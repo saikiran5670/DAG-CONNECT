@@ -448,38 +448,79 @@ namespace net.atos.daf.ct2.reportservice.Services
 
         #region Eco Score Report - Create User Preference
 
-        public override async Task<EcoScoreUserPreferenceCreateResponse> CreateEcoScoreUserPreference(EcoScoreUserPreferenceCreateRequest request, ServerCallContext context)
+        /// <summary>
+        /// Initially created for Eco Score report. Later can be generalized.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override async Task<ReportUserPreferenceCreateResponse> CreateReportUserPreference(ReportUserPreferenceCreateRequest request, ServerCallContext context)
         {
             try
             {
-                EcoScoreUserPreferenceCreateResponse response = new EcoScoreUserPreferenceCreateResponse();
+                ReportUserPreferenceCreateResponse response = new ReportUserPreferenceCreateResponse();
+                var isSuccess = await _reportManager.CreateReportUserPreference(_mapper.MapCreateReportUserPreferences(request));
+                if (isSuccess)
+                {
+                    response.Code = Responsecode.Success;
+                }
+                else
+                {
+                    response.Message = String.Format(ReportConstants.USER_PREFERENCE_CREATE_FAILURE_MSG, request.AccountId, request.ReportId);
+                    response.Code = Responsecode.Failed;
+                }
+
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return new EcoScoreUserPreferenceCreateResponse()
+                return new ReportUserPreferenceCreateResponse()
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = $"{nameof(CreateEcoScoreUserPreference)} failed due to - " + ex.Message
+                    Message = $"{nameof(CreateReportUserPreference)} failed due to - " + ex.Message
                 };
             }
         }
 
-        public override async Task<EcoScoreGetUserPreferenceResponse> GetEcoScoreUserPreference(EcoScoreGetUserPreferenceRequest request, ServerCallContext context)
+        /// <summary>
+        /// Initially created for Eco Score report. Later can be generalized.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override async Task<GetReportUserPreferenceResponse> GetReportUserPreference(GetReportUserPreferenceRequest request, ServerCallContext context)
         {
             try
             {
-                EcoScoreGetUserPreferenceResponse response = new EcoScoreGetUserPreferenceResponse();
+                GetReportUserPreferenceResponse response = new GetReportUserPreferenceResponse();
+                IEnumerable<UserPreferenceReportDataColumn> userPreferences = null;
+                var userPreferencesExists = await _reportManager.CheckIfUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
+                var roleBasedUserPreferences = await _reportManager.GetRoleBasedDataColumn(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
+
+                if (userPreferencesExists)
+                {
+                    var preferences = await _reportManager.GetReportUserPreference(request.ReportId, request.AccountId, request.OrganizationId);
+
+                    //Filter out preferences based on Account role and org package subscription
+                    userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAtrributeId == x.DataAtrributeId));
+                }
+                else
+                {
+                    userPreferences = roleBasedUserPreferences;
+                }
+
+                response.Code = Responsecode.Success;
+                //response.UserPreferences.AddRange(_mapper.MapUserPreferences(userPreferences));
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return new EcoScoreGetUserPreferenceResponse()
+                return new GetReportUserPreferenceResponse()
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = $"{nameof(CreateEcoScoreUserPreference)} failed due to - " + ex.Message
+                    Message = $"{nameof(GetReportUserPreference)} failed due to - " + ex.Message
                 };
             }
         }

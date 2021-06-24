@@ -52,6 +52,7 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 				}
 			}
 		} catch (Exception e) {
+			logger.error("Issue while calling invoke() in TripSink :: " + e);
 			e.printStackTrace();
 		}
 

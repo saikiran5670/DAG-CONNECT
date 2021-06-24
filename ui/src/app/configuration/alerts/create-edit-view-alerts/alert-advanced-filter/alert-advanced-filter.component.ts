@@ -81,7 +81,12 @@ export class AlertAdvancedFilterComponent implements OnInit {
   selectedDuration :any;
   selectedOccurance : any;
   rowData : any;
+  distanceVal: any =[];
+  occurenceVal: any =[];
+  durationVal :any = [];
   thresholdVal: any;
+  from: any;
+  to: any;
   options: Options = {
     floor: 0,
     ceil: 10000
@@ -120,8 +125,11 @@ export class AlertAdvancedFilterComponent implements OnInit {
       toDate: [''],
       toTimeRange:['23:59']
     })
+
+    
+    
     this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
-    if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate'){
+    if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
       this.setDefaultAdvanceAlert();
     }
   }
@@ -131,11 +139,16 @@ export class AlertAdvancedFilterComponent implements OnInit {
     this.loadPOIData();
     this.loadGeofenceData();
     this.loadGroupData();
-      // this.rowData = this.selectedRowData.filter(item=>item.urgencyLevelType === 'F');
-      // this.selectedDistance = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'T');
-      // this.selectedDuration = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'D');
-      // this.selectedOccurance = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'N');
-      this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
+    this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
+    if(this.selectedApplyOn == 'C'){
+      this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate,'DD/MM/YYYY HH:MM').split(" ");
+      this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate,'DD/MM/YYYY HH:MM').split(" ");
+      this.alertAdvancedFilterForm.get('fromDate').setValue(this.from[0]);
+      this.alertAdvancedFilterForm.get('toDate').setValue(this.to[0]);
+
+      this.alertAdvancedFilterForm.get('fromTimeRange').setValue(this.from[1]);
+      this.alertAdvancedFilterForm.get('toTimeRange').setValue(this.to[1]);
+    }
       this.alertAdvancedFilterForm.get('fullorCustom').setValue(this.selectedApplyOn);
       let Data = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.forEach(element => {
         if(element.filterType == 'N' && element.thresholdValue !=0)
@@ -153,7 +166,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
           this.isDurationSelected =true;
           this.alertAdvancedFilterForm.get('duration').setValue(element.thresholdValue);
         }
-        if(element.landmarkType == 'P' || element.landmarkType == 'O' || element.landmarkType == 'G')
+        if(element.landmarkType == 'P' || element.landmarkType == 'O' || element.landmarkType == 'C' || element.landmarkType == 'G')
         {
 
             this.isPoiSelected= true;
@@ -163,6 +176,15 @@ export class AlertAdvancedFilterComponent implements OnInit {
             // this.loadGroupData();
           
         }
+        if(this.actionType == 'view'){
+          let arr1 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => (item.filterType == 'N' && item.thresholdValue != 0));
+          this.occurenceVal.push(arr1);
+          let arr2 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'T');
+          this.distanceVal.push(arr2);
+          let arr3 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'D');
+          this.durationVal.push(arr3);
+        }
+        
       });
   }
 
@@ -1459,6 +1481,36 @@ else{
       this.advancedAlertPayload.push(obj);
     }
     }
+
+    if(!this.isDurationSelected && !this.isDistanceSelected && !this.isOccurenceSelected){
+      this.filterType = 'N';
+      this.thresholdVal = 0;
+      let filterObj = {
+        "type" : this.filterType,
+        "val" : this.thresholdVal
+      }
+      this.filterTypeArray.push(filterObj);
+      if(!this.isPoiSelected){
+      obj = {
+      "alertUrgencyLevelId": 0,
+      "filterType": "N",
+      "thresholdValue": this.thresholdVal,
+      "unitType": "N",
+      "landmarkType": 'N',
+      "refId": 0,
+      "positionType": "N",
+      "alertTimingDetails": this.alertTimingDetail
+    }
+    if(this.actionType == 'edit'){
+      let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].id;
+      obj["id"] = periodRefArr;
+      obj["alertId"] = this.selectedRowData.id;
+      obj["state"] = 'A';
+      obj["alertTimingDetails"]["refId"] = periodRefArr;
+     }
+    this.advancedAlertPayload.push(obj);
+  }
+  }
 
 
       if (this.geoMarkerArray.length != 0) {

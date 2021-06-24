@@ -128,5 +128,15 @@ export class AlertService {
       .pipe(catchError(this.handleError));
   }
 
+  getNotificationRecipients(orgId): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+     headers: new HttpHeaders({ headerObj }),
+   };
+     return this.httpClient
+       .get<any[]>(`${this.alertServiceUrl}/getnotificationrecipients?orgnizationId=${orgId}`,headers)
+       .pipe(catchError(this.handleError));
+   }
+
 
 }

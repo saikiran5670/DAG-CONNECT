@@ -89,5 +89,36 @@
             grpcRequest.VINs.AddRange(request.VINs);
             return grpcRequest;
         }
+
+        /// <summary>
+        /// Initially created for Eco Score report. Later can be generalized.
+        /// </summary>
+        /// <param name="objUserPreferenceCreateRequest"></param>
+        /// <param name="accountId"></param>
+        /// <param name="orgId"></param>
+        /// <returns></returns>
+        internal reportservice.ReportUserPreferenceCreateRequest MapCreateReportUserPreferences(ReportUserPreferenceCreateRequest objUserPreferenceCreateRequest,
+                                                                                                int accountId, int orgId)
+        {
+            reportservice.ReportUserPreferenceCreateRequest objRequest = new reportservice.ReportUserPreferenceCreateRequest();
+
+            objRequest.ReportId = objUserPreferenceCreateRequest.ReportId;
+            objRequest.AccountId = accountId;
+            objRequest.OrganizationId = orgId;
+
+            for (int i = 0; i < objUserPreferenceCreateRequest.Attributes.Count; i++)
+            {
+                objRequest.Attributes.Add(new reportservice.UserPreferenceAttribute()
+                {
+                    DataAttributeId = objUserPreferenceCreateRequest.Attributes[i].DataAttributeId,
+                    State = objUserPreferenceCreateRequest.Attributes[i].State.ToString(),
+                    Type = objUserPreferenceCreateRequest.Attributes[i].Type,
+                    ChartType = objUserPreferenceCreateRequest.Attributes[i].ChartType,
+                    ThresholdType = objUserPreferenceCreateRequest.Attributes[i].ThresholdType,
+                    ThresholdValue = objUserPreferenceCreateRequest.Attributes[i].ThresholdValue
+                });
+            }
+            return objRequest;
+        }
     }
 }

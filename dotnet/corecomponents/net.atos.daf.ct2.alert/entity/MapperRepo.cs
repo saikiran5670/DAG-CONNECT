@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.alert.entity
             Dictionary<int, AlertFilterRef> alertFilterRefLookup = new Dictionary<int, AlertFilterRef>();
             Dictionary<int, AlertLandmarkRef> alertLandmarkRefLookup = new Dictionary<int, AlertLandmarkRef>();
 
-            Dictionary<int, NotificationRecipient> notificationRecipientRefLookup = new Dictionary<int, NotificationRecipient>();
+            Dictionary<Tuple<int, int>, NotificationRecipient> notificationRecipientRefLookup = new Dictionary<Tuple<int, int>, NotificationRecipient>();
             Dictionary<int, NotificationLimit> notificationLimitkRefLookup = new Dictionary<int, NotificationLimit>();
             Dictionary<int, NotificationAvailabilityPeriod> notificationAvailabilityPeriodLookup = new Dictionary<int, NotificationAvailabilityPeriod>();
 
@@ -108,10 +108,10 @@ namespace net.atos.daf.ct2.alert.entity
                     //}
                     if (alertItem.Notrec_id > 0 && alertItem.Notref_notification_id == alertItem.Noti_id && alertItem.Notref_recipient_id == alertItem.Notrec_id && alertItem.Notref_alert_id == alertItem.Ale_id)
                     {
-                        if (!notificationRecipientRefLookup.TryGetValue(Convert.ToInt32(alertItem.Notrec_id), out NotificationRecipient notificationRecipient))
+                        if (!notificationRecipientRefLookup.TryGetValue(Tuple.Create(Convert.ToInt32(alertItem.Notrec_id), alertItem.Notref_alert_id), out NotificationRecipient notificationRecipient))
                         {
                             notificationRecipient = ToNotificationRecipientModel(alertItem);
-                            notificationRecipientRefLookup.Add(Convert.ToInt32(alertItem.Notrec_id), notificationRecipient);
+                            notificationRecipientRefLookup.Add(Tuple.Create(Convert.ToInt32(alertItem.Notrec_id), alertItem.Notref_alert_id), notificationRecipient);
                             notification.NotificationRecipients.Add(notificationRecipient);
                         }
                         if (alertItem.Notlim_id > 0 && alertItem.Notlim_recipient_id == alertItem.Notrec_id)

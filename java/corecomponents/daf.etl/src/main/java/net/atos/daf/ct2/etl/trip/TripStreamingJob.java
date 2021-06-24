@@ -26,12 +26,15 @@ import net.atos.daf.ct2.etl.common.bo.TripAggregatedData;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.kafka.FlinkKafkaStatusMsgConsumer;
 import net.atos.daf.ct2.etl.common.postgre.TripSink;
+import net.atos.daf.ct2.etl.common.postgre.EcoScoreSink;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.FlinkUtil;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.serde.KafkaMessageSerializeSchema;
+import net.atos.daf.postgre.bo.EcoScore;
 import net.atos.daf.postgre.bo.Trip;
+
 
 public class TripStreamingJob {
 	private static Logger logger = LoggerFactory.getLogger(TripStreamingJob.class);
@@ -48,6 +51,7 @@ public class TripStreamingJob {
 			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams);
 			env.getConfig().setGlobalJobParameters(envParams);
 			final StreamTableEnvironment tableEnv = FlinkUtil.createStreamTableEnvironment(env);
+			
 			TripStreamingJob tripStreamingJob = new TripStreamingJob();
 			TripAggregations tripAggregation = new TripAggregations();
 
@@ -74,10 +78,13 @@ public class TripStreamingJob {
 			DataStream<TripAggregatedData> tripAggrData = tripAggregation.getConsolidatedTripData(tripStsWithCo2Emission, indxData,Long.valueOf(envParams.get(ETLConstants.TRIP_TIME_WINDOW_MILLISEC)), tableEnv);
 			
 			DataStream<Trip> finalTripData = tripAggregation.getTripStatisticData(tripAggrData, tableEnv);
+			DataStream<EcoScore> ecoScoreData = tripAggregation.getEcoScoreData(tripAggrData, tableEnv);
+			
 			// Call Audit Trail
 			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_START, ETLConstants.TRIP_STREAMING_JOB_NAME,
 					"Trip Streaming Job Started", ETLConstants.AUDIT_CREATE_EVENT_TYPE);
 
+			ecoScoreData.addSink(new EcoScoreSink());
 			finalTripData.addSink(new TripSink());
 			
 			if ("true".equals(envParams.get(ETLConstants.EGRESS_TRIP_AGGR_DATA))){

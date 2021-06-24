@@ -18,6 +18,7 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple8;
 import org.apache.flink.api.java.tuple.Tuple9;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.table.api.Table;
@@ -34,6 +35,7 @@ import net.atos.daf.ct2.etl.common.hbase.TripIndexData;
 import net.atos.daf.ct2.etl.common.postgre.TripCo2Emission;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.ETLQueries;
+import net.atos.daf.postgre.bo.EcoScore;
 import net.atos.daf.postgre.bo.Trip;
 
 public class TripAggregations implements Serializable{
@@ -91,6 +93,11 @@ public class TripAggregations implements Serializable{
 
 		//tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination,vDist, previousVdist, increment, formula for avgWt
 		DataStream<Tuple9<String, String, String, Integer, Double, Long, Long, Long, Double>> grossWtCombData = getGrossWtCombData(firstLevelAggrData, timeInMilli);
+		
+		//only for testing remove this ******************
+		indxData.writeAsText("/home/flinkhuser/TestindexDataBfrAggregation.txt", FileSystem.WriteMode.OVERWRITE)
+					.name("writeIndexDataToFile");
+				
 		tableEnv.createTemporaryView("grossWtCombData", grossWtCombData);
 		
 		Table indxTblAggrResult = tableEnv.sqlQuery(ETLQueries.TRIP_INDEX_AGGREGATION_QRY);
@@ -101,6 +108,10 @@ public class TripAggregations implements Serializable{
 	public DataStream<TripAggregatedData> getConsolidatedTripData(SingleOutputStreamOperator<TripStatusData> stsData, SingleOutputStreamOperator<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> indxData, Long timeInMilli, StreamTableEnvironment tableEnv)
 	{
 		DataStream<Tuple8<String, String, String, Integer, Double, Double, Double, Long>> secondLevelAggrData = getTripIndexAggregatedData(stsData, tableEnv, indxData, timeInMilli);
+		
+		//only for testing remove this ******************
+		indxData.writeAsText("/home/flinkhuser/TestindexData.txt", FileSystem.WriteMode.OVERWRITE)
+			.name("writeIndexDataToFile");
 		
 		tableEnv.createTemporaryView("tripStsData", stsData);
 		
@@ -119,6 +130,13 @@ public class TripAggregations implements Serializable{
 		tableEnv.createTemporaryView("tripAggrData", tripAggrData);
 		Table tripStatisticData =tableEnv.sqlQuery(ETLQueries.TRIP_QRY);
 		return tableEnv.toRetractStream(tripStatisticData, Trip.class).map(rec -> rec.f1);
+	}
+	
+	public DataStream<EcoScore> getEcoScoreData(DataStream<TripAggregatedData> tripAggrData, StreamTableEnvironment tableEnv)
+	{
+		tableEnv.createTemporaryView("tripAggrDataForEcoScore", tripAggrData);
+		Table tripStatisticData =tableEnv.sqlQuery(ETLQueries.ECOSCORE_QRY);
+		return tableEnv.toRetractStream(tripStatisticData, EcoScore.class).map(rec -> rec.f1);
 	}
 	
 	public SingleOutputStreamOperator<TripStatusData> getTripStsWithCo2Emission(
@@ -166,15 +184,25 @@ public class TripAggregations implements Serializable{
 								vDistDiff = (Long) (row.getField(6)) - currentTripVDist.f1 ;
 								prevVDist = currentTripVDist.f1;
 								
-								if(vDistDiff == 0)
-									vDistDiff = 1;
 							}else{
 								currentTripVDist = new Tuple2<String, Long>();
 							}
 							
+
+							if(vDistDiff == 0)
+								vDistDiff = 1;
+							
 							currentTripVDist.f0 = (String) (row.getField(0));
 							currentTripVDist.f1 = (Long) (row.getField(6));
 							prevVDistState.update(currentTripVDist);
+							
+							logger.info(" GrossWt Info :: "+new Tuple9<String, String, String, Integer, Double, Long, Long, Long, Double>(
+									(String) (row.getField(0)), (String) (row.getField(1)),
+									(String) (row.getField(2)), (Integer) (row.getField(3)),
+									(Double) (row.getField(4)), (Long) (row.getField(6)), prevVDist,
+									(Long) (row.getField(7)), ((Double) (row.getField(4)) * vDistDiff)));
+							
+							logger.info(" vDistDiff :"+vDistDiff +" row.getField(4): "+((Double) (row.getField(4))) );
 							
 							//tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination,vDist, previousVdist, increment, formula for avgWt
 							return new Tuple9<String, String, String, Integer, Double, Long, Long, Long, Double>(
