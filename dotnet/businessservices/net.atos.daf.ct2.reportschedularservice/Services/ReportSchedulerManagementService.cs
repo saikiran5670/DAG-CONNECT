@@ -323,5 +323,67 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
         }
         #endregion
+
+        #region GetPDFBinaryFormatById
+        public override async Task<ReportPDFListResponse> GetPDFBinaryFormatById(ReportPDFByIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var data = await _reportSchedulerManager.GetPDFBinaryFormatById(request.ReportId);
+                ReportPDFListResponse response = new ReportPDFListResponse();
+                if (data.Any())
+                {
+                    foreach (var item in data)
+                    {
+                        response.PDFList.Add(_mapper.MapPDFRepoModel(item));
+                    }
+                }
+                response.Message = ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_SUCCESS_MSG;
+                response.Code = ResponseCode.Success;
+                _logger.Info(ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_CALLED_MSG);
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ReportPDFListResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = string.Format("{0} {1}", ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_FAIL_MSG, ex.Message)
+                });
+            }
+        }
+        #endregion
+
+        #region GetPDFBinaryFormatByToken
+        public override async Task<ReportPDFListResponse> GetPDFBinaryFormatByToken(ReportPDFByTokenRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var data = await _reportSchedulerManager.GetPDFBinaryFormatByToken(request.Token);
+                ReportPDFListResponse response = new ReportPDFListResponse();
+                if (data.Any())
+                {
+                    foreach (var item in data)
+                    {
+                        response.PDFList.Add(_mapper.MapPDFRepoModel(item));
+                    }
+                }
+                response.Message = ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_SUCCESS_MSG;
+                response.Code = ResponseCode.Success;
+                _logger.Info(ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_CALLED_MSG);
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ReportPDFListResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = string.Format("{0} {1}", ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_FAIL_MSG, ex.Message)
+                });
+            }
+        }
+        #endregion
     }
 }
