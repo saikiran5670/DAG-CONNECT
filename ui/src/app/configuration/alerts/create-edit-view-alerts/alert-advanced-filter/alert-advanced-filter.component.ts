@@ -1482,6 +1482,36 @@ else{
     }
     }
 
+    if(!this.isDurationSelected && !this.isDistanceSelected && !this.isOccurenceSelected){
+      this.filterType = 'N';
+      this.thresholdVal = 0;
+      let filterObj = {
+        "type" : this.filterType,
+        "val" : this.thresholdVal
+      }
+      this.filterTypeArray.push(filterObj);
+      if(!this.isPoiSelected){
+      obj = {
+      "alertUrgencyLevelId": 0,
+      "filterType": "N",
+      "thresholdValue": this.thresholdVal,
+      "unitType": "N",
+      "landmarkType": 'N',
+      "refId": 0,
+      "positionType": "N",
+      "alertTimingDetails": this.alertTimingDetail
+    }
+    if(this.actionType == 'edit'){
+      let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].refId;
+      obj["id"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+      obj["alertId"] = this.selectedRowData.id;
+      obj["state"] = 'A';
+      obj["alertTimingDetails"]["refId"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+     }
+    this.advancedAlertPayload.push(obj);
+  }
+  }
+
 
       if (this.geoMarkerArray.length != 0) {
         this.geoMarkerArray.forEach(element => {

@@ -450,7 +450,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 									then  
 									(select Count(id) from master.landmark where category_id in(r.parent_id) and type in ('C','O') and state ='A' and (organization_id= @organizationID or organization_id is null)) 
 									else 
-									(select Count(id) from master.landmark where category_id in(r.parent_id) and (sub_category_id = r.Subcategory_id ) and type in ('C','O') and state ='A' and (organization_id=36 or organization_id is null)) 
+									(select Count(id) from master.landmark where category_id in(r.parent_id) and (sub_category_id = r.Subcategory_id ) and type in ('C','O') and state ='A' and (organization_id=@organizationID or organization_id is null)) 
 									end) ) as No_of_Geofence,
 							
 							
@@ -458,7 +458,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 									then  
 									(select Count(id) from master.landmark where category_id in(r.parent_id) and type in ('P') and state ='A' and (organization_id= @organizationID or organization_id is null)) 
 									else 
-									(select Count(id) from master.landmark where category_id in(r.parent_id) and (sub_category_id = r.Subcategory_id ) and type in ('P') and state ='A' and (organization_id=36 or organization_id is null)) 
+									(select Count(id) from master.landmark where category_id in(r.parent_id) and (sub_category_id = r.Subcategory_id ) and type in ('P') and state ='A' and (organization_id=@organizationID or organization_id is null)) 
 									end) )  as No_of_POI,
 									
                             r.Parent_category_Icon As IconId,

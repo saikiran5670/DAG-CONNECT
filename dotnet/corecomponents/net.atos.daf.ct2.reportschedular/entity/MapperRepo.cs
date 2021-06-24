@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
                     if (!scheduledReportRecipientLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Receipt_id), out _))
                     {
                         var scheduledReportRecipient = ToScheduledReportRecipientModel(reportSchedulerItem);
-                        scheduledReportRecipientLookup.Add(Convert.ToInt32(reportSchedulerItem.Receipt_schedule_report_id), scheduledReportRecipient);
+                        scheduledReportRecipientLookup.Add(Convert.ToInt32(reportSchedulerItem.Receipt_id), scheduledReportRecipient);
                         reportScheduler.ScheduledReportRecipient.Add(scheduledReportRecipient);
                     }
                 }
@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
                     if (!scheduledReportDriverRefLookup.TryGetValue(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Driveref_driver_id), reportSchedulerItem.Repsch_id), out _))
                     {
                         var scheduledReportDriver = ToScheduledReportDriverRefModel(reportSchedulerItem);
-                        scheduledReportDriverRefLookup.Add(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), reportSchedulerItem.Repsch_id), scheduledReportDriver);
+                        scheduledReportDriverRefLookup.Add(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Driveref_driver_id), reportSchedulerItem.Repsch_id), scheduledReportDriver);
                         reportScheduler.ScheduledReportDriverRef.Add(scheduledReportDriver);
                     }
                 }
