@@ -165,7 +165,8 @@ export class CreateNotificationsAlertComponent implements OnInit {
       receipientId: [],
       retrictTo: ['1'],
       emailEach: ['1'],
-      minutes: ['1']
+      minutes: ['1'],
+      emailllimitId: []
     });
 
   }
@@ -185,7 +186,8 @@ export class CreateNotificationsAlertComponent implements OnInit {
       widthInput: [''],
       webretrictTo: ['1'],
       webEach: ['1'],
-      webminutes: ['1']
+      webminutes: ['1'],
+      weblimitId: []
     });
 
   }
@@ -239,6 +241,8 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(this.emailLabel);
           this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
           this.FormEmailArray.at(this.emailIndex).get("minutes").setValue(this.emailtimeUnitValue);
+          this.notificationForm.get("recipientLabel").reset();
+          this.notificationForm.get("contactMode").reset();
         }
         else {
           this.emailIndex = this.emailIndex + 1;
@@ -247,6 +251,8 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(this.emailLabel);
           this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
           this.FormEmailArray.at(this.emailIndex).get("minutes").setValue(this.emailtimeUnitValue);
+          this.notificationForm.get("recipientLabel").reset();
+          this.notificationForm.get("contactMode").reset();
         }
       }
       //this is for web service
@@ -259,6 +265,8 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(this.wsLabel);
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
           this.FormWebArray.at(this.wsIndex).get("webminutes").setValue(this.timeUnitValue);
+          this.notificationForm.get("recipientLabel").reset();
+          this.notificationForm.get("contactMode").reset();
         }
         else {
           this.wsIndex = this.wsIndex + 1;
@@ -267,6 +275,8 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(this.wsLabel);
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
           this.FormWebArray.at(this.wsIndex).get("webminutes").setValue(this.timeUnitValue);
+          this.notificationForm.get("recipientLabel").reset();
+          this.notificationForm.get("contactMode").reset();
         }
       }
     }
@@ -291,6 +301,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.FormEmailArray.at(this.emailIndex).get("minutes").setValue(data.notificationLimits[0].notificationPeriodType);
           this.FormEmailArray.at(this.emailIndex).get("retrictTo").setValue(data.notificationLimits[0].maxLimit);
           this.FormEmailArray.at(this.emailIndex).get("emailEach").setValue(data.notificationLimits[0].periodLimit);
+          this.FormEmailArray.at(this.emailIndex).get("emailllimitId").setValue(data.notificationLimits[0].id);
         }
         else {
           this.emailIndex = this.emailIndex + 1;
@@ -305,6 +316,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.FormEmailArray.at(this.emailIndex).get("minutes").setValue(data.notificationLimits[0].notificationPeriodType);
           this.FormEmailArray.at(this.emailIndex).get("retrictTo").setValue(data.notificationLimits[0].maxLimit);
           this.FormEmailArray.at(this.emailIndex).get("emailEach").setValue(data.notificationLimits[0].periodLimit);
+          this.FormEmailArray.at(this.emailIndex).get("emailllimitId").setValue(data.notificationLimits[0].id);
         }
       }
       //this is for web service
@@ -323,6 +335,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.FormWebArray.at(this.wsIndex).get("webminutes").setValue(data.notificationLimits[0].notificationPeriodType);
           this.FormWebArray.at(this.wsIndex).get("webretrictTo").setValue(data.notificationLimits[0].maxLimit);
           this.FormWebArray.at(this.wsIndex).get("webEach").setValue(data.notificationLimits[0].periodLimit);
+          this.FormWebArray.at(this.wsIndex).get("weblimitId").setValue(data.notificationLimits[0].id);
           if (data.wsType == 'A') {
             this.FormWebArray.at(this.wsIndex).get("loginId").setValue(data.wsLogin);
             this.FormWebArray.at(this.wsIndex).get("password").setValue(data.wsPassword);
@@ -342,6 +355,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.FormWebArray.at(this.wsIndex).get("webminutes").setValue(data.notificationLimits[0].notificationPeriodType);
           this.FormWebArray.at(this.wsIndex).get("webretrictTo").setValue(data.notificationLimits[0].maxLimit);
           this.FormWebArray.at(this.wsIndex).get("webEach").setValue(data.notificationLimits[0].periodLimit);
+          this.FormWebArray.at(this.wsIndex).get("weblimitId").setValue(data.notificationLimits[0].id);
           if (data.wsType == 'A') {
             this.FormWebArray.at(this.wsIndex).get("loginId").setValue(data.wsLogin);
             this.FormWebArray.at(this.wsIndex).get("password").setValue(data.wsPassword);
@@ -350,8 +364,6 @@ export class CreateNotificationsAlertComponent implements OnInit {
         }
       }
     }
-    this.notificationForm.get("recipientLabel").reset();
-    this.notificationForm.get("contactMode").reset();
   }
 
   deleteWebNotificationRow(index: number) {
@@ -431,7 +443,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
               "notificationId": 0,
               "notificationModeType": "A",
               "maxLimit": 0,
-              "notificationPeriodType": "N",
+              "notificationPeriodType": "D",
               "periodLimit": 0
             }
           }
@@ -450,7 +462,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
           webNotificationLimits.push(obj);
 
           webPayload = {
-            id: WsData.receipientId ? WsData.receipientId.value : 0,
+            id: WsData.receipientId.value ? WsData.receipientId.value : 0,
             recipientLabel: WsData.webRecipientLabel.value,
             accountGroupId: this.organizationId,
             notificationModeType: WsData.webContactModes.value,
@@ -479,21 +491,21 @@ export class CreateNotificationsAlertComponent implements OnInit {
           let limitVal = parseInt(WsData.webEach.value);
           if (WsData.notifyPeriodweb.value == 'A') {
             obj = {
-              "id": 0,
-              "recipientId": 0,
-              "notificationId": 0,
+              "id": WsData.weblimitId.value,
+              "recipientId":WsData.receipientId.value,
+              "notificationId": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
               "notificationModeType": "A",
               "maxLimit": 0,
-              "notificationPeriodType": "N",
+              "notificationPeriodType": "D",
               "periodLimit": 0
             }
           }
           else if (WsData.notifyPeriodweb.value == 'C') {
             obj =
             {
-              "id": 0,
-              "recipientId": 0,
-              "notificationId": 0,
+              "id": WsData.weblimitId.value,
+              "recipientId":WsData.receipientId.value,
+              "notificationId": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
               "notificationModeType": 'C',
               "maxLimit": webrestrict,
               "notificationPeriodType": WsData.webminutes.value,
@@ -542,7 +554,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
               "notificationId": 0,
               "notificationModeType": "A",
               "maxLimit": 0,
-              "notificationPeriodType": "N",
+              "notificationPeriodType": "D",
               "periodLimit": 0
             }
           }
@@ -560,7 +572,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
           }
           emailNotificationLimits.push(obj);
           emailPayload = {
-            id: EmailData.receipientId ? EmailData.receipientId.value : 0,
+            id: EmailData.receipientId.value ? EmailData.receipientId.value : 0,
             recipientLabel: EmailData.emailRecipientLabel.value,
             accountGroupId: this.organizationId,
             notificationModeType: EmailData.emailContactModes.value,
@@ -588,21 +600,21 @@ export class CreateNotificationsAlertComponent implements OnInit {
           let limitVal = parseInt(EmailData.emailEach.value);
           if (EmailData.notifyPeriod.value == 'A') {
             obj = {
-              "id": 0,
-              "recipientId": 0,
-              "notificationId": 0,
+              "id": EmailData.emailllimitId.value,
+              "recipientId": EmailData.receipientId.value ? EmailData.receipientId.value : 0,
+              "notificationId": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
               "notificationModeType": "A",
               "maxLimit": 0,
-              "notificationPeriodType": "N",
+              "notificationPeriodType": "D",
               "periodLimit": 0
             }
           }
           else if (EmailData.notifyPeriod.value == 'C') {
             obj =
             {
-              "id": 0,
-              "recipientId": 0,
-              "notificationId": 0,
+              "id": EmailData.emailllimitId.value,
+              "recipientId": EmailData.receipientId.value ? EmailData.receipientId.value : 0,
+              "notificationId": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
               "notificationModeType": 'C',
               "maxLimit": restrictTo,
               "notificationPeriodType": EmailData.minutes.value,
