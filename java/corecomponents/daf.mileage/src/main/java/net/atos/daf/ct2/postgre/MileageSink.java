@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import net.atos.daf.ct2.bo.TripMileage;
 import net.atos.daf.ct2.util.MileageConstants;
@@ -18,6 +20,7 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 	* 
 	*/
 	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LogManager.getLogger(MileageSink.class);
 	private PreparedStatement statement;
 	private Connection connection;
 	
@@ -44,7 +47,7 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 		statement.setDouble(12, rec.getGpsDistance());
 		statement.setLong(13, rec.getModifiedAt());
 
-		System.out.println("mileage data for veh "+rec);
+		logger.info("mileage data for veh "+rec);
 		statement.addBatch();
 		statement.executeBatch();
 	}
@@ -58,25 +61,24 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 				envParams.get(MileageConstants.DATAMART_POSTGRE_DATABASE_NAME),
 				envParams.get(MileageConstants.DATAMART_POSTGRE_USER),
 				envParams.get(MileageConstants.DATAMART_POSTGRE_PASSWORD));
-		System.out.println("In trip sink connection done" + connection);
+		logger.info("In trip sink connection done" + connection);
 		statement = connection.prepareStatement(query);
 		
 	}
 
 	@Override
     public void close() throws Exception {
-        if (statement != null) {
+		super.close(); 
+		if (statement != null) {
         	statement.close();
         }
-        System.out.println("In close() of tripSink :: ");
+        logger.info("In close() of tripSink :: ");
         
         if (connection != null) {
         	System.out.println("Releasing connection from Trip Job");
             connection.close();
         }
-             
-        super.close(); 
-		
+    	
     }
 	
 }

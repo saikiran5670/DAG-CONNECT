@@ -42,6 +42,7 @@ export class DriverTimeManagementComponent implements OnInit {
   tableExpandPanel: boolean = true;
   noDetailsExpandPanel : boolean = true;
   generalExpandPanel : boolean = true;
+  searchFilterpersistData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
 
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
@@ -155,6 +156,8 @@ export class DriverTimeManagementComponent implements OnInit {
   }
 
   onVehicleGroupChange(event: any){
+    if(event.value || event.value == 0){
+
     this.driverTimeForm.get('vehicle').setValue(''); //- reset vehicle dropdown
     if(parseInt(event.value) == 0){ //-- all group
       this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
@@ -162,9 +165,19 @@ export class DriverTimeManagementComponent implements OnInit {
     }else{
       this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
     }
+    this.searchFilterpersistData["vehicleGroupDropDownValue"] = event.value;
+    this.searchFilterpersistData["vehicleDropDownValue"] = '';
+    this.setGlobalSearchData(this.searchFilterpersistData)
+  }else {
+    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
+    this.driverTimeForm.get('vehicleGroup').setValue(parseInt(this.searchFilterpersistData.vehicleGroupDropDownValue));
+    this.driverTimeForm.get('vehicle').setValue(parseInt(this.searchFilterpersistData.vehicleDropDownValue));
+  }
   }
 
   onVehicleChange(event: any){
+    this.searchFilterpersistData["vehicleDropDownValue"] = event.value;
+    this.setGlobalSearchData(this.searchFilterpersistData)
   }
 
   onDriverChange(event: any){
@@ -457,6 +470,7 @@ export class DriverTimeManagementComponent implements OnInit {
     this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     //this.updateDataSource(this.tripData);
     this.resetdriverTimeFormControlValue();
+    this.filterDateData(); // extra addded as per discuss with Atul
     this.tableInfoObj = {};
     //this.advanceFilterOpen = false;
    // this.selectedPOI.clear();
@@ -466,7 +480,10 @@ export class DriverTimeManagementComponent implements OnInit {
     this.driverTimeForm.get('vehicleGroup').setValue(0);
     this.driverTimeForm.get('vehicle').setValue(0);
     this.driverTimeForm.get('driver').setValue(0);
-
+    this.searchFilterpersistData["vehicleGroupDropDownValue"] = 0;
+    this.searchFilterpersistData["vehicleDropDownValue"] = '';
+    this.searchFilterpersistData["driverDropDownValue"] = '';
+    this.setGlobalSearchData(this.searchFilterpersistData);
   }
 
   hideloader() {
@@ -499,6 +516,11 @@ export class DriverTimeManagementComponent implements OnInit {
      // this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
       //this.loadUserPOI();
     });
+
+  }
+  setGlobalSearchData(globalSearchFilterData:any) {
+    this.searchFilterpersistData["modifiedFrom"] = "TripReport";
+    localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
   }
 
   filterDateData(){
@@ -816,6 +838,13 @@ export class DriverTimeManagementComponent implements OnInit {
   }
 
   setPrefFormatTime(){
+    if(this.searchFilterpersistData.modifiedFrom !== "" &&  ((this.searchFilterpersistData.startTimeStamp || this.searchFilterpersistData.endTimeStamp) !== "") ) {
+      console.log("---if fleetUtilizationSearchData exist")
+      this.selectedStartTime = this.searchFilterpersistData.startTimeStamp;
+      this.selectedEndTime = this.searchFilterpersistData.endTimeStamp;
+      this.startTimeDisplay = `${this.searchFilterpersistData.startTimeStamp+":00"}`;
+      this.endTimeDisplay = `${this.searchFilterpersistData.endTimeStamp+":59"}`;
+    }else {
     if(this.prefTimeFormat == 24){
       this.startTimeDisplay = '00:00:00';
       this.endTimeDisplay = '23:59:59';
@@ -824,19 +853,51 @@ export class DriverTimeManagementComponent implements OnInit {
       this.endTimeDisplay = '11:59 PM';
     }
   }
+}
 
   setDefaultStartEndTime(){
     this.setPrefFormatTime();
-    this.selectedStartTime = "00:00";
-    this.selectedEndTime = "23:59";
+    if(this.searchFilterpersistData.modifiedFrom == ""){
+      this.selectedStartTime = "00:00";
+      this.selectedEndTime = "23:59";
+    }
   }
 
   setDefaultTodayDate(){
+    if(this.searchFilterpersistData.modifiedFrom !== "") {
+      console.log("---if searchFilterpersistData startDateStamp exist")
+      if(this.searchFilterpersistData.timeRangeSelection !== ""){
+        this.selectionTab = this.searchFilterpersistData.timeRangeSelection;
+
+        let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
+        let endDateFromSearch =new Date(this.searchFilterpersistData.endDateStamp);
+        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.searchFilterpersistData.startTimeStamp, 'start');
+        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.searchFilterpersistData.endTimeStamp, 'end');
+        // this.globalSearchFilterData["timeRangeSelection"] = this.searchFilterpersistData.timeRangeSelection;
+        // this.setGlobalSearchData(this.globalSearchFilterData);
+        // this.selectionTimeRange(this.selectionTab)
+      }else {
+        this.selectionTab = 'today';
+        let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
+        let endDateFromSearch =new Date(this.searchFilterpersistData.endDateStamp);
+        console.log(typeof(startDateFromSearch));
+        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.searchFilterpersistData.startTimeStamp, 'start');
+        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.searchFilterpersistData.endTimeStamp, 'end');
+      }
+      
+    }else {
     this.selectionTab = 'today';
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
+  }
+  }
+
+  setVehicleGroupAndVehiclePreSelection() {
+    if(this.searchFilterpersistData.vehicleDropDownValue !== "") {
+      this.onVehicleGroupChange(this.searchFilterpersistData.vehicleGroupDropDownValue)
+    }
   }
 
   setDefaultDateToFetch(){
@@ -876,6 +937,21 @@ export class DriverTimeManagementComponent implements OnInit {
     return date;
   }
   setStartEndDateTime(date: any, timeObj: any, type: any){
+    if(type == "start"){
+      console.log("--date type--",date)
+      console.log("--date type--",timeObj)
+      this.searchFilterpersistData["startDateStamp"] = date;
+      this.searchFilterpersistData.testDate = date;
+      this.searchFilterpersistData["startTimeStamp"] = timeObj;
+      this.setGlobalSearchData(this.searchFilterpersistData)
+      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
+      // console.log("---time after function called--",timeObj)
+    }else if(type == "end") {
+      this.searchFilterpersistData["endDateStamp"] = date;
+      this.searchFilterpersistData["endTimeStamp"] = timeObj;
+      this.setGlobalSearchData(this.searchFilterpersistData)
+      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
+    }
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
     if(this.prefTimeFormat == 12){
@@ -931,7 +1007,10 @@ export class DriverTimeManagementComponent implements OnInit {
         break;
       }
     }
-    this.filterDateData();
+    this.searchFilterpersistData["timeRangeSelection"] = this.selectionTab;
+    this.setGlobalSearchData(this.searchFilterpersistData);
+    this.resetdriverTimeFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
