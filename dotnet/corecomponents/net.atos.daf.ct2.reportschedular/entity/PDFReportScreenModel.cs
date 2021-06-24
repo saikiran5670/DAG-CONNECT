@@ -18,4 +18,14 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int IsMailSend { get; set; }
         public string FileName { get; set; }
     }
+    public class ReportPDFByidModel
+    {
+        public int Id { get; set; }
+        public int OrganizationId { get; set; }
+    }
+    public class ReportPDFBytokenModel
+    {
+        public string Token { get; set; }
+        public int OrganizationId { get; set; }
+    }
 }

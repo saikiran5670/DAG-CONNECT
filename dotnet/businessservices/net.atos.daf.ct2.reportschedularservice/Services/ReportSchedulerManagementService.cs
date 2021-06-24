@@ -329,7 +329,10 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
         {
             try
             {
-                var data = await _reportSchedulerManager.GetPDFBinaryFormatById(request.ReportId);
+                ReportPDFByidModel objReportPDFByidModel = new ReportPDFByidModel();
+                objReportPDFByidModel.Id = request.ReportId;
+                objReportPDFByidModel.OrganizationId = request.OrganizationId;
+                var data = await _reportSchedulerManager.GetPDFBinaryFormatById(objReportPDFByidModel);
                 ReportPDFListResponse response = new ReportPDFListResponse();
                 if (data.Any())
                 {
@@ -360,7 +363,10 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
         {
             try
             {
-                var data = await _reportSchedulerManager.GetPDFBinaryFormatByToken(request.Token);
+                ReportPDFBytokenModel objReportPDFBytokenModel = new ReportPDFBytokenModel();
+                objReportPDFBytokenModel.Token = request.Token;
+                objReportPDFBytokenModel.OrganizationId = request.OrganizationId;
+                var data = await _reportSchedulerManager.GetPDFBinaryFormatByToken(objReportPDFBytokenModel);
                 ReportPDFListResponse response = new ReportPDFListResponse();
                 if (data.Any())
                 {

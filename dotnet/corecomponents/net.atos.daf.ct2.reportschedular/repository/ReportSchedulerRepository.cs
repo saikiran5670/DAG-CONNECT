@@ -613,7 +613,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region GetPDFinBinaryFormatByReportId
-        public async Task<List<PDFReportScreenModel>> GetPDFBinaryFormatById(int reportId)
+        public async Task<List<PDFReportScreenModel>> GetPDFBinaryFormatById(ReportPDFByidModel request)
         {
             try
             {
@@ -631,8 +631,10 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                     is_mail_send as IsMailSend,
                                     file_name as FileName
                                 FROM master.scheduledreport
-                                WHERE id=@id";
-                param.Add("@id", reportId);
+                                WHERE id=@id
+                                AND organization_id=@organization_id";
+                param.Add("@id", request.Id);
+                param.Add("@organization_id", request.OrganizationId);
                 var data = await _dataAccess.QueryAsync<PDFReportScreenModel>(query, param);
                 return data.ToList();
             }
@@ -644,7 +646,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region GetPDFinBinaryFormatByToken
-        public async Task<List<PDFReportScreenModel>> GetPDFBinaryFormatByToken(string token)
+        public async Task<List<PDFReportScreenModel>> GetPDFBinaryFormatByToken(ReportPDFBytokenModel request)
         {
             try
             {
@@ -662,8 +664,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                     is_mail_send as IsMailSend,
                                     file_name as FileName
                                 FROM master.scheduledreport
-                                WHERE token=@token";
-                param.Add("@token", token);
+                                FROM master.scheduledreport
+                                WHERE organization_id=@organization_id
+                                AND token=@token";
+                param.Add("@token", request.Token);
+                param.Add("@organization_id", request.OrganizationId);
                 var data = await _dataAccess.QueryAsync<PDFReportScreenModel>(query, param);
                 return data.ToList();
             }
