@@ -177,6 +177,23 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(){
     console.log("component destroy...");
+    this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.tripForm.controls.vehicleGroup.value;
+    this.globalSearchFilterData["vehicleDropDownValue"] = this.tripForm.controls.vehicle.value;
+    this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
+    this.globalSearchFilterData["startDateStamp"] = this.startDateValue;
+    this.globalSearchFilterData["endDateStamp"] = this.endDateValue;
+    this.globalSearchFilterData.testDate = this.startDateValue;
+    this.globalSearchFilterData.filterPrefTimeFormat = this.prefTimeFormat;
+    if(this.prefTimeFormat == 24){
+      let _splitStartTime = this.startTimeDisplay.split(':');
+      let _splitEndTime = this.endTimeDisplay.split(':');
+      this.globalSearchFilterData["startTimeStamp"] = `${_splitStartTime[0]}:${_splitStartTime[1]}`;
+      this.globalSearchFilterData["endTimeStamp"] = `${_splitEndTime[0]}:${_splitEndTime[1]}`;
+    }else{
+      this.globalSearchFilterData["startTimeStamp"] = this.startTimeDisplay;  
+      this.globalSearchFilterData["endTimeStamp"] = this.endTimeDisplay;  
+    }
+    this.setGlobalSearchData(this.globalSearchFilterData);
   }
   
   ngOnInit() {
@@ -253,13 +270,56 @@ export class TripReportComponent implements OnInit, OnDestroy {
     }
   }
 
+  _get12Time(_sTime: any){
+    let _x = _sTime.split(':');
+    let _yy: any = '';
+    if(_x[0] >= 12){ // 12 or > 12
+      if(_x[0] == 12){ // exact 12
+        _yy = `${_x[0]}:${_x[1]} PM`;
+      }else{ // > 12
+        let _xx = (_x[0] - 12);
+        _yy = `${_xx}:${_x[1]} PM`;
+      }
+    }else{ // < 12
+      _yy = `${_x[0]}:${_x[1]} AM`;
+    }
+    return _yy;
+  }
+
+  get24Time(_time: any){
+    let _x = _time.split(':');
+    let _y = _x[1].split(' ');
+    let res: any = '';
+    if(_y[1] == 'PM'){ // PM
+      let _z: any = parseInt(_x[0]) + 12;
+      res = `${(_x[0] == 12) ? _x[0] : _z}:${_y[0]}`;
+    }else{ // AM
+      res = `${_x[0]}:${_y[0]}`;
+    }
+    return res;
+  }
+
   setPrefFormatTime(){
     if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "" && ((this.globalSearchFilterData.startTimeStamp || this.globalSearchFilterData.endTimeStamp) !== "") ) {
-      console.log("---if fleetUtilizationSearchData exist")
-      this.selectedStartTime = this.globalSearchFilterData.startTimeStamp;
-      this.selectedEndTime = this.globalSearchFilterData.endTimeStamp;
-      this.startTimeDisplay = `${this.globalSearchFilterData.startTimeStamp+":00"}`;
-      this.endTimeDisplay = `${this.globalSearchFilterData.endTimeStamp+":59"}`;
+      //console.log("---if fleetUtilizationSearchData exist")
+      if(this.prefTimeFormat == this.globalSearchFilterData.filterPrefTimeFormat){ // same format
+        this.selectedStartTime = this.globalSearchFilterData.startTimeStamp;
+        this.selectedEndTime = this.globalSearchFilterData.endTimeStamp;
+        this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.globalSearchFilterData.startTimeStamp}:00` : this.globalSearchFilterData.startTimeStamp;
+        this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.globalSearchFilterData.endTimeStamp}:59` : this.globalSearchFilterData.endTimeStamp;  
+      }else{ // different format
+        if(this.prefTimeFormat == 12){ // 12
+          this.selectedStartTime = this._get12Time(this.globalSearchFilterData.startTimeStamp);
+          this.selectedEndTime = this._get12Time(this.globalSearchFilterData.endTimeStamp);
+          this.startTimeDisplay = this.selectedStartTime; 
+          this.endTimeDisplay = this.selectedEndTime;
+        }else{ // 24
+          this.selectedStartTime = this.get24Time(this.globalSearchFilterData.startTimeStamp);
+          this.selectedEndTime = this.get24Time(this.globalSearchFilterData.endTimeStamp);
+          this.startTimeDisplay = `${this.selectedStartTime}:00`; 
+          this.endTimeDisplay = `${this.selectedEndTime}:59`;
+        }
+      }
     }else {
       if(this.prefTimeFormat == 24){
         this.startTimeDisplay = '00:00:00';
@@ -318,8 +378,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
       }
       let startDateFromSearch = new Date(this.globalSearchFilterData.startDateStamp);
       let endDateFromSearch = new Date(this.globalSearchFilterData.endDateStamp);
-      this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.globalSearchFilterData.startTimeStamp, 'start');
-      this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.globalSearchFilterData.endTimeStamp, 'end');
+      this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
+      this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
     }else {
     this.selectionTab = 'today';
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
@@ -508,9 +568,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
     }else{
       this.tripForm.get('vehicle').setValue('');
       this.tripForm.get('vehicleGroup').setValue(0);
-      this.globalSearchFilterData["vehicleGroupDropDownValue"] = 0;
-      this.globalSearchFilterData["vehicleDropDownValue"] = '';
-      this.setGlobalSearchData(this.globalSearchFilterData);
+      // this.globalSearchFilterData["vehicleGroupDropDownValue"] = 0;
+      // this.globalSearchFilterData["vehicleDropDownValue"] = '';
+      // this.setGlobalSearchData(this.globalSearchFilterData);
     }
   }
 
@@ -533,9 +593,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.globalSearchFilterData["vehicleGroupDropDownValue"] = event.value;
-    this.globalSearchFilterData["vehicleDropDownValue"] = '';
-    this.setGlobalSearchData(this.globalSearchFilterData)
+    // this.globalSearchFilterData["vehicleGroupDropDownValue"] = event.value;
+    // this.globalSearchFilterData["vehicleDropDownValue"] = '';
+    // this.setGlobalSearchData(this.globalSearchFilterData)
     // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
   }
     else {
@@ -547,8 +607,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   onVehicleChange(event: any){
     this.internalSelection = true;
-    this.globalSearchFilterData["vehicleDropDownValue"] = event.value;
-    this.setGlobalSearchData(this.globalSearchFilterData)
+    // this.globalSearchFilterData["vehicleDropDownValue"] = event.value;
+    // this.setGlobalSearchData(this.globalSearchFilterData)
     // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
   }
 
@@ -810,8 +870,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
         break;
       }
     }
-    this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
-    this.setGlobalSearchData(this.globalSearchFilterData);
+    // this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
+    // this.setGlobalSearchData(this.globalSearchFilterData);
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -837,16 +897,16 @@ export class TripReportComponent implements OnInit, OnDestroy {
     if(type == "start"){
       console.log("--date type--",date)
       console.log("--date type--",timeObj)
-      this.globalSearchFilterData["startDateStamp"] = date;
-      this.globalSearchFilterData.testDate = date;
-      this.globalSearchFilterData["startTimeStamp"] = timeObj;
-      this.setGlobalSearchData(this.globalSearchFilterData)
+      // this.globalSearchFilterData["startDateStamp"] = date;
+      // this.globalSearchFilterData.testDate = date;
+      // this.globalSearchFilterData["startTimeStamp"] = timeObj;
+      // this.setGlobalSearchData(this.globalSearchFilterData)
       // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
       // console.log("---time after function called--",timeObj)
     }else if(type == "end") {
-      this.globalSearchFilterData["endDateStamp"] = date;
-      this.globalSearchFilterData["endTimeStamp"] = timeObj;
-      this.setGlobalSearchData(this.globalSearchFilterData)
+      // this.globalSearchFilterData["endDateStamp"] = date;
+      // this.globalSearchFilterData["endTimeStamp"] = timeObj;
+      // this.setGlobalSearchData(this.globalSearchFilterData)
       // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
     }
 
@@ -909,9 +969,11 @@ export class TripReportComponent implements OnInit, OnDestroy {
           });
         }
       }else{
-        this.globalSearchFilterData["vehicleGroupDropDownValue"] = '';
-        this.globalSearchFilterData["vehicleDropDownValue"] = '';
-        this.setGlobalSearchData(this.globalSearchFilterData);
+        // this.globalSearchFilterData["vehicleGroupDropDownValue"] = '';
+        // this.globalSearchFilterData["vehicleDropDownValue"] = '';
+        // this.setGlobalSearchData(this.globalSearchFilterData);
+        this.tripForm.get('vehicle').setValue('');
+        this.tripForm.get('vehicleGroup').setValue('');
       }
     }
     this.vehicleGroupListData = finalVINDataList;
