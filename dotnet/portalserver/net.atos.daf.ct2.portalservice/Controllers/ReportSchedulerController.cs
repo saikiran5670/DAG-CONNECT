@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -76,23 +77,66 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (request.ScheduledReportVehicleRef.Count > 0)
                 {
-                    foreach (var item in request.ScheduledReportVehicleRef)
+                    //Condition if vehicle select All and group select All
+                    if (request.ScheduledReportVehicleRef[0].VehicleGroupId == 0 && request.ScheduledReportVehicleRef[0].VehicleId == 0)
                     {
-                        if ((item.VehicleGroupId == 0 && item.VehicleId > 0) || (item.VehicleGroupId >= 0 && item.VehicleId > 0))
+                        var scheduledReportVehicleRef = request.ScheduledReportVehicleRef;
+                        request.ScheduledReportVehicleRef = new List<ScheduledReportVehicleRef>();
+                        VehicleandVehicleGroupIdResponse vehicleandVehicleGroupId = await _reportschedulerClient.GetVehicleandVehicleGroupIdAsync(new ReportParameterRequest { AccountId = request.CreatedBy, OrganizationId = request.OrganizationId });
+                        if (vehicleandVehicleGroupId.VehicleIdList.Count > 0)
                         {
-                            var vehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
-                            vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
-                            if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
-                            vehicleGroupRequest.GroupType = "S";
-                            vehicleGroupRequest.RefId = item.VehicleGroupId;
-                            vehicleGroupRequest.FunctionEnum = "N";
-                            vehicleGroupRequest.OrganizationId = GetContextOrgId();
-                            vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
-                            vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
-                            item.VehicleGroupId = response.VehicleGroup.Id;
+                            foreach (var item in vehicleandVehicleGroupId.VehicleIdList)
+                            {
+                                ScheduledReportVehicleRef objScheduledReportVehicleRef = new ScheduledReportVehicleRef();
+                                var vehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
+                                vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
+                                if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
+                                vehicleGroupRequest.GroupType = "S";
+                                vehicleGroupRequest.RefId = request.ScheduledReportVehicleRef[0].VehicleGroupId;
+                                vehicleGroupRequest.FunctionEnum = "N";
+                                vehicleGroupRequest.OrganizationId = GetContextOrgId();
+                                vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
+                                vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
+                                objScheduledReportVehicleRef.VehicleGroupId = response.VehicleGroup.Id;
+                                objScheduledReportVehicleRef.CreatedAt = scheduledReportVehicleRef[0].CreatedAt;
+                                objScheduledReportVehicleRef.CreatedBy = scheduledReportVehicleRef[0].CreatedBy;
+                                objScheduledReportVehicleRef.ScheduleReportId = scheduledReportVehicleRef[0].ScheduleReportId;
+                                objScheduledReportVehicleRef.State = scheduledReportVehicleRef[0].State;
+                                request.ScheduledReportVehicleRef.Add(objScheduledReportVehicleRef);
+                            }
                         }
-                        //TOBE DO
-                        //Condition if vehicle select All and group select All
+                        if (vehicleandVehicleGroupId.VehicleGroupIdList.Count > 0)
+                        {
+                            foreach (var item in vehicleandVehicleGroupId.VehicleGroupIdList)
+                            {
+                                ScheduledReportVehicleRef objScheduledReportVehicleRef = new ScheduledReportVehicleRef();
+                                objScheduledReportVehicleRef.VehicleGroupId = item.VehicleGroupId;
+                                objScheduledReportVehicleRef.CreatedAt = scheduledReportVehicleRef[0].CreatedAt;
+                                objScheduledReportVehicleRef.CreatedBy = scheduledReportVehicleRef[0].CreatedBy;
+                                objScheduledReportVehicleRef.ScheduleReportId = scheduledReportVehicleRef[0].ScheduleReportId;
+                                objScheduledReportVehicleRef.State = scheduledReportVehicleRef[0].State;
+                                request.ScheduledReportVehicleRef.Add(objScheduledReportVehicleRef);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in request.ScheduledReportVehicleRef)
+                        {
+                            if ((item.VehicleGroupId == 0 && item.VehicleId > 0) || (item.VehicleGroupId >= 0 && item.VehicleId > 0))
+                            {
+                                var vehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
+                                vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
+                                if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
+                                vehicleGroupRequest.GroupType = "S";
+                                vehicleGroupRequest.RefId = item.VehicleGroupId;
+                                vehicleGroupRequest.FunctionEnum = "N";
+                                vehicleGroupRequest.OrganizationId = GetContextOrgId();
+                                vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
+                                vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
+                                item.VehicleGroupId = response.VehicleGroup.Id;
+                            }
+                        }
                     }
                 }
                 ReportSchedulerRequest reportSchedulerRequest = _mapper.ToReportSchedulerEntity(request);
@@ -138,24 +182,68 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (request.ScheduledReportVehicleRef.Count > 0)
                 {
-                    foreach (var item in request.ScheduledReportVehicleRef)
+                    //Condition if vehicle select All and group select All
+                    if (request.ScheduledReportVehicleRef[0].VehicleGroupId == 0 && request.ScheduledReportVehicleRef[0].VehicleId == 0)
                     {
-                        if ((item.VehicleGroupId == 0 && item.VehicleId > 0) || (item.VehicleGroupId >= 0 && item.VehicleId > 0))
+                        var scheduledReportVehicleRef = request.ScheduledReportVehicleRef;
+                        request.ScheduledReportVehicleRef = new List<ScheduledReportVehicleRef>();
+                        VehicleandVehicleGroupIdResponse vehicleandVehicleGroupId = await _reportschedulerClient.GetVehicleandVehicleGroupIdAsync(new ReportParameterRequest { AccountId = request.CreatedBy, OrganizationId = request.OrganizationId });
+                        if (vehicleandVehicleGroupId.VehicleIdList.Count > 0)
                         {
-                            var vehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
-                            vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
-                            if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
-                            vehicleGroupRequest.GroupType = "S";
-                            vehicleGroupRequest.RefId = item.VehicleGroupId;
-                            vehicleGroupRequest.FunctionEnum = "N";
-                            vehicleGroupRequest.OrganizationId = GetContextOrgId();
-                            vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
-                            vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
-                            item.VehicleGroupId = response.VehicleGroup.Id;
+                            foreach (var item in vehicleandVehicleGroupId.VehicleIdList)
+                            {
+                                ScheduledReportVehicleRef objScheduledReportVehicleRef = new ScheduledReportVehicleRef();
+                                var vehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
+                                vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
+                                if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
+                                vehicleGroupRequest.GroupType = "S";
+                                vehicleGroupRequest.RefId = request.ScheduledReportVehicleRef[0].VehicleGroupId;
+                                vehicleGroupRequest.FunctionEnum = "N";
+                                vehicleGroupRequest.OrganizationId = GetContextOrgId();
+                                vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
+                                vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
+                                objScheduledReportVehicleRef.VehicleGroupId = response.VehicleGroup.Id;
+                                objScheduledReportVehicleRef.CreatedAt = scheduledReportVehicleRef[0].CreatedAt;
+                                objScheduledReportVehicleRef.CreatedBy = scheduledReportVehicleRef[0].CreatedBy;
+                                objScheduledReportVehicleRef.ScheduleReportId = scheduledReportVehicleRef[0].ScheduleReportId;
+                                objScheduledReportVehicleRef.State = scheduledReportVehicleRef[0].State;
+                                request.ScheduledReportVehicleRef.Add(objScheduledReportVehicleRef);
+                            }
                         }
-                        //TOBE DO
-                        //Condition if vehicle select All and group select All
+                        if (vehicleandVehicleGroupId.VehicleGroupIdList.Count > 0)
+                        {
+                            foreach (var item in vehicleandVehicleGroupId.VehicleGroupIdList)
+                            {
+                                ScheduledReportVehicleRef objScheduledReportVehicleRef = new ScheduledReportVehicleRef();
+                                objScheduledReportVehicleRef.VehicleGroupId = item.VehicleGroupId;
+                                objScheduledReportVehicleRef.CreatedAt = scheduledReportVehicleRef[0].CreatedAt;
+                                objScheduledReportVehicleRef.CreatedBy = scheduledReportVehicleRef[0].CreatedBy;
+                                objScheduledReportVehicleRef.ScheduleReportId = scheduledReportVehicleRef[0].ScheduleReportId;
+                                objScheduledReportVehicleRef.State = scheduledReportVehicleRef[0].State;
+                                request.ScheduledReportVehicleRef.Add(objScheduledReportVehicleRef);
+                            }
+                        }
                     }
+                    else
+                    {
+                        foreach (var item in request.ScheduledReportVehicleRef)
+                        {
+                            if ((item.VehicleGroupId == 0 && item.VehicleId > 0) || (item.VehicleGroupId >= 0 && item.VehicleId > 0))
+                            {
+                                var vehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
+                                vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
+                                if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
+                                vehicleGroupRequest.GroupType = "S";
+                                vehicleGroupRequest.RefId = item.VehicleGroupId;
+                                vehicleGroupRequest.FunctionEnum = "N";
+                                vehicleGroupRequest.OrganizationId = GetContextOrgId();
+                                vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
+                                vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
+                                item.VehicleGroupId = response.VehicleGroup.Id;
+                            }
+                        }
+                    }
+
                 }
                 ReportSchedulerRequest reportSchedulerRequest = _mapper.ToReportSchedulerEntity(request);
                 ReportSchedulerResponse reportSchedulerResponse = new ReportSchedulerResponse();

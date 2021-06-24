@@ -17,6 +17,8 @@ export class ReportsPreferencesComponent implements OnInit {
   editTripFlag: boolean = false;
   editFleetUtilisationFlag: boolean = false;
   reportListData: any = [];
+  showDriverTimePerferences : boolean = false;
+  editDriverTimePerferencesFlag:boolean = false;
 
   constructor( private reportService: ReportService ) { }
 
@@ -83,4 +85,7 @@ export class ReportsPreferencesComponent implements OnInit {
     }
   }
 
+  editDriverTimePerferences(){
+    
+  }
 }
