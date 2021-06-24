@@ -273,11 +273,11 @@ namespace net.atos.daf.ct2.vehicle
                 long endDate = 0;
 
                 if (since == "yesterday")
-                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)));
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)), "UTC");
                 else if (since == "today")
-                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now));
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now), "UTC");
                 else if (isnumeric)
-                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(Convert.ToDateTime(since)));
+                    startDate = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(since), "UTC");
 
                 endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
@@ -294,7 +294,6 @@ namespace net.atos.daf.ct2.vehicle
                 VehicleMileage vehicleMileage = new VehicleMileage();
                 vehicleMileage.Vehicles = new List<entity.Vehicles>();
                 vehicleMileage.VehiclesCSV = new List<VehiclesCSV>();
-                string sTimezone = "UTC";
                 string targetdateformat = "yyyy-MM-ddTHH:mm:ss.fffz";
 
                 if (vehicleMileageList != null)
@@ -304,7 +303,7 @@ namespace net.atos.daf.ct2.vehicle
                         if (contentType == "text/csv")
                         {
                             VehiclesCSV vehiclesCSV = new VehiclesCSV();
-                            vehiclesCSV.EvtDateTime = item.Evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.Evt_timestamp, sTimezone, targetdateformat) : string.Empty;
+                            vehiclesCSV.EvtDateTime = item.Evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.Evt_timestamp, "UTC", targetdateformat) : string.Empty;
                             vehiclesCSV.VIN = item.Vin;
                             vehiclesCSV.TachoMileage = item.Odo_distance > 0 ? item.Odo_distance : 0;
                             vehiclesCSV.RealMileage = item.Real_distance > 0 ? item.Real_distance : 0;
@@ -314,7 +313,7 @@ namespace net.atos.daf.ct2.vehicle
                         else
                         {
                             entity.Vehicles vehiclesobj = new entity.Vehicles();
-                            vehiclesobj.EvtDateTime = item.Evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.Evt_timestamp, sTimezone, targetdateformat) : string.Empty;
+                            vehiclesobj.EvtDateTime = item.Evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.Evt_timestamp, "UTC", targetdateformat) : string.Empty;
                             vehiclesobj.VIN = item.Vin;
                             vehiclesobj.TachoMileage = item.Odo_distance > 0 ? item.Odo_distance : 0;
                             vehiclesobj.GPSMileage = item.Real_distance > 0 ? item.Real_distance : 0;
@@ -350,11 +349,11 @@ namespace net.atos.daf.ct2.vehicle
                 long endDate = 0;
 
                 if (since == "yesterday")
-                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)));
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)), "UTC");
                 else if (since == "today")
-                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now));
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now), "UTC");
                 else if (isnumeric)
-                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(Convert.ToDateTime(since)));
+                    startDate = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(since), "UTC");
 
                 endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
