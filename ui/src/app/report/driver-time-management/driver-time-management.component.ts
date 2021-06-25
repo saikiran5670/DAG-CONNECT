@@ -8681,7 +8681,7 @@ let finalGroupDataList = [];
     this.selectedDriverData = _row;
     let setId = (this.driverListData.filter(elem=>elem.driverID === _row.driverId)[0]['driverID']);
     this.driverTimeForm.get('driver').setValue(setId);
-    
+    this.onSearch();
     // this.driverDetails = 
     //   [
     //           {
