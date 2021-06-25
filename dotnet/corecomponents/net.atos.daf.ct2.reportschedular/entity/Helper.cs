@@ -6,25 +6,27 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 {
     public class Helper
     {
-        public DateTime GetNextFrequencyTime(long currentdate, TimeFrequenyType timeFrequenyType)
+        public ReportEmailFrequency GetNextFrequencyTime(long currentdate, TimeFrequenyType timeFrequenyType)
         {
             DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             DateTime date = start.AddMilliseconds(currentdate).ToLocalTime();
-            var nextDate = date.AddDays(1);
+            var reportEmailFrequency = new ReportEmailFrequency();
+
             switch (timeFrequenyType)
             {
 
                 case TimeFrequenyType.Daily:
-                    nextDate = date.AddDays(1);
+                    reportEmailFrequency.ReportNextScheduleRunDate = UTCHandling.GetUTCFromDateTime(date.AddDays(1));
                     break;
                 case TimeFrequenyType.Weekly:
-                    nextDate = date.AddDays(7);
+                    reportEmailFrequency.ReportNextScheduleRunDate = UTCHandling.GetUTCFromDateTime(date.AddDays(7));
                     break;
                 case TimeFrequenyType.BiWeekly:
-                    nextDate = date.AddDays(14);
+                    reportEmailFrequency.ReportNextScheduleRunDate = UTCHandling.GetUTCFromDateTime(date.AddDays(14));
                     break;
             }
-            return nextDate;
+            reportEmailFrequency.ReportPrevioudScheduleRunDate = UTCHandling.GetUTCFromDateTime(date);
+            return reportEmailFrequency;
         }
 
         public ReportEmailFrequency GetNextQuarterTime(long currentdate)

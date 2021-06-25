@@ -19,6 +19,7 @@ import { LandmarkCategoryService } from '../../services/landmarkCategory.service
 import * as moment from 'moment-timezone';
 import { Util } from '../../shared/util';
 import { Router, NavigationExtras } from '@angular/router';
+import { OrganizationService } from '../../services/organization.service';
 
 declare var H: any;
 
@@ -55,6 +56,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   accountId: any;
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
+  trackType: any = 'snail';
   vehicleDD: any = [];
   vehicleGrpDD: any = [];
   dataSource: any = new MatTableDataSource([]);
@@ -154,7 +156,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     }
   ];
   
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService) {
     this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
     const state = navigation.extras.state as {
@@ -223,16 +225,37 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        this.prefTimeFormat = parseInt(prefData.timeformat.filter(i => i.id == this.accountPrefObj.accountPreference.timeFormatId)[0].value.split(" ")[0]);
-        this.prefTimeZone = prefData.timezone.filter(i => i.id == this.accountPrefObj.accountPreference.timezoneId)[0].value;
-        this.prefDateFormat = prefData.dateformat.filter(i => i.id == this.accountPrefObj.accountPreference.dateFormatTypeId)[0].name;
-        this.prefUnitFormat = prefData.unit.filter(i => i.id == this.accountPrefObj.accountPreference.unitId)[0].name;
-        this.setDefaultStartEndTime();
-        this.setPrefFormatDate();
-        this.setDefaultTodayDate();
-        this.getReportPreferences();
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        }else{ // org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
+        }
       });
     });
+  }
+
+  proceedStep(prefData: any, preference: any){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefUnitFormat = prefData.unit[0].name;
+    }
+    this.setDefaultStartEndTime();
+    this.setPrefFormatDate();
+    this.setDefaultTodayDate();
+    this.getReportPreferences();
   }
 
   getReportPreferences(){
@@ -443,6 +466,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
   }
 
   onSearch(){
+    this.tripTraceArray = [];
+    //this.trackType = 'snail';
     //this.internalSelection = true;
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
@@ -557,6 +582,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.resetTripFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
     this.tableInfoObj = {};
+    this.tripTraceArray = [];
+    this.trackType = 'snail';
     this.advanceFilterOpen = false;
     this.selectedPOI.clear();
   }
@@ -701,7 +728,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       });
       this.showMap = true;
       let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType);
     }
   }
 
@@ -730,13 +757,13 @@ export class TripReportComponent implements OnInit, OnDestroy {
     if(event.checked){ //-- add new marker
       this.tripTraceArray.push(row);
       let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType);
     }
     else{ //-- remove existing marker
       let arr = this.tripTraceArray.filter(item => item.id != row.id);
       this.tripTraceArray = arr;
       let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType);
     }
   }
 
@@ -1021,7 +1048,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
   }
 
   onMapRepresentationChange(event: any){
-
+    this.trackType = event.value;
+    let _ui = this.reportMapService.getUI();
+    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType);
   }
 
   backToFleetUtilReport(){

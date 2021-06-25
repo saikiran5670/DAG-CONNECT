@@ -80,7 +80,7 @@ export class ReportMapService {
     return this.ui;
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any){
+  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any){
     this.clearRoutesFromMap();
     if(_selectedRoutes){
       for(var i in _selectedRoutes){
@@ -136,7 +136,7 @@ export class ReportMapService {
           endBubble.close();
         }, false);
 
-        this.calculateAtoB();
+        this.calculateAtoB(trackType);
       }
     }
    }
@@ -161,7 +161,7 @@ export class ReportMapService {
     return endMarker;
   }
 
-  calculateAtoB(){
+  calculateAtoB(trackType?: any){
     let routeRequestParams = {
       'routingMode': 'fast',
       'transportMode': 'truck',
@@ -170,13 +170,13 @@ export class ReportMapService {
       'return': 'polyline'
     };
     this.hereSerive.calculateRoutePoints(routeRequestParams).then((data: any)=>{
-      this.addRouteShapeToMap(data);
+      this.addRouteShapeToMap(data, trackType);
     },(error)=>{
        console.error(error);
     })
   }
 
-  addRouteShapeToMap(result: any){
+  addRouteShapeToMap(result: any, trackType?: any){
     result.routes[0].sections.forEach((section) =>{
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
         this.routeOutlineMarker = new H.map.Polyline(linestring, {
@@ -186,13 +186,22 @@ export class ReportMapService {
           }
         });
         // Create a patterned polyline:
-        this.routeCorridorMarker = new H.map.Polyline(linestring, {
-          style: {
-            lineWidth: 3,
-            strokeColor: '#436ddc'
-          }
+        if(trackType && trackType == 'dotted'){
+          this.routeCorridorMarker = new H.map.Polyline(linestring, {
+            style: {
+              lineWidth: 3,
+              strokeColor: '#436ddc',
+              lineDash:[2,2]
+            }
+          });
+        }else{
+          this.routeCorridorMarker = new H.map.Polyline(linestring, {
+            style: {
+              lineWidth: 3,
+              strokeColor: '#436ddc'
+            }
+          });
         }
-        );
         // create a group that represents the route line and contains
         // outline and the pattern
         var routeLine = new H.map.Group();
@@ -207,7 +216,7 @@ export class ReportMapService {
   getConvertedDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
       element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone,true);
-      element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone);
+      element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone,true);
       element.convertedAverageWeight = this.getAvrgWeight(element.averageWeight, unitFormat);
       element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
       element.convertedFuelConsumed100Km = this.getFuelConsumed(element.fuelConsumed100Km, unitFormat);
@@ -261,18 +270,18 @@ export class ReportMapService {
     });
     return gridData;
   }
-  getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any,addTime?:boolean){
+  getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean){
     let sTime: any = 0;
     if(startTime != 0){
-      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat,addTime);
+      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime);
     }
     return sTime;
   }
 
-  getEndTime(endTime: any, dateFormat: any, timeFormat: any, timeZone: any){
+  getEndTime(endTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean){
     let eTime: any = 0;
     if(endTime != 0){
-      eTime = this.formStartEndDate(Util.convertUtcToDate(endTime, timeZone), dateFormat, timeFormat);
+      eTime = this.formStartEndDate(Util.convertUtcToDate(endTime, timeZone), dateFormat, timeFormat, addTime);
     }
     return eTime;
   }
@@ -373,7 +382,7 @@ export class ReportMapService {
     return data;
   }
 
-  formStartEndDate(date: any, dateFormat: any, timeFormat: any,addTime?:boolean){
+  formStartEndDate(date: any, dateFormat: any, timeFormat: any, addTime?:boolean){
     // let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
     // let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
     // let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 

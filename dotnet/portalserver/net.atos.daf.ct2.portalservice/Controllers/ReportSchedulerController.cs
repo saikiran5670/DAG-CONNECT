@@ -92,7 +92,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                 vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
                                 if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
                                 vehicleGroupRequest.GroupType = "S";
-                                vehicleGroupRequest.RefId = request.ScheduledReportVehicleRef[0].VehicleGroupId;
+                                vehicleGroupRequest.RefId = scheduledReportVehicleRef[0].VehicleGroupId;
                                 vehicleGroupRequest.FunctionEnum = "N";
                                 vehicleGroupRequest.OrganizationId = GetContextOrgId();
                                 vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
@@ -197,7 +197,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                 vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
                                 if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
                                 vehicleGroupRequest.GroupType = "S";
-                                vehicleGroupRequest.RefId = request.ScheduledReportVehicleRef[0].VehicleGroupId;
+                                vehicleGroupRequest.RefId = scheduledReportVehicleRef[0].VehicleGroupId;
                                 vehicleGroupRequest.FunctionEnum = "N";
                                 vehicleGroupRequest.OrganizationId = GetContextOrgId();
                                 vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
@@ -251,7 +251,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (reportSchedulerResponse != null && reportSchedulerResponse.Code == ResponseCode.Failed)
                 {
-                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_CREATE_FAILED_MSG);
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_UPDATE_FAILED_MSG);
                 }
                 else if (reportSchedulerResponse != null && reportSchedulerResponse.Code == ResponseCode.Conflict)
                 {
@@ -263,7 +263,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_CREATE_FAILED_MSG);
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_UPDATE_FAILED_MSG);
                 }
             }
             catch (Exception ex)
@@ -399,6 +399,70 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                           _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, $"{ex.Message}  {ex.StackTrace}");
+            }
+        }
+        #endregion
+
+        #region GetPDFBinaryFormatByToken
+        [HttpGet]
+        [Route("download")]
+        public async Task<IActionResult> GetPDFBinaryFormatByToken([FromQuery]ReportPDFByTokenRequest request)
+        {
+            try
+            {
+                request.OrganizationId = GetContextOrgId();
+                if (request.OrganizationId == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
+                //int roleid = AssignOrgContextByRoleId(0);
+                var data = await _reportschedulerClient.GetPDFBinaryFormatByTokenAsync(request);
+
+                if (data == null)
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
+                if (data.Code == ResponseCode.Success)
+                    return Ok(data);
+                if (data.Code == ResponseCode.InternalServerError)
+                    return StatusCode((int)data.Code, String.Format(ReportSchedulerConstants.REPORTSCHEDULER_PARAMETER_NOT_FOUND_MSG, data.Message));
+                return StatusCode((int)data.Code, data.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
+                 ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetPDFBinaryFormatByToken", ex.Message), 1, 2, JsonConvert.SerializeObject(request),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, string.Format("{0} {1}", ex.Message, ex.StackTrace));
+            }
+        }
+        #endregion
+
+        #region GetPDFBinaryFormatById
+        [HttpGet]
+        [Route("getpdf")]
+        public async Task<IActionResult> GetPDFBinaryFormatById([FromQuery]ReportPDFByTokenRequest request)
+        {
+            try
+            {
+                request.OrganizationId = GetContextOrgId();
+                if (request.OrganizationId == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
+                //int roleid = AssignOrgContextByRoleId(0);
+                var data = await _reportschedulerClient.GetPDFBinaryFormatByTokenAsync(request);
+
+                if (data == null)
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
+                if (data.Code == ResponseCode.Success)
+                    return Ok(data);
+                if (data.Code == ResponseCode.InternalServerError)
+                    return StatusCode((int)data.Code, String.Format(ReportSchedulerConstants.REPORTSCHEDULER_PARAMETER_NOT_FOUND_MSG, data.Message));
+                return StatusCode((int)data.Code, data.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
+                 ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetPDFBinaryFormatById", ex.Message), 1, 2, JsonConvert.SerializeObject(request),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, string.Format("{0} {1}", ex.Message, ex.StackTrace));
             }
         }
         #endregion

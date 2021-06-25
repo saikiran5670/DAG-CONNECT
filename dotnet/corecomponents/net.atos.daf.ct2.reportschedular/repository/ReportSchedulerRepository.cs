@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
@@ -185,7 +186,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                         foreach (var item in driverList)
                         {
                             driverref.ScheduleReportId = report.Id;
-                            driverref.DriverId = Convert.ToInt32(item.DriverId);
+                            driverref.DriverId = Convert.ToInt32(item.Id);
                             int scheduledrid = await Createscheduledreportdriverref(driverref);
                         }
                     }
@@ -458,7 +459,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                         foreach (var item in driverList)
                         {
                             driverref.ScheduleReportId = report.Id;
-                            driverref.DriverId = Convert.ToInt32(item.DriverId);
+                            driverref.DriverId = Convert.ToInt32(item.Id);
                             driverref.ModifiedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                             int scheduledrid = await Createscheduledreportdriverref(driverref);
                         }
@@ -474,7 +475,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 
                 transactionScope.Commit();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 transactionScope.Rollback();
                 throw;
@@ -605,6 +606,73 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 }
             }
             catch
+            {
+                throw;
+            }
+        }
+        #endregion
+
+        #region GetPDFinBinaryFormatByReportId
+        public async Task<List<PDFReportScreenModel>> GetPDFBinaryFormatById(ReportPDFByidModel request)
+        {
+            try
+            {
+                var param = new DynamicParameters();
+                string query = @"SELECT 
+                                    id as Id,
+                                    schedule_report_id as ScheduleReportId,
+                                    report as Report,
+                                    token as Token,
+                                    downloaded_at as DownloadedAt,
+                                    valid_till as ValidTill,
+                                    created_at as CreatedAt,
+                                    start_date as StartDate,
+                                    end_date as EndDate,
+                                    is_mail_send as IsMailSend,
+                                    file_name as FileName
+                                FROM master.scheduledreport
+                                WHERE id=@id
+                                AND organization_id=@organization_id";
+                param.Add("@id", request.Id);
+                param.Add("@organization_id", request.OrganizationId);
+                var data = await _dataAccess.QueryAsync<PDFReportScreenModel>(query, param);
+                return data.ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
+
+        #region GetPDFinBinaryFormatByToken
+        public async Task<List<PDFReportScreenModel>> GetPDFBinaryFormatByToken(ReportPDFBytokenModel request)
+        {
+            try
+            {
+                var param = new DynamicParameters();
+                string query = @"SELECT 
+                                    id as Id,
+                                    schedule_report_id as ScheduleReportId,
+                                    report as Report,
+                                    token as Token,
+                                    downloaded_at as DownloadedAt,
+                                    valid_till as ValidTill,
+                                    created_at as CreatedAt,
+                                    start_date as StartDate,
+                                    end_date as EndDate,
+                                    is_mail_send as IsMailSend,
+                                    file_name as FileName
+                                FROM master.scheduledreport
+                                FROM master.scheduledreport
+                                WHERE organization_id=@organization_id
+                                AND token=@token";
+                param.Add("@token", request.Token);
+                param.Add("@organization_id", request.OrganizationId);
+                var data = await _dataAccess.QueryAsync<PDFReportScreenModel>(query, param);
+                return data.ToList();
+            }
+            catch (Exception)
             {
                 throw;
             }
