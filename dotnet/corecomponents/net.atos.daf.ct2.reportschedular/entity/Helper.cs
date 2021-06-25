@@ -11,7 +11,6 @@ namespace net.atos.daf.ct2.reportscheduler.entity
             DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             DateTime date = start.AddMilliseconds(currentdate).ToLocalTime();
             var reportEmailFrequency = new ReportEmailFrequency();
-
             switch (timeFrequenyType)
             {
 
@@ -66,7 +65,6 @@ namespace net.atos.daf.ct2.reportscheduler.entity
             };
             return reportEmailFrequency;
         }
-
 
     }
 }
