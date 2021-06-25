@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Google.Protobuf;
 using net.atos.daf.ct2.reportscheduler.entity;
 
 namespace net.atos.daf.ct2.reportschedulerservice.Entity
@@ -206,7 +207,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             ReportPDFResponse objReportPDFResponse = new ReportPDFResponse();
             objReportPDFResponse.Id = request.Id;
             objReportPDFResponse.ScheduleReportId = request.ScheduleReportId;
-            //objReportPDFResponse.Report = request.Report ?? null;
+            objReportPDFResponse.Report = ByteString.CopyFrom(request.Report) ?? null;
             objReportPDFResponse.Token = request.Token ?? null;
             objReportPDFResponse.DownloadedAt = request.DownloadedAt;
             objReportPDFResponse.ValidTill = request.ValidTill;

@@ -251,7 +251,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (reportSchedulerResponse != null && reportSchedulerResponse.Code == ResponseCode.Failed)
                 {
-                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_CREATE_FAILED_MSG);
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_UPDATE_FAILED_MSG);
                 }
                 else if (reportSchedulerResponse != null && reportSchedulerResponse.Code == ResponseCode.Conflict)
                 {
@@ -263,7 +263,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_CREATE_FAILED_MSG);
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_UPDATE_FAILED_MSG);
                 }
             }
             catch (Exception ex)
@@ -405,8 +405,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region GetPDFBinaryFormatByToken
         [HttpGet]
-        [Route("pdfreportbytoken")]
-        public async Task<IActionResult> GetPDFBinaryFormatByToken(ReportPDFByTokenRequest request)
+        [Route("download")]
+        public async Task<IActionResult> GetPDFBinaryFormatByToken([FromQuery]ReportPDFByTokenRequest request)
         {
             try
             {
@@ -434,10 +434,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
         #region GetPDFBinaryFormatById
         [HttpGet]
-        [Route("pdfreportbyid")]
-        public async Task<IActionResult> GetPDFBinaryFormatById(ReportPDFByTokenRequest request)
+        [Route("getpdf")]
+        public async Task<IActionResult> GetPDFBinaryFormatById([FromQuery]ReportPDFByTokenRequest request)
         {
             try
             {
