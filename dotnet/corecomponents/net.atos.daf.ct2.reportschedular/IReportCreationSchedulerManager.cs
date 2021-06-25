@@ -7,6 +7,6 @@ namespace net.atos.daf.ct2.reportscheduler
 {
     public interface IReportCreationSchedulerManager
     {
-        Task<int> GenerateReport();
+        Task<bool> GenerateReport();
     }
 }

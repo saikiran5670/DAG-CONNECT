@@ -44,7 +44,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
   selectedGroup = new SelectionModel(true, []);
   alertAdvancedFilterForm: FormGroup;
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
-  displayedColumnsGeofence: string[] = ['select', 'name', 'categoryName', 'subCategoryName'];
+  displayedColumnsGeofence: string[] = ['select', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGroup: string[] = ['select', 'name', 'poiCount', 'geofenceCount'];
   localStLanguage: any;
   organizationId: number;
@@ -310,7 +310,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
           }
         });
         tableData = selectedGeofenceList;
-        this.displayedColumnsGeofence= ['name', 'categoryName', 'subCategoryName'];
+        this.displayedColumnsGeofence= ['name', 'categoryName', 'subCategoryName', 'address'];
         this.updateGeofenceDataSource(tableData);
       }
       else if(this.actionType == 'edit' || this.actionType == 'duplicate'){

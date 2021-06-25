@@ -45,7 +45,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   };
   displayedColumnsVehicles: string[] = ['vin', 'vehicleName', 'vehicleGroupName', 'subcriptionStatus']
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
-  displayedColumnsGeofence: string[] = ['select', 'name', 'categoryName', 'subCategoryName'];
+  displayedColumnsGeofence: string[] = ['select', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGroup: string[] = ['select', 'name', 'poiCount', 'geofenceCount'];
   displayedColumnsCorridor: string[] = ['select', 'corridoreName', 'startPoint', 'endPoint', 'distance', 'width'];
   selectedPOI = new SelectionModel(true, []);
@@ -983,7 +983,7 @@ PoiCheckboxClicked(event: any, row: any) {
         }
       });
       tableData = selectedGeofenceList;
-      this.displayedColumnsGeofence= ['name', 'categoryName', 'subCategoryName'];
+      this.displayedColumnsGeofence= ['name', 'categoryName', 'subCategoryName', 'address'];
       this.updateGeofenceDataSource(tableData);
     }
     else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
@@ -1753,12 +1753,16 @@ PoiCheckboxClicked(event: any, row: any) {
         } row`;
   }
 
-  masterToggleForGroup() {
+  masterToggleForGroup(event) {
     this.isAllSelectedForGroup()
       ? this.selectedGroup.clear()
       : this.groupDataSource.data.forEach((row) =>
         this.selectedGroup.select(row)
       );
+
+      this.groupDataSource.data.forEach(row => {
+        this.onGroupSelect(event, row);
+      });
   }
 
   isAllSelectedForGroup() {
