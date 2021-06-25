@@ -348,10 +348,19 @@ namespace net.atos.daf.ct2.account
         {
             try
             {
+
                 var parameter = new DynamicParameters();
                 string query = string.Empty;
                 parameter.Add("@account_id", account.Id);
                 parameter.Add("@organization_Id", account.Organization_Id);
+                //TODO: Check for duplicate account org.
+                query = @"select id from master.accountorg where account_id=@account_id and organization_id=@organization_id and state='A'";
+                var accountOrgId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (accountOrgId > 0)
+                {
+                    account.Id = accountOrgId;
+                    return account;
+                }
                 parameter.Add("@start_date", account.StartDate);
                 if (account.EndDate.HasValue)
                 {
@@ -363,8 +372,8 @@ namespace net.atos.daf.ct2.account
                 }
                 query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,state)  
                                    values(@account_id,@organization_Id,@start_date,@end_date,'A') RETURNING id";
-                var AccountOrgId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                account.Id = AccountOrgId;
+                accountOrgId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                account.Id = accountOrgId;
 
             }
             catch (Exception)
