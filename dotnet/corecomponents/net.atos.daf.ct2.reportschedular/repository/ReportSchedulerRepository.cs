@@ -661,9 +661,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                     file_name as FileName
                                 FROM master.scheduledreport                                
                                 WHERE token=@token";
-
                 param.Add("@token", Guid.Parse(request.Token));
-
                 var data = await _dataAccess.QueryAsync<PDFReportScreenModel>(query, param);
                 return data.FirstOrDefault();
             }
@@ -680,18 +678,16 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             try
             {
                 string query = string.Empty;
-
                 query = @"UPDATE master.scheduledreport 
                           SET downloaded_at=@downloaded_at 
                           WHERE token=@token";
                 var parameter = new DynamicParameters();
                 parameter.Add("@downloaded_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@token", Guid.Parse(token));
-
                 int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
                 if (rowEffected > 0)
                 {
-                    return token;// to show reportid in gRPC message
+                    return token;// to check condition in gRPC message
                 }
                 else
                 {

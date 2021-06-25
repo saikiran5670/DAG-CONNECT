@@ -21,11 +21,9 @@ namespace net.atos.daf.ct2.reportscheduler.entity
     public class ReportPDFByidModel
     {
         public int Id { get; set; }
-        public int OrganizationId { get; set; }
     }
     public class ReportPDFBytokenModel
     {
         public string Token { get; set; }
-        public int OrganizationId { get; set; }
     }
 }

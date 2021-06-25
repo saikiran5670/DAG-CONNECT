@@ -13,8 +13,8 @@ service ReportSchedulerService{
   rpc EnableDisableReportSchedule (ReportStatusUpdateDeleteRequest) returns (ReportStatusUpdateDeleteResponse);
   rpc DeleteReportSchedule (ReportStatusUpdateDeleteRequest) returns (ReportStatusUpdateDeleteResponse);
   rpc GetVehicleandVehicleGroupId (ReportParameterRequest) returns (VehicleandVehicleGroupIdResponse); 
-  rpc GetPDFBinaryFormatById (ReportPDFByIdRequest) returns (ReportPDFListResponse);
-  rpc GetPDFBinaryFormatByToken (ReportPDFByTokenRequest) returns (ReportPDFListResponse);
+  rpc GetPDFBinaryFormatById (ReportPDFByIdRequest) returns (ReportPDFResponse);
+  rpc GetPDFBinaryFormatByToken (ReportPDFByTokenRequest) returns (ReportPDFResponse);
 }
 
 enum ResponseCode{
@@ -200,10 +200,6 @@ message ReportPDFResponse {
  int32 ScheduleReportId = 2;
  bytes Report = 3;
  string FileName = 4;
-}
-
-message ReportPDFListResponse{
-  ResponseCode Code=1;
-  string Message = 2;
-  repeated ReportPDFResponse PDFList =3;
+  ResponseCode Code=5;
+  string Message = 6;
 }

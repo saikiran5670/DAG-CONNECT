@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.applications
         public ReportEmailSchedulerWorker(ILogger<PasswordExpiryWorker> logger,
                         IConfiguration configuration,
                         IAuditTraillib auditlog,
-                        IReportSchedulerManager reportSchedulerManager ,
+                        IReportSchedulerManager reportSchedulerManager,
                         IHostApplicationLifetime hostApplicationLifetime)
         {
             _logger = logger;
