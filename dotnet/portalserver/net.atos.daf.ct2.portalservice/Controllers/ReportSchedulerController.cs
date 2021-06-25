@@ -410,9 +410,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                request.OrganizationId = GetContextOrgId();
-                if (request.OrganizationId == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
-                //int roleid = AssignOrgContextByRoleId(0);
+
                 var data = await _reportschedulerClient.GetPDFBinaryFormatByTokenAsync(request);
 
                 if (data == null)
