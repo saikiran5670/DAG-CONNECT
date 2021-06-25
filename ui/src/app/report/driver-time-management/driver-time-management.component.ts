@@ -8482,30 +8482,43 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 //   }
 // ]
 // };
+let groupIdArray = [];
+let finalGroupDataList = [];
     if(this.onLoadData.vehicleDetailsWithAccountVisibiltyList.length > 0){
-      distinctGroupId  = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.map(data=>data.vehicleGroupId);
+      groupIdArray  = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.map(data=>data.vehicleGroupId);
       //this.vehicleGroupListData = distinctGroupId;
-    if(distinctGroupId.length > 0){
-      distinctVIN = distinctGroupId.filter((value, index, self) => self.indexOf(value) === index);
+    if(groupIdArray.length > 0){
+      distinctGroupId = groupIdArray.filter((value, index, self) => self.indexOf(value) === index);
 
-      if(distinctVIN.length > 0){
-        distinctVIN.forEach(element => {
+      if(distinctGroupId.length > 0){
+        distinctGroupId.forEach(element => {
           let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vehicleGroupId === element); 
           if(_item.length > 0){
-            finalVINDataList.push(_item[0])
+            finalGroupDataList.push(_item[0])
           }
         });
-        this.vehicleGroupListData = finalVINDataList;
+        this.vehicleGroupListData = finalGroupDataList;
 
         ////console.log("finalVINDataList:: ", finalVINDataList); 
       }
       this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
       this.finalVehicleList = [];
-     
       this.finalVehicleList = this.onLoadData.vehicleDetailsWithAccountVisibiltyList;
       this.vehicleListData =[];
-      this.vehicleListData = this.finalVehicleList;
-      if(this.vehicleListData[0].vehicleId != 0)
+      let vinList = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.map(data=>data.vin);
+      if(vinList.length>0){
+        let distinctVIN = vinList.filter((value, index, self) => self.indexOf(value) === index);
+        if(distinctVIN.length > 0){
+          distinctVIN.forEach(element => {
+            let _item = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
+            if(_item.length > 0){
+              finalVINDataList.push(_item[0])
+            }
+          });
+      }
+      }
+      this.vehicleListData = finalVINDataList;
+      if(this.vehicleListData.length>0 && this.vehicleListData[0].vehicleId != 0)
       this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
     }
     }
@@ -8533,6 +8546,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     }
     this.resetdriverTimeFormControlValue();
     this.selectedVehicleGroup = this.vehicleGroupListData[0].vehicleGroupName;
+    if(this.vehicleListData.length >0)
     this.selectedVehicle = this.vehicleListData[0].vehicleName;
 
    
@@ -8668,52 +8682,52 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     let setId = (this.driverListData.filter(elem=>elem.driverID === _row.driverId)[0]['driverID']);
     this.driverTimeForm.get('driver').setValue(setId);
     
-    this.driverDetails = this.selectedDriverData;
-      // [
-      //         {
-      //           "driverId": "UK DB08176162022802",
-      //           "driverName": "Helloupdated Helloupdated",
-      //           "vin": "RERAE75PC0E261011",
-      //           "activityDate": 1604338846000,
-      //           "startTime": 1604338846000,
-      //           "endTime": 1604337628000,
-      //           "code": 3,
-      //           "restTime": 0,
-      //           "availableTime": 0,
-      //           "workTime": 0,
-      //           "driveTime": 14400,
-      //           "serviceTime": 10800
-      //         },
-      //         {
-      //           "driverId": "UK DB08176162022802",
-      //           "driverName": "Helloupdated Helloupdated",
-      //           "vin": "RERAE75PC0E261011",
-      //           "activityDate": 1624370044000,
-      //           "startTime": 1604338846000,
-      //           "endTime": 1604337628000,
-      //           "code": 3,
-      //           "restTime": 0,
-      //           "availableTime": 0,
-      //           "workTime": 0,
-      //           "driveTime": 10800,
-      //           "serviceTime": 14400
-      //         },
-      //         {
-      //           "driverId": "UK DB08176162022802",
-      //           "driverName": "Helloupdated Helloupdated",
-      //           "vin": "RERAE75PC0E261011",
-      //           "activityDate": 1624427508387,
-      //           "startTime": 1604338846000,
-      //           "endTime": 1604337628000,
-      //           "code": 3,
-      //           "restTime": 0,
-      //           "availableTime": 0,
-      //           "workTime": 0,
-      //           "driveTime": 10800,
-      //           "serviceTime": 14400
-      //         },
+    // this.driverDetails = 
+    //   [
+    //           {
+    //             "driverId": "UK DB08176162022802",
+    //             "driverName": "Helloupdated Helloupdated",
+    //             "vin": "RERAE75PC0E261011",
+    //             "activityDate": 1604338846000,
+    //             "startTime": 1604338846000,
+    //             "endTime": 1604337628000,
+    //             "code": 3,
+    //             "restTime": 0,
+    //             "availableTime": 0,
+    //             "workTime": 0,
+    //             "driveTime": 14400,
+    //             "serviceTime": 10800
+    //           },
+    //           {
+    //             "driverId": "UK DB08176162022802",
+    //             "driverName": "Helloupdated Helloupdated",
+    //             "vin": "RERAE75PC0E261011",
+    //             "activityDate": 1624370044000,
+    //             "startTime": 1604338846000,
+    //             "endTime": 1604337628000,
+    //             "code": 3,
+    //             "restTime": 0,
+    //             "availableTime": 0,
+    //             "workTime": 0,
+    //             "driveTime": 10800,
+    //             "serviceTime": 14400
+    //           },
+    //           {
+    //             "driverId": "UK DB08176162022802",
+    //             "driverName": "Helloupdated Helloupdated",
+    //             "vin": "RERAE75PC0E261011",
+    //             "activityDate": 1624427508387,
+    //             "startTime": 1604338846000,
+    //             "endTime": 1604337628000,
+    //             "code": 3,
+    //             "restTime": 0,
+    //             "availableTime": 0,
+    //             "workTime": 0,
+    //             "driveTime": 10800,
+    //             "serviceTime": 14400
+    //           },
               
-      //       ]
+    //         ]
 
             let updateData = this.driverDetails;
             this.setGeneralDriverDetailValue();
