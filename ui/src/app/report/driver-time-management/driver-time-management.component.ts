@@ -457,19 +457,24 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   onVehicleGroupChange(event: any){
-    if(event.value || event.value == 0){
+    if(event.value){
       this.internalSelection = true; 
     this.driverTimeForm.get('vehicle').setValue(''); //- reset vehicle dropdown
     this.driverTimeForm.get('driver').setValue(''); //- reset vehicle dropdown
     this.driverListData = this.finalDriverList;
-    this.vehicleListData = this.finalVehicleList
+    this.vehicleListData = this.finalVehicleList;
+    //console.log(this.driverListData)
+    //console.log(this.vehicleListData)
+
+    
     if(parseInt(event.value) == 0){ //-- all group
       //.filter(i => i.vehicleGroupId != 0);
       this.driverTimeForm.get('vehicle').setValue(0);
       this.driverTimeForm.get('driver').setValue(0);
 
     }else{
-      this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+
+      this.vehicleListData = this.finalVehicleList.filter(i => i.vehicleGroupId == parseInt(event.value));
       // let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       // if(search.length > 0){
       //   this.vehicleDD = [];
@@ -489,8 +494,13 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   onVehicleChange(event: any){
-    let selectedVin = this.vehicleListData.filter(i=>i.vehicleId === parseInt(event.value))[0]['vin'];
-    this.driverListData = this.finalDriverList.filter(i => i.vin == selectedVin);
+    if(event.value==0){
+      this.driverListData = this.finalDriverList;
+    }else{
+      let selectedVin = this.vehicleListData.filter(i=>i.vehicleId === parseInt(event.value))[0]['vin'];
+      this.driverListData = this.finalDriverList.filter(i => i.vin == selectedVin);
+    }
+    
     
     this.searchFilterpersistData["vehicleDropDownValue"] = event.value;
     this.setGlobalSearchData(this.searchFilterpersistData)
@@ -517,6 +527,10 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     }
     else {
       _vehicelIds = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.driverTimeForm.controls.vehicle.value)).map(data => data.vin);
+      if(_vehicelIds.length > 0){
+        _vehicelIds = _vehicelIds.filter((value, index, self) => self.indexOf(value) === index);
+      }
+       
     }
 
     if (parseInt(this.driverTimeForm.controls.driver.value) === 0) {
@@ -540,182 +554,183 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     }
     if(_vehicelIds.length > 0){
       this.showLoadingIndicator = true;
-      this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
+     this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
         this.hideloader();
-        let tripData = {
-          "driverActivities": [
-            {
-              "driverId": "NL B000384974000000",
-              "driverName": "Helloupdated Helloupdated",
-              "vin": "RERAE75PC0E261011",
-              "activityDate": 1604338846000,
-              "startTime": 0,
-              "endTime": 0,
-              "code": 3,
-              "restTime": 0,
-              "availableTime": 0,
-              "workTime": 0,
-              "driveTime": 1218000,
-              "serviceTime": 1218000
-            },
-            {
-              "driverId": "D2",
-              "driverName": "Ayrton Senna",
-              "vin": "RERAE75PC0E261011",
-              "activityDate": 1604338846000,
-              "startTime": 0,
-              "endTime": 0,
-              "code": 1,
-              "restTime": 0,
-              "availableTime": 1218000,
-              "workTime": 0,
-              "driveTime": 0,
-              "serviceTime": 1218000
-            },
-            {
-              "driverId": "UK DB08176162022802",
-              "driverName": "Helloupdated Helloupdated",
-              "vin": "RERAE75PC0E261011",
-              "activityDate": 1604338846000,
-              "startTime": 0,
-              "endTime": 0,
-              "code": 3,
-              "restTime": 0,
-              "availableTime": 0,
-              "workTime": 0,
-              "driveTime": 1218000,
-              "serviceTime": 1218000
-            },
-            {
-              "driverId": "D2",
-              "driverName": "Ayrton Senna",
-              "vin": "RERAE75PC0E261011",
-              "activityDate": 1604338846000,
-              "startTime": 0,
-              "endTime": 0,
-              "code": 1,
-              "restTime": 0,
-              "availableTime": 1218000,
-              "workTime": 0,
-              "driveTime": 0,
-              "serviceTime": 1218000
-            },
-            {
-              "driverId": "UK DB08176162022802",
-              "driverName": "Helloupdated Helloupdated",
-              "vin": "RERAE75PC0E261011",
-              "activityDate": 1604338846000,
-              "startTime": 0,
-              "endTime": 0,
-              "code": 3,
-              "restTime": 0,
-              "availableTime": 0,
-              "workTime": 0,
-              "driveTime": 1218000,
-              "serviceTime": 1218000
-            },
-            {
-              "driverId": "D2",
-              "driverName": "Ayrton Senna",
-              "vin": "RERAE75PC0E261011",
-              "activityDate": 1604338846000,
-              "startTime": 0,
-              "endTime": 0,
-              "code": 1,
-              "restTime": 0,
-              "availableTime": 1218000,
-              "workTime": 0,
-              "driveTime": 0,
-              "serviceTime": 1218000
-            },
-            {
-              "driverId": "UK DB08176162022802",
-              "driverName": "Helloupdated Helloupdated",
-              "vin": "RERAE75PC0E261011",
-              "activityDate": 1604338846000,
-              "startTime": 0,
-              "endTime": 0,
-              "code": 3,
-              "restTime": 0,
-              "availableTime": 0,
-              "workTime": 0,
-              "driveTime": 1218000,
-              "serviceTime": 1218000
-            },
-            {
-              "driverId": "D2",
-              "driverName": "Ayrton Senna",
-              "vin": "RERAE75PC0E261011",
-              "activityDate": 1604338846000,
-              "startTime": 0,
-              "endTime": 0,
-              "code": 1,
-              "restTime": 0,
-              "availableTime": 1218000,
-              "workTime": 0,
-              "driveTime": 0,
-              "serviceTime": 1218000
-            },
-            {
-              "driverId": "UK DB08176162022802",
-              "driverName": "Helloupdated Helloupdated",
-              "vin": "RERAE75PC0E261011",
-              "activityDate": 1604338846000,
-              "startTime": 0,
-              "endTime": 0,
-              "code": 3,
-              "restTime": 0,
-              "availableTime": 0,
-              "workTime": 0,
-              "driveTime": 1218000,
-              "serviceTime": 1218000
-            },
-            {
-              "driverId": "D2",
-              "driverName": "Ayrton Senna",
-              "vin": "RERAE75PC0E261011",
-              "activityDate": 1604338846000,
-              "startTime": 0,
-              "endTime": 0,
-              "code": 1,
-              "restTime": 0,
-              "availableTime": 1218000,
-              "workTime": 0,
-              "driveTime": 0,
-              "serviceTime": 1218000
-            },
-            {
-              "driverId": "UK DB08176162022802",
-              "driverName": "Helloupdated Helloupdated",
-              "vin": "RERAE75PC0E261011",
-              "activityDate": 1604338846000,
-              "startTime": 0,
-              "endTime": 0,
-              "code": 3,
-              "restTime": 0,
-              "availableTime": 0,
-              "workTime": 0,
-              "driveTime": 1218000,
-              "serviceTime": 1218000
-            },
-            {
-              "driverId": "D2",
-              "driverName": "Ayrton Senna",
-              "vin": "RERAE75PC0E261011",
-              "activityDate": 1604338846000,
-              "startTime": 0,
-              "endTime": 0,
-              "code": 1,
-              "restTime": 0,
-              "availableTime": 1218000,
-              "workTime": 0,
-              "driveTime": 0,
-              "serviceTime": 1218000
-            }
-          ],
-          "code": 200,
-          "message": "Trip fetched successfully for requested Filters"
-        }
+        let tripData = _tripData;
+        // let tripData = {
+        //   "driverActivities": [
+        //     {
+        //       "driverId": "NL B000384974000000",
+        //       "driverName": "Helloupdated Helloupdated",
+        //       "vin": "RERAE75PC0E261011",
+        //       "activityDate": 1604338846000,
+        //       "startTime": 0,
+        //       "endTime": 0,
+        //       "code": 3,
+        //       "restTime": 0,
+        //       "availableTime": 0,
+        //       "workTime": 0,
+        //       "driveTime": 1218000,
+        //       "serviceTime": 1218000
+        //     },
+        //     {
+        //       "driverId": "D2",
+        //       "driverName": "Ayrton Senna",
+        //       "vin": "RERAE75PC0E261011",
+        //       "activityDate": 1604338846000,
+        //       "startTime": 0,
+        //       "endTime": 0,
+        //       "code": 1,
+        //       "restTime": 0,
+        //       "availableTime": 1218000,
+        //       "workTime": 0,
+        //       "driveTime": 0,
+        //       "serviceTime": 1218000
+        //     },
+        //     {
+        //       "driverId": "UK DB08176162022802",
+        //       "driverName": "Helloupdated Helloupdated",
+        //       "vin": "RERAE75PC0E261011",
+        //       "activityDate": 1604338846000,
+        //       "startTime": 0,
+        //       "endTime": 0,
+        //       "code": 3,
+        //       "restTime": 0,
+        //       "availableTime": 0,
+        //       "workTime": 0,
+        //       "driveTime": 1218000,
+        //       "serviceTime": 1218000
+        //     },
+        //     {
+        //       "driverId": "D2",
+        //       "driverName": "Ayrton Senna",
+        //       "vin": "RERAE75PC0E261011",
+        //       "activityDate": 1604338846000,
+        //       "startTime": 0,
+        //       "endTime": 0,
+        //       "code": 1,
+        //       "restTime": 0,
+        //       "availableTime": 1218000,
+        //       "workTime": 0,
+        //       "driveTime": 0,
+        //       "serviceTime": 1218000
+        //     },
+        //     {
+        //       "driverId": "UK DB08176162022802",
+        //       "driverName": "Helloupdated Helloupdated",
+        //       "vin": "RERAE75PC0E261011",
+        //       "activityDate": 1604338846000,
+        //       "startTime": 0,
+        //       "endTime": 0,
+        //       "code": 3,
+        //       "restTime": 0,
+        //       "availableTime": 0,
+        //       "workTime": 0,
+        //       "driveTime": 1218000,
+        //       "serviceTime": 1218000
+        //     },
+        //     {
+        //       "driverId": "D2",
+        //       "driverName": "Ayrton Senna",
+        //       "vin": "RERAE75PC0E261011",
+        //       "activityDate": 1604338846000,
+        //       "startTime": 0,
+        //       "endTime": 0,
+        //       "code": 1,
+        //       "restTime": 0,
+        //       "availableTime": 1218000,
+        //       "workTime": 0,
+        //       "driveTime": 0,
+        //       "serviceTime": 1218000
+        //     },
+        //     {
+        //       "driverId": "UK DB08176162022802",
+        //       "driverName": "Helloupdated Helloupdated",
+        //       "vin": "RERAE75PC0E261011",
+        //       "activityDate": 1604338846000,
+        //       "startTime": 0,
+        //       "endTime": 0,
+        //       "code": 3,
+        //       "restTime": 0,
+        //       "availableTime": 0,
+        //       "workTime": 0,
+        //       "driveTime": 1218000,
+        //       "serviceTime": 1218000
+        //     },
+        //     {
+        //       "driverId": "D2",
+        //       "driverName": "Ayrton Senna",
+        //       "vin": "RERAE75PC0E261011",
+        //       "activityDate": 1604338846000,
+        //       "startTime": 0,
+        //       "endTime": 0,
+        //       "code": 1,
+        //       "restTime": 0,
+        //       "availableTime": 1218000,
+        //       "workTime": 0,
+        //       "driveTime": 0,
+        //       "serviceTime": 1218000
+        //     },
+        //     {
+        //       "driverId": "UK DB08176162022802",
+        //       "driverName": "Helloupdated Helloupdated",
+        //       "vin": "RERAE75PC0E261011",
+        //       "activityDate": 1604338846000,
+        //       "startTime": 0,
+        //       "endTime": 0,
+        //       "code": 3,
+        //       "restTime": 0,
+        //       "availableTime": 0,
+        //       "workTime": 0,
+        //       "driveTime": 1218000,
+        //       "serviceTime": 1218000
+        //     },
+        //     {
+        //       "driverId": "D2",
+        //       "driverName": "Ayrton Senna",
+        //       "vin": "RERAE75PC0E261011",
+        //       "activityDate": 1604338846000,
+        //       "startTime": 0,
+        //       "endTime": 0,
+        //       "code": 1,
+        //       "restTime": 0,
+        //       "availableTime": 1218000,
+        //       "workTime": 0,
+        //       "driveTime": 0,
+        //       "serviceTime": 1218000
+        //     },
+        //     {
+        //       "driverId": "UK DB08176162022802",
+        //       "driverName": "Helloupdated Helloupdated",
+        //       "vin": "RERAE75PC0E261011",
+        //       "activityDate": 1604338846000,
+        //       "startTime": 0,
+        //       "endTime": 0,
+        //       "code": 3,
+        //       "restTime": 0,
+        //       "availableTime": 0,
+        //       "workTime": 0,
+        //       "driveTime": 1218000,
+        //       "serviceTime": 1218000
+        //     },
+        //     {
+        //       "driverId": "D2",
+        //       "driverName": "Ayrton Senna",
+        //       "vin": "RERAE75PC0E261011",
+        //       "activityDate": 1604338846000,
+        //       "startTime": 0,
+        //       "endTime": 0,
+        //       "code": 1,
+        //       "restTime": 0,
+        //       "availableTime": 1218000,
+        //       "workTime": 0,
+        //       "driveTime": 0,
+        //       "serviceTime": 1218000
+        //     }
+        //   ],
+        //   "code": 200,
+        //   "message": "Trip fetched successfully for requested Filters"
+        // }
 
         if(this.allDriversSelected){
           this.onSearchData = tripData;
@@ -727,38 +742,38 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           this.setDataForAll();
         }
         else{
-          this.driverDetails =   [
-            {
-              "driverId": "UK DB08176162022802",
-              "driverName": "Helloupdated Helloupdated",
-              "vin": "RERAE75PC0E261011",
-              "activityDate": 1604338846000,
-              "startTime": 1604338846000,
-              "endTime": 1604337628000,
-              "code": 3,
-              "restTime": 0,
-              "availableTime": 0,
-              "workTime": 0,
-              "driveTime": 1218000,
-              "serviceTime": 1218000
-            },
-            {
-              "driverId": "UK DB08176162022802",
-              "driverName": "Helloupdated Helloupdated",
-              "vin": "RERAE75PC0E261011",
-              "activityDate": 1624373306931,
-              "startTime": 1604338846000,
-              "endTime": 1604337628000,
-              "code": 3,
-              "restTime": 0,
-              "availableTime": 0,
-              "workTime": 0,
-              "driveTime": 1218000,
-              "serviceTime": 1218000
-            },
+          // this.driverDetails =   [
+          //   {
+          //     "driverId": "UK DB08176162022802",
+          //     "driverName": "Helloupdated Helloupdated",
+          //     "vin": "RERAE75PC0E261011",
+          //     "activityDate": 1604338846000,
+          //     "startTime": 1604338846000,
+          //     "endTime": 1604337628000,
+          //     "code": 3,
+          //     "restTime": 0,
+          //     "availableTime": 0,
+          //     "workTime": 0,
+          //     "driveTime": 1218000,
+          //     "serviceTime": 1218000
+          //   },
+          //   {
+          //     "driverId": "UK DB08176162022802",
+          //     "driverName": "Helloupdated Helloupdated",
+          //     "vin": "RERAE75PC0E261011",
+          //     "activityDate": 1624373306931,
+          //     "startTime": 1604338846000,
+          //     "endTime": 1604337628000,
+          //     "code": 3,
+          //     "restTime": 0,
+          //     "availableTime": 0,
+          //     "workTime": 0,
+          //     "driveTime": 1218000,
+          //     "serviceTime": 1218000
+          //   },
             
-          ]
-          let updateData = this.driverDetails;
+          // ]
+          let updateData = tripData.driverActivities;
           
           this.setGeneralDriverDetailValue();
           this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(updateData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
@@ -809,6 +824,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.driverTimeForm.get('vehicle').setValue('');
       this.driverTimeForm.get('driver').setValue('');
     }
+    this.driverTimeForm.get('vehicle').setValue('');
+
 
     // this.searchFilterpersistData["vehicleGroupDropDownValue"] = 0;
     // this.searchFilterpersistData["vehicleDropDownValue"] = '';
@@ -869,7 +886,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     //   let filterVIN: any = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
 
     // }
-//     this.onLoadData = {"driverList": [{
+//     this.onLoadData = 
+//     {
+//       "driverList": [{
 //       "vin": "XLR0998HGFFT76638",
 //       "driverID": "PL 1821230147770000",
 //       "firstName": null,
@@ -8481,10 +8500,13 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         ////console.log("finalVINDataList:: ", finalVINDataList); 
       }
       this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-      this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0) ;
-  //this.vehicleListData = this.vehicleListData.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime));
-       this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
-       this.finalVehicleList = this.vehicleListData;
+      this.finalVehicleList = [];
+     
+      this.finalVehicleList = this.onLoadData.vehicleDetailsWithAccountVisibiltyList;
+      this.vehicleListData =[];
+      this.vehicleListData = this.finalVehicleList;
+      if(this.vehicleListData[0].vehicleId != 0)
+      this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
     }
     }
     if(this.onLoadData.driverList.length > 0){
@@ -8646,57 +8668,58 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     let setId = (this.driverListData.filter(elem=>elem.driverID === _row.driverId)[0]['driverID']);
     this.driverTimeForm.get('driver').setValue(setId);
     
-    this.driverDetails =   [
-              {
-                "driverId": "UK DB08176162022802",
-                "driverName": "Helloupdated Helloupdated",
-                "vin": "RERAE75PC0E261011",
-                "activityDate": 1604338846000,
-                "startTime": 1604338846000,
-                "endTime": 1604337628000,
-                "code": 3,
-                "restTime": 0,
-                "availableTime": 0,
-                "workTime": 0,
-                "driveTime": 14400,
-                "serviceTime": 10800
-              },
-              {
-                "driverId": "UK DB08176162022802",
-                "driverName": "Helloupdated Helloupdated",
-                "vin": "RERAE75PC0E261011",
-                "activityDate": 1624370044000,
-                "startTime": 1604338846000,
-                "endTime": 1604337628000,
-                "code": 3,
-                "restTime": 0,
-                "availableTime": 0,
-                "workTime": 0,
-                "driveTime": 10800,
-                "serviceTime": 14400
-              },
-              {
-                "driverId": "UK DB08176162022802",
-                "driverName": "Helloupdated Helloupdated",
-                "vin": "RERAE75PC0E261011",
-                "activityDate": 1624427508387,
-                "startTime": 1604338846000,
-                "endTime": 1604337628000,
-                "code": 3,
-                "restTime": 0,
-                "availableTime": 0,
-                "workTime": 0,
-                "driveTime": 10800,
-                "serviceTime": 14400
-              },
+    this.driverDetails = this.selectedDriverData;
+      // [
+      //         {
+      //           "driverId": "UK DB08176162022802",
+      //           "driverName": "Helloupdated Helloupdated",
+      //           "vin": "RERAE75PC0E261011",
+      //           "activityDate": 1604338846000,
+      //           "startTime": 1604338846000,
+      //           "endTime": 1604337628000,
+      //           "code": 3,
+      //           "restTime": 0,
+      //           "availableTime": 0,
+      //           "workTime": 0,
+      //           "driveTime": 14400,
+      //           "serviceTime": 10800
+      //         },
+      //         {
+      //           "driverId": "UK DB08176162022802",
+      //           "driverName": "Helloupdated Helloupdated",
+      //           "vin": "RERAE75PC0E261011",
+      //           "activityDate": 1624370044000,
+      //           "startTime": 1604338846000,
+      //           "endTime": 1604337628000,
+      //           "code": 3,
+      //           "restTime": 0,
+      //           "availableTime": 0,
+      //           "workTime": 0,
+      //           "driveTime": 10800,
+      //           "serviceTime": 14400
+      //         },
+      //         {
+      //           "driverId": "UK DB08176162022802",
+      //           "driverName": "Helloupdated Helloupdated",
+      //           "vin": "RERAE75PC0E261011",
+      //           "activityDate": 1624427508387,
+      //           "startTime": 1604338846000,
+      //           "endTime": 1604337628000,
+      //           "code": 3,
+      //           "restTime": 0,
+      //           "availableTime": 0,
+      //           "workTime": 0,
+      //           "driveTime": 10800,
+      //           "serviceTime": 14400
+      //         },
               
-            ]
+      //       ]
 
             let updateData = this.driverDetails;
             this.setGeneralDriverDetailValue();
             this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(updateData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
 
-    this.driverSelected = true;
+            this.driverSelected = true;
   }
 
   backToMainPage(){

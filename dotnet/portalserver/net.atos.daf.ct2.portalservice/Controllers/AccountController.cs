@@ -936,7 +936,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, "Preference details are found.");
+                        return Ok(new AccountPreferenceResponse());
                     }
                 }
                 else

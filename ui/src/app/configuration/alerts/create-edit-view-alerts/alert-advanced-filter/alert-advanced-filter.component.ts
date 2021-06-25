@@ -503,7 +503,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
               this.selectedPOI.select(row);
             else
               this.selectedPOI.deselect(row);  
-              this.PoiCheckboxClicked(event,row);
+            this.PoiCheckboxClicked(event,row);
           }
         });
       }
@@ -752,29 +752,34 @@ export class AlertAdvancedFilterComponent implements OnInit {
         }
 
         onGroupSelect(event: any, row: any){
-          if(event.checked){
-          let groupDetails= [];
           let objData = { 
             organizationid : this.organizationId,
             groupid : row.id
           };
-          this.groupArray.push(row);
-          this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupData) => {
-            groupDetails = groupData["groups"][0];
-            this.selectPOITableRows(groupDetails, event);
-            this.selectGeofenceTableRows(groupDetails, event);
-          });
-        }
-        else{
-          let arr = this.groupArray.filter(item => item.id != row.id);
-          this.groupArray = arr;
-        }
+          let groupDetails= [];
+          if(event.checked){
+            this.groupArray.push(row);
+            this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupData) => {
+              groupDetails = groupData["groups"][0];
+              this.selectPOITableRows(groupDetails, event);
+              this.selectGeofenceTableRows(groupDetails, event);
+            });
+          }
+          else{
+            this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupData) => {
+              groupDetails = groupData["groups"][0];
+              this.selectPOITableRows(groupDetails, event);
+              this.selectGeofenceTableRows(groupDetails, event);
+            });
+            let arr = this.groupArray.filter(item => item.id != row.id);
+            this.groupArray = arr;
+          }
         }
 
         selectGeofenceTableRows(rowData: any, event?: any){
           if(event){
             this.geofenceDataSource.data.forEach((row: any) => {
-              let search = rowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == row.id && (item.landmarkType == "C" || item.landmarkType == "O"));
+              let search = rowData.landmarks.filter(item => item.landmarkid == row.id && (item.type == "C" || item.type == "O"));
               if (event && search.length > 0) {
                 if(event.checked)
                   this.selectedGeofence.select(row);
@@ -841,12 +846,16 @@ export class AlertAdvancedFilterComponent implements OnInit {
             } row`;
       }
     
-      masterToggleForGroup() {
+      masterToggleForGroup(event) {
         this.isAllSelectedForGroup()
           ? this.selectedGroup.clear()
           : this.groupDataSource.data.forEach((row) =>
             this.selectedGroup.select(row)
           );
+
+          this.groupDataSource.data.forEach(row => {
+            this.onGroupSelect(event, row);
+          });
       }
     
       isAllSelectedForGroup() {

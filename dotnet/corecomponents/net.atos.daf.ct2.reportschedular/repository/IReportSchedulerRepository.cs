@@ -15,8 +15,9 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         Task<ReportSchedulerMap> UpdateReportScheduler(ReportSchedulerMap report);
         Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid);
         Task<int> ManipulateReportSchedular(ReportStatusUpdateDeleteModel objReportStatusUpdateDeleteModel);
-        Task<List<PDFReportScreenModel>> GetPDFBinaryFormatById(ReportPDFByidModel request);
-        Task<List<PDFReportScreenModel>> GetPDFBinaryFormatByToken(ReportPDFBytokenModel request);
+        Task<PDFReportScreenModel> GetPDFBinaryFormatById(ReportPDFByidModel request);
+        Task<PDFReportScreenModel> GetPDFBinaryFormatByToken(ReportPDFBytokenModel request);
+        Task<string> UpdatePDFBinaryRecordByToken(string token);
         #endregion
 
         #region Report Creation Scheduler
@@ -31,6 +32,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         Task<int> SendReportEmail();
+
+
 
     }
 }
