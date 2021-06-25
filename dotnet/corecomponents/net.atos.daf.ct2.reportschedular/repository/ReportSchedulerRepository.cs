@@ -613,7 +613,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region GetPDFinBinaryFormatByReportId
-        public async Task<List<PDFReportScreenModel>> GetPDFBinaryFormatById(ReportPDFByidModel request)
+        public async Task<PDFReportScreenModel> GetPDFBinaryFormatById(ReportPDFByidModel request)
         {
             try
             {
@@ -636,7 +636,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 param.Add("@id", request.Id);
                 param.Add("@organization_id", request.OrganizationId);
                 var data = await _dataAccess.QueryAsync<PDFReportScreenModel>(query, param);
-                return data.ToList();
+                return data as PDFReportScreenModel;
             }
             catch (Exception)
             {
@@ -646,7 +646,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region GetPDFinBinaryFormatByToken
-        public async Task<List<PDFReportScreenModel>> GetPDFBinaryFormatByToken(ReportPDFBytokenModel request)
+        public async Task<PDFReportScreenModel> GetPDFBinaryFormatByToken(ReportPDFBytokenModel request)
         {
             try
             {
@@ -665,14 +665,45 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                     file_name as FileName
                                 FROM master.scheduledreport
                                 FROM master.scheduledreport
-                                WHERE organization_id=@organization_id
-                                AND token=@token";
+                                WHERE token=@token
+                                AND organization_id=@organization_id";
                 param.Add("@token", request.Token);
                 param.Add("@organization_id", request.OrganizationId);
                 var data = await _dataAccess.QueryAsync<PDFReportScreenModel>(query, param);
-                return data.ToList();
+                return data as PDFReportScreenModel;
             }
             catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
+
+        #region Update PDFBinary Record once downloaded by Token
+        public async Task<string> UpdatePDFBinaryRecordByToken(string token)
+        {
+            try
+            {
+                string query = string.Empty;
+
+                query = @"UPDATE master.reportscheduler 
+                          SET downloaded_at=@downloaded_at 
+                          WHERE token=@token";
+                var parameter = new DynamicParameters();
+                parameter.Add("@downloaded_at", UTCHandling.GetUTCFromDateTime(DateTime.Now, "UTC"));
+                parameter.Add("@token", token);
+
+                int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
+                if (rowEffected > 0)
+                {
+                    return token;// to show reportid in gRPC message
+                }
+                else
+                {
+                    return string.Empty;//to return Failed Message in grpc
+                }
+            }
+            catch
             {
                 throw;
             }

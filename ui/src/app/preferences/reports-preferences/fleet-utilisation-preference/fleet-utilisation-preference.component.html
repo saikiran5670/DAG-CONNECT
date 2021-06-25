@@ -1,7 +1,7 @@
 <form [formGroup]="fleetUtilForm">
 
     <!-- summary tab -->
-    <div fxLayout="row" class='areaWidth full-width padding-10 summaryPref' fxLayoutAlign="left center"
+    <div *ngIf='summaryColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 summaryPref' fxLayoutAlign="left center"
         style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForSummaryColumns() : null'
@@ -13,7 +13,7 @@
             </mat-checkbox>
         </div>
     </div>
-    <div fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+    <div *ngIf='summaryColumnData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
         <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
             <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
@@ -65,7 +65,7 @@
     </div>
 
     <!-- Charts tab -->
-    <div fxLayout="row" class='areaWidth full-width padding-10 chartPref margin-top-20' fxLayoutAlign="left center"
+    <div *ngIf='chartsColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 chartPref margin-top-20' fxLayoutAlign="left center"
         style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
             <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForChartsColumns() : null'
@@ -85,7 +85,7 @@
             <span class='headerFont'>{{ translationData.lblThresholdType || 'Threshold Type' }}</span>
         </div>
     </div>
-    <div *ngIf='chartIndex && chartIndex.distanceIndex == 0' fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left center">
+    <div *ngIf='chartsColumnData.length > 0 && chartIndex && chartIndex.distanceIndex == 0' fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left center">
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForChartsColumns.toggle(chartsColumnData[0]) : null;'
@@ -108,7 +108,7 @@
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
     </div>
-    <div *ngIf='chartIndex && chartIndex.vehicleIndex == 1' fxLayout="row" class='areaWidth full-width padding-10 chartPref oddColumnColor' fxLayoutAlign="left center">
+    <div *ngIf='chartsColumnData.length > 0 && chartIndex && chartIndex.vehicleIndex == 1' fxLayout="row" class='areaWidth full-width padding-10 chartPref oddColumnColor' fxLayoutAlign="left center">
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForChartsColumns.toggle(chartsColumnData[1]) : null;'
@@ -131,7 +131,7 @@
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
     </div>
-    <div *ngIf='chartIndex && chartIndex.mileageIndex == 2' fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left center">
+    <div *ngIf='chartsColumnData.length > 0 && chartIndex && chartIndex.mileageIndex == 2' fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left center">
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForChartsColumns.toggle(chartsColumnData[2]) : null;'
@@ -171,7 +171,7 @@
             </mat-form-field>
         </div>
     </div>
-    <div *ngIf='chartIndex && chartIndex.timeIndex == 3' fxLayout="row" class='areaWidth full-width padding-10 chartPref oddColumnColor' fxLayoutAlign="left center">
+    <div *ngIf='chartsColumnData.length > 0 && chartIndex && chartIndex.timeIndex == 3' fxLayout="row" class='areaWidth full-width padding-10 chartPref oddColumnColor' fxLayoutAlign="left center">
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForChartsColumns.toggle(chartsColumnData[3]) : null;'
@@ -219,7 +219,7 @@
     </div>
 
     <!-- Calender tab -->
-    <div fxLayout="row" class='areaWidth full-width padding-10 calenderPref margin-top-20' fxLayoutAlign="left center"
+    <div *ngIf='calenderColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 calenderPref margin-top-20' fxLayoutAlign="left center"
         style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-checkbox class='custom-checkbox' [checked]='true' [disabled]='!editFlag'>
@@ -227,7 +227,7 @@
             </mat-checkbox>
         </div>
     </div>
-    <div fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left">
+    <div *ngIf='calenderColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left">
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
             <mat-label>{{ translationData.lblViewcalenderdetails || 'View calender details' }}</mat-label>
             <mat-form-field appearance="outline" style='width: 80%'>
@@ -252,7 +252,7 @@
     </div>
 
     <!-- Details tab -->
-    <div fxLayout="row" class='areaWidth full-width padding-10 detailsPref margin-top-20' fxLayoutAlign="left center"
+    <div *ngIf='detailColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 detailsPref margin-top-20' fxLayoutAlign="left center"
         style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForDetailsColumns() : null'
@@ -264,7 +264,7 @@
             </mat-checkbox>
         </div>
     </div>
-    <div fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+    <div *ngIf='detailColumnData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
         <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
             <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
@@ -382,13 +382,13 @@
 
     <!-- Error msg -->
     <div fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start"
-        *ngIf='editFlag && reqField'>
+        *ngIf='editFlag && reqField && detailColumnData.length > 0'>
         <span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN,
             Registration Number' }}</span>
     </div>
 
     <!-- Button -->
-    <div fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end" *ngIf='editFlag'>
+    <div *ngIf='(summaryColumnData.length > 0 || chartsColumnData.length > 0 || calenderColumnData.length > 0 || detailColumnData.length > 0) && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
         <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
             translationData.lblCancel || 'Cancel' }}</button>
         <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{

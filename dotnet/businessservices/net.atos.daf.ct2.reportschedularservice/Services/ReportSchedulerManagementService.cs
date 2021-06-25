@@ -334,12 +334,9 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                 objReportPDFByidModel.OrganizationId = request.OrganizationId;
                 var data = await _reportSchedulerManager.GetPDFBinaryFormatById(objReportPDFByidModel);
                 ReportPDFListResponse response = new ReportPDFListResponse();
-                if (data.Any())
+                if (data != null)
                 {
-                    foreach (var item in data)
-                    {
-                        response.PDFList.Add(_mapper.MapPDFRepoModel(item));
-                    }
+                    response.PDFList.Add(_mapper.MapPDFRepoModel(data));
                 }
                 response.Message = ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_SUCCESS_MSG;
                 response.Code = ResponseCode.Success;
@@ -366,14 +363,16 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                 ReportPDFBytokenModel objReportPDFBytokenModel = new ReportPDFBytokenModel();
                 objReportPDFBytokenModel.Token = request.Token;
                 objReportPDFBytokenModel.OrganizationId = request.OrganizationId;
-                var data = await _reportSchedulerManager.GetPDFBinaryFormatByToken(objReportPDFBytokenModel);
+                PDFReportScreenModel data = await _reportSchedulerManager.GetPDFBinaryFormatByToken(objReportPDFBytokenModel);
                 ReportPDFListResponse response = new ReportPDFListResponse();
-                if (data.Any())
+                if (data != null)
                 {
-                    foreach (var item in data)
+                    string strupdatetoken = await _reportSchedulerManager.UpdatePDFBinaryRecordByToken(request.Token);
+                    if (strupdatetoken != string.Empty)
                     {
-                        response.PDFList.Add(_mapper.MapPDFRepoModel(item));
+                        response.PDFList.Add(_mapper.MapPDFRepoModel(data));
                     }
+
                 }
                 response.Message = ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_SUCCESS_MSG;
                 response.Code = ResponseCode.Success;

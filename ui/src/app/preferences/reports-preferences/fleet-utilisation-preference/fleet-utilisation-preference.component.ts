@@ -166,8 +166,9 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
         this.selectionForChartsColumns.select(element);
       }
     });
-
-    this.setDefaultFormValues();
+    if(this.summaryColumnData.length > 0 && this.chartsColumnData.length > 0 && this.calenderColumnData.length > 0 && this.detailColumnData.length > 0){
+      this.setDefaultFormValues();
+    }
     this.validateRequiredField();
   }
 
