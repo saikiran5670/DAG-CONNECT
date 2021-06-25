@@ -67,7 +67,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int DrivingTime { get; set; }
         [DisplayName("Alerts")]
         public int Alert { get; set; }
-        [DisplayName("Distance")]
+        [DisplayName("Events")]
         public int Events { get; set; }
         [DisplayName("Fuel Consumed 100km")]
         public double FuelConsumed100km { get; set; }

@@ -404,17 +404,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region GetPDFBinaryFormatByToken
+        [AllowAnonymous]
         [HttpGet]
         [Route("download")]
         public async Task<IActionResult> GetPDFBinaryFormatByToken([FromQuery] ReportPDFByTokenRequest request)
         {
             try
             {
-                request.OrganizationId = GetContextOrgId();
-                if (request.OrganizationId == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
-                //int roleid = AssignOrgContextByRoleId(0);
                 var data = await _reportschedulerClient.GetPDFBinaryFormatByTokenAsync(request);
-
                 if (data == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
                 if (data.Code == ResponseCode.Success)
@@ -442,11 +439,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                request.OrganizationId = GetContextOrgId();
-                if (request.OrganizationId == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
-                //int roleid = AssignOrgContextByRoleId(0);
                 var data = await _reportschedulerClient.GetPDFBinaryFormatByTokenAsync(request);
-
                 if (data == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
                 if (data.Code == ResponseCode.Success)

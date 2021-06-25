@@ -55,7 +55,8 @@ namespace net.atos.daf.ct2.reports
 
         #region Trip Report Table Details
 
-        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilter) => await _reportRepository.GetFilteredTripDetails(tripFilter);
+        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilter,
+                                                                    bool isLiveFleetRequired = true) => await _reportRepository.GetFilteredTripDetails(tripFilter, isLiveFleetRequired);
 
         #endregion
 

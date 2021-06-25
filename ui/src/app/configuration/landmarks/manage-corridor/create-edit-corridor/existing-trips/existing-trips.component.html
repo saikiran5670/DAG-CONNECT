@@ -387,7 +387,7 @@
             </button>
           </span>
 
-          <span *ngIf="actionType === 'edit'">
+          <span *ngIf="actionType == 'edit'">
             <button mat-button color="primary" (click)="resetToEditData()" [disabled]="existingTripForm.pristine">
               <span>Reset</span>
             </button>

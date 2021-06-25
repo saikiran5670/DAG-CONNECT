@@ -26,51 +26,50 @@ namespace net.atos.daf.ct2.reportscheduler
             //_generatePdf = generatePdf;
             _reportCreator = reportCreator;
         }
-        public async Task<int> GenerateReport()
+
+        public async Task<bool> GenerateReport()
         {
+            var flag = false;
             try
             {
-                //Get the records from reportscheduler for next run date as today
                 foreach (var reportSchedulerData in await _reportSchedulerRepository.GetReportCreationSchedulerList())
-                //int cnt = 1;
-                //while (cnt == 1)
                 {
                     try
                     {
-                        //Generate Report as per report id / key
                         _reportCreator.SetParameters(reportSchedulerData);
-                        //_reportCreator.SetParameters("Trip Report", "lblTripReport");
-                        var pdf = await _reportCreator.GenerateReport();
-                        //Insert the pdf bytes into scheduledreport , with 
-                        // Calculate nect run
-
-                        //cnt += 1;
+                        var isCreated = await _reportCreator.GenerateReport();
+                        await AddAuditLog($"SchedulerId: {reportSchedulerData.Id}, IsSuccess: {isCreated}", isCreated ? AuditTrailEnum.Event_status.SUCCESS : AuditTrailEnum.Event_status.FAILED);
                     }
                     catch (Exception ex)
                     {
-
+                        await AddAuditLog($"SchedulerId: {reportSchedulerData.Id}, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED);
                     }
                 }
+                flag = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                await _auditLog.AddLogs(new AuditTrail
-                {
-                    Created_at = DateTime.Now,
-                    Performed_at = DateTime.Now,
-                    Performed_by = 2,
-                    Component_name = "Report Creation Scheduler",
-                    Service_name = "reportscheduler.CoreComponent",
-                    Event_type = AuditTrailEnum.Event_type.Mail,
-                    Event_status = AuditTrailEnum.Event_status.FAILED,
-                    Message = $"Report Created successfully",
-                    Sourceobject_id = 0,
-                    Targetobject_id = 0,
-                    Updated_data = "ReportCreationScheduler"
-                });
+                await AddAuditLog($"Failed to run, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED);
             }
+            return flag;
+        }
 
-            return 1;
+        private async Task AddAuditLog(string message, AuditTrailEnum.Event_status eventStatus)
+        {
+            await _auditLog.AddLogs(new AuditTrail
+            {
+                Created_at = DateTime.Now,
+                Performed_at = DateTime.Now,
+                Performed_by = 2,
+                Component_name = "Report Creation Scheduler",
+                Service_name = "reportscheduler.CoreComponent",
+                Event_type = AuditTrailEnum.Event_type.CREATE,
+                Event_status = eventStatus,
+                Message = message,
+                Sourceobject_id = 0,
+                Targetobject_id = 0,
+                Updated_data = "ReportCreationScheduler"
+            });
         }
     }
 }

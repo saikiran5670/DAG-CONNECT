@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             ReportTypeRequest objreporttype = new ReportTypeRequest();
             objreporttype.Id = reportType.Id;
             objreporttype.ReportName = string.IsNullOrEmpty(reportType.ReportName) ? string.Empty : reportType.ReportName;
-            //objreporttype.IsDriver = string.IsNullOrEmpty(reportType.Enum) ? string.Empty : reportType.Enum;           
+            objreporttype.IsDriver = reportType.ReportName == ReportSchedulerConstant.DRIVE_TIME_MANAGEMENT || reportType.ReportName == ReportSchedulerConstant.ECO_SCORE;
             return objreporttype;
         }
 

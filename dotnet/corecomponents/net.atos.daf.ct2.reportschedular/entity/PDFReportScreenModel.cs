@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int Id { get; set; }
         public int ScheduleReportId { get; set; }
         public byte[] Report { get; set; }
-        public string Token { get; set; }
+        public Guid Token { get; set; }
         public long DownloadedAt { get; set; }
         public long ValidTill { get; set; }
         public long CreatedAt { get; set; }
@@ -21,11 +21,9 @@ namespace net.atos.daf.ct2.reportscheduler.entity
     public class ReportPDFByidModel
     {
         public int Id { get; set; }
-        public int OrganizationId { get; set; }
     }
     public class ReportPDFBytokenModel
     {
         public string Token { get; set; }
-        public int OrganizationId { get; set; }
     }
 }

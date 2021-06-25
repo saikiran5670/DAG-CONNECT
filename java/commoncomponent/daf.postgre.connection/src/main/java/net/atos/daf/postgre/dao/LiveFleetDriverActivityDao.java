@@ -21,7 +21,8 @@ public class LiveFleetDriverActivityDao implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
 	/** SQL statement for insert. */
-	private static final String LIVEFLEET_DRIVER_INSERT = "INSERT INTO livefleet.livefleet_trip_driver_activity  (trip_id    , trip_start_time_stamp , trip_end_time_stamp   , activity_date,  vin   , driver_id     , code  , start_time    , end_time      , duration      , created_at_m2m        , created_at_kafka      , created_at_dm , modified_at   , last_processed_message_time_stamp ,is_driver1    ) VALUES ( ?, ?, ?, ?   , ?,?, ?, ?, ?, ?       , ?     , ?     , ?     , ? ,?    ,?)";
+	//private static final String LIVEFLEET_DRIVER_INSERT = "INSERT INTO livefleet.livefleet_trip_driver_activity  (trip_id    , trip_start_time_stamp , trip_end_time_stamp   , activity_date,  vin   , driver_id     , code  , start_time    , end_time      , duration      , created_at_m2m        , created_at_kafka      , created_at_dm , modified_at   , last_processed_message_time_stamp ,is_driver1    ) VALUES ( ?, ?, ?, ?   , ?,?, ?, ?, ?, ?       , ?     , ?     , ?     , ? ,?    ,?)";
+	private static final String LIVEFLEET_DRIVER_INSERT = "INSERT INTO livefleet.livefleet_trip_driver_activity  (trip_id    , trip_start_time_stamp , trip_end_time_stamp   , activity_date,  vin   , driver_id     , code  , start_time    , end_time      , duration      , created_at_m2m        , created_at_kafka      , created_at_dm , modified_at   , last_processed_message_time_stamp ,is_driver1 ,logical_code   ) VALUES ( ?, ?, ?, ?   , ?,?, ?, ?, ?, ?       , ?     , ?     , ?     , ? ,?    ,?, ?)";
 	private static final String LIVEFLEET_DRIVER_READ = "SELECT * FROM livefleet.livefleet_trip_driver_activity WHERE trip_start_time_stamp !=0 AND trip_id = ?";
 	private static final String DRIVER_ACTIVITY_READ = "select code,start_time from livefleet.livefleet_trip_driver_activity  where driver_id = ? order by id DESC limit 1";
 	private static final String DRIVER_ACTIVITY_UPDATE = "UPDATE livefleet.livefleet_trip_driver_activity  SET end_time = ?, duration = ?, modified_at = extract(epoch from now()) * 1000 WHERE driver_id IN ( SELECT driver_id FROM livefleet.livefleet_trip_driver_activity WHERE driver_id = ? ORDER BY id DESC LIMIT 1 ) AND id IN ( SELECT id FROM livefleet.livefleet_trip_driver_activity WHERE driver_id = ? ORDER BY id DESC LIMIT 1 )";
@@ -180,10 +181,21 @@ public class LiveFleetDriverActivityDao implements Serializable {
 		else
 			stmt_insert_driver_activity.setLong(6, DafConstants.DTM_NULL_VAL);
 
-		if (row.getCode() != null)
+		//TODO Temporary fix
+		/*if (row.getCode() != null)
 			stmt_insert_driver_activity.setString(7, row.getCode()); // 7-Working_state_code
 		else
+			stmt_insert_driver_activity.setString(7, "");*/
+		if (row.getCode() != null){
+			
+			if("2".equals(row.getCode()) && row.getTripId() != null)
+				stmt_insert_driver_activity.setString(7, "3"); // 7-Working_state_code
+			else
+				stmt_insert_driver_activity.setString(7, row.getCode());
+			
+		}else
 			stmt_insert_driver_activity.setString(7, "");
+		
 
 		if (row.getStartTime() != null) {
 			stmt_insert_driver_activity.setLong(8, row.getStartTime()); // 8-start_time
@@ -204,6 +216,9 @@ public class LiveFleetDriverActivityDao implements Serializable {
 		stmt_insert_driver_activity.setLong(14, Types.NULL); // 14-modified_at
 		stmt_insert_driver_activity.setLong(15, row.getLastProcessedMessageTimestamp()); // 15-last_processed_message_time
 		stmt_insert_driver_activity.setBoolean(16, row.getIsDriver1()); // 16-is_Driver_flag
+		
+		//TODO Temporary fix
+		stmt_insert_driver_activity.setString(17, row.getCode());
 
 		return stmt_insert_driver_activity;
 
