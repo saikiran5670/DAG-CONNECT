@@ -233,26 +233,16 @@ namespace net.atos.daf.ct2.accountpreference
                 var parameter = new DynamicParameters();
                 List<AccountPreference> entity = new List<AccountPreference>();
                 parameter.Add("@id", filter.Id);
-                var query = @"SELECT master.accountpreference.id,
-                                 master.accountpreference.type,
-       master.accountpreference.language_id,
-       master.accountpreference.timezone_id,
-       master.accountpreference.currency_id,
-       master.accountpreference.unit_id,
-       master.accountpreference.vehicle_display_id,
-       master.accountpreference.date_format_id,
-       master.accountpreference.time_format_id,
-       master.accountpreference.state,
-       master.accountpreference.landing_page_display_id,
-       master.icon.id as iconId,
-       master.icon.icon
-          FROM   master.accountpreference
-       INNER JOIN master.icon
-       ON icon.id = accountpreference.icon_id
-WHERE master.accountpreference.state = 'A'
-       AND master.accountpreference.id = @id
-ORDER BY 1 DESC
-LIMIT  1 ";
+                var query = @"SELECT ac.id,ac.type,ac.language_id,ac.timezone_id,ac.currency_id,ac.unit_id,ac.vehicle_display_id,
+                            ac.date_format_id,ac.time_format_id,ac.state,ac.landing_page_display_id,
+                            COALESCE(i.id,0) as iconId,i.icon
+                            FROM   master.accountpreference ac
+                            LEFT OUTER JOIN master.icon i
+                            ON i.id = ac.icon_id
+                            WHERE ac.state = 'A'
+                            AND ac.id = @id
+                            ORDER BY 1 DESC
+                            LIMIT  1 ";
                 // if (filter != null)
                 // {
                 //     // id filter
@@ -304,9 +294,11 @@ LIMIT  1 ";
             entity.TimeFormatId = record.time_format_id;
             entity.LandingPageDisplayId = record.landing_page_display_id;
             entity.IconId = record.iconid;
-            string base64String = Convert.ToBase64String(record.icon, 0, record.icon.Length);
-
-            entity.IconByte = Convert.ToBase64String(record.icon, 0, record.icon.Length);
+            if (record.icon != null && record.icon.Length > 0)
+            {
+                //string base64String = Convert.ToBase64String(record.icon, 0, record.icon.Length);
+                entity.IconByte = Convert.ToBase64String(record.icon, 0, record.icon.Length);
+            }
             //record.isActive = record.state;
             return entity;
         }

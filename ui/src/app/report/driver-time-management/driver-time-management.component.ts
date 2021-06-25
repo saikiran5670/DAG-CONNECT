@@ -457,19 +457,24 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   onVehicleGroupChange(event: any){
-    if(event.value || event.value == 0){
+    if(event.value){
       this.internalSelection = true; 
     this.driverTimeForm.get('vehicle').setValue(''); //- reset vehicle dropdown
     this.driverTimeForm.get('driver').setValue(''); //- reset vehicle dropdown
     this.driverListData = this.finalDriverList;
-    this.vehicleListData = this.finalVehicleList
+    this.vehicleListData = this.finalVehicleList;
+    //console.log(this.driverListData)
+    //console.log(this.vehicleListData)
+
+    
     if(parseInt(event.value) == 0){ //-- all group
       //.filter(i => i.vehicleGroupId != 0);
       this.driverTimeForm.get('vehicle').setValue(0);
       this.driverTimeForm.get('driver').setValue(0);
 
     }else{
-      this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+
+      this.vehicleListData = this.finalVehicleList.filter(i => i.vehicleGroupId == parseInt(event.value));
       // let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       // if(search.length > 0){
       //   this.vehicleDD = [];
@@ -489,8 +494,13 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   onVehicleChange(event: any){
-    let selectedVin = this.vehicleListData.filter(i=>i.vehicleId === parseInt(event.value))[0]['vin'];
-    this.driverListData = this.finalDriverList.filter(i => i.vin == selectedVin);
+    if(event.value==0){
+      this.driverListData = this.finalDriverList;
+    }else{
+      let selectedVin = this.vehicleListData.filter(i=>i.vehicleId === parseInt(event.value))[0]['vin'];
+      this.driverListData = this.finalDriverList.filter(i => i.vin == selectedVin);
+    }
+    
     
     this.searchFilterpersistData["vehicleDropDownValue"] = event.value;
     this.setGlobalSearchData(this.searchFilterpersistData)
@@ -869,7 +879,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     //   let filterVIN: any = this.onLoadData.vehicleDetailsWithAccountVisibiltyList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
 
     // }
-//     this.onLoadData = {"driverList": [{
+//     this.onLoadData = 
+//     {
+//       "driverList": [{
 //       "vin": "XLR0998HGFFT76638",
 //       "driverID": "PL 1821230147770000",
 //       "firstName": null,
@@ -8481,10 +8493,12 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         ////console.log("finalVINDataList:: ", finalVINDataList); 
       }
       this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-      this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0) ;
+      this.finalVehicleList = this.onLoadData.vehicleDetailsWithAccountVisibiltyList;
+     
+      this.vehicleListData = this.finalVehicleList;
+     // this.vehicleListData  = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0) ;
   //this.vehicleListData = this.vehicleListData.filter(i => (i.activityDateTime >= currentStartTime) && (i.activityDateTime <= currentEndTime));
        this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
-       this.finalVehicleList = this.vehicleListData;
     }
     }
     if(this.onLoadData.driverList.length > 0){
