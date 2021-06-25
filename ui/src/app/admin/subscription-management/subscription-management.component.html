@@ -99,7 +99,7 @@
                   <!-- <button mat-stroked-button color="primary" class='actionBtn' *ngIf="row.status == 'Expired' ? true : false ">
                      shop
                   </button>  -->
-                  <span  *ngIf="row.state == 'A'  "  (click)="onShopclick(row)">
+                  <span  *ngIf="row.state == 'A'|| row.subscriptionEndDate == '0'  "  (click)="onShopclick(row)">
                   <button mat-flat-button color="primary" type="button" class="actionBtn">
                     Shop
                   </button>

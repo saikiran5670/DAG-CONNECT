@@ -15,6 +15,7 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { ReportMapService } from '../report-map.service';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { OrganizationService } from '../../services/organization.service';
 
 @Component({
   selector: 'app-driver-time-management',
@@ -22,11 +23,8 @@ import 'jspdf-autotable';
   styleUrls: ['./driver-time-management.component.less']
 })
 export class DriverTimeManagementComponent implements OnInit, OnDestroy {
-
-  
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   selectionTab: any;
-
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   driverTimeForm: FormGroup;
@@ -237,7 +235,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   ];
   
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
-  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) { 
+  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private organizationService: OrganizationService) { 
     this.defaultTranslation()
   }
 
@@ -271,16 +269,45 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        this.prefTimeFormat = parseInt(prefData.timeformat.filter(i => i.id == this.accountPrefObj.accountPreference.timeFormatId)[0].value.split(" ")[0]);
-        this.prefTimeZone = prefData.timezone.filter(i => i.id == this.accountPrefObj.accountPreference.timezoneId)[0].value;
-        this.prefDateFormat = prefData.dateformat.filter(i => i.id == this.accountPrefObj.accountPreference.dateFormatTypeId)[0].name;
-        this.prefUnitFormat = prefData.unit.filter(i => i.id == this.accountPrefObj.accountPreference.unitId)[0].name;
-        this.setDefaultStartEndTime();
-        this.setPrefFormatDate();
-        this.setDefaultTodayDate();
-        this.getReportPreferences();
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        }else{ // org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
+        }
+        // this.prefTimeFormat = parseInt(prefData.timeformat.filter(i => i.id == this.accountPrefObj.accountPreference.timeFormatId)[0].value.split(" ")[0]);
+        // this.prefTimeZone = prefData.timezone.filter(i => i.id == this.accountPrefObj.accountPreference.timezoneId)[0].value;
+        // this.prefDateFormat = prefData.dateformat.filter(i => i.id == this.accountPrefObj.accountPreference.dateFormatTypeId)[0].name;
+        // this.prefUnitFormat = prefData.unit.filter(i => i.id == this.accountPrefObj.accountPreference.unitId)[0].name;
+        // this.setDefaultStartEndTime();
+        // this.setPrefFormatDate();
+        // this.setDefaultTodayDate();
+        // this.getReportPreferences();
       });
     });
+  }
+
+  proceedStep(prefData: any, preference: any){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefUnitFormat = prefData.unit[0].name;
+    }
+    this.setDefaultStartEndTime();
+    this.setPrefFormatDate();
+    this.setDefaultTodayDate();
+    this.getReportPreferences();
   }
 
   setPrefFormatTime(){
