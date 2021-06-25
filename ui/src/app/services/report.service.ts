@@ -78,7 +78,7 @@ export class ReportService {
     };
     return this.httpClient
       .post<any[]>(
-        `${this.reportServiceUrl}/driverTime/getdetails`, data, headers
+        `${this.reportServiceUrl}/drivetime/getdetails`, data, headers
       )
       .pipe(catchError(this.handleError));
   }
