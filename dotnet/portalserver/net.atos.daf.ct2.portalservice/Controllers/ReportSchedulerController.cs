@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -404,21 +405,30 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region GetPDFBinaryFormatByToken
+        [AllowAnonymous]
         [HttpGet]
         [Route("download")]
-        public async Task<IActionResult> GetPDFBinaryFormatByToken([FromQuery]ReportPDFByTokenRequest request)
+        public async Task<IActionResult> GetPDFBinaryFormatByToken([FromQuery] ReportPDFByTokenRequest request)
         {
             try
             {
-                request.OrganizationId = GetContextOrgId();
-                if (request.OrganizationId == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
-                //int roleid = AssignOrgContextByRoleId(0);
                 var data = await _reportschedulerClient.GetPDFBinaryFormatByTokenAsync(request);
-
                 if (data == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
                 if (data.Code == ResponseCode.Success)
-                    return Ok(data);
+                {
+                    if (data.Id > 0)
+                    {
+                        var pdfStreamResult = new MemoryStream();
+                        pdfStreamResult.Write(data.Report.ToByteArray(), 0, data.Report.Length);
+                        pdfStreamResult.Position = 0;
+                        return File(pdfStreamResult, "application/pdf", data.FileName);
+                    }
+                    else
+                    {
+                        return StatusCode((int)data.Code, data.Message);
+                    }
+                }
                 if (data.Code == ResponseCode.InternalServerError)
                     return StatusCode((int)data.Code, String.Format(ReportSchedulerConstants.REPORTSCHEDULER_PARAMETER_NOT_FOUND_MSG, data.Message));
                 return StatusCode((int)data.Code, data.Message);
@@ -438,15 +448,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region GetPDFBinaryFormatById
         [HttpGet]
         [Route("getpdf")]
-        public async Task<IActionResult> GetPDFBinaryFormatById([FromQuery]ReportPDFByTokenRequest request)
+        public async Task<IActionResult> GetPDFBinaryFormatById([FromQuery] ReportPDFByTokenRequest request)
         {
             try
             {
-                request.OrganizationId = GetContextOrgId();
-                if (request.OrganizationId == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
-                //int roleid = AssignOrgContextByRoleId(0);
                 var data = await _reportschedulerClient.GetPDFBinaryFormatByTokenAsync(request);
-
                 if (data == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
                 if (data.Code == ResponseCode.Success)

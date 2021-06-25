@@ -559,14 +559,6 @@ namespace net.atos.daf.ct2.translation.repository
                     {
                         // If warning data is already exist then update specific record 
                         int warningId = CheckDtcWarningClassExist(item.WarningClass, item.Number, item.Code);
-                        var iconID = GetIcocIDFromIcon(item.WarningClass, item.Number);
-
-                        if (iconID == 0)
-                        {
-                            item.Message = "violates foreign key constraint for Icon_ID";
-                            dtcwarningLists.Add(item);
-                            return dtcwarningList;
-                        }
 
                         var languageCode = _translationCoreMapper.MapDTCTLanguageCode(item.Code);
 
@@ -574,6 +566,14 @@ namespace net.atos.daf.ct2.translation.repository
                         if (warningId == 0)
                         {
                             // Insert
+                            var iconID = GetIcocIDFromIcon(item.WarningClass, item.Number);
+
+                            if (iconID == 0)
+                            {
+                                item.Message = "violates foreign key constraint for Icon_ID";
+                                dtcwarningLists.Add(item);
+                                return dtcwarningList;
+                            }
 
                             var insertWarningDataQueryStatement = @"INSERT INTO master.dtcwarning(
                                                               code, type, veh_type, class, number, description, advice, expires_at, icon_id, created_at, created_by)
@@ -607,28 +607,20 @@ namespace net.atos.daf.ct2.translation.repository
 
                             var updateWarningDataQueryStatement = @"UPDATE master.dtcwarning
                                                               SET code=@code, 
-                                                                  type=@type, 
-                                                                  veh_type=@veh_type,
                                                                   class=@class,
                                                                   number=@number, 
                                                                   description=@description, 
                                                                   advice=@advice,
-                                                                  expires_at=@expires_at,
-                                                                  icon_id=@icon_id,
                                                                   modified_at=@modified_at,
                                                                   modified_by=@modified_by
                                                            WHERE class = @class and number = @number and code =@code  RETURNING id";
 
                             var parameter = new DynamicParameters();
                             parameter.Add("@code", languageCode);
-                            parameter.Add("@type", item.Type);
-                            parameter.Add("@veh_type", item.VehType);
                             parameter.Add("@class", item.WarningClass);
                             parameter.Add("@number", item.Number);
                             parameter.Add("@description", item.Description);
                             parameter.Add("@advice", item.Advice);
-                            parameter.Add("@expires_at", item.ExpiresAt);
-                            parameter.Add("@icon_id", iconID);
                             parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                             parameter.Add("@modified_by", item.ModifyBy);
 

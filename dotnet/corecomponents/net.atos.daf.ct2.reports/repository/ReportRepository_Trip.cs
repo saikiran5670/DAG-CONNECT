@@ -37,10 +37,10 @@ namespace net.atos.daf.ct2.reports.repository
         /// <summary>
         /// Fetch Filtered trips along with Live Fleet Position
         /// </summary>
-        /// <param name="TripFilters"></param>
+        /// <param name="tripFilters"></param>
         /// <returns>List of Trips Data with LiveFleet attached under *LiveFleetPosition* property</returns>
-        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest TripFilters,
-                                                                    bool IsLiveFleetRequired = true)
+        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilters,
+                                                                    bool isLiveFleetRequired = true)
         {
             try
             {
@@ -75,17 +75,17 @@ namespace net.atos.daf.ct2.reports.repository
 		                        )";
 
                 var parameter = new DynamicParameters();
-                parameter.Add("@StartDateTime", TripFilters.StartDateTime);
-                parameter.Add("@EndDateTime", TripFilters.EndDateTime);
-                parameter.Add("@vin", TripFilters.VIN);
+                parameter.Add("@StartDateTime", tripFilters.StartDateTime);
+                parameter.Add("@EndDateTime", tripFilters.EndDateTime);
+                parameter.Add("@vin", tripFilters.VIN);
 
                 List<TripDetails> data = (List<TripDetails>)await _dataMartdataAccess.QueryAsync<TripDetails>(query, parameter);
-                if (data?.Count > 0 && IsLiveFleetRequired)
+                if (data?.Count > 0 && isLiveFleetRequired)
                 {
 
                     // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
-                    string[] TripIds = data.Select(item => item.TripId).ToArray();
-                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(TripIds);
+                    string[] tripIds = data.Select(item => item.TripId).ToArray();
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
                     if (lstLiveFleetPosition.Count > 0)
                         foreach (TripDetails trip in data)
                         {
@@ -98,8 +98,8 @@ namespace net.atos.daf.ct2.reports.repository
                         await GetLiveFleetPosition(item);
                     }
                     */
-                    lstTripEntityResponce = data.ToList();
                 }
+                lstTripEntityResponce = data;
                 return lstTripEntityResponce;
             }
             catch (Exception)

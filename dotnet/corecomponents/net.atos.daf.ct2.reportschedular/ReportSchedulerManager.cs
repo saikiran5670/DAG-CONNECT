@@ -57,13 +57,17 @@ namespace net.atos.daf.ct2.reportscheduler
             return await _reportSchedulerRepository.ManipulateReportSchedular(objReportStatusUpdateDeleteModel);
         }
 
-        public async Task<List<PDFReportScreenModel>> GetPDFBinaryFormatById(ReportPDFByidModel request)
+        public async Task<PDFReportScreenModel> GetPDFBinaryFormatById(ReportPDFByidModel request)
         {
             return await _reportSchedulerRepository.GetPDFBinaryFormatById(request);
         }
-        public async Task<List<PDFReportScreenModel>> GetPDFBinaryFormatByToken(ReportPDFBytokenModel request)
+        public async Task<PDFReportScreenModel> GetPDFBinaryFormatByToken(ReportPDFBytokenModel request)
         {
             return await _reportSchedulerRepository.GetPDFBinaryFormatByToken(request);
+        }
+        public async Task<string> UpdatePDFBinaryRecordByToken(string token)
+        {
+            return await _reportSchedulerRepository.UpdatePDFBinaryRecordByToken(token);
         }
     }
 }

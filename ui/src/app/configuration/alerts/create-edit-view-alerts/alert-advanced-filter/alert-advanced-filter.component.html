@@ -348,6 +348,10 @@
                   <mat-header-cell *matHeaderCellDef mat-sort-header>Sub-Category</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.subCategoryName }}</mat-cell>
                 </ng-container>
+                <ng-container matColumnDef="address">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.address }}, {{ row.city }}, {{ row.country }}</mat-cell>
+                </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumnsGeofence"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumnsGeofence;">
                 </mat-row>
@@ -386,7 +390,7 @@
               <mat-table matTableExporter [dataSource]="groupDataSource" matSort>
                 <ng-container matColumnDef="select">
                   <mat-header-cell *matHeaderCellDef>
-                    <mat-checkbox (change)='$event ? masterToggleForGroup() : null;'
+                    <mat-checkbox (change)='$event ? masterToggleForGroup($event) : null;'
                       [checked]='selectedGroup.hasValue() && isAllSelectedForGroup()'
                       [indeterminate]='selectedGroup.hasValue() && !isAllSelectedForGroup()'
                       [aria-label]='checkboxLabelForGroup()'>

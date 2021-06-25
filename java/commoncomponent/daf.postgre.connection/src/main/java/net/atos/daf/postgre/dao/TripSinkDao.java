@@ -251,7 +251,11 @@ public class TripSinkDao implements Serializable {
 		else
 			statement.setDouble(40, 0);
 
-		statement.setString(41, rec.getDriverId());
+		if(rec.getDriverId() != null)
+			statement.setString(41, rec.getDriverId());
+		else
+			statement.setString(41, DafConstants.UNKNOWN);
+		
 		statement.setString(42, rec.getDriver2Id());
 
 		if (rec.getTripCalGpsVehTime() != null)

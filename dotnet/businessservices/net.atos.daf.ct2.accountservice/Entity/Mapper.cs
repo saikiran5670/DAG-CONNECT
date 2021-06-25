@@ -161,7 +161,8 @@ namespace net.atos.daf.ct2.accountservice
             request.TimeFormatId = entity.TimeFormatId;
             request.LandingPageDisplayId = entity.LandingPageDisplayId;
             request.IconId = entity.IconId;
-            request.IconByte = entity.IconByte;
+            if (entity.IconByte != null && entity.IconByte.Length > 0)
+                request.IconByte = entity.IconByte;
             return request;
         }
         // group mapping
