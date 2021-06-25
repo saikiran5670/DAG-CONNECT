@@ -1,5 +1,5 @@
 <!-- trip report tab -->
-<div fxLayout="row" class='areaWidth full-width padding-10 tripReportPref' fxLayoutAlign="left center"
+<div *ngIf='initData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 tripReportPref' fxLayoutAlign="left center"
     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForColumns() : null'
@@ -11,7 +11,7 @@
         </mat-checkbox>
     </div>
 </div>
-<div fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+<div *ngIf='initData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
     <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
@@ -152,13 +152,13 @@
 </div>
 
 <!-- error msg -->
-<div fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start" *ngIf="editFlag && reqField">
+<div *ngIf='initData.length > 0 && editFlag && reqField' fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start">
     <span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN,
         Registration Number' }}</span>
 </div>
 
 <!-- buttons -->
-<div fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end" *ngIf="editFlag">
+<div *ngIf='initData.length > 0 && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
     <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
         translationData.lblCancel || 'Cancel' }}</button>
     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
