@@ -198,14 +198,7 @@ message ReportPDFResponse {
  int32 Id = 1;
  int32 ScheduleReportId = 2;
  bytes Report = 3;
- string Token = 4;
- int64 DownloadedAt = 5;
- int64 ValidTill = 6;
- int64 CreatedAt = 7;
- int64 StartDate = 8;
- int64 EndDate = 9;
- int32 IsMailSend = 10;
- string FileName = 11;
+ string FileName = 4;
 }
 
 message ReportPDFListResponse{
