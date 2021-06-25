@@ -400,10 +400,11 @@ export class OrganisationRelationshipComponent implements OnInit {
 
   deleteOrgRelationship(){
     let relList: any = '';
-    let relId = 
-    { 
-      id: this.selectedOrgRelations.selected.map(item=>item.id)
-    }
+    let relId = this.selectedOrgRelations.selected.map(item=>item.id);
+    // let relId = 
+    // { 
+    //   id: this.selectedOrgRelations.selected.map(item=>item.id)
+    // }
     const options = {
       title: this.translationData.lblDelete || 'Delete',
       message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Do you want to end  '$' relationship?",
@@ -433,7 +434,7 @@ export class OrganisationRelationshipComponent implements OnInit {
 
   getDeletMsg(relationshipName: any){
     if(this.translationData.lblRelationshipwassuccessfullydeleted)
-      return this.translationData.lblRelationshipDelete.replace('$', relationshipName);
+      return this.translationData.lblRelationshipwassuccessfullydeleted.replace('$', relationshipName);
     else
       return ("Relationship '$' was successfully deleted").replace('$', relationshipName);
   }
