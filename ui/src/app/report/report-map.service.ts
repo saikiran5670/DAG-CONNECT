@@ -32,10 +32,11 @@ export class ReportMapService {
     });
    }
 
+   defaultLayers : any;
   initMap(mapElement: any){
-    let defaultLayers = this.platform.createDefaultLayers();
+    this.defaultLayers = this.platform.createDefaultLayers();
     this.hereMap = new H.Map(mapElement.nativeElement,
-      defaultLayers.raster.normal.map, {
+      this.defaultLayers.raster.normal.map, {
       center: { lat: 51.43175839453286, lng: 5.519981221425336 },
       //center:{lat:41.881944, lng:-87.627778},
       zoom: 4,
@@ -43,7 +44,7 @@ export class ReportMapService {
     });
     window.addEventListener('resize', () => this.hereMap.getViewPort().resize());
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
-    this.ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
+    this.ui = H.ui.UI.createDefault(this.hereMap, this.defaultLayers);
     var group = new H.map.Group();
     this.mapGroup = group;
 
@@ -51,18 +52,18 @@ export class ReportMapService {
     // create custom one
     var ms = new H.ui.MapSettingsControl( {
         baseLayers : [ { 
-          label:"normal",layer:defaultLayers.raster.normal.map
+          label:"normal",layer:this.defaultLayers.raster.normal.map
         },{
-          label:"satellite",layer:defaultLayers.raster.satellite.map
+          label:"satellite",layer:this.defaultLayers.raster.satellite.map
         }, {
-          label:"terrain",layer:defaultLayers.raster.terrain.map
+          label:"terrain",layer:this.defaultLayers.raster.terrain.map
         }
         ],
       layers : [{
-            label: "layer.traffic", layer: defaultLayers.vector.normal.traffic
+            label: "layer.traffic", layer: this.defaultLayers.vector.normal.traffic
         },
         {
-            label: "layer.incidents", layer: defaultLayers.vector.normal.trafficincidents
+            label: "layer.incidents", layer: this.defaultLayers.vector.normal.trafficincidents
         }
     ]
       });
@@ -78,6 +79,38 @@ export class ReportMapService {
 
   getUI(){
     return this.ui;
+  }
+
+  getPOIS(){
+    //let hexString = (35).toString(16);
+    let tileProvider = new H.map.provider.ImageTileProvider({
+      // We have tiles only for zoom levels 12â€“15,
+      // so on all other zoom levels only base map will be visible
+      min: 0,
+      max: 26,
+      opacity: 0.5,
+      getURL: function (column, row, zoom) {
+          return `https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/${zoom}/${column}/${row}/256/png8?apiKey=BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw&pois`;
+        }
+    });
+    var overlayLayer = new H.map.layer.TileLayer(tileProvider, {
+      // Let's make it semi-transparent
+      //opacity: 0.5
+    });
+    this.hereMap.addLayer(overlayLayer);
+  
+   // let poi = this.platform.createDefaultLayers({pois:true});
+    //     let routeURL = 'https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/11/525/761/256/png8?apiKey=BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw&pois';
+      
+    // var normalLayer = this.platform.getMapTileService({type: 'base'}).createTileLayer(
+    //   routeURL
+    // );   
+   // this.hereMap.addLayer(poi.raster.normal.map);
+
+    // this.hereSerive.getHerePois().subscribe(data=>{
+    //   console.log(data)
+    // });
+   
   }
 
   viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any){
