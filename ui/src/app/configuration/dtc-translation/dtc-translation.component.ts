@@ -139,8 +139,14 @@ export class DtcTranslationComponent implements OnInit {
       }, (error) => {
         this.serverError = true;
         if(error.status == 400){
+          if(error.error.title== "One or more validation errors occurred.")
+          {
+            this.errorMsg = this.translationData.lblImportingViolationError || 'The "Warning Language" field is required for each row of data'
+          }
+          else{
           this.errorMsg = this.translationData.lblImportingViolationError || 'Violates foreign key constraint for Icon_ID, Please enter valid data for Warning_Class and Warning_Number';
-        }else{
+        }
+      }else{
           this.errorMsg = this.translationData.lblImportingError || 'Importing Error';
         }
       });

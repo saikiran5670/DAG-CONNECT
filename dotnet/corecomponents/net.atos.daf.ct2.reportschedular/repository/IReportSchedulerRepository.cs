@@ -26,7 +26,9 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         Task<VehicleList> GetVehicleListForSingle(int reprotSchedulerId);
         Task<ReportLogo> GetReportLogo(int accountId);
         Task<IEnumerable<UserTimeZone>> GetUserTimeZone();
-
+        Task<IEnumerable<UserDateFormat>> GetUserDateFormat();
+        Task<IEnumerable<UserTimeFormat>> GetUserTimeFormat();
+        Task<int> InsertReportPDF(ScheduledReport scheduledReport);
         #endregion
 
         Task<int> SendReportEmail();

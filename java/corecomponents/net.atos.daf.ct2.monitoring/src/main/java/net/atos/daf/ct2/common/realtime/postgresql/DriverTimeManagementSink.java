@@ -166,7 +166,10 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 	public DriverActivityPojo DriverActivityCalculation(Monitor row, DriverActivityPojo DriverActivity,
 			boolean driverIdentification) {
 
-		DriverActivity.setTripId(null);
+		//TODO Temporary fix
+		//DriverActivity.setTripId(null);
+		DriverActivity.setTripId(row.getDocument().getTripID());
+		
 		DriverActivity.setVid(row.getVid());
 		//DriverActivity.setVin(null);
 		//DriverActivity.setTripStartTimeStamp(Types);

@@ -11,16 +11,16 @@ namespace net.atos.daf.ct2.reportscheduler.helper
 {
     public static class TimeZoneHelper
     {
-        public static DateTime GetDateTimeFromUTC(long utcDate, string timeZone)
+        public static string GetDateTimeFromUTC(long utcDate, string timeZone, string datetimeFormat)
         {
             try
             {
-                return Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(utcDate, timeZone, "yyyy-MM-ddTHH:mm:ss"));
+                return UTCHandling.GetConvertedDateTimeFromUTC(utcDate, timeZone, datetimeFormat);
             }
             catch (Exception)
             {
-                return Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(utcDate, "UTC", "yyyy-MM-ddTHH:mm:ss"));
-            }            
+                return UTCHandling.GetConvertedDateTimeFromUTC(utcDate, "UTC", datetimeFormat);
+            }
         }
     }
 
@@ -28,19 +28,18 @@ namespace net.atos.daf.ct2.reportscheduler.helper
     {
         private static TimeZoneSingleton _instance;
         private static IEnumerable<UserTimeZone> _userTimeZone;
-        private static Object root;
+        private static readonly Object _root = new object();
         private TimeZoneSingleton()
         {
-
         }
 
         public static TimeZoneSingleton GetInstance(IReportSchedulerRepository reportSchedularRepository)
         {
-            lock (root)
+            lock (_root)
             {
                 if (_instance == null)
                 {
-                    _userTimeZone =  reportSchedularRepository.GetUserTimeZone().Result;
+                    _userTimeZone = reportSchedularRepository.GetUserTimeZone().Result;
                     _instance = new TimeZoneSingleton();
                 }
             }
@@ -49,7 +48,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
 
         public string GetTimeZoneName(int timezoneId)
         {
-            return _userTimeZone.Where(w => w.Id == timezoneId).FirstOrDefault().Name ?? "UTC";
+            return _userTimeZone.Where(w => w.Id == timezoneId).FirstOrDefault()?.Name ?? "UTC";
         }
 
     }

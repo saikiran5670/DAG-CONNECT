@@ -8,6 +8,8 @@ using net.atos.daf.ct2.account.report;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.repository;
+using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.visibility;
 
 namespace net.atos.daf.ct2.reportscheduler.report
 {
@@ -16,46 +18,50 @@ namespace net.atos.daf.ct2.reportscheduler.report
         private readonly IConverter _generatePdf;
         private readonly IReportManager _reportManager;
         private readonly IReportSchedulerRepository _reportSchedularRepository;
+        private readonly IVisibilityManager _visibilityManager;
 
         public string ReportName { get; private set; }
         public string ReportKey { get; private set; }
         public IReport Report { get; private set; }
+        public bool IsAllParameterSet { get; private set; } = false;
         public ReportCreationScheduler ReportSchedulerData { get; private set; }
 
-
-
         public ReportCreator(IConverter generatePdf, IReportManager reportManager,
-                             IReportSchedulerRepository reportSchedularRepository)
+                             IReportSchedulerRepository reportSchedularRepository,
+                             IVisibilityManager visibilityManager)
         {
             _generatePdf = generatePdf;
             _reportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
+            _visibilityManager = visibilityManager;
         }
 
         public void SetParameters(ReportCreationScheduler reportSchedulerData)
         {
             ReportSchedulerData = reportSchedulerData;
             ReportName = reportSchedulerData.ReportName;
-            ReportKey = reportSchedulerData.ReportKey;
-            Report = InitializeReport(reportSchedulerData.ReportKey);
+            ReportKey = reportSchedulerData.ReportKey = reportSchedulerData.ReportKey?.Trim();
+            Report = InitializeReport(ReportKey);
+            IsAllParameterSet = true;
         }
 
         private IReport InitializeReport(string reportKey) =>
         reportKey switch
         {
-            "lblTripReport" => new TripReport(_reportManager,_reportSchedularRepository),
-            "lblTripTracing" => null,
+            ReportNameConstants.REPORT_TRIP => new TripReport(_reportManager, _reportSchedularRepository, _visibilityManager),
+            ReportNameConstants.REPORT_TRIP_TRACING => null,
             _ => throw new ArgumentException(message: "invalid Report Key value", paramName: nameof(reportKey)),
         };
 
-        public async Task<byte[]> GenerateReport()
+        public async Task<bool> GenerateReport()
         {
+            if (!IsAllParameterSet) throw new Exception("Report Creation all Parameters are not set.");
             var globalSettings = new GlobalSettings
             {
                 ColorMode = ColorMode.Color,
-                Orientation = Orientation.Portrait,
+                Orientation = Orientation.Landscape,
                 PaperSize = PaperKind.A4,
-                Margins = new MarginSettings { Top = 10, Bottom = 10 },
+                Margins = new MarginSettings { Top = 10 },
                 //DocumentTitle = "PDF Report"//,
                 //Out = @"C:\Harneet\POC\Employee_Report5.pdf"
             };
@@ -65,9 +71,9 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 PagesCount = true,
                 HtmlContent = await GenerateTemplate(),
                 //Page = "https://code-maze.com/", //USE THIS PROPERTY TO GENERATE PDF CONTENT FROM AN HTML PAGE
-                WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "Chart.min.js") },
-                //HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
-                //FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = "Report Footer" }
+                WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css") },
+                HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
+                FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = "Report Footer", Spacing = 0 }
             };
 
             var pdf = new HtmlToPdfDocument()
@@ -75,29 +81,35 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 GlobalSettings = globalSettings,
                 Objects = { objectSettings }
             };
-            return _generatePdf.Convert(pdf);
+
+            return await _reportSchedularRepository
+                            .InsertReportPDF(new ScheduledReport
+                            {
+                                Report = _generatePdf.Convert(pdf),
+                                ScheduleReportId = ReportSchedulerData.Id,
+                                StartDate = ReportSchedulerData.StartDate,
+                                EndDate = ReportSchedulerData.EndDate,
+                                Token = Guid.NewGuid(),
+                                FileName = $"{ReportSchedulerData.ReportName}_{DateTime.Now.ToString("ddMMyyyyHHmmss")}",
+                                CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now),
+                                ValidTill = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(3)),
+                                IsMailSend = false
+                            }) > 0;
         }
 
         private async Task<string> GenerateTemplate()
         {
-            Byte[] bytes = File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), "assets", "DAFLogo.png"));
-            String logoPath = Convert.ToBase64String(bytes);
-            string scriptPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "Chart.min.js");
+            await Report.SetParameters(ReportSchedulerData);
+            byte[] logoBytes = await Report.GetLogoImage();
             StringBuilder html = new StringBuilder();
-            html.Append("<html><head>");
-            //html.AppendFormat("<script src='{0}' ></script>", scriptPath);
-            html.Append("<script > 	Function.prototype.bind = Function.prototype.bind || function (thisp) {var fn = this;return function () {return fn.apply(thisp, arguments);};};</script>");
-            html.Append("<style>body{font-family: -apple-system,BlinkMacSystemFont,'Segoe UI'}.header img {  float: left;  width: 150px;  height: 100px;  background: #555;}.header h1 {  position: relative;  top: 18px;  left: 10px;}table {font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Liberation Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji',Helvetica Neue LT Std-Md;border-collapse: collapse;width: 100%;}td, th { border-bottom-width: 1px solid Red;text-align: left;padding: 8px; }tr:nth-child(odd) {background-color: #ecf7fe; padding: 8px; margin: 15px;}tr:nth-child(even) {background-color: #ffff; padding: 8px; margin: 15px;}tr:{min-height: 45px!important;align-items: center; padding: 8px; margin: 15px;}}</style></head><body>");
-            html.Append("</head ><body>");
-            html.Append("</br>");
-            html.AppendFormat("<span><img src='data:image/gif;base64,{0}' /><div><span style='text-align: center;'><h1>{1}</h1></span>", logoPath, ReportName);
-            html.Append("</br>");
-            html.Append(await Report.GenerateSummary());
-            html.Append("</br>");
-            html.Append(await Report.GenerateTable());
-            //html.Append("<canvas id='myChart' style='width:100%;max-width:600px'></canvas>");
-            //html.Append("<script>var xValues = ['Italy', 'France', 'Spain', 'USA', 'Argentina']; var yValues = [55, 49, 44, 24, 15]; var barColors = ['red', 'green','blue','orange','brown']; new Chart('myChart', {type: 'bar',data: {labels: xValues, datasets: [{backgroundColor: barColors, data: yValues}]  },  options: { legend: {display: false}, title: { display: true, text: 'World Wine Production 2018'} } }); </script>");
-            html.Append("</body></html>");
+
+            html.AppendFormat(ReportTemplate.REPORT_TEMPLATE
+                              , logoBytes != null ? Convert.ToBase64String(logoBytes)
+                                                : Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), "assets", "DAFLogo.png")))
+                              , ReportName
+                              , await Report.GenerateSummary()
+                              , await Report.GenerateTable()
+                );
             return html.ToString();
         }
     }

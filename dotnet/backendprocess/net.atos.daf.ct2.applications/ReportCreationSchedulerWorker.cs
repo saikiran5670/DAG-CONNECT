@@ -43,33 +43,35 @@ namespace net.atos.daf.ct2.applications
             try
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-
-                var temp = _reportCreationSchedulerManager.GenerateReport();
-
-
-                await _auditlog.AddLogs(new AuditTrail
-                {
-                    Created_at = DateTime.Now,
-                    Performed_at = DateTime.Now,
-                    Performed_by = 2,
-                    Component_name = "Report Scheduler",
-                    Service_name = "Backend Process",
-                    Event_type = AuditTrailEnum.Event_type.Mail,
-                    Event_status = AuditTrailEnum.Event_status.SUCCESS,
-                    Message = $"Email send process run successfully",
-                    Sourceobject_id = 0,
-                    Targetobject_id = 0,
-                    Updated_data = "Report Scheduler"
-                });
+                var isSuccess = await _reportCreationSchedulerManager.GenerateReport();
+                await AddAuditLog(isSuccess ? "Process ran successfully" : "Proccess ran failed, For more details, please check audit logs.", isSuccess ? AuditTrailEnum.Event_status.SUCCESS : AuditTrailEnum.Event_status.FAILED);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                await AddAuditLog($"Failed to run, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED);
             }
             finally
             {
                 _hostApplicationLifetime.StopApplication();
             }
+        }
+
+        private async Task AddAuditLog(string message, AuditTrailEnum.Event_status eventStatus)
+        {
+            await _auditlog.AddLogs(new AuditTrail
+            {
+                Created_at = DateTime.Now,
+                Performed_at = DateTime.Now,
+                Performed_by = 2,
+                Component_name = "Report Creation Scheduler",
+                Service_name = "Backend Process",
+                Event_type = AuditTrailEnum.Event_type.CREATE,
+                Event_status = eventStatus,
+                Message = message,
+                Sourceobject_id = 0,
+                Targetobject_id = 0,
+                Updated_data = "ReportCreationScheduler"
+            });
         }
     }
 }
