@@ -186,7 +186,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                         foreach (var item in driverList)
                         {
                             driverref.ScheduleReportId = report.Id;
-                            driverref.DriverId = Convert.ToInt32(item.DriverId);
+                            driverref.DriverId = Convert.ToInt32(item.Id);
                             int scheduledrid = await Createscheduledreportdriverref(driverref);
                         }
                     }
@@ -459,7 +459,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                         foreach (var item in driverList)
                         {
                             driverref.ScheduleReportId = report.Id;
-                            driverref.DriverId = Convert.ToInt32(item.DriverId);
+                            driverref.DriverId = Convert.ToInt32(item.Id);
                             driverref.ModifiedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                             int scheduledrid = await Createscheduledreportdriverref(driverref);
                         }
@@ -475,7 +475,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 
                 transactionScope.Commit();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 transactionScope.Rollback();
                 throw;

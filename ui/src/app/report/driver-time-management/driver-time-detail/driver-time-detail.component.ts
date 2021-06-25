@@ -130,6 +130,22 @@ console.log(this.driverDetails)
           },
         ],
       },
+      plugins: {
+        zoom: {
+            pan: {
+                enabled: true,
+                mode: 'x',
+                threshold: 10
+            },
+            zoom: {
+                enabled: true,
+                mode: 'x',
+                limits: {
+                  x: {min: 0, max: 24},
+                },
+            }
+        }
+    }
     };
 
     
