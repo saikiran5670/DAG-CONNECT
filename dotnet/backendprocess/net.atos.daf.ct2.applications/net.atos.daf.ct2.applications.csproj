@@ -48,6 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.visibility\net.atos.daf.ct2.visibility.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.account\net.atos.daf.ct2.account.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.reportschedular\net.atos.daf.ct2.reportscheduler.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.reports\net.atos.daf.ct2.reports.csproj" />

@@ -15,15 +15,13 @@ namespace net.atos.daf.ct2.reportscheduler
     public partial class ReportSchedulerManager : IReportSchedulerManager
     {
         private readonly IReportSchedulerRepository _reportSchedulerRepository;
-        private readonly IAccountManager _accountManager;
         private readonly EmailConfiguration _emailConfiguration;
         private readonly IConfiguration _configuration;
         readonly IAuditTraillib _auditlog;
-        public ReportSchedulerManager(IReportSchedulerRepository reportSchedularRepository, IAuditTraillib auditlog, IAccountManager accountManager, IConfiguration configuration)
+        public ReportSchedulerManager(IReportSchedulerRepository reportSchedularRepository, IAuditTraillib auditlog, IConfiguration configuration)
         {
             _reportSchedulerRepository = reportSchedularRepository;
             this._auditlog = auditlog;
-            _accountManager = accountManager;
             this._configuration = configuration;
             _emailConfiguration = new EmailConfiguration();
             configuration.GetSection("EmailConfiguration").Bind(_emailConfiguration);
