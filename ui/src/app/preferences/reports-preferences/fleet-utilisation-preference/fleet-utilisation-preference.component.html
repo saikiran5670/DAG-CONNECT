@@ -241,7 +241,7 @@
                 </mat-select>
             </mat-form-field>
         </div>
-        <div fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+        <div *ngIf='slideStateData.dataAtrributeId' fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
             <mat-label style="margin-bottom: 8px !important;">{{ translationData.lblViewcalenderviewmode || 'View
                 calender view mode' }}</mat-label>
             <span>
