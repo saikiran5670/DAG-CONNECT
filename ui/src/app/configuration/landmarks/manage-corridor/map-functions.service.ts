@@ -105,6 +105,7 @@ export class MapFunctionsService {
     this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
     this.transportOnceChecked = false;
     this.trafficOnceChecked = false;
+    this.ui.getBubbles().forEach(bub =>this.ui.removeBubble(bub));
   }
 
   group = new H.map.Group();
@@ -196,8 +197,10 @@ export class MapFunctionsService {
           // show info bubble
           this.ui.addBubble(bubble);
         }, false);
-        this.endMarker.addEventListener('pointerleave', function(evt) {
+        this.endMarker.addEventListener('pointerleave', (evt)=> {
+          this.ui.removeBubble(bubble);
           bubble.close();
+          bubble.dispose();
         }, false);
         //this.group.addObjects([this.startMarker, this.endMarker]);
         if (accountOrganizationId) {
@@ -228,7 +231,7 @@ export class MapFunctionsService {
           this.calculateTruckRoute();
 
         }
-        //this.addInfoBubble(this.group);
+        //this.removeBubble();
 
         // this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
         // let successRoute = this.calculateAB('view');
@@ -237,6 +240,12 @@ export class MapFunctionsService {
     }
   }
 
+  removeBubble(){
+    this.hereMap.addEventListener('tap', (evt) => {
+    this.ui.getBubbles().forEach(bub =>this.ui.removeBubble(bub));
+
+    })
+  }
   viaAddressPositionLat;
   viaAddressPositionLong;
   viaMarker: any;

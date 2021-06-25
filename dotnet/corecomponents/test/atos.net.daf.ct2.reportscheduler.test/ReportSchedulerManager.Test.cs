@@ -77,5 +77,40 @@ namespace atos.net.daf.ct2.reportscheduler.test
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
         }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for manipulate report scheduler")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task Unt_ReportSchedular_ManipulateReportSchedular()
+        {
+            ReportStatusUpdateDeleteModel reportStatusUpdateDeleteModel = new ReportStatusUpdateDeleteModel();
+            var result = await _reportSchedulerManager.ManipulateReportSchedular(reportStatusUpdateDeleteModel);
+            Assert.IsNotNull(result);
+
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get PDFBinary Format By Id")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+
+        public async Task Unt_ReportSchedular_GetPDFBinaryFormatById()
+        {
+            ReportPDFByidModel reportPDFByidModel = new ReportPDFByidModel();
+            var result = await _reportSchedulerManager.GetPDFBinaryFormatById(reportPDFByidModel);
+            Assert.IsNotNull(result);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get PDFBinary format by Token")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task Unt()
+        {
+            ReportPDFBytokenModel reportPDFBytokenModel = new ReportPDFBytokenModel();
+            var result = await _reportSchedulerManager.GetPDFBinaryFormatByToken(reportPDFBytokenModel);
+            Assert.IsNotNull(result);
+        }
     }
 }
