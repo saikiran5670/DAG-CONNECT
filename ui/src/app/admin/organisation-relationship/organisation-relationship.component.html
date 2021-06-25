@@ -32,13 +32,13 @@
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
             <div class='areaWidth min-width-10-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <mat-form-field appearance="outline">
-                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                  <input matInput [formControl]="searchFilter" placeholder="{{ translationData.lblSearch || 'Search' }}">
                   <span matPrefix><mat-icon>search</mat-icon></span>
               </mat-form-field>
             </div>
             <div class="areaWidth min-width-5-per" fxLayoutGap="2px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline" class="full-width" >   
-                      <mat-select placeholder="Relationship" (selectionChange)="applyFilterOnRelationship($event.value)">
+                      <mat-select placeholder="Relationship"  [formControl]="relationFilter">
                         <mat-option value="allRelations">All</mat-option>
                         <mat-option  *ngFor="let options of relationshipList" [value]="options.relationId">
                           {{options.relationName}}
@@ -48,7 +48,7 @@
               </div>
               <div class="areaWidth min-width-5-per"  fxLayoutAlign="left">
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-select placeholder="Vehicle Group" (selectionChange)="applyFilterOnVehicle($event.value)">
+                  <mat-select placeholder="Vehicle Group"  [formControl]="vehicleGrpFilter">
                     <!-- <mat-option *ngFor="let options of relationshipList" [value]="options.id"> -->
                       <mat-option value="allVehicle">All</mat-option>
                       <mat-option *ngFor="let options of vehicleList" [value]="options.vehiclegroupID">
@@ -59,7 +59,7 @@
               </div>
               <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-select placeholder="Organisation" (selectionChange)="applyFilterOnOrganisation($event.value)">
+                  <mat-select placeholder="Organisation"  [formControl]="orgFilter">
                     <mat-option value="allOrg">All</mat-option>
                     <mat-option *ngFor="let options of organizationList" [value]="options.organizationId">
                       {{options.organizationName}}
@@ -69,7 +69,7 @@
               </div>
               <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-select placeholder="All Type" (selectionChange)="applyFilterOnType($event.value)">
+                  <mat-select placeholder="All Type"  [formControl]="typeFilter">
                     <mat-option value="all">All</mat-option>
                     <mat-option *ngFor="let options of allTypes" [value]="options.name">
                         {{options.name}}
