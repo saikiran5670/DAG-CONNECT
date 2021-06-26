@@ -297,19 +297,23 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     foreach (var item in response.ReportSchedulerRequest)
                     {
-                        foreach (var vehicle in item.ScheduledReportVehicleRef)
+                        if (item.ScheduledReportVehicleRef.Any())
                         {
-                            if (vehicle.VehicleGroupId > 0 && vehicle.VehicleGroupType != "S")
+                            foreach (var vehicle in item.ScheduledReportVehicleRef)
                             {
-                                VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
-                                vehicleRequest.VehicleGroupId = vehicle.VehicleGroupId;
-                                vehicleRequest.GroupType = vehicle.VehicleGroupType;
-                                vehicleRequest.FunctionEnum = vehicle.FunctionEnum;
-                                vehicleRequest.OrgnizationId = orgnizationid;
-                                VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
-                                vehicle.VehicleCount = vehicleResponse.VehicleCount;
+                                if (vehicle.VehicleGroupId > 0 && vehicle.VehicleGroupType != "S")
+                                {
+                                    VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
+                                    vehicleRequest.VehicleGroupId = vehicle.VehicleGroupId;
+                                    vehicleRequest.GroupType = vehicle.VehicleGroupType;
+                                    vehicleRequest.FunctionEnum = vehicle.FunctionEnum;
+                                    vehicleRequest.OrgnizationId = orgnizationid;
+                                    VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
+                                    vehicle.VehicleCount = vehicleResponse.VehicleCount;
+                                }
                             }
                         }
+
                     }
                 }
 
