@@ -18,7 +18,6 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple8;
 import org.apache.flink.api.java.tuple.Tuple9;
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.table.api.Table;
@@ -94,10 +93,6 @@ public class TripAggregations implements Serializable{
 		//tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination,vDist, previousVdist, increment, formula for avgWt
 		DataStream<Tuple9<String, String, String, Integer, Double, Long, Long, Long, Double>> grossWtCombData = getGrossWtCombData(firstLevelAggrData, timeInMilli);
 		
-		//only for testing remove this ******************
-		indxData.writeAsText("/home/flinkhuser/TestindexDataBfrAggregation.txt", FileSystem.WriteMode.OVERWRITE)
-					.name("writeIndexDataToFile");
-				
 		tableEnv.createTemporaryView("grossWtCombData", grossWtCombData);
 		
 		Table indxTblAggrResult = tableEnv.sqlQuery(ETLQueries.TRIP_INDEX_AGGREGATION_QRY);
@@ -108,10 +103,6 @@ public class TripAggregations implements Serializable{
 	public DataStream<TripAggregatedData> getConsolidatedTripData(SingleOutputStreamOperator<TripStatusData> stsData, SingleOutputStreamOperator<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> indxData, Long timeInMilli, StreamTableEnvironment tableEnv)
 	{
 		DataStream<Tuple8<String, String, String, Integer, Double, Double, Double, Long>> secondLevelAggrData = getTripIndexAggregatedData(stsData, tableEnv, indxData, timeInMilli);
-		
-		//only for testing remove this ******************
-		indxData.writeAsText("/home/flinkhuser/TestindexData.txt", FileSystem.WriteMode.OVERWRITE)
-			.name("writeIndexDataToFile");
 		
 		tableEnv.createTemporaryView("tripStsData", stsData);
 		

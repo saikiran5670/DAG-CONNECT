@@ -12,6 +12,7 @@
         CreateAccount = 1,
         ChangeResetPasswordSuccess = 2,
         ResetPassword = 3,
-        PasswordExpiryNotification = 4
+        PasswordExpiryNotification = 4,
+        SendReport = 5
     }
 }

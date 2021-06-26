@@ -91,5 +91,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
             schedulereportvr.ModifiedBy = request.ModifiedBy;
             return schedulereportvr;
         }
+
     }
 }
