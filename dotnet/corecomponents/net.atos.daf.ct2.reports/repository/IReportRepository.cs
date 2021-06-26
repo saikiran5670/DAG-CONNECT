@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.reports.repository
         Task<int> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceRequest);
         Task<IEnumerable<VehicleFromTripDetails>> GetVinsFromTripStatistics(IEnumerable<string> vinList);
         Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripEntityRequest,
-                                                                    bool IsLiveFleetRequired = true);
+                                                                    bool isLiveFleetRequired = true);
         Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter activityFilters);
         Task<IEnumerable<ReportDetails>> GetReportDetails();
         Task<List<Driver>> GetDriversByVIN(long StartDateTime, long EndDateTime, List<string> VIN);

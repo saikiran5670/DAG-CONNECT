@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Google.Protobuf;
 using net.atos.daf.ct2.reportscheduler.entity;
 
 namespace net.atos.daf.ct2.reportschedulerservice.Entity
@@ -10,7 +11,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             ReportTypeRequest objreporttype = new ReportTypeRequest();
             objreporttype.Id = reportType.Id;
             objreporttype.ReportName = string.IsNullOrEmpty(reportType.ReportName) ? string.Empty : reportType.ReportName;
-            //objreporttype.IsDriver = string.IsNullOrEmpty(reportType.Enum) ? string.Empty : reportType.Enum;           
+            objreporttype.IsDriver = reportType.ReportName == ReportSchedulerConstant.DRIVE_TIME_MANAGEMENT || reportType.ReportName == ReportSchedulerConstant.ECO_SCORE;
             return objreporttype;
         }
 
@@ -206,15 +207,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             ReportPDFResponse objReportPDFResponse = new ReportPDFResponse();
             objReportPDFResponse.Id = request.Id;
             objReportPDFResponse.ScheduleReportId = request.ScheduleReportId;
-            //objReportPDFResponse.Report = request.Report ?? null;
-            objReportPDFResponse.Token = request.Token ?? null;
-            objReportPDFResponse.DownloadedAt = request.DownloadedAt;
-            objReportPDFResponse.ValidTill = request.ValidTill;
-            objReportPDFResponse.CreatedAt = request.CreatedAt;
-            objReportPDFResponse.ScheduleReportId = request.ScheduleReportId;
-            objReportPDFResponse.StartDate = request.StartDate;
-            objReportPDFResponse.EndDate = request.EndDate;
-            objReportPDFResponse.IsMailSend = request.IsMailSend;
+            objReportPDFResponse.Report = ByteString.CopyFrom(request.Report) ?? null;
             objReportPDFResponse.FileName = request.FileName;
             return objReportPDFResponse;
         }

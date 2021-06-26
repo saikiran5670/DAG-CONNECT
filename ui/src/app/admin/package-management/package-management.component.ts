@@ -181,7 +181,7 @@ export class PackageManagementComponent implements OnInit {
     }})
     .then(canvas => {  
         
-        let fileWidth = 208;
+        let fileWidth = 100;
         let fileHeight = canvas.height * fileWidth / canvas.width;
         
         const FILEURI = canvas.toDataURL('image/png')

@@ -9,6 +9,6 @@ namespace net.atos.daf.ct2.reportscheduler.report
     public interface IReportCreator
     {
         void SetParameters(ReportCreationScheduler reportSchedulerData);
-        Task<byte[]> GenerateReport();
+        Task<bool> GenerateReport();
     }
 }

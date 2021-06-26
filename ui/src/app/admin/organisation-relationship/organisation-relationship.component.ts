@@ -12,6 +12,7 @@ import { Router, ActivatedRoute,  } from '@angular/router';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-organisation-relationship',
@@ -52,6 +53,18 @@ export class OrganisationRelationshipComponent implements OnInit {
       name: 'Terminated'
     }
   ];
+  relationFilter= new FormControl();
+  vehicleGrpFilter= new FormControl();
+  orgFilter= new FormControl();
+  typeFilter= new FormControl();
+  searchFilter= new FormControl();
+  filteredValues = {
+    relation: '',
+    vehicleGrp: '',
+    org: '',
+    type: '',
+    search: ''
+  };
 
   constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService, private router: Router, private route: ActivatedRoute) { 
  this.defaultTranslation();
@@ -76,7 +89,44 @@ export class OrganisationRelationshipComponent implements OnInit {
       this.loadInitData();
     });
     this.loadInitData();//temporary
-
+    this.relationFilter.valueChanges.subscribe(filterValue => {
+      if(filterValue==='allRelations'){
+        this.filteredValues['relation'] = '';
+      } else{
+        this.filteredValues['relation'] = filterValue;
+      }
+      this.dataSource.filter = JSON.stringify(this.filteredValues);
+    });
+    this.vehicleGrpFilter.valueChanges.subscribe(filterValue => {
+      if(filterValue==='allVehicle'){
+        this.filteredValues['vehicleGrp'] = '';
+      } else{
+        this.filteredValues['vehicleGrp'] = filterValue;
+      }
+      this.dataSource.filter = JSON.stringify(this.filteredValues);
+    });
+    this.orgFilter.valueChanges.subscribe(filterValue => {
+      if(filterValue==='allOrg'){
+        this.filteredValues['org'] = '';
+      } else{
+        this.filteredValues['org'] = filterValue;
+      }
+      this.dataSource.filter = JSON.stringify(this.filteredValues);
+    });
+    this.typeFilter.valueChanges.subscribe(filterValue => {
+      if(filterValue==='all'){
+        this.filteredValues['type'] = '';
+      } else if(filterValue === 'Active'){
+        this.filteredValues['type'] = 'true';
+      } else if(filterValue === 'Terminated'){
+        this.filteredValues['type'] = 'false';
+      }
+      this.dataSource.filter = JSON.stringify(this.filteredValues);
+    });
+    this.searchFilter.valueChanges.subscribe(filterValue => {
+      this.filteredValues['search'] = filterValue;
+      this.dataSource.filter = JSON.stringify(this.filteredValues);
+    });
   }
 
   loadInitData() {
@@ -105,12 +155,18 @@ export class OrganisationRelationshipComponent implements OnInit {
                     this.dataSource.paginator = this.paginator;
                     this.dataSource.sort = this.sort;
                     this.dataSource.filterPredicate = function(data, filter: any){
-                      return data.relationshipName.toLowerCase().includes(filter) || 
-                              data.vehicleGroupName.toLowerCase().includes(filter) ||
-                              data.organizationName.toLowerCase().includes(filter) ||
-                              (getDt(data.startDate)).toString().toLowerCase().includes(filter) ||
-                              (getDt(data.endDate)).toString().toLowerCase().includes(filter) ||
-                              getChaining(data.allowChain).includes(filter)
+                      let val = JSON.parse(filter);
+                        return (data.allowChain).toString().indexOf(val.type) !== -1 &&
+                              data.orgRelationId.toString().indexOf(val.relation) !== -1 &&
+                              data.targetOrgId.toString().indexOf(val.org) !== -1 &&
+                              data.vehicleGroupID.toString().indexOf(val.vehicleGrp) !== -1 &&
+                              ((data.relationshipName.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 || 
+                                data.vehicleGroupName.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+                                data.organizationName.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+                                (getDt(data.startDate)).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+                                (getDt(data.endDate)).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
+                                getChaining(data.allowChain).indexOf(val.search.toLowerCase())) !== -1);
+
                       };
                     });
              }
@@ -344,10 +400,11 @@ export class OrganisationRelationshipComponent implements OnInit {
 
   deleteOrgRelationship(){
     let relList: any = '';
-    let relId = 
-    { 
-      id: this.selectedOrgRelations.selected.map(item=>item.id)
-    }
+    let relId = this.selectedOrgRelations.selected.map(item=>item.id);
+    // let relId = 
+    // { 
+    //   id: this.selectedOrgRelations.selected.map(item=>item.id)
+    // }
     const options = {
       title: this.translationData.lblDelete || 'Delete',
       message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Do you want to end  '$' relationship?",
@@ -377,7 +434,7 @@ export class OrganisationRelationshipComponent implements OnInit {
 
   getDeletMsg(relationshipName: any){
     if(this.translationData.lblRelationshipwassuccessfullydeleted)
-      return this.translationData.lblRelationshipDelete.replace('$', relationshipName);
+      return this.translationData.lblRelationshipwassuccessfullydeleted.replace('$', relationshipName);
     else
       return ("Relationship '$' was successfully deleted").replace('$', relationshipName);
   }

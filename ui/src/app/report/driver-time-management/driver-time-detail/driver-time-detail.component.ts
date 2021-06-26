@@ -81,10 +81,10 @@ console.log(this.driverDetails)
     let availableTimeArray = this.detailConvertedData.map(data=>data.availableTime);
 
     this.barChartData = [
-      { data: [8.0,6.15,6.15], label: 'Work', stack: 'a',backgroundColor: '#e85c2a', hoverBackgroundColor: '#e85c2a',barThickness: 10},
-      { data: [4.0,6.45,6.45], label: 'Drive', stack: 'a',backgroundColor: '#29539b',hoverBackgroundColor: '#29539b',barThickness: 10},
-      { data: [8.0,6.15,6.15], label: 'Rest', stack: 'a', backgroundColor: '#8ac543',hoverBackgroundColor: '#8ac543',barThickness: 10},
-      { data: [4.0,6.45,6.45], label: 'Available', stack: 'a' ,backgroundColor: '#dddee2',hoverBackgroundColor: '#dddee2',barThickness: 10},
+      { data: [6.0,6.0,6.0], label: 'Work', stack: 'a',backgroundColor: '#e85c2a', hoverBackgroundColor: '#e85c2a',barThickness: 10},
+      { data: [6.0,6.0,6.0], label: 'Drive', stack: 'a',backgroundColor: '#29539b',hoverBackgroundColor: '#29539b',barThickness: 10},
+      { data: [6.0,6.0,6.0], label: 'Rest', stack: 'a', backgroundColor: '#8ac543',hoverBackgroundColor: '#8ac543',barThickness: 10},
+      { data: [6.0,6.0,6.0], label: 'Available', stack: 'a' ,backgroundColor: '#dddee2',hoverBackgroundColor: '#dddee2',barThickness: 10},
     ]
     
     this.barChartLabels = dateArray;
@@ -98,9 +98,7 @@ console.log(this.driverDetails)
         xAxes: [
           {
             //stacked: true,
-            time: {
-              unit: 'hour',
-            },
+            
             gridLines: {
               display: true,
               drawBorder:true,
@@ -109,6 +107,7 @@ console.log(this.driverDetails)
             },
            ticks: {
             beginAtZero: true,
+            min:0,
             max: 24
           },
           },
@@ -130,6 +129,30 @@ console.log(this.driverDetails)
           },
         ],
       },
+      plugins: {
+        zoom: {
+            pan: {
+                enabled: true,
+                mode: 'x',
+                rangeMin: {
+                  x: 0,
+                },
+                rangeMax: {
+                  x: 24,
+                },   
+            },
+            zoom: {
+                enabled: true,
+                mode: 'x',
+                rangeMin: {
+                  x: 1,
+                },
+                rangeMax: {
+                  x: 24,
+                }
+            }
+        }
+    }
     };
 
     

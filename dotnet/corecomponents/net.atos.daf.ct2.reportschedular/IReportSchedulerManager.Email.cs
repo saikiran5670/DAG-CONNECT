@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.reportscheduler.entity;
 
 namespace net.atos.daf.ct2.reportscheduler
 {
-    public interface IReportCreationSchedulerManager
+    public partial interface IReportSchedulerManager
     {
-        Task<bool> GenerateReport();
+        Task<int> SendReportEmail();
     }
 }

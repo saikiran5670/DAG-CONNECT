@@ -13,6 +13,8 @@ using net.atos.daf.ct2.reportscheduler.report;
 using net.atos.daf.ct2.reportscheduler.repository;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.repository;
 using Identity = net.atos.daf.ct2.identity;
 
 namespace net.atos.daf.ct2.applications
@@ -51,10 +53,13 @@ namespace net.atos.daf.ct2.applications
                                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
                             });
                             services.AddSingleton<IReportCreationSchedulerManager, ReportCreationSchedulerManager>();
+                            services.AddSingleton<IReportSchedulerManager, ReportSchedulerManager>();
                             services.AddSingleton<IReportSchedulerRepository, ReportSchedulerRepository>();
                             services.AddTransient<IReportCreator, ReportCreator>();
                             services.AddTransient<IReportManager, ReportManager>();
                             services.AddTransient<IReportRepository, ReportRepository>();
+                            services.AddTransient<IVisibilityManager, VisibilityManager>();
+                            services.AddTransient<IVisibilityRepository, VisibilityRepository>();
                             //services.AddControllersWithViews();
                             //services.AddRazorPages();
                             //services.AddControllers();

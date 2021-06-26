@@ -423,10 +423,16 @@ export class ExistingTripsComponent implements OnInit {
 
 
   onReset() {
+    // this.selectedStartTime = '00:00:00';
+    // this.selectedEndTime= '23:59:59';
+    this.startTimeDisplay = '00:00:00';
+    this.endTimeDisplay= '23:59:59';
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.existingTripForm.get('vehicle').setValue('');
     this.existingTripForm.get('vehicleGroup').setValue('');
+    // this.existingTripForm.get('startTime').setValue(this.selectedStartTime);
+    // this.existingTripForm.get('endTime').setValue(this.selectedEndTime);
     this.vinListSelectedValue = '';
     this.vinList = [];
   }
@@ -910,6 +916,7 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   resetToEditData() {
+    // this.setDefaultStartEndTime();
     this.searchStrError = false;
     this.searchEndStrError = false;
     this.setCorridorData();

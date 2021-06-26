@@ -16,6 +16,7 @@ import { FleetUtilisationComponent } from './fleet-utilisation/fleet-utilisation
 import { DriverTimeDetailComponent } from './driver-time-management/driver-time-detail/driver-time-detail.component';
 import { FullCalendarModule } from '@fullcalendar/angular'; 
 import dayGridPlugin from '@fullcalendar/daygrid';
+import 'chartjs-plugin-zoom';
 // import interactionPlugin from '@fullcalendar/interaction';
 
 FullCalendarModule.registerPlugins([ // register FullCalendar plugins

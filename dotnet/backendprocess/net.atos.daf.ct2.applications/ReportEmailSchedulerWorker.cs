@@ -14,26 +14,27 @@ using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.applications
 {
-    internal class ReportCreationSchedulerWorker : BackgroundService
+    internal class ReportEmailSchedulerWorker : BackgroundService
     {
         private readonly ILogger<PasswordExpiryWorker> _logger;
         private readonly IAuditTraillib _auditlog;
-        private readonly IReportCreationSchedulerManager _reportCreationSchedulerManager;
+        private readonly IReportSchedulerManager _reportSchedulerManager;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly IConfiguration _configuration;
 
-        public ReportCreationSchedulerWorker(ILogger<PasswordExpiryWorker> logger,
+        public ReportEmailSchedulerWorker(ILogger<PasswordExpiryWorker> logger,
                         IConfiguration configuration,
                         IAuditTraillib auditlog,
-                        IReportCreationSchedulerManager reportCreationSchedulerManager,
+                        IReportSchedulerManager reportSchedulerManager,
                         IHostApplicationLifetime hostApplicationLifetime)
         {
             _logger = logger;
             _configuration = configuration;
             _auditlog = auditlog;
-            _reportCreationSchedulerManager = reportCreationSchedulerManager;
+            _reportSchedulerManager = reportSchedulerManager;
             _hostApplicationLifetime = hostApplicationLifetime;
         }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             stoppingToken.Register(() =>
@@ -43,35 +44,33 @@ namespace net.atos.daf.ct2.applications
             try
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                var isSuccess = await _reportCreationSchedulerManager.GenerateReport();
-                await AddAuditLog(isSuccess ? "Process ran successfully" : "Proccess ran failed, For more details, please check audit logs.", isSuccess ? AuditTrailEnum.Event_status.SUCCESS : AuditTrailEnum.Event_status.FAILED);
+
+                var temp = _reportSchedulerManager.SendReportEmail();
+
+
+                await _auditlog.AddLogs(new AuditTrail
+                {
+                    Created_at = DateTime.Now,
+                    Performed_at = DateTime.Now,
+                    Performed_by = 2,
+                    Component_name = "Email Scheduler",
+                    Service_name = "Backend Process",
+                    Event_type = AuditTrailEnum.Event_type.Mail,
+                    Event_status = AuditTrailEnum.Event_status.SUCCESS,
+                    Message = $"Email send process run successfully",
+                    Sourceobject_id = 0,
+                    Targetobject_id = 0,
+                    Updated_data = "Email Scheduler"
+                });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                await AddAuditLog($"Failed to run, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED);
+                throw;
             }
             finally
             {
                 _hostApplicationLifetime.StopApplication();
             }
-        }
-
-        private async Task AddAuditLog(string message, AuditTrailEnum.Event_status eventStatus)
-        {
-            await _auditlog.AddLogs(new AuditTrail
-            {
-                Created_at = DateTime.Now,
-                Performed_at = DateTime.Now,
-                Performed_by = 2,
-                Component_name = "Report Creation Scheduler",
-                Service_name = "Backend Process",
-                Event_type = AuditTrailEnum.Event_type.CREATE,
-                Event_status = eventStatus,
-                Message = message,
-                Sourceobject_id = 0,
-                Targetobject_id = 0,
-                Updated_data = "ReportCreationScheduler"
-            });
         }
     }
 }

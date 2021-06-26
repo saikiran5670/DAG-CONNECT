@@ -89,7 +89,7 @@
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-                <mat-error *ngIf="driverTimeForm.get('vehicle').hasError('required') && vehicleListData.length > 0">
+                <mat-error *ngIf="driverTimeForm.get('vehicle').hasError('required')">
                   {{translationData.lblPleaseSelectVehicle || 'Please Select Vehicle' }}
                 </mat-error>
               </div>
@@ -100,12 +100,15 @@
                 <mat-form-field appearance="outline">
                   <mat-select [disabled]="driverListData.length == 0" (selectionChange)="onDriverChange($event)" placeholder="{{ translationData.lblSelectDriver || 'Select Driver' }}" formControlName="driver">
                     <mat-option *ngFor="let rer of driverListData" [value]="rer.driverID">
-                        {{ rer.driverID }}
+                        {{ rer.firstName ? rer.firstName : rer.driverID  }} {{ rer.lastName}}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-                <mat-error *ngIf="driverTimeForm.get('vehicle').hasError('required') && vehicleListData.length > 0">
+                <mat-error *ngIf="driverTimeForm.get('driver').hasError('required') && this.driverListData.length > 0">
                   {{translationData.lblPleaseSelectDriver || 'Please Select Driver' }}
+                </mat-error>
+                <mat-error *ngIf="this.driverListData.length === 0">
+                  {{translationData.lblNoDriverAvailable || 'No Driver Available' }}
                 </mat-error>
             </div>
             </div>
