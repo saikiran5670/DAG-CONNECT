@@ -45,5 +45,9 @@ namespace net.atos.daf.ct2.vehicle
         Task<List<VisibilityVehicle>> GetVisibilityVehicles(int accountId, int orgId);
 
         #endregion
+
+        #region Get Vehicle Group Count for Report scheduler
+        Task<int> GetVehicleAssociatedGroupCount(VehicleCountFilter vehicleCountFilter);
+        #endregion
     }
 }

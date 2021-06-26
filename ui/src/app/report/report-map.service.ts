@@ -9,6 +9,8 @@ declare var H: any;
 })
 export class ReportMapService {
   platform: any;
+  clusteringLayer: any;
+  overlayLayer: any;
   map: any;
   ui: any
   hereMap: any;
@@ -74,7 +76,11 @@ export class ReportMapService {
     this.hereMap.removeObjects(this.hereMap.getObjects())
     this.group.removeAll();
     this.startMarker = null; 
-    this.endMarker = null;
+    this.endMarker = null; 
+    if(this.clusteringLayer)
+      this.hereMap.removeLayer(this.clusteringLayer);
+    if(this.overlayLayer)
+      this.hereMap.removeLayer(this.overlayLayer);
   }
 
   getUI(){
@@ -93,11 +99,11 @@ export class ReportMapService {
           return `https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/${zoom}/${column}/${row}/256/png8?apiKey=BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw&pois`;
         }
     });
-    var overlayLayer = new H.map.layer.TileLayer(tileProvider, {
+    this.overlayLayer = new H.map.layer.TileLayer(tileProvider, {
       // Let's make it semi-transparent
       //opacity: 0.5
     });
-    this.hereMap.addLayer(overlayLayer);
+    this.hereMap.addLayer(this.overlayLayer);
   
    // let poi = this.platform.createDefaultLayers({pois:true});
     //     let routeURL = 'https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/11/525/761/256/png8?apiKey=BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw&pois';
@@ -113,7 +119,7 @@ export class ReportMapService {
    
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any){
+  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any){
     this.clearRoutesFromMap();
     if(_selectedRoutes){
       for(var i in _selectedRoutes){
@@ -169,10 +175,289 @@ export class ReportMapService {
           endBubble.close();
         }, false);
 
-        this.calculateAtoB(trackType);
+        //this.calculateAtoB(trackType);
+        if(_selectedRoutes[i].liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
+          let liveFleetPoints: any = _selectedRoutes[i].liveFleetPosition;
+          liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
+          if(_displayRouteView == 'C'){ // classic route
+            let blueColorCode: any = '#436ddc';
+            this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
+          }else if(_displayRouteView == 'F' || _displayRouteView == 'CO'){ // fuel consumption/CO2 emissiom route
+            let filterDataPoints: any = this.getFilterDataPoints(liveFleetPoints, _displayRouteView);
+            filterDataPoints.forEach((element) => {
+              this.drawPolyline(element, trackType);
+            });
+          }
+        }
+        this.hereMap.addObject(this.group);
+        this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
+      }
+      if(_selectedRoutes.length > 0){
+        this.setMarkerCluster(_selectedRoutes, _ui, this.hereMap);
       }
     }
    }
+
+   showClassicRoute(dataPoints: any, _trackType: any, _colorCode: any){
+    let lineString: any = new H.geo.LineString();
+    dataPoints.map((element) => {
+      lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+    });
+
+    let _style: any = {
+      lineWidth: 4, 
+      strokeColor: _colorCode
+    }
+    if(_trackType == 'dotted'){
+      _style.lineDash = [2,2];
+    }
+    let polyline = new H.map.Polyline(
+      lineString, { style: _style }
+    );
+    
+    this.group.addObject(polyline);
+   }
+
+   getFilterDataPoints(_dataPoints: any, _displayRouteView: any){
+    let fuelThreshold: any = 400; // hard coded
+    let co2Threshold: any = 1; // hard coded
+    let threshold: any = 0;
+    let innerArray: any = [];
+    let outerArray: any = [];
+    let finalDataPoints: any = [];
+    _dataPoints.forEach((element) => { 
+      let elemChecker: any;
+      if(_displayRouteView == 'F'){ // fuel consumption
+        threshold = fuelThreshold;
+        elemChecker = element.fuelconsumtion;
+      }else{ // co2 emission
+        threshold = co2Threshold;
+        elemChecker = element.co2Emission;
+      }
+      
+      if(elemChecker < threshold){
+        element.color = '#12a802'; // green
+      }else{
+        element.color = '#f2f200'; // yellow  and #FFBF00 - Amber
+      }
+      finalDataPoints.push(element);
+    });
+
+    let curColor: any = '';
+    finalDataPoints.forEach((element, index) => {
+      innerArray.push(element);
+      if(index != 0){
+        if(curColor != element.color){
+          outerArray.push({dataPoints: innerArray, color: curColor});
+          innerArray = [];
+          curColor = element.color;
+          innerArray.push(element);
+        }else if(index == (finalDataPoints.length - 1)){ // last point
+          outerArray.push({dataPoints: innerArray, color: curColor}); 
+        }
+      }else{ // 0
+        curColor = element.color;
+      }
+    });
+
+    return outerArray;
+  }
+
+  setMarkerCluster(data: any, ui: any, hereMap: any){
+    let dataPoints = data.map((item) => {
+      return new H.clustering.DataPoint(item.startPositionLattitude, item.startPositionLongitude);
+    });
+    var noiseSvg =
+    '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px">' +
+    '<circle cx="20px" cy="20px" r="20" fill="red" />' +
+    '<text x="20" y="35" font-size="30pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="white" textContent="!">!</text></svg>';
+  
+    var noiseIcon = new H.map.Icon(noiseSvg, {
+      size: { w: 22, h: 22 },
+      anchor: { x: 11, y: 11 }
+    });
+  
+  
+    var clusterSvgTemplate =
+    '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px"><circle cx="25px" cy="25px" r="20" fill="red" stroke-opacity="0.5" />' +
+    '<text x="24" y="32" font-size="14pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="white">{text}</text>' +
+    '</svg>';
+    // // Create a clustering provider with custom options for clusterizing the input
+    let clusteredDataProvider = new H.clustering.Provider(dataPoints, {
+      clusteringOptions: {
+        // Maximum radius of the neighbourhood
+        eps: 32,
+        // minimum weight of points required to form a cluster
+        minWeight: 9
+      },
+      theme: {
+        getClusterPresentation: (markerCluster: any) => {
+  
+          // Use cluster weight to change icon size:
+          var svgString = clusterSvgTemplate.replace('{radius}', markerCluster.getWeight());
+          svgString = svgString.replace('{text}', markerCluster.getWeight());
+  
+          var w, h;
+          var weight = markerCluster.getWeight();
+  
+          //Set cluster size depending on the weight
+          if (weight <= 6)
+          {
+            w = 35;
+            h = 35;
+          }
+          else if (weight <= 12) {
+            w = 50;
+            h = 50;
+          }
+          else {
+            w = 75;
+            h = 75;
+          }
+  
+          var clusterIcon = new H.map.Icon(svgString, {
+            size: { w: w, h: h },
+            anchor: { x: (w/2), y: (h/2) }
+          });
+  
+          // Create a marker for clusters:
+          var clusterMarker = new H.map.Marker(markerCluster.getPosition(), {
+            icon: clusterIcon,
+            // Set min/max zoom with values from the cluster, otherwise
+            // clusters will be shown at all zoom levels:
+            min: markerCluster.getMinZoom(),
+            max: markerCluster.getMaxZoom()
+          });
+  
+          // Bind cluster data to the marker:
+          clusterMarker.setData(markerCluster);
+          let infoBubble: any
+          clusterMarker.addEventListener("pointerenter",  (event) => {
+  
+            var point = event.target.getGeometry(),
+              screenPosition = hereMap.geoToScreen(point),
+              t = event.target,
+              data = t.getData(),
+              tooltipContent = "<table border='1'><thead><th>Action</th><th>Latitude</th><th>Longitude</th></thead><tbody>"; 
+              var chkBxId = 0;
+            data.forEachEntry(
+              (p) => 
+              { 
+                tooltipContent += "<tr>";
+                tooltipContent += "<td><input type='checkbox' id='"+ chkBxId +"' onclick='infoBubbleCheckBoxClick("+ chkBxId +","+ p.getPosition().lat +", "+ p.getPosition().lng +")'></td>" + "<td>" + p.getPosition().lat + "</td><td>" + p.getPosition().lng + "</td>";
+                tooltipContent += "</tr>";
+                chkBxId++;
+                //alert(chkBxId);
+              }
+            ); 
+            tooltipContent += "</tbody></table>";
+            
+            // function infoBubbleCheckBoxClick(chkBxId, latitude, longitude){
+            //   // Get the checkbox
+            //   let checkBox: any = document.getElementById(chkBxId);
+            //   if (checkBox.checked == true){
+            //     alert("Latitude:" + latitude + " Longitude:" + longitude + " Enabled")
+            //   } else {
+            //     alert("Latitude:" + latitude + " Longitude:" + longitude + " Disabled")
+            //   }
+            // }
+
+            infoBubble = new H.ui.InfoBubble(hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
+            ui.addBubble(infoBubble);
+          });
+          
+          
+          clusterMarker.addEventListener("pointerleave", (event) => { 
+            if(infoBubble)
+            {
+              ui.removeBubble(infoBubble);
+              infoBubble = null;
+            }
+          });				
+  
+          return clusterMarker;
+        },
+        getNoisePresentation: (noisePoint) => {
+          let infoBubble: any;
+  
+          // Create a marker for noise points:
+          var noiseMarker = new H.map.Marker(noisePoint.getPosition(), {
+            icon: noiseIcon,
+  
+            // Use min zoom from a noise point to show it correctly at certain
+            // zoom levels:
+            min: noisePoint.getMinZoom(),
+            max: 20
+          });
+  
+          // Bind cluster data to the marker:
+          noiseMarker.setData(noisePoint);
+  
+          noiseMarker.addEventListener("pointerenter", (event) => { 
+            
+            var point = event.target.getGeometry();
+            var tooltipContent = ["Latitude: ", point.lat, ", Longitude: ", point.lng].join("");
+  
+            var screenPosition = hereMap.geoToScreen(point);
+  
+            infoBubble = new H.ui.InfoBubble(hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
+            ui.addBubble(infoBubble);
+          
+          });
+          
+          noiseMarker.addEventListener("pointerleave", (event) => { 
+            if(infoBubble)
+            {
+              ui.removeBubble(infoBubble);
+              infoBubble = null;
+            }
+          });
+          
+  
+          return noiseMarker;
+        }
+      }
+    });
+  
+    // // Create a layer tha will consume objects from our clustering provider
+    this.clusteringLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
+  
+    // // To make objects from clustering provder visible,
+    // // we need to add our layer to the map
+    hereMap.addLayer(this.clusteringLayer);
+    clusteredDataProvider.addEventListener('tap', (event) => {
+      // Log data bound to the marker that has been tapped:
+      console.log(event.target.getData())
+    });
+  }
+
+  infoBubbleCheckBoxClick(chkBxId, latitude, longitude){
+    var checkBox: any = document.getElementById(chkBxId);
+    if (checkBox.checked == true){
+      alert("Latitude:" + latitude + " Longitude:" + longitude + " Enabled")
+    } else {
+      alert("Latitude:" + latitude + " Longitude:" + longitude + " Disabled")
+    }
+  }
+   
+  drawPolyline(finalDatapoints: any, trackType?: any){
+    var lineString = new H.geo.LineString();
+    finalDatapoints.dataPoints.map((element) => {
+      lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+    });
+  
+    let _style: any = {
+      lineWidth: 4, 
+      strokeColor: finalDatapoints.color
+    }
+    if(trackType == 'dotted'){
+      _style.lineDash = [2,2];
+    }
+    let polyline = new H.map.Polyline(
+      lineString, { style: _style }
+    );
+    this.group.addObject(polyline);
+  }
 
   createHomeMarker(){
     const homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">

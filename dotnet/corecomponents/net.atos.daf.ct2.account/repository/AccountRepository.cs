@@ -385,7 +385,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@organization_Id", orgId);
 
                 query = @"SELECT EXISTS 
-                            ( SELECT 1 FROM master.accountorg WHERE account_id=@account_id AND organization_Id=@organization_Id )";
+                            ( SELECT 1 FROM master.accountorg WHERE account_id=@account_id AND organization_Id=@organization_Id AND state='A')";
                 return await _dataAccess.ExecuteScalarAsync<bool>(query, parameter);
             }
             catch (Exception)

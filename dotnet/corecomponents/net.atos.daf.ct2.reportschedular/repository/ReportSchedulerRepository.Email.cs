@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
+using net.atos.daf.ct2.email.Entity;
+using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.utilities;
 
@@ -11,39 +13,43 @@ namespace net.atos.daf.ct2.reportscheduler.repository
     {
         public Task<int> SendReportEmail() => throw new NotImplementedException();
 
-        public async void GetReportEmailDetails()
+        public async Task<IEnumerable<ReportSchedulerEmailResult>> GetReportEmailDetails()
         {
-            string queryAlert = @"SELECT repsch.id as repsch_id, 
+            MapperRepo repositoryMapper = new MapperRepo();
+            try
+            {
+                string queryAlert = @"SELECT repsch.id as repsch_id,  
                                             repsch.organization_id as repsch_organization_id, 
                                             repsch.report_id as repsch_report_id, 
                                             repsch.frequency_type as repsch_frequency_type,                                           
                                             repsch.last_schedule_run_date as repsch_last_schedule_run_date, 
                                             repsch.next_schedule_run_date as repsch_next_schedule_run_date,                                            
                                             repsch.mail_subject as repsch_mail_subject, 
-                                            repsch.mail_description as repsch_mail_description,                                         
+                                            repsch.mail_description as repsch_mail_description,  
+                                            repsch.start_date as repsch_start_date, 
+                                            repsch.end_date as repsch_end_date
                                             receipt.id as receipt_id, 
-                                            repsch.created_by as repsch_created_by,                                           
-                                            repsch.modified_by as repsch_modified_by, 
-                                            receipt.schedule_report_id as receipt_schedule_report_id, 
-                                            receipt.email as receipt_email,  
-                                            schrep.id as schrep_id, 
+                                            repsch.created_by as repsch_created_by, 
+                                            receipt.email as receipt_email, 
                                             schrep.token as schrep_token,
-                                            schrep.schedule_report_id as schrep_schedule_report_id, 
-                                            schrep.report as schrep_report,
-                                            schrep.downloaded_at as schrep_downloaded_at, 
                                             schrep.valid_till as schrep_valid_till, 
                                             schrep.created_at as schrep_created_at, 
                                             schrep.start_date as schrep_start_date, 
                                             schrep.end_date as schrep_end_date
 	                                        FROM master.reportscheduler as repsch	                                 
-	                                       LEFT JOIN master.scheduledreportrecipient as receipt
-	                                       ON repsch.id=receipt.schedule_report_id AND repsch.status='A' AND receipt.state='A'	                                  
-	                                       LEFT JOIN master.scheduledreport as schrep
-	                                       ON repsch.id=schrep.schedule_report_id AND repsch.status='A' ";
-            queryAlert += " where date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date) AT TIME ZONE 'UTC')) = date_trunc('hour', NOW() AT TIME ZONE 'UTC') GROUP BY repsch.created_by";
+	                                        Inner JOIN master.scheduledreportrecipient as receipt
+	                                        ON repsch.id=receipt.schedule_report_id AND repsch.status='A' AND receipt.state='A'	                                  
+	                                        inner JOIN master.scheduledreport as schrep
+	                                       ON repsch.id=schrep.schedule_report_id AND repsch.start_date=schrep.start_date AND repsch.end_date=schrep.end_date AND repsch.status='A' ";
+                queryAlert += " where date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date/1000) AT TIME ZONE 'UTC')) = date_trunc('hour', NOW() AT TIME ZONE 'UTC')";
 
-            IEnumerable<ReportSchedulerResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerResult>(queryAlert);
-
+                IEnumerable<ReportSchedulerEmailResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerEmailResult>(queryAlert);
+                return reportSchedulerResult;// repositoryMapper.GetReportSchedulerList(reportSchedulerResult);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<int> UpdateTimeRangeByDate(ReportEmailFrequency reportEmailFrequency)
@@ -88,5 +94,6 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
             return rowEffected;
         }
+
     }
 }

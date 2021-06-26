@@ -181,21 +181,12 @@ public class LiveFleetDriverActivityDao implements Serializable {
 		else
 			stmt_insert_driver_activity.setLong(6, DafConstants.DTM_NULL_VAL);
 
-		//TODO Temporary fix
-		/*if (row.getCode() != null)
+		
+		if (row.getCode() != null)
 			stmt_insert_driver_activity.setString(7, row.getCode()); // 7-Working_state_code
 		else
-			stmt_insert_driver_activity.setString(7, "");*/
-		if (row.getCode() != null){
-			
-			if("2".equals(row.getCode()) && row.getTripId() != null)
-				stmt_insert_driver_activity.setString(7, "3"); // 7-Working_state_code
-			else
-				stmt_insert_driver_activity.setString(7, row.getCode());
-			
-		}else
 			stmt_insert_driver_activity.setString(7, "");
-		
+			
 
 		if (row.getStartTime() != null) {
 			stmt_insert_driver_activity.setLong(8, row.getStartTime()); // 8-start_time
@@ -218,7 +209,16 @@ public class LiveFleetDriverActivityDao implements Serializable {
 		stmt_insert_driver_activity.setBoolean(16, row.getIsDriver1()); // 16-is_Driver_flag
 		
 		//TODO Temporary fix
-		stmt_insert_driver_activity.setString(17, row.getCode());
+		//stmt_insert_driver_activity.setString(17, row.getCode());
+		if (row.getCode() != null) {
+
+			if ("2".equals(row.getCode()) && row.getTripId() != null)
+				stmt_insert_driver_activity.setString(17, "3"); // driving
+			else
+				stmt_insert_driver_activity.setString(17, row.getCode());
+
+		} else
+			stmt_insert_driver_activity.setString(17, "");
 
 		return stmt_insert_driver_activity;
 

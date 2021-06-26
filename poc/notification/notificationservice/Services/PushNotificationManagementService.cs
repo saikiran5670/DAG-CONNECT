@@ -12,8 +12,6 @@ using Newtonsoft.Json;
 
 namespace notificationservice.Services
 {
-    
-
     public class PushNotificationManagementService : PushNotificationService.PushNotificationServiceBase
     {
         private readonly KafkaConfiguration _kafkaConfiguration;
@@ -32,12 +30,16 @@ namespace notificationservice.Services
             {
                 while (!context.CancellationToken.IsCancellationRequested)
                 {
-                    await Task.Delay(50);
+                    //await Task.Delay(50);
                     ConsumeResult<Null, string> message = Worker.Consumer(_kafkaConfiguration.EH_FQDN, _kafkaConfiguration.EH_CONNECTION_STRING, _kafkaConfiguration.CONSUMER_GROUP, _kafkaConfiguration.EH_NAME, _kafkaConfiguration.CA_CERT_LOCATION);
                     TripAlert tripAlert = JsonConvert.DeserializeObject<TripAlert>(message.Message.Value);
-                    pushnotificationcorecomponent.Entity.TripAlert tripAlertDB = JsonConvert.DeserializeObject<pushnotificationcorecomponent.Entity.TripAlert>(message.Message.Value);
-                    
-                    await _tripAlertManager.CreateTripAlert(tripAlertDB);
+
+
+                    /* Temporary disconnected from DB*/
+                    //pushnotificationcorecomponent.Entity.TripAlert tripAlertDB = JsonConvert.DeserializeObject<pushnotificationcorecomponent.Entity.TripAlert>(message.Message.Value);
+                    //await _tripAlertManager.CreateTripAlert(tripAlertDB);
+                    /* Temporary disconnected from DB*/
+
                     //AlertMessageData AlertMessageData = JsonConvert.DeserializeObject<AlertMessageData>(message.Message.Value);
                     var alertMessageData = new AlertMessageData
                     {

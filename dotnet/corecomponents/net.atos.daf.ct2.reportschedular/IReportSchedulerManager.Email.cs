@@ -8,6 +8,8 @@ namespace net.atos.daf.ct2.reportscheduler
 {
     public partial interface IReportSchedulerManager
     {
-        Task<int> SendReportEmail();
+        Task<bool> SendReportEmail();
+        //  Task<IEnumerable<ReportSchedulerMap>> GetReportEmailDetails();
+        // Task<int> UpdateTimeRangeByDate(ReportEmailFrequency reportEmailFrequency);
     }
 }
