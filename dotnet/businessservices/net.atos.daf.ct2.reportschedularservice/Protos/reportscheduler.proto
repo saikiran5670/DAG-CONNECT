@@ -152,6 +152,8 @@ message ScheduledReportVehicleRefRequest
     string VehicleName =11; 
     string VehicleGroupName =12;
     string VehicleGroupType =13;
+    string FunctionEnum =14;
+    int32 VehicleCount =15;
 }
 message VehicleSubscribeandFeatureRequest {
 		 int32 VehicleGroupId =  1;

@@ -76,6 +76,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public string VehicleName { get; set; }
         public string VehicleGroupName { get; set; }
         public string VehicleGroupType { get; set; }
+        public string FunctionEnum { get; set; }
     }
     public class ReportSchedulerMap : ReportScheduler
     {

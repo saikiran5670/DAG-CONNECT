@@ -67,6 +67,7 @@ export class DriverTimePreferencesComponent implements OnInit {
   loadDriveTimePreferences(){
     this.reportService.getUserPreferenceReport(this.reportId, this.accountId, this.accountOrganizationId).subscribe((prefData : any) => {
       this.initData = prefData['userPreferences'];
+      this.resetColumnData();
       this.preparePrefData(this.initData);
 
     //  this.initData = this.getTranslatedColumnName(this.initData);
@@ -75,6 +76,12 @@ export class DriverTimePreferencesComponent implements OnInit {
     }, (error)=>{
       this.initData = [];
     });
+  }
+
+  resetColumnData(){
+    this.specificDriverData = [];
+    this.allDriverTableData = [];
+    this.chartData = [];
   }
 
   preparePrefData(prefData: any){
@@ -122,6 +129,7 @@ export class DriverTimePreferencesComponent implements OnInit {
   setColumnCheckbox(){
     this.selectionForAllDriver.clear();
     this.selectionForDriver.clear();
+    this.selectionForChart.clear();
     
     this.allDriverTableData.forEach(element => {
       if(element.state == 'A'){
