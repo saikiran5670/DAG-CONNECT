@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using net.atos.daf.ct2.reportscheduler.entity;
 
 namespace net.atos.daf.ct2.reportscheduler.helper
 {
     public static class ReportHelper
     {
-        public static string ToDataTableAndGenerateHTML<T>(List<T> items)
+        public static string ToDataTableAndGenerateHTML<T>(List<T> items, IEnumerable<ReportColumnName> reporyColumns)
         {
             DataTable dataTable = new DataTable(typeof(T).Name);
 
@@ -19,7 +21,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
                 //Defining type of data column gives proper data table 
                 var type = (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>) ? Nullable.GetUnderlyingType(prop.PropertyType) : prop.PropertyType);
                 //Setting column names as Property names
-                dataTable.Columns.Add(DisplayNameHelper.GetDisplayName(prop) ?? prop.Name, type);
+                dataTable.Columns.Add(GetColumnName(DisplayNameHelper.GetDisplayName(prop), reporyColumns, prop), type);
             }
 
             foreach (T item in items)
@@ -34,6 +36,11 @@ namespace net.atos.daf.ct2.reportscheduler.helper
             }
             //put a breakpoint here and check datatable
             return GenerateHTMLString(dataTable);
+        }
+
+        private static string GetColumnName(string displayNamKey, IEnumerable<ReportColumnName> reporyColumns, PropertyInfo prop)
+        {
+            return reporyColumns.Where(w => w.Key == displayNamKey).FirstOrDefault()?.Value ?? prop.Name;
         }
 
         public static string GenerateHTMLString(DataTable reportData)

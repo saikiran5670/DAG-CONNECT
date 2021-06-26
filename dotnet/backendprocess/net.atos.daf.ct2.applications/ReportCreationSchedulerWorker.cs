@@ -16,13 +16,13 @@ namespace net.atos.daf.ct2.applications
 {
     internal class ReportCreationSchedulerWorker : BackgroundService
     {
-        private readonly ILogger<PasswordExpiryWorker> _logger;
+        private readonly ILogger<ReportCreationSchedulerWorker> _logger;
         private readonly IAuditTraillib _auditlog;
         private readonly IReportCreationSchedulerManager _reportCreationSchedulerManager;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly IConfiguration _configuration;
 
-        public ReportCreationSchedulerWorker(ILogger<PasswordExpiryWorker> logger,
+        public ReportCreationSchedulerWorker(ILogger<ReportCreationSchedulerWorker> logger,
                         IConfiguration configuration,
                         IAuditTraillib auditlog,
                         IReportCreationSchedulerManager reportCreationSchedulerManager,
@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.applications
         {
             stoppingToken.Register(() =>
             {
-                _logger.LogInformation("Ending the process...");
+                _logger.LogInformation("Ending the process...at: {time}", DateTimeOffset.Now);
             });
             try
             {
