@@ -16,6 +16,10 @@ using net.atos.daf.ct2.visibility.repository;
 using net.atos.daf.ct2.visibility;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.notification;
+using net.atos.daf.ct2.notification.repository;
+using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.translation.repository;
 
 namespace net.atos.daf.ct2.reportschedulerservice
 {
@@ -57,6 +61,10 @@ namespace net.atos.daf.ct2.reportschedulerservice
             services.AddTransient<IVisibilityManager, VisibilityManager>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IAuditTraillib, AuditTraillib>();
+            services.AddTransient<IEmailRepository, EmailRepository>();
+            services.AddTransient<IEmailNotificationManager, EmailNotificationManager>();
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
+            services.AddTransient<ITranslationManager, TranslationManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
