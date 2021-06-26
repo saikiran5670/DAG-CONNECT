@@ -293,7 +293,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (orgnizationid == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
                 orgnizationid = GetContextOrgId();
                 ReportSchedulerListResponse response = await _reportschedulerClient.GetReportSchedulerListAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid });
-                if (true)
+                if (response.ReportSchedulerRequest.Any())
                 {
                     foreach (var item in response.ReportSchedulerRequest)
                     {
