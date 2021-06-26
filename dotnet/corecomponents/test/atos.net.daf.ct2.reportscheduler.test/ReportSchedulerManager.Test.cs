@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reportscheduler;
 using net.atos.daf.ct2.reportscheduler.entity;
