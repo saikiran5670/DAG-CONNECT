@@ -98,8 +98,7 @@ namespace net.atos.daf.ct2.email
 
                 messageRequest.Content = emailContent;
                 messageRequest.ContentMimeType = emailTemplate.ContentType == (char)EmailContentType.Html ? MimeType.Html : MimeType.Text;
-
-                return await SendEmail(messageRequest);
+                return await SendEmail(messageRequest); //wrap this function usder while loop with retry condition
             }
             catch (Exception)
             {
@@ -109,7 +108,7 @@ namespace net.atos.daf.ct2.email
         public static string GetReportEmailContent(string emailTemplate, Uri baseUrl)
         {
 
-            Uri reportUrl = new Uri(baseUrl, "assets/logo.png");
+            Uri downloadReportUrl = new Uri(baseUrl, "assets/logo.png"); // replace with downloadreport url from configuration
             var replacedContent = emailTemplate;
 
             return replacedContent;

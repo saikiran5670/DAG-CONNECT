@@ -95,9 +95,14 @@ namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
         [StringLength(1, MinimumLength = 1, ErrorMessage = "Report scheduler Status should be 1 character Either A or I")]
         public string Status { get; set; }
     }
-    public class ReportStatusDeleteModel
+    public class ReportStatusByIdModel
     {
         [Required]
         public int ReportId { get; set; }
+    }
+    public class ReportStatusByTokenModel
+    {
+        [Required]
+        public string Token { get; set; }
     }
 }

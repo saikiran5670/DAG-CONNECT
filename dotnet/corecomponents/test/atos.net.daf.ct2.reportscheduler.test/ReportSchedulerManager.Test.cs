@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.notification;
 using net.atos.daf.ct2.reportscheduler;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.ENUM;
@@ -19,6 +20,7 @@ namespace atos.net.daf.ct2.reportscheduler.test
         private readonly IDataMartDataAccess _dataMartdataAccess;
         private readonly ReportSchedulerRepository _reportSchedulerRepository;
         private readonly IReportSchedulerManager _reportSchedulerManager;
+        private readonly IEmailNotificationManager _emailNotificationManager;
         readonly IAuditTraillib _auditlog;
         private readonly Helper _helper;
         public ReportSchedulerManagerTest()
@@ -30,7 +32,7 @@ namespace atos.net.daf.ct2.reportscheduler.test
             _dataMartdataAccess = new PgSQLDataMartDataAccess(_config.GetConnectionString("DataMartConnectionString"));
             _dataAccess = new PgSQLDataAccess(connectionString);
             _reportSchedulerRepository = new ReportSchedulerRepository(_dataAccess, _dataMartdataAccess);
-            _reportSchedulerManager = new ReportSchedulerManager(_reportSchedulerRepository, _auditlog, _config);
+            _reportSchedulerManager = new ReportSchedulerManager(_reportSchedulerRepository, _auditlog, _emailNotificationManager);
             _helper = new Helper();
         }
 
