@@ -33,6 +33,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         Task<int> SendReportEmail();
+        Task<string> GetLanguageCodePreference(string emailId, int? orgId);
+        Task<IEnumerable<ReportSchedulerMap>> GetReportEmailDetails();
 
 
 

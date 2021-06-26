@@ -4,7 +4,7 @@ using System.Text;
 
 namespace net.atos.daf.ct2.reportscheduler.entity
 {
-    public class ReportSchedulerResult
+    public class ReportSchedulerEmailResult
     {
         public int Repsch_id { get; set; }
         public int Repsch_organization_id { get; set; }
@@ -45,20 +45,13 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int Vehref_created_by { get; set; }
         public long Vehref_modified_at { get; set; }
         public int Vehref_modified_by { get; set; }
-        public int Vehicleid { get; set; }
-        public string Vin { get; set; }
-        public string Regno { get; set; }
-        public string Vehiclename { get; set; }
-        public string Vehiclegroupname { get; set; }
-        public string Vehiclegrouptype { get; set; }
-        public string Functionenum { get; set; }
         public int Schrep_id { get; set; }
         public int Schrep_schedule_report_id { get; set; }
+        public string Schrep_report { get; set; }
         public string Schrep_downloaded_at { get; set; }
         public string Schrep_valid_till { get; set; }
         public string Schrep_created_at { get; set; }
         public string Schrep_start_date { get; set; }
         public string Schrep_end_date { get; set; }
     }
-
 }

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="enum\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />
+    <ProjectReference Include="..\net.atos.daf.ct2.email\net.atos.daf.ct2.email.csproj" />
+    <ProjectReference Include="..\net.atos.daf.ct2.translation\net.atos.daf.ct2.translation.csproj" />
+  </ItemGroup>
+
+</Project>
