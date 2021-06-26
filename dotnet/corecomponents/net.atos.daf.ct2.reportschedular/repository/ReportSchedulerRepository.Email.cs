@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                                        ON repsch.id=receipt.schedule_report_id AND repsch.status='A' AND receipt.state='A'	                                  
 	                                        inner JOIN master.scheduledreport as schrep
 	                                       ON repsch.id=schrep.schedule_report_id AND repsch.start_date=schrep.start_date AND repsch.end_date=schrep.end_date AND repsch.status='A' ";
-                queryAlert += " where date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date) AT TIME ZONE 'UTC')) = date_trunc('hour', NOW() AT TIME ZONE 'UTC')";
+                queryAlert += " where date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date/1000) AT TIME ZONE 'UTC')) = date_trunc('hour', NOW() AT TIME ZONE 'UTC')";
 
                 IEnumerable<ReportSchedulerResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerResult>(queryAlert);
                 return repositoryMapper.GetReportSchedulerList(reportSchedulerResult);
