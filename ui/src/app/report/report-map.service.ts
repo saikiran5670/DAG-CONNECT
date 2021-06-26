@@ -10,6 +10,7 @@ declare var H: any;
 export class ReportMapService {
   platform: any;
   clusteringLayer: any;
+  overlayLayer: any;
   map: any;
   ui: any
   hereMap: any;
@@ -77,7 +78,9 @@ export class ReportMapService {
     this.startMarker = null; 
     this.endMarker = null; 
     if(this.clusteringLayer)
-    this.hereMap.removeLayer(this.clusteringLayer);
+      this.hereMap.removeLayer(this.clusteringLayer);
+    if(this.overlayLayer)
+      this.hereMap.removeLayer(this.overlayLayer);
   }
 
   getUI(){
@@ -96,11 +99,11 @@ export class ReportMapService {
           return `https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/${zoom}/${column}/${row}/256/png8?apiKey=BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw&pois`;
         }
     });
-    var overlayLayer = new H.map.layer.TileLayer(tileProvider, {
+    this.overlayLayer = new H.map.layer.TileLayer(tileProvider, {
       // Let's make it semi-transparent
       //opacity: 0.5
     });
-    this.hereMap.addLayer(overlayLayer);
+    this.hereMap.addLayer(this.overlayLayer);
   
    // let poi = this.platform.createDefaultLayers({pois:true});
     //     let routeURL = 'https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/11/525/761/256/png8?apiKey=BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw&pois';
@@ -173,7 +176,7 @@ export class ReportMapService {
         }, false);
 
         //this.calculateAtoB(trackType);
-        if(_selectedRoutes[i].liveFleetPosition.length > 0){
+        if(_selectedRoutes[i].liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
           let liveFleetPoints: any = _selectedRoutes[i].liveFleetPosition;
           liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
           if(_displayRouteView == 'C'){ // classic route
@@ -233,9 +236,9 @@ export class ReportMapService {
       }
       
       if(elemChecker < threshold){
-        element.color = '#00ff00'; // green
+        element.color = '#12a802'; // green
       }else{
-        element.color = '#ffff00'; // yellow  and #FFBF00 - Amber
+        element.color = '#f2f200'; // yellow  and #FFBF00 - Amber
       }
       finalDataPoints.push(element);
     });
@@ -249,6 +252,8 @@ export class ReportMapService {
           innerArray = [];
           curColor = element.color;
           innerArray.push(element);
+        }else if(index == (finalDataPoints.length - 1)){ // last point
+          outerArray.push({dataPoints: innerArray, color: curColor}); 
         }
       }else{ // 0
         curColor = element.color;
