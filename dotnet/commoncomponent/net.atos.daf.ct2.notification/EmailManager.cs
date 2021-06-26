@@ -14,14 +14,14 @@ using net.atos.daf.ct2.translation;
 
 namespace net.atos.daf.ct2.notification
 {
-    public class EmailManager : IEmailManager
+    public class EmailNotificationManager : IEmailNotificationManager
     {
         private readonly IEmailRepository _emailRepository;
 
         private readonly IConfiguration _configuration;
         private readonly EmailConfiguration _emailConfiguration;
         private readonly ITranslationManager _translationManager;
-        public EmailManager(IEmailRepository emailRepository, IConfiguration configuration, ITranslationManager translationManager)
+        public EmailNotificationManager(IEmailRepository emailRepository, IConfiguration configuration, ITranslationManager translationManager)
         {
             _emailRepository = emailRepository;
             _configuration = configuration;

@@ -3,7 +3,7 @@ using net.atos.daf.ct2.notification.entity;
 
 namespace net.atos.daf.ct2.notification
 {
-    public interface IEmailManager
+    public interface IEmailNotificationManager
     {
         Task<bool> TriggerSendEmail(MailNotificationRequest mailNotificationRequest);
     }
