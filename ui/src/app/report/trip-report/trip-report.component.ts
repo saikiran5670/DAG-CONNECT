@@ -156,16 +156,17 @@ export class TripReportComponent implements OnInit, OnDestroy {
       value: 'startPosition'
     }
   ];
+ _state: any ;
   
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService) {
     this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
-    const state = navigation.extras.state as {
+    this._state = navigation.extras.state as {
       fromFleetUtilReport: boolean,
       vehicleData: any
     };
     //console.log(state)
-    if(state){
+    if(this._state){
       this.showBack = true;
     }else{
       this.showBack = false;
@@ -594,7 +595,17 @@ export class TripReportComponent implements OnInit, OnDestroy {
 
   resetTripFormControlValue(){
     if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== ""){
-      this.tripForm.get('vehicle').setValue(this.globalSearchFilterData.vehicleDropDownValue);
+      if(this._state){
+        if(this.vehicleDD.length > 0){
+            let _v = this.vehicleDD.filter(i => i.vin == this._state.vehicleData.vin);
+            if(_v.length > 0){
+              let id =_v[0].vehicleId;
+              this.tripForm.get('vehicle').setValue(id);
+            }
+        }
+        }else{
+          this.tripForm.get('vehicle').setValue(this.globalSearchFilterData.vehicleDropDownValue);
+      }
       this.tripForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
     }else{
       this.tripForm.get('vehicle').setValue('');
@@ -608,7 +619,6 @@ export class TripReportComponent implements OnInit, OnDestroy {
   onVehicleGroupChange(event: any){
     if(event.value || event.value == 0){
     this.internalSelection = true; 
-    this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
     if(parseInt(event.value) == 0){ //-- all group
       //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
       this.vehicleDD = this.vehicleListData;
@@ -632,7 +642,10 @@ export class TripReportComponent implements OnInit, OnDestroy {
     else {
       // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
-      this.tripForm.get('vehicle').setValue(parseInt(this.globalSearchFilterData.vehicleDropDownValue));
+      //this.tripForm.get('vehicle').setValue(parseInt(this.globalSearchFilterData.vehicleDropDownValue));
+      // if(!this._state){
+      //   this.tripForm.get('vehicle').setValue(this.globalSearchFilterData.vehicleDropDownValue);
+      // }
     }
   }
 
@@ -1001,7 +1014,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     //console.log(currentStartTime + "<->" + currentEndTime);
     if(this.wholeTripData.vinTripList.length > 0){
-      let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) || (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
+      let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if(filterVIN.length > 0){
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
         ////console.log("distinctVIN:: ", distinctVIN);
@@ -1037,10 +1050,13 @@ export class TripReportComponent implements OnInit, OnDestroy {
       }
       //this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
       this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-      this.resetTripFormControlValue();
+      // this.resetTripFormControlValue();
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.vehicleDD = this.vehicleListData;
+    if(this.vehicleDD.length > 0){
+     this.resetTripFormControlValue();
+    }
     this.setVehicleGroupAndVehiclePreSelection();
     if(this.showBack){
       this.onSearch();
