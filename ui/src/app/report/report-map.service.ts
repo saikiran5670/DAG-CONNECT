@@ -177,7 +177,8 @@ export class ReportMapService {
           let liveFleetPoints: any = _selectedRoutes[i].liveFleetPosition;
           liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
           if(_displayRouteView == 'C'){ // classic route
-            this.showClassicRoute(liveFleetPoints, trackType, 'blue');
+            let blueColorCode: any = '#436ddc';
+            this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
           }else if(_displayRouteView == 'F' || _displayRouteView == 'CO'){ // fuel consumption/CO2 emissiom route
             let filterDataPoints: any = this.getFilterDataPoints(liveFleetPoints, _displayRouteView);
             filterDataPoints.forEach((element) => {
@@ -232,9 +233,9 @@ export class ReportMapService {
       }
       
       if(elemChecker < threshold){
-        element.color = 'green';
+        element.color = '#00ff00'; // green
       }else{
-        element.color = 'red';
+        element.color = '#ffff00'; // yellow  and #FFBF00 - Amber
       }
       finalDataPoints.push(element);
     });
