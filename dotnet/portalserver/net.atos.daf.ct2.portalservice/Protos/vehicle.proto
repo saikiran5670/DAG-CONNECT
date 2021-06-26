@@ -36,6 +36,7 @@ service VehicleService {
   rpc GetVehicleGroupbyAccountId (VehicleGroupListRequest) returns (VehicleGroupResponse);
 
   rpc UpdateVehicleConnection(VehicleConnectRequest)returns(VehicleConnectResponse);
+  rpc GetVehicleAssociatedGroupCount (VehicleCountFilterRequest) returns (VehicleCountFilterResponse);
 }
 
 message VehiclesBySubscriptionDetailsResponse{
@@ -375,4 +376,19 @@ message VehicleConnectResponse {
   string Message = 2;
   repeated VehicleConnection VehicleConnectedList = 3;
   repeated VehicleConnection VehicleConnectionfailedList = 4;
+}
+
+message VehicleCountFilterRequest 
+{
+    int32 VehicleGroupId =1;
+    string GroupType =2;
+    string FunctionEnum=3;
+    int32 OrgnizationId=4;
+}
+
+message VehicleCountFilterResponse
+{
+    Responcecode Code = 1;
+    string Message = 2;
+    int32 VehicleCount=3;
 }

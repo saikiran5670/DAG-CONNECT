@@ -51,6 +51,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public string Vehiclename { get; set; }
         public string Vehiclegroupname { get; set; }
         public string Vehiclegrouptype { get; set; }
+        public string Functionenum { get; set; }
         public int Schrep_id { get; set; }
         public int Schrep_schedule_report_id { get; set; }
         public string Schrep_downloaded_at { get; set; }

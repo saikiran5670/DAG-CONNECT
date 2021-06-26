@@ -272,7 +272,7 @@ export class LoginComponent implements OnInit {
 
   public acceptCookies(){
     this.cookiesFlag = false;
-    this.cookieService.set('cookiePolicy', 'true');
+    this.cookieService.set('cookiePolicy', 'true', 365);
   }
 
   public showOrganizationRolePopup(data: any, accountDetails: any, accountPreference: any) {

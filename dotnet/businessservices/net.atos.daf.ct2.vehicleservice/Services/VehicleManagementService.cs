@@ -1078,5 +1078,36 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 });
             }
         }
+
+        #region Vehicle Count For Report Scheduler
+        public override async Task<VehicleCountFilterResponse> GetVehicleAssociatedGroupCount(VehicleCountFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var response = new VehicleCountFilterResponse();
+                VehicleCountFilter vehiclefilter = new VehicleCountFilter();
+                vehiclefilter.VehicleGroupId = request.VehicleGroupId;
+                vehiclefilter.GroupType = request.GroupType;
+                vehiclefilter.FunctionEnum = request.FunctionEnum;
+                vehiclefilter.OrgnizationId = request.OrgnizationId;
+
+                int result = await _vehicleManager.GetVehicleAssociatedGroupCount(vehiclefilter);
+                response.VehicleCount = result;
+                response.Message = "Vehicle Count.";
+                response.Code = Responcecode.Success;
+                _logger.Info("Vehicle Count method in Vehicle service called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new VehicleCountFilterResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+        #endregion
     }
 }
