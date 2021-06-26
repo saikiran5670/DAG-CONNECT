@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.reportscheduler
 
         public async Task<bool> GenerateReport()
         {
-            var flag = false;
+            var flag = true;
             try
             {
                 foreach (var reportSchedulerData in await _reportSchedulerRepository.GetReportCreationSchedulerList())
@@ -42,13 +42,14 @@ namespace net.atos.daf.ct2.reportscheduler
                     }
                     catch (Exception ex)
                     {
+                        flag = false;
                         await AddAuditLog($"SchedulerId: {reportSchedulerData.Id}, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED);
                     }
                 }
-                flag = true;
             }
             catch (Exception ex)
             {
+                flag = false;
                 await AddAuditLog($"Failed to run, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED);
             }
             return flag;

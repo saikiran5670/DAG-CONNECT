@@ -18,30 +18,25 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             MapperRepo repositoryMapper = new MapperRepo();
             try
             {
-                string queryAlert = @"SELECT repsch.id as repsch_id,  
-                                            repsch.organization_id as repsch_organization_id, 
-                                            repsch.report_id as repsch_report_id, 
-                                            repsch.frequency_type as repsch_frequency_type,                                           
-                                            repsch.last_schedule_run_date as repsch_last_schedule_run_date, 
-                                            repsch.next_schedule_run_date as repsch_next_schedule_run_date,                                            
-                                            repsch.mail_subject as repsch_mail_subject, 
-                                            repsch.mail_description as repsch_mail_description,  
-                                            repsch.start_date as repsch_start_date, 
-                                            repsch.end_date as repsch_end_date
-                                            receipt.id as receipt_id, 
-                                            repsch.created_by as repsch_created_by, 
-                                            receipt.email as receipt_email, 
-                                            schrep.token as schrep_token,
-                                            schrep.valid_till as schrep_valid_till, 
-                                            schrep.created_at as schrep_created_at, 
-                                            schrep.start_date as schrep_start_date, 
-                                            schrep.end_date as schrep_end_date
+                string queryAlert = @"SELECT repsch.id as ReportSchedulerId,  
+                                            repsch.organization_id as OrganizationId, 
+                                            repsch.code as LanguageCode,
+                                            repsch.frequency_type as FrequencyType,                                           
+                                            repsch.last_schedule_run_date as LastScheduleRunDate, 
+                                            repsch.next_schedule_run_date as NextScheduleRunDate,                                            
+                                            repsch.mail_subject as MailSubject, 
+                                            repsch.mail_description as MailDescription,  
+                                            repsch.start_date as StartDate, 
+                                            repsch.end_date as EndDate,                                            
+                                            repsch.created_by as ReportCreatedBy, 
+                                            receipt.email as EmailId, 
+                                            schrep.token as ReportToken                                           
 	                                        FROM master.reportscheduler as repsch	                                 
 	                                        Inner JOIN master.scheduledreportrecipient as receipt
 	                                        ON repsch.id=receipt.schedule_report_id AND repsch.status='A' AND receipt.state='A'	                                  
 	                                        inner JOIN master.scheduledreport as schrep
 	                                       ON repsch.id=schrep.schedule_report_id AND repsch.start_date=schrep.start_date AND repsch.end_date=schrep.end_date AND repsch.status='A' ";
-                queryAlert += " where date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date/1000) AT TIME ZONE 'UTC')) = date_trunc('hour', NOW() AT TIME ZONE 'UTC')";
+                queryAlert += "where date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date/1000) AT TIME ZONE 'UTC')) = date_trunc('hour', NOW() AT TIME ZONE 'UTC')";
 
                 IEnumerable<ReportSchedulerEmailResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerEmailResult>(queryAlert);
                 return reportSchedulerResult;// repositoryMapper.GetReportSchedulerList(reportSchedulerResult);
