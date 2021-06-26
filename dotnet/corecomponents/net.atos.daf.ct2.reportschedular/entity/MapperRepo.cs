@@ -132,6 +132,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
             schedulereportvr.VehicleName = request.Vehiclename;
             schedulereportvr.VehicleGroupName = request.Vehiclegroupname;
             schedulereportvr.VehicleGroupType = request.Vehiclegrouptype;
+            schedulereportvr.FunctionEnum = request.Functionenum;
             return schedulereportvr;
         }
         public ScheduledReportRecipient ToScheduledReportRecipientModel(ReportSchedulerResult request)

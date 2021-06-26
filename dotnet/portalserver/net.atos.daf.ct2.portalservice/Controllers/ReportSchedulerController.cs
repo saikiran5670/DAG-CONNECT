@@ -289,6 +289,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (orgnizationid == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
                 ReportSchedulerListResponse response = await _reportschedulerClient.GetReportSchedulerListAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid });
+                if (true)
+                {
+                    foreach (var item in response.ReportSchedulerRequest)
+                    {
+                        foreach (var vehicle in item.ScheduledReportVehicleRef)
+                        {
+                            if (vehicle.VehicleGroupId > 0 && vehicle.VehicleGroupType != "S")
+                            {
+                                VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
+                                vehicleRequest.VehicleGroupId = vehicle.VehicleGroupId;
+                                vehicleRequest.GroupType = vehicle.VehicleGroupType;
+                                vehicleRequest.FunctionEnum = vehicle.FunctionEnum;
+                                vehicleRequest.OrgnizationId = orgnizationid;
+                                VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
+                                vehicle.VehicleCount = vehicleResponse.VehicleCount;
+                            }
+                        }
+                    }
+                }
 
                 if (response == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
@@ -422,7 +441,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         var pdfStreamResult = new MemoryStream();
                         pdfStreamResult.Write(data.Report.ToByteArray(), 0, data.Report.Length);
                         pdfStreamResult.Position = 0;
-                        return File(pdfStreamResult, "application/pdf", data.FileName);
+                        string filename = data.FileName + ".pdf";
+                        return File(pdfStreamResult, "application/pdf", filename);
                     }
                     else
                     {

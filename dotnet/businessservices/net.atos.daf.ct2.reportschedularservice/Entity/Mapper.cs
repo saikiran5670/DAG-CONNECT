@@ -200,6 +200,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             schedulereportvr.VehicleName = string.IsNullOrEmpty(request.VehicleName) ? string.Empty : request.VehicleName;
             schedulereportvr.VehicleGroupName = string.IsNullOrEmpty(request.VehicleGroupName) ? string.Empty : request.VehicleGroupName;
             schedulereportvr.VehicleGroupType = string.IsNullOrEmpty(request.VehicleGroupType) ? string.Empty : request.VehicleGroupType;
+            schedulereportvr.FunctionEnum = string.IsNullOrEmpty(request.FunctionEnum) ? string.Empty : request.FunctionEnum;
             return schedulereportvr;
         }
         internal ReportPDFResponse MapPDFRepoModel(PDFReportScreenModel request)
