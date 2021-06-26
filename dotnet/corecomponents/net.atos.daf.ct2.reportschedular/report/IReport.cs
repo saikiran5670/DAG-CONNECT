@@ -10,8 +10,6 @@ namespace net.atos.daf.ct2.reportscheduler.report
     {
         Task SetParameters(ReportCreationScheduler reportSchedulerData);
 
-        Task<byte[]> GetLogoImage();
-
         Task<string> GenerateSummary();
 
         Task<string> GenerateTable();

@@ -145,6 +145,7 @@ namespace net.atos.daf.ct2.accountservice
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
             preference.IconId = request.IconId;
             preference.IconByte = request.IconByte;
+            preference.CreatedBy = request.CreatedBy;
             return preference;
         }
         public AccountPreference ToPreferenceEntity(Preference.AccountPreference entity)
@@ -163,6 +164,7 @@ namespace net.atos.daf.ct2.accountservice
             request.IconId = entity.IconId;
             if (entity.IconByte != null && entity.IconByte.Length > 0)
                 request.IconByte = entity.IconByte;
+            request.CreatedBy = entity.CreatedBy;
             return request;
         }
         // group mapping

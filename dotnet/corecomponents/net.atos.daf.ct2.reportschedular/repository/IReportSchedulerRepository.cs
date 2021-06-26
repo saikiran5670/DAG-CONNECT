@@ -29,6 +29,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         Task<IEnumerable<UserDateFormat>> GetUserDateFormat();
         Task<IEnumerable<UserTimeFormat>> GetUserTimeFormat();
         Task<int> InsertReportPDF(ScheduledReport scheduledReport);
+        Task<IEnumerable<ReportColumnName>> GetColumnName(int reportId, string languageCode);
         #endregion
 
         Task<int> SendReportEmail();

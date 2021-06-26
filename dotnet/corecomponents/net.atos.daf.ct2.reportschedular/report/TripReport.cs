@@ -111,19 +111,17 @@ namespace net.atos.daf.ct2.account.report
                         EndPosition = tripData.EndPosition,
                         FuelConsumed = tripData.FuelConsumed,
                         DrivingTime = tripData.DrivingTime,
-                        Alert = tripData.Alert,
+                        Alerts = tripData.Alert,
                         Events = tripData.Events,
                         FuelConsumed100km = tripData.FuelConsumed100km
                     });
             }
-            var html = ReportHelper.ToDataTableAndGenerateHTML<TripReportPdfDetails>(tripReportPdfDetails);
+            var html = ReportHelper
+                        .ToDataTableAndGenerateHTML<TripReportPdfDetails>
+                            (tripReportPdfDetails, await _reportSchedularRepository
+                                                                                .GetColumnName(ReportSchedulerData.ReportId, ReportSchedulerData.Code)
+                            );
             return await Task.FromResult<string>(html);
-        }
-
-        public async Task<byte[]> GetLogoImage()
-        {
-            var reportLogo = await _reportSchedularRepository.GetReportLogo(ReportSchedulerData.CreatedBy);
-            return reportLogo.Image;
         }
     }
 }

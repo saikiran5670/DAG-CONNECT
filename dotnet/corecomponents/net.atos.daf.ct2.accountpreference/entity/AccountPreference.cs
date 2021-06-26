@@ -18,6 +18,8 @@ namespace net.atos.daf.ct2.accountpreference
         public bool RefIdNotValid { get; set; }
         public int IconId { get; set; }
         public string IconByte { get; set; }
+        public int CreatedBy { get; set; }
+
     }
 
 }

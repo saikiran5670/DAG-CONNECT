@@ -18,9 +18,9 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             {
                 #region Query GetReportCreationScheduler
                 var query = @"select rs.id as Id, rs.organization_id as OrganizationId, rs.report_id as ReportId, 
-                            r.name as ReportName, r.key as ReportKey,rs.frequency_type as FrequecyType, rs.status as Status, 
+                            r.name as ReportName, trim(r.key) as ReportKey,rs.frequency_type as FrequecyType, rs.status as Status, 
                             rs.type as Type, rs.start_date as StartDate, rs.end_date as EndDate,
-                            rs.code as Code, rs.last_schedule_run_date as LastScheduleRunDate, 
+                            trim(rs.code) as Code, rs.last_schedule_run_date as LastScheduleRunDate, 
                             rs.next_schedule_run_date as NextScheduleRunDate, rs.created_at as CreatedAt, 
                             rs.created_by as CreatedBy, rs.modified_at as ModifiedAT, rs.modified_by as ModifiedBy, 
                             rs.mail_subject as MailSubject, rs.mail_description as MailDescription, 
@@ -33,14 +33,12 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                             ap.date_format_id as DateFormatId,
                             ap.time_format_id as TimeFormatId
                             from master.reportscheduler rs
-                                 inner join master.report r on to_date(TO_CHAR(TO_TIMESTAMP(rs.next_schedule_run_date / 1000), 'DD/MM/YYYY') , 'DD/MM/YYYY')=
-									                            to_date(TO_CHAR(now(), 'DD/MM/YYYY') , 'DD/MM/YYYY') and rs.status = 'A' and r.id = rs.report_id
+                                 inner join master.report r on date_trunc('day', (to_timestamp(rs.next_schedule_run_date/1000) AT TIME ZONE 'UTC'))=
+date_trunc('day', NOW() AT TIME ZONE 'UTC') and rs.status = 'A' and r.id = rs.report_id
 								 left Join master.account ac on ac.id = rs.created_by and ac.state='A'
 	                             left join master.accountpreference ap on ap.id = ac.preference_id								 
 								 left join master.scheduledreport sr on sr.schedule_report_id = rs.id and rs.start_date = sr.start_date and  sr.end_date = rs.end_date
-                            where to_date(TO_CHAR(TO_TIMESTAMP(rs.next_schedule_run_date / 1000), 'DD/MM/YYYY') , 'DD/MM/YYYY')=
-									                            to_date(TO_CHAR(now(), 'DD/MM/YYYY') , 'DD/MM/YYYY') and
-	                              sr.id is null";
+                            where sr.id is null";
                 #endregion
                 return _dataAccess.QueryAsync<ReportCreationScheduler>(query);
             }
@@ -174,6 +172,26 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                values (@schedule_report_id, @report, @token, @valid_till,
 		                               @created_at, @start_date, @end_date,@is_mail_send,@file_name) RETURNING id";
                 return _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public Task<IEnumerable<ReportColumnName>> GetColumnName(int reportId, string languageCode)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@report_id", reportId);
+                parameter.Add("@code", languageCode);
+                var query = @"select da.key as Key,reverse(split_part(reverse(ts.value), '.',1)) as Value
+                              from master.report r 
+                                 inner join master.reportattribute ra on r.id = @report_id and  r.id = ra.report_id
+	                             inner join master.dataattribute da on ra.data_attribute_id = da.id
+	                             left join translation.translation ts on ts.code = @code and ts.name = da.key ";
+                return _dataAccess.QueryAsync<ReportColumnName>(query, parameter);
             }
             catch (Exception)
             {
