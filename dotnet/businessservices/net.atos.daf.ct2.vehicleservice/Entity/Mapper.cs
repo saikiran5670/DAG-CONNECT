@@ -311,5 +311,15 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
                                      }).ToList());
             return vehicleConnectResponse;
         }
+
+        public VehicleCountFilter ToVehicleGroupCountFilter(VehicleCountFilterRequest request)
+        {
+            VehicleCountFilter vehiclefilter = new VehicleCountFilter();
+            vehiclefilter.VehicleGroupId = request.VehicleGroupId;
+            vehiclefilter.GroupType = request.GroupType;
+            vehiclefilter.FunctionEnum = request.FunctionEnum;
+            vehiclefilter.OrgnizationId = request.OrgnizationId;
+            return vehiclefilter;
+        }
     }
 }

@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ReportService } from '../../../services/report.service';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-fleet-utilisation-preference',
@@ -63,7 +64,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     name: 'Upper'
   }];
   
-  constructor(private reportService: ReportService, private _formBuilder: FormBuilder) { }
+  constructor(private reportService: ReportService, private _formBuilder: FormBuilder, private router: Router) { }
 
   ngOnInit() { 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -366,7 +367,14 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.reportService.createReportUserPreference(objData).subscribe((prefData: any) => {
       this.loadFleetUtilisationPreferences();
       this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+      if((this.router.url).includes("fleetfuelreport")){
+        this.reloadCurrentComponent();
+      }
     });
+  }
+
+  reloadCurrentComponent(){
+    window.location.reload(); //-- reload screen
   }
 
   getSuccessMsg(){
