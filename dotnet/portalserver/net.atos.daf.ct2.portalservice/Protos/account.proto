@@ -241,6 +241,7 @@ message AccountFilter {
         int32 LandingPageDisplayId=11;
         int32 IconId =12;
         string IconByte =13;
+        int32 CreatedBy=14;
     }
     message AccountPreferenceResponse
     {
