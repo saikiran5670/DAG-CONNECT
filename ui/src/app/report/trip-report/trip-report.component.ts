@@ -681,10 +681,27 @@ export class TripReportComponent implements OnInit, OnDestroy {
    
     var doc = new jsPDF();
 
-    doc.setFontSize(18);
-    doc.text('Trip Details', 11, 8);
-    doc.setFontSize(11);
-    doc.setTextColor(100);
+    (doc as any).autoTable({
+      styles: {
+          cellPadding: 0.5,
+          fontSize: 12
+      },       
+      didDrawPage: function(data) {     
+          // Header
+          doc.setFontSize(14);
+          var fileTitle = "Trip Details";
+          var img = "/assets/logo.png";
+          doc.addImage(img, 'JPEG',10,10,0,0);
+ 
+          var img = "/assets/logo_daf.png"; 
+          doc.text(fileTitle, 14, 35);
+          doc.addImage(img, 'JPEG',150, 10, 0, 10);            
+      },
+      margin: {
+          bottom: 20, 
+          top:30 
+      }
+  });
 
     let pdfColumns = [['Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
 
