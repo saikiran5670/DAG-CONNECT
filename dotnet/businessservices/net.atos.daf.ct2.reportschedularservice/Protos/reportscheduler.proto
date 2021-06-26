@@ -191,11 +191,9 @@ message VehicleGroupIdList {
 
 message ReportPDFByIdRequest {
  int32 ReportId =1;
- int32 OrganizationId =2;
 }
 message ReportPDFByTokenRequest {
  string Token =1;
- int32 OrganizationId =2;
 }
 message ReportPDFResponse {
  int32 Id = 1;

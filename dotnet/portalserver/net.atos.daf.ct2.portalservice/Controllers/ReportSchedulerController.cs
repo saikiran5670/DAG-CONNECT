@@ -341,7 +341,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region DeleteReportSchedule
         [HttpDelete]
         [Route("delete")]
-        public async Task<IActionResult> DeleteReportSchedule([FromQuery] Entity.ReportScheduler.ReportStatusDeleteModel request)
+        public async Task<IActionResult> DeleteReportSchedule([FromQuery] Entity.ReportScheduler.ReportStatusByIdModel request)
         {
             try
             {
@@ -435,11 +435,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("download")]
-        public async Task<IActionResult> GetPDFBinaryFormatByToken([FromQuery] ReportPDFByTokenRequest request)
+        public async Task<IActionResult> GetPDFBinaryFormatByToken([FromQuery] Entity.ReportScheduler.ReportStatusByTokenModel request)
         {
             try
             {
-                var data = await _reportschedulerClient.GetPDFBinaryFormatByTokenAsync(request);
+                ReportPDFByTokenRequest objReportPDFByTokenRequest = new ReportPDFByTokenRequest();
+                objReportPDFByTokenRequest.Token = request.Token;
+                var data = await _reportschedulerClient.GetPDFBinaryFormatByTokenAsync(objReportPDFByTokenRequest);
                 if (data == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
                 if (data.Code == ResponseCode.Success)
@@ -449,8 +451,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         var pdfStreamResult = new MemoryStream();
                         pdfStreamResult.Write(data.Report.ToByteArray(), 0, data.Report.Length);
                         pdfStreamResult.Position = 0;
-                        string filename = data.FileName + ".pdf";
-                        return File(pdfStreamResult, "application/pdf", filename);
+                        return File(pdfStreamResult, "application/pdf", data.FileName);
                     }
                     else
                     {
@@ -476,11 +477,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region GetPDFBinaryFormatById
         [HttpGet]
         [Route("getpdf")]
-        public async Task<IActionResult> GetPDFBinaryFormatById([FromQuery] ReportPDFByTokenRequest request)
+        public async Task<IActionResult> GetPDFBinaryFormatById([FromQuery] Entity.ReportScheduler.ReportStatusByIdModel request)
         {
             try
             {
-                var data = await _reportschedulerClient.GetPDFBinaryFormatByTokenAsync(request);
+                ReportPDFByIdRequest objReportPDFByIdRequest = new ReportPDFByIdRequest();
+                objReportPDFByIdRequest.ReportId = request.ReportId;
+                var data = await _reportschedulerClient.GetPDFBinaryFormatByIdAsync(objReportPDFByIdRequest);
                 if (data == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
                 if (data.Code == ResponseCode.Success)
