@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public string MailSubject { get; set; }
         public int ReportCreatedBy { get; set; }
         public string MailDescription { get; set; }
-        public string ReportToken { get; set; }
+        public Guid ReportToken { get; set; }
         public long StartDate { get; set; }
         public long EndDate { get; set; }
         public string EmailId { get; set; }
