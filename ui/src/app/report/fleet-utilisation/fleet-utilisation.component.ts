@@ -1202,7 +1202,7 @@ calendarOptions: CalendarOptions = {
 
   exportAsPDFFile(){
    
-    var doc = new jsPDF();
+    var doc = new jsPDF('p', 'mm', 'a4');
 
     doc.setFontSize(18);
     doc.text('Trip Fleet Utilisation Details', 11, 8);
@@ -1239,41 +1239,24 @@ calendarOptions: CalendarOptions = {
       }
     })
     // below line for Download PDF document  
-    doc.save('tripFleetUtilisationTable.pdf');
+   
+    doc.addPage();
 
-
-    // var data = document.getElementById('myChart');  
-    // const divHeight = data.clientHeight
-    // const divWidth = data.clientWidth
-    // const ratio = divHeight / divWidth;
-    // html2canvas(data,
-    //   {
-    //     height: window.outerHeight + window.innerHeight,
-    //     width: window.outerWidth + window.innerWidth,
-    //     windowHeight: window.outerHeight + window.innerHeight,
-    //     windowWidth: window.outerWidth + window.innerWidth,
-    //     scrollX: 0,
-    //     scrollY: 0
-    //   }
-    //   ).then(canvas => {  
-    //   var pdf = new jsPDF("l", "mm", "a4"); 
-    //   var imgData = canvas.toDataURL('image/png');
-    //   var width = pdf.internal.pageSize.getWidth();
-    //   var height = pdf.internal.pageSize.getHeight();
-    //   pdf.addImage(imgData, 'PNG', 0, 0, width, height*ratio); 
-    //   pdf.save('tripFleetUtilisation.pdf'); 
-    // });  
-
-// To merge both pdf
-
-
-  //   const merge = require('easy-pdf-merge');
-  //   merge(['tripFleetUtilisationTable.pdf', 'tripFleetUtilisation.pdf'], 'Ouput.pdf', function (err) {
-  //     if (err) {
-  //         return console.log(err)
-  //     }
-  //     console.log('Successfully merged!')
-  // });
+    let DATA = document.getElementById('charts');
+      
+    html2canvas( DATA )
+    .then(canvas => {  
+        
+        let fileWidth = 200;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
+        
+        const FILEURI = canvas.toDataURL('image/png')
+        // let PDF = new jsPDF('p', 'mm', 'a4');
+        let position = 0;
+        doc.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight) ;
+        doc.save('tripFleetUtilisation.pdf');
+    });     
+   
   }
 
   pageSizeUpdated(_event) {
