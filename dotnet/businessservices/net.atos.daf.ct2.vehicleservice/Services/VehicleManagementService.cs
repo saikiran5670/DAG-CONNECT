@@ -1085,13 +1085,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             try
             {
                 var response = new VehicleCountFilterResponse();
-                VehicleCountFilter vehiclefilter = new VehicleCountFilter();
-                vehiclefilter.VehicleGroupId = request.VehicleGroupId;
-                vehiclefilter.GroupType = request.GroupType;
-                vehiclefilter.FunctionEnum = request.FunctionEnum;
-                vehiclefilter.OrgnizationId = request.OrgnizationId;
-
-                int result = await _vehicleManager.GetVehicleAssociatedGroupCount(vehiclefilter);
+                int result = await _vehicleManager.GetVehicleAssociatedGroupCount(_mapper.ToVehicleGroupCountFilter(request));
                 response.VehicleCount = result;
                 response.Message = "Vehicle Count.";
                 response.Code = Responcecode.Success;

@@ -293,23 +293,27 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (orgnizationid == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
                 orgnizationid = GetContextOrgId();
                 ReportSchedulerListResponse response = await _reportschedulerClient.GetReportSchedulerListAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid });
-                if (true)
+                if (response.ReportSchedulerRequest.Any())
                 {
                     foreach (var item in response.ReportSchedulerRequest)
                     {
-                        foreach (var vehicle in item.ScheduledReportVehicleRef)
+                        if (item.ScheduledReportVehicleRef.Any())
                         {
-                            if (vehicle.VehicleGroupId > 0 && vehicle.VehicleGroupType != "S")
+                            foreach (var vehicle in item.ScheduledReportVehicleRef)
                             {
-                                VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
-                                vehicleRequest.VehicleGroupId = vehicle.VehicleGroupId;
-                                vehicleRequest.GroupType = vehicle.VehicleGroupType;
-                                vehicleRequest.FunctionEnum = vehicle.FunctionEnum;
-                                vehicleRequest.OrgnizationId = orgnizationid;
-                                VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
-                                vehicle.VehicleCount = vehicleResponse.VehicleCount;
+                                if (vehicle.VehicleGroupId > 0 && vehicle.VehicleGroupType != "S")
+                                {
+                                    VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
+                                    vehicleRequest.VehicleGroupId = vehicle.VehicleGroupId;
+                                    vehicleRequest.GroupType = vehicle.VehicleGroupType;
+                                    vehicleRequest.FunctionEnum = vehicle.FunctionEnum;
+                                    vehicleRequest.OrgnizationId = orgnizationid;
+                                    VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
+                                    vehicle.VehicleCount = vehicleResponse.VehicleCount;
+                                }
                             }
                         }
+
                     }
                 }
 
