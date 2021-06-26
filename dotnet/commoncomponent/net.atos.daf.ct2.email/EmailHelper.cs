@@ -86,7 +86,7 @@ namespace net.atos.daf.ct2.email
                         emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AccountInfo.FullName, baseUrl.AbsoluteUri, messageRequest.ToAddressList.First().Key, DateTime.Now.AddDays(messageRequest.RemainingDaysToExpire).ToString("dd-MMM-yyyy"));
                         break;
                     case EmailEventType.SendReport:
-                        emailContent = GetReportEmailContent(emailTemplateContent, baseUrl);
+                        emailContent = GetReportEmailContent(emailTemplateContent, baseUrl, messageRequest);
                         break;
                 }
 
@@ -105,11 +105,14 @@ namespace net.atos.daf.ct2.email
                 throw;
             }
         }
-        public static string GetReportEmailContent(string emailTemplate, Uri baseUrl)
+        public static string GetReportEmailContent(string emailTemplate, Uri baseUrl, MessageRequest messageRequest)
         {
-
-            Uri downloadReportUrl = new Uri(baseUrl, "assets/logo.png"); // replace with downloadreport url from configuration
+            var downloadUrl = "reportscheduler/download?Token={0}";
             var replacedContent = emailTemplate;
+            foreach (var token in messageRequest.ReportTokens)
+            {
+                var downloadReportUrl = new Uri(baseUrl, string.Format(downloadUrl, token));
+            }
 
             return replacedContent;
         }
