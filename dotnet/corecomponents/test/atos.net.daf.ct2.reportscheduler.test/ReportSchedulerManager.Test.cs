@@ -36,6 +36,14 @@ namespace atos.net.daf.ct2.reportscheduler.test
             _helper = new Helper();
         }
 
+        [TestMethod]
+        public async Task GetReportEmailDetailsTest()
+        {
+            var result = await _reportSchedulerRepository.GetReportEmailDetails();
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result != null);
+        }
+
         [TestCategory("Unit-Test-Case")]
         [Description("Test for Get report type")]
         [TestMethod]
