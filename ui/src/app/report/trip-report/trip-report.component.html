@@ -164,7 +164,7 @@
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
                 translationData.lblHerePOIs || 'Here POI(s)'}}</div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-                  <mat-checkbox>{{ translationData.lblHotel || 'Hotel' }}</mat-checkbox>
+                  <mat-checkbox (change)='poiSelected($event,"Hotel")'>{{ translationData.lblHotel || 'Hotel' }}</mat-checkbox>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                   <mat-checkbox>{{ translationData.lblParking || 'Parking' }}</mat-checkbox>

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.reportscheduler;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportschedulerservice.Entity;
+using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.visibility;
 using Newtonsoft.Json;
 
@@ -325,28 +327,41 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
         #endregion
 
         #region GetPDFBinaryFormatById
-        public override async Task<ReportPDFListResponse> GetPDFBinaryFormatById(ReportPDFByIdRequest request, ServerCallContext context)
+        public override async Task<ReportPDFResponse> GetPDFBinaryFormatById(ReportPDFByIdRequest request, ServerCallContext context)
         {
             try
             {
                 ReportPDFByidModel objReportPDFByidModel = new ReportPDFByidModel();
                 objReportPDFByidModel.Id = request.ReportId;
-                objReportPDFByidModel.OrganizationId = request.OrganizationId;
                 var data = await _reportSchedulerManager.GetPDFBinaryFormatById(objReportPDFByidModel);
-                ReportPDFListResponse response = new ReportPDFListResponse();
+                _logger.Info(ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_CALLED_MSG);
                 if (data != null)
                 {
-                    response.PDFList.Add(_mapper.MapPDFRepoModel(data));
+                    ReportPDFResponse response = new ReportPDFResponse()
+                    {
+                        FileName = data.FileName ?? null,
+                        Id = data.Id,
+                        Report = ByteString.CopyFrom(data.Report) ?? null,
+                        ScheduleReportId = data.ScheduleReportId,
+                        Message = ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_SUCCESS_MSG,
+                        Code = ResponseCode.Success
+                    };
+                    return await Task.FromResult(response);
                 }
-                response.Message = ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_SUCCESS_MSG;
-                response.Code = ResponseCode.Success;
-                _logger.Info(ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_CALLED_MSG);
-                return await Task.FromResult(response);
+                else
+                {
+                    ReportPDFResponse response = new ReportPDFResponse()
+                    {
+                        Message = ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_FAIL_MSG,
+                        Code = ResponseCode.NotFound
+                    };
+                    return await Task.FromResult(response);
+                }
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return await Task.FromResult(new ReportPDFListResponse
+                return await Task.FromResult(new ReportPDFResponse
                 {
                     Code = ResponseCode.Failed,
                     Message = string.Format("{0} {1}", ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_FAIL_MSG, ex.Message)
@@ -356,33 +371,57 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
         #endregion
 
         #region GetPDFBinaryFormatByToken
-        public override async Task<ReportPDFListResponse> GetPDFBinaryFormatByToken(ReportPDFByTokenRequest request, ServerCallContext context)
+        public override async Task<ReportPDFResponse> GetPDFBinaryFormatByToken(ReportPDFByTokenRequest request, ServerCallContext context)
         {
             try
             {
                 ReportPDFBytokenModel objReportPDFBytokenModel = new ReportPDFBytokenModel();
                 objReportPDFBytokenModel.Token = request.Token;
-                objReportPDFBytokenModel.OrganizationId = request.OrganizationId;
                 PDFReportScreenModel data = await _reportSchedulerManager.GetPDFBinaryFormatByToken(objReportPDFBytokenModel);
-                ReportPDFListResponse response = new ReportPDFListResponse();
+                _logger.Info(ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_CALLED_MSG);
+                long currentdate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+
                 if (data != null)
                 {
-                    string strupdatetoken = await _reportSchedulerManager.UpdatePDFBinaryRecordByToken(request.Token);
-                    if (strupdatetoken != string.Empty)
+                    if (data.ValidTill < currentdate)
                     {
-                        response.PDFList.Add(_mapper.MapPDFRepoModel(data));
+                        string strUpdatedToken = await _reportSchedulerManager.UpdatePDFBinaryRecordByToken(data.Token.ToString());
+                        ReportPDFResponse response = new ReportPDFResponse()
+                        {
+                            FileName = data.FileName ?? null,
+                            Id = data.Id,
+                            Report = ByteString.CopyFrom(data.Report) ?? null,
+                            ScheduleReportId = data.ScheduleReportId,
+                            Message = ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_SUCCESS_MSG,
+                            Code = ResponseCode.Success
+                        };
+                        return await Task.FromResult(response);
+                    }
+                    else
+                    {
+                        ReportPDFResponse response = new ReportPDFResponse()
+                        {
+                            Message = ReportSchedulerConstant.REPORT_SCHEDULER_VALID_EMAIL_LINK,
+                            Code = ResponseCode.Success
+                        };
+                        return await Task.FromResult(response);
                     }
 
                 }
-                response.Message = ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_SUCCESS_MSG;
-                response.Code = ResponseCode.Success;
-                _logger.Info(ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_CALLED_MSG);
-                return await Task.FromResult(response);
+                else
+                {
+                    ReportPDFResponse response = new ReportPDFResponse()
+                    {
+                        Message = ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_FAIL_MSG,
+                        Code = ResponseCode.NotFound
+                    };
+                    return await Task.FromResult(response);
+                }
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return await Task.FromResult(new ReportPDFListResponse
+                return await Task.FromResult(new ReportPDFResponse
                 {
                     Code = ResponseCode.Failed,
                     Message = string.Format("{0} {1}", ReportSchedulerConstant.REPORT_SCHEDULER_GETFORPDF_FAIL_MSG, ex.Message)

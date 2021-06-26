@@ -348,39 +348,50 @@ namespace net.atos.daf.ct2.account
         {
             try
             {
-
-                var parameter = new DynamicParameters();
-                string query = string.Empty;
-                parameter.Add("@account_id", account.Id);
-                parameter.Add("@organization_Id", account.Organization_Id);
-                //TODO: Check for duplicate account org.
-                query = @"select id from master.accountorg where account_id=@account_id and organization_id=@organization_id and state='A'";
-                var accountOrgId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                if (accountOrgId > 0)
+                if (!await CheckIfAccountExistsInOrg(account.Id, account.Organization_Id.Value))
                 {
-                    account.Id = accountOrgId;
-                    return account;
-                }
-                parameter.Add("@start_date", account.StartDate);
-                if (account.EndDate.HasValue)
-                {
-                    parameter.Add("@end_date", account.EndDate);
-                }
-                else
-                {
-                    parameter.Add("@end_date", null);
-                }
-                query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,state)  
+                    var parameter = new DynamicParameters();
+                    string query = string.Empty;
+                    parameter.Add("@account_id", account.Id);
+                    parameter.Add("@organization_Id", account.Organization_Id.Value);
+                    parameter.Add("@start_date", account.StartDate);
+                    if (account.EndDate.HasValue)
+                    {
+                        parameter.Add("@end_date", account.EndDate);
+                    }
+                    else
+                    {
+                        parameter.Add("@end_date", null);
+                    }
+                    query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,state)  
                                    values(@account_id,@organization_Id,@start_date,@end_date,'A') RETURNING id";
-                accountOrgId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                account.Id = accountOrgId;
-
+                    account.Id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                }
+                return account;
             }
             catch (Exception)
             {
                 throw;
             }
-            return account;
+        }
+
+        public async Task<bool> CheckIfAccountExistsInOrg(int accountId, int orgId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                parameter.Add("@account_id", accountId);
+                parameter.Add("@organization_Id", orgId);
+
+                query = @"SELECT EXISTS 
+                            ( SELECT 1 FROM master.accountorg WHERE account_id=@account_id AND organization_Id=@organization_Id )";
+                return await _dataAccess.ExecuteScalarAsync<bool>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<int> UpsertPasswordModifiedDate(int accountId, long modifiedAt)

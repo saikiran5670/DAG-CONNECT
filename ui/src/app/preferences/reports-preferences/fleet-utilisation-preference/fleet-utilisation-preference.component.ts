@@ -342,8 +342,9 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
         _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
     });
-
-    _calenderArr.push({ dataAttributeId: this.slideStateData.dataAtrributeId, state: (this.fleetUtilForm.controls.calenderViewMode.value) ? "A" : "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 })
+    if(this.slideStateData.dataAtrributeId){
+      _calenderArr.push({ dataAttributeId: this.slideStateData.dataAtrributeId, state: (this.fleetUtilForm.controls.calenderViewMode.value) ? "A" : "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 })
+    }
 
     this.detailColumnData.forEach(element => {
       let dSearch = this.selectionForDetailsColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);

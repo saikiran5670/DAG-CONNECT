@@ -11,7 +11,8 @@ namespace net.atos.daf.ct2.reports
         Task<IEnumerable<UserPreferenceReportDataColumn>> GetRoleBasedDataColumn(int reportId, int accountId, int roleId, int organizationId, int contextOrgId);
         Task<int> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceRequest);
         Task<IEnumerable<VehicleFromTripDetails>> GetVinsFromTripStatistics(IEnumerable<string> vinList);
-        Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilter);
+        Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilter,
+                                                                    bool isLiveFleetRequired = true);
         Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter driverActivityFilter);
         Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter driverActivityFilter);
         Task<IEnumerable<ReportDetails>> GetReportDetails();

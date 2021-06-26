@@ -81,15 +81,13 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             try
             {
                 var parameterType = new DynamicParameters();
-                var queryStatement = @"SELECT distinct
-                                       id as Id
-                                      ,dr.first_name || ' ' || dr.last_name AS DriverName                                         		  
-                                      ,dr.driver_id as DriverId                                        		                                 		                                    		  
-                                       FROM 
-                                       master.driver dr
-                                       Where dr.organization_id= @organization_id;";
+                var queryStatement = @"SELECT id as Id, driver_id_ext as DriverId, first_name ||' '||last_name as DriverName
+	                                    FROM master.driver 
+	                                    Where organization_id= @organization_id
+	                                    AND opt_in='I'
+	                                    AND state='A';";
                 parameterType.Add("@organization_id", organizationid);
-                IEnumerable<DriverDetail> driverdetails = await _dataMartdataAccess.QueryAsync<DriverDetail>(queryStatement, null);
+                IEnumerable<DriverDetail> driverdetails = await _dataAccess.QueryAsync<DriverDetail>(queryStatement, null);
                 return driverdetails;
             }
             catch (Exception)
@@ -541,8 +539,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 					                        (CASE WHEN grp.group_type<>'S' THEN grp.name END) as vehiclegroupname,
                                             (CASE WHEN grp.group_type='S' THEN 'S' ELSE 'G' END) as vehiclegrouptype,
                                             schrep.id as schrep_id, 
-                                            schrep.schedule_report_id as schrep_schedule_report_id, 
-                                            schrep.report as schrep_report,
+                                            schrep.schedule_report_id as schrep_schedule_report_id,                                            
                                             schrep.downloaded_at as schrep_downloaded_at, 
                                             schrep.valid_till as schrep_valid_till, 
                                             schrep.created_at as schrep_created_at, 
@@ -631,12 +628,10 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                     is_mail_send as IsMailSend,
                                     file_name as FileName
                                 FROM master.scheduledreport
-                                WHERE id=@id
-                                AND organization_id=@organization_id";
+                                WHERE id=@id";
                 param.Add("@id", request.Id);
-                param.Add("@organization_id", request.OrganizationId);
                 var data = await _dataAccess.QueryAsync<PDFReportScreenModel>(query, param);
-                return data as PDFReportScreenModel;
+                return data.FirstOrDefault();
             }
             catch (Exception)
             {
@@ -663,14 +658,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                     end_date as EndDate,
                                     is_mail_send as IsMailSend,
                                     file_name as FileName
-                                FROM master.scheduledreport
-                                FROM master.scheduledreport
-                                WHERE token=@token
-                                AND organization_id=@organization_id";
-                param.Add("@token", request.Token);
-                param.Add("@organization_id", request.OrganizationId);
+                                FROM master.scheduledreport                                
+                                WHERE token=@token";
+                param.Add("@token", Guid.Parse(request.Token));
                 var data = await _dataAccess.QueryAsync<PDFReportScreenModel>(query, param);
-                return data as PDFReportScreenModel;
+                return data.FirstOrDefault();
             }
             catch (Exception)
             {
@@ -685,18 +677,16 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             try
             {
                 string query = string.Empty;
-
-                query = @"UPDATE master.reportscheduler 
+                query = @"UPDATE master.scheduledreport 
                           SET downloaded_at=@downloaded_at 
                           WHERE token=@token";
                 var parameter = new DynamicParameters();
-                parameter.Add("@downloaded_at", UTCHandling.GetUTCFromDateTime(DateTime.Now, "UTC"));
-                parameter.Add("@token", token);
-
+                parameter.Add("@downloaded_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameter.Add("@token", Guid.Parse(token));
                 int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
                 if (rowEffected > 0)
                 {
-                    return token;// to show reportid in gRPC message
+                    return token;// to check condition in gRPC message
                 }
                 else
                 {

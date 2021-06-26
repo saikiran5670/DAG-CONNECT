@@ -21,6 +21,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
                 //Setting column names as Property names
                 dataTable.Columns.Add(DisplayNameHelper.GetDisplayName(prop) ?? prop.Name, type);
             }
+
             foreach (T item in items)
             {
                 var values = new object[props.Length];
@@ -41,7 +42,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
             {
                 StringBuilder sb = new StringBuilder();
                 //Table start.
-                sb.Append("<table>");
+                sb.Append("<table align='center'>");
 
                 //Adding HeaderRow.
                 sb.Append("<tr>");
@@ -69,7 +70,9 @@ namespace net.atos.daf.ct2.reportscheduler.helper
             }
             else
             {
-                return null;
+                StringBuilder sb = new StringBuilder();
+                sb.Append("No Records Found.");
+                return sb.ToString();
             }
         }
     }

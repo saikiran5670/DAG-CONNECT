@@ -436,6 +436,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
     });
   }
 
+  poiSelected(_event,data){
+    this.reportMapService.getPOIS();
+  }
   makeUserCategoryPOIList(poiData: any){
     let categoryArr: any = [];
     let _arr: any = poiData.map(item => item.categoryId).filter((value, index, self) => self.indexOf(value) === index);

@@ -11,5 +11,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public string VehicleName { get; set; }
 
         public string RegistrationNo { get; set; }
+
+        public int Id { get; set; }
     }
 }
