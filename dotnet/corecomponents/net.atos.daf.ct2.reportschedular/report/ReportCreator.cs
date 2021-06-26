@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 PaperSize = PaperKind.A4,
                 Margins = new MarginSettings { Top = 10 },
                 //DocumentTitle = "PDF Report"//,
-                Out = $@"C:\Harneet\POC\Employee_Report{ReportSchedulerData.Id}.pdf"
+                //Out = $@"C:\Harneet\POC\Employee_Report{ReportSchedulerData.Id}.pdf"
             };
 
             var objectSettings = new ObjectSettings
@@ -100,7 +100,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
         private async Task<string> GenerateTemplate()
         {
             await Report.SetParameters(ReportSchedulerData);
-            byte[] logoBytes = null;// await GetLogoImage();
+            byte[] logoBytes = await GetLogoImage();
             StringBuilder html = new StringBuilder();
 
             html.AppendFormat(ReportTemplate.REPORT_TEMPLATE
