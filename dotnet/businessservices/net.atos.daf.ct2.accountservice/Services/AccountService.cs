@@ -1303,6 +1303,7 @@ namespace net.atos.daf.ct2.accountservice
                 preference.Exists = false;
                 preference = await _preferencemanager.Create(preference);
                 if (preference.Id.HasValue) request.Id = preference.Id.Value;
+                if (preference.IconId > 0) { request.IconId = preference.IconId; }
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
                 response.Code = Responcecode.Success;
@@ -1330,6 +1331,7 @@ namespace net.atos.daf.ct2.accountservice
                 preference.Exists = false;
                 preference = await _preferencemanager.Update(preference);
                 if (preference.Id.HasValue) request.Id = preference.Id.Value;
+                if (preference.IconId > 0) { request.IconId = preference.IconId; }
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
                 response.Code = Responcecode.Success;

@@ -787,6 +787,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 var accountPreference = new AccountBusinessService.AccountPreference();
                 var preference = new AccountBusinessService.AccountPreferenceResponse();
+                request.CreatedBy = _userDetails.AccountId;
                 accountPreference = _mapper.ToAccountPreference(request);
                 preference = await _accountClient.CreatePreferenceAsync(accountPreference);
                 if (preference != null && preference.Code == AccountBusinessService.Responcecode.Success)
@@ -834,6 +835,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The Preference Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
                 }
+                request.CreatedBy = _userDetails.AccountId;
                 var preference = new AccountBusinessService.AccountPreferenceResponse();
                 var accountPreference = new AccountBusinessService.AccountPreference();
                 accountPreference = _mapper.ToAccountPreference(request);

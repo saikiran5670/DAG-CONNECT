@@ -141,6 +141,7 @@ namespace net.atos.daf.ct2.portalservice.Account
                 LandingPageDisplayId = request.LandingPageDisplayId,
                 IconId = (int)request.IconId,
                 IconByte = request.IconByte.ToString(),
+                CreatedBy = request.CreatedBy
             };
             return preference;
         }

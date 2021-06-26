@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.email;
+using net.atos.daf.ct2.notification;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.repository;
 using net.atos.daf.ct2.translation;
@@ -15,16 +16,21 @@ namespace net.atos.daf.ct2.reportscheduler
     public partial class ReportSchedulerManager : IReportSchedulerManager
     {
         private readonly IReportSchedulerRepository _reportSchedulerRepository;
-        private readonly EmailConfiguration _emailConfiguration;
-        private readonly IConfiguration _configuration;
+        private readonly IEmailNotificationManager _emailNotificationManager;
+        // private readonly EmailConfiguration _emailConfiguration;
+        // private readonly IConfiguration _configuration;
         readonly IAuditTraillib _auditlog;
-        public ReportSchedulerManager(IReportSchedulerRepository reportSchedularRepository, IAuditTraillib auditlog, IConfiguration configuration)
+        public ReportSchedulerManager(IReportSchedulerRepository reportSchedularRepository,
+                                      IAuditTraillib auditlog,
+                                      //IConfiguration configuration,
+                                      IEmailNotificationManager emailNotificationManager)
         {
+            _emailNotificationManager = emailNotificationManager;
             _reportSchedulerRepository = reportSchedularRepository;
             this._auditlog = auditlog;
-            this._configuration = configuration;
-            _emailConfiguration = new EmailConfiguration();
-            configuration.GetSection("EmailConfiguration").Bind(_emailConfiguration);
+            //this._configuration = configuration;
+            //_emailConfiguration = new EmailConfiguration();
+            //configuration.GetSection("EmailConfiguration").Bind(_emailConfiguration);
         }
         public async Task<ReportParameter> GetReportParameter(int accountid, int organizationid)
         {

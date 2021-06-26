@@ -5,7 +5,7 @@ import { ViewChild } from '@angular/core';
 import { ViewChildren } from '@angular/core';
 import { Input } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
-import { Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { FormBuilder } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
@@ -23,6 +23,7 @@ import { Options } from '@angular-slider/ngx-slider';
 import { PeriodSelectionFilterComponent } from '../period-selection-filter/period-selection-filter.component';
 import { Util } from 'src/app/shared/util';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import * as moment from 'moment-timezone';
 
 declare var H: any;
 
@@ -87,9 +88,10 @@ export class AlertAdvancedFilterComponent implements OnInit {
   thresholdVal: any;
   from: any;
   to: any;
+  ui: any;
   options: Options = {
     floor: 0,
-    ceil: 10000
+    ceil: 100000
   };
   @ViewChild(PeriodSelectionFilterComponent)
   periodSelectionComponent: PeriodSelectionFilterComponent;
@@ -113,6 +115,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId= parseInt(localStorage.getItem("accountId"));
+    let today = new Date();
     this.alertAdvancedFilterForm = this._formBuilder.group({
       poiSite: [''],
       distance: [''],
@@ -120,9 +123,9 @@ export class AlertAdvancedFilterComponent implements OnInit {
       duration: [''],
       widthInput: [''],
       fullorCustom: ['A'],
-      fromDate: [''],
+      fromDate: new FormControl(today),
       fromTimeRange: ['00:00'],
-      toDate: [''],
+      toDate: new FormControl(today.setDate(today.getDate() + 14)),
       toTimeRange:['23:59']
     })
 
@@ -143,8 +146,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
     if(this.selectedApplyOn == 'C'){
       this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate,'DD/MM/YYYY HH:MM').split(" ");
       this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate,'DD/MM/YYYY HH:MM').split(" ");
-      this.alertAdvancedFilterForm.get('fromDate').setValue(this.from[0]);
-      this.alertAdvancedFilterForm.get('toDate').setValue(this.to[0]);
+      this.alertAdvancedFilterForm.get('fromDate').setValue(moment(this.from[0]));
+      this.alertAdvancedFilterForm.get('toDate').setValue(moment(this.to[0]));
 
       this.alertAdvancedFilterForm.get('fromTimeRange').setValue(this.from[1]);
       this.alertAdvancedFilterForm.get('toTimeRange').setValue(this.to[1]);
@@ -215,8 +218,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
       );
       window.addEventListener('resize', () => this.map.getViewPort().resize());
       var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-      var ui = H.ui.UI.createDefault(this.map, defaultLayers);  
-    }, 5000);
+      this.ui = H.ui.UI.createDefault(this.map, defaultLayers);  
+    }, 1000);
   }
 
   onChangePOI(event: any){
@@ -283,7 +286,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
     }
-    this.addMarkerOnMap();
+    this.addMarkerOnMap(this.ui);
       
     }
 
@@ -432,19 +435,42 @@ export class AlertAdvancedFilterComponent implements OnInit {
       }
     }
 
-    addMarkerOnMap(){
+    addMarkerOnMap(ui){
       this.map.removeObjects(this.map.getObjects());
       this.markerArray.forEach(element => {
         let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
         this.map.addObject(marker);
         // this.createResizableCircle(this.circularGeofenceFormGroup.controls.radius.value ? parseInt(this.circularGeofenceFormGroup.controls.radius.value) : 0, element);
-        this.createResizableCircle(this.alertAdvancedFilterForm.controls.widthInput.value * 1000,element);
+        this.createResizableCircle(this.alertAdvancedFilterForm.controls.widthInput.value * 1000,this.ui,element);
+
+         //For tooltip on info bubble
+
+        var bubble;
+        marker.addEventListener('pointerenter', function (evt) {
+          // event target is the marker itself, group is a parent event target
+          // for all objects that it contains
+          bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+            // read custom data
+            content:`<div>
+            <b>POI Name: ${element.name}</b><br>
+            <b>Category: ${element.categoryName}</b><br>
+            <b>Sub-Category: ${element.subCategoryName}</b><br>
+            <b>Address: ${element.address}</b>
+            </div>`
+          });
+          // show info bubble
+          ui.addBubble(bubble);
+        }, false);
+        marker.addEventListener('pointerleave', function(evt) {
+          bubble.close();
+        }, false);
+        
       });
       this.geoMarkerArray.forEach(element => {
         if(element.type == "C"){
         this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
         this.map.addObject(this.marker);
-        this.createResizableCircle(element.distance, element);
+        this.createResizableCircle(element.distance, this.ui, element);
         }
         else if(element.type == "O"){
           this.polyPoints = [];
@@ -453,7 +479,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
           this.polyPoints.push(Math.abs(item.longitude.toFixed(4)));
           this.polyPoints.push(0);
           });
-          this.createResizablePolygon(this.map,this.polyPoints,this);
+          this.createResizablePolygon(this.map,this.polyPoints,this,this.ui, element);
         }
   
     });
@@ -520,7 +546,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
       }
     }
 
-    createResizableCircle(_radius: any, rowData: any) {
+    createResizableCircle(_radius: any, ui: any, rowData: any) {
       var circle = new H.map.Circle(
         { lat: rowData.latitude, lng: rowData.longitude },
   
@@ -545,9 +571,28 @@ export class AlertAdvancedFilterComponent implements OnInit {
       circleOutline.draggable = true;
       circleOutline.getGeometry().pushPoint(circleOutline.getGeometry().extractPoint(0));
       this.map.addObject(circleGroup);
+
+      var bubble;
+    circle.addEventListener('pointerenter', function (evt) {
+      // event target is the marker itself, group is a parent event target
+      // for all objects that it contains
+      bubble =  new H.ui.InfoBubble({lat:rowData.latitude,lng:rowData.longitude}, {
+        // read custom data
+        content:`<div>
+        <b>Geofence Name: ${rowData.name}</b><br>
+        <b>Category: ${rowData.categoryName}</b><br>
+        <b>Sub-Category: ${rowData.subCategoryName}</b><br>
+        </div>`
+      });
+      // show info bubble
+      ui.addBubble(bubble);
+    }, false);
+    circle.addEventListener('pointerleave', function(evt) {
+      bubble.close();
+    }, false);
       }
     
-      createResizablePolygon(map: any, points: any, thisRef: any){
+      createResizablePolygon(map: any, points: any, thisRef: any, ui: any, rowData: any){
             var svgCircle = '<svg width="50" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">' +
             '<circle cx="10" cy="10" r="7" fill="transparent" stroke="red" stroke-width="4"/>' +
             '</svg>',
@@ -584,6 +629,28 @@ export class AlertAdvancedFilterComponent implements OnInit {
         
           // add group with polygon and it's vertices (markers) on the map
           map.addObject(mainGroup);
+
+          var bubble;
+          mainGroup.addEventListener('pointerenter', function(evt) {
+            if (polygonTimeout) {
+              clearTimeout(polygonTimeout);
+              polygonTimeout = null;
+            }
+            // show vertice markers
+            verticeGroup.setVisibility(true);
+            
+            bubble =  new H.ui.InfoBubble({ lat: rowData.latitude, lng: rowData.longitude } , {
+              // read custom data
+              content:`<div>
+              <b>Geofence Name: ${rowData.name}</b><br>
+                <b>Category: ${rowData.categoryName}</b><br>
+                <b>Sub-Category: ${rowData.subCategoryName}</b><br>
+              </div>`
+            });
+            // show info bubble
+            ui.addBubble(bubble);
+          }, true);
+         
         
           // event listener for main group to show markers if moved in with mouse (or touched on touch devices)
           mainGroup.addEventListener('pointerenter', function(evt) {
@@ -676,7 +743,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
           this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
           this.map.addObject(this.marker);
           
-          this.createResizableCircle(element.distance, element);
+          this.createResizableCircle(element.distance, this.ui, element);
           }
           // "PolygonGeofence"
           else{
@@ -686,7 +753,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
             this.polyPoints.push(Math.abs(item.longitude.toFixed(4)));
             this.polyPoints.push(0);
             });
-            this.createResizablePolygon(this.map,this.polyPoints,this);
+            this.createResizablePolygon(this.map,this.polyPoints,this, this.ui, element);
           }
     
       });
@@ -876,7 +943,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
         this.poiWidthKm = this.poiWidth / 1000;
         this.alertAdvancedFilterForm.controls.widthInput.setValue(this.poiWidthKm);
         if(this.markerArray.length > 0){
-        this.addMarkerOnMap();
+        this.addMarkerOnMap(this.ui);
         }
     }
    

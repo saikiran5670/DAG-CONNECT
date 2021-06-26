@@ -11,6 +11,7 @@ namespace net.atos.daf.ct2.accountpreference
     public class AccountPreferenceRepository : IAccountPreferenceRepository
     {
         private readonly IDataAccess _dataAccess;
+        readonly string _iconName = "Preference_Icon";
         public AccountPreferenceRepository(IDataAccess dataAccess)
         {
             _dataAccess = dataAccess;
@@ -24,22 +25,25 @@ namespace net.atos.daf.ct2.accountpreference
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@icon", Convert.FromBase64String(preference.IconByte));
-                parameter.Add("@type", 'P');//For account preference
-                parameter.Add("@name", "Preference_Icon");//need to add name of the icon
-                parameter.Add("@state", 'A');
-                parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                parameter.Add("@created_by", 0);
-                parameter.Add("@modified_at", 0);
-                parameter.Add("@modified_by", 0);
-                string queryicon = @"insert into master.icon
+                int iconId = 0;
+                if (!string.IsNullOrEmpty(preference.IconByte))
+                {
+                    parameter.Add("@icon", Convert.FromBase64String(preference.IconByte));
+                    parameter.Add("@type", (char)preference.PreferenceType);//For account preference
+                    parameter.Add("@name", _iconName);//need to add name of the icon
+                    parameter.Add("@state", 'A');
+                    parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    parameter.Add("@created_by", preference.CreatedBy);
+                    parameter.Add("@modified_at", 0);
+                    parameter.Add("@modified_by", 0);
+                    string queryicon = @"insert into master.icon
                                 (icon,type,name,state,created_at,created_by,modified_at,modified_by) 
                                 values (@icon,@type,@name,@state,@created_at,@created_by,@modified_at,@modified_by)RETURNING id";
 
-                var iconId = await _dataAccess.ExecuteScalarAsync<int>(queryicon, parameter);
-
-                int PreferenceId = 0;
-                int Id = 0;
+                    iconId = await _dataAccess.ExecuteScalarAsync<int>(queryicon, parameter);
+                }
+                int preferenceId = 0;
+                int id = 0;
                 string queryCheck = string.Empty;
                 parameter.Add("@ref_id", preference.RefId);
                 parameter.Add("@type", (char)preference.PreferenceType);
@@ -60,16 +64,16 @@ namespace net.atos.daf.ct2.accountpreference
                 {
                     // check if preference does not exists 
                     queryCheck = "select preference_id from master.account where state='A' and id=@ref_id";
-                    PreferenceId = await _dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
-                    if (PreferenceId > 0)
+                    preferenceId = await _dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
+                    if (preferenceId > 0)
                     {
                         preference.Exists = true;
                         return preference;
                     }
                     // in valid account preference
                     queryCheck = "select a.id from master.account a join master.accountorg ag on a.id = ag.account_id and ag.state='A' where a.id=@ref_id";
-                    Id = await _dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
-                    if (Id <= 0)
+                    id = await _dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
+                    if (id <= 0)
                     {
                         preference.RefIdNotValid = true;
                         return preference;
@@ -80,16 +84,16 @@ namespace net.atos.daf.ct2.accountpreference
                 {
                     // check if preference does not exists 
                     queryCheck = "select preference_id from master.organization where state='A' and id=@ref_id";
-                    PreferenceId = await _dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
-                    if (PreferenceId > 0)
+                    preferenceId = await _dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
+                    if (preferenceId > 0)
                     {
                         preference.Exists = true;
                         return preference;
                     }
                     // invalid organization
                     queryCheck = "select id from master.organization where state='A' and id=@ref_id";
-                    Id = await _dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
-                    if (Id <= 0)
+                    id = await _dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
+                    if (id <= 0)
                     {
                         preference.RefIdNotValid = true;
                         return preference;
@@ -103,7 +107,7 @@ namespace net.atos.daf.ct2.accountpreference
                                 values (@type,@language_id,@timezone_id,
                                 @currency_id,@unit_id,@vehicle_display_id,@date_format_id,'A',@time_format_id,@landing_page_display_id,@Icon_id) RETURNING id";
 
-                var preferenceId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var createdPreferenceId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 // Update preference id for account or organization
                 //comment code open
                 if (preference.PreferenceType == PreferenceType.Account)
@@ -115,10 +119,11 @@ namespace net.atos.daf.ct2.accountpreference
                 {
                     queryCheck = "update master.organization set preference_id=@preference_id where id=@ref_id";
                 }
-                parameter.Add("@preference_id", preferenceId);
+                parameter.Add("@preference_id", createdPreferenceId);
                 await _dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
                 //comment code end
-                preference.Id = preferenceId;
+                preference.Id = createdPreferenceId;
+                preference.IconId = iconId;
 
                 transactionScope.Commit();
             }
@@ -141,7 +146,34 @@ namespace net.atos.daf.ct2.accountpreference
 
             try
             {
+                int createdIconId = 0;
                 var parameter = new DynamicParameters();
+                if (!string.IsNullOrEmpty(preference.IconByte))
+                {
+                    string queryicon;
+                    int iconIdExists = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT Icon_id FROM master.accountpreference where id=@id), 0)", new { id = preference.Id });
+                    parameter.Add("@icon", Convert.FromBase64String(preference.IconByte));
+                    parameter.Add("@type", (char)preference.PreferenceType);
+                    parameter.Add("@name", _iconName);
+                    parameter.Add("@state", 'A');
+                    parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    parameter.Add("@modified_by", preference.CreatedBy);
+                    parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    parameter.Add("@created_by", preference.CreatedBy);
+                    if (iconIdExists > 0)
+                    {
+                        queryicon = @"update  master.icon set 
+                                icon=@icon,type=@type,name=@name,state=@state,modified_at=@modified_at,modified_by=@modified_by where id=" + preference.IconId + " RETURNING id;";
+                    }
+                    else
+                    {
+                        queryicon = @"insert into master.icon
+                                (icon,type,name,state,created_at,created_by) 
+                                values (@icon,@type,@name,@state,@created_at,@created_by)RETURNING id";
+
+                    }
+                    createdIconId = await _dataAccess.ExecuteScalarAsync<int>(queryicon, parameter);
+                }
                 parameter.Add("@id", preference.Id);
                 parameter.Add("@language_id", preference.LanguageId);
                 parameter.Add("@timezone_id", preference.TimezoneId);
@@ -151,25 +183,22 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@date_format_id", preference.DateFormatTypeId);
                 parameter.Add("@time_format_id", preference.TimeFormatId);
                 parameter.Add("@landing_page_display_id", preference.LandingPageDisplayId);
-                parameter.Add("@Icon_id", preference.IconId);
+                if (preference.IconId > 0)
+                {
+                    parameter.Add("@Icon_id", preference.IconId);
+                }
+                else
+                {
+                    parameter.Add("@Icon_id", createdIconId);
+                }
 
                 var query = @"update master.accountpreference set language_id=@language_id,
                             timezone_id=@timezone_id,currency_id=@currency_id,unit_id=@unit_id,
                             vehicle_display_id=@vehicle_display_id,
-                            date_format_id=@date_format_id,state='A',time_format_id=@time_format_id,landing_page_display_id=@landing_page_display_id
+                            date_format_id=@date_format_id,state='A',time_format_id=@time_format_id,landing_page_display_id=@landing_page_display_id,icon_id=@icon_id
 	                        WHERE id=@id RETURNING id;";
-                var Id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
-
-
-                parameter.Add("@icon", Convert.FromBase64String(preference.IconByte));
-                parameter.Add("@type", 'P');
-                parameter.Add("@name", preference.UnitId);
-                parameter.Add("@state", 'A');
-                parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                parameter.Add("@modified_by", 0);
-                var queryicon = @"update  master.icon set 
-                                icon=@icon,type=@type,name=@name,state=@state,modified_at=@modified_at,modified_by=@modified_by where id=" + preference.IconId + " RETURNING id;";
-                var Ids = await _dataAccess.ExecuteScalarAsync<int>(queryicon, parameter);
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                preference.IconId = createdIconId;
                 transactionScope.Commit();
             }
             catch (Exception)
@@ -203,7 +232,7 @@ namespace net.atos.daf.ct2.accountpreference
                 int icon_id = 0;
                 checkPreferenceQuery = @"select icon_id from master.accountpreference where id=@id and state='A'";
                 icon_id = await _dataAccess.ExecuteScalarAsync<int>(checkPreferenceQuery, parameter);
-                query.Append(" ; " + "update master.icon set state='D' where id=" + icon_id + " ");
+                query.Append(" ; " + "update master.icon set state='D' , modified_at= " + UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) + " where id=" + icon_id + " ");
                 //result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);                    
                 // Update preference id for account or organization
                 if (preferenceType == PreferenceType.Account)
