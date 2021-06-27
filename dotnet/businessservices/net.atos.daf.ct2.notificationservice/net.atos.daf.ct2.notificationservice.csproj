@@ -19,4 +19,10 @@
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.notificationengine\net.atos.daf.ct2.notificationengine.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="cacert.pem">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
