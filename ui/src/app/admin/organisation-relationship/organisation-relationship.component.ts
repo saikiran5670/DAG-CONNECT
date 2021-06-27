@@ -156,7 +156,8 @@ export class OrganisationRelationshipComponent implements OnInit {
                     this.dataSource.sort = this.sort;
                     this.dataSource.filterPredicate = function(data, filter: any){
                       let val = JSON.parse(filter);
-                        return (data.allowChain).toString().indexOf(val.type) !== -1 &&
+                      let allowChain = data.allowChain == true && data.endDate == 0 ? 'true' :  'false';
+                        return allowChain.indexOf(val.type) !== -1 &&
                               data.orgRelationId.toString().indexOf(val.relation) !== -1 &&
                               data.targetOrgId.toString().indexOf(val.org) !== -1 &&
                               data.vehicleGroupID.toString().indexOf(val.vehicleGrp) !== -1 &&
