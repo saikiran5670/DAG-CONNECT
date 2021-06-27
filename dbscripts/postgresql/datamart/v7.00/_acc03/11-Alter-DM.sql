@@ -20,7 +20,7 @@ CREATE TABLE if not exists tripdetail.tripalert
 TABLESPACE pg_default;
 
 ALTER TABLE  tripdetail.tripalert 
-    OWNER to pgadmin;
+    OWNER to pgdbdmadmin;
 	
 Do $$
 begin
@@ -65,7 +65,7 @@ CREATE TABLE if not exists tripdetail.ecoscoredata
 TABLESPACE pg_default;
 
 ALTER TABLE  tripdetail.ecoscoredata 
-    OWNER to pgadmin;
+    OWNER to pgdbdmadmin;
 
 
 Do $$
