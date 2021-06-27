@@ -20,6 +20,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -51,6 +52,7 @@
     <Protobuf Include="Protos\corridor.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\map.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\reportscheduler.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\pushnotification.proto" GrpcServices="Client" />
 
   </ItemGroup>
   <ItemGroup>

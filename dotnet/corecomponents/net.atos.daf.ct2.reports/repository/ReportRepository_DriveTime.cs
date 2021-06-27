@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.reports.repository
                                          		  , da.activity_date
                                          		  , da.start_time
                                          		  , da.end_time
-                                         		  , da.code
+                                         		  , da.logical_code
                                          		  , sum(da.duration) AS Duration
                                          		  , TO_TIMESTAMP(da.duration)
                                          		FROM livefleet.livefleet_trip_driver_activity da
@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.reports.repository
                                          				AND da.vin = ANY( @Vins )
                                          				----AND da.driver_id IN ( @DriverIDs )
                                          				----AND da.vin IN ( @Vins )
-                                         			GROUP BY da.driver_id, da.activity_date, da.code, da.duration, da.vin, dr.first_name, dr.last_name, da.end_time, da.start_time
+                                         			GROUP BY da.driver_id, da.activity_date, da.logical_code, da.duration, da.vin, dr.first_name, dr.last_name, da.end_time, da.start_time
                                          			ORDER BY da.activity_date DESC
                                          	)
                                            , cte_mappedActivity AS (
@@ -57,9 +57,9 @@ namespace net.atos.daf.ct2.reports.repository
                                            	      , start_time 
                                          	      , end_time
                                          		  , sum(duration) AS duration
-                                         		  , code
+                                         		  , logical_code
                                          		FROM cte_dailyActivity
-                                         			GROUP BY driverName, activity_date, driver_id, vin, activity_date, code, start_time, end_time 
+                                         			GROUP BY driverName, activity_date, driver_id, vin, activity_date, logical_code, start_time, end_time 
                                          			ORDER BY driver_id
                                          	)
                                            , cte_pivotedtable AS (
@@ -70,14 +70,14 @@ namespace net.atos.daf.ct2.reports.repository
                                          		  , activity_date
                                          	      , start_time 
                                          	      , end_time
-                                         		  , code
-                                         		  , max( CASE WHEN ( code = '0') THEN duration ELSE 0 END ) AS rest_time
-                                         		  , max( CASE WHEN ( code = '1' ) THEN duration ELSE 0 END) AS available_time
-                                         		  , max( CASE WHEN ( code = '2' ) THEN duration ELSE 0 END ) AS work_time
-                                         		  , max( CASE WHEN ( code = '3' ) THEN duration ELSE 0 END ) AS drive_time
+                                         		  , logical_code
+                                         		  , max( CASE WHEN ( logical_code = '0') THEN duration ELSE 0 END ) AS rest_time
+                                         		  , max( CASE WHEN ( logical_code = '1' ) THEN duration ELSE 0 END) AS available_time
+                                         		  , max( CASE WHEN ( logical_code = '2' ) THEN duration ELSE 0 END ) AS work_time
+                                         		  , max( CASE WHEN ( logical_code = '3' ) THEN duration ELSE 0 END ) AS drive_time
                                          		FROM
                                          			cte_mappedActivity
-                                         			GROUP BY driverName, driver_id, vin, activity_date, code, start_time, end_time
+                                         			GROUP BY driverName, driver_id, vin, activity_date, logical_code, start_time, end_time
                                          			ORDER BY driver_id
                                          	)
                                          SELECT
@@ -85,7 +85,7 @@ namespace net.atos.daf.ct2.reports.repository
                                            , driver_id AS driverid
                                            , vin
                                            , activity_date AS activitydate
-                                           , code
+                                           , logical_code AS code
                                            , start_time                                                                          AS starttime
                                            , end_time                                                                            AS endtime
                                            , rest_time                                                                           AS resttime
@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.reports.repository
                                            , sum(COALESCE(available_time, 0) + COALESCE(work_time, 0) + COALESCE(drive_time, 0)) AS ServiceTime
                                          FROM
                                          	cte_pivotedtable
-                                         	GROUP BY 	driverName , driver_id, vin, activity_date, code, rest_time, available_time, work_time, drive_time, start_time, end_time";
+                                         	GROUP BY 	driverName , driver_id, vin, activity_date, logical_code, rest_time, available_time, work_time, drive_time, start_time, end_time";
 
                 List<DriversActivities> lstDriverActivities = (List<DriversActivities>)await _dataMartdataAccess.QueryAsync<DriversActivities>(queryActivities, parameterOfFilters);
 
