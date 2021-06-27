@@ -516,10 +516,14 @@ calendarOptions: CalendarOptions = {
       }
       //this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
       this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-      this.resetTripFormControlValue();
+      // this.resetTripFormControlValue();
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.vehicleDD = this.vehicleListData;
+    if(this.vehicleListData.length > 0){
+      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+      this.resetTripFormControlValue();
+    };
     this.setVehicleGroupAndVehiclePreSelection();
     if(this.fromTripPageBack){
       this.onSearch();
@@ -531,96 +535,23 @@ calendarOptions: CalendarOptions = {
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    let _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    
+    let _vinData: any = [];
+    if( parseInt(this.tripForm.controls.vehicle.value ) == 0){
+         _vinData = this.vehicleDD.filter(i => i.vehicleId != 0).map(item => item.vin);
+    }else{
+       let search = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+       if(search.length > 0){
+         _vinData.push(search[0].vin);
+       }
+    }
     if(_vinData.length > 0){
-      let VINs = [];
-      VINs.push(_vinData[0].vin);
       this.showLoadingIndicator = true;
       let searchDataParam = {
         "startDateTime":_startTime,
         "endDateTime":_endTime,
-        "viNs":  VINs,
+        "viNs":  _vinData,
       }
       this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
-      // Dummy data
-
-      // let fleetData =[
-      //   {
-      //     "vehicleName":"Vehicle 1",
-      //     "vin":"XLR0998HGFFT5566",
-      //     "stopTime":1587143959831,
-      //     "numberOfTrips":15,
-      //     "distance":139,
-      //     "idleDuration":353,
-      //     "averageSpeed":2663,
-      //     "odometer":298850780,
-      //     "averageDistancePerDay":50,
-      //     "averageWeightPerTrip":5000,
-      //     "drivingTime":0,
-      //     "tripTime":0,
-      //     "registrationNumber":"",
-      //   },
-      //   {
-      //     "vehicleName":"Vehicle 2",
-      //     "vin":"XLR0998HGFFT5566",
-      //     "stopTime":1587143959831,
-      //     "numberOfTrips":15,
-      //     "distance":13950132,
-      //     "idleDuration":353,
-      //     "averageSpeed":2663,
-      //     "odometer":298850780,
-      //     "averageDistancePerDay":50,
-      //     "averageWeightPerTrip":5000,
-      //     "drivingTime":0,
-      //     "tripTime":0,
-      //     "registrationNumber":"",
-      //   },{
-      //     "vehicleName":"Vehicle 3",
-      //     "vin":"XLR0998HGFFT5566",
-      //     "stopTime":1587143959831,
-      //     "numberOfTrips":15,
-      //     "distance":13925230,
-      //     "idleDuration":353,
-      //     "averageSpeed":2663,
-      //     "odometer":298850780,
-      //     "averageDistancePerDay":50,
-      //     "averageWeightPerTrip":5000,
-      //     "drivingTime":0,
-      //     "tripTime":0,
-      //     "registrationNumber":"",
-      //   },{
-      //     "vehicleName":"Vehicle 4",
-      //     "vin":"XLR0998HGFFT5566",
-      //     "stopTime":1587143959831,
-      //     "numberOfTrips":15,
-      //     "distance":13900,
-      //     "idleDuration":353,
-      //     "averageSpeed":2663,
-      //     "odometer":298850780,
-      //     "averageDistancePerDay":50,
-      //     "averageWeightPerTrip":5000,
-      //     "drivingTime":0,
-      //     "tripTime":0,
-      //     "registrationNumber":"",
-      //   },{
-      //     "vehicleName":"Vehicle 5",
-      //     "vin":"XLR0998HGFFT5566",
-      //     "stopTime":1587143959831,
-      //     "numberOfTrips":15,
-      //     "distance":13900000,
-      //     "idleDuration":353,
-      //     "averageSpeed":2663,
-      //     "odometer":298850780,
-      //     "averageDistancePerDay":50,
-      //     "averageWeightPerTrip":5000,
-      //     "drivingTime":0,
-      //     "tripTime":0,
-      //     "registrationNumber":"",
-      //   }
-      // ];
-     // this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(fleetData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-      // Dummy data ends
 
        this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
       this.setTableInfo();
@@ -774,7 +705,7 @@ calendarOptions: CalendarOptions = {
       this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
       this.tripForm.get('vehicleGroup').setValue(this.fleetUtilizationSearchData.vehicleGroupDropDownValue);
     }else{
-      this.tripForm.get('vehicle').setValue('');
+      this.tripForm.get('vehicle').setValue(0);
       this.tripForm.get('vehicleGroup').setValue(0);
       // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = 0;
       // this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
@@ -815,10 +746,11 @@ calendarOptions: CalendarOptions = {
     //   // this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
     // }
   }
+
   onVehicleGroupChange(event: any){
    if(event.value || event.value == 0){
       this.internalSelection = true; 
-      this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
+      this.tripForm.get('vehicle').setValue(0); //- reset vehicle dropdown
       if(parseInt(event.value) == 0){ //-- all group
         //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
         this.vehicleDD = this.vehicleListData;
@@ -1284,7 +1216,8 @@ calendarOptions: CalendarOptions = {
   gotoTrip(vehData: any){
     const navigationExtras: NavigationExtras = {
       state: {
-        fromFleetUtilReport: true
+        fromFleetUtilReport: true,
+        vehicleData: vehData
       }
     };
     this.router.navigate(['report/tripreport'], navigationExtras);

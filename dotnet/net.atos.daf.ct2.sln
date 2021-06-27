@@ -194,7 +194,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.mapservice
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "atos.net.daf.ct2.reportscheduler.test", "corecomponents\test\atos.net.daf.ct2.reportscheduler.test\atos.net.daf.ct2.reportscheduler.test.csproj", "{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.notification", "commoncomponent\net.atos.daf.ct2.notification\net.atos.daf.ct2.notification.csproj", "{53489655-894D-4F3A-A27A-1B626DE523EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.notification", "commoncomponent\net.atos.daf.ct2.notification\net.atos.daf.ct2.notification.csproj", "{53489655-894D-4F3A-A27A-1B626DE523EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.notificationengine", "net.atos.daf.ct2.notificationengine\net.atos.daf.ct2.notificationengine.csproj", "{889C1E30-4E40-454B-A643-06A6008BBF40}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.notificationservice", "net.atos.daf.ct2.notificationservice\net.atos.daf.ct2.notificationservice.csproj", "{DD9F3DD1-35E3-43EB-AD5E-C1D22D046889}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1144,6 +1148,30 @@ Global
 		{53489655-894D-4F3A-A27A-1B626DE523EB}.Release|x64.Build.0 = Release|Any CPU
 		{53489655-894D-4F3A-A27A-1B626DE523EB}.Release|x86.ActiveCfg = Release|Any CPU
 		{53489655-894D-4F3A-A27A-1B626DE523EB}.Release|x86.Build.0 = Release|Any CPU
+		{889C1E30-4E40-454B-A643-06A6008BBF40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{889C1E30-4E40-454B-A643-06A6008BBF40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{889C1E30-4E40-454B-A643-06A6008BBF40}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{889C1E30-4E40-454B-A643-06A6008BBF40}.Debug|x64.Build.0 = Debug|Any CPU
+		{889C1E30-4E40-454B-A643-06A6008BBF40}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{889C1E30-4E40-454B-A643-06A6008BBF40}.Debug|x86.Build.0 = Debug|Any CPU
+		{889C1E30-4E40-454B-A643-06A6008BBF40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{889C1E30-4E40-454B-A643-06A6008BBF40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{889C1E30-4E40-454B-A643-06A6008BBF40}.Release|x64.ActiveCfg = Release|Any CPU
+		{889C1E30-4E40-454B-A643-06A6008BBF40}.Release|x64.Build.0 = Release|Any CPU
+		{889C1E30-4E40-454B-A643-06A6008BBF40}.Release|x86.ActiveCfg = Release|Any CPU
+		{889C1E30-4E40-454B-A643-06A6008BBF40}.Release|x86.Build.0 = Release|Any CPU
+		{DD9F3DD1-35E3-43EB-AD5E-C1D22D046889}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD9F3DD1-35E3-43EB-AD5E-C1D22D046889}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD9F3DD1-35E3-43EB-AD5E-C1D22D046889}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DD9F3DD1-35E3-43EB-AD5E-C1D22D046889}.Debug|x64.Build.0 = Debug|Any CPU
+		{DD9F3DD1-35E3-43EB-AD5E-C1D22D046889}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DD9F3DD1-35E3-43EB-AD5E-C1D22D046889}.Debug|x86.Build.0 = Debug|Any CPU
+		{DD9F3DD1-35E3-43EB-AD5E-C1D22D046889}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD9F3DD1-35E3-43EB-AD5E-C1D22D046889}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD9F3DD1-35E3-43EB-AD5E-C1D22D046889}.Release|x64.ActiveCfg = Release|Any CPU
+		{DD9F3DD1-35E3-43EB-AD5E-C1D22D046889}.Release|x64.Build.0 = Release|Any CPU
+		{DD9F3DD1-35E3-43EB-AD5E-C1D22D046889}.Release|x86.ActiveCfg = Release|Any CPU
+		{DD9F3DD1-35E3-43EB-AD5E-C1D22D046889}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1234,6 +1262,8 @@ Global
 		{EE00332D-C042-406C-A64B-5DA492595D45} = {05D9A3A5-02DB-44AC-8E17-030995037356}
 		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C} = {A8B3E117-26FF-4FC1-A381-ED115B3104D5}
 		{53489655-894D-4F3A-A27A-1B626DE523EB} = {824A4D14-F8BE-4618-AEDC-A34C9FD2261E}
+		{889C1E30-4E40-454B-A643-06A6008BBF40} = {2783CFF0-6071-4B9E-8414-18ACB95D1997}
+		{DD9F3DD1-35E3-43EB-AD5E-C1D22D046889} = {E42B6632-428F-4BDE-BB14-D8FA9DD42E87}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD5CC07A-2F4F-48DF-AB1C-BE925A46D5B7}
