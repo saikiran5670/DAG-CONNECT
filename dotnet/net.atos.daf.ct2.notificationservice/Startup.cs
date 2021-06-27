@@ -55,7 +55,6 @@ namespace net.atos.daf.ct2.notificationservice
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>();
                 endpoints.MapGrpcService<PushNotificationManagementService>();
 
                 endpoints.MapGet("/", async context =>
