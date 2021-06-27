@@ -8,16 +8,20 @@ using net.atos.daf.ct2.notificationservice.entity;
 using net.atos.daf.ct2.pushnotificationservice;
 using net.atos.daf.ct2.notificationservice;
 using Grpc.Core;
+using log4net;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.notificationservice.services
 {
     public class PushNotificationManagementService : PushNotificationService.PushNotificationServiceBase
     {
+        private readonly ILog _logger;
         private readonly KafkaConfiguration _kafkaConfiguration;
         private readonly IConfiguration _configuration;
         private readonly ITripAlertManager _tripAlertManager;
         public PushNotificationManagementService(ITripAlertManager tripAlertManager, IConfiguration configuration)
         {
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._configuration = configuration;
             _kafkaConfiguration = new KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
