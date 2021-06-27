@@ -16,11 +16,11 @@ namespace net.atos.daf.ct2.notificationservice.services
         private readonly KafkaConfiguration _kafkaConfiguration;
         private readonly IConfiguration _configuration;
         private readonly ITripAlertManager _tripAlertManager;
-        public PushNotificationManagementService(ITripAlertManager tripAlertManager, IConfiguration Configuration)
+        public PushNotificationManagementService(ITripAlertManager tripAlertManager, IConfiguration configuration)
         {
-            this._configuration = Configuration;
+            this._configuration = configuration;
             _kafkaConfiguration = new KafkaConfiguration();
-            Configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
+            configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
             _tripAlertManager = tripAlertManager;
         }
 

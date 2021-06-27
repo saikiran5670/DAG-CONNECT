@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.notificationengine
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }

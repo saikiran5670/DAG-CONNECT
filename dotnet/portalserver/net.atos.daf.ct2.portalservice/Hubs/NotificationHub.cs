@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.portalservice.hubs
             {
                 await foreach (var alertMessageData in streamingCall.ResponseStream.ReadAllAsync(cancellationToken: cts.Token))
                 {
-                    await Clients.All.SendAsync("NotifyAlertResponse", this.Context.ConnectionId + " " + JsonConvert.SerializeObject(alertMessageData));
+                    await Clients.All.SendAsync("NotifyAlertResponse", this.Context.ConnectionId + " " + JsonConvert.SerializeObject(alertMessageData) + " " + someTextFromClient);
                 }
             }
             catch (RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.Cancelled)
