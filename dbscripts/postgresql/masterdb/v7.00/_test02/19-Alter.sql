@@ -15,7 +15,7 @@ CREATE TABLE if not exists master.notificationrecipientref
 TABLESPACE pg_default;
 
 ALTER TABLE  master.notificationrecipientref  
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 	
 Do $$
 begin
@@ -104,7 +104,7 @@ CREATE TABLE if not exists master.notificationhistory
 TABLESPACE pg_default;
 
 ALTER TABLE  master.notificationhistory  
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 	
 Do $$
 begin
