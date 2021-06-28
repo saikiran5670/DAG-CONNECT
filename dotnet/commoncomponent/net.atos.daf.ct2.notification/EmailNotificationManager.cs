@@ -40,8 +40,10 @@ namespace net.atos.daf.ct2.notification
             mailNotificationRequest.MessageRequest.TokenSecret = mailNotificationRequest.TokenSecret;
             try
             {
-                var languageCode = await GetLanguageCodePreference(mailNotificationRequest.MessageRequest.AccountInfo.EmailId,
-                                                                   mailNotificationRequest.MessageRequest.AccountInfo.Organization_Id);
+                var languageCode = string.IsNullOrEmpty(mailNotificationRequest.MessageRequest.LanguageCode) ?
+                                        await GetLanguageCodePreference(mailNotificationRequest.MessageRequest.AccountInfo.EmailId,
+                                                                        mailNotificationRequest.MessageRequest.AccountInfo.Organization_Id)
+                                        : mailNotificationRequest.MessageRequest.LanguageCode;
                 var emailTemplate = await _translationManager.GetEmailTemplateTranslations(mailNotificationRequest.EventType,
                                                                                            mailNotificationRequest.ContentType,
                                                                                            languageCode);
