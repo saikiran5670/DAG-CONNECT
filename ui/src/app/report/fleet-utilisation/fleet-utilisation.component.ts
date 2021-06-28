@@ -87,6 +87,10 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   isChartsOpen: boolean = false;
   isCalendarOpen: boolean = false;
   isSummaryOpen: boolean = false;
+  summaryColumnData: any = [];
+  chartsColumnData: any = [];
+  calenderColumnData: any = [];
+  detailColumnData: any = [];
   timebasedThreshold : any = 36000;
   mileagebasedThreshold : any = 60;
   showField: any = {
@@ -166,12 +170,16 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   lineChartVehicleCount: any = [];
   greaterMileageCount :  any = 0;
   greaterTimeCount :  any = 0;
-  calendarpreferenceOption : any = 'Distance';
+  calendarpreferenceOption : any = "da_report_calendarview_totaltrips";
   calendarValue: any =0;
 
 // Bar chart implementation
 
 barChartOptions: any = {
+  responsive: true,
+  legend: {
+    position: 'bottom',
+  },
   scales: {
     yAxes: [{
       id: "y-axis-1",
@@ -204,12 +212,16 @@ barChartData: any[] = [
   { 
     label: 'Average distance per vehicle(km/day)',
     type: 'bar',
+    backgroundColor: '#7BC5EC',
+    hoverBackgroundColor: '#7BC5EC',
     yAxesID: "y-axis-1",
     data: this.averageDistanceBarData,	    
     },
     {
       label: 'Total distance(km)',
       type: 'bar',
+      backgroundColor: '#4679CC',
+      hoverBackgroundColor: '#4679CC',
       yAxesID: "y-axis-1",
       data: this.barVarticleData
     },
@@ -220,6 +232,11 @@ barChartData: any[] = [
 doughnutChartLabels: Label[] = ['Percentage of vehicles with distance done above 1000 km', 'Percentage of vehicles with distance done under 1000 km'];
 doughnutChartData: any = [];
 doughnutChartType: ChartType = 'doughnut';
+doughnutChartColors: Color[] = [
+  {
+    backgroundColor: ['#7BC5EC', '#69EC0A'],
+  },
+];
 
 // Doughnut chart implementation for Time based utilisation
 
@@ -227,6 +244,17 @@ doughnutChartLabelsForTime: Label[] = ['Percentage of vehicles with driving time
 doughnutChartDataForTime: any = [];
 doughnutChartTypeTime: ChartType = 'doughnut';
 
+public doughnut_barOptions: ChartOptions = {
+  responsive: true,
+  legend: {
+    position: 'bottom',
+    // labels: {
+    //   //fontSize: 10,
+    //   usePointStyle: true,
+    // },
+  },
+  cutoutPercentage: 50,
+};
 // Line chart implementation
 
 lineChartData: ChartDataSets[] = [
@@ -236,6 +264,10 @@ lineChartData: ChartDataSets[] = [
 lineChartLabels: Label[] =this.chartsLabelsdefined;
 
 lineChartOptions = {
+  responsive: true,
+  legend: {
+    position: 'bottom',
+  },
   scales: {
     yAxes: [{
       id: "y-axis-1",
@@ -254,7 +286,7 @@ lineChartOptions = {
 
 lineChartColors: Color[] = [
   {
-    borderColor: 'blue',
+    borderColor: '#7BC5EC',
     backgroundColor: 'rgba(255,255,0,0)',
   },
 ];
@@ -410,39 +442,98 @@ calendarOptions: CalendarOptions = {
     return res;
   }
 
+  resetPref(){
+    this.summaryColumnData = [];
+    this.chartsColumnData = [];
+    this.calenderColumnData = [];
+    this.detailColumnData = [];
+  }
 
   getFleetPreferences(){
     this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
-      this.setDisplayColumnBaseOnPref();
+      this.resetPref();
+      this.preparePrefData(this.reportPrefData);
       this.loadWholeTripData();
     }, (error) => {
       this.reportPrefData = [];
-      this.setDisplayColumnBaseOnPref();
+      this.resetPref();
+      this.preparePrefData(this.reportPrefData);
       this.loadWholeTripData();
     });
   }
 
-  setDisplayColumnBaseOnPref(){
-    let filterPref = this.reportPrefData.filter(i => i.state == 'I');
-    if(filterPref.length > 0){
-      filterPref.forEach(element => {
-        let search = this.prefMapData.filter(i => i.key == element.key);
-        if(search.length > 0){
-          let index = this.displayedColumns.indexOf(search[0].value);
-          if (index > -1) {
-              this.displayedColumns.splice(index, 1);
+  preparePrefData(prefData: any){
+    if(prefData.length > 0){
+      prefData.forEach(element => {
+        if(element.key.includes('da_report_general')){
+          this.summaryColumnData.push(element);
+        }else if(element.key.includes('da_report_charts')){
+          this.chartsColumnData.push(element);
+        }else if(element.key.includes('da_report_calendarview')){
+          if(element.key == 'da_report_calendarview_expensiontype'){
+            this.isCalendarOpen = (element.state == "A") ? true : false; 
+          }else{
+            this.calenderColumnData.push(element);
           }
-        }
-
-        if(element.key == 'da_report_details_vehiclename'){
-          this.showField.vehicleName = false;
-        }else if(element.key == 'da_report_details_vin'){
-          this.showField.vin = false;
-        }else if(element.key == 'da_report_details_registrationnumber'){
-          this.showField.regNo = false;
+        }else if(element.key.includes('da_report_details')){
+          this.detailColumnData.push(element);
         }
       });
+      this.setDefaultAttributeBaseOnPref();
+    }
+  }
+
+  noOfVehStatus: boolean = false;
+  idleDurationStatus: boolean = false;
+  totalDistanceStatus: boolean = false;
+  noOfTripsStatus: boolean = false;
+  avgDistanceStatus: boolean = false;
+
+  setDefaultAttributeBaseOnPref(){
+    if(this.detailColumnData.length > 0){ // details section
+      let filterPref = this.detailColumnData.filter(i => i.state == 'I');
+      if(filterPref.length > 0){
+        filterPref.forEach(element => {
+          let search = this.prefMapData.filter(i => i.key == element.key);
+          if(search.length > 0){
+            let index = this.displayedColumns.indexOf(search[0].value);
+            if (index > -1) {
+                this.displayedColumns.splice(index, 1);
+            }
+          }
+          if(element.key == 'da_report_details_vehiclename'){
+            this.showField.vehicleName = false;
+          }else if(element.key == 'da_report_details_vin'){
+            this.showField.vin = false;
+          }else if(element.key == 'da_report_details_registrationnumber'){
+            this.showField.regNo = false;
+          }
+        });
+      }
+    }
+
+    if(this.summaryColumnData.length > 0){ // summary section
+      this.summaryColumnData.forEach(element => {
+        if(element.key == '"da_report_general_numberofvehicles"'){
+          this.noOfVehStatus = element.state == "A" ? true : false;
+        }else if(element.key == 'da_report_general_idleduration'){
+          this.idleDurationStatus = element.state == "A" ? true : false;
+        }else if(element.key == 'da_report_general_totaldistance'){
+          this.totalDistanceStatus = element.state == "A" ? true : false;
+        }else if(element.key == 'da_report_general_numberoftrips'){
+          this.noOfTripsStatus = element.state == "A" ? true : false;
+        }else if(element.key == 'da_report_general_averagedistanceperday'){
+          this.avgDistanceStatus = element.state == "A" ? true : false;
+        }
+      });
+    }
+
+    if(this.calenderColumnData.length > 0){
+      let _s = this.calenderColumnData.filter(i => i.state == 'A');
+      if(_s.length == this.calenderColumnData.length){
+        this.calendarpreferenceOption = "da_report_calendarview_totaltrips";
+      }
     }
   }
 
@@ -558,7 +649,7 @@ calendarOptions: CalendarOptions = {
       this.updateDataSource(this.tripData);
       this.hideloader();
       this.isChartsOpen = true;
-      this.isCalendarOpen = true;
+      //this.isCalendarOpen = true;
       this.isSummaryOpen = true;
       this.tripData.forEach(element => {
         if((element.distance/1000) > this.mileagebasedThreshold){
@@ -659,36 +750,36 @@ calendarOptions: CalendarOptions = {
   calendarSelectedValues(e: any){
     e.forEach(element => {
       switch(this.calendarpreferenceOption){
-      case 'Average Weight': { 
+      case "da_report_calendarview_averageweight": {  // avg weight
         this.calendarOptions.events =[ {title : `${element.averageweight}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
-        console.log(this.calendarOptions.events);
+        //console.log(this.calendarOptions.events);
         break;
       }
-      case 'Idle Duration':{
+      case "da_report_calendarview_idleduration":{ // idle duration
         this.calendarOptions.events =[ {title : `${element.averageidleduration}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
-      case 'Distance': {
+      case "da_report_calendarview_distance": { // distance
         this.calendarOptions.events =[ {title : `${element.averagedistanceperday/1000}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
-      case 'Active vehicles': {
+      case "da_report_calendarview_activevehicles": { // active vehicles
         this.calendarOptions.events =[ {title : `${element.vehiclecount}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
-      case 'Driving time ': {
+      case "da_report_calendarview_drivingtime": { // driving time
         this.calendarOptions.events =[ {title : `${element.averagedrivingtime}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
-      case 'Time based utlisation': {
+      case "da_report_calendarview_timebasedutilization": { // time based utilisation
         this.calendarOptions.events =[ {title : `${(element.averagedrivingtime/this.timebasedThreshold) * 100}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
-      case 'Mileage based utilisation': {
+      case "da_report_calendarview_mileagebasedutilization": { // maleage based utilisation
         this.calendarOptions.events =[ {title : `${(element.averagedistanceperday/this.mileagebasedThreshold)*100}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
-      case 'Total Trips': {
+      case "da_report_calendarview_totaltrips": { // total trip 
         this.calendarOptions.events =[ {title : `${element.tripcount}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }

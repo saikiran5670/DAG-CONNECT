@@ -6,8 +6,9 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 {
     public class ReportEmailDetail
     {
-        public RecipientDetail RecipientDetail { get; set; }
-        public ReportEmailFrequency ReportEmailFrequency { get; set; }
+        public int ReportId { get; set; }
+        public string EmailId { get; set; }
+        public bool IsMailSent { get; set; }
 
     }
 }

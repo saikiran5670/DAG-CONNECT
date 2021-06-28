@@ -6,6 +6,8 @@ using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.notification;
+using net.atos.daf.ct2.notification.repository;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reports.repository;
 using net.atos.daf.ct2.reportscheduler;
@@ -65,6 +67,31 @@ namespace net.atos.daf.ct2.applications
                             //services.AddControllers();
                             services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
                             services.AddHostedService<ReportCreationSchedulerWorker>();
+                        }
+                        else if (args[0] == "ReportEmailScheduler")
+                        {
+                            string dataMartconnectionString = hostContext.Configuration["ConnectionStrings:DataMartConnectionString"];
+
+                            services.AddSingleton<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
+                            {
+                                return new PgSQLDataMartDataAccess(dataMartconnectionString);
+                            });
+                            // services.AddSingleton<IReportCreationSchedulerManager, ReportCreationSchedulerManager>();
+                            services.AddSingleton<IReportSchedulerManager, ReportSchedulerManager>();
+                            services.AddSingleton<IReportSchedulerRepository, ReportSchedulerRepository>();
+                            // services.AddTransient<IReportCreator, ReportCreator>();
+                            //  services.AddTransient<IReportManager, ReportManager>();
+                            // services.AddTransient<IReportRepository, ReportRepository>();
+                            // services.AddTransient<IVisibilityManager, VisibilityManager>();
+                            //services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+                            services.AddTransient<IEmailNotificationManager, EmailNotificationManager>();
+                            services.AddTransient<IEmailRepository, EmailRepository>();
+
+                            //services.AddControllersWithViews();
+                            //services.AddRazorPages();
+                            //services.AddControllers();
+                            // services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+                            //  services.AddHostedService<ReportCreationSchedulerWorker>();
                         }
                     }
                     else
