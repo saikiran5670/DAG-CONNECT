@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.entity;
 using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.email;
 using net.atos.daf.ct2.email.Entity;
@@ -17,10 +19,13 @@ namespace net.atos.daf.ct2.reportscheduler
     {
         private readonly IEmailNotificationManager _emailNotificationManager;
         private readonly IReportSchedulerRepository _reportSchedulerRepository;
-        public ReportEmailSchedulerManager(IEmailNotificationManager emailNotificationManager, IReportSchedulerRepository reportSchedulerRepository)
+        readonly IAuditTraillib _auditlog;
+        public ReportEmailSchedulerManager(IEmailNotificationManager emailNotificationManager,
+            IReportSchedulerRepository reportSchedulerRepository, IAuditTraillib auditTraillib)
         {
             _emailNotificationManager = emailNotificationManager;
             _reportSchedulerRepository = reportSchedulerRepository;
+            _auditlog = auditTraillib;
         }
         public async Task<List<ReportEmailDetail>> SendReportEmail()
         {
@@ -40,12 +45,32 @@ namespace net.atos.daf.ct2.reportscheduler
                 var isSuccess = await _emailNotificationManager.TriggerSendEmail(mailNotifictaion);
                 var mailSent = new ReportEmailDetail() { EmailId = emailItem.EmailId, IsMailSent = emailItem.IsMailSent, ReportId = emailItem.ReportSchedulerId };
                 reportsSent.Add(mailSent);
+                await AddAuditLog(isSuccess, mailSent.EmailId);
                 if (isSuccess)
                 {
                     var nextUpdatedDate = UpdateNextTimeDate(emailItem);
                 }
             }
             return reportsSent;
+        }
+
+        private async Task AddAuditLog(bool isSuccess, string emailId)
+        {
+
+            await _auditlog.AddLogs(new AuditTrail
+            {
+                Created_at = DateTime.Now,
+                Performed_at = DateTime.Now,
+                Performed_by = 2,
+                Component_name = "Report Scheduler Email Notification",
+                Service_name = "Report Email Scheduler Email Component",
+                Event_type = AuditTrailEnum.Event_type.Mail,
+                Event_status = isSuccess ? AuditTrailEnum.Event_status.SUCCESS : AuditTrailEnum.Event_status.FAILED,
+                Message = isSuccess ? $"Email send to {emailId}" : $"Email is not send to {emailId}",
+                Sourceobject_id = 0,
+                Targetobject_id = 0,
+                Updated_data = "EmailNotificationForReportSchedule"
+            });
         }
 
         private async Task<int> UpdateNextTimeDate(ReportSchedulerEmailResult emailItem)
