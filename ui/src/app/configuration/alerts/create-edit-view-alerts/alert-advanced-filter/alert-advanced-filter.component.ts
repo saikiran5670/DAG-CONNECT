@@ -373,7 +373,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
       let selectedGroupList: any = [];
       if(this.actionType == 'view'){
         tableData.forEach((row: any) => {
-          let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == 'G');
+          let search = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == row.id && item.landmarkType == 'G');
           if (search.length > 0) {
             selectedGroupList.push(row);
           }
@@ -418,7 +418,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
       let selectedPOIList: any = [];
       if(this.actionType == 'view'){
         tableData.forEach((row: any) => {
-          let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == "P");
+          let search = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == row.id && item.landmarkType == "P");
           if (search.length > 0) {
             selectedPOIList.push(row);
             setTimeout(() => {

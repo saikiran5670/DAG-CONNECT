@@ -194,7 +194,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.mapservice
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "atos.net.daf.ct2.reportscheduler.test", "corecomponents\test\atos.net.daf.ct2.reportscheduler.test\atos.net.daf.ct2.reportscheduler.test.csproj", "{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.notification", "commoncomponent\net.atos.daf.ct2.notification\net.atos.daf.ct2.notification.csproj", "{53489655-894D-4F3A-A27A-1B626DE523EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.notification", "commoncomponent\net.atos.daf.ct2.notification\net.atos.daf.ct2.notification.csproj", "{53489655-894D-4F3A-A27A-1B626DE523EB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.notificationservice", "businessservices\net.atos.daf.ct2.notificationservice\net.atos.daf.ct2.notificationservice.csproj", "{60285826-CF94-4003-8DE8-D4FA28161FC2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.notificationengine", "corecomponents\net.atos.daf.ct2.notificationengine\net.atos.daf.ct2.notificationengine.csproj", "{6EE894F0-5DF3-4E51-9E2A-37C4C63A20E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1144,6 +1148,30 @@ Global
 		{53489655-894D-4F3A-A27A-1B626DE523EB}.Release|x64.Build.0 = Release|Any CPU
 		{53489655-894D-4F3A-A27A-1B626DE523EB}.Release|x86.ActiveCfg = Release|Any CPU
 		{53489655-894D-4F3A-A27A-1B626DE523EB}.Release|x86.Build.0 = Release|Any CPU
+		{60285826-CF94-4003-8DE8-D4FA28161FC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60285826-CF94-4003-8DE8-D4FA28161FC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60285826-CF94-4003-8DE8-D4FA28161FC2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{60285826-CF94-4003-8DE8-D4FA28161FC2}.Debug|x64.Build.0 = Debug|Any CPU
+		{60285826-CF94-4003-8DE8-D4FA28161FC2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{60285826-CF94-4003-8DE8-D4FA28161FC2}.Debug|x86.Build.0 = Debug|Any CPU
+		{60285826-CF94-4003-8DE8-D4FA28161FC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60285826-CF94-4003-8DE8-D4FA28161FC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60285826-CF94-4003-8DE8-D4FA28161FC2}.Release|x64.ActiveCfg = Release|Any CPU
+		{60285826-CF94-4003-8DE8-D4FA28161FC2}.Release|x64.Build.0 = Release|Any CPU
+		{60285826-CF94-4003-8DE8-D4FA28161FC2}.Release|x86.ActiveCfg = Release|Any CPU
+		{60285826-CF94-4003-8DE8-D4FA28161FC2}.Release|x86.Build.0 = Release|Any CPU
+		{6EE894F0-5DF3-4E51-9E2A-37C4C63A20E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EE894F0-5DF3-4E51-9E2A-37C4C63A20E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EE894F0-5DF3-4E51-9E2A-37C4C63A20E5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6EE894F0-5DF3-4E51-9E2A-37C4C63A20E5}.Debug|x64.Build.0 = Debug|Any CPU
+		{6EE894F0-5DF3-4E51-9E2A-37C4C63A20E5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6EE894F0-5DF3-4E51-9E2A-37C4C63A20E5}.Debug|x86.Build.0 = Debug|Any CPU
+		{6EE894F0-5DF3-4E51-9E2A-37C4C63A20E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EE894F0-5DF3-4E51-9E2A-37C4C63A20E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EE894F0-5DF3-4E51-9E2A-37C4C63A20E5}.Release|x64.ActiveCfg = Release|Any CPU
+		{6EE894F0-5DF3-4E51-9E2A-37C4C63A20E5}.Release|x64.Build.0 = Release|Any CPU
+		{6EE894F0-5DF3-4E51-9E2A-37C4C63A20E5}.Release|x86.ActiveCfg = Release|Any CPU
+		{6EE894F0-5DF3-4E51-9E2A-37C4C63A20E5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1234,6 +1262,8 @@ Global
 		{EE00332D-C042-406C-A64B-5DA492595D45} = {05D9A3A5-02DB-44AC-8E17-030995037356}
 		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C} = {A8B3E117-26FF-4FC1-A381-ED115B3104D5}
 		{53489655-894D-4F3A-A27A-1B626DE523EB} = {824A4D14-F8BE-4618-AEDC-A34C9FD2261E}
+		{60285826-CF94-4003-8DE8-D4FA28161FC2} = {E42B6632-428F-4BDE-BB14-D8FA9DD42E87}
+		{6EE894F0-5DF3-4E51-9E2A-37C4C63A20E5} = {2783CFF0-6071-4B9E-8414-18ACB95D1997}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD5CC07A-2F4F-48DF-AB1C-BE925A46D5B7}

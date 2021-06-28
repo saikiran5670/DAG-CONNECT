@@ -50,7 +50,7 @@ namespace net.atos.daf.ct2.notification
 
                 return await EmailHelper.SendEmail(mailNotificationRequest.MessageRequest, emailTemplate);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }

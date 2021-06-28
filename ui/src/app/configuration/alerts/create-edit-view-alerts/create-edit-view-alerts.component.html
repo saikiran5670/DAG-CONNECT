@@ -744,14 +744,14 @@
             (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && selectedGroup.selected.length == 0) &&
             (selectedCorridor.selected.length == 0)) && 
             (!isCriticalLevelSelected && !isWarningLevelSelected && !isAdvisoryLevelSelected) ||
-            (((isCriticalLevelSelected && 
+            (isCriticalLevelSelected && 
                 ((this.alertForm.get('criticalLevelThreshold').value == '') || 
                   (isWarningLevelSelected && this.alertForm.get('warningLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value ) ||
                   (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value ))) ||
              (isWarningLevelSelected &&
-                (this.alertForm.get('warningLevelThreshold').value == '') ||
-                  (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('warningLevelThreshold').value )) ||
-             (isAdvisoryLevelSelected && (this.alertForm.get('advisoryLevelThreshold').value == ''))))" mat-raised-button color="primary"
+                ((this.alertForm.get('warningLevelThreshold').value == '') ||
+                  (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('warningLevelThreshold').value ))) ||
+             (isAdvisoryLevelSelected && (this.alertForm.get('advisoryLevelThreshold').value == ''))" mat-raised-button color="primary"
             (click)='onCreateUpdate()'>{{ actionType == 'create' || actionType == 'duplicate' ? (translationData.lblCreate || 'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
         </div>

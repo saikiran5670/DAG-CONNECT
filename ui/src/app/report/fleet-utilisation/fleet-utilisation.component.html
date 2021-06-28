@@ -23,7 +23,8 @@
                 </div>
               </div>
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
+                <!-- <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label> -->
+                <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} </mat-label>
                 <mat-form-field appearance="outline">
                   <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
                     <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
@@ -82,7 +83,8 @@
                 </div>
               </div>
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
+                <!-- <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label> -->
+                <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}</mat-label>
                 <mat-form-field appearance="outline">
                   <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
                     <!-- <mat-option value="0">--All--</mat-option> -->
@@ -260,7 +262,10 @@
             <canvas baseChart 
             [data]="doughnutChartData"
             [chartType]="doughnutChartType"
-            [labels]="doughnutChartLabels">
+            [labels]="doughnutChartLabels"
+            [colors]="doughnutChartColors"
+            [options]="doughnut_barOptions"
+            [legend]="barChartLegend">
           </canvas>
         </div>
         </div>
@@ -270,7 +275,10 @@
             <canvas baseChart 
             [data]="doughnutChartDataForTime"
             [chartType]="doughnutChartTypeTime"
-            [labels]="doughnutChartLabelsForTime">
+            [labels]="doughnutChartLabelsForTime"
+            [colors]="doughnutChartColors"
+            [options]="doughnut_barOptions"
+            [legend]="barChartLegend">
           </canvas>
         </div>
         </div>

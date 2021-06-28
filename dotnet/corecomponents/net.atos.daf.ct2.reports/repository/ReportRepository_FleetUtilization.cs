@@ -26,6 +26,7 @@ namespace net.atos.daf.ct2.reports.repository
                                             	(
                                             		SELECT
                                             			VIN
+                                                      , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
                                             		  , count(trip_id)                as numberoftrips
                                             		  , SUM(etl_gps_trip_time)        as etl_gps_trip_time
                                             		  , SUM(end_time_stamp)           as end_time_stamp
@@ -57,7 +58,7 @@ namespace net.atos.daf.ct2.reports.repository
                                             		  , round ( fd.etl_gps_distance,2) as Distance
                                             		  , fd.veh_message_driving_time    as DrivingTime
                                             		  , fd.idle_duration               as IdleTime
-                                            		  , fd.veh_message_distance        as AverageDistance
+                                            		  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistance
                                             		  , round (fd.average_speed,2)     as AverageSpeed
                                             		  , round (fd.average_weight,2)    as AverageWeight
                                             		  , round (fd.start_odometer,2)    as Odometer

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notificationservice-grpc-deployment
+spec:
+  selector:
+    matchLabels:
+      run: notificationservice-grpc
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: notificationservice-grpc
+    spec:
+      containers:
+      - name: notificationservice-grpc
+        image: dafdev017756.azurecr.io/notificationservice-grpc
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: notificationservice
+spec:
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    run: notificationservice-grpc

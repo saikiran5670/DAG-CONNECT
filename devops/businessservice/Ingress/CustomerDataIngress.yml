@@ -136,6 +136,10 @@ spec:
           serviceName: portalservice
           servicePort: 80
         path: /reportscheduler
+      - backend:
+          serviceName: portalservice
+          servicePort: 80
+        path: /notificationservice
   tls:
   - hosts:
     - #{IngressURL}#
