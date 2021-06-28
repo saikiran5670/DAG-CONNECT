@@ -28,5 +28,8 @@ namespace net.atos.daf.ct2.reports
         Task<List<Calender_Fleetutilization>> GetCalenderData(FleetUtilizationFilter tripFilters);
         Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request);
         Task<bool> CreateReportUserPreference(ReportUserPreferenceCreateRequest request);
+        Task<bool> CheckIfReportUserPreferencesExist(int reportId, int accountId, int organizationId);
+        Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId, int organizationId);
+        Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId, int organizationId, int contextOrgId);
     }
 }
