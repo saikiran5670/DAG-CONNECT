@@ -6,7 +6,7 @@ using net.atos.daf.ct2.reportscheduler.entity;
 
 namespace net.atos.daf.ct2.reportscheduler
 {
-    public partial interface IReportSchedulerManager
+    public interface IReportEmailSchedulerManager
     {
         Task<List<ReportEmailDetail>> SendReportEmail();
     }

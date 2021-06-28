@@ -17,12 +17,21 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 
                 case TimeFrequenyType.Daily:
                     reportEmailFrequency.ReportNextScheduleRunDate = UTCHandling.GetUTCFromDateTime(date.AddDays(1));
+                    reportEmailFrequency.StartDate = UTCHandling.GetUTCFromDateTime(deafaultDateTime.AddMilliseconds(reportEmailFrequency.StartDate).ToLocalTime().AddDays(1));
+                    reportEmailFrequency.EndDate = UTCHandling.GetUTCFromDateTime(deafaultDateTime.AddMilliseconds(reportEmailFrequency.EndDate).ToLocalTime().AddDays(1));
+
                     break;
                 case TimeFrequenyType.Weekly:
                     reportEmailFrequency.ReportNextScheduleRunDate = UTCHandling.GetUTCFromDateTime(date.AddDays(7));
+                    reportEmailFrequency.StartDate = UTCHandling.GetUTCFromDateTime(deafaultDateTime.AddMilliseconds(reportEmailFrequency.StartDate).ToLocalTime().AddDays(1));
+                    reportEmailFrequency.EndDate = UTCHandling.GetUTCFromDateTime(deafaultDateTime.AddMilliseconds(reportEmailFrequency.EndDate).ToLocalTime().AddDays(1));
+
                     break;
                 case TimeFrequenyType.BiWeekly:
                     reportEmailFrequency.ReportNextScheduleRunDate = UTCHandling.GetUTCFromDateTime(date.AddDays(14));
+                    reportEmailFrequency.StartDate = UTCHandling.GetUTCFromDateTime(deafaultDateTime.AddMilliseconds(reportEmailFrequency.StartDate).ToLocalTime().AddDays(1));
+                    reportEmailFrequency.EndDate = UTCHandling.GetUTCFromDateTime(deafaultDateTime.AddMilliseconds(reportEmailFrequency.EndDate).ToLocalTime().AddDays(1));
+
                     break;
                 case TimeFrequenyType.Monthly:
                     reportEmailFrequency = GetNextMonthlyTime(reportEmailFrequency.ReportScheduleRunDate);
@@ -32,8 +41,6 @@ namespace net.atos.daf.ct2.reportscheduler.entity
                     break;
             }
             reportEmailFrequency.ReportPrevioudScheduleRunDate = UTCHandling.GetUTCFromDateTime(date);
-            reportEmailFrequency.StartDate = UTCHandling.GetUTCFromDateTime(deafaultDateTime.AddMilliseconds(reportEmailFrequency.StartDate).ToLocalTime().AddDays(1));
-            reportEmailFrequency.EndDate = UTCHandling.GetUTCFromDateTime(deafaultDateTime.AddMilliseconds(reportEmailFrequency.EndDate).ToLocalTime().AddDays(1));
         }
 
         public ReportEmailFrequency GetNextQuarterTime(long currentdate)

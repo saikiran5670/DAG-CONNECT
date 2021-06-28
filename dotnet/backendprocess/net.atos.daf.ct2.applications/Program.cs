@@ -76,22 +76,13 @@ namespace net.atos.daf.ct2.applications
                             {
                                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
                             });
-                            // services.AddSingleton<IReportCreationSchedulerManager, ReportCreationSchedulerManager>();
+
                             services.AddSingleton<IReportSchedulerManager, ReportSchedulerManager>();
                             services.AddSingleton<IReportSchedulerRepository, ReportSchedulerRepository>();
-                            // services.AddTransient<IReportCreator, ReportCreator>();
-                            //  services.AddTransient<IReportManager, ReportManager>();
-                            // services.AddTransient<IReportRepository, ReportRepository>();
-                            // services.AddTransient<IVisibilityManager, VisibilityManager>();
-                            //services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+
                             services.AddTransient<IEmailNotificationManager, EmailNotificationManager>();
                             services.AddTransient<IEmailRepository, EmailRepository>();
 
-                            //services.AddControllersWithViews();
-                            //services.AddRazorPages();
-                            //services.AddControllers();
-                            // services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-                            //  services.AddHostedService<ReportCreationSchedulerWorker>();
                         }
                     }
                     else

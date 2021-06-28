@@ -5,15 +5,23 @@ using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.email;
 using net.atos.daf.ct2.email.Entity;
 using net.atos.daf.ct2.email.Enum;
+using net.atos.daf.ct2.notification;
 using net.atos.daf.ct2.notification.entity;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.ENUM;
+using net.atos.daf.ct2.reportscheduler.repository;
 
 namespace net.atos.daf.ct2.reportscheduler
 {
-    public partial class ReportSchedulerManager : IReportSchedulerManager
+    public class ReportEmailSchedulerManager : IReportEmailSchedulerManager
     {
-
+        private readonly IEmailNotificationManager _emailNotificationManager;
+        private readonly IReportSchedulerRepository _reportSchedulerRepository;
+        public ReportEmailSchedulerManager(IEmailNotificationManager emailNotificationManager, IReportSchedulerRepository reportSchedulerRepository)
+        {
+            _emailNotificationManager = emailNotificationManager;
+            _reportSchedulerRepository = reportSchedulerRepository;
+        }
         public async Task<List<ReportEmailDetail>> SendReportEmail()
         {
             var reportsSent = new List<ReportEmailDetail>();
