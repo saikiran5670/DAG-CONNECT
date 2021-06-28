@@ -36,14 +36,13 @@ export class VehicleConnectSettingsComponent implements OnInit {
   accountId: number;
   connectedAll:any;
   totalVehicles: any = 0;
-  connectedchecked: boolean = false;
   legendsDisabled: boolean = false;
-
+ 
   constructor(private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private translationService: TranslationService, private dialog: MatDialog,) {
     this.defaultTranslation();  
      }
  
-     defaultTranslation() {
+    defaultTranslation() {
     this.translationData = {
       lblAllVehicleDetails: "All Vehicle Details",
       lblNoRecordFound: "No Record Found",
@@ -172,14 +171,8 @@ export class VehicleConnectSettingsComponent implements OnInit {
     }    
     return obj;
   }
-  fieldsChange(values){
-    if (values.checked) {
-      this.connectedAll = true;     
-    }else{
-      this.connectedAll = false;       
-    }   
-  }
-  onChangeConnectedAllStatus(rowData: any){  
+ 
+  onChangeConnectedAllStatus(rowData: any){    
     if( this.vehicleOptInOut.length > 0){    
     const options = {
       title: this.translationData.lblConnected || "Confirmation",
@@ -204,10 +197,10 @@ export class VehicleConnectSettingsComponent implements OnInit {
             this.loadVehicleData();           
           }, error => {
             this.loadVehicleData();
-          });         
+          });      
       }else {       
          this.loadVehicleData();        
-      }         
+      }  
     });  
   }
   else{   
@@ -223,8 +216,8 @@ export class VehicleConnectSettingsComponent implements OnInit {
       title: this.translationData.lblConnected || "Confirmation",
       message: this.translationData.lblYouwanttoDetails || "Are you sure want to change status Connected  # '$' Vehicle?",   
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.optIn == 'I') ? this.translationData.lblDeactivate || "Connected Off" : this.translationData.lblActivate || " Connected On",
-      status: rowData.status == 'C' ? 'On to Off' : 'Off to On' ,
+      confirmText: (rowData.status == "C" && rowData.optIn == "I"|| rowData.status == "C" && rowData.optIn == "H" || rowData.status == "N" && rowData.optIn == "H") ? this.translationData.lblDeactivate || "Connected Off" : this.translationData.lblActivate || " Connected On",
+      status: (rowData.status == "C" && rowData.optIn == "I" || rowData.status == 'C'  && rowData.optIn == "H"|| rowData.status == "N"  && rowData.optIn == "H")? 'On to Off' : 'Off to On' ,
       name: rowData.name
     };
     const dialogConfig = new MatDialogConfig();
