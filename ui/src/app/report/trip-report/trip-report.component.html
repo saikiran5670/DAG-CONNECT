@@ -200,6 +200,19 @@
           </div>
         </div>
       </div>
+
+      
+      <div class="searchBoxContainer">
+        <div id="searchbox" style="padding: 10px 0 0">
+          <input type="text" (keyup)="searchValue($event)" placeholder="Search your location..." />
+        </div>
+        <mat-list [ngClass]="[ activeSearchList ? 'showSearchList' : 'noSearch']">
+          <mat-list-item *ngFor="let item of searchData" (click)="SearchListItems(item)">{{item.title}}</mat-list-item>
+        </mat-list>
+      </div>
+
+
+
       <div #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px"></div>
     </mat-expansion-panel>
   </mat-card>

@@ -142,7 +142,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
               private dialog: MatDialog,
               private alertService: AlertService,
               private corridorService: CorridorService,
-              private dialogService: ConfirmDialogService) 
+              private dialogService: ConfirmDialogService,
+              private el: ElementRef) 
   {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -249,12 +250,12 @@ export class CreateEditViewAlertsComponent implements OnInit {
       else if(this.actionType == 'view'){
         this.alert_category_selected = this.selectedRowData.category;
         this.selectedApplyOn = this.selectedRowData.applyOn;
-        this.alertCategoryName = this.alertCategoryList.filter(item => item.enum == this.alert_category_selected)[0].value
+        this.alertCategoryName = this.translationData[this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_category_selected)[0].key];
+        this.alertTypeName = this.translationData[this.alertCategoryTypeMasterData.filter(item => (item.enum == this.selectedRowData.type && item.parentEnum == this.alert_category_selected))[0].key];
         this.onChangeAlertType(this.selectedRowData.type);
         if(this.selectedRowData.notifications.length != 0)
           this.panelOpenState= true;
       }
-      
     })
   }
 
@@ -288,7 +289,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
     if(this.panelOpenState && this.notificationComponent.openAdvancedFilter){
       this.notificationComponent.setAlertType(this.alert_type_selected);
     }
-    this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
+    if(this.actionType != 'view'){
+      this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
+    }
     
     //Render vehicle group and vehicle dropdowns based on alert type
     let alertTypeObj = this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_type_selected && item.parentEnum == this.alert_category_selected)[0];
@@ -954,10 +957,18 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   getBreadcum() {
+    let page = '';
+    if(this.actionType == 'edit')
+      page = (this.translationData.lblEditAlertDetails ? this.translationData.lblEditAlertDetails : 'Edit Alert Details') ;
+    else if(this.actionType === 'view')
+      page = (this.translationData.lblViewAlertDetails ? this.translationData.lblViewAlertDetails : 'View Alert Details');
+    else if(this.actionType === 'create' || this.actionType === 'duplicate')
+      page = (this.translationData.lblCreateNewAlert ? this.translationData.lblCreateNewAlert : 'Create New Alert');
+    
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
     ${this.translationData.lblLandmarks ? this.translationData.lblAlerts : "Alerts"} / 
-    ${(this.actionType == 'edit') ? (this.translationData.lblEditAlertDetails ? this.translationData.lblEditAlertDetails : 'Edit Alert Details') : (this.translationData.lblViewAlertDetails ? this.translationData.lblViewAlertDetails : ' Create New Alert')}`;
+    ${page}`;
   }
 
   loadPOIData() {
@@ -1691,8 +1702,15 @@ PoiCheckboxClicked(event: any, row: any) {
             this.backToPage.emit(emitObj);
           }  
         }, (error) => {
-          if(error.status == 409)
+          if(error.status == 409 && error.error == 'Duplicate alert name')
+          {
             this.isDuplicateAlert= true;
+            const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'alertName' + '"]');
+            invalidControl.focus();
+          }
+          // else if(error.status == 409 && error.error == 'Duplicate notification recipient label'){
+          //   this.notificationComponent.duplicateRecipientLabel();
+          // }
         })
     }
     else if(this.actionType == 'edit'){

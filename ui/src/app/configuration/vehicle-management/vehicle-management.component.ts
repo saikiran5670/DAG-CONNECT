@@ -14,6 +14,8 @@ export class VehicleManagementComponent implements OnInit {
   translationData: any =[];
   localStLanguage: any;
   accountOrganizationId: any = 0;
+  accountOrganizationSetting: any ;
+  isShow: boolean = false;
 
   constructor(private translationService: TranslationService, private route: Router,) {}
 
@@ -32,6 +34,7 @@ export class VehicleManagementComponent implements OnInit {
     };
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);    
+      this.checkVehicleConnectionSetting();
     });
     //let currentComponentUrl: String;
     // currentComponentUrl = this.route.routerState.snapshot.url
@@ -47,6 +50,19 @@ export class VehicleManagementComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }),{});
+  }
+  
+  checkVehicleConnectionSetting(){
+    localStorage.getItem("accountFeatures");
+    this.accountOrganizationSetting = localStorage.getItem('accountFeatures');
+    let data = JSON.parse(this.accountOrganizationSetting)["menus"];
+    console.log(data);
+   data.forEach(element => {
+      if(element.key == 'feat_vehiclemanagement_vehicleconnectionsetting')
+      {
+        this.isShow = true;
+      }
+    });
   }
   
 }

@@ -167,7 +167,6 @@ export class OrganisationRelationshipComponent implements OnInit {
                                 (getDt(data.startDate)).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
                                 (getDt(data.endDate)).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
                                 getChaining(data.allowChain).indexOf(val.search.toLowerCase())) !== -1);
-
                       };
                     });
              }
