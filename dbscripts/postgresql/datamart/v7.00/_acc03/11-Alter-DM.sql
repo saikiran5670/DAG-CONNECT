@@ -85,4 +85,4 @@ end;
 $$;
 
 ALTER TABLE tripdetail.ecoscoredata ADD CONSTRAINT uk_ecoscoredata_tripid UNIQUE (trip_id);
-
+ALTER TABLE livefleet.livefleet_trip_driver_activity   add COLUMN if not exists logical_code char(1) ;

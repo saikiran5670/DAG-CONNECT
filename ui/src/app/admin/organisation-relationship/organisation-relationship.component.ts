@@ -157,17 +157,16 @@ export class OrganisationRelationshipComponent implements OnInit {
                     this.dataSource.filterPredicate = function(data, filter: any){
                       let val = JSON.parse(filter);
                       let allowChain = data.allowChain == true && data.endDate == 0 ? 'true' :  'false';
-                        return allowChain.indexOf(val.type) !== -1 &&
-                              data.orgRelationId.toString().indexOf(val.relation) !== -1 &&
-                              data.targetOrgId.toString().indexOf(val.org) !== -1 &&
-                              data.vehicleGroupID.toString().indexOf(val.vehicleGrp) !== -1 &&
+                        return (val.type === '' || allowChain.toString() === val.type.toString() ) &&
+                              (val.relation === '' || data.orgRelationId.toString() === val.relation.toString() ) &&
+                              (val.org === '' || data.targetOrgId.toString() === val.org.toString() ) &&
+                              (val.vehicleGrp === '' || data.vehicleGroupID.toString() === val.vehicleGrp.toString() ) &&
                               ((data.relationshipName.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 || 
                                 data.vehicleGroupName.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
                                 data.organizationName.toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
                                 (getDt(data.startDate)).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
                                 (getDt(data.endDate)).toString().toLowerCase().indexOf(val.search.toLowerCase()) !== -1 ||
                                 getChaining(data.allowChain).indexOf(val.search.toLowerCase())) !== -1);
-
                       };
                     });
              }

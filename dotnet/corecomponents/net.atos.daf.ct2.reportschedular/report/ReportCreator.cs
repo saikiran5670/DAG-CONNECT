@@ -90,7 +90,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
                                 StartDate = ReportSchedulerData.StartDate,
                                 EndDate = ReportSchedulerData.EndDate,
                                 Token = Guid.NewGuid(),
-                                FileName = $"{ReportSchedulerData.ReportName}_{DateTime.Now.ToString("ddMMyyyyHHmmss")}",
+                                FileName = $"{ReportSchedulerData.ReportName}_{ReportSchedulerData.Id}_{DateTime.Now.ToString("ddMMyyyyHHmmss")}",
                                 CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now),
                                 ValidTill = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(3)),
                                 IsMailSend = false
@@ -116,7 +116,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
         private async Task<byte[]> GetLogoImage()
         {
             var reportLogo = await _reportSchedularRepository.GetReportLogo(ReportSchedulerData.CreatedBy);
-            return reportLogo.Image;
+            return reportLogo?.Image;
         }
     }
 }

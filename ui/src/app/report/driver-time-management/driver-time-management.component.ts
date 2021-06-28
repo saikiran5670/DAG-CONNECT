@@ -554,7 +554,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     }
     if(_vehicelIds.length > 0){
       this.showLoadingIndicator = true;
-     this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
+      this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
         this.hideloader();
         let tripData = _tripData;
         // let tripData = {
@@ -773,10 +773,10 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           //   },
             
           // ]
-          let updateData = tripData.driverActivities;
-          
+          //let updateData = tripData.driverActivities;
+          this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+          this.driverDetails = tripData.driverActivities;
           this.setGeneralDriverDetailValue();
-          this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(updateData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
           this.setSingleDriverData();
         }
        
@@ -8745,10 +8745,10 @@ let finalGroupDataList = [];
     //           },
               
     //         ]
-
-            let updateData = this.driverDetails;
-            this.setGeneralDriverDetailValue();
-            this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(updateData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+            // this.driverDetails = _row;
+            // let updateData = this.driverDetails;
+            // this.setGeneralDriverDetailValue();
+            // this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(updateData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
 
             this.driverSelected = true;
   }

@@ -226,7 +226,7 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-          <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+          <div *ngIf='distanceChart && distanceChart.state' class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistancePerDay || 'Distance per day' }}</span>
             <div class="chart-wrapper">
               <canvas baseChart 
@@ -239,7 +239,7 @@
             </canvas>
           </div>
         </div>
-        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+        <div *ngIf='activeVehicleChart && activeVehicleChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblActiveVehiclesPerDay || 'Active vehicles per day' }}</span>
           <div class="chart-wrapper">
             <canvas baseChart 
@@ -256,9 +256,9 @@
 
       </div>
       <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-        <div *ngIf = 'isChartsOpen' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+        <div *ngIf='mileageBasedChart && mileageBasedChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMileageBasedUtilisation || 'Mileage based utilisation' }}</span>
-          <div class="chart-wrapper">
+          <div *ngIf = "mileageDChartType" class="chart-wrapper">
             <canvas baseChart 
             [data]="doughnutChartData"
             [chartType]="doughnutChartType"
@@ -268,10 +268,21 @@
             [legend]="barChartLegend">
           </canvas>
         </div>
+        <div *ngIf = "!mileageDChartType" class="chart-wrapper">
+          <canvas baseChart 
+          [data]="mileagePieChartData" 
+          [labels]="mileagePieChartLabels" 
+          [chartType]="pieChartType"
+          [options]="pieChartOptions"
+          [colors]="doughnutChartColors"
+          [plugins]="pieChartPlugins"
+          [legend]="barChartLegend">
+        </canvas>
+      </div>
         </div>
-        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+        <div *ngIf='timeBasedChart && timeBasedChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTimeBasedUtilisation || 'Time based utilisation' }}</span>
-          <div class="chart-wrapper">
+          <div *ngIf = "timeDChartType" class="chart-wrapper">
             <canvas baseChart 
             [data]="doughnutChartDataForTime"
             [chartType]="doughnutChartTypeTime"
@@ -281,6 +292,17 @@
             [legend]="barChartLegend">
           </canvas>
         </div>
+        <div *ngIf = "!timeDChartType" class="chart-wrapper">
+          <canvas baseChart 
+          [data]="timePieChartData" 
+          [labels]="timePieChartLabels" 
+          [chartType]="pieChartType"
+          [colors]="doughnutChartColors"
+          [options]="pieChartOptions"
+          [plugins]="pieChartPlugins"
+          [legend]="barChartLegend">
+        </canvas>
+      </div>
         </div>
       </div>
       </mat-expansion-panel>

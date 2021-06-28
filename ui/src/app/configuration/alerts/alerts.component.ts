@@ -39,6 +39,7 @@ export class AlertsComponent implements OnInit {
   duplicateFlag: boolean = false;
   accountOrganizationId: any;
   accountId: any;
+  accountRoleId: any;
   EmployeeDataService : any= [];  
   packageCreatedMsg : any = '';
   titleVisible : boolean = false;
@@ -49,9 +50,12 @@ export class AlertsComponent implements OnInit {
   alertCriticalityList: any= [];
   alertStatusList: any= [];
 
+  alertTypeListBasedOnPrivilege: any= [];
   stringifiedData: any;  
   parsedJson: any;  
   filterValues = {};  
+  alertCategoryTypeMasterData: any= [];
+  alertCategoryTypeFilterData: any= [];
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   dialogVeh: MatDialogRef<UserDetailTableComponent>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -71,6 +75,7 @@ export class AlertsComponent implements OnInit {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
       this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
       this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+      this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
       let translationObj = {
         id: 0,
         code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -115,11 +120,37 @@ export class AlertsComponent implements OnInit {
         key:'Suspended'
        }
     ]    
-    this.loadAlertsData();        
+    this.loadDataBasedOnPrivileges();
+        
     }, (error) => {
 
     })
   }
+
+  loadDataBasedOnPrivileges(){
+    this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
+      this.alertCategoryTypeMasterData = data["enumTranslation"];
+      this.alertCategoryTypeFilterData = data["alertCategoryFilterRequest"];
+      //this.associatedVehicleData = data["associatedVehicleRequest"];
+
+      let alertTypeMap = new Map();
+      this.alertCategoryTypeFilterData.forEach(element => {
+        alertTypeMap.set(element.featureKey, element.featureKey);
+      });
+
+      if(alertTypeMap != undefined){
+        this.alertCategoryTypeMasterData.forEach(element => {
+          if(alertTypeMap.get(element.key)){
+            element["value"]= this.translationData[element["key"]];
+            this.alertTypeListBasedOnPrivilege.push(element);
+          }
+        });
+      }
+
+      this.loadAlertsData();   
+    })
+  }
+
 
   removeDuplicates(originalArray, prop) {
     var newArray = [];
@@ -204,7 +235,9 @@ export class AlertsComponent implements OnInit {
     this.alertService.getAlertData(this.accountId,this.accountOrganizationId).subscribe((data) => {
       this.initData =data; 
       this.originalAlertData= JSON.parse(JSON.stringify(data)); //Clone array of objects
-      this.initData.forEach(item => {           
+      this.initData.forEach(item => {      
+        let hasPrivilege = this.alertTypeListBasedOnPrivilege.filter(element => element.enum == item.type).length > 0;    
+        item["hasPrivilege"]  = hasPrivilege;
       let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
       catVal.forEach(obj => { 
         item["category"]=obj.value;
