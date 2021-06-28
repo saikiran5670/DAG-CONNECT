@@ -146,3 +146,189 @@ WHERE NOT EXISTS (SELECT 1 FROM master.reportattribute WHERE REPORT_ID =
 				  (SELECT id from MASTER.REPORT WHERE lower(name) = 'fleet utilisation report') AND
 				  DATA_ATTRIBUTE_ID = (SELECT id from master.dataattribute WHERE name = 'Report.CalendarView.ExpensionType'));
 
+
+INSERT INTO TRANSLATION.TRANSLATION (CODE,TYPE,NAME,VALUE,created_at)  
+SELECT 'EN-GB','L','da_report_details_stoptime','Report.Details.StopTime',
+(select extract(epoch from now()) * 1000)
+WHERE NOT EXISTS (SELECT 1 FROM TRANSLATION.TRANSLATION WHERE name = 'da_report_details_stoptime');
+
+INSERT INTO TRANSLATION.TRANSLATION (CODE,TYPE,NAME,VALUE,created_at)  
+SELECT 'EN-GB','L','da_report_details_drivingtime','Report.Details.DrivingTime',
+(select extract(epoch from now()) * 1000)
+WHERE NOT EXISTS (SELECT 1 FROM TRANSLATION.TRANSLATION WHERE name = 'da_report_details_drivingtime');
+
+INSERT INTO TRANSLATION.TRANSLATION (CODE,TYPE,NAME,VALUE,created_at)  
+SELECT 'EN-GB','L','da_report_details_averagedistanceperday','Report.Details.AverageDistancePerDay',
+(select extract(epoch from now()) * 1000)
+WHERE NOT EXISTS (SELECT 1 FROM TRANSLATION.TRANSLATION WHERE name = 'da_report_details_averagedistanceperday');
+
+INSERT INTO TRANSLATION.TRANSLATION (CODE,TYPE,NAME,VALUE,created_at)  
+SELECT 'EN-GB','L','da_report_details_triptime','Report.Details.TripTime',
+(select extract(epoch from now()) * 1000)
+WHERE NOT EXISTS (SELECT 1 FROM TRANSLATION.TRANSLATION WHERE name = 'da_report_details_triptime');
+
+INSERT INTO TRANSLATION.TRANSLATION (CODE,TYPE,NAME,VALUE,created_at)  
+SELECT 'EN-GB','L','da_report_details_vehiclename','Report.Details.VehicleName',
+(select extract(epoch from now()) * 1000)
+WHERE NOT EXISTS (SELECT 1 FROM TRANSLATION.TRANSLATION WHERE name = 'da_report_details_vehiclename');
+
+
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_calendarview_activevehicles',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_calendarview_activevehicles' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_calendarview_averageweight',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_calendarview_averageweight' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_calendarview_distance',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_calendarview_distance' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_calendarview_drivingtime',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_calendarview_drivingtime' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_calendarview_expensiontype',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_calendarview_expensiontype' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_calendarview_idleduration',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_calendarview_idleduration' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_calendarview_mileagebasedutilization',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_calendarview_mileagebasedutilization' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_calendarview_timebasedutilization',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_calendarview_timebasedutilization' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_calendarview_totaltrips',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_calendarview_totaltrips' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_charts_distanceperday',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_charts_distanceperday' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_charts_mileagebasedutilization',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_charts_distanceperday' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_charts_numberofvehiclesperday',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_charts_numberofvehiclesperday' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_charts_timebasedutilization',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_charts_timebasedutilization' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_details_averagespeed',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_details_averagespeed' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_details_averageweightpertrip',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_details_averageweightpertrip' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_details_distance',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_details_distance' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_details_idleduration',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_details_idleduration' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_details_numberoftrips',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_details_numberoftrips' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_details_odometer',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_details_odometer' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_details_registrationnumber',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_details_registrationnumber' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_details_vin',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_details_vin' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_general_averagedistanceperday',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_general_averagedistanceperday' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_general_idleduration',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_general_idleduration' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_general_numberoftrips',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_general_numberoftrips' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_general_numberofvehicles',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_general_numberofvehicles' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_general_totaldistance',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_general_totaldistance' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_details_stoptime',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_details_stoptime' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_details_drivingtime',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_details_drivingtime' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_details_averagedistanceperday',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_details_averagedistanceperday' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_details_triptime',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_details_triptime' 
+and ref_id=0);
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'da_report_details_vehiclename',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'da_report_details_vehiclename' 
+and ref_id=0);
+
+
+
+

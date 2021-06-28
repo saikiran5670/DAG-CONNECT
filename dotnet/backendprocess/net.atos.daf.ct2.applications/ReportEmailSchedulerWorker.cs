@@ -39,33 +39,16 @@ namespace net.atos.daf.ct2.applications
         {
             stoppingToken.Register(() =>
             {
-                _logger.LogInformation("Ending the process...");
+                _logger.LogInformation("Ending the process...at: {time}", DateTimeOffset.Now);
             });
             try
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-
-                var temp = _reportEmailSchedulerManager.SendReportEmail();
-
-
-                await _auditlog.AddLogs(new AuditTrail
-                {
-                    Created_at = DateTime.Now,
-                    Performed_at = DateTime.Now,
-                    Performed_by = 2,
-                    Component_name = "Email Scheduler",
-                    Service_name = "Backend Process",
-                    Event_type = AuditTrailEnum.Event_type.Mail,
-                    Event_status = AuditTrailEnum.Event_status.SUCCESS,
-                    Message = $"Email send process run successfully",
-                    Sourceobject_id = 0,
-                    Targetobject_id = 0,
-                    Updated_data = "Email Scheduler"
-                });
+                var isSuccess = await _reportEmailSchedulerManager.SendReportEmail();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                _logger.LogInformation($"Failed to run, Error: {ex.Message}");
             }
             finally
             {
