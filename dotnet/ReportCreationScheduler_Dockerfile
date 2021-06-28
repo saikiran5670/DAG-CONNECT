@@ -20,6 +20,9 @@ COPY ["corecomponents/net.atos.daf.ct2.identitysession/net.atos.daf.ct2.identity
 COPY ["corecomponents/net.atos.daf.ct2.identity/net.atos.daf.ct2.identity.csproj", "corecomponents/net.atos.daf.ct2.identity/"]
 RUN dotnet restore "backendprocess/net.atos.daf.ct2.applications/net.atos.daf.ct2.applications.csproj"
 COPY . .
+RUN cp backendprocess/net.atos.daf.ct2.applications/liblibwkhtmltox.dll /app/publish 
+RUN cp backendprocess/net.atos.daf.ct2.applications/liblibwkhtmltox.dylib /app/publish
+RUN cp backendprocess/net.atos.daf.ct2.applications/liblibwkhtmltox.so /app/publish
 WORKDIR "/src/backendprocess/net.atos.daf.ct2.applications"
 RUN dotnet build "net.atos.daf.ct2.applications.csproj" -c Release -o /app/build
 
@@ -29,5 +32,6 @@ RUN dotnet publish "net.atos.daf.ct2.applications.csproj" -c Release -o /app/pub
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-RUN ls -a
+RUN ls -a /app
+RUN ls -a /app/publish
 ENTRYPOINT ["dotnet", "net.atos.daf.ct2.applications.dll", "ReportCreationScheduler"]
