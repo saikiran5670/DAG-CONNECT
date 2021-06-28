@@ -137,7 +137,7 @@ spec:
           servicePort: 80
         path: /reportscheduler
       - backend:
-          serviceName: applicationservice
+          serviceName: portalservice
           servicePort: 80
         path: /NotificationHub
   tls:
