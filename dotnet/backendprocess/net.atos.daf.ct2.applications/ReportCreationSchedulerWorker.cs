@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.applications
             }
             catch (Exception ex)
             {
-                await AddAuditLog($"Failed to run, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED);
+                await AddAuditLog($"Failed to run, Error: {ex.InnerException?.Message ?? ex.Message}", AuditTrailEnum.Event_status.FAILED);
             }
             finally
             {
