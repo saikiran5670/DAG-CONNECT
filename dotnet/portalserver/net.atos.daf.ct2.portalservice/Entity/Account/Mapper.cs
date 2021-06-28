@@ -140,7 +140,7 @@ namespace net.atos.daf.ct2.portalservice.Account
                 TimeFormatId = request.TimeFormatId,
                 LandingPageDisplayId = request.LandingPageDisplayId,
                 IconId = (int)request.IconId,
-                IconByte = request.IconByte.ToString(),
+                IconByte = request.IconByte == null ? "" : request.IconByte.ToString(),
                 CreatedBy = request.CreatedBy
             };
             return preference;
@@ -158,7 +158,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             preference.TimeFormatId = request.TimeFormatId;
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
             preference.IconId = request.IconId;
-            preference.IconByte = request.IconByte.ToString();
+            preference.IconByte = request.IconByte == null ? "" : request.IconByte.ToString();
             return preference;
         }
 
