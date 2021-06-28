@@ -12,32 +12,39 @@
     <None Remove="assets\DAFLogo.png" />
     <None Remove="assets\style.css" />
     <None Remove="assets\WallImg2.jpg" />
-    <None Remove="libwkhtmltox.dll" />
-    <None Remove="libwkhtmltox.dylib" />
-    <None Remove="libwkhtmltox.so" />
+    <None Remove="liblibwkhtmltox.dll" />
+    <None Remove="liblibwkhtmltox.dylib" />
+    <None Remove="liblibwkhtmltox.so" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="assets\Chart.min.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
     <Content Include="assets\DAFLogo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
     <Content Include="assets\style.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
     <Content Include="assets\WallImg2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
-    <Content Include="libwkhtmltox.dll">
+    <Content Include="liblibwkhtmltox.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
-    <Content Include="libwkhtmltox.dylib">
+    <Content Include="liblibwkhtmltox.dylib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
-    <Content Include="libwkhtmltox.so">
+    <Content Include="liblibwkhtmltox.so">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
 

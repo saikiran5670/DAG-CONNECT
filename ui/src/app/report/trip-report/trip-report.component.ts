@@ -21,6 +21,10 @@ import { Util } from '../../shared/util';
 import { Router, NavigationExtras } from '@angular/router';
 import { OrganizationService } from '../../services/organization.service';
 
+//Add for Search Functionality With Zoom
+import { POIService } from 'src/app/services/poi.service';
+
+
 declare var H: any;
 
 @Component({
@@ -30,6 +34,28 @@ declare var H: any;
 })
 
 export class TripReportComponent implements OnInit, OnDestroy {
+
+
+//Add Search Functionality with Zoom
+
+selectedMarker: any;
+searchData: any = [];
+activeSearchList: any = false;
+private platform: any;
+private search: any;
+map: any;
+private ui: any;
+lat: any = '37.7397';
+lng: any = '-121.4252';
+query: any;
+// getHereMap : any;
+@ViewChild("map")
+public mapElement: ElementRef;
+
+
+
+// @ViewChild('divHello', { static: false }) divHello: ElementRef;
+// @ViewChild('map', { static: true }) testMapRef: any;
   tripReportId: any = 1;
   selectionTab: any;
   reportPrefData: any = [];
@@ -42,8 +68,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   // hereMap: any;
   // platform: any;
   // ui: any;
-  @ViewChild("map")
-  public mapElement: ElementRef;
+
   showMap: boolean = false;
   showBack: boolean = false;
   showMapPanel: boolean = false;
@@ -158,7 +183,17 @@ export class TripReportComponent implements OnInit, OnDestroy {
   ];
  _state: any ;
   
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router, private organizationService: OrganizationService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private POIService: POIService, private router: Router, private organizationService: OrganizationService) {
+    
+    //Add for Search Fucntionality with Zoom
+    this.query = "starbucks";
+    this.platform = new H.service.Platform({
+      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+    });
+
+
+
+
     this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
     this._state = navigation.extras.state as {
@@ -239,6 +274,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
         }
       });
     });
+      
+    // var ui = this.reportMapService.getUI();
+    // this.getHereMap = this.reportMapService.getHereMap();
   }
 
   proceedStep(prefData: any, preference: any){
@@ -465,9 +503,34 @@ export class TripReportComponent implements OnInit, OnDestroy {
   }
 
   public ngAfterViewInit() {
-    // setTimeout(() => {
-     //this.reportMapService.initMap(this.mapElement);
-    // }, 0);
+    // this.showMapPanel = true;
+    // const canvas = <HTMLCanvasElement> document.getElementById("divHello");
+    // console.log("---test ref---",canvas)
+    // console.log("---test ref---",this.divHello)
+    // console.log("---test ref map---",this.testMapRef)
+    // console.log("----this.map from ngAfterViewInit---", this.map);
+    // let defaultLayers = this.platform.createDefaultLayers();
+    // //Step 2: initialize a map - this map is centered over Europe
+    // this.map = new H.Map(this.mapElement.nativeElement,
+    //   defaultLayers.vector.normal.map, {
+    //   center: { lat: 51.43175839453286, lng: 5.519981221425336 },
+    //   // center: {lat:37.37634, lng:-122.03405},
+    //   zoom: 4,
+    //   pixelRatio: window.devicePixelRatio || 1
+    // });
+    // // add a resize listener to make sure that the map occupies the whole container
+    // window.addEventListener('resize', () => this.map.getViewPort().resize());
+
+    // // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
+    // var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
+
+    // // Create the default UI components
+    // var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+   
+    // var ui = this.reportMapService.getUI();
+    // this.getHereMap = this.reportMapService.getHereMap();
+    // var searchbox = ui.getControl("searchbox");
+
   }
 
   onSearch(){
@@ -1101,4 +1164,57 @@ export class TripReportComponent implements OnInit, OnDestroy {
     };
     this.router.navigate(['report/fleetutilisation'], navigationExtras);
   }
+
+
+
+
+
+
+
+
+//Add Search functionality with Zoom
+
+
+searchValue(event: any) {
+  this.activeSearchList = true;
+  if(event.target.value == "") {
+    this.activeSearchList = false;
+  }
+  ////console.log("----search value called--",event.target.value);
+  let inputData = event.target.value;
+        // "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+    // var a = https://places.ls.hereapi.com/places/v1/autosuggest?at=40.74917,-73.98529&q=chrysler&apiKey="BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+
+    this.POIService.getAutoSuggestMap(inputData).subscribe((res: any) => {
+   let newData = res.results;
+        this.searchData = newData;
+     });
+     
+}
+
+drawMarkerOnMap(getSelectedLatitude,getSelectedLongitude){
+  let getHereMap = this.reportMapService.getHereMap();
+  // let getSelectedLatitude = this.selectedElementData.latitude;//this.poiFormGroup.get("lattitude").value;
+  // let getSelectedLongitude = this.selectedElementData.longitude;//this.poiFormGroup.get("longitude").value;
+  this.selectedMarker = new H.map.Marker({ lat: getSelectedLatitude, lng: getSelectedLongitude });
+  getHereMap.addObject(this.selectedMarker);
+}
+
+removeMapObjects(){
+  let getHereMap = this.reportMapService.getHereMap();
+  getHereMap.removeObjects(getHereMap.getObjects());
+}
+
+SearchListItems(item){
+  let getHereMap = this.reportMapService.getHereMap();
+  this.removeMapObjects();
+  console.log("---this.map from SearchList()--",getHereMap)
+
+getHereMap.setCenter({lat:item.position[0], lng:item.position[1]});
+getHereMap.setZoom(14);
+let getSelectedLatitude = item.position[0];//this.poiFormGroup.get("lattitude").value;
+let getSelectedLongitude = item.position[1];//this.poiFormGroup.get("longitude").value;
+this.drawMarkerOnMap(getSelectedLatitude,getSelectedLongitude);
+}
+
 }

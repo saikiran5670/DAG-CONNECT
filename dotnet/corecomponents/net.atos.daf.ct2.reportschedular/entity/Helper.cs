@@ -6,26 +6,41 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 {
     public class Helper
     {
-        public ReportEmailFrequency GetNextFrequencyTime(long currentdate, TimeFrequenyType timeFrequenyType)
+        public void GetNextFrequencyTime(ReportEmailFrequency reportEmailFrequency)
         {
-            DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            DateTime date = start.AddMilliseconds(currentdate).ToLocalTime();
-            var reportEmailFrequency = new ReportEmailFrequency();
-            switch (timeFrequenyType)
+            DateTime deafaultDateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            DateTime date = deafaultDateTime.AddMilliseconds(reportEmailFrequency.ReportScheduleRunDate).ToLocalTime();
+
+
+            switch (reportEmailFrequency.FrequencyType)
             {
 
                 case TimeFrequenyType.Daily:
                     reportEmailFrequency.ReportNextScheduleRunDate = UTCHandling.GetUTCFromDateTime(date.AddDays(1));
+                    reportEmailFrequency.StartDate = UTCHandling.GetUTCFromDateTime(deafaultDateTime.AddMilliseconds(reportEmailFrequency.StartDate).ToLocalTime().AddDays(1));
+                    reportEmailFrequency.EndDate = UTCHandling.GetUTCFromDateTime(deafaultDateTime.AddMilliseconds(reportEmailFrequency.EndDate).ToLocalTime().AddDays(1));
+
                     break;
                 case TimeFrequenyType.Weekly:
                     reportEmailFrequency.ReportNextScheduleRunDate = UTCHandling.GetUTCFromDateTime(date.AddDays(7));
+                    reportEmailFrequency.StartDate = UTCHandling.GetUTCFromDateTime(deafaultDateTime.AddMilliseconds(reportEmailFrequency.StartDate).ToLocalTime().AddDays(1));
+                    reportEmailFrequency.EndDate = UTCHandling.GetUTCFromDateTime(deafaultDateTime.AddMilliseconds(reportEmailFrequency.EndDate).ToLocalTime().AddDays(1));
+
                     break;
                 case TimeFrequenyType.BiWeekly:
                     reportEmailFrequency.ReportNextScheduleRunDate = UTCHandling.GetUTCFromDateTime(date.AddDays(14));
+                    reportEmailFrequency.StartDate = UTCHandling.GetUTCFromDateTime(deafaultDateTime.AddMilliseconds(reportEmailFrequency.StartDate).ToLocalTime().AddDays(1));
+                    reportEmailFrequency.EndDate = UTCHandling.GetUTCFromDateTime(deafaultDateTime.AddMilliseconds(reportEmailFrequency.EndDate).ToLocalTime().AddDays(1));
+
+                    break;
+                case TimeFrequenyType.Monthly:
+                    reportEmailFrequency = GetNextMonthlyTime(reportEmailFrequency.ReportScheduleRunDate);
+                    break;
+                case TimeFrequenyType.Quartly:
+                    reportEmailFrequency = GetNextQuarterTime(reportEmailFrequency.ReportScheduleRunDate);
                     break;
             }
             reportEmailFrequency.ReportPrevioudScheduleRunDate = UTCHandling.GetUTCFromDateTime(date);
-            return reportEmailFrequency;
         }
 
         public ReportEmailFrequency GetNextQuarterTime(long currentdate)

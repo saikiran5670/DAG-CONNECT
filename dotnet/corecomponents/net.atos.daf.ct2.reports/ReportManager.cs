@@ -257,6 +257,22 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.CreateReportUserPreference(request);
         }
 
+        public async Task<bool> CheckIfReportUserPreferencesExist(int reportId, int accountId, int organizationId)
+        {
+            return await _reportRepository.CheckIfReportUserPreferencesExist(reportId, accountId, organizationId);
+        }
+
+        public async Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId, int organizationId)
+        {
+            return await _reportRepository.GetReportUserPreferences(reportId, accountId, organizationId);
+        }
+
+        public async Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId,
+                                                                                       int organizationId, int contextOrgId)
+        {
+            return await _reportRepository.GetPrivilegeBasedReportUserPreferences(reportId, accountId, roleId, organizationId, contextOrgId);
+        }
+
         #endregion
 
         #endregion

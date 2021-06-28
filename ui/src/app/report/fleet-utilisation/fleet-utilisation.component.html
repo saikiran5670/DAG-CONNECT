@@ -169,7 +169,7 @@
               </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="40px">
-                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                <div *ngIf='noOfVehStatus' style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
                         <span>{{ translationData.lblNumberOfVehicles || 'Number of vehicles' }} </span>
                     </div>
@@ -177,7 +177,7 @@
                         <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('NumberOfVehicles')}}</span>
                     </div>
                 </div>
-                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                <div *ngIf='totalDistanceStatus' style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
                         <span>{{ translationData.lblTotalDistance || 'Total distance' }} </span>
                     </div>
@@ -185,7 +185,7 @@
                         <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('distance').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</span>
                     </div>
                 </div>
-                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                <div *ngIf='noOfTripsStatus' style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
                         <span>{{ translationData.lblNumberOfTrips || 'Number of trips' }} </span>
                     </div>
@@ -193,7 +193,7 @@
                         <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('NumberOfTrips')}}</span>
                     </div>
                 </div>
-                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                <div *ngIf='avgDistanceStatus' style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
                         <span>{{ translationData.lblAverageDistancePerDay || 'Average distance per day' }} </span>
                     </div>
@@ -201,7 +201,7 @@
                         <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('AverageDistancePerDay').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</span>
                     </div>
                 </div>
-                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                <div *ngIf='idleDurationStatus' style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
                         <span>{{ translationData.lblIdleDuration || 'Idle duration' }} </span>
                     </div>
@@ -226,7 +226,7 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-          <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+          <div *ngIf='distanceChart && distanceChart.state' class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistancePerDay || 'Distance per day' }}</span>
             <div class="chart-wrapper">
               <canvas baseChart 
@@ -239,7 +239,7 @@
             </canvas>
           </div>
         </div>
-        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+        <div *ngIf='activeVehicleChart && activeVehicleChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblActiveVehiclesPerDay || 'Active vehicles per day' }}</span>
           <div class="chart-wrapper">
             <canvas baseChart 
@@ -256,7 +256,7 @@
 
       </div>
       <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-        <div *ngIf = 'isChartsOpen' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+        <div *ngIf='mileageBasedChart && mileageBasedChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMileageBasedUtilisation || 'Mileage based utilisation' }}</span>
           <div class="chart-wrapper">
             <canvas baseChart 
@@ -269,7 +269,7 @@
           </canvas>
         </div>
         </div>
-        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+        <div *ngIf='timeBasedChart && timeBasedChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTimeBasedUtilisation || 'Time based utilisation' }}</span>
           <div class="chart-wrapper">
             <canvas baseChart 
@@ -289,7 +289,7 @@
       <!-- Calendar view -->
 
       <mat-card *ngIf='initData.length > 0'  class='mat-elevation-z no-padding margin-bottom-xlg'>
-        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px" (opened)="isCalendarOpen == true"
+        <mat-expansion-panel [(expanded)]="isCalendarOpen" class="full-width" fxLayoutGap="10px" (opened)="isCalendarOpen == true"
         (closed)="isCalendarOpen == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>

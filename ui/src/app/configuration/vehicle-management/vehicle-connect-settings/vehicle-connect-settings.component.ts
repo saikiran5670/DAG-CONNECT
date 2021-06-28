@@ -13,11 +13,11 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
   selector: 'app-vehicle-connect-settings',
   templateUrl: './vehicle-connect-settings.component.html',
   styleUrls: ['./vehicle-connect-settings.component.less']
-})
+  })
 export class VehicleConnectSettingsComponent implements OnInit {
   actionType: any = '';
   selectedRowData: any = [];
-  displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'relationShip', 'status', 'connected', 'terminated'];
+  displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'status', 'connected', 'terminated'];
   dataSource: any = new MatTableDataSource([]);
   vehicleUpdatedMsg: any = '';
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -37,12 +37,13 @@ export class VehicleConnectSettingsComponent implements OnInit {
   connectedAll:any;
   totalVehicles: any = 0;
   connectedchecked: boolean = false;
- 
-  constructor(private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private translationService: TranslationService, private dialog: MatDialog,) {
-    this.defaultTranslation();      
-  }
+  legendsDisabled: boolean = false;
 
-  defaultTranslation() {
+  constructor(private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private translationService: TranslationService, private dialog: MatDialog,) {
+    this.defaultTranslation();  
+     }
+ 
+     defaultTranslation() {
     this.translationData = {
       lblAllVehicleDetails: "All Vehicle Details",
       lblNoRecordFound: "No Record Found",
@@ -70,7 +71,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);  
       this.updateDataSource(data);
-      this.loadVehicleData();   
+      this.loadVehicleData();  
     }); 
   }
   processTranslation(transData: any) {
@@ -138,8 +139,19 @@ export class VehicleConnectSettingsComponent implements OnInit {
       this.titleVisible = false;
     }, 5000);
   }
-  
-  filterChangeStatus(data){
+ 
+  filterChangeStatus(event){
+    let filterValue='';
+    filterValue = event.value;   
+    if(filterValue == ""){
+      this.dataSource.filter = '';
+    }
+    else{
+    this.dataSource.filterPredicate = function(data, filter: string): boolean {
+      return data.status === filter;
+    };  
+    this.dataSource.filter = filterValue;
+    }    
   }
 
   onCheckboxChange(e) {  
