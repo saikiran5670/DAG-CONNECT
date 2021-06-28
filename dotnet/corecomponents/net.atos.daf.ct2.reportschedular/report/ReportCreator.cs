@@ -116,7 +116,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
         private async Task<byte[]> GetLogoImage()
         {
             var reportLogo = await _reportSchedularRepository.GetReportLogo(ReportSchedulerData.CreatedBy);
-            return reportLogo.Image;
+            return reportLogo?.Image;
         }
     }
 }
