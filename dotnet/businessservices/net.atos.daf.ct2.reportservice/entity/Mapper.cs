@@ -98,5 +98,37 @@ namespace net.atos.daf.ct2.reportservice.entity
             }
             return objRequest;
         }
+
+        internal ReportUserPreference MapReportUserPreferences(IEnumerable<reports.entity.ReportUserPreference> userPreferences)
+        {
+            var root = userPreferences.Where(up => up.Name.IndexOf('.') == -1).First();
+
+            return FillRecursive(userPreferences, new int[] { root.DataAttributeId }).FirstOrDefault();
+        }
+
+        private static List<ReportUserPreference> FillRecursive(IEnumerable<reports.entity.ReportUserPreference> flatObjects, int[] parentIds)
+        {
+            List<ReportUserPreference> recursiveObjects = new List<ReportUserPreference>();
+            if (parentIds != null)
+            {
+                foreach (var item in flatObjects.Where(x => parentIds.Contains(x.DataAttributeId)))
+                {
+                    var preference = new ReportUserPreference
+                    {
+                        DataAttributeId = item.DataAttributeId,
+                        Name = item.Name ?? string.Empty,
+                        DataAttributeType = item.DataAttributeType ?? string.Empty,
+                        Key = item.Key ?? string.Empty,
+                        State = item.State ?? ((char)ReportPreferenceState.InActive).ToString(),
+                        ChartType = item.ChartType ?? string.Empty,
+                        ThresholdType = item.ThresholdType ?? string.Empty,
+                        ThresholdValue = item.ThresholdValue
+                    };
+                    preference.SubReportUserPreferences.AddRange(FillRecursive(flatObjects, item.SubDataAttributes));
+                    recursiveObjects.Add(preference);
+                }
+            }
+            return recursiveObjects;
+        }
     }
 }

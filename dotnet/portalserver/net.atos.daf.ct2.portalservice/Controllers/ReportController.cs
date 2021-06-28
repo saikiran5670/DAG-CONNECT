@@ -561,7 +561,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         /// <param name="objUserPreferenceCreateRequest"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("ecoscoreuserpreference/create")]
+        [Route("reportuserpreference/create")]
         public async Task<IActionResult> CreateReportUserPreference(Entity.Report.ReportUserPreferenceCreateRequest objUserPreferenceCreateRequest)
         {
             try
@@ -598,7 +598,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         /// <param></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("ecoscoreuserpreference/get")]
+        [Route("reportuserpreference/get")]
         public async Task<IActionResult> GetReportUserPreference(int reportId)
         {
             try
@@ -610,10 +610,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                             new GetReportUserPreferenceRequest
                                             {
                                                 ReportId = reportId,
-                                                AccountId = _userDetails.AccountId,
-                                                RoleId = _userDetails.RoleId,
-                                                OrganizationId = GetUserSelectedOrgId(),
-                                                ContextOrgId = GetContextOrgId()
+                                                AccountId = 30,//_userDetails.AccountId,
+                                                RoleId = 12,//_userDetails.RoleId,
+                                                OrganizationId = 10,//GetUserSelectedOrgId(),
+                                                ContextOrgId = 10//GetContextOrgId()
                                             });
                 if (response.Code == Responsecode.Success)
                 {
@@ -621,10 +621,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                      $"{ nameof(GetReportUserPreference) } method", 1, 2, Convert.ToString(reportId),
                       _userDetails);
-                    return Ok(response);
+                    return Ok(response.UserPreference);
                 }
                 if (response.Code == Responsecode.InternalServerError)
-                    return StatusCode((int)response.Code, string.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, _userDetails.AccountId, reportId, response.Message));
+                    return StatusCode((int)response.Code, string.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, response.Message));
                 else
                     return StatusCode((int)response.Code, response.Message);
             }

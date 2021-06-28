@@ -494,24 +494,33 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 GetReportUserPreferenceResponse response = new GetReportUserPreferenceResponse();
-                IEnumerable<UserPreferenceReportDataColumn> userPreferences = null;
-                var userPreferencesExists = await _reportManager.CheckIfUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
-                var roleBasedUserPreferences = await _reportManager.GetRoleBasedDataColumn(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
+                IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
+                var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
+                var roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
 
                 if (userPreferencesExists)
                 {
-                    var preferences = await _reportManager.GetReportUserPreference(request.ReportId, request.AccountId, request.OrganizationId);
+                    var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
 
                     //Filter out preferences based on Account role and org package subscription
-                    userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAtrributeId == x.DataAtrributeId));
+                    userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAttributeId == x.DataAttributeId));
                 }
                 else
                 {
                     userPreferences = roleBasedUserPreferences;
                 }
 
+                try
+                {
+                    response.UserPreference = _mapper.MapReportUserPreferences(userPreferences);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(null, ex);
+                    throw new Exception("Error occurred while parsing the report user preferences.");
+                }
+
                 response.Code = Responsecode.Success;
-                //response.UserPreferences.AddRange(_mapper.MapUserPreferences(userPreferences));
                 return await Task.FromResult(response);
             }
             catch (Exception ex)

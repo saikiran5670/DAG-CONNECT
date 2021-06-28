@@ -96,8 +96,21 @@ message GetReportUserPreferenceRequest {
 }
 
 message GetReportUserPreferenceResponse {
+    ReportUserPreference UserPreference = 1;
     Responsecode Code = 2;
     string Message = 3;
+}
+
+message ReportUserPreference{
+    int32 DataAttributeId=1;
+    string Name=2;
+    string DataAttributeType=3;
+    string Key=4;
+    string State=5;
+    string ChartType=6;
+    string ThresholdType=7;
+    int64 ThresholdValue=8;
+    repeated ReportUserPreference SubReportUserPreferences=9;
 }
 
 message ReportUserPreferenceCreateRequest{
