@@ -31,6 +31,12 @@ namespace net.atos.daf.ct2.notification
         }
         public async Task<bool> TriggerSendEmail(MailNotificationRequest mailNotificationRequest)
         {
+            if (string.IsNullOrEmpty(mailNotificationRequest.MessageRequest.AccountInfo.FullName))
+            {
+                var account = await _emailRepository.GetAccountByEmailId(mailNotificationRequest.MessageRequest.AccountInfo.EmailId);
+                mailNotificationRequest.MessageRequest.AccountInfo.FullName = account.FullName;
+            }
+
             if (mailNotificationRequest.EventType == EmailEventType.PasswordExpiryNotification)
             {
                 mailNotificationRequest.MessageRequest.RemainingDaysToExpire = Convert.ToInt32(_configuration["RemainingDaysToExpire"]);

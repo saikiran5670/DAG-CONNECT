@@ -11,8 +11,6 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 {
     public partial class ReportSchedulerRepository : IReportSchedulerRepository
     {
-        public Task<int> SendReportEmail() => throw new NotImplementedException();
-
         public async Task<IEnumerable<ReportSchedulerEmailResult>> GetReportEmailDetails()
         {
             MapperRepo repositoryMapper = new MapperRepo();
@@ -49,7 +47,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 
         public async Task<int> UpdateTimeRangeByDate(ReportEmailFrequency reportEmailFrequency)
         {
-            var next_schedule_run_date = _helper.GetNextFrequencyTime(reportEmailFrequency.ReportScheduleRunDate, reportEmailFrequency.FrequencyType);
+            _helper.GetNextFrequencyTime(reportEmailFrequency);
             var query = @"UPDATE master.reportscheduler 
                           SET start_date=@start_date ,
                               next_schedule_run_date=@next_schedule_run_date ,
@@ -58,10 +56,10 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                           WHERE id=@id RETURNING id";
             var parameter = new DynamicParameters();
             parameter.Add("@id", reportEmailFrequency.ReportId);
-            parameter.Add("@start_date", next_schedule_run_date.StartDate);
-            parameter.Add("@end_date", next_schedule_run_date.EndDate);
-            parameter.Add("@next_schedule_run_date", next_schedule_run_date.ReportNextScheduleRunDate);
-            parameter.Add("@previous_schedule_run_date", next_schedule_run_date.ReportPrevioudScheduleRunDate);
+            parameter.Add("@start_date", reportEmailFrequency.StartDate);
+            parameter.Add("@end_date", reportEmailFrequency.EndDate);
+            parameter.Add("@next_schedule_run_date", reportEmailFrequency.ReportNextScheduleRunDate);
+            parameter.Add("@previous_schedule_run_date", reportEmailFrequency.ReportPrevioudScheduleRunDate);
 
             int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
             return rowEffected;

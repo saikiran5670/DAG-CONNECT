@@ -32,7 +32,6 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         Task<IEnumerable<ReportColumnName>> GetColumnName(int reportId, string languageCode);
         #endregion
 
-        Task<int> SendReportEmail();
         Task<IEnumerable<ReportSchedulerEmailResult>> GetReportEmailDetails();
         Task<int> UpdateTimeRangeByDate(ReportEmailFrequency reportEmailFrequency);
 
