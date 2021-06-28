@@ -35,6 +35,6 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 RUN ls -a /app
 RUN ls -a /app/assets
-RUN cat /app/assets/styles.css
+RUN cat /app/assets/style.css
 
 ENTRYPOINT ["dotnet", "net.atos.daf.ct2.applications.dll", "ReportCreationScheduler"]
