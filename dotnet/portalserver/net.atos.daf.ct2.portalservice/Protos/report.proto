@@ -114,12 +114,11 @@ message ReportUserPreference{
 }
 
 message ReportUserPreferenceCreateRequest{
-    repeated UserPreferenceAttribute Attributes =1;
-    int32 AccountId =2;
-    int32 ReportId =3;
-    int32 OrganizationId =4;
-    int64 CreatedAt =6;
-    int64 ModifiedAt =7;  
+    repeated UserPreferenceAttribute Attributes=1;
+    int32 AccountId=2;
+    int32 ReportId=3;
+    int32 OrganizationId=4;
+    int32 ContextOrgId=5;
 }
 
 message ReportUserPreferenceCreateResponse{
@@ -138,10 +137,10 @@ message Atribute{
 
 message UserPreferenceAttribute {
     int32 DataAttributeId = 1;
-    string State = 2;
-    string Type = 3;
-    string ChartType = 4;
-    string ThresholdType = 5;
+    int32 State = 2;
+    int32 Type = 3;
+    int32 ChartType = 4;
+    int32 ThresholdType = 5;
     int64 ThresholdValue = 6;
 }
 

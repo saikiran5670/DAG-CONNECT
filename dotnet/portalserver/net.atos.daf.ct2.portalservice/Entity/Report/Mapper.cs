@@ -1,4 +1,6 @@
-﻿namespace net.atos.daf.ct2.portalservice.Entity.Report
+﻿using System.Linq;
+
+namespace net.atos.daf.ct2.portalservice.Entity.Report
 {
     public class Mapper
     {
@@ -98,24 +100,25 @@
         /// <param name="orgId"></param>
         /// <returns></returns>
         internal reportservice.ReportUserPreferenceCreateRequest MapCreateReportUserPreferences(ReportUserPreferenceCreateRequest objUserPreferenceCreateRequest,
-                                                                                                int accountId, int orgId)
+                                                                                                int accountId, int orgId, int contextOrgId)
         {
             reportservice.ReportUserPreferenceCreateRequest objRequest = new reportservice.ReportUserPreferenceCreateRequest();
 
             objRequest.ReportId = objUserPreferenceCreateRequest.ReportId;
             objRequest.AccountId = accountId;
             objRequest.OrganizationId = orgId;
+            objRequest.ContextOrgId = contextOrgId;
 
-            for (int i = 0; i < objUserPreferenceCreateRequest.Attributes.Count; i++)
+            foreach (var attribute in objUserPreferenceCreateRequest.Attributes)
             {
                 objRequest.Attributes.Add(new reportservice.UserPreferenceAttribute()
                 {
-                    DataAttributeId = objUserPreferenceCreateRequest.Attributes[i].DataAttributeId,
-                    State = objUserPreferenceCreateRequest.Attributes[i].State.ToString(),
-                    Type = objUserPreferenceCreateRequest.Attributes[i].Type,
-                    ChartType = objUserPreferenceCreateRequest.Attributes[i].ChartType,
-                    ThresholdType = objUserPreferenceCreateRequest.Attributes[i].ThresholdType,
-                    ThresholdValue = objUserPreferenceCreateRequest.Attributes[i].ThresholdValue
+                    DataAttributeId = attribute.DataAttributeId,
+                    State = (int)attribute.State.ToCharArray().First(),
+                    Type = (int)attribute.PreferenceType.ToCharArray().First(),
+                    ChartType = !string.IsNullOrEmpty(attribute.ChartType) ? (int)attribute.ChartType.ToCharArray().First() : 0,
+                    ThresholdType = !string.IsNullOrEmpty(attribute.ThresholdType) ? (int)attribute.ThresholdType.ToCharArray().First() : 0,
+                    ThresholdValue = attribute.ThresholdValue
                 });
             }
             return objRequest;

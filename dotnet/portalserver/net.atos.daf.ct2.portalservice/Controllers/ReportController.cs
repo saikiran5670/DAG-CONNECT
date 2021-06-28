@@ -566,7 +566,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                var request = _mapper.MapCreateReportUserPreferences(objUserPreferenceCreateRequest, _userDetails.AccountId, GetUserSelectedOrgId());
+                var request = _mapper.MapCreateReportUserPreferences(objUserPreferenceCreateRequest, _userDetails.AccountId, GetUserSelectedOrgId(), GetContextOrgId());
                 var response = await _reportServiceClient.CreateReportUserPreferenceAsync(request);
 
                 if (response.Code == Responsecode.Success)
@@ -574,7 +574,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                             "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS, "Report use preference created successfully", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
                                 _userDetails);
-                    return Ok(response);
+                    return Ok(response.Message);
                 }
                 else
                 {
@@ -610,10 +610,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                             new GetReportUserPreferenceRequest
                                             {
                                                 ReportId = reportId,
-                                                AccountId = 30,//_userDetails.AccountId,
-                                                RoleId = 12,//_userDetails.RoleId,
-                                                OrganizationId = 10,//GetUserSelectedOrgId(),
-                                                ContextOrgId = 10//GetContextOrgId()
+                                                AccountId = _userDetails.AccountId,
+                                                RoleId = _userDetails.RoleId,
+                                                OrganizationId = GetUserSelectedOrgId(),
+                                                ContextOrgId = GetContextOrgId()
                                             });
                 if (response.Code == Responsecode.Success)
                 {
