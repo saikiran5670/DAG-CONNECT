@@ -172,6 +172,10 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
 // Bar chart implementation
 
 barChartOptions: any = {
+  responsive: true,
+  legend: {
+    position: 'bottom',
+  },
   scales: {
     yAxes: [{
       id: "y-axis-1",
@@ -204,12 +208,16 @@ barChartData: any[] = [
   { 
     label: 'Average distance per vehicle(km/day)',
     type: 'bar',
+    backgroundColor: '#7BC5EC',
+    hoverBackgroundColor: '#7BC5EC',
     yAxesID: "y-axis-1",
     data: this.averageDistanceBarData,	    
     },
     {
       label: 'Total distance(km)',
       type: 'bar',
+      backgroundColor: '#4679CC',
+      hoverBackgroundColor: '#4679CC',
       yAxesID: "y-axis-1",
       data: this.barVarticleData
     },
@@ -220,6 +228,11 @@ barChartData: any[] = [
 doughnutChartLabels: Label[] = ['Percentage of vehicles with distance done above 1000 km', 'Percentage of vehicles with distance done under 1000 km'];
 doughnutChartData: any = [];
 doughnutChartType: ChartType = 'doughnut';
+doughnutChartColors: Color[] = [
+  {
+    backgroundColor: ['#7BC5EC', '#69EC0A'],
+  },
+];
 
 // Doughnut chart implementation for Time based utilisation
 
@@ -227,6 +240,17 @@ doughnutChartLabelsForTime: Label[] = ['Percentage of vehicles with driving time
 doughnutChartDataForTime: any = [];
 doughnutChartTypeTime: ChartType = 'doughnut';
 
+public doughnut_barOptions: ChartOptions = {
+  responsive: true,
+  legend: {
+    position: 'bottom',
+    // labels: {
+    //   //fontSize: 10,
+    //   usePointStyle: true,
+    // },
+  },
+  cutoutPercentage: 50,
+};
 // Line chart implementation
 
 lineChartData: ChartDataSets[] = [
@@ -236,6 +260,10 @@ lineChartData: ChartDataSets[] = [
 lineChartLabels: Label[] =this.chartsLabelsdefined;
 
 lineChartOptions = {
+  responsive: true,
+  legend: {
+    position: 'bottom',
+  },
   scales: {
     yAxes: [{
       id: "y-axis-1",
@@ -254,7 +282,7 @@ lineChartOptions = {
 
 lineChartColors: Color[] = [
   {
-    borderColor: 'blue',
+    borderColor: '#7BC5EC',
     backgroundColor: 'rgba(255,255,0,0)',
   },
 ];

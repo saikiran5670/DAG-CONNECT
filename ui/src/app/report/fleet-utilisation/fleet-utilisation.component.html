@@ -262,7 +262,10 @@
             <canvas baseChart 
             [data]="doughnutChartData"
             [chartType]="doughnutChartType"
-            [labels]="doughnutChartLabels">
+            [labels]="doughnutChartLabels"
+            [colors]="doughnutChartColors"
+            [options]="doughnut_barOptions"
+            [legend]="barChartLegend">
           </canvas>
         </div>
         </div>
@@ -272,7 +275,10 @@
             <canvas baseChart 
             [data]="doughnutChartDataForTime"
             [chartType]="doughnutChartTypeTime"
-            [labels]="doughnutChartLabelsForTime">
+            [labels]="doughnutChartLabelsForTime"
+            [colors]="doughnutChartColors"
+            [options]="doughnut_barOptions"
+            [legend]="barChartLegend">
           </canvas>
         </div>
         </div>
