@@ -148,9 +148,9 @@ export class CreateNotificationsAlertComponent implements OnInit {
       this.setDefaultValues();
     }
 
-    if (this.actionType == 'view') {
-      this.openAdvancedFilter = true;
-    }
+    // if (this.actionType == 'view') {
+    //   this.openAdvancedFilter = true;
+    // }
   }
 
 
