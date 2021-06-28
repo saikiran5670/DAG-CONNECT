@@ -585,7 +585,7 @@ namespace net.atos.daf.ct2.reports.repository
         {
             string queryInsert = @"INSERT INTO master.reportpreference
                                    (organization_id,account_id, report_id, type, data_attribute_id,state,chart_type,created_at,modified_at,threshold_limit_type,threshold_value)
-                                   VALUES (@organization_id,@account_id,@report_id,@type,@data_attribute_id,@state,@chart_type,@created_at, @modified_at,@threshold_type,@threshold_value)";
+                                   VALUES (@organization_id,@account_id,@report_id,@type,@data_attribute_id,@state,@chart_type,@created_at,@modified_at,@threshold_type,@threshold_value)";
 
             string queryDelete = @"DELETE FROM master.reportpreference
                                   WHERE organization_id=@organization_id and account_id=@account_id AND report_id=@report_id";
@@ -630,6 +630,108 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
+        public async Task<bool> CheckIfReportUserPreferencesExist(int reportId, int accountId, int organizationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@report_id", reportId);
+                parameter.Add("@account_id", accountId);
+                parameter.Add("@organization_id", organizationId);
+
+                #region Query Select User Preferences
+                var query = @"SELECT EXISTS 
+                            (
+                                SELECT 1 FROM master.reportpreference 
+                                WHERE account_id = @account_id and organization_id = @organization_id and report_id = @report_id
+                            )";
+                #endregion
+
+                return await _dataAccess.ExecuteScalarAsync<bool>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId,
+                                                                                             int organizationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@report_id", reportId);
+                parameter.Add("@account_id", accountId);
+                parameter.Add("@organization_id", organizationId);
+
+                #region Query Select User Preferences
+                var query = @"SELECT d.id as DataAttributeId,d.name as Name,d.type as DataAttributeType, 
+                                     ra.key as Key, rp.state, rp.chart_type as ChartType, rp.type as ReportPreferenceType, 
+                                     rp.threshold_limit_type as ThresholdType, rp.threshold_value as ThresholdValue,
+                                     ra.sub_attribute_ids as SubDataAttributes, ra.type as AttributeType
+                FROM master.reportpreference rp
+                INNER JOIN master.reportattribute ra ON rp.reportattribute_id = ra.id and ra.report_id = @report_id and 
+                                                        rp.account_id = @account_id and rp.organization_id = @organization_id and 
+                                                        rp.report_id = ra.report_id
+                INNER JOIN master.dataattribute d ON ra.data_attribute_id = d.id";
+                #endregion
+
+                return await _dataAccess.QueryAsync<ReportUserPreference>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId,
+                                                                                              int organizationId, int contextOrgId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@report_id", reportId);
+                parameter.Add("@account_id", accountId);
+                parameter.Add("@role_id", roleId);
+                parameter.Add("@organization_id", organizationId);
+                parameter.Add("@context_org_id", contextOrgId);
+
+                #region Query RoleBasedDataColumn
+                var query = @"SELECT DISTINCT d.id as DataAttributeId,d.name as Name,d.type as DataAttributeType, ra.key as Key, 'A' as state,
+                                              ra.sub_attribute_ids as SubDataAttributes, ra.type as AttributeType
+                              FROM master.reportattribute ra
+                              INNER JOIN master.dataattribute d ON ra.report_id = @report_id and d.id = ra.data_attribute_id 
+                              INNER JOIN master.DataAttributeSetAttribute dasa ON dasa.data_attribute_id = d.id
+                              INNER JOIN master.DataAttributeSet das ON das.id = dasa.data_attribute_set_id and das.state = 'A' 
+                              INNER JOIN
+                              (
+                                  --Account Route
+                                  SELECT f.id, f.data_attribute_set_id
+                                  FROM master.Account acc
+                                  INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.organization_id = @organization_id AND ar.role_id = @role_id AND acc.state = 'A'
+                                  INNER JOIN master.Role r ON ar.role_id = r.id AND r.state = 'A'
+                                  INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
+                                  INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+                                  INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type = 'D'
+                                  INTERSECT
+                                  --Subscription Route
+                                  SELECT f.id, f.data_attribute_set_id
+                                  FROM master.Subscription s
+                                  INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
+                                  INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
+                                  INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+                                  INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type = 'D'
+                              ) fsets ON fsets.data_attribute_set_id = das.id";
+                #endregion
+
+                return await _dataAccess.QueryAsync<ReportUserPreference>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         #endregion
     }
 }

@@ -31,6 +31,12 @@ namespace net.atos.daf.ct2.notification
         }
         public async Task<bool> TriggerSendEmail(MailNotificationRequest mailNotificationRequest)
         {
+            if (string.IsNullOrEmpty(mailNotificationRequest.MessageRequest.AccountInfo.FullName))
+            {
+                var account = await _emailRepository.GetAccountByEmailId(mailNotificationRequest.MessageRequest.AccountInfo.EmailId);
+                mailNotificationRequest.MessageRequest.AccountInfo.FullName = account.FullName;
+            }
+
             if (mailNotificationRequest.EventType == EmailEventType.PasswordExpiryNotification)
             {
                 mailNotificationRequest.MessageRequest.RemainingDaysToExpire = Convert.ToInt32(_configuration["RemainingDaysToExpire"]);
@@ -40,8 +46,10 @@ namespace net.atos.daf.ct2.notification
             mailNotificationRequest.MessageRequest.TokenSecret = mailNotificationRequest.TokenSecret;
             try
             {
-                var languageCode = await GetLanguageCodePreference(mailNotificationRequest.MessageRequest.AccountInfo.EmailId,
-                                                                   mailNotificationRequest.MessageRequest.AccountInfo.Organization_Id);
+                var languageCode = string.IsNullOrEmpty(mailNotificationRequest.MessageRequest.LanguageCode) ?
+                                        await GetLanguageCodePreference(mailNotificationRequest.MessageRequest.AccountInfo.EmailId,
+                                                                        mailNotificationRequest.MessageRequest.AccountInfo.Organization_Id)
+                                        : mailNotificationRequest.MessageRequest.LanguageCode;
                 var emailTemplate = await _translationManager.GetEmailTemplateTranslations(mailNotificationRequest.EventType,
                                                                                            mailNotificationRequest.ContentType,
                                                                                            languageCode);

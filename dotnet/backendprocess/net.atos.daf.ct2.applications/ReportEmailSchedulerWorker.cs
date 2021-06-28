@@ -18,20 +18,20 @@ namespace net.atos.daf.ct2.applications
     {
         private readonly ILogger<PasswordExpiryWorker> _logger;
         private readonly IAuditTraillib _auditlog;
-        private readonly IReportSchedulerManager _reportSchedulerManager;
+        private readonly IReportEmailSchedulerManager _reportEmailSchedulerManager;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly IConfiguration _configuration;
 
         public ReportEmailSchedulerWorker(ILogger<PasswordExpiryWorker> logger,
                         IConfiguration configuration,
                         IAuditTraillib auditlog,
-                        IReportSchedulerManager reportSchedulerManager,
+                        IReportEmailSchedulerManager reportEmailSchedulerManager,
                         IHostApplicationLifetime hostApplicationLifetime)
         {
             _logger = logger;
             _configuration = configuration;
             _auditlog = auditlog;
-            _reportSchedulerManager = reportSchedulerManager;
+            _reportEmailSchedulerManager = reportEmailSchedulerManager;
             _hostApplicationLifetime = hostApplicationLifetime;
         }
 
@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.applications
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-                var temp = _reportSchedulerManager.SendReportEmail();
+                var temp = _reportEmailSchedulerManager.SendReportEmail();
 
 
                 await _auditlog.AddLogs(new AuditTrail

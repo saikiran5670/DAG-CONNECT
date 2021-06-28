@@ -8,6 +8,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
     public class ReportEmailFrequency
     {
         public int ReportId { get; set; }
+        public string EmailId { get; set; }
         public long ReportScheduleRunDate { get; set; }
         public long ReportNextScheduleRunDate { get; set; }
         public long ReportPrevioudScheduleRunDate { get; set; }
