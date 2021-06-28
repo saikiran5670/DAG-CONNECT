@@ -435,6 +435,36 @@ export class UserManagementComponent implements OnInit {
     this.dataSource = dataSource;
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    let val = JSON.parse(dataSource.filter);
+    this.dataSource = this.dataSource.data.filter((item)=>{
+      let isGroup = false;
+      let isRole = false;
+      let isName = false;
+      if(val.userGroup !== ''){
+        if(item.accountGroups.length >0){
+          item.accountGroups.forEach(element => {
+            if(element.name.toString().toLowerCase() === val.userGroup) isGroup= true;
+          });
+        } 
+      }else {
+        isGroup = true;
+      }
+      if(val.role !== ''){
+        if(item.roles.length >0){
+          item.roles.forEach(element => {
+            if(element.name.toString().toLowerCase() === val.role) isRole = true;
+          });
+        } 
+      }else {
+        isRole = true;
+      }
+      if(val.firstName !== ''){
+        if(item.firstName.toString().toLowerCase() === val.firstName) isName = true;
+      } else {
+        isName = true;
+      }
+      return isGroup && isRole && isName;
+    });
   }
 
   callToUserDetailTable(tableData: any){
