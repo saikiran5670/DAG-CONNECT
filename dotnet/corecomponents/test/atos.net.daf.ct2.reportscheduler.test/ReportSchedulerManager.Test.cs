@@ -32,7 +32,7 @@ namespace atos.net.daf.ct2.reportscheduler.test
             _dataMartdataAccess = new PgSQLDataMartDataAccess(_config.GetConnectionString("DataMartConnectionString"));
             _dataAccess = new PgSQLDataAccess(connectionString);
             _reportSchedulerRepository = new ReportSchedulerRepository(_dataAccess, _dataMartdataAccess);
-            _reportSchedulerManager = new ReportSchedulerManager(_reportSchedulerRepository, _auditlog, _emailNotificationManager);
+            _reportSchedulerManager = new ReportSchedulerManager(_reportSchedulerRepository);
             _helper = new Helper();
         }
 
