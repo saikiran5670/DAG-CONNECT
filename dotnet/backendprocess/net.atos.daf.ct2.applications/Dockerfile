@@ -1,0 +1,32 @@
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/core/runtime:3.1-buster-slim AS base
+WORKDIR /app
+
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+WORKDIR /src
+COPY ["backendprocess/net.atos.daf.ct2.applications/net.atos.daf.ct2.applications.csproj", "backendprocess/net.atos.daf.ct2.applications/"]
+COPY ["corecomponents/net.atos.daf.ct2.reports/net.atos.daf.ct2.reports.csproj", "corecomponents/net.atos.daf.ct2.reports/"]
+COPY ["commoncomponent/net.atos.daf.ct2.data/net.atos.daf.ct2.data.csproj", "commoncomponent/net.atos.daf.ct2.data/"]
+COPY ["commoncomponent/net.atos.daf.ct2.audit/net.atos.daf.ct2.audit.csproj", "commoncomponent/net.atos.daf.ct2.audit/"]
+COPY ["commoncomponent/net.atos.daf.ct2.utilities/net.atos.daf.ct2.utilities.csproj", "commoncomponent/net.atos.daf.ct2.utilities/"]
+COPY ["corecomponents/net.atos.daf.ct2.reportschedular/net.atos.daf.ct2.reportscheduler.csproj", "corecomponents/net.atos.daf.ct2.reportschedular/"]
+COPY ["commoncomponent/net.atos.daf.ct2.notification/net.atos.daf.ct2.notification.csproj", "commoncomponent/net.atos.daf.ct2.notification/"]
+COPY ["commoncomponent/net.atos.daf.ct2.email/net.atos.daf.ct2.email.csproj", "commoncomponent/net.atos.daf.ct2.email/"]
+COPY ["commoncomponent/net.atos.daf.ct2.translation/net.atos.daf.ct2.translation.csproj", "commoncomponent/net.atos.daf.ct2.translation/"]
+COPY ["commoncomponent/net.atos.daf.ct2.visibility/net.atos.daf.ct2.visibility.csproj", "commoncomponent/net.atos.daf.ct2.visibility/"]
+COPY ["corecomponents/net.atos.daf.ct2.account/net.atos.daf.ct2.account.csproj", "corecomponents/net.atos.daf.ct2.account/"]
+COPY ["corecomponents/net.atos.daf.ct2.identitysession/net.atos.daf.ct2.identitysession.csproj", "corecomponents/net.atos.daf.ct2.identitysession/"]
+COPY ["corecomponents/net.atos.daf.ct2.identity/net.atos.daf.ct2.identity.csproj", "corecomponents/net.atos.daf.ct2.identity/"]
+RUN dotnet restore "backendprocess/net.atos.daf.ct2.applications/net.atos.daf.ct2.applications.csproj"
+COPY . .
+WORKDIR "/src/backendprocess/net.atos.daf.ct2.applications"
+RUN dotnet build "net.atos.daf.ct2.applications.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "net.atos.daf.ct2.applications.csproj" -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "net.atos.daf.ct2.applications.dll"]
