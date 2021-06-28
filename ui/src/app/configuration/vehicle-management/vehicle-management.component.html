@@ -4,9 +4,11 @@
           <mat-tab label="{{ translationData.lblVehicleDetails || 'Vehicle Details' }}"> 
               <app-vehicle-details *ngIf="selectedIndex == 0" [translationData]='translationData'></app-vehicle-details>
           </mat-tab>
+          <div *ngIf="isShow">
           <mat-tab label="{{ translationData.lblVehicleConnectSettings || 'Vehicle Connect Settings' }}">
             <app-vehicle-connect-settings *ngIf="selectedIndex == 1" ></app-vehicle-connect-settings>
-          </mat-tab>        
+          </mat-tab>   
+        </div>     
       </mat-tab-group>  
 </mat-card>
 </div>

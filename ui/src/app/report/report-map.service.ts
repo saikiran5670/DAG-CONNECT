@@ -87,6 +87,10 @@ export class ReportMapService {
     return this.ui;
   }
 
+    getHereMap() {
+      return this.hereMap
+    }
+
   getPOIS(){
     //let hexString = (35).toString(16);
     let tileProvider = new H.map.provider.ImageTileProvider({
@@ -277,6 +281,7 @@ export class ReportMapService {
       anchor: { x: 11, y: 11 }
     });
   
+
   
     var clusterSvgTemplate =
     '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px"><circle cx="25px" cy="25px" r="20" fill="red" stroke-opacity="0.5" />' +

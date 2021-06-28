@@ -142,7 +142,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
               private dialog: MatDialog,
               private alertService: AlertService,
               private corridorService: CorridorService,
-              private dialogService: ConfirmDialogService) 
+              private dialogService: ConfirmDialogService,
+              private el: ElementRef) 
   {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -1701,8 +1702,15 @@ PoiCheckboxClicked(event: any, row: any) {
             this.backToPage.emit(emitObj);
           }  
         }, (error) => {
-          if(error.status == 409)
+          if(error.status == 409 && error.error == 'Duplicate alert name')
+          {
             this.isDuplicateAlert= true;
+            const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'alertName' + '"]');
+            invalidControl.focus();
+          }
+          // else if(error.status == 409 && error.error == 'Duplicate notification recipient label'){
+          //   this.notificationComponent.duplicateRecipientLabel();
+          // }
         })
     }
     else if(this.actionType == 'edit'){

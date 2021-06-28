@@ -1,6 +1,10 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/runtime:3.1 AS base
+
+RUN ["apt-get", "update"]
+RUN ["apt-get", "-y", "install", "libgdiplus"]
+
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
@@ -29,6 +33,5 @@ RUN dotnet publish "net.atos.daf.ct2.applications.csproj" -c Release -o /app/pub
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-RUN ls -a /app
-RUN ls -a /app/publish
+
 ENTRYPOINT ["dotnet", "net.atos.daf.ct2.applications.dll", "ReportCreationScheduler"]

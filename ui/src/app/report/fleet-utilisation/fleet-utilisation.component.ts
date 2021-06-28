@@ -91,8 +91,8 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   chartsColumnData: any = [];
   calenderColumnData: any = [];
   detailColumnData: any = [];
-  timebasedThreshold : any = 36000;
-  mileagebasedThreshold : any = 60;
+  timebasedThreshold : any = 0; // hh:mm
+  mileagebasedThreshold : any = 0; // km
   showField: any = {
     vehicleName: true,
     vin: true,
@@ -208,39 +208,24 @@ barChartType: ChartType = 'bar';
 barChartLegend = true;
 barChartPlugins = [];
 
-barChartData: any[] = [
-  { 
-    label: 'Average distance per vehicle(km/day)',
-    type: 'bar',
-    backgroundColor: '#7BC5EC',
-    hoverBackgroundColor: '#7BC5EC',
-    yAxesID: "y-axis-1",
-    data: this.averageDistanceBarData,	    
-    },
-    {
-      label: 'Total distance(km)',
-      type: 'bar',
-      backgroundColor: '#4679CC',
-      hoverBackgroundColor: '#4679CC',
-      yAxesID: "y-axis-1",
-      data: this.barVarticleData
-    },
-];
+barChartData: any[];
 
 // Doughnut chart implementation for Mileage based utilisation
 
-doughnutChartLabels: Label[] = ['Percentage of vehicles with distance done above 1000 km', 'Percentage of vehicles with distance done under 1000 km'];
+//doughnutChartLabels: Label[] = ['Percentage of vehicles with distance done above 1000 km', 'Percentage of vehicles with distance done under 1000 km'];
+doughnutChartLabels: Label[];
 doughnutChartData: any = [];
 doughnutChartType: ChartType = 'doughnut';
 doughnutChartColors: Color[] = [
   {
-    backgroundColor: ['#7BC5EC', '#69EC0A'],
+    backgroundColor: ['#69EC0A','#7BC5EC'],
   },
 ];
 
 // Doughnut chart implementation for Time based utilisation
 
-doughnutChartLabelsForTime: Label[] = ['Percentage of vehicles with driving time above 1h 0 m', 'Percentage of vehicles with driving time under 1h 0 m'];
+//doughnutChartLabelsForTime: Label[] = ['Percentage of vehicles with driving time above 1h 0 m', 'Percentage of vehicles with driving time under 1h 0 m'];
+doughnutChartLabelsForTime: Label[];
 doughnutChartDataForTime: any = [];
 doughnutChartTypeTime: ChartType = 'doughnut';
 
@@ -257,9 +242,7 @@ public doughnut_barOptions: ChartOptions = {
 };
 // Line chart implementation
 
-lineChartData: ChartDataSets[] = [
-  { data: this.lineChartVehicleCount, label: 'Number of Vehicles' },
-];
+lineChartData: ChartDataSets[];
 
 lineChartLabels: Label[] =this.chartsLabelsdefined;
 
@@ -535,8 +518,63 @@ calendarOptions: CalendarOptions = {
         this.calendarpreferenceOption = "da_report_calendarview_totaltrips";
       }
     }
+
+    if(this.chartsColumnData.length > 0){
+      this.chartsColumnData.forEach(element => {
+        if(element.key == "da_report_charts_distanceperday"){
+          this.distanceChart.state = element.state == "A" ? true : false;
+          this.distanceChart.chartType = element.chartType;
+        }else if(element.key == "da_report_charts_numberofvehiclesperday"){
+          this.activeVehicleChart.state = element.state == "A" ? true : false;
+          this.activeVehicleChart.chartType = element.chartType;
+        }else if(element.key == "da_report_charts_mileagebasedutilization"){
+          this.mileageBasedChart.state = element.state == "A" ? true : false;
+          this.mileageBasedChart.chartType = element.chartType;
+          this.mileageBasedChart.thresholdValue = element.thresholdValue;
+          this.mileageBasedChart.thresholdType = element.thresholdType;
+          this.mileagebasedThreshold = parseInt(element.thresholdValue);
+          this.doughnutChartLabels = [`Percentage of vehicles with distance done above ${this.convertMeterToKm(this.mileagebasedThreshold)} km`, `Percentage of vehicles with distance done under ${this.convertMeterToKm(this.mileagebasedThreshold)} km`]
+        }else if(element.key == "da_report_charts_timebasedutilization"){
+          this.timeBasedChart.state = element.state == "A" ? true : false;
+          this.timeBasedChart.chartType = element.chartType;
+          this.timeBasedChart.thresholdValue = element.thresholdValue;
+          this.timeBasedChart.thresholdType = element.thresholdType;
+          this.timebasedThreshold = parseInt(element.thresholdValue);
+          this.doughnutChartLabelsForTime = [`Percentage of vehicles with driving time above ${this.convertMilisecondsToHHMM(this.timebasedThreshold)}`, `Percentage of vehicles with driving time under ${this.convertMilisecondsToHHMM(this.timebasedThreshold)}`];
+        }
+      });
+    }
   }
 
+  convertMeterToKm(meter: any){
+    return meter ? (meter/1000).toFixed(0) : 0;
+  }
+
+  convertMilisecondsToHHMM(ms: any){
+    if(ms){
+      // 1- Convert to seconds:
+      let seconds: any = ms / 1000;
+      // 2- Extract hours:
+      let hours: any = (seconds / 3600); // 3,600 seconds in 1 hour
+      hours = parseInt(hours);
+      seconds = (seconds % 3600); // seconds remaining after extracting hours
+      seconds = parseInt(seconds);
+      // 3- Extract minutes:
+      let minutes: any = (seconds / 60); // 60 seconds in 1 minute
+      // 4- Keep only seconds not extracted to minutes:
+      minutes = parseInt(minutes);
+      seconds = seconds % 60;
+      //console.log( hours+":"+minutes+":"+seconds);
+      return `${hours < 10 ? '0'+hours : hours} h ${minutes < 10 ? '0'+minutes : minutes} m`;
+    }else{
+      return '00 h 00 m';
+    }
+  }
+
+  distanceChart: any = {};
+  activeVehicleChart: any = {};
+  mileageBasedChart: any = {};
+  timeBasedChart: any = {};
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -623,6 +661,7 @@ calendarOptions: CalendarOptions = {
 
   onSearch(){
     //this.internalSelection = true;
+    this.resetChartData(); // reset chart data
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
@@ -652,7 +691,7 @@ calendarOptions: CalendarOptions = {
       //this.isCalendarOpen = true;
       this.isSummaryOpen = true;
       this.tripData.forEach(element => {
-        if((element.distance/1000) > this.mileagebasedThreshold){
+        if(element.distance > this.mileagebasedThreshold){
           this.greaterMileageCount = this.greaterMileageCount + 1;
         }
         if(element.drivingTime > this.timebasedThreshold){
@@ -676,8 +715,17 @@ calendarOptions: CalendarOptions = {
         this.calendarSelectedValues(calendarData["calenderDetails"]);
       })
     }
-    this.calendarOptions.initialDate = this.startDateValue
-    this.calendarOptions.validRange = { start: `${new Date(this.startDateValue).getFullYear()}-${(new Date(this.startDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.startDateValue).getDate().toString().padStart(2, '0')}`, end : '2021-06-24'};
+    this.calendarOptions.initialDate = this.startDateValue;
+    this.calendarOptions.validRange = { start: `${new Date(this.startDateValue).getFullYear()}-${(new Date(this.startDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.startDateValue).getDate().toString().padStart(2, '0')}`, end :  `${new Date(this.endDateValue).getFullYear()}-${(new Date(this.endDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.endDateValue).getDate().toString().padStart(2, '0')}`};
+  }
+
+  resetChartData(){
+    this.doughnutChartData = [];
+    this.doughnutChartDataForTime = [];
+    this.barVarticleData = [];
+    this.lineChartVehicleCount = [];
+    this.chartsLabelsdefined = [];
+    this.averageDistanceBarData = [];
   }
 
   onReset(){
@@ -694,6 +742,7 @@ calendarOptions: CalendarOptions = {
     this.selectedPOI.clear();
     this.resetTripFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
+    
   }
 
   sumOfColumns(columnName : any){
@@ -745,6 +794,33 @@ calendarOptions: CalendarOptions = {
       this.averageDistanceBarData.push(this.barVarticleData/e.vehiclecount);
       this.lineChartVehicleCount.push(e.vehiclecount);     
     });
+    this.assignChartData();
+  }
+
+  assignChartData(){
+    this.barChartData = [
+      { 
+        label: 'Average distance per vehicle(km/day)',
+        type: 'bar',
+        backgroundColor: '#7BC5EC',
+        hoverBackgroundColor: '#7BC5EC',
+        yAxesID: "y-axis-1",
+        data: this.averageDistanceBarData,	    
+        },
+        {
+          label: 'Total distance(km)',
+          type: 'bar',
+          backgroundColor: '#4679CC',
+          hoverBackgroundColor: '#4679CC',
+          yAxesID: "y-axis-1",
+          data: this.barVarticleData
+        },
+    ];
+    this.lineChartData = [
+      { data: this.lineChartVehicleCount, label: 'Number of Vehicles' },
+    ];
+    this.barChartLabels = this.chartsLabelsdefined;
+    this.lineChartLabels = this.chartsLabelsdefined;
   }
 
   calendarSelectedValues(e: any){
