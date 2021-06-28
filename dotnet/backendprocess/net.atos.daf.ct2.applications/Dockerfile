@@ -29,4 +29,4 @@ RUN dotnet publish "net.atos.daf.ct2.applications.csproj" -c Release -o /app/pub
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "net.atos.daf.ct2.applications.dll"]
+ENTRYPOINT ["dotnet", "net.atos.daf.ct2.applications.dll", "ReportCreationScheduler"]
