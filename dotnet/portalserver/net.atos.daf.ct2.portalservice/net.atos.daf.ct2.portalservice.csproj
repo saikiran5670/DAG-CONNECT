@@ -10,6 +10,7 @@
     <None Remove="Protos\group.proto" />
     <None Remove="Protos\package.proto" />
     <None Remove="Protos\report.proto" />
+    <None Remove="Protos\reportscheduler.proto" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.14.0" />
@@ -19,6 +20,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -34,6 +36,7 @@
     <Protobuf Include="Protos\group.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\package.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\feature.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\reportscheduler.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\subscribe.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\vehicle.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\translation.proto" GrpcServices="Client" />
@@ -48,7 +51,8 @@
     <Protobuf Include="Protos\alert.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\corridor.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\map.proto" GrpcServices="Client" />
-
+    <Protobuf Include="Protos\reportscheduler.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\pushnotification.proto" GrpcServices="Client" />
 
   </ItemGroup>
   <ItemGroup>

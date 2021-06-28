@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.visibility.repository
 
         public IEnumerable<FeatureSet> GetFeatureSet(int userid, int orgid)
         {
-            var featureSet = new List<FeatureSet>();
+            var featureSets = new List<FeatureSet>();
             var func = "dafconnectmaster.getuserrolefeatures";
             var result = _dataAccess.Query<Feature>(
                             sql: func,
@@ -36,20 +36,20 @@ namespace net.atos.daf.ct2.visibility.repository
             {
                 if (feature != null)
                 {
-                    var _featureSet = new FeatureSet();
-                    _featureSet.FeatureSetID = feature.RoleFeatureId;
-                    _featureSet.FeatureSetName = feature.FeatureDescription;
+                    var featureSet = new FeatureSet();
+                    featureSet.FeatureSetID = feature.RoleFeatureId;
+                    featureSet.FeatureSetName = feature.FeatureDescription;
                     // get child features
-                    var childFeatures = result.Where(fe => fe.ParentFeatureId == _featureSet.FeatureSetID).ToList();
+                    var childFeatures = result.Where(fe => fe.ParentFeatureId == featureSet.FeatureSetID).ToList();
                     if (childFeatures != null)
                     {
-                        _featureSet.Features = new List<Feature>();
-                        _featureSet.Features.AddRange(childFeatures);
+                        featureSet.Features = new List<Feature>();
+                        featureSet.Features.AddRange(childFeatures);
                     }
-                    featureSet.Add(_featureSet);
+                    featureSets.Add(featureSet);
                 }
             }
-            return featureSet;
+            return featureSets;
         }
 
         public Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId,
@@ -325,7 +325,7 @@ namespace net.atos.daf.ct2.visibility.repository
             }
         }
 
-        public Task<IEnumerable<VehicleDetailsFeatureAndSubsction>> GetVehicleByFeatureAndSubscription(int accountId, int organizationId,int roleId,
+        public Task<IEnumerable<VehicleDetailsFeatureAndSubsction>> GetVehicleByFeatureAndSubscription(int accountId, int organizationId, int roleId,
                                                                                                     string featureName = "Alert")
         {
             try
@@ -403,34 +403,47 @@ as
 org_veh_subscribe_features
 as
 (
-	select distinct  movf.featureid,movf.key,movf.name,0 as vehicleid, movf.organizationid , 'O' as subscriptiontype,
-	case when featuresetid is null then '0' else featuresetid end as featuresetid 
+	select distinct  movf.featureid,movf.key,movf.name,0 as vehicleid, movf.organizationid , 'O' as subscriptiontype
+	--case when featuresetid is null then '0' else featuresetid end as featuresetid 
 	from matching_org_veh_features movf
 	union
-	select distinct  featureid,key,name, case when vehicleid is null then 0 else vehicleid end  as vehicleid , organizationid , subscriptiontype,
-	case when featuresetid is null then 0 else featuresetid end as featuresetid 
+	select distinct  featureid,key,name, case when vehicleid is null then 0 else vehicleid end  as vehicleid , organizationid , subscriptiontype
+	--case when featuresetid is null then 0 else featuresetid end as featuresetid 
 	from  veh_features_not_in_org
 	union
-	select distinct featureid,key,name, case when vehicleid is null then 0 else vehicleid end  as vehicleid, organizationid , subscriptiontype,case when featuresetid is null then 0 else featuresetid end as featuresetid  from  org_subscriptions
+	select distinct featureid,key,name, case when vehicleid is null then 0 else vehicleid end  as vehicleid, organizationid , subscriptiontype
+	--,case when featuresetid is null then 0 else featuresetid end as featuresetid  
+	from  org_subscriptions
 )
-
---select distinct ovsf.featureid, ovsf.key as featurekey,ovsf.name,ovsf.vehicleid,ovsf.organizationid,ovsf.subscriptiontype,enutra.key as enumkey,ovsf.featuresetid
-select ovsf.featureid as FeatureId, 
-case when ovsf.key is null  then '' else ovsf.key end as key,
-case when ovsf.name is null then '' else ovsf.name end as Name,ovsf.vehicleid as VehicleId,ovsf.organizationid as OrganizationId,
-case when ovsf.subscriptiontype is null then '' else subscriptiontype end as SubscriptionType,
-case when enutra.key is null then '' else enutra.key end as FeatureEnum  
+,user_specific_features
+as
+(
+select FSF.feature_id as FeatureId
 FROM master.Account acc
 INNER JOIN master.AccountRole accrol ON acc.id = accrol.account_id AND acc.id = @account_id  AND accrol.organization_id = @organization_id AND accrol.role_id = @role_id AND acc.state = 'A'
 INNER JOIN master.Role rol ON accrol.role_id = rol.id AND rol.state = 'A'
-inner join org_veh_subscribe_features ovsf ON rol.feature_set_id=ovsf.featuresetid
+INNER JOIN master.FeatureSetFeature FSF on FSF.feature_set_id=rol.feature_set_id
+--INNER join org_veh_subscribe_features ovsf ON FSF.feature_id=ovsf.featureid
+--left join translation.enumtranslation enutra
+--on   ovsf.featureid = enutra.feature_id
+--and enutra.type='T'
+--order by 1 desc
+)
+select distinct ovsf.featureid as FeatureId, 
+case when ovsf.key is null  then '' else ovsf.key end as key,
+case when ovsf.name is null then '' else ovsf.name end as Name,ovsf.vehicleid as VehicleId,ovsf.organizationid as OrganizationId,
+case when ovsf.subscriptiontype is null then '' else subscriptiontype end as SubscriptionType,
+case when enutra.key is null then '' else enutra.key end as FeatureEnum   from org_veh_subscribe_features ovsf
+inner join
+user_specific_features usf
+on ovsf.FeatureId=usf.FeatureId
 left join translation.enumtranslation enutra
 on   ovsf.featureid = enutra.feature_id
-and enutra.type='T' 
+and enutra.type='T'
 order by 1 desc
 ";
                 #endregion
-                
+
                 var list = _dataAccess.QueryAsync<VehicleDetailsFeatureAndSubsction>(query, parameter);
                 return list;
             }

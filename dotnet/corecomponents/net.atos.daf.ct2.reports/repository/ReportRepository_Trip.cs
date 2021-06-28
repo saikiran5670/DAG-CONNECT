@@ -37,9 +37,10 @@ namespace net.atos.daf.ct2.reports.repository
         /// <summary>
         /// Fetch Filtered trips along with Live Fleet Position
         /// </summary>
-        /// <param name="TripFilters"></param>
+        /// <param name="tripFilters"></param>
         /// <returns>List of Trips Data with LiveFleet attached under *LiveFleetPosition* property</returns>
-        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest TripFilters)
+        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilters,
+                                                                    bool isLiveFleetRequired = true)
         {
             try
             {
@@ -74,17 +75,17 @@ namespace net.atos.daf.ct2.reports.repository
 		                        )";
 
                 var parameter = new DynamicParameters();
-                parameter.Add("@StartDateTime", TripFilters.StartDateTime);
-                parameter.Add("@EndDateTime", TripFilters.EndDateTime);
-                parameter.Add("@vin", TripFilters.VIN);
+                parameter.Add("@StartDateTime", tripFilters.StartDateTime);
+                parameter.Add("@EndDateTime", tripFilters.EndDateTime);
+                parameter.Add("@vin", tripFilters.VIN);
 
                 List<TripDetails> data = (List<TripDetails>)await _dataMartdataAccess.QueryAsync<TripDetails>(query, parameter);
-                if (data?.Count > 0)
+                if (data?.Count > 0 && isLiveFleetRequired)
                 {
 
                     // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
-                    string[] TripIds = data.Select(item => item.TripId).ToArray();
-                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(TripIds);
+                    string[] tripIds = data.Select(item => item.TripId).ToArray();
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
                     if (lstLiveFleetPosition.Count > 0)
                         foreach (TripDetails trip in data)
                         {
@@ -97,8 +98,8 @@ namespace net.atos.daf.ct2.reports.repository
                         await GetLiveFleetPosition(item);
                     }
                     */
-                    lstTripEntityResponce = data.ToList();
                 }
+                lstTripEntityResponce = data;
                 return lstTripEntityResponce;
             }
             catch (Exception)
@@ -153,7 +154,7 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
                 //Creating chunk of 1000 trip ids because IN clause support till 1000 paramters only
-               var combineTrips = CreateChunks(TripIds);
+                var combineTrips = CreateChunks(TripIds);
 
                 List<LiveFleetPosition> lstLiveFleetPosition = new List<LiveFleetPosition>();
                 if (combineTrips.Count > 0)
@@ -182,14 +183,16 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
                 var parameterPosition = new DynamicParameters();
-                parameterPosition.Add("@trip_id", CommaSparatedTripIDs );
+                parameterPosition.Add("@trip_id", CommaSparatedTripIDs);
                 string queryPosition = @"select id, 
                                          vin,
                                     	 trip_id as Tripid,
                                          gps_altitude as GpsAltitude, 
                                          gps_heading as GpsHeading,
                                          gps_latitude as GpsLatitude,
-                                         gps_longitude as GpsLongitude
+                                         gps_longitude as GpsLongitude,
+                                         fuel_consumption as Fuelconsumtion,
+                                         co2_emission as Co2emission
                                     from livefleet.livefleet_position_statistics
                                     where trip_id = ANY (@trip_id) order by id desc";
                 List<LiveFleetPosition> lstLiveFleetPosition = (List<LiveFleetPosition>)await _dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);
@@ -207,7 +210,7 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 throw;
             }
-            
+
         }
 
         #region Generic code to Prepare In query String
@@ -221,7 +224,7 @@ namespace net.atos.daf.ct2.reports.repository
         {
             // Creating batch of 1000 ids as IN clause support only 1000 parameters
             var TripChunks = Common.CommonExtention.Split<string>(ArrayForChuk, 1000).ToList();
-           
+
 
             return TripChunks;
         }

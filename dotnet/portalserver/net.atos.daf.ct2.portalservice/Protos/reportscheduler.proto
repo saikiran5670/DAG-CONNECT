@@ -1,0 +1,204 @@
+syntax = "proto3";
+
+option csharp_namespace = "net.atos.daf.ct2.reportschedulerservice";
+
+package reportscheduler;
+
+// The greeting service definition.
+service ReportSchedulerService{  
+  rpc GetReportParameter (ReportParameterRequest) returns (ReportParameterResponse);
+  rpc CreateReportScheduler (ReportSchedulerRequest) returns (ReportSchedulerResponse);
+  rpc UpdateReportScheduler (ReportSchedulerRequest) returns (ReportSchedulerResponse);
+  rpc GetReportSchedulerList (ReportParameterRequest) returns (ReportSchedulerListResponse);
+  rpc EnableDisableReportSchedule (ReportStatusUpdateDeleteRequest) returns (ReportStatusUpdateDeleteResponse);
+  rpc DeleteReportSchedule (ReportStatusUpdateDeleteRequest) returns (ReportStatusUpdateDeleteResponse);
+  rpc GetVehicleandVehicleGroupId (ReportParameterRequest) returns (VehicleandVehicleGroupIdResponse);
+  rpc GetPDFBinaryFormatById (ReportPDFByIdRequest) returns (ReportPDFResponse);
+  rpc GetPDFBinaryFormatByToken (ReportPDFByTokenRequest) returns (ReportPDFResponse);
+}
+
+enum ResponseCode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}
+
+message IdRequest {
+  int32 ReportScheulerId = 1;  
+}
+message ReportParameterRequest
+{
+    int32 AccountId = 1;
+    int32 OrganizationId = 2;
+    int32 RoleId=3;
+}
+message ReportParameterResponse
+{
+	ResponseCode Code = 1;
+    string message = 2;
+    repeated ReportTypeRequest ReportType = 3;
+    repeated DriverDetailRequest DriverDetail = 4;
+    repeated ReceiptEmailsRequest ReceiptEmails = 5;
+    repeated AssociatedVehicleRequest AssociatedVehicle = 6;    
+}
+message AssociatedVehicleRequest {
+	int32 VehicleGroupId =  1;
+    string VehicleGroupName =  2;
+    int32 VehicleId =  3;
+    string VehicleName =  4;
+    string Vin =  5;
+    string RegistrationNo =  6;
+    string GroupType = 7;
+}
+message ReportTypeRequest
+{
+    int32 Id =  1;
+    string ReportName =  2;
+    bool IsDriver =  3;
+}
+message DriverDetailRequest
+{
+    int32 Id = 1;
+    string DriverId = 2;
+    string DriverName = 3;
+}
+message ReceiptEmailsRequest
+{    
+    string Email = 1;
+}
+message ReportSchedulerResponse
+{
+   ResponseCode Code=1;
+   string message = 2;
+   int32 ReportSchedulerId=3;
+}
+message ReportSchedulerListResponse
+{
+   ResponseCode Code=1;
+   string message = 2;
+   repeated ReportSchedulerRequest ReportSchedulerRequest=3;
+}
+message ReportSchedulerRequest
+{
+	int32 Id =1;
+    int32 OrganizationId =2;
+    int32 ReportId =3;
+    string FrequencyType =4;
+    string Status =5;
+    string Type =6;    
+    int64 StartDate =7;
+    int64 EndDate =8;
+    string Code =9;
+    int64 LastScheduleRunDate =10;
+    int64 NextScheduleRunDate =11;
+    int64 CreatedAt =12;
+    int32 CreatedBy =13;
+    int64 ModifiedAt =14;
+    int32 ModifiedBy =15;
+    string MailSubject =16;
+    string MailDescription =17;
+    int64 ReportDispatchTime =18;
+    repeated ScheduledReportRequest ScheduledReport=19;
+    repeated ScheduledReportRecipientRequest ScheduledReportRecipient=20;
+    repeated ScheduledReportDriverRefRequest ScheduledReportDriverRef=21;
+    repeated ScheduledReportVehicleRefRequest ScheduledReportVehicleRef=22;
+}
+message ScheduledReportRequest
+{
+    int32 Id =1;
+    int32 ScheduleReportId =2;
+    //byteArray Report =3;
+    string Token =3;
+    int64 StartDate =4;
+    int64 EndDate =5;
+    int64 DownloadedAt =6;
+    int64 ValidTill =7;
+    int64 CreatedAt =8;
+}
+message ScheduledReportRecipientRequest
+{
+    int32 Id=1; 
+    int32 ScheduleReportId =2;
+    string Email =3;
+    string State =4;
+    int64 CreatedAt =5;
+    int64 ModifiedAt =6;
+}
+message ScheduledReportDriverRefRequest
+{
+    int32 ScheduleReportId =1;
+    int32 DriverId =2;
+    string State =3;
+    int64 CreatedAt =4;
+    int32 CreatedBy =5;
+    int64 ModifiedAt =6;
+    int32 ModifiedBy =7;
+}
+message ScheduledReportVehicleRefRequest
+{
+    int32 ScheduleReportId =1;
+    int32 VehicleGroupId =2;
+    string State =3;
+    int64 CreatedAt =4;
+    int32 CreatedBy =5;
+    int64 ModifiedAt =6;
+    int32 ModifiedBy =7;
+    int32 VehicleId =8;
+    string Vin =9; 
+    string Regno=10;
+    string VehicleName =11; 
+    string VehicleGroupName =12;
+    string VehicleGroupType =13;
+    string FunctionEnum =14;
+    int32 VehicleCount =15;
+}
+message VehicleSubscribeandFeatureRequest {
+		 int32 VehicleGroupId =  1;
+         int32 VehicleId =  2;
+         string FeatureName =  3;
+         string FeatureKey =  4;
+         bool Subscribe =  5;
+}
+
+message ReportStatusUpdateDeleteRequest {
+   int32 ReportId = 1;
+   int32 OrganizationId = 2;
+   string Status = 3;
+}
+
+message ReportStatusUpdateDeleteResponse {
+  ResponseCode Code=1;
+  string Message = 2;  
+  int32 ReportId =3;
+}
+
+message VehicleandVehicleGroupIdResponse {
+  ResponseCode Code=1;
+  string Message = 2;
+  repeated VehicleIdList VehicleIdList =3;
+  repeated VehicleGroupIdList VehicleGroupIdList =4;
+}
+
+message VehicleIdList {
+ int32 VehicleId =1;
+}
+message VehicleGroupIdList {
+ int32 VehicleGroupId =1;
+}
+message ReportPDFByIdRequest {
+ int32 ReportId =1;
+}
+message ReportPDFByTokenRequest {
+ string Token =1;
+}
+message ReportPDFResponse {
+ int32 Id = 1;
+ int32 ScheduleReportId = 2;
+ bytes Report = 3;
+ string FileName = 4;
+   ResponseCode Code=5;
+  string Message = 6;
+}

@@ -1,11 +1,12 @@
 <form [formGroup]="periodSelectionForm">
-  <div fxLayout="column" fxLayoutAlign="left" fxLayoutAlign="space-between">
+  <div *ngIf="actionType != 'view'" fxLayout="column" fxLayoutAlign="left" fxLayoutAlign="space-between">
     <mat-label style="font-size: 17px; font-weight: bold;" class="margin-bottom-sm">{{ translationData.lblSelectCalender || 'Select Calender' }}
     </mat-label>
     <mat-label class="margin-bottom-sm">{{ translationData.lblSelectoneorseveraldays || 'Select one or several days' }} <span
         class='mandatoryColor'>*</span>
       <mat-label style="color: darkgray;">{{ translationData.lblMax04customperiodperday || '(Max 04 custom period per
         day)'}}</mat-label>
+        <mat-label style="color: red;" *ngIf="weekDaySelected == false">{{ translationData.lblPleaseSelectAtLeastOneDay || 'Please select at least one day'}}</mat-label>
     </mat-label>
     <!-- calendar -->
     <div formArrayName="FormArrayItems">
@@ -29,26 +30,26 @@
               </div> 
             </div>
             <div  fxLayout="row" class="full-width margin-bottom-sm" *ngIf="item['controls']['fulldayCustom'].value ==  'C'">
-              <div fxLayout="column" class="max-width-90-per"  fxLayoutAlign="left">
-                <div  fxLayout="row" formArrayName="FormArrayCustomItems">
+              <div fxLayout="column" class="full-width"  fxLayoutAlign="left">
+                <div  fxLayout="row" formArrayName="FormArrayCustomItems" class="margin-bottom-sm">
                 <!-- <div formArrayName="FormArrayCustomItems">
                  <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index">
                   <div [formGroupName]="customIndex"> -->
-                    <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index" style="background: #dedddd;border-radius: 7px;margin-right: 10px;"  class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+                    <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index" style="background: #dedddd;border-radius: 7px;margin-right:5px;"  class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                       <div [formGroupName]="customIndex"  fxLayout="row" class="full-width margin-bottom-sm"  fxLayoutGap="5px">
-                        <div class="max-width-35-per" fxLayout="column">
-                          <mat-label>{{ translationData.lblFrom || 'From' }}</mat-label>
-                          <mat-form-field appearance="outline" class="full-width">
+                        <div class="max-width-42-per" fxLayout="column">
+                          <mat-label style="margin-left: 5px;">{{ translationData.lblFrom || 'From' }}</mat-label>
+                          <mat-form-field style="margin-left: 5px;" appearance="outline" class="full-width">
                               <input type="time" matInput formControlName="fromTime" >
                           </mat-form-field>
                         </div>
-                        <div class="max-width-35-per" fxLayout="column">
-                          <mat-label>{{ translationData.lblTo || 'To' }}</mat-label>
-                          <mat-form-field appearance="outline" class="full-width">
+                        <div class="max-width-42-per" fxLayout="column">
+                          <mat-label style="margin-left: 5px;">{{ translationData.lblTo || 'To' }}</mat-label>
+                          <mat-form-field style="margin-left: 5px;" appearance="outline" class="full-width">
                               <input type="time" matInput formControlName="toTime" >
                           </mat-form-field>
                         </div>
-                        <div class="max-width-10-per" fxLayout="column">
+                        <div class="max-width-8-per" fxLayout="column">
                           <!-- <button class='actionBtn' mat-flat-button (click)="onDeleteCustomPeriod(periodIndex, customIndex)" matTooltip="{{ translationData.lblDelete || 'Delete' }}"> -->
                             <mat-icon class="deleteIcon" (click)="onDeleteCustomPeriod(periodIndex, customIndex)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">delete_outline</mat-icon>
                           <!-- </button> -->
@@ -60,11 +61,17 @@
                  </div>
                 </div>  -->
               </div>
-              </div>   
-              <div  fxLayout="column" class="max-width-10-per"  fxLayoutAlign="left" fxLayoutGap="10px">
-                <button class='no-margin' mat-raised-button color="primary" (click)='addCustomPeriod(periodIndex)'>
-                  {{ translationData.lblAdd || 'Add' }}</button>
+              <div fxLayout="row">
+                <div  fxLayout="column"  fxLayoutAlign="left" fxLayoutGap="10px">
+                    <button mat-raised-button color="primary" (click)='addCustomPeriod(periodIndex, [], true)'>
+                      {{ translationData.lblAdd || 'Add' }}</button>
+                  </div>
               </div>
+              </div>   
+              <!-- <div  fxLayout="column" class="max-width-8-per"  fxLayoutAlign="left" fxLayoutGap="10px">
+                <button class='button1' mat-raised-button color="primary" (click)='addCustomPeriod(periodIndex, [], true)'>
+                  {{ translationData.lblAdd || 'Add' }}</button>
+              </div> -->
             </div>
           </mat-card>
         </div>
@@ -72,3 +79,41 @@
     </div>
   </div>
 </form>
+
+<div *ngIf="actionType == 'view'">
+  <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
+    fxLayoutGap="10px">
+    <mat-label style="font-size: 17px; font-weight: bold;">{{ translationData.lblSelectedDays || 'Selected Days'}}
+    </mat-label>
+  </div>
+
+  <div *ngFor="let days of timings">
+    <div fxLayout="row" class="areaWidth filter-direction margin-bottom-sm" fxLayoutGap="10px">
+      <mat-label>Day:<span style='font-weight: 500!important;'>{{days.day}}</span></mat-label>
+      <mat-label>Period Type:
+        <span style='font-weight: 500!important;' *ngIf="days.Type == 'C'">Custom Period</span>
+        <span style='font-weight: 500!important;' *ngIf="days.Type == 'A'">Full Day</span>
+      </mat-label>
+    </div>
+
+    <div *ngIf="days.Type == 'C'" fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="5px">
+      <div *ngFor="let item of days.data" class="areaWidth min-width-20-per " fxLayout="column" fxLayoutAlign="left">
+        <div class="areaWidth min-width-30-per" fxLayout="row" fxLayoutAlign="left">
+
+          <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblFrom || 'From' }}</mat-label>
+            <span style='font-weight: 500!important;'>{{ item.startDate }}</span>
+          </div>
+          <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblFrom || 'To' }}</mat-label>
+            <span style='font-weight: 500!important;'>{{ item.endDate }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style='padding: 10px; position: relative;'>
+      <mat-divider></mat-divider>
+    </div>
+  </div>
+
+</div>

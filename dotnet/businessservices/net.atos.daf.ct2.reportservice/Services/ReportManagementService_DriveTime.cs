@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Newtonsoft.Json;
+using VisibleEntity = net.atos.daf.ct2.visibility.entity;
 using ReportComponent = net.atos.daf.ct2.reports;
+using ProtobufCollection = Google.Protobuf.Collections;
 
 namespace net.atos.daf.ct2.reportservice.Services
 {
@@ -113,22 +115,28 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 if (vehicleDeatilsWithAccountVisibility.Count() > 0)
                 {
-                    string lstVehicle = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
-                    response.VehicleDetailsWithAccountVisibiltyList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(lstVehicle));
-
                     List<string> vinList = vehicleDeatilsWithAccountVisibility.Select(s => s.Vin).Distinct().ToList();
                     //string VINs = "'" + string.Join("','", vinList) + "'";
                     var lstDriver = await _reportManager.GetDriversByVIN(request.StartDateTime, request.EndDateTime, vinList);
-
                     if (lstDriver.Count() > 0)
                     {
+                        string lstVehicle = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                        response.VehicleDetailsWithAccountVisibiltyList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(lstVehicle));
                         string resDrivers = JsonConvert.SerializeObject(lstDriver);
                         response.DriverList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleFromDriverTimeDetails>>(resDrivers));
+                        response.Code = Responsecode.Success;
+                        response.Message = Responsecode.Success.ToString();
                     }
                     else
                     {
                         VehicleFromDriverTimeDetails vehicleFromDriverTimeDetails = new VehicleFromDriverTimeDetails();
                         response.DriverList.Add(vehicleFromDriverTimeDetails);
+                        string lstVehicle = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                        response.VehicleDetailsWithAccountVisibiltyList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(lstVehicle));
+                        //VehicleDetailsWithAccountVisibilty vehicleDetailsWithAccountVisibilty = new VehicleDetailsWithAccountVisibilty();
+                        //response.VehicleDetailsWithAccountVisibiltyList.Add(vehicleDetailsWithAccountVisibilty);
+                        response.Code = Responsecode.NotFound;
+                        response.Message = Responsecode.NotFound.ToString();
                     }
                 }
                 else
@@ -137,10 +145,9 @@ namespace net.atos.daf.ct2.reportservice.Services
                     response.DriverList.Add(vehicleFromDriverTimeDetails);
                     VehicleDetailsWithAccountVisibilty vehicleDetailsWithAccountVisibilty = new VehicleDetailsWithAccountVisibilty();
                     response.VehicleDetailsWithAccountVisibiltyList.Add(vehicleDetailsWithAccountVisibilty);
+                    response.Code = Responsecode.NotFound;
+                    response.Message = Responsecode.NotFound.ToString();
                 }
-
-                response.Code = Responsecode.Success;
-                response.Message = Responsecode.Success.ToString();
             }
             catch (Exception ex)
             {
@@ -153,6 +160,27 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             return await Task.FromResult(response);
         }
+
+        private async Task<Tuple<ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty>, List<string>>> GetVisibleVINDetails(int accountId, int organizationId)
+        {
+            IEnumerable<VisibleEntity.VehicleDetailsAccountVisibilty> vehicleDeatilsWithAccountVisibility = await _visibilityManager.GetVehicleByAccountVisibility(accountId, organizationId);
+
+            string lstVehicle = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+            ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty> lstVehiclesWithVisiblity = JsonConvert.DeserializeObject<ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty>>(lstVehicle);
+            List<string> vinList = vehicleDeatilsWithAccountVisibility.Select(s => s.Vin).Distinct().ToList();
+            return await Task.FromResult(new Tuple<ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty>, List<string>>(lstVehiclesWithVisiblity, vinList));
+        }
+
+        //private async Task<(ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty>, List<string>)> GetVisibleVINDetails1(int AccountId, int OrganizationId)
+        //{
+        //    IEnumerable<VisibleEntity.VehicleDetailsAccountVisibilty> _vehicleDeatilsWithAccountVisibility = await _visibilityManager.GetVehicleByAccountVisibility(AccountId, OrganizationId);
+
+        //    string lstVehicle = JsonConvert.SerializeObject(_vehicleDeatilsWithAccountVisibility);
+        //    ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty> lstVehiclesWithVisiblity = JsonConvert.DeserializeObject<ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty>>(lstVehicle);
+        //    List<string> vinList = _vehicleDeatilsWithAccountVisibility.Select(s => s.Vin).Distinct().ToList();
+        //    return await Task.FromResult((lstVehiclesWithVisiblity, vinList));
+        //}
+
         #endregion
     }
 }

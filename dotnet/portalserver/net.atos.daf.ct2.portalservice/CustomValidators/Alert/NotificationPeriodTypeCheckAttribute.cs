@@ -16,6 +16,7 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
                 case "M":
                 case "W":
                 case "Y":
+                case "H":
                     valid = true;
                     break;
             }

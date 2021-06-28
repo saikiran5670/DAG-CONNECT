@@ -16,14 +16,14 @@ namespace net.atos.daf.ct2.poigeofence.repository
         private static readonly log4net.ILog _log =
        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public PoiRepository(IDataAccess _dataAccess, IDataMartDataAccess _DataMartdataAccess)
+        public PoiRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
-            this._dataAccess = _dataAccess;
-            _dataMartdataAccess = _DataMartdataAccess;
+            _dataAccess = dataAccess;
+            _dataMartdataAccess = dataMartdataAccess;
         }
         public async Task<List<POI>> GetAllGobalPOI(POIEntityRequest objPOIEntityRequest)
         {
-            
+
             try
             {
                 string query = string.Empty;
@@ -682,12 +682,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@id", tripAddressDetails.Id);
                 parameter.Add("@startAddress", tripAddressDetails.StartAddress);
                 parameter.Add("@endAddress", tripAddressDetails.EndAddress);
-              
+
                 string query = @"update tripdetail.trip_statistics set start_position=@startAddress, 
                                                            end_position=@endAddress                                                                                                                                                                                                                     
                                                            where id = @Id RETURNING id";
-                tripAddressDetails.Id = await _dataMartdataAccess.ExecuteScalarAsync<int>(query, parameter);             
-                
+                tripAddressDetails.Id = await _dataMartdataAccess.ExecuteScalarAsync<int>(query, parameter);
+
             }
             catch (Exception ex)
             {

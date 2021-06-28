@@ -154,6 +154,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
     }
     else {
       this.isUserRoleExist = false;
+      this.createButtonFlag = true;
       this.doneFlag = true;
       let featureIds = [];
       this.selectionForFeatures.selected.forEach(feature => {
@@ -368,6 +369,16 @@ export class EditUserRoleDetailsComponent implements OnInit {
         });
         console.log("--allChildrenElements Id's--",this.allChildrenIds)
       }
+    }
+    var selectName = row.name;
+    var selectId = row.id;
+    if(!selectName.includes('.')){
+      this.dataSource.data.forEach( row => {
+        if(row.name.startsWith(selectName)){
+          if(!event.checked)
+            this.selectionForFeatures.deselect(row);
+        }
+      });
     }
   }
 

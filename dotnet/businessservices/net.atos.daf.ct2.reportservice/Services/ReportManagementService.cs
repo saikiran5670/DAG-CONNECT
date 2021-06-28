@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
 using log4net;
+using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.reports;
+using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reports.ENUM;
 using net.atos.daf.ct2.reportservice.entity;
 using net.atos.daf.ct2.visibility;
@@ -18,17 +21,19 @@ namespace net.atos.daf.ct2.reportservice.Services
         private readonly IReportManager _reportManager;
         private readonly IVisibilityManager _visibilityManager;
         private readonly Mapper _mapper;
-        public ReportManagementService(IReportManager reportManager, IVisibilityManager visibilityManager)
+        private readonly IConfiguration _configuration;
+        public ReportManagementService(IReportManager reportManager, IVisibilityManager visibilityManager, IConfiguration configuration)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _reportManager = reportManager;
             _visibilityManager = visibilityManager;
             _mapper = new Mapper();
+            _configuration = configuration;
         }
 
         #region Select User Preferences
 
-        public override async Task<ReportDetailsResponse> GetReportDetails(TempPara Id, ServerCallContext context)
+        public override async Task<ReportDetailsResponse> GetReportDetails(TempPara id, ServerCallContext context)
         {
             try
             {
@@ -57,56 +62,36 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
-                var userPrefernces = await _reportManager.GetUserPreferenceReportDataColumn(request.ReportId, request.AccountId, request.OrganizationId);
-                if (userPrefernces.Count() == 0)
+                IEnumerable<UserPreferenceReportDataColumn> userPreferences = null;
+                var userPreferencesExists = await _reportManager.CheckIfUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
+                var roleBasedUserPreferences = await _reportManager.GetRoleBasedDataColumn(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
+
+                if (userPreferencesExists)
                 {
-                    return await Task.FromResult(new UserPreferenceDataColumnResponse
-                    {
-                        Message = String.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, request.AccountId, request.ReportId, ReportConstants.USER_PREFERENCE_FAILURE_MSG2),
-                        Code = Responsecode.Failed
-                    });
+                    var preferences = await _reportManager.GetReportUserPreference(request.ReportId, request.AccountId, request.OrganizationId);
+
+                    //Filter out preferences based on Account role and org package subscription
+                    userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAtrributeId == x.DataAtrributeId));
                 }
-                if (!userPrefernces.Any(a => a.State == ((char)ReportPreferenceState.Active).ToString()))
+                else
                 {
-                    var roleBasedUserPrefernces = await _reportManager.GetRoleBasedDataColumn(request.ReportId, request.AccountId, request.OrganizationId);
-
-                    if (!roleBasedUserPrefernces.Any(a => a.State == ((char)ReportPreferenceState.Active).ToString()))
-                    {
-                        foreach (var item in roleBasedUserPrefernces)
-                        {
-                            item.State = ((char)ReportPreferenceState.Active).ToString();
-                        }
-                    }
-
-                    var roleBasedresponse = new UserPreferenceDataColumnResponse
-                    {
-                        Message = String.Format(ReportConstants.USER_PREFERENCE_SUCCESS_MSG, request.AccountId, request.ReportId),
-                        Code = Responsecode.Success
-                    };
-
-                    roleBasedresponse.UserPreferences.AddRange(_mapper.MapUserPrefences(roleBasedUserPrefernces));
-                    return await Task.FromResult(roleBasedresponse);
+                    userPreferences = roleBasedUserPreferences;
                 }
 
-                var response = new UserPreferenceDataColumnResponse
-                {
-                    Message = String.Format(ReportConstants.USER_PREFERENCE_SUCCESS_MSG, request.AccountId, request.ReportId),
-                    Code = Responsecode.Success
-                };
-                response.UserPreferences.AddRange(_mapper.MapUserPrefences(userPrefernces));
+                var response = new UserPreferenceDataColumnResponse();
+                response.Code = Responsecode.Success;
+                response.UserPreferences.AddRange(_mapper.MapUserPreferences(userPreferences));
                 return await Task.FromResult(response);
 
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                var errorResponse = new UserPreferenceDataColumnResponse
+                return new UserPreferenceDataColumnResponse
                 {
                     Message = ex.Message,
                     Code = Responsecode.InternalServerError
                 };
-                errorResponse.UserPreferences.Add(new UserPreferenceDataColumn());
-                return await Task.FromResult(errorResponse);
             }
         }
         #endregion
@@ -118,7 +103,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             {
                 _logger.Info("CreateUserPreference method in ReportManagement service called.");
 
-                int insertedUserPreferenceCount = await _reportManager.CreateUserPreference(_mapper.MapCreateUserPrefences(objUserPreferenceCreateRequest));
+                int insertedUserPreferenceCount = await _reportManager.CreateUserPreference(_mapper.MapCreateUserPreferences(objUserPreferenceCreateRequest));
                 if (insertedUserPreferenceCount == 0)
                 {
                     return await Task.FromResult(new UserPreferenceCreateResponse
@@ -143,6 +128,49 @@ namespace net.atos.daf.ct2.reportservice.Services
                     Code = Responsecode.InternalServerError
                 });
             }
+        }
+        #endregion
+
+        #region - Common search parameter for all reports
+
+        public override async Task<ReportSearchParameterResponse> GetReportSearchParameter(IdRequestForDriverActivity request, ServerCallContext context)
+        {
+            ReportSearchParameterResponse response = new ReportSearchParameterResponse();
+            try
+            {
+                var visibleVehicle = await GetVisibleVINDetails(request.AccountId, request.OrganizationId);
+                if (visibleVehicle?.Item1?.Count() > 0)
+                {
+                    response.VehicleDetailsWithAccountVisibiltyList.AddRange(visibleVehicle.Item1);
+                    object lstDriver = await _reportManager.GetReportSearchParameterByVIN(request.ReportId, request.StartDateTime, request.EndDateTime, visibleVehicle.Item2);
+                    if (lstDriver != null)
+                    {
+                        string resDrivers = JsonConvert.SerializeObject(lstDriver);
+                        response.AdditionalSearchParameter.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<SearchParameter>>(resDrivers));
+                    }
+                    else
+                    {
+                        response.AdditionalSearchParameter.Add(new SearchParameter());
+                    }
+                }
+                else
+                {
+                    response.AdditionalSearchParameter.Add(new SearchParameter());
+                    response.VehicleDetailsWithAccountVisibiltyList.Add(new VehicleDetailsWithAccountVisibilty());
+                }
+                response.Code = Responsecode.Success;
+                response.Message = Responsecode.Success.ToString();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ReportSearchParameterResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetDriverActivityParameters failed due to - " + ex.Message
+                });
+            }
+            return await Task.FromResult(response);
         }
         #endregion
     }

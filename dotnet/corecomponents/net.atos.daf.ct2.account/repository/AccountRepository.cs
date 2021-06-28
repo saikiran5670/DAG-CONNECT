@@ -16,9 +16,9 @@ namespace net.atos.daf.ct2.account
     public class AccountRepository : IAccountRepository
     {
         private readonly IDataAccess _dataAccess;
-        public AccountRepository(IDataAccess _dataAccess)
+        public AccountRepository(IDataAccess dataAccess)
         {
-            this._dataAccess = _dataAccess;
+            this._dataAccess = dataAccess;
         }
 
         #region Account
@@ -348,30 +348,50 @@ namespace net.atos.daf.ct2.account
         {
             try
             {
-                var parameter = new DynamicParameters();
-                string query = string.Empty;
-                parameter.Add("@account_id", account.Id);
-                parameter.Add("@organization_Id", account.Organization_Id);
-                parameter.Add("@start_date", account.StartDate);
-                if (account.EndDate.HasValue)
+                if (!await CheckIfAccountExistsInOrg(account.Id, account.Organization_Id.Value))
                 {
-                    parameter.Add("@end_date", account.EndDate);
-                }
-                else
-                {
-                    parameter.Add("@end_date", null);
-                }
-                query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,state)  
+                    var parameter = new DynamicParameters();
+                    string query = string.Empty;
+                    parameter.Add("@account_id", account.Id);
+                    parameter.Add("@organization_Id", account.Organization_Id.Value);
+                    parameter.Add("@start_date", account.StartDate);
+                    if (account.EndDate.HasValue)
+                    {
+                        parameter.Add("@end_date", account.EndDate);
+                    }
+                    else
+                    {
+                        parameter.Add("@end_date", null);
+                    }
+                    query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,state)  
                                    values(@account_id,@organization_Id,@start_date,@end_date,'A') RETURNING id";
-                var AccountOrgId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                account.Id = AccountOrgId;
-
+                    account.Id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                }
+                return account;
             }
             catch (Exception)
             {
                 throw;
             }
-            return account;
+        }
+
+        public async Task<bool> CheckIfAccountExistsInOrg(int accountId, int orgId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                parameter.Add("@account_id", accountId);
+                parameter.Add("@organization_Id", orgId);
+
+                query = @"SELECT EXISTS 
+                            ( SELECT 1 FROM master.accountorg WHERE account_id=@account_id AND organization_Id=@organization_Id AND state='A')";
+                return await _dataAccess.ExecuteScalarAsync<bool>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<int> UpsertPasswordModifiedDate(int accountId, long modifiedAt)
@@ -1553,16 +1573,15 @@ namespace net.atos.daf.ct2.account
 	                                SELECT act.preference_id AS preferenceid
 		                                ,act.id AS accountid
 		                                ,CONCAT (act.first_name,' ',act.last_name) AS accountName
-		                                ,actrole.role_id AS roleid
-										,org.id AS orgdefault_id
-		                                ,org.org_id AS organizationid
-		                                ,org.name AS organizationname
-	                                FROM master.account act
-	                                INNER JOIN master.accountrole actrole ON act.id = actrole.account_id
-	                                LEFT JOIN master.organization org ON actrole.organization_id = org.id
-	                                WHERE act.STATE = 'A'
-	                                )
-	                                ,cte_actpreference
+                            ,actrole.role_id AS roleid
+                            --,org.id AS orgdefault_id
+                            --,org.org_id AS organizationid
+                            --,org.name AS organizationname
+                            FROM master.account act
+                            INNER JOIN master.accountrole actrole ON act.id = actrole.account_id
+                            --LEFT JOIN master.organization org ON actrole.organization_id = org.id
+                            WHERE act.STATE = 'A' AND act.id=@accountID and actrole.role_id=@roleID)
+                            ,cte_actpreference
                                 AS (
 	                                SELECT _timezone.name AS timezonename
 		                                ,_dateformat.name AS dateformat
@@ -1576,22 +1595,22 @@ namespace net.atos.daf.ct2.account
 	                                FROM master.accountpreference actp
 	                                INNER JOIN master.timezone _timezone ON _timezone.id = actp.timezone_id
 	                                INNER JOIN master.unit _unit ON _unit.id = actp.unit_id
-	                                INNER JOIN master.DATEFORMAT _dateformat ON _dateformat.id = actp.date_format_id
-	                                INNER JOIN master.vehicledisplay _vehicledisplay ON _vehicledisplay.id = actp.vehicle_display_id
-	                                )
-                                SELECT cte_act.accountid
-	                                ,cte_act.accountname
-	                                ,cte_act.roleid
-	                                ,cte_act.organizationid
-	                                ,cte_act.organizationname
-	                                ,cte_actp.timezonename as timezone
-	                                ,cte_actp.DATEFORMAT
-	                                ,cte_actp.unitdisplay
-	                                ,cte_actp.vehicledisplay
-                                FROM cte_actpreference cte_actp
-                                RIGHT JOIN cte_account cte_act ON cte_act.preferenceid = cte_actp.accountpreferenceid
-                                WHERE cte_act.accountID = @accountID AND cte_act.roleid = @roleID AND cte_act.orgdefault_id = @OrganizationID
-                                ";
+									INNER JOIN master.DATEFORMAT _dateformat ON _dateformat.id = actp.date_format_id
+									INNER JOIN master.vehicledisplay _vehicledisplay ON _vehicledisplay.id = actp.vehicle_display_id
+                            )
+                            SELECT cte_act.accountid
+                            ,cte_act.accountname
+                            ,cte_act.roleid
+                            ,(select org_id from master.organization where id=@OrganizationID) as organizationid
+                            ,(select name as organizationname from master.organization where id=@OrganizationID) as organizationname
+                            --,cte_act.organizationid
+                            --,cte_act.organizationname
+                            ,cte_actp.timezonename as timezone
+                            ,cte_actp.DATEFORMAT
+                            ,cte_actp.unitdisplay
+                            ,cte_actp.vehicledisplay
+                            FROM cte_actpreference cte_actp
+                            RIGHT JOIN cte_account cte_act ON cte_act.preferenceid = cte_actp.accountpreferenceid";
                     //}
                     parameter.Add("@accountID", account.AccountId);
                     parameter.Add("@roleID", account.RoleId);

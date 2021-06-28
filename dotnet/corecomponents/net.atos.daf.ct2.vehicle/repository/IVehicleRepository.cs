@@ -4,7 +4,7 @@ using net.atos.daf.ct2.vehicle.entity;
 
 namespace net.atos.daf.ct2.vehicle.repository
 {
-    public interface IVehicleRepository
+    public partial interface IVehicleRepository
     {
         //    Task<int> AddVehicle(Vehicle vehicle);
         //    Task<int> AddVehicleGroup(VehicleGroup vehicleGroup);
@@ -44,6 +44,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         Task<VehicleDataMart> CreateAndUpdateVehicleInDataMart(VehicleDataMart vehicledatamart);
         Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid);
         Task<List<AccountVehicleEntity>> GetORGRelationshipVehicleGroupVehicles(int organizationId, bool is_vehicle);
+        Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId);
 
         #region Vehicle Mileage Data
         Task<IEnumerable<DtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate, bool noFilter);

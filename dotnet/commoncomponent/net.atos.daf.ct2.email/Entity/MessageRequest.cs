@@ -17,5 +17,7 @@ namespace net.atos.daf.ct2.email.Entity
         public AccountInfo AccountInfo { get; set; }
         public Guid? TokenSecret { get; set; }
         public int RemainingDaysToExpire { get; set; }
+        public List<string> ReportTokens { get; set; }
+        public int MailRetryCount { get; set; } = 0;
     }
 }

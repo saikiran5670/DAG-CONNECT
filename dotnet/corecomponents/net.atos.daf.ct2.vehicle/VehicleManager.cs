@@ -13,13 +13,11 @@ namespace net.atos.daf.ct2.vehicle
 {
     public class VehicleManager : IVehicleManager
     {
-        IVehicleRepository _vehicleRepository;
-        IAuditTraillib _auditlog;
+        readonly IVehicleRepository _vehicleRepository;
 
-        public VehicleManager(IVehicleRepository vehicleRepository, IAuditTraillib auditlog)
+        public VehicleManager(IVehicleRepository vehicleRepository)
         {
             this._vehicleRepository = vehicleRepository;
-            this._auditlog = auditlog;
         }
 
         public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId)
@@ -30,7 +28,6 @@ namespace net.atos.daf.ct2.vehicle
         {
             try
             {
-                // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Create method in vehicle manager",1,2,JsonConvert.SerializeObject(vehicle));
                 return await _vehicleRepository.Create(vehicle);
             }
             catch (Exception)
@@ -56,7 +53,6 @@ namespace net.atos.daf.ct2.vehicle
         {
             try
             {
-                // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update property method in vehicle manager",1,2,null);
                 return await _vehicleRepository.UpdateProperty(vehicleproperty);
             }
             catch (Exception)
@@ -254,7 +250,19 @@ namespace net.atos.daf.ct2.vehicle
                 throw;
             }
         }
+        public async Task<VehicleConnectedResult> UpdateVehicleConnection(List<VehicleConnect> vehicleConnects)
+        {
+            try
+            {
+                return await _vehicleRepository.UpdateVehicleConnection(vehicleConnects);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
+        public async Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId) => await _vehicleRepository.GetVehicleAssociatedGroup(vehicleId, organizationId);
 
         #region Vehicle Mileage Data
         public async Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contentType, int accountId, int orgid)
@@ -265,11 +273,11 @@ namespace net.atos.daf.ct2.vehicle
                 long endDate = 0;
 
                 if (since == "yesterday")
-                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)));
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)), "UTC");
                 else if (since == "today")
-                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now));
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now), "UTC");
                 else if (isnumeric)
-                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(Convert.ToDateTime(since)));
+                    startDate = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(since), "UTC");
 
                 endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
@@ -286,7 +294,6 @@ namespace net.atos.daf.ct2.vehicle
                 VehicleMileage vehicleMileage = new VehicleMileage();
                 vehicleMileage.Vehicles = new List<entity.Vehicles>();
                 vehicleMileage.VehiclesCSV = new List<VehiclesCSV>();
-                string sTimezone = "UTC";
                 string targetdateformat = "yyyy-MM-ddTHH:mm:ss.fffz";
 
                 if (vehicleMileageList != null)
@@ -296,7 +303,7 @@ namespace net.atos.daf.ct2.vehicle
                         if (contentType == "text/csv")
                         {
                             VehiclesCSV vehiclesCSV = new VehiclesCSV();
-                            vehiclesCSV.EvtDateTime = item.Evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.Evt_timestamp, sTimezone, targetdateformat) : string.Empty;
+                            vehiclesCSV.EvtDateTime = item.Evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.Evt_timestamp, "UTC", targetdateformat) : string.Empty;
                             vehiclesCSV.VIN = item.Vin;
                             vehiclesCSV.TachoMileage = item.Odo_distance > 0 ? item.Odo_distance : 0;
                             vehiclesCSV.RealMileage = item.Real_distance > 0 ? item.Real_distance : 0;
@@ -306,7 +313,7 @@ namespace net.atos.daf.ct2.vehicle
                         else
                         {
                             entity.Vehicles vehiclesobj = new entity.Vehicles();
-                            vehiclesobj.EvtDateTime = item.Evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.Evt_timestamp, sTimezone, targetdateformat) : string.Empty;
+                            vehiclesobj.EvtDateTime = item.Evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.Evt_timestamp, "UTC", targetdateformat) : string.Empty;
                             vehiclesobj.VIN = item.Vin;
                             vehiclesobj.TachoMileage = item.Odo_distance > 0 ? item.Odo_distance : 0;
                             vehiclesobj.GPSMileage = item.Real_distance > 0 ? item.Real_distance : 0;
@@ -342,11 +349,11 @@ namespace net.atos.daf.ct2.vehicle
                 long endDate = 0;
 
                 if (since == "yesterday")
-                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)));
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)), "UTC");
                 else if (since == "today")
-                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now));
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now), "UTC");
                 else if (isnumeric)
-                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(Convert.ToDateTime(since)));
+                    startDate = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(since), "UTC");
 
                 endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
@@ -444,6 +451,54 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
+        #endregion
+
+        #region Vehicle Count for Report Scheduler
+        public async Task<int> GetVehicleAssociatedGroupCount(VehicleCountFilter vehicleCountFilter)
+        {
+            try
+            {
+                List<VisibilityVehicle> vehicles = new List<VisibilityVehicle>();
+                switch (vehicleCountFilter.GroupType)
+                {
+                    case "G":
+                        //Group
+                        vehicles.AddRange(await _vehicleRepository.GetGroupTypeVehicles(vehicleCountFilter.VehicleGroupId));
+                        break;
+                    case "D":
+                        //Dynamic
+                        switch (vehicleCountFilter.FunctionEnum)
+                        {
+                            case "A":
+                                //All
+                                vehicles.AddRange(await _vehicleRepository.GetDynamicAllVehicleForVisibility(vehicleCountFilter.OrgnizationId));
+                                break;
+                            case "O":
+                                //Owner
+                                vehicles.AddRange(await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(vehicleCountFilter.OrgnizationId));
+                                break;
+                            case "V":
+                                //Visible
+                                vehicles.AddRange(await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(vehicleCountFilter.OrgnizationId));
+                                break;
+                            case "M":
+                                //OEM
+                                vehicles.AddRange(await _vehicleRepository.GetDynamicOEMVehiclesForVisibility(vehicleCountFilter.VehicleGroupId));
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                return vehicles.Count();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         #endregion
     }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -22,11 +23,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly CategoryService.CategoryServiceClient _categoryServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly CategoryMapper _categoryMapper;
-        private ILog _logger;
+        private readonly ILog _logger;
 
         public LandmarkCategoryController(CategoryService.CategoryServiceClient categoryServiceClient,
             AuditHelper auditHelper, AccountPrivilegeChecker privilegeChecker
-            , IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper, privilegeChecker)
+            , IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper, privilegeChecker)
         {
             _categoryServiceClient = categoryServiceClient;
             _auditHelper = auditHelper;
@@ -34,10 +35,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
-
         [HttpPost]
         [Route("addcategory")]
-
         public async Task<IActionResult> AddCategory(AddCategoryRequest request)
         {
             try
@@ -260,7 +259,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                var response = await _categoryServiceClient.GetCategoryDetailsAsync(request);
+                int orgId = GetContextOrgId();
+                Metadata headers = new Metadata();
+                headers.Add("orgId", Convert.ToString(orgId));
+                var response = await _categoryServiceClient.GetCategoryDetailsAsync(request, headers);
 
 
                 if (response != null)

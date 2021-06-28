@@ -27,15 +27,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Private Variable
         private readonly RoleService.RoleServiceClient _roleclient;
         private readonly Mapper _mapper;
-
-        private ILog _logger;
-        private string _fk_Constraint = "violates foreign key constraint";
+        private readonly ILog _logger;
+        private readonly string _fk_Constraint = "violates foreign key constraint";
         private readonly AuditHelper _auditHelper;
 
         #endregion
 
         #region Constructor
-        public RoleController(RoleBusinessService.RoleService.RoleServiceClient roleclient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+        public RoleController(RoleBusinessService.RoleService.RoleServiceClient roleclient, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _roleclient = roleclient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -61,10 +60,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     request.Code = "PLADM";
                 }
-                if (request.FeatureIds.Length == 0)
-                {
-                    return StatusCode(400, "Feature Ids are required.");
-                }
+                //Commenting out this check for bug no.6210
+                //if (request.FeatureIds.Length == 0)
+                //{
+                //    return StatusCode(400, "Feature Ids are required.");
+                //}
                 //int Rid = _roleclient.CheckRoleNameExist(roleMaster.RoleName.Trim(), roleMaster.OrganizationId, 0);
                 RoleRequest ObjRole = new RoleRequest();
                 ObjRole.OrganizationId = request.OrganizationId;
@@ -115,10 +115,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 return StatusCode(400, "Role name and Role Id required Roleid required");
             }
-            if (roleMaster.FeatureIds.Length == 0)
-            {
-                return StatusCode(400, "Feature Ids required.");
-            }
+            // commenting for bug 6210
+            //if (roleMaster.FeatureIds.Length == 0)
+            //{
+            //    return StatusCode(400, "Feature Ids required.");
+            //}
             //context org id is only set when role id is different
             //Assign context orgId
             roleMaster.OrganizationId = AssignOrgContextByRoleId(roleMaster.RoleId);

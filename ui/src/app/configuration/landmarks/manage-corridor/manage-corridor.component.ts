@@ -32,6 +32,8 @@ export class ManageCorridorComponent implements OnInit {
   dataSource: any;
   markerArray: any = [];
   corridorNameList = [];
+  routeType = 'R';
+  corridorTypeId = 46;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -152,6 +154,12 @@ export class ManageCorridorComponent implements OnInit {
   editViewCorridor(rowData: any, type: any){
     this.actionType = type;
     this.selectedElementData = rowData;
+    if(this.selectedElementData.corridorType === 'R'){
+      this.corridorTypeId = 46;
+    }
+    else{
+      this.corridorTypeId = 45;
+    }
     this.createEditStatus = true;
   }
 
@@ -175,7 +183,7 @@ export class ManageCorridorComponent implements OnInit {
         }
       },
       (error)=>{
-        if(error.status === 500){
+        if(error.status === 500 || error.status === 409){
           const options = {
             title: this.translationData.lblDelete || "Delete",
             message: this.translationData.lblAreyousureyouwanttodelete || "Alert exists for corridor. You cannot deleted this corridor if there is an alert set for it. To remove this Corridor, first remove connected alerts.",
@@ -273,17 +281,16 @@ export class ManageCorridorComponent implements OnInit {
     this.showMap = this.selectedCorridors.selected.length > 0 ? true : false;
     //console.log(this.selectedpois.selected.length)
     //console.log(row);
+    this.mapFunctions.clearRoutesFromMap();
     if(event.checked){ //-- add new marker
       this.markerArray.push(row);
-      
-    this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
+    //this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
     }else{ //-- remove existing marker
       //It will filter out checked points only
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
-      this.mapFunctions.clearRoutesFromMap();
-
       }
+    this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
 
      // this.addPolylineToMap();
   }

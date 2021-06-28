@@ -8,12 +8,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
     {
         Task<Category> AddCategory(Category category);
         Task<Category> EditCategory(Category category);
-        Task<CategoryID> DeleteCategory(int ID);
-        Task<IEnumerable<Category>> GetCategoryType(string Type, int OrganizationId);
-        Task<IEnumerable<CategoryList>> GetCategoryDetails();
+        Task<CategoryID> DeleteCategory(int id);
+        Task<IEnumerable<Category>> GetCategoryType(string type, int organizationId);
+        Task<IEnumerable<CategoryList>> GetCategoryDetails(int orgId);
         Task<IEnumerable<Category>> GetCategory(CategoryFilter categoryFilter);
         Task<Category_SubCategory_ID_Class> BulkDeleteCategory(DeleteCategoryclass deleteCategoryclass);
-        Task<List<CategoryWisePOI>> GetCategoryWisePOI(int OrganizationId);
+        Task<List<CategoryWisePOI>> GetCategoryWisePOI(int organizationId);
 
     }
 }

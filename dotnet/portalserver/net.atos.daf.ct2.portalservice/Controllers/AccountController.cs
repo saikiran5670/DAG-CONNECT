@@ -783,10 +783,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     (request.LandingPageDisplayId <= 0)
                     )
                 {
-                    return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
+                    return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatTypeId, TimeFormatId, LandingPageDisplayId is required");
                 }
                 var accountPreference = new AccountBusinessService.AccountPreference();
                 var preference = new AccountBusinessService.AccountPreferenceResponse();
+                request.CreatedBy = _userDetails.AccountId;
                 accountPreference = _mapper.ToAccountPreference(request);
                 preference = await _accountClient.CreatePreferenceAsync(accountPreference);
                 if (preference != null && preference.Code == AccountBusinessService.Responcecode.Success)
@@ -834,6 +835,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The Preference Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
                 }
+                request.CreatedBy = _userDetails.AccountId;
                 var preference = new AccountBusinessService.AccountPreferenceResponse();
                 var accountPreference = new AccountBusinessService.AccountPreference();
                 accountPreference = _mapper.ToAccountPreference(request);
@@ -936,7 +938,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, "Preference details are found.");
+                        return Ok(new AccountPreferenceResponse());
                     }
                 }
                 else
@@ -1572,14 +1574,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                 {
-                    if (response.AccountGroupDetail != null && response.AccountGroupDetail.Count > 0)
-                    {
-                        return Ok(response.AccountGroupDetail);
-                    }
-                    else
-                    {
-                        return StatusCode(404, "Account Group details are found.");
-                    }
+                    return Ok(response.AccountGroupDetail);
                 }
                 else
                 {
@@ -1779,7 +1774,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region Session org context switching
-        
+
         [HttpPost]
         [Route("setuserselection")]
         public async Task<IActionResult> SetUserSelection([FromBody] AccountInfoRequest request)
@@ -1825,36 +1820,36 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                int s_accountId = _userDetails.AccountId;
-                int s_roleId = _userDetails.RoleId;
-                int s_orgId = _userDetails.OrgId;
-                int s_contextOrgId = _userDetails.ContextOrgId;
+                int sAccountId = _userDetails.AccountId;
+                int sRoleId = _userDetails.RoleId;
+                int sOrgId = _userDetails.OrgId;
+                int sContextOrgId = _userDetails.ContextOrgId;
 
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                               "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                               "SwitchOrgContext method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                               _userDetails.ToString(), _userDetails);
 
-                if (request.AccountId != s_accountId)
+                if (request.AccountId != sAccountId)
                     return BadRequest("Account Id mismatched");
 
                 // check for DAF Admin
-                int level = await _privilegeChecker.GetLevelByRoleId(s_orgId, s_roleId);
+                int level = await _privilegeChecker.GetLevelByRoleId(sOrgId, sRoleId);
 
                 //Add context org id to session
                 if (level >= 30)
                     return Unauthorized("Unauthorized access");
 
-                if (s_contextOrgId != request.ContextOrgId)
+                if (sContextOrgId != request.ContextOrgId)
                 {
                     _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.ContextOrgId);
 
                     //return menu items
                     var response = await _accountClient.GetMenuFeaturesAsync(new AccountBusinessService.MenuFeatureRequest()
                     {
-                        AccountId = s_accountId,
-                        OrganizationId = s_orgId,
-                        RoleId = s_roleId,
+                        AccountId = sAccountId,
+                        OrganizationId = sOrgId,
+                        RoleId = sRoleId,
                         LanguageCode = request.LanguageCode,
                         ContextOrgId = request.ContextOrgId
                     });
@@ -1892,6 +1887,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         #endregion
-        }
+    }
 
 }

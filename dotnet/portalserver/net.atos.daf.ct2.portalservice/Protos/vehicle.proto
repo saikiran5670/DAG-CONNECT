@@ -26,14 +26,17 @@ service VehicleService {
   rpc Terminate (VehicleTerminateRequest) returns (VehicleGroupDeleteResponce);
   rpc SetOptInStatus (VehicleOptInRequest) returns (VehicleGroupDeleteResponce);
   rpc GetVehicle (VehicleIdRequest) returns (VehicleDetailsResponce);
+  rpc GetVehicleBySubscriptionId (subscriptionIdRequest) returns (VehiclesBySubscriptionDetailsResponse);
   rpc GetVehicleGroupWithVehCount (VehicleGroupLandingRequest) returns (VehicleGroupLandingResponse);
 
   rpc GetDynamicAllVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
-  rpc GetDynamicVisibleVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
   rpc GetDynamicOwnedVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
+  rpc GetDynamicVisibleVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
   rpc GetRelationshipVehicles (OrgvehicleIdRequest) returns (VehicleListResponce);
-  rpc GetVehicleBySubscriptionId (subscriptionIdRequest) returns (VehiclesBySubscriptionDetailsResponse);
   rpc GetVehicleGroupbyAccountId (VehicleGroupListRequest) returns (VehicleGroupResponse);
+
+  rpc UpdateVehicleConnection(VehicleConnectRequest)returns(VehicleConnectResponse);
+  rpc GetVehicleAssociatedGroupCount (VehicleCountFilterRequest) returns (VehicleCountFilterResponse);
 }
 
 message VehiclesBySubscriptionDetailsResponse{
@@ -66,10 +69,12 @@ enum Type{
 }
 
 enum Responcecode{
-  Success = 0;
-  Failed = 1;
-  Conflict = 2;
-  NotFound = 3;
+  NA=0; 
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500; 
 }
 
 enum ObjectType{
@@ -108,6 +113,7 @@ message VehicleResponce {
   Responcecode code=1;
   string message = 2;
   VehicleRequest vehicle=3;
+  bool Exists=4;
 }
 
 message VehicleCreateResponce {
@@ -221,6 +227,7 @@ message VehicleGroupRefDetails{
   google.protobuf.Int32Value OrganizationId=9;
   string Description=10;
   int64 CreatedAt=11;
+  string AssociatedGroups=23;
 }
 
 message VehicleGroupRefResponce{
@@ -305,7 +312,6 @@ message VehicleDetailsResponce {
   VehicleDetails vehicle=3;
 }
 
-
 message VehicleGroupLandingRequest{
   int32 Id=1;
   int32 OrganizationId = 2;
@@ -352,4 +358,37 @@ message VehicleGroupList{
 message VehicleGroupListRequest {
   int32 AccountId = 1;
   int32 OrganizationId = 2;
+}
+
+message VehicleConnection {
+  int32 VehicleId = 1;
+  string Opt_In = 2;
+  int32 ModifiedBy = 3;
+  
+}
+
+message VehicleConnectRequest{
+    repeated VehicleConnection Vehicles = 1;
+}
+
+message VehicleConnectResponse {
+  Responcecode Code = 1;
+  string Message = 2;
+  repeated VehicleConnection VehicleConnectedList = 3;
+  repeated VehicleConnection VehicleConnectionfailedList = 4;
+}
+
+message VehicleCountFilterRequest 
+{
+    int32 VehicleGroupId =1;
+    string GroupType =2;
+    string FunctionEnum=3;
+    int32 OrgnizationId=4;
+}
+
+message VehicleCountFilterResponse
+{
+    Responcecode Code = 1;
+    string Message = 2;
+    int32 VehicleCount=3;
 }

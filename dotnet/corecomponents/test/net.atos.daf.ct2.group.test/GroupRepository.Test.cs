@@ -133,7 +133,7 @@ namespace net.atos.daf.ct2.group.test
             filter.ObjectType = ObjectType.AccountGroup;
             filter.GroupType = GroupType.Single;
             //filter.GroupType = GroupType.None;
-           // var result = _groupRepository.Get(filter).Result;
+            // var result = _groupRepository.Get(filter).Result;
 
             //filter by id
             filter = new GroupFilter();
@@ -141,7 +141,7 @@ namespace net.atos.daf.ct2.group.test
             filter.FunctionEnum = FunctionEnum.None;
             filter.ObjectType = ObjectType.None;
             filter.GroupType = GroupType.None;
-        //    result = _groupRepository.Get(filter).Result;
+            //    result = _groupRepository.Get(filter).Result;
             // filter by organization id and id
             filter = new GroupFilter();
             filter.FunctionEnum = FunctionEnum.None;
@@ -149,14 +149,14 @@ namespace net.atos.daf.ct2.group.test
             filter.GroupType = GroupType.None;
             filter.Id = 2;
             filter.OrganizationId = 1;
-        //    result = _groupRepository.Get(filter).Result;
+            //    result = _groupRepository.Get(filter).Result;
 
             // filter by functional enum
             filter = new GroupFilter();
             filter.FunctionEnum = FunctionEnum.All;
             filter.ObjectType = ObjectType.None;
             filter.GroupType = GroupType.None;
-           var result = _groupRepository.Get(filter).Result;
+            var result = _groupRepository.Get(filter).Result;
 
             Assert.IsTrue(result != null);
         }

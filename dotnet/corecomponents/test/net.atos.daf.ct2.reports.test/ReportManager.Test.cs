@@ -36,8 +36,8 @@ namespace net.atos.daf.ct2.reports.test
         [Timeout(TestTimeout.Infinite)]
         public async Task GetUserPreferences_Success()
         {
-            var result = await _reportManager.GetUserPreferenceReportDataColumn(1, 144, 1);
-            Assert.IsTrue(result.Count() > 0);
+            var result = await _reportManager.CheckIfUserPreferencesExist(1, 144, 1);
+            Assert.IsTrue(result);
         }
 
         [TestCategory("Unit-Test-Case")]
@@ -46,8 +46,8 @@ namespace net.atos.daf.ct2.reports.test
         [Timeout(TestTimeout.Infinite)]
         public async Task GetUserPreferences_Failure()
         {
-            var result = await _reportManager.GetUserPreferenceReportDataColumn(100000, 144, 1);
-            Assert.IsTrue(result.Count() == 0);
+            var result = await _reportManager.CheckIfUserPreferencesExist(100000, 144, 1);
+            Assert.IsTrue(result);
         }
 
         [TestCategory("Unit-Test-Case")]
@@ -56,8 +56,8 @@ namespace net.atos.daf.ct2.reports.test
         [Timeout(TestTimeout.Infinite)]
         public async Task GetRoleBasedDataColumn_Success()
         {
-            var result = await _reportManager.GetRoleBasedDataColumn(1, 144, 1);
-            Assert.IsTrue(result.Count() > 0);
+            var result = await _reportManager.CheckIfUserPreferencesExist(1, 144, 1);
+            Assert.IsTrue(result);
         }
 
         [TestCategory("Unit-Test-Case")]
@@ -66,8 +66,8 @@ namespace net.atos.daf.ct2.reports.test
         [Timeout(TestTimeout.Infinite)]
         public async Task GetRoleBasedDataColumn_Falure()
         {
-            var result = await _reportManager.GetRoleBasedDataColumn(10000, 144, 1);
-            Assert.IsTrue(result.Count() == 0);
+            var result = await _reportManager.CheckIfUserPreferencesExist(10000, 144, 1);
+            Assert.IsTrue(result);
         }
 
         [TestCategory("Unit-Test-Case")]
@@ -96,18 +96,19 @@ namespace net.atos.daf.ct2.reports.test
         [Timeout(TestTimeout.Infinite)]
         public async Task GetDriversActivity_Success()
         {
-            List<string> _driverID = new List<string>
+            List<string> driverID = new List<string>
             {
                 "UK DB08176162022802"
-            }; List<string> _vin = new List<string>
+            }; List<string> vin = new List<string>
             {
                 "RERAE75PC0E261011"
-            }; var result = await _reportManager.GetDriversActivity(new entity.DriverActivityFilter() {
-                                                                        DriverId = _driverID,
-                                                                        StartDateTime = 1604337628000,
-                                                                        EndDateTime = 1604338846000,
-                                                                        VIN = _vin
-                                                                    });
+            }; var result = await _reportManager.GetDriversActivity(new entity.DriverActivityFilter()
+            {
+                DriverId = driverID,
+                StartDateTime = 1604337628000,
+                EndDateTime = 1604338846000,
+                VIN = vin
+            });
             Assert.IsTrue(result.Count() > 0);
         }
         #endregion

@@ -37,15 +37,17 @@ import { AlertAdvancedFilterComponent } from './configuration/alerts/create-edit
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { PeriodSelectionFilterComponent } from './configuration/alerts/create-edit-view-alerts/period-selection-filter/period-selection-filter.component';
 import { ReportSchedulerService } from './services/report.scheduler.service';
+import { NotificationAdvancedFilterComponent } from './configuration/alerts/create-edit-view-alerts/create-notifications-alert/notification-advanced-filter/notification-advanced-filter.component';
+import {AutocompleteLibModule} from 'angular-ng-autocomplete';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
-  // return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
+  //return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
 @NgModule({
     declarations: [AppComponent, AlertsComponent, PreferencesComponent, ErrorComponent, CreateEditViewAlertsComponent, AlertsFilterComponent, CreateNotificationsAlertComponent, 
-      AlertAdvancedFilterComponent, PeriodSelectionFilterComponent],
+      AlertAdvancedFilterComponent, PeriodSelectionFilterComponent, NotificationAdvancedFilterComponent,],
   imports: [
     BrowserModule,
     HttpClientModule,
@@ -63,6 +65,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
       deps: [HttpClient],
     }),
     PreferencesModule,
+    AutocompleteLibModule
     //RouterModule.forRoot(appRoute)
   ],
   providers: [

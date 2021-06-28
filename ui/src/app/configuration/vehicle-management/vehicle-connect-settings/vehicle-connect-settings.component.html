@@ -1,0 +1,133 @@
+<div class="full-width">
+    <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
+      style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-sm'>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+        {{ vehicleUpdatedMsg }}
+      </div>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+        <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+      </div>
+    </div>
+    <mat-card *ngIf='!updateViewStatus' class='mat-elevation-z'>      
+      <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+        <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" style="width: 180px;">
+          <mat-form-field appearance="outline">
+            <input matInput (keyup)="applyFilter($event.target.value)"
+              placeholder="{{ translationData.lblSearch || 'Search' }}">
+            <span matPrefix>
+              <mat-icon>search</mat-icon>
+            </span>
+          </mat-form-field>
+        </div>   
+        <!-- <div class='areaWidth' fxLayout="column" fxLayoutGap="3px">
+        <mat-form-field appearance="outline">
+          <mat-select placeholder="{{ translationData.lblSelectUserRole || 'Select Status' }}" (selectionChange)="filterChangeStatus($event)" >
+              <mat-option value=''>{{ translationData.lblStatusAll || 'All' }}</mat-option>           
+          </mat-select>
+      </mat-form-field>
+      </div> -->
+      <div class='areaWidth' fxLayoutGap="3px" style="padding-top: 10px;">
+        <span class="connectedStatus">         
+          <img matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/vehicleStatus/Opt_In.svg' />
+          {{ translationData.lbl || 'Connected On' }}
+        </span> 
+        <span class="connectedStatus">        
+          <img matTooltip="{{ translationData.lblOptOut || 'Opt-Out' }}" src='assets/images/icons/vehicleStatus/Opt_Out.svg' />
+          {{ translationData.lbl || 'Connected Off' }}
+        </span>
+        <span class="connectedStatus">         
+          <img matTooltip="{{ translationData.lblOTA || 'OTA' }}" src='assets/images/icons/vehicleStatus/Ota.svg' />
+          {{ translationData.lbl || 'OTA' }}
+        </span>
+        <span class="connectedStatus">         
+          <img matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/vehicleStatus/Opt_In.svg' />
+          {{ translationData.lbl || 'Connected On + OTA' }}
+        </span>       
+        <span class="connectedStatus">         
+          <img matTooltip="{{ translationData.lblTerminate || 'Terminate' }}" src='assets/images/icons/vehicleStatus/Terminate.svg' />
+          {{ translationData.lbl || 'Terminate' }}
+        </span>
+      </div>
+        <div class='areaWidth' fxLayoutGap="3px" fxLayoutAlign="end" style="letter-spacing: 0.2px;font-size: 16px;">
+          <span style='padding-top: 10px;'>{{ translationData.lblConnected || 'Connected' }}</span>
+          <button class='actionBtn' mat-flat-button  (click)="onChangeConnectedAllStatus($event)" matTooltip="{{ translationData.lblClicktoactivate || 'Select list checkbox for changing the status' }}" [(ngModel)]="connectedAll">
+          <mat-slide-toggle color="primary" value="false" (change)="fieldsChange($event)">
+          </mat-slide-toggle>&nbsp;         
+          </button>
+        </div> 
+      </div>     
+      <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+      <div *ngIf='initData.length > 0' id="vehicleMgmtData">
+        <mat-table matTableExporter [dataSource]="dataSource" matSort #exporter="matTableExporter">
+         <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicle || 'Vehicle' }}</mat-header-cell>
+             <mat-cell *matCellDef="let row" class="vehicleNameCheck">
+             <input type="checkbox" [disabled]='row.status == "T"' [value]="row.id" (change)="onCheckboxChange($event)" />
+              {{ row.name }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="vin">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip="{{row.vin}}">{{row.vin}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="licensePlateNumber">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRegistrationNumber || 'Registration Number' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.licensePlateNumber }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="modelId">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblModel || 'Model' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.modelId ? row.modelId : '-' }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="relationShip">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRelationship || 'Relationship' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.relationShip }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+            <span *ngIf="row.status == 'O'">
+              <img matTooltip="{{ translationData.lblOptOut || 'Opt-Out' }}" src='assets/images/icons/vehicleStatus/Opt_Out.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
+            </span>
+            <span *ngIf="row.status == 'C'">
+              <img matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/vehicleStatus/Opt_In.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
+            </span>
+            <span *ngIf="row.status == 'N'">
+              <img matTooltip="{{ translationData.lblOptInOTA || 'Opt-In + OTA' }}" src='assets/images/icons/vehicleStatus/Opt_In.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
+              <img matTooltip="{{ translationData.lblOptInOTA || 'Opt-In + OTA' }}" src='assets/images/icons/vehicleStatus/Ota.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
+            </span>
+            <span *ngIf="row.status == 'A'">
+              <img matTooltip="{{ translationData.lblOTA || 'OTA' }}" src='assets/images/icons/vehicleStatus/Ota.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
+            </span>
+            <span *ngIf="row.status == 'T'">
+              <img matTooltip="{{ translationData.lblTerminate || 'Terminate' }}" src='assets/images/icons/vehicleStatus/Terminate.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
+            </span>
+          </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="connected">
+            <mat-header-cell *matHeaderCellDef mat-sort-header  style="min-width: 16%;">{{ translationData.lblConnected || 'Connected(On/Off)'}}</mat-header-cell>
+            <mat-cell *matCellDef="let row"  style="min-width: 16%;">
+             
+              <button *ngIf="row.status != 'T'" class='actionBtn' mat-flat-button (click)="onChangeConnectedStatus(row)" matTooltip="{{ row.optIn == 'I' ? (translationData.lblClicktodeactivate || 'Click to change the status') : translationData.lblClicktoactivate || 'Click to change the status' }}">
+              <mat-slide-toggle color="primary" [checked]='(row.optIn == "I" ? true : false) || ((row.status == "C" && row.optIn == "H") ? true : false) || ((row.status == "N" && row.optIn == "H") ? true : false) ' >
+             </mat-slide-toggle>&nbsp;        
+            </button>
+          </mat-cell>            
+          </ng-container>
+          <ng-container matColumnDef="terminated">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTerminated || 'Terminated'}}</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+            <button class='actionBtn terminatedBtn' mat-flat-button (click)="onChangeTerminatedStatus(row)" matTooltip="{{ row.status == 'T' ? (translationData.lblClicktodeactivate || '') : translationData.lblClicktoactivate || 'Click to terminate' }}">
+              <mat-slide-toggle [disabled]='row.status == "T"' color="primary" [checked]='row.status == "T" ? true : false' >
+            </mat-slide-toggle>&nbsp;        
+            </button>
+          </mat-cell>            
+          </ng-container>
+         
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;">
+          </mat-row>
+      </mat-table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+      </div>
+      <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+    </mat-card>
+   </div>

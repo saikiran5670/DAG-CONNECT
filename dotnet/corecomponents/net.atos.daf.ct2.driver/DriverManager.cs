@@ -8,9 +8,8 @@ namespace net.atos.daf.ct2.driver
 {
     public class DriverManager : IDriverManager
     {
-        IDriverRepository _driverRepository;
-        IAuditTraillib _auditlog;
-
+        readonly IDriverRepository _driverRepository;
+        readonly IAuditTraillib _auditlog;
         public DriverManager(IDriverRepository driverRepository, IAuditTraillib auditlog)
         {
             _driverRepository = driverRepository;

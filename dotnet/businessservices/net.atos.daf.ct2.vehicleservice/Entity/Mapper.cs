@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
@@ -289,5 +290,36 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             return objvehiclegroup;
         }
 
+        public VehicleConnectResponse ToVehichleConnectResponse(VehicleConnectedResult vehicleConnectedResult)
+        {
+            var vehicleConnectResponse = new VehicleConnectResponse();
+            vehicleConnectResponse.VehicleConnectedList.AddRange(vehicleConnectedResult.VehicleConnectedList
+                                     .Select(x => new VehicleConnection()
+                                     {
+                                         OptIn = x.Opt_In.ToString(),
+                                         VehicleId = x.VehicleId,
+                                         ModifiedBy = x.ModifiedBy
+
+                                     }).ToList());
+            vehicleConnectResponse.VehicleConnectionfailedList.AddRange(vehicleConnectedResult.VehicleConnectionfailedList
+                                     .Select(x => new VehicleConnection()
+                                     {
+                                         OptIn = x.Opt_In.ToString(),
+                                         VehicleId = x.VehicleId,
+                                         ModifiedBy = x.ModifiedBy
+
+                                     }).ToList());
+            return vehicleConnectResponse;
+        }
+
+        public VehicleCountFilter ToVehicleGroupCountFilter(VehicleCountFilterRequest request)
+        {
+            VehicleCountFilter vehiclefilter = new VehicleCountFilter();
+            vehiclefilter.VehicleGroupId = request.VehicleGroupId;
+            vehiclefilter.GroupType = request.GroupType;
+            vehiclefilter.FunctionEnum = request.FunctionEnum;
+            vehiclefilter.OrgnizationId = request.OrgnizationId;
+            return vehiclefilter;
+        }
     }
 }

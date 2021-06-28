@@ -151,7 +151,7 @@
               <span style='font-weight: 500!important;'>{{ selectedRowData.vin != '' ? selectedRowData.vin : '-' }}</span>
             </div>
         </div>
-        <div *ngIf="selectedApplyOn != 'S'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+        <div *ngIf="selectedApplyOn != 'S'" class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
     </div>
 
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
@@ -175,42 +175,7 @@
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
     </div>
 
-     <!-- Advance filter -->
-    <div *ngIf="actionType != 'view' && (alert_category_selected === 'F' && (alert_type_selected === 'A' || alert_type_selected === 'L' ||
-    alert_type_selected === 'T' || alert_type_selected === 'P' || alert_type_selected === 'I')
-    || (alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) )"
-     fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <a class="linkBtn" (click)="onClickAdvancedFilter()"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
-        </div>
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
-    </div>
-
-    <!-- <div *ngIf="openAdvancedFilter" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px"> -->
-        <!-- <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-            <mat-card  class='mat-elevation-z' style="background:#c3f1f7;">
-                <mat-panel-title>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilterDetails || 'Advanced Filter Details' }}</span>
-                </mat-panel-title>
-                <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
-                    <p style="color: darkgray; font-size: 2em">This feature is part of sprint5</p>
-                </div>   
-            </mat-card>
-        </div> -->
-        <div *ngIf="openAdvancedFilter" class="full-width">
-        <app-alert-advanced-filter 
-        [translationData]='translationData'
-        [alert_category_selected] = 'alert_category_selected'
-        [alert_type_selected] = 'alert_type_selected'
-        [selectedRowData] = 'selectedRowData'
-        [actionType] = 'actionType'
-        >
-      </app-alert-advanced-filter>
-    </div>
-    <!-- </div> -->
-
-    <!-- Vehicles table -->
+     <!-- Vehicles table -->
     
       <mat-expansion-panel *ngIf="actionType != 'view'" class="full-width" fxLayoutGap="10px">
         <mat-expansion-panel-header class="full-width">
@@ -252,6 +217,42 @@
       </div>
     </mat-expansion-panel>
 
+    <!-- Advance filter -->
+    <div *ngIf="(alert_category_selected === 'F' && (alert_type_selected === 'A' || alert_type_selected === 'L' ||
+    alert_type_selected === 'T' || alert_type_selected === 'P' || alert_type_selected === 'I')
+    || (alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X' || alert_type_selected === 'S')) )"
+     fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <a class="linkBtn" (click)="onClickAdvancedFilter()"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+    </div>
+
+    <!-- <div *ngIf="openAdvancedFilter" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px"> -->
+        <!-- <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+            <mat-card  class='mat-elevation-z' style="background:#c3f1f7;">
+                <mat-panel-title>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilterDetails || 'Advanced Filter Details' }}</span>
+                </mat-panel-title>
+                <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
+                    <p style="color: darkgray; font-size: 2em">This feature is part of sprint5</p>
+                </div>   
+            </mat-card>
+        </div> -->
+        <div *ngIf="openAdvancedFilter" class="full-width" >
+          <mat-card class='mat-elevation-z' style="background:#c3f1f7;">
+            <app-alert-advanced-filter 
+            [translationData]='translationData'
+            [alert_category_selected] = 'alert_category_selected'
+            [alert_type_selected] = 'alert_type_selected'
+            [selectedRowData] = 'selectedRowData'
+            [actionType] = 'actionType'
+            >
+          </app-alert-advanced-filter>
+        </mat-card>
+    </div>
+    
   </mat-expansion-panel>
 </mat-card>
 
@@ -320,7 +321,7 @@
                   </div> 
                   <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <input placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="criticalLevelThreshold" maxlength="50">
+                      <input type="number" min="0" max="100" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="criticalLevelThreshold" maxlength="3">
                     </mat-form-field>
                   </div>
                   <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
@@ -344,7 +345,7 @@
                   </div> 
                   <div *ngIf="isWarningLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <input placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="warningLevelThreshold" maxlength="50">
+                      <input type="number" min="0" max="100" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="warningLevelThreshold" maxlength="3">
                     </mat-form-field>
                   </div>
                   <div *ngIf="isWarningLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
@@ -368,7 +369,7 @@
                   </div> 
                   <div *ngIf="isAdvisoryLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <input placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="advisoryLevelThreshold" maxlength="50">
+                      <input type="number" min="0" max="100" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="advisoryLevelThreshold" maxlength="3">
                     </mat-form-field>
                   </div>
                   <div *ngIf="isAdvisoryLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
@@ -521,6 +522,10 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Sub-Category</mat-header-cell>
                     <mat-cell *matCellDef="let row">{{ row.subCategoryName }}</mat-cell>
                 </ng-container>
+                <ng-container matColumnDef="address">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.address }}, {{ row.city }}, {{ row.country }}</mat-cell>
+                </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumnsGeofence"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumnsGeofence;">
                 </mat-row>
@@ -553,7 +558,7 @@
               <mat-table matTableExporter [dataSource]="groupDataSource" matSort>
                 <ng-container matColumnDef="select">
                   <mat-header-cell *matHeaderCellDef>
-                    <mat-checkbox (change)='$event ? masterToggleForGroup() : null;'
+                    <mat-checkbox (change)='$event ? masterToggleForGroup($event) : null;'
                       [checked]='selectedGroup.hasValue() && isAllSelectedForGroup()'
                       [indeterminate]='selectedGroup.hasValue() && !isAllSelectedForGroup()'
                       [aria-label]='checkboxLabelForGroup()'>
@@ -685,8 +690,10 @@
                     </mat-form-field>
                   </div>
                 </div> -->
-                <app-period-selection-filter 
-                [translationData] = 'translationData'></app-period-selection-filter>
+                <app-period-selection-filter  #periodComponent
+                [translationData] = 'translationData'
+                [selectedRowData] = 'selectedRowData'
+                [actionType]='actionType'></app-period-selection-filter>
              </div>
            </div>
           
@@ -733,18 +740,18 @@
           ((alertForm.controls.vehicleGroup.value == '' || 
             alertForm.controls.vehicleGroup.value == 'ALL') ? true : false) : 
             ((alertForm.controls.vehicle.value == '' || isUnsubscribedVehicle) ? true : false)) ||
-            (alert_category_selected != 'R' &&
+            (alert_category_selected != 'R' && alert_type_selected != 'S' &&
             (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && selectedGroup.selected.length == 0) &&
             (selectedCorridor.selected.length == 0)) && 
             (!isCriticalLevelSelected && !isWarningLevelSelected && !isAdvisoryLevelSelected) ||
-            (((isCriticalLevelSelected && 
-                (this.alertForm.get('criticalLevelThreshold').value == '' || 
+            (isCriticalLevelSelected && 
+                ((this.alertForm.get('criticalLevelThreshold').value == '') || 
                   (isWarningLevelSelected && this.alertForm.get('warningLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value ) ||
                   (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value ))) ||
              (isWarningLevelSelected &&
-                this.alertForm.get('warningLevelThreshold').value == '' ||
-                  (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('warningLevelThreshold').value )) ||
-             (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value == '')))" mat-raised-button color="primary"
+                ((this.alertForm.get('warningLevelThreshold').value == '') ||
+                  (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('warningLevelThreshold').value ))) ||
+             (isAdvisoryLevelSelected && (this.alertForm.get('advisoryLevelThreshold').value == ''))" mat-raised-button color="primary"
             (click)='onCreateUpdate()'>{{ actionType == 'create' || actionType == 'duplicate' ? (translationData.lblCreate || 'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
         </div>

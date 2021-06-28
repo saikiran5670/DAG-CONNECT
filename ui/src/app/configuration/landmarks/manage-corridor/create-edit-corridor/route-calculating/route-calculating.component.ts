@@ -156,7 +156,6 @@ export class RouteCalculatingComponent implements OnInit {
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });
-    //this.configureAutoCompleteForLocationSearch();
     this.configureAutoSuggest()
    }
 
@@ -166,7 +165,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup = this.formBuilder.group({
       corridorType:['Regular'],
       label: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
-      widthInput : ['', [Validators.required]],
+      widthInput : [''],
       viaroute1: [''],
       viaroute2: [''],
       trailer:["Regular"],
@@ -206,12 +205,21 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
     this.noRouteErr = false;
 
-    //this.configureAutoCompleteForLocationSearch();
+    if(this.actionType === 'edit'){
+      this.corridorFormGroup.controls.label.disable();
+    }
   }
 
   subscribeWidthValue(){
     this.corridorFormGroup.get("widthInput").valueChanges.subscribe(x => {
+     
       this.corridorWidthKm = Number(x);
+      if(Number(x) > 10)
+      {
+        this.corridorWidthKm =10;
+        this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+
+      }
       this.corridorWidth = this.corridorWidthKm  * 1000;
       this.checkRoutePlot();
       this.updateWidth();
@@ -242,7 +250,7 @@ export class RouteCalculatingComponent implements OnInit {
       this.corridorId = _selectedElementData.id;
       if(this.corridorId){
           this.corridorService.getCorridorFullList(this.organizationId,this.corridorId).subscribe((data)=>{
-              console.log(data)
+              //console.log(data)
               if(data[0]["corridorProperties"]){
                  this.additionalData =  data[0]["corridorProperties"];
                  this.setAdditionalData();
@@ -268,7 +276,7 @@ export class RouteCalculatingComponent implements OnInit {
         this.viaRouteCount = true;
         this.viaRoutePlottedPoints = _selectedElementData.viaAddressDetail;
         _selectedElementData.viaAddressDetail.forEach(element => {
-          this.viaRoutesList.push(element.corridorViaStopName);
+          this.viaRoutesList.push(element.viaRoutName);
           
         });
        // this.plotViaPoint(this.viaRoutesList);
@@ -408,21 +416,15 @@ export class RouteCalculatingComponent implements OnInit {
   onSearchClicked : boolean = false;
   sliderChanged(){
      // this.corridorWidth = _event.value;
+     
       this.corridorWidthKm = this.corridorWidth / 1000;
+      if(this.corridorWidthKm > 10)
+      {
+        this.corridorWidthKm=10;
+      }
       this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
-      //let drawWidth = this.corridorWidthKm*10;
-      // if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
-      //   this.addTruckRouteShapeToMap(drawWidth);
-      // }
       this.checkRoutePlot();
       this.updateWidth();
-    //   if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
-    //  // this.calculateAB();
-    //  this.updateWidth()
-
-    // }
-
-      //this.calculateRouteFromAtoB();
   }
 
   checkRoutePlot(){
@@ -605,18 +607,18 @@ export class RouteCalculatingComponent implements OnInit {
       "modified_At": 0,
       "modified_By": this.organizationId,
       "attribute": {
-        "trailer": this.selectedTrailerId,
-        "explosive": this.explosiveChecked,
-        "gas": this.gasChecked,
-        "flammable": this.flammableChecked,
-        "combustible": this.combustibleChecked,
-        "organic": this.organicChecked,
-        "poision": this.poisonChecked,
-        "radioActive": this.radioactiveChecked,
-        "corrosive": this.corrosiveChecked,
-        "poisonousInhalation": this.poisonInhaleChecked,
-        "waterHarm": this.waterHarmChecked,
-        "other": this.othersChecked
+        "isTrailer": this.selectedTrailerId,
+        "isExplosive": this.explosiveChecked,
+        "isGas": this.gasChecked,
+        "isFlammable": this.flammableChecked,
+        "isCombustible": this.combustibleChecked,
+        "isorganic": this.organicChecked,
+        "ispoision": this.poisonChecked,
+        "isRadioActive": this.radioactiveChecked,
+        "isCorrosive": this.corrosiveChecked,
+        "isPoisonousInhalation": this.poisonInhaleChecked,
+        "isWaterHarm": this.waterHarmChecked,
+        "isOther": this.othersChecked
       },
       "exclusion": {
         "tollRoad": this.tollRoadChecked ? 'A' : 'I',
@@ -690,13 +692,6 @@ export class RouteCalculatingComponent implements OnInit {
       return ("Corridor '$' already exists.").replace('$', name);
   }
 
-  getSuggestion(_event){
-    let startValue = _event.target.value;
-    
-   
-    console.log(_event)
-  }
-
   backToCorridorList(){
     let emitObj = {
       booleanFlag: false,
@@ -739,7 +734,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.vehicleWidth.setValue("");
     this.corridorFormGroup.controls.limitedWeight.setValue("");
     this.corridorFormGroup.controls.weightPerAxle.setValue("");
-    this.clearMap();
+    //this.clearMap();
     this.resetMapLayers();
 
     this.noRouteErr = false;
@@ -866,7 +861,7 @@ export class RouteCalculatingComponent implements OnInit {
       let _arr = this.viaRouteObj;
       let _viaArr = this.viaRoutePlottedPoints;
       this.viaRouteObj = _arr.filter(obj => obj.label !== route);
-      this.viaRoutePlottedPoints = _viaArr.filter(obj => obj.corridorViaStopName !== route);
+      this.viaRoutePlottedPoints = _viaArr.filter(obj => obj.viaRoutName !== route);
     }
    
     this.plotSeparateVia();
@@ -971,68 +966,8 @@ export class RouteCalculatingComponent implements OnInit {
     }
   }
 
-  plotViaPoint(_viaRouteList){
-    if(this.viaMarker){
-      this.mapGroup.removeObject(this.viaMarker);
-    }
-   // 
-    if(_viaRouteList.length >0){
-      for(var i in _viaRouteList){
-
-        let geocodingParameters = {
-          searchText: _viaRouteList[i],
-        };
-        this.hereService.getLocationDetails(geocodingParameters).then((result) => {
-          this.viaAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"];
-          this.viaAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
-          let viaMarker = this.createViaMarker();
-          let markerSize = { w: 26, h: 32 };
-          const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-      
-          this.viaMarker = new H.map.Marker({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong},{icon:icon});
-          this.mapGroup.addObject(this.viaMarker);
-         // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
-          //this.hereMap.setZoom(8);
-        //  this.hereMap.setCenter({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong}, 'default');
-          if(this.actionType === 'create'){
-            this.viaRoutePlottedPoints.push({
-              "viaRoutName": _viaRouteList[i],
-              "latitude": this.viaAddressPositionLat,
-              "longitude": this.viaAddressPositionLat
-            });
-          }
-        this.checkRoutePlot();
-    
-        });
-      }  
-      
-    }
-    else{
-      this.checkRoutePlot();
-
-    }
-    
-
-    
-  }
-
   suggestionData :  any;
   dataService : any;
-  private configureAutoCompleteForLocationSearch() {
-    let searchParam = this.searchEndStr !== null ? this.searchEndStr : this.searchStr != null ? this.searchStr : this.searchViaStr;
-    let AUTOCOMPLETION_URL = 'https://autocomplete.geocoder.cit.api.here.com/6.2/suggest.json' + '?' +
-    '&maxresults=5' +  // The upper limit the for number of suggestions to be included in the response.  Default is set to 5.
-    '&app_id=' + this.map_id + // TODO: Store this configuration in Config File.
-    '&app_code=' + this.map_code +  // TODO: Store this configuration in Config File.
-    '&query='+searchParam; 
-    this.suggestionData = this.completerService.remote(
-      AUTOCOMPLETION_URL,
-      "label",
-      "label");
-    this.suggestionData.dataField("suggestions");
-    this.dataService = this.suggestionData;
-    console.log(this.dataService);
-  }
 
   private configureAutoSuggest(){
     let searchParam = this.searchEndStr !== null ? this.searchEndStr : this.searchStr != null ? this.searchStr : this.searchViaStr;
@@ -1041,16 +976,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.suggestionData = this.completerService.remote(
     URL,'title','title');
     this.suggestionData.dataField("items");
-      this.dataService = this.suggestionData;
-    // let queryParams= 'apiKey='+this.map_key +'&limit=5'+'&q='+searchParam ;
-    // if(searchParam != ''){
-      
-    // this.hereService.getSuggestions(queryParams).subscribe((data)=>{
-      
-    //   this.dataService = data.item;
-    //   console.log(this.dataService);
-    //   })
-    // }
+    this.dataService = this.suggestionData;
   }
 
   /////////////////////////// v8 calculate ////////////////////
@@ -1067,51 +993,55 @@ export class RouteCalculatingComponent implements OnInit {
 
   calculateTruckRoute(){
     let lineWidth = this.corridorWidthKm;
-    let routeRequestParams = 
-    'origin='+`${this.startAddressPositionLat},${this.startAddressPositionLong}`+
-    '&destination='+ `${this.endAddressPositionLat},${this.endAddressPositionLong}`+
-    '&return=polyline,summary,travelSummary'+
-    '&routingMode=fast'+
-    '&transportMode=truck'+
-    '&apikey='+this.map_key
+    let routeRequestParams = {
+      'origin':`${this.startAddressPositionLat},${this.startAddressPositionLong}`,
+      'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`,
+      'return':'polyline,summary,travelSummary',
+      'routingMode':'fast',
+      'transportMode':'truck',
+      'apikey':this.map_key
+
+    }
 
     if(this.viaRoutePlottedPoints.length>0){
-      this.viaRoutePlottedPoints.forEach(element => {
-      routeRequestParams += '&via='+ `${element["latitude"]},${element["longitude"]}`
-      });
+      let waypoints = [];
+      for(var i in this.viaRoutePlottedPoints){
+        waypoints.push(`${this.viaRoutePlottedPoints[i]["latitude"]},${this.viaRoutePlottedPoints[i]["longitude"]}`)
+      }
+      routeRequestParams['via'] = new H.service.Url.MultiValueQueryParameter( waypoints );
     }
 
     if(this.selectedTrailerId){
-      routeRequestParams += '&truck[trailerCount]='+ this.selectedTrailerId;
+      routeRequestParams['truck[trailerCount]'] = this.selectedTrailerId;
     }
     if(this.tunnelId){
-      routeRequestParams += '&truck[tunnelCategory]='+ this.tunnelId;
+      routeRequestParams['truck[tunnelCategory]']= this.tunnelId;
     }
     if(this.corridorFormGroup.controls.vehicleHeight.value){
-      routeRequestParams += '&truck[height]='+ Math.round(this.corridorFormGroup.controls.vehicleHeight.value);
+      routeRequestParams['truck[height]'] = Math.round(this.corridorFormGroup.controls.vehicleHeight.value);
     }
     if(this.corridorFormGroup.controls.vehicleWidth.value){
-      routeRequestParams += '&truck[width]='+ Math.round(this.corridorFormGroup.controls.vehicleWidth.value);
+      routeRequestParams['truck[width]'] = Math.round(this.corridorFormGroup.controls.vehicleWidth.value);
     }
     if(this.corridorFormGroup.controls.vehicleLength.value){
-      routeRequestParams += '&truck[length]='+ Math.round(this.corridorFormGroup.controls.vehicleLength.value);
+      routeRequestParams['truck[length]']= Math.round(this.corridorFormGroup.controls.vehicleLength.value);
     }
     if(this.corridorFormGroup.controls.limitedWeight.value){
-      routeRequestParams += '&truck[grossWeight]='+ Math.round(this.corridorFormGroup.controls.limitedWeight.value);
+      routeRequestParams['truck[grossWeight]'] = Math.round(this.corridorFormGroup.controls.limitedWeight.value);
     }
     if(this.corridorFormGroup.controls.weightPerAxle.value){
-      routeRequestParams += '&truck[weightPerAxle]='+ Math.round(this.corridorFormGroup.controls.weightPerAxle.value);
+      routeRequestParams['truck[weightPerAxle]'] = Math.round(this.corridorFormGroup.controls.weightPerAxle.value);
     }
 
     if(this.hazardousMaterial.length > 0){
-      routeRequestParams += '&truck[shippedHazardousGoods]=' + this.hazardousMaterial.join();
+      routeRequestParams['truck[shippedHazardousGoods]']= this.hazardousMaterial.join();
     }
     if(this.exclusions.length>0){
-      routeRequestParams += '&avoid[features]=' + this.exclusions.join();
+      routeRequestParams['avoid[features]'] = this.exclusions.join();
 
     }
     this.routePoints= [];
-    this.hereService.getTruckRoutes(routeRequestParams).subscribe((data)=>{
+    this.hereService.calculateRoutePoints(routeRequestParams).then((data:any)=>{
       if(data && data.routes){
         if(data.routes.length == 0){
           this.noRouteErr = true;
@@ -1166,8 +1096,6 @@ export class RouteCalculatingComponent implements OnInit {
 
   updateWidth(){
     let setWidth = this.corridorWidthKm * 10;
-    // this.addTruckRouteShapeToMap();
-    //let geoLineString = this.corridorPath.getGeometry();
     if (this.corridorPath) {
 
       this.corridorPath.setStyle({
@@ -1176,9 +1104,6 @@ export class RouteCalculatingComponent implements OnInit {
       });
 
     }
-    //this.corridorPath.setStyle( this.corridorPath.getStyle().getCopy({linewidth:_width}));
-    //console.log(geoLineString)
-    //this.corridorPath.setGeometry(geoLineString);
   }
 
 

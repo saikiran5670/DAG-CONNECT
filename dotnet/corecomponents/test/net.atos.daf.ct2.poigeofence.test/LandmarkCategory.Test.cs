@@ -102,7 +102,8 @@ namespace net.atos.daf.ct2.poigeofence.test
         [Timeout(TestTimeout.Infinite)]
         public void GetCategoryDetails()
         {
-            var result = _categoryManager.GetCategoryDetails().Result;
+            int orgid = 100;
+            var result = _categoryManager.GetCategoryDetails(orgid).Result;
             Assert.IsNotNull(result);
         }
 
@@ -112,8 +113,8 @@ namespace net.atos.daf.ct2.poigeofence.test
         [Timeout(TestTimeout.Infinite)]
         public void GetCategoryWisePOI()
         {
-            int OrganizationId = 100;
-            var result =  _categoryManager.GetCategoryWisePOI(OrganizationId).Result;
+            int organizationId = 100;
+            var result = _categoryManager.GetCategoryWisePOI(organizationId).Result;
             Assert.IsTrue(result.Count > 0);
         }
 

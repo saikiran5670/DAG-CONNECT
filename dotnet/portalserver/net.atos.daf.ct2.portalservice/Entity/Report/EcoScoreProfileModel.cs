@@ -40,9 +40,11 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
     {
         [Required]
         [StringLength(50, MinimumLength = 1, ErrorMessage = "The field {0} must be a string with a length of {1} characters.")]
+        [RegularExpression(@"^[\s\w\p{L}\-\.]{1,100}$", ErrorMessage = "Profile name Allowed: a - z, A - Z, 0 - 9, hyphens dash, spaces, periods, international alphabets [e.g.à, è, ì, ò, ù, À, È, Ì, Ò, Ù] and Not allowed: special chars [i.e. !, @, #, $, %, &, *] with maximun length 50.")]
         public string Name { get; set; }
 
         [StringLength(120, MinimumLength = 0, ErrorMessage = "The field {0} must be a string with a length of {1} characters.")]
+        [RegularExpression(@"^[\s\w\p{L}\-\.]{1,100}$", ErrorMessage = "Profile Description Allowed: a-z, A-Z, 0-9, hyphens dash, spaces, periods, international ref. alphabets [e.g. à, è, ì, ò, ù, À, È, Ì, Ò, Ù] and Not allowed: special chars [i.e. !, @, #, $, %, &, *] with maximun length 120.")]
         public string Description { get; set; }
 
         public bool IsDAFStandard { get; set; }
@@ -73,7 +75,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
     public class EcoScoreProfileUpdateRequest
     {
         public int ProfileId { get; set; }
+        [Required]
+        [StringLength(50, MinimumLength = 1, ErrorMessage = "The field {0} must be a string with a length of {1} characters.")]
+        [RegularExpression(@"^[\s\w\p{L}\-\.]{1,100}$", ErrorMessage = "Profile name Allowed: a - z, A - Z, 0 - 9, hyphens dash, spaces, periods, international alphabets [e.g.à, è, ì, ò, ù, À, È, Ì, Ò, Ù] and Not allowed: special chars [i.e. !, @, #, $, %, &, *] with maximun length 50.")]
         public string Name { get; set; }
+        [StringLength(120, MinimumLength = 0, ErrorMessage = "The field {0} must be a string with a length of {1} characters.")]
+        [RegularExpression(@"^[\s\w\p{L}\-\.]{1,100}$", ErrorMessage = "Profile Description Allowed: a-z, A-Z, 0-9, hyphens dash, spaces, periods, international ref. alphabets [e.g. à, è, ì, ò, ù, À, È, Ì, Ò, Ù] and Not allowed: special chars [i.e. !, @, #, $, %, &, *] with maximun length 120.")]
         public string Description { get; set; }
         public List<EcoScoreProfileKPI> ProfileKPIs { get; set; }
     }
@@ -82,22 +89,35 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
     {
         public int ProfileId { get; set; }
     }
-  
+
+    public class EcoScoreReportByAllDriversRequest
+    {
+        [Required]
+        public long StartDateTime { get; set; }
+        [Required]
+        public long EndDateTime { get; set; }
+        [Required]
+        public List<string> VINs { get; set; }
+        [Range(0, 100, ErrorMessage = "Minimum Trip Distance should be non-negative and less than 100.")]
+        public double MinTripDistance { get; set; }
+        [Range(0, 100, ErrorMessage = "Minimum Driver Total Distance should be non-negative and less than 100.")]
+        public double MinDriverTotalDistance { get; set; }
+        public int TargetProfileId { get; set; }
+        public int ReportId { get; set; }
+    }
+}
+
+public enum LimitType
+{
+    Min = 'N',
+    Max = 'X',
+    None = 'O'
+}
+
+public enum RangeValueType
+{
+    Decimal = 'D',
+    Time = 'T'
 }
 
 
-
-    public enum LimitType
-    {
-        Min = 'N',
-        Max = 'X',
-        None = 'O'
-    }
-
-    public enum RangeValueType
-    {
-        Decimal = 'D',
-        Time = 'T'
-    }
-
-  

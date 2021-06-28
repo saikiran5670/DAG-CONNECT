@@ -61,7 +61,7 @@ namespace net.atos.daf.ct2.features.entity
             feature.State = !string.IsNullOrEmpty(record.State) ? Convert.ToString(MapCharToFeatureState(record.State)) : string.Empty;
             feature.Data_attribute_Set_id = record.Data_attribute_Set_id ?? 0;
             feature.Key = !string.IsNullOrEmpty(record.Key) ? record.Key : string.Empty;
-            feature.Level = record.Level ?? 0;            
+            feature.Level = record.Level ?? 0;
             feature.RoleId = record.RoleId ?? 0;
             feature.Organization_Id = record.Organization_Id ?? 0;
             // feature.modified_by = record.modified_by;

@@ -23,19 +23,19 @@ namespace net.atos.daf.ct2.poigeofence
             return await _categoryRepository.EditCategory(category);
         }
 
-        public async Task<CategoryID> DeleteCategory(int ID)
+        public async Task<CategoryID> DeleteCategory(int id)
         {
-            return await _categoryRepository.DeleteCategory(ID);
+            return await _categoryRepository.DeleteCategory(id);
         }
 
-        public async Task<IEnumerable<Category>> GetCategory(string Type, int OrganizationId)
+        public async Task<IEnumerable<Category>> GetCategory(string type, int organizationId)
         {
-            return await _categoryRepository.GetCategoryType(Type, OrganizationId);
+            return await _categoryRepository.GetCategoryType(type, organizationId);
         }
 
-        public async Task<IEnumerable<CategoryList>> GetCategoryDetails()
+        public async Task<IEnumerable<CategoryList>> GetCategoryDetails(int orgId)
         {
-            return await _categoryRepository.GetCategoryDetails();
+            return await _categoryRepository.GetCategoryDetails(orgId);
         }
 
         public async Task<Category_SubCategory_ID_Class> BulkDeleteCategory(DeleteCategoryclass deleteCategoryclass)
@@ -43,9 +43,9 @@ namespace net.atos.daf.ct2.poigeofence
             return await _categoryRepository.BulkDeleteCategory(deleteCategoryclass);
         }
 
-        public async Task<List<CategoryWisePOI>> GetCategoryWisePOI(int OrganizationId)
+        public async Task<List<CategoryWisePOI>> GetCategoryWisePOI(int organizationId)
         {
-            return await _categoryRepository.GetCategoryWisePOI(OrganizationId);
+            return await _categoryRepository.GetCategoryWisePOI(organizationId);
         }
     }
 }

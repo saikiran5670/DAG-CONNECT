@@ -44,10 +44,10 @@ namespace net.atos.daf.ct2.poigeofence.entity
 
         }
 
-        public string MapType(string Type)
+        public string MapType(string type)
         {
             var ctype = string.Empty;
-            switch (Type)
+            switch (type)
             {
                 case "SUBCATEGORY":
                     ctype = "S";

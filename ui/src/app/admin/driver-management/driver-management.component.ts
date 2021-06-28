@@ -265,7 +265,28 @@ export class DriverManagementComponent implements OnInit {
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+          var a1;
+          var b1;
+          if(sort.active && sort.active === 'firstName'){
+            a1 = a.firstName + ' ' + a.lastName;
+            b1 = b.firstName + ' ' + b.lastName;
+          } else {
+            a1 = a[sort.active];
+            b1 = b[sort.active]
+          }
+          return this.compare(a1, b1, isAsc);
+        });
+       }
     });
+  }
+
+  compare(a: Number | String, b: Number | String, isAsc: boolean) {
+    if(!(a instanceof Number)) a = a.toUpperCase();
+    if(!(b instanceof Number)) b = b.toUpperCase();
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
   getNewTagData(data: any){

@@ -37,6 +37,8 @@ export class MapFunctionsService {
   exclusions = [];
 
   map_key = "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+  ui: any;
+
   constructor(private hereService: HereService, private corridorService: CorridorService) {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -52,6 +54,8 @@ export class MapFunctionsService {
   selectedTrailerId = undefined;
   trafficFlowChecked = false;
   transportDataChecked = false;
+  trafficOnceChecked = false;
+  transportOnceChecked = false;
   vehicleHeightValue = 0
   vehicleWidthValue = 0
   vehicleLengthValue = 0
@@ -97,6 +101,11 @@ export class MapFunctionsService {
   clearRoutesFromMap() { 
     this.mapGroup.removeAll();
     this.startMarker = null; this.endMarker = null;
+    this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic);
+    this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
+    this.transportOnceChecked = false;
+    this.trafficOnceChecked = false;
+    this.ui.getBubbles().forEach(bub =>this.ui.removeBubble(bub));
   }
 
   group = new H.map.Group();
@@ -107,9 +116,13 @@ export class MapFunctionsService {
     let corridorName = '';
     let startAddress = '';
     let endAddress = '';
-
+    
+    this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic);
+    this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
+    this.transportOnceChecked = false;
+    this.trafficOnceChecked = false;
  // var group = new H.map.Group();
- this.group.removeAll();
+ this.mapGroup.removeAll();
  this.hereMap.removeObjects(this.hereMap.getObjects())
     // if(this.routeOutlineMarker){
     //   this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
@@ -143,15 +156,16 @@ export class MapFunctionsService {
           this.corridorWidthKm = this.corridorWidth / 1000;
         }
 
-
+        //create and add start marker
         let houseMarker = this.createHomeMarker();
         let markerSize = { w: 26, h: 32 };
         const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
         this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, { icon: icon });
+        this.mapGroup.addObject(this.startMarker);
 
+        //create and add end marker
         let endMarker = this.createEndMarker();
         const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-
         this.endMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: iconEnd });
         let endMarkerHtml = `<div style="font-size:11px;font-family:Times New Roman">
         <table>
@@ -162,8 +176,33 @@ export class MapFunctionsService {
         </table>
         </div>`
         this.endMarker.setData(endMarkerHtml);
+        this.mapGroup.addObject(this.endMarker);
 
-        this.group.addObjects([this.startMarker, this.endMarker]);
+        // add end tooltip
+        let bubble;
+        this.endMarker.addEventListener('pointerenter',  (evt)=> {
+          // event target is the marker itself, group is a parent event target
+          // for all objects that it contains
+          bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+            // read custom data
+            content:`<div style="font-size:12px;font-family:Times New Roman">
+            <table>
+            <tr><td><b>Corridor Name:</b></td> <td>${corridorName} </td></tr>
+            <tr><td><b>Start Point:</b></td><td>${startAddress}</td></tr>
+            <tr><td><b>End Point:</b></td><td>${endAddress}</td></tr>
+            <tr><td><b>Width:</b></td><td>${this.corridorWidthKm} km</td></tr>
+            </table>
+            </div>`
+          });
+          // show info bubble
+          this.ui.addBubble(bubble);
+        }, false);
+        this.endMarker.addEventListener('pointerleave', (evt)=> {
+          this.ui.removeBubble(bubble);
+          bubble.close();
+          bubble.dispose();
+        }, false);
+        //this.group.addObjects([this.startMarker, this.endMarker]);
         if (accountOrganizationId) {
           if (_selectedRoutes[i].id) {
             this.corridorService.getCorridorFullList(accountOrganizationId, _selectedRoutes[i].id).subscribe((data) => {
@@ -171,6 +210,13 @@ export class MapFunctionsService {
               if (data[0]["corridorProperties"]) {
                 this.additionalData = data[0]["corridorProperties"];
                 this.setAdditionalData();
+                  if(this.trafficOnceChecked){
+                    this.hereMap.addLayer(this.defaultLayers.vector.normal.traffic);
+                  }
+                  if(this.transportOnceChecked){
+                    this.hereMap.addLayer(this.defaultLayers.vector.normal.truck);
+                  }
+                
                 if (data[0].viaAddressDetail.length > 0) {
                   this.viaRoutePlottedPoints = data[0].viaAddressDetail;
                   this.plotViaStopPoints();
@@ -185,28 +231,36 @@ export class MapFunctionsService {
           this.calculateTruckRoute();
 
         }
-        this.addInfoBubble(this.group);
+        //this.removeBubble();
 
         // this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
         // let successRoute = this.calculateAB('view');
       }
+     
     }
   }
 
+  removeBubble(){
+    this.hereMap.addEventListener('tap', (evt) => {
+    this.ui.getBubbles().forEach(bub =>this.ui.removeBubble(bub));
+
+    })
+  }
   viaAddressPositionLat;
   viaAddressPositionLong;
   viaMarker: any;
 
   plotViaStopPoints() {
-    for (var i in this.viaRoutePlottedPoints)
+    for (var i in this.viaRoutePlottedPoints){
       this.viaAddressPositionLat = this.viaRoutePlottedPoints[i]["latitude"];
-    this.viaAddressPositionLong = this.viaRoutePlottedPoints[i]["longitude"];
-    let viaMarker = this.createViaMarker();
-    let markerSize = { w: 26, h: 32 };
-    const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+      this.viaAddressPositionLong = this.viaRoutePlottedPoints[i]["longitude"];
+      let viaMarker = this.createViaMarker();
+      let markerSize = { w: 26, h: 32 };
+      const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
 
-    this.viaMarker = new H.map.Marker({ lat: this.viaAddressPositionLat, lng: this.viaAddressPositionLong }, { icon: icon });
-    this.mapGroup.addObject(this.viaMarker);
+      this.viaMarker = new H.map.Marker({ lat: this.viaAddressPositionLat, lng: this.viaAddressPositionLong }, { icon: icon });
+      this.mapGroup.addObject(this.viaMarker);
+    }
 
   }
   setAdditionalData() {
@@ -215,6 +269,7 @@ export class MapFunctionsService {
     this.getExclusionList = _data["exclusion"];
     this.hazardousMaterial = [];
     this.exclusions = [];
+
     this.getAttributeData["isCombustible"] ? this.hazardousMaterial.push('combustible') : '';
     this.getAttributeData["isCorrosive"] ? this.hazardousMaterial.push('corrosive') : '';
     this.getAttributeData["isExplosive"] ? this.hazardousMaterial.push('explosive') : '';
@@ -233,11 +288,13 @@ export class MapFunctionsService {
     this.transportDataChecked = _data["isTransportData"];
     this.trafficFlowChecked = _data["isTrafficFlow"];
     if(this.trafficFlowChecked){
-      this.hereMap.addLayer(this.defaultLayers.vector.normal.traffic);
+      this.trafficOnceChecked= true;
+      //this.hereMap.addLayer(this.defaultLayers.vector.normal.traffic);
     }
     this.transportDataChecked = _data["isTransportData"];
     if(this.transportDataChecked){
-      this.hereMap.addLayer(this.defaultLayers.vector.normal.truck);
+      this.transportOnceChecked = true;
+      //this.hereMap.addLayer(this.defaultLayers.vector.normal.truck);
     }
     this.vehicleHeightValue = _data["vehicleSize"].vehicleHeight;
     this.vehicleWidthValue = _data["vehicleSize"].vehicleWidth;
@@ -338,60 +395,67 @@ export class MapFunctionsService {
   routePoints: any;
   calculateTruckRoute() {
     let lineWidth = this.corridorWidthKm;
-    let routeRequestParams =
-      'origin=' + `${this.startAddressPositionLat},${this.startAddressPositionLong}` +
-      '&destination=' + `${this.endAddressPositionLat},${this.endAddressPositionLong}` +
-      '&return=polyline,summary,travelSummary' +
-      '&routingMode=fast' +
-      '&transportMode=truck' +
-      '&apikey=' + this.map_key
+    let routeRequestParams = {
+      'origin':`${this.startAddressPositionLat},${this.startAddressPositionLong}`,
+      'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`,
+      'return':'polyline,summary,travelSummary',
+      'routingMode':'fast',
+      'transportMode':'truck',
+      'apikey':this.map_key
 
-    if (this.viaRoutePlottedPoints.length > 0) {
-      this.viaRoutePlottedPoints.forEach(element => {
-        routeRequestParams += '&via=' + `${element["latitude"]},${element["longitude"]}`
-      });
+    }
+    
+    if(this.viaRoutePlottedPoints.length>0){
+      let waypoints = [];
+      for(var i in this.viaRoutePlottedPoints){
+        waypoints.push(`${this.viaRoutePlottedPoints[i]["latitude"]},${this.viaRoutePlottedPoints[i]["longitude"]}`)
+      }
+      routeRequestParams['via'] = new H.service.Url.MultiValueQueryParameter( waypoints )
+      
     }
 
     if (this.selectedTrailerId) {
-      routeRequestParams += '&truck[trailerCount]=' + this.selectedTrailerId;
+      routeRequestParams['truck[trailerCount]'] = this.selectedTrailerId;
     }
     if (this.tunnelId) {
-      routeRequestParams += '&truck[tunnelCategory]=' + this.tunnelId;
+      routeRequestParams['truck[tunnelCategory]']= this.tunnelId;
     }
     if (this.vehicleHeightValue) {
-      routeRequestParams += '&truck[height]=' + Math.round(this.vehicleHeightValue);
+      routeRequestParams['truck[height]'] = Math.round(this.vehicleHeightValue);
     }
     if (this.vehicleWidthValue) {
-      routeRequestParams += '&truck[width]=' + Math.round(this.vehicleWidthValue);
+      routeRequestParams['truck[width]'] = Math.round(this.vehicleWidthValue);
     }
     if (this.vehicleLengthValue) {
-      routeRequestParams += '&truck[length]=' + Math.round(this.vehicleLengthValue);
+      routeRequestParams['truck[length]']= Math.round(this.vehicleLengthValue);
     }
     if (this.vehicleLimitedWtValue) {
-      routeRequestParams += '&truck[grossWeight]=' + Math.round(this.vehicleLimitedWtValue);
+      routeRequestParams['truck[grossWeight]'] = Math.round(this.vehicleLimitedWtValue);
     }
     if (this.vehicleWtPerAxleValue) {
-      routeRequestParams += '&truck[weightPerAxle]=' + Math.round(this.vehicleWtPerAxleValue);
+      routeRequestParams['truck[weightPerAxle]'] = Math.round(this.vehicleWtPerAxleValue);
     }
 
     if (this.hazardousMaterial.length > 0) {
-      routeRequestParams += '&truck[shippedHazardousGoods]=' + this.hazardousMaterial.join();
+      routeRequestParams['truck[shippedHazardousGoods]']= this.hazardousMaterial.join();
     }
     
     if(this.exclusions.length>0){
-      routeRequestParams += '&avoid[features]=' + this.exclusions.join();
+      routeRequestParams['avoid[features]'] = this.exclusions.join();
 
     }
     this.routePoints = [];
-    this.hereService.getTruckRoutes(routeRequestParams).subscribe((data) => {
-      if (data && data.routes) {
-        if (data.routes.length == 0) {
-          // this.noRoutesLabel = true;
-        } else {
+    this.hereService.calculateRoutePoints(routeRequestParams).then((data:any)=>{
+      if(data && data.routes){
+        if(data.routes.length == 0){
+        }
+        else{
           this.routePoints = data.routes[0];
           this.addTruckRouteShapeToMap(lineWidth);
         }
-      }
+        
+        }
+      
     })
 
   }
@@ -422,10 +486,10 @@ export class MapFunctionsService {
 
 
         // Add the polyline to the map
-        this.mapGroup.addObjects([this.startMarker, this.corridorPath, polylinePath, this.endMarker]);
-        if (this.viaMarker) {
-          this.mapGroup.addObject(this.viaMarker);
-        }
+        this.mapGroup.addObjects([this.corridorPath, polylinePath]);
+        // if (this.viaMarker) {
+        //   this.mapGroup.addObject(this.viaMarker);
+        // }
         this.hereMap.addObject(this.mapGroup);
         this.hereMap.getViewModel().setLookAtData({
           bounds: this.mapGroup.getBoundingBox()
@@ -438,7 +502,6 @@ export class MapFunctionsService {
     }
   }
 
-  ui: any;
   addInfoBubble(markerGroup) {
 
     var group = new H.map.Group();

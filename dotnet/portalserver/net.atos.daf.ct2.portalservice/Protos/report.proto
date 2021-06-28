@@ -18,12 +18,20 @@ rpc CreateEcoScoreProfile (CreateEcoScoreProfileRequest) returns (CreateEcoScore
 rpc GetEcoScoreProfiles (GetEcoScoreProfileRequest) returns (GetEcoScoreProfileResponse);
 rpc GetEcoScoreProfileKPIDetails (GetEcoScoreProfileKPIRequest) returns (GetEcoScoreProfileKPIResponse);
 rpc UpdateEcoScoreProfile (UpdateEcoScoreProfileRequest) returns (UpdateEcoScoreProfileResponse);
+rpc DeleteEcoScoreProfile (DeleteEcoScoreProfileRequest) returns (DeleteEcoScoreProfileResponse);
+rpc GetReportSearchParameter (IdRequestForDriverActivity) returns (ReportSearchParameterResponse);
+rpc GetFleetUtilizationDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationDetailsResponse);
+rpc GetFleetCalenderDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationCalenderResponse);
+rpc GetEcoScoreReportByAllDrivers (GetEcoScoreReportByAllDriversRequest) returns (GetEcoScoreReportByAllDriversResponse);
+rpc GetReportUserPreference (GetReportUserPreferenceRequest) returns (GetReportUserPreferenceResponse);
+rpc CreateReportUserPreference (ReportUserPreferenceCreateRequest) returns (ReportUserPreferenceCreateResponse);
 }
 
 enum Responsecode{
   None = 0;
   Success = 200;
   Failed = 400;
+  Forbidden = 403;
   Conflict = 409;
   NotFound = 404;
   InternalServerError = 500;
@@ -43,14 +51,14 @@ message ReportDetails {
     string Key = 3;
 }
 
-
-
-
 message IdRequest {
   int32 ReportId = 1;
   int32 AccountId=2;
-  int32 OrganizationId=3;
+  int32 RoleId=3;
+  int32 OrganizationId=4;
+  int32 ContextOrgId=5; 
 }
+
 message UserPreferenceDataColumn{
     int32 DataAtrributeId =1;
     string Name=2;
@@ -60,6 +68,8 @@ message UserPreferenceDataColumn{
     string Key =6;
     string State=7;
     string ChartType = 8;
+    string ThresholdType = 9;
+    int64 ThresholdValue = 10;
 }
 
 message UserPreferenceDataColumnResponse{
@@ -73,15 +83,53 @@ message UserPreferenceCreateRequest{
    int32 AccountId =2;
   int32 ReportId =3;
   int32 OrganizationId =4;
-  string Type =5;
   int64 CreatedAt =6;
-  int64 ModifiedAt =7;
-  string CharType = 8;
+  int64 ModifiedAt =7;  
+}
+
+message GetReportUserPreferenceRequest {
+    int32 ReportId = 1;
+    int32 AccountId=2;
+    int32 RoleId=3;
+    int32 OrganizationId=4;
+    int32 ContextOrgId=5; 
+}
+
+message GetReportUserPreferenceResponse {
+    Responsecode Code = 2;
+    string Message = 3;
+}
+
+message ReportUserPreferenceCreateRequest{
+    repeated UserPreferenceAttribute Attributes =1;
+    int32 AccountId =2;
+    int32 ReportId =3;
+    int32 OrganizationId =4;
+    int64 CreatedAt =6;
+    int64 ModifiedAt =7;  
+}
+
+message ReportUserPreferenceCreateResponse{
+    Responsecode Code = 1;
+    string Message = 2;
 }
 
 message Atribute{
- int32 DataAttributeId =1;
- string State =2;
+ int32 DataAttributeId = 1;
+ string State = 2;
+   string Type = 3;
+ string CharType = 4;
+  string ThresholdType = 5;
+  int64 ThresholdValue = 6;
+}
+
+message UserPreferenceAttribute {
+    int32 DataAttributeId = 1;
+    string State = 2;
+    string Type = 3;
+    string ChartType = 4;
+    string ThresholdType = 5;
+    int64 ThresholdValue = 6;
 }
 
 message UserPreferenceCreateResponse{
@@ -140,6 +188,8 @@ message LiveFleetPosition {
     double GpsHeading=2; 
     double GpsLatitude=3;
     double GpsLongitude=4; 
+    double Fuelconsumtion=6;
+    double Co2emission=7;
     int32 Id=5;
 }
 // End Trip Report Table
@@ -193,12 +243,7 @@ message ActivityFilterRequest {
     repeated string VINs = 3;
     repeated string DriverIds = 4;
 }
-//message VinsRepeated {
-//    string VIN=1;
-//}
-//message DriverIdRepeated {
-//    string DriverId=1;
-//}
+
 message DriverActivityResponse {
     repeated DriverActivity DriverActivities = 1;   
     Responsecode code = 2;
@@ -242,6 +287,22 @@ message IdRequestForDriverActivity {
   int64 StartDateTime = 4;
   int64 EndDateTime = 5; 
   }
+
+message ReportSearchParameterResponse {
+Responsecode Code = 1;
+string Message = 2;
+repeated SearchParameter AdditionalSearchParameter  = 3;
+repeated VehicleDetailsWithAccountVisibilty VehicleDetailsWithAccountVisibiltyList = 4;
+}
+
+
+message SearchParameter {
+string DriverId = 1;
+string VIN = 2;
+string PerformanceType = 3;
+}
+
+
 // End   Driver Time Managment Report
 
 message CreateEcoScoreProfileRequest {
@@ -282,6 +343,7 @@ message EcoScoreProfiles {
  string ProfileName = 2;
  string ProfileDescription = 3;
  bool IsDeleteAllowed = 4;
+ int32 OrganizationId = 5;
 }
 
 message GetEcoScoreProfileKPIRequest {
@@ -310,7 +372,7 @@ string SectionDescription = 3;
 repeated EcoScoreKPI ProfileKPIDetails = 4;
 }
 
-message EcoScoreKPI {
+message EcoScoreKPI{
 int32 EcoScoreKPIId = 1; 
 string KPIName = 2; 
 string LimitType = 3; 
@@ -337,3 +399,96 @@ message UpdateEcoScoreProfileResponse {
   Responsecode Code = 1;
   string Message = 2;
 }
+message DeleteEcoScoreProfileRequest
+{
+ int32 ProfileId = 1;
+}
+message DeleteEcoScoreProfileResponse
+{
+  Responsecode Code = 1;
+  string Message = 2;
+}
+
+// Start Fleet Utilization Report
+message FleetUtilizationFilterRequest {
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    repeated string VINs = 3;
+}
+
+message FleetUtilizationDetailsResponse {
+    repeated FleetUtilizationDetails FleetDetails = 1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+
+message FleetUtilizationCalenderResponse {
+    repeated FleetUtilizationcalender CalenderDetails = 1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+
+message FleetUtilizationDetails {
+    string VehicleName = 1;
+    string VIN = 2;
+    string RegistrationNumber = 3;
+    double Distance = 4;
+    int32 NumberOfTrips  = 5;
+    int64 TripTime = 6;
+    int64 DrivingTime = 7;
+    int64 IdleDuration = 8;
+    int64 StopTime = 9;
+    double AverageDistancePerDay = 10;
+    double AverageSpeed = 11;
+    double AverageWeightPerTrip = 12;
+    int64 Odometer = 13;
+
+}
+
+message FleetUtilizationcalender {
+    string VehicleName = 1;
+    string VIN = 2;
+    int64 CalenderDate = 3;
+    double Averagedistance = 4;
+    double Averagetriptime  = 5;
+    double Averagedrivingtime = 6;
+    double Averageidleduration = 7;
+    double Averagedistanceperday = 8;
+    double AverageSpeed = 9;
+    double Averageweight=12;
+    int32 Vehiclecount =10;
+    int32 Tripcount =11;
+
+   
+
+}
+
+// END Fleet Utilization Report
+
+/// START: Eco Score Report By All Drivers
+message GetEcoScoreReportByAllDriversRequest {
+  int64 StartDateTime = 1;
+  int64 EndDateTime = 2; 
+  repeated string VINs = 3;
+  double MinTripDistance = 4;
+  double MinDriverTotalDistance = 5;
+  int32 OrgId = 6;
+  int32 AccountId = 7;
+  int32 TargetProfileId = 8;
+  int32 ReportId = 9;
+  }
+
+ message EcoScoreReportDriversRanking {
+  int32 Ranking = 1;
+  string DriverName = 2; 
+  string DriverId = 3;
+  double EcoScoreRanking = 4;
+  string EcoScoreRankingColor = 5;  
+  }
+  
+  message GetEcoScoreReportByAllDriversResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+  repeated EcoScoreReportDriversRanking DriverRanking = 3;
+  }
+  /// END: Eco Score Report By All Drivers

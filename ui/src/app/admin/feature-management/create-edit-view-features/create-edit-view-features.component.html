@@ -144,15 +144,14 @@
                             from below list to map with this Feature Relationship') }}</span>
                     </div>
                 </div>
-                <div fxLayout="column" fxLayoutAlign="end">
+                <div fxLayout="column" fxLayoutAlign="edit">
                     <div fxLayout="row" class='areaWidth'>
                         <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{
                             translationData.lblCancel || 'Cancel' }}</button>
                         <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" *ngIf="actionType == 'edit'"
                             (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
-                        <button class='no-margin' [disabled]="!featureFormGroup.valid" mat-raised-button color="primary"
-                            (click)='onCreate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
-                            (translationData.lblConfirm || 'Confirm') }}</button>
+                        <button class='no-margin' [disabled]="!featureFormGroup.valid || selectionForDataAttribute.selected.length == 0 || createButtonClicked" mat-raised-button color="primary" 
+                            (click)='onCreate()'>{{ createStatus ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>
                     </div>
                 </div>
             </div>
@@ -179,6 +178,8 @@
                 </div>
             </div>
             <div class='margin-bottom-xlg'>
+                    <mat-icon class='margin-right-10'>info</mat-icon>
+                    <span>{{ translationData.lblMessage || 'Select atleast one Data attritute.'}}<span class='mandatoryColor'>*</span></span>
                 <mat-table [dataSource]="dataSource" class="table-items" matSort>
                     <ng-container matColumnDef="name">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttribute || 'Data

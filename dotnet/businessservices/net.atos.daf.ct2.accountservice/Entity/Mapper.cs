@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Google.Protobuf;
 using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.utilities;
 using AccountComponent = net.atos.daf.ct2.account;
@@ -142,6 +143,9 @@ namespace net.atos.daf.ct2.accountservice
             preference.DateFormatTypeId = request.DateFormatId;
             preference.TimeFormatId = request.TimeFormatId;
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
+            preference.IconId = request.IconId;
+            preference.IconByte = request.IconByte;
+            preference.CreatedBy = request.CreatedBy;
             return preference;
         }
         public AccountPreference ToPreferenceEntity(Preference.AccountPreference entity)
@@ -157,6 +161,10 @@ namespace net.atos.daf.ct2.accountservice
             request.DateFormatId = entity.DateFormatTypeId;
             request.TimeFormatId = entity.TimeFormatId;
             request.LandingPageDisplayId = entity.LandingPageDisplayId;
+            request.IconId = entity.IconId;
+            if (entity.IconByte != null && entity.IconByte.Length > 0)
+                request.IconByte = entity.IconByte;
+            request.CreatedBy = entity.CreatedBy;
             return request;
         }
         // group mapping

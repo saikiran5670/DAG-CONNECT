@@ -11,7 +11,7 @@ using net.atos.daf.ct2.vehicle.entity;
 
 namespace net.atos.daf.ct2.vehicle.repository
 {
-    public class VehicleRepository : IVehicleRepository
+    public partial class VehicleRepository : IVehicleRepository
     {
 
         private readonly IDataAccess _dataAccess;
@@ -901,7 +901,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             return vehicles.AsEnumerable();
         }
 
-        private async Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId)
+        public async Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId)
         {
             try
             {

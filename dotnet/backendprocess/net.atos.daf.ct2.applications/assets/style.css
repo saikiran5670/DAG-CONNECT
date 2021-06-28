@@ -1,0 +1,27 @@
+﻿.header {
+    text-align: center;
+    color: #ecf7fe;
+    padding-bottom: 35px;
+}
+
+table {
+    page-break-inside: avoid;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td, th {
+    border: 1px solid #ecf7fe;
+    padding: 15px;
+    font-size: 22px;
+    text-align: center;
+}
+
+table th {
+    
+}
+tr:nth-child(odd) {background-color: #ecf7fe;}
+tr:nth-child(even) {background-color: #ffff;}
+thead { display: table-header-group }
+tfoot { display: table-row-group }
+tr { page-break-inside: avoid }

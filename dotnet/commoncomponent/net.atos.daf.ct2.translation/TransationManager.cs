@@ -14,9 +14,9 @@ namespace net.atos.daf.ct2.translation
         private readonly ITranslationRepository _translationRepository; // = new TranslationRepository();
         // private static readonly log4net.ILog log =
         // log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        public TranslationManager(ITranslationRepository _repository)
+        public TranslationManager(ITranslationRepository translationRepository)
         {
-            _translationRepository = _repository;
+            _translationRepository = translationRepository;
         }
 
         public async Task<IEnumerable<Langauge>> GetAllLanguageCode()
@@ -32,11 +32,11 @@ namespace net.atos.daf.ct2.translation
             }
         }
 
-        public async Task<IEnumerable<Translations>> GetKeyTranslationByLanguageCode(string langaguecode, string key)
+        public async Task<IEnumerable<Translations>> GetKeyTranslationByLanguageCode(string langagueCode, string key)
         {
             try
             {
-                var result = await _translationRepository.GetKeyTranslationByLanguageCode(langaguecode, key);
+                var result = await _translationRepository.GetKeyTranslationByLanguageCode(langagueCode, key);
                 return result;
             }
             catch (Exception)
@@ -59,11 +59,11 @@ namespace net.atos.daf.ct2.translation
         }
 
 
-        public async Task<IEnumerable<Translations>> GetTranslationsByMenu(int MenuId, MenuType type, string langaguecode)
+        public async Task<IEnumerable<Translations>> GetTranslationsByMenu(int menuId, MenuType type, string langaguecode)
         {
             try
             {
-                var result = await _translationRepository.GetTranslationsByMenu(MenuId, ((char)type).ToString(), langaguecode);
+                var result = await _translationRepository.GetTranslationsByMenu(menuId, ((char)type).ToString(), langaguecode);
                 return result;
             }
             catch (Exception)
@@ -72,11 +72,11 @@ namespace net.atos.daf.ct2.translation
             }
         }
 
-        public async Task<IEnumerable<Translations>> GetTranslationsForDropDowns(string Dropdownname, string langagugecode)
+        public async Task<IEnumerable<Translations>> GetTranslationsForDropDowns(string dropdownname, string langagugecode)
         {
             try
             {
-                var result = await _translationRepository.GetTranslationsForDropDowns(Dropdownname, langagugecode);
+                var result = await _translationRepository.GetTranslationsForDropDowns(dropdownname, langagugecode);
                 return result;
             }
             catch (Exception)
@@ -90,26 +90,26 @@ namespace net.atos.daf.ct2.translation
             try
             {
 
-                TranslationDataStatus TdataStatus = new TranslationDataStatus();
-                TdataStatus.AddCount = 0;
-                TdataStatus.UpdateCount = 0;
-                TdataStatus.FailedCount = 0;
-                var TranslationsList = await _translationRepository.GetAllTranslations();
+                TranslationDataStatus tdataStatus = new TranslationDataStatus();
+                tdataStatus.AddCount = 0;
+                tdataStatus.UpdateCount = 0;
+                tdataStatus.FailedCount = 0;
+                var translationsList = await _translationRepository.GetAllTranslations();
                 foreach (var item in translationupload.Translationss)
                 {
-                    var TranslationtResult = await InsertTranslationFileData(item, TranslationsList);
-                    if (TranslationtResult == TranslationStatus.Added)
-                        TdataStatus.AddCount = TdataStatus.AddCount + 1;
-                    else if (TranslationtResult == TranslationStatus.Updated)
-                        TdataStatus.UpdateCount = TdataStatus.UpdateCount + 1;
-                    else if (TranslationtResult == TranslationStatus.Failed)
-                        TdataStatus.FailedCount = TdataStatus.FailedCount + 1;
+                    var translationtResult = await InsertTranslationFileData(item, translationsList);
+                    if (translationtResult == TranslationStatus.Added)
+                        tdataStatus.AddCount = tdataStatus.AddCount + 1;
+                    else if (translationtResult == TranslationStatus.Updated)
+                        tdataStatus.UpdateCount = tdataStatus.UpdateCount + 1;
+                    else if (translationtResult == TranslationStatus.Failed)
+                        tdataStatus.FailedCount = tdataStatus.FailedCount + 1;
                 }
-                translationupload.AddedCount = TdataStatus.AddCount;
-                translationupload.UpdatedCount = TdataStatus.UpdateCount;
-                translationupload.FailureCount = TdataStatus.FailedCount;
+                translationupload.AddedCount = tdataStatus.AddCount;
+                translationupload.UpdatedCount = tdataStatus.UpdateCount;
+                translationupload.FailureCount = tdataStatus.FailedCount;
                 var result = await _translationRepository.InsertTranslationFileDetails(translationupload);
-                return TdataStatus;
+                return tdataStatus;
             }
             catch (Exception)
             {
@@ -118,12 +118,12 @@ namespace net.atos.daf.ct2.translation
         }
 
 
-        public async Task<TranslationStatus> InsertTranslationFileData(Translations translationupload, List<Translations> TranslationsList)
+        public async Task<TranslationStatus> InsertTranslationFileData(Translations translationupload, List<Translations> translationsList)
         {
             try
             {
 
-                var result = await _translationRepository.InsertTranslationFileData(translationupload, TranslationsList);
+                var result = await _translationRepository.InsertTranslationFileData(translationupload, translationsList);
                 //Translationupload v = new Translationupload();
                 return result;
                 //return result;
@@ -134,11 +134,11 @@ namespace net.atos.daf.ct2.translation
             }
         }
 
-        public async Task<IEnumerable<Translationupload>> GetFileUploadDetails(int FileID)
+        public async Task<IEnumerable<Translationupload>> GetFileUploadDetails(int fileID)
         {
             try
             {
-                var result = await _translationRepository.GetFileUploadDetails(FileID);
+                var result = await _translationRepository.GetFileUploadDetails(fileID);
                 return result;
             }
             catch (Exception)
@@ -160,11 +160,11 @@ namespace net.atos.daf.ct2.translation
             }
         }
 
-        public async Task<IEnumerable<DTCwarning>> GetDTCWarningData(string LanguageCode)
+        public async Task<IEnumerable<DTCwarning>> GetDTCWarningData(string languageCode)
         {
             try
             {
-                var result = await _translationRepository.GetDTCWarningData(LanguageCode);
+                var result = await _translationRepository.GetDTCWarningData(languageCode);
                 return result;
             }
             catch (Exception)
@@ -183,6 +183,6 @@ namespace net.atos.daf.ct2.translation
             var result = await _translationRepository.UpdateDTCWarningData(dtcwarningList);
             return result;
         }
-       
+
     }
 }

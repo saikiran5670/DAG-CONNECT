@@ -259,30 +259,34 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onPOIClick(rowData: any){
-    let id: any; 
-    if(rowData.subCategoryId == 0){ // parent-cat
-      id = rowData.parentCategoryId;
-      this.landmarkCategoryService.getCategoryPOI(this.accountOrganizationId, id).subscribe((poiData: any) => {
+    let subCategoryId: any; 
+    let categoryID: any;
+    categoryID = rowData.parentCategoryId;
+    subCategoryId = rowData.subCategoryId;
+    if(subCategoryId == 0){ // parent-cat
+      this.landmarkCategoryService.getCategoryPOI(this.accountOrganizationId, categoryID).subscribe((poiData: any) => {
         this.nextStepforPOI(poiData);
       });
-    }else{ // sub-cat
-      id = rowData.subCategoryId;
-      this.landmarkCategoryService.getSubCategoryPOI(this.accountOrganizationId, id).subscribe((poiData: any) => {
+    }
+    else{ // sub-cat
+      this.landmarkCategoryService.getSubCategoryPOI(this.accountOrganizationId, categoryID, subCategoryId).subscribe((poiData: any) => {
         this.nextStepforPOI(poiData);
       });
     }
   }
 
   onGeofenceClick(rowData: any){
-    let id: any; 
-    if(rowData.subCategoryId == 0){ // parent-cat
-      id = rowData.parentCategoryId;
-      this.landmarkCategoryService.getCategoryGeofences(this.accountOrganizationId, id).subscribe((geofenceData: any) => {
+    //let id: any; 
+    let categoryId: any;
+    let subCategoryId: any;
+    categoryId = rowData.parentCategoryId;
+    subCategoryId = rowData.subCategoryId;
+    if(subCategoryId == 0){ // parent-cat
+      this.landmarkCategoryService.getCategoryGeofences(this.accountOrganizationId, categoryId).subscribe((geofenceData: any) => {
         this.nextStepforGeofence(geofenceData);
       });
     }else{ // sub-cat
-      id = rowData.subCategoryId; 
-      this.landmarkCategoryService.getSubCategoryGeofences(this.accountOrganizationId, id).subscribe((geofenceData: any) => {
+      this.landmarkCategoryService.getSubCategoryGeofences(this.accountOrganizationId, categoryId, subCategoryId).subscribe((geofenceData: any) => {
         this.nextStepforGeofence(geofenceData);
       });
     }

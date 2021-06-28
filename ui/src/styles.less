@@ -772,6 +772,9 @@ mat-dialog-container{
 .min-width-15-per{
     min-width: 15%;
 }
+.min-width-20-per{
+    min-width: 20%;
+}
 .min-width-60-per{
     min-width: 60%;
 }
@@ -1111,4 +1114,39 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
 }
 .padding-item{
     padding: revert;
+}
+
+.custom-checkbox{
+    .mat-checkbox-layout{
+        margin-bottom: 0px !important;
     }
+
+    &.mat-checkbox-disabled{
+        .mat-checkbox-label{
+            color: rgba(0,0,0,1) !important;
+        }
+    }
+}
+
+.targetSpanIcon{
+    .mat-form-field-appearance-outline{
+        .mat-form-field-suffix{
+            top: 0em !important;
+        }   
+    }
+}
+
+.mat-slide-toggle{
+    &.mat-checked {
+        .mat-slide-toggle-bar {
+            background-color: #84c9d4 !important;
+        }
+        .mat-slide-toggle-thumb {
+            background-color: #339fdc;
+        }
+    }
+}
+
+.H_scalebar{
+    display: none;
+}

@@ -58,7 +58,7 @@ public class User extends CommonFunctionLib{
 	}
 	public static void selectGroupInUser() throws Exception {
 		try {
-			String GRPTBL = getTextFromOR("GRP_STEP3_TBL"); 
+			String GRPTBL = getTextFromOR("GRP_STEP2_TBL"); 
 			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
 			String GRP_ROW = getTextFromOR("GRP_ROW");
 			String CELL = "/div";
@@ -76,7 +76,7 @@ public class User extends CommonFunctionLib{
 	}
 	public static void selectRoleInUserPOPUP() throws Exception {
 		try {
-			String Tbl = getTextFromOR("GRP_STEP1_TBL");
+			String Tbl =""; getTextFromOR("GRP_STEP1_TBL");
 			String GRPTBL = getTextFromOR("GRP_POPUP_TBL"); 
 			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
 			String GRP_ROW = getTextFromOR("GRP_ROW");
@@ -114,7 +114,7 @@ public class User extends CommonFunctionLib{
 		try {
 			int ColNo = 0; 
 			String column = "Accounts";
-			String TBL =  getTextFromOR("GRP_STEP3_TBL");
+			String TBL =  getTextFromOR("GRP_STEP2_TBL");
 			String COL =  getTextFromOR("GRP_COLUMNHEADER");
 			
 			List<WebElement> options = driver.findElements(By.xpath(TBL+COL));

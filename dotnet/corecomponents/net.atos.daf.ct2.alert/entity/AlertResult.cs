@@ -26,8 +26,8 @@ namespace net.atos.daf.ct2.alert.entity
         public string Aleurg_unit_type { get; set; }
         public BitArray Aleurg_day_type { get; set; }
         public string Aleurg_period_type { get; set; }
-        public int Aleurg_urgencylevel_start_date { get; set; }
-        public int Aleurg_urgencylevel_end_date { get; set; }
+        public long Aleurg_urgencylevel_start_date { get; set; }
+        public long Aleurg_urgencylevel_end_date { get; set; }
         public string Aleurg_state { get; set; }
         public long Aleurg_created_at { get; set; }
         public long Aleurg_modified_at { get; set; }
@@ -52,8 +52,8 @@ namespace net.atos.daf.ct2.alert.entity
         public string Alefil_position_type { get; set; }
         public BitArray Alefil_day_type { get; set; }
         public string Alefil_period_type { get; set; }
-        public int Alefil_filter_start_date { get; set; }
-        public int Alefil_filter_end_date { get; set; }
+        public long Alefil_filter_start_date { get; set; }
+        public long Alefil_filter_end_date { get; set; }
         public string Alefil_state { get; set; }
         public long Alefil_created_at { get; set; }
         public long Alefil_modified_at { get; set; }
@@ -137,5 +137,13 @@ namespace net.atos.daf.ct2.alert.entity
         public string Vehiclegroupname { get; set; }
         public string Vin { get; set; }
         public string Regno { get; set; }
+        public int Notlim_recipient_id { get; set; }
+        public int Notref_id { get; set; }
+        public int Notref_alert_id { get; set; }
+        public int Notref_notification_id { get; set; }
+        public int Notref_recipient_id { get; set; }
+        public string Notref_state { get; set; }
+        public long Notref_created_at { get; set; }
+        public long Notref_modified_at { get; set; }
     }
 }

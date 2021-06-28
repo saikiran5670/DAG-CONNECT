@@ -85,6 +85,9 @@ namespace net.atos.daf.ct2.email
                     case EmailEventType.PasswordExpiryNotification:
                         emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AccountInfo.FullName, baseUrl.AbsoluteUri, messageRequest.ToAddressList.First().Key, DateTime.Now.AddDays(messageRequest.RemainingDaysToExpire).ToString("dd-MMM-yyyy"));
                         break;
+                    case EmailEventType.SendReport:
+                        emailContent = GetReportEmailContent(emailTemplateContent, baseUrl, messageRequest);
+                        break;
                 }
 
                 if (emailTemplate.TemplateLabels.Count() > 0)
@@ -95,13 +98,23 @@ namespace net.atos.daf.ct2.email
 
                 messageRequest.Content = emailContent;
                 messageRequest.ContentMimeType = emailTemplate.ContentType == (char)EmailContentType.Html ? MimeType.Html : MimeType.Text;
-
-                return await SendEmail(messageRequest);
+                return await SendEmail(messageRequest); //wrap this function usder while loop with retry condition
             }
             catch (Exception)
             {
                 throw;
             }
+        }
+        public static string GetReportEmailContent(string emailTemplate, Uri baseUrl, MessageRequest messageRequest)
+        {
+            var downloadUrl = "reportscheduler/download?Token={0}";
+            var replacedContent = emailTemplate;
+            foreach (var token in messageRequest.ReportTokens)
+            {
+                var downloadReportUrl = new Uri(baseUrl, string.Format(downloadUrl, token));
+            }
+
+            return replacedContent;
         }
 
         public static string GetEmailContent(EmailTemplate emailTemplate)

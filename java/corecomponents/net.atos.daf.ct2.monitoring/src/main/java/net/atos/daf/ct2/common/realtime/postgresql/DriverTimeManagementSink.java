@@ -73,8 +73,9 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 	public void invoke(KafkaRecord<Monitor> monitor) throws Exception {
 
 		Monitor row = monitor.getValue();
-		
-		if (row.getMessageType().equals(7)) {
+		Integer value=new Integer(7);
+		if (value.equals(row.getMessageType())) {
+		//if (row.getMessageType().equals(7)) {
 			queue = new ArrayList<Monitor>();
 			synchronizedCopy = new ArrayList<Monitor>();
 
@@ -165,7 +166,10 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 	public DriverActivityPojo DriverActivityCalculation(Monitor row, DriverActivityPojo DriverActivity,
 			boolean driverIdentification) {
 
-		DriverActivity.setTripId(null);
+		//TODO Temporary fix
+		//DriverActivity.setTripId(null);
+		DriverActivity.setTripId(row.getDocument().getTripID());
+		
 		DriverActivity.setVid(row.getVid());
 		//DriverActivity.setVin(null);
 		//DriverActivity.setTripStartTimeStamp(Types);

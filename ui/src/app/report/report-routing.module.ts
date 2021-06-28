@@ -4,21 +4,22 @@ import { DashboardComponent } from '../dashboard/dashboard.component';
 import { ReportComponent } from './report.component';
 import { TripReportComponent } from './trip-report/trip-report.component';
 import { TripTracingComponent } from './trip-tracing/trip-tracing.component';
-
+import { DriverTimeManagementComponent } from './driver-time-management/driver-time-management.component'
+import { FleetUtilisationComponent } from './fleet-utilisation/fleet-utilisation.component';
 
 const routes: Routes = [
   {
     path: "", component: ReportComponent, children:[
       { path: "tripreport", component: TripReportComponent },
-      { path: "triptracing", component: TripTracingComponent},
-      { path: "advancedfleetfuelreport", component: DashboardComponent},
-      { path: "fleetfuelreport", component: DashboardComponent},
-      { path: "fleetutilisation", component: DashboardComponent},
-      { path: "fuelbenchmarking", component: DashboardComponent},
-      { path: "fueldeviationreport", component: DashboardComponent},
-      { path: "vehicleperformancereport", component: DashboardComponent},
-      { path: "drivetimemanagement", component: DashboardComponent},
-      { path: "ecoscorereport", component: DashboardComponent}
+      { path: "triptracing", component: TripTracingComponent },
+      { path: "advancedfleetfuelreport", component: DashboardComponent },
+      { path: "fleetfuelreport", component: DashboardComponent },
+      { path: "fleetutilisation", component: FleetUtilisationComponent },
+      { path: "fuelbenchmarking", component: DashboardComponent },
+      { path: "fueldeviationreport", component: DashboardComponent },
+      { path: "vehicleperformancereport", component: DashboardComponent },
+      { path: "drivetimemanagement", component: DriverTimeManagementComponent },
+      { path: "ecoscorereport", component: DashboardComponent }
   ]
   }];
 

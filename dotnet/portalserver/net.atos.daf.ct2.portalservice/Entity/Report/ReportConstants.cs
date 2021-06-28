@@ -4,7 +4,6 @@
     {
         public const string USER_PREFERENCE_SUCCESS_MSG = "User preferences fetched successfully for account Id:- {0} and for report Id:- {1}.";
         public const string USER_PREFERENCE_FAILURE_MSG = "User preferences fetched failed for account Id:- {0} and for report Id:- {1}. Error: {2}";
-        public const string USER_PREFERENCE_FAILURE_MSG2 = "No records found for reprot data columns.";
 
         public const string GET_VIN_SUCCESS_MSG = "VIN fetched successfully for given date range";
         public const string GET_VIN_FAILURE_MSG = "VIN fetched failed for given date range";
@@ -44,9 +43,24 @@
         #region Eco-Score Report
         public const string GET_ECOSCORE_PROFILE_SUCCESS_MSG = "Eco-Score profiles fetched successfully.";
         public const string GET_ECOSCORE_PROFILE_KPI_SUCCESS_MSG = "Eco-Score profile KPI details fetched successfully for given profile.";
+        public const string DELETE_ECOSCORE_PROFILE_KPI_SUCCESS_MSG = "Eco-Score profile Deleted successfully.";
+        public const string GET_ECOSCORE_REPORT_VALIDATION_STARTDATE_MSG = "Invalid start date.";
+        public const string GET_ECOSCORE_REPORT_VALIDATION_ENDDATE_MSG = "Invalid end date.";
+        public const string GET_ECOSCORE_REPORT_VALIDATION_VINREQUIRED_MSG = "Invalid VIN details.";
+        public const string GET_ECOSCORE_REPORT_VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
+        public const string GET_ECOSCORE_REPORT_SUCCESS_MSG = "Eco-Score Report details fetched successfully.";
+        public const string GET_ECOSCORE_REPORT_FAILURE_MSG = "Eco-Score Report details fetched failed. With Error : {0}";
+        public const string GET_ECOSCORE_REPORT_NOTFOUND_MSG = "No records found for Eco-Score reprot.";
         #endregion
 
-
-
+        #region Fleet utilization Report
+        public const string GET_FLEET_UTILIZATION_VALIDATION_STARTDATE_MSG = "Invalid start date.";
+        public const string GET_FLEET_UTILIZATION_VALIDATION_ENDDATE_MSG = "Invalid end date.";
+        public const string GET_FLEET_UTILIZATION_VALIDATION_VINREQUIRED_MSG = "Invalid VIN details.";
+        public const string GET_FLEET_UTILIZATION_VALIDATION_IDREQUIRED_MSG = "Invalid driver id/ids details.";
+        public const string GET_FLEET_UTILIZATION_VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
+        public const string GET_FLEET_UTILIZATION_SUCCESS_MSG = "Fleet Utilizaiton details fetched successfully";
+        public const string GET_FLEET_UTILIZATION_FAILURE_MSG = "No Result Found";
+        #endregion
     }
 }

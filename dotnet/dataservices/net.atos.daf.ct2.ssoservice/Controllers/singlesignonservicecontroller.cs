@@ -1,6 +1,8 @@
 using System;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
+using log4net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -16,21 +18,22 @@ namespace net.atos.daf.ct2.singlesignonservice.Controllers
     [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class SingleSignOnServiceController : ControllerBase
     {
-        private readonly ILogger<SingleSignOnServiceController> _logger;
+        private readonly ILog _logger;
         private readonly AccountComponent.IAccountIdentityManager _accountIdentityManager;
-        public SingleSignOnServiceController(AccountComponent.IAccountIdentityManager accountIdentityManager, ILogger<SingleSignOnServiceController> logger)
+        public SingleSignOnServiceController(AccountComponent.IAccountIdentityManager accountIdentityManager)
         {
             this._accountIdentityManager = accountIdentityManager;
-            this._logger = logger;
+            this._logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         [HttpGet]
         [Route("sso")]
         public async Task<IActionResult> ValidateSSOToken(string token)
         {
+            _logger.Info("ValidateSSOToken dataservice api called");
             try
             {
-                UserDetails _details = new UserDetails();
+                UserDetails details = new UserDetails();
                 if (!string.IsNullOrEmpty(token))
                 {
                     SSOResponse result = await _accountIdentityManager.ValidateSSOToken(token);
@@ -38,25 +41,28 @@ namespace net.atos.daf.ct2.singlesignonservice.Controllers
                     {
                         if (result.Details != null)
                         {
-                            _details.AccountID = result.Details.AccountID;
-                            _details.AccountName = result.Details.AccountName;
-                            _details.RoleID = result.Details.RoleID;
-                            _details.OrganizationID = result.Details.OrganizationID;
-                            _details.OraganizationName = result.Details.OrganizationName;
-                            _details.DateFormat = result.Details.DateFormat;
-                            _details.TimeZone = result.Details.TimeZone;
-                            _details.UnitDisplay = result.Details.UnitDisplay;
-                            _details.VehicleDisplay = result.Details.VehicleDisplay;
+                            _logger.Info("ValidateSSOToken dataservice api called => Token Found");
+                            details.AccountID = result.Details.AccountID;
+                            details.AccountName = result.Details.AccountName;
+                            details.RoleID = result.Details.RoleID;
+                            details.OrganizationID = result.Details.OrganizationID;
+                            details.OraganizationName = result.Details.OrganizationName;
+                            details.DateFormat = result.Details.DateFormat;
+                            details.TimeZone = result.Details.TimeZone;
+                            details.UnitDisplay = result.Details.UnitDisplay;
+                            details.VehicleDisplay = result.Details.VehicleDisplay;
 
-                            return Ok(_details);
+                            return Ok(details);
                         }
                         else
                         {
+                            _logger.Info("ValidateSSOToken dataservice api called => result.Details is null");
                             return GenerateErrorResponse(result.StatusCode, result.Message, nameof(token));
                         }
                     }
                     else
                     {
+                        _logger.Info("ValidateSSOToken dataservice api called => result is null");
                         return GenerateErrorResponse(result.StatusCode, result.Message, nameof(token));
                     }
                 }
@@ -67,7 +73,7 @@ namespace net.atos.daf.ct2.singlesignonservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.Error(null, ex);
                 return GenerateErrorResponse(HttpStatusCode.NotFound, "INVALID_TOKEN", nameof(token));
             }
         }

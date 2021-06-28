@@ -166,10 +166,42 @@ export class VehicleService {
     }
   }
 
+  setoptinstatus(data: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+    .put<any>(`${this.vehicleServiceUrl}/setoptinstatus`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+  
+  terminateVehiclestatus(data: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+    .put<any>(`${this.vehicleServiceUrl}/terminate`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+
+  updatevehicleconnection(data: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+    .put<any>(`${this.vehicleServiceUrl}/updatevehicleconnection`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(errResponse: HttpErrorResponse) {
     console.error('Error : ', errResponse.error);
     return throwError(
       errResponse
     );
   }
+
 }

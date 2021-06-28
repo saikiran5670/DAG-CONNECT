@@ -59,17 +59,88 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
-  createTripReportPreference(data: any): Observable<any[]> {
+  createReportUserPreference(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any[]>(
-        `${this.reportServiceUrl}/createuserpreference`, data, headers
+        `${this.reportServiceUrl}/userpreference/create`, data, headers
       )
       .pipe(catchError(this.handleError));
   }
+
+  getDriverTimeDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/drivetime/getdetails`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getSelectedDriverDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/drivetime/getdetailssingle`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+  
+  getDefaultDriverParameter(data: any): Observable<any[]> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .post<any[]>(
+          `${this.reportServiceUrl}/drivetime/getparameters`, data, headers
+        )
+        .pipe(catchError(this.handleError));
+  }
+
+  getReportDetails(){
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.reportServiceUrl}/getreportdetails`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getFleetDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/fleetutilization/getdetails`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getCalendarDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/fleetutilization/getcalenderdata`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+  
   
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);

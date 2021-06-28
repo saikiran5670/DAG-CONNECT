@@ -20,12 +20,12 @@ namespace net.atos.daf.ct2.account
 {
     public class AccountIdentityManager : IAccountIdentityManager
     {
-        IdentityComponent.ITokenManager _tokenManager;
-        IdentityComponent.IAccountAuthenticator _autheticator;
-        IdentityComponent.IAccountManager _identityAccountManager;
-        IAccountManager _accountManager;
-        IdentitySessionComponent.IAccountSessionManager _accountSessionManager;
-        IdentitySessionComponent.IAccountTokenManager _accountTokenManager;
+        readonly IdentityComponent.ITokenManager _tokenManager;
+        readonly IdentityComponent.IAccountAuthenticator _autheticator;
+        readonly IdentityComponent.IAccountManager _identityAccountManager;
+        readonly IAccountManager _accountManager;
+        readonly IdentitySessionComponent.IAccountSessionManager _accountSessionManager;
+        readonly IdentitySessionComponent.IAccountTokenManager _accountTokenManager;
         private readonly IConfiguration _configuration;
         private readonly IAuditTraillib _auditlog;
         private readonly SSOConfiguration _ssoConfiguration;
@@ -87,7 +87,7 @@ namespace net.atos.daf.ct2.account
                 IdentityEntity.AccountToken accToken = await PrepareSaveToken(user, account, roleId);
                 if (accToken != null && accToken.StatusCode == HttpStatusCode.OK)
                 {
-                   var _passwordPolicyAccount = await CaptureUserLastLogin(account);
+                    await CaptureUserLastLogin(account);
 
                     IdentityEntity.AccountIDPClaim accIDPclaims = _tokenManager.DecodeToken(accToken.AccessToken);
 
@@ -95,24 +95,7 @@ namespace net.atos.daf.ct2.account
                     accIdentity.AccountInfo = account;
                     accIdentity.AccountOrganization = _accountManager.GetAccountOrg(account.Id).Result;
                     accIdentity.AccountRole = accountOrgRoleList;
-                    #region commneted code
-                    //accIdentity.AccountToken=accToken;
-                    // int accountId= GetAccountByEmail(user.UserName);
-                    // if(accountId>0)
-                    // {
-                    //AccountPreferenceFilter filter=new AccountPreferenceFilter();
-                    //filter.Ref_Id=account.Id;
-                    ////filter.Ref_Id =PreferenceType.Ref_id;
-                    //filter.PreferenceType=PreferenceType.Account;
-                    //IEnumerable<AccountPreference> preferences = preferenceManager.Get(filter).Result;
-                    //foreach(var pref in preferences) 
-                    //{
-                    //    accIdentity.AccountPreference=pref;
-                    //    break; //get only first preference
-                    //}
-                    // }
-                    #endregion
-                }//if check password max days expird
+                }//if check password max days expired
                 else if (accToken?.StatusCode == HttpStatusCode.BadRequest && CheckIsPasswordExpired(accToken?.Message))
                 {
                     //Generate Reset token with 302 response code
@@ -498,7 +481,7 @@ namespace net.atos.daf.ct2.account
                         //token generated successfully hence adding token info & updating session info
                         accSessionEntity.LastSessionRefresh = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                         accSessionEntity.SessionExpiredAt += unixTimeSecondsExpiresAt;
-                        var _session_Id = await _accountSessionManager.UpdateSession(accSessionEntity);
+                        await _accountSessionManager.UpdateSession(accSessionEntity);
 
                         accToken.StatusCode = System.Net.HttpStatusCode.OK;
                         accToken.Message = "Token is created and saved to databse.";
@@ -603,37 +586,37 @@ namespace net.atos.daf.ct2.account
             // Account account = GetAccountByEmail(request.Email);
             if (request?.AccountID > 0)
             {
-                IdentitySessionComponent.entity.AccountToken _latestToken = await GetAccountTokenDetails(request.AccountID);
-                if (_latestToken?.Id > 0)
+                IdentitySessionComponent.entity.AccountToken latestToken = await GetAccountTokenDetails(request.AccountID);
+                if (latestToken?.Id > 0)
                 {
-                    int _recentTokenExpirIn = _latestToken.ExpireIn;
-                    Guid _ssoGuid = Guid.NewGuid();
+                    int recentTokenExpirIn = latestToken.ExpireIn;
+                    Guid ssoGuid = Guid.NewGuid();
 
                     // Preparing SSO Token with new TokenId (GUID) and Token Type as 'S'
-                    IdentitySessionComponent.entity.AccountToken _newSSOToken = _latestToken;
-                    _newSSOToken.AccessToken = string.Empty;
-                    _newSSOToken.CreatedAt = new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds();
-                    _newSSOToken.TokenType = IdentitySessionComponent.ENUM.TokenType.SSO;
-                    _newSSOToken.TokenId = Convert.ToString(_ssoGuid);
-                    _newSSOToken.ExpireIn = _recentTokenExpirIn;
-                    _newSSOToken.AccountId = request.AccountID;
-                    _newSSOToken.OrganizationId = request.OrganizaitonID;
-                    _newSSOToken.RoleId = request.RoleID;
+                    IdentitySessionComponent.entity.AccountToken newSSOToken = latestToken;
+                    newSSOToken.AccessToken = string.Empty;
+                    newSSOToken.CreatedAt = new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds();
+                    newSSOToken.TokenType = IdentitySessionComponent.ENUM.TokenType.SSO;
+                    newSSOToken.TokenId = Convert.ToString(ssoGuid);
+                    newSSOToken.ExpireIn = recentTokenExpirIn;
+                    newSSOToken.AccountId = request.AccountID;
+                    newSSOToken.OrganizationId = request.OrganizaitonID;
+                    newSSOToken.RoleId = request.RoleID;
 
                     // Sotring toen details for future validation
-                    int tokenkey = await _accountTokenManager.InsertToken(_newSSOToken);
+                    int tokenkey = await _accountTokenManager.InsertToken(newSSOToken);
 
                     // Keeping session data updated with new expiryAt
-                    IdentitySessionComponent.entity.AccountSession _latestSession = await GetAccountSessionDetails(_latestToken.Session_Id);
-                    if (_latestSession?.Id > 0)
+                    IdentitySessionComponent.entity.AccountSession latestSession = await GetAccountSessionDetails(latestToken.Session_Id);
+                    if (latestSession?.Id > 0)
                     {
-                        _latestSession.LastSessionRefresh = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-                        _latestSession.SessionExpiredAt += _recentTokenExpirIn;
-                        var session_Id = await _accountSessionManager.UpdateSession(_latestSession);
+                        latestSession.LastSessionRefresh = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                        latestSession.SessionExpiredAt += recentTokenExpirIn;
+                        var session_Id = await _accountSessionManager.UpdateSession(latestSession);
                     }
 
                     // To Return valid SSO details 
-                    ssoToken.Token = _ssoConfiguration.ZuoraBaseUrl + "=" + Convert.ToString(_ssoGuid);
+                    ssoToken.Token = _ssoConfiguration.ZuoraBaseUrl + "=" + Convert.ToString(ssoGuid);
                     ssoToken.TokenType = IdentitySessionComponent.ENUM.TokenType.SSO.ToString();
                     ssoToken.StatusCode = HttpStatusCode.OK;
                     ssoToken.Message = "Request to redirect";
@@ -670,59 +653,59 @@ namespace net.atos.daf.ct2.account
         ///  </returns>
         public async Task<SSOResponse> ValidateSSOToken(string tokenGuid)
         {
-            SSOResponse _ssoResponse = new SSOResponse();
-            IEnumerable<IdentitySessionComponent.entity.AccountToken> _tokenlist = await _accountTokenManager.GetTokenDetails(tokenGuid);
+            SSOResponse ssoResponse = new SSOResponse();
+            IEnumerable<IdentitySessionComponent.entity.AccountToken> tokenList = await _accountTokenManager.GetTokenDetails(tokenGuid);
             // TODO: delete after testing
             //IdentitySessionComponent.entity.AccountToken _savedToeken = _tokenlist.FirstOrDefault();
-            IdentitySessionComponent.entity.AccountToken _savedToeken = _tokenlist.Where(token => token.TokenType == IdentitySessionComponent.ENUM.TokenType.SSO).FirstOrDefault();
-            if (_savedToeken?.AccountId > 0)
+            IdentitySessionComponent.entity.AccountToken savedToken = tokenList.Where(token => token.TokenType == IdentitySessionComponent.ENUM.TokenType.SSO).FirstOrDefault();
+            if (savedToken?.AccountId > 0)
             {
-                if (UtcDateCompare(_savedToeken.CreatedAt, _savedToeken.ExpireIn))
+                if (UtcDateCompare(savedToken.CreatedAt, savedToken.ExpireIn))
                 {
-                    IdentitySessionComponent.entity.AccountSession _latestSession = await GetAccountSessionDetails(_savedToeken.Session_Id);
-                    if (_latestSession?.Id > 0)
+                    IdentitySessionComponent.entity.AccountSession latestSession = await GetAccountSessionDetails(savedToken.Session_Id);
+                    if (latestSession?.Id > 0)
                     {
                         // Get users SSO Details and return it back
-                        _ssoResponse.Details = await _accountManager.GetAccountSSODetails(_savedToeken);
+                        ssoResponse.Details = await _accountManager.GetAccountSSODetails(savedToken);
                     }
                 }
                 else
                 {
-                    _ssoResponse.StatusCode = HttpStatusCode.NotFound;
-                    _ssoResponse.Message = "TOKEN_EXPIRED";
-                    _ssoResponse.Value = tokenGuid;
+                    ssoResponse.StatusCode = HttpStatusCode.NotFound;
+                    ssoResponse.Message = "TOKEN_EXPIRED";
+                    ssoResponse.Value = tokenGuid;
                 }
             }
             else
             {
-                _ssoResponse.StatusCode = HttpStatusCode.NotFound;
-                _ssoResponse.Message = "INVALID_TOKEN";
-                _ssoResponse.Value = tokenGuid;
+                ssoResponse.StatusCode = HttpStatusCode.NotFound;
+                ssoResponse.Message = "INVALID_TOKEN";
+                ssoResponse.Value = tokenGuid;
             }
-            return _ssoResponse;
+            return ssoResponse;
         }
-        private async Task<identitysession.entity.AccountToken> GetAccountTokenDetails(int _accountID)
+        private async Task<identitysession.entity.AccountToken> GetAccountTokenDetails(int accountID)
         {
 
-            var accountTokens = await _accountTokenManager.GetTokenDetails(_accountID);
-            identitysession.entity.AccountToken lastestToken = accountTokens.OrderByDescending(__token => __token.CreatedAt).FirstOrDefault();
+            var accountTokens = await _accountTokenManager.GetTokenDetails(accountID);
+            identitysession.entity.AccountToken lastestToken = accountTokens.OrderByDescending(token => token.CreatedAt).FirstOrDefault();
 
             return await Task.FromResult(lastestToken);
         }
 
-        private async Task<identitysession.entity.AccountSession> GetAccountSessionDetails(int _sessionID)
+        private async Task<identitysession.entity.AccountSession> GetAccountSessionDetails(int sessionID)
         {
 
-            identitysession.entity.AccountSession lastestSession = await _accountSessionManager.GetAccountSessionById(_sessionID);
+            identitysession.entity.AccountSession lastestSession = await _accountSessionManager.GetAccountSessionById(sessionID);
 
             return await Task.FromResult(lastestSession);
         }
 
-        private bool UtcDateCompare(long UnixFromDate, long UnixToDate)
+        private bool UtcDateCompare(long unixFromDate, long unixToDate)
         {
             DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-            dtDateTime = dtDateTime.AddSeconds(UnixFromDate).ToLocalTime();
-            DateTime exdateTime = dtDateTime.AddSeconds(UnixToDate);
+            dtDateTime = dtDateTime.AddSeconds(unixFromDate).ToLocalTime();
+            DateTime exdateTime = dtDateTime.AddSeconds(unixToDate);
             int result = DateTime.Compare(exdateTime, DateTime.Now);
             return result > 0 ? true : false;
         }

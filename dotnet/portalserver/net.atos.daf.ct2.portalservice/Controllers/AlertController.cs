@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Route("alert")]
     public class AlertController : BaseController
     {
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly AlertService.AlertServiceClient _alertServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.Alert.Mapper _mapper;
@@ -218,15 +218,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 alertRequest = _mapper.ToAlertRequest(request);
                 if (request.ApplyOn.ToLower() == "s")
                 {
-                    var VehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
-                    VehicleGroupRequest.Name = string.Format(AlertConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
-                    if (VehicleGroupRequest.Name.Length > 50) VehicleGroupRequest.Name = VehicleGroupRequest.Name.Substring(0, 49);
-                    VehicleGroupRequest.GroupType = "S";
-                    VehicleGroupRequest.RefId = alertRequest.VehicleGroupId;
-                    VehicleGroupRequest.FunctionEnum = "N";
-                    VehicleGroupRequest.OrganizationId = GetContextOrgId();
-                    VehicleGroupRequest.Description = string.Format(AlertConstants.VEHICLE_GROUP_NAME, alertRequest.Name, alertRequest.OrganizationId);
-                    vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
+                    var vehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
+                    vehicleGroupRequest.Name = string.Format(AlertConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
+                    if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
+                    vehicleGroupRequest.GroupType = "S";
+                    vehicleGroupRequest.RefId = alertRequest.VehicleGroupId;
+                    vehicleGroupRequest.FunctionEnum = "N";
+                    vehicleGroupRequest.OrganizationId = GetContextOrgId();
+                    vehicleGroupRequest.Description = string.Format(AlertConstants.VEHICLE_GROUP_NAME, alertRequest.Name, alertRequest.OrganizationId);
+                    vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
                     alertRequest.VehicleGroupId = response.VehicleGroup.Id;
                 }
 
@@ -319,15 +319,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // create single vehicle group with selected vehicle  
                 if (request.ApplyOn.ToLower() == "s")
                 {
-                    var VehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
-                    VehicleGroupRequest.Name = string.Format(AlertConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
-                    if (VehicleGroupRequest.Name.Length > 50) VehicleGroupRequest.Name = VehicleGroupRequest.Name.Substring(0, 49);
-                    VehicleGroupRequest.GroupType = "S";
-                    VehicleGroupRequest.RefId = alertRequest.VehicleGroupId;
-                    VehicleGroupRequest.FunctionEnum = "N";
-                    VehicleGroupRequest.OrganizationId = GetContextOrgId();
-                    VehicleGroupRequest.Description = string.Format(AlertConstants.VEHICLE_GROUP_NAME, alertRequest.Name, alertRequest.OrganizationId);
-                    vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
+                    var vehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
+                    vehicleGroupRequest.Name = string.Format(AlertConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
+                    if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
+                    vehicleGroupRequest.GroupType = "S";
+                    vehicleGroupRequest.RefId = alertRequest.VehicleGroupId;
+                    vehicleGroupRequest.FunctionEnum = "N";
+                    vehicleGroupRequest.OrganizationId = GetContextOrgId();
+                    vehicleGroupRequest.Description = string.Format(AlertConstants.VEHICLE_GROUP_NAME, alertRequest.Name, alertRequest.OrganizationId);
+                    vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
                     alertRequest.VehicleGroupId = response.VehicleGroup.Id;
                 }
                 alertservice.AlertResponse alertResponse = await _alertServiceClient.UpdateAlertAsync(alertRequest);
@@ -387,6 +387,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     response.Code = ResponseCode.Success;
                     return Ok(response.AlertRequest);
                 }
+                else if (response.Code == ResponseCode.Failed)
+                {
+                    return StatusCode(500, AlertConstants.ALERT_GET_FAILED_MSG);
+                }
                 else
                 {
                     return StatusCode(404, AlertConstants.ALERT_NOT_FOUND_MSG);
@@ -414,6 +418,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (orgnizationId == 0) return BadRequest(AlertConstants.ALERT_ORG_ID_NOT_NULL_MSG);
                 orgnizationId = GetContextOrgId();
+
                 NotificationRecipientResponse response = await _alertServiceClient.GetRecipientLabelListAsync(new OrgIdRequest { OrganizationId = orgnizationId });
 
                 if (response.NotificationRecipient != null && response.NotificationRecipient.Count > 0)

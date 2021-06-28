@@ -19,12 +19,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 {
     public class VehicleManagementService : VehicleService.VehicleServiceBase
     {
-        //private readonly ILogger<VehicleManagementService> _logger;
         private readonly IVehicleManager _vehicleManager;
         private readonly Group.IGroupManager _groupManager;
         private readonly Mapper _mapper;
 
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly IAuditTraillib _auditlog;
         private readonly AccountComponent.IAccountManager _accountmanager;
 
@@ -692,7 +691,6 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         if (!response.GroupRefDetails.Any(a => a.Id == item.ID))
                         {
                             //You have your value.
-
                             VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
                             ObjGroupRef.Id = item.ID;
                             ObjGroupRef.Name = item.Name ?? "";
@@ -700,6 +698,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                             ObjGroupRef.VIN = item.VIN ?? "";
                             ObjGroupRef.ModelId = item.ModelId ?? "";
                             ObjGroupRef.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id;
+                            ObjGroupRef.AssociatedGroups = await _vehicleManager.GetVehicleAssociatedGroup(item.ID, item.Organization_Id ?? 0);
                             response.GroupRefDetails.Add(ObjGroupRef);
                         }
                     }
@@ -1048,5 +1047,61 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
         }
 
+        public override async Task<VehicleConnectResponse> UpdateVehicleConnection(VehicleConnectRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var vehicleConnect = new List<VehicleConnect>();
+                vehicleConnect.AddRange(request.Vehicles.Select(x => new VehicleConnect()
+                {
+                    VehicleId = x.VehicleId,
+                    Opt_In = Convert.ToChar(x.OptIn),
+                    ModifiedBy = x.ModifiedBy
+                }).ToList());
+
+                var response = new VehicleConnectResponse();
+                var result = await _vehicleManager.UpdateVehicleConnection(vehicleConnect);
+                var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Vehicle Connect Status", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set Opt In status", 1, 2, Convert.ToString(request)).Result;
+                response = _mapper.ToVehichleConnectResponse(result);
+                response.Message = "Vehicle Opt In Status updated.";
+                response.Code = Responcecode.Success;
+                _logger.Info("VehicleConnectAll method in Vehicle service called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new VehicleConnectResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
+        #region Vehicle Count For Report Scheduler
+        public override async Task<VehicleCountFilterResponse> GetVehicleAssociatedGroupCount(VehicleCountFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var response = new VehicleCountFilterResponse();
+                int result = await _vehicleManager.GetVehicleAssociatedGroupCount(_mapper.ToVehicleGroupCountFilter(request));
+                response.VehicleCount = result;
+                response.Message = "Vehicle Count.";
+                response.Code = Responcecode.Success;
+                _logger.Info("Vehicle Count method in Vehicle service called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new VehicleCountFilterResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+        #endregion
     }
 }

@@ -26,19 +26,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
         #region Private Variable
         private readonly AuditHelper _auditHelper;
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly FeatureService.FeatureServiceClient _featureclient;
-        private string _fk_Constraint = "violates foreign key constraint";
-        private IMemoryCacheProvider _cache;
+        private readonly string _fk_Constraint = "violates foreign key constraint";
+        private readonly IMemoryCacheProvider _cache;
         private readonly PortalCacheConfiguration _cachesettings;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         #endregion
 
         #region Constructor
-        public FeatureController(FeatureService.FeatureServiceClient Featureclient, IMemoryCacheProvider cache, IOptions<PortalCacheConfiguration> cachesettings,
-             AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+        public FeatureController(FeatureService.FeatureServiceClient featureClient, IMemoryCacheProvider cache, IOptions<PortalCacheConfiguration> cachesettings,
+             AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
-            _featureclient = Featureclient;
+            _featureclient = featureClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _cache = cache;
             _cachesettings = cachesettings.Value;
@@ -391,7 +391,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                           "Feature service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                           "ChangeFeatureState  method in Feature controller", FeatureId, FeatureId, JsonConvert.SerializeObject(FeatureObj),
                                            _userDetails);
-                
+
                 return Ok(feature);
             }
             catch (Exception ex)

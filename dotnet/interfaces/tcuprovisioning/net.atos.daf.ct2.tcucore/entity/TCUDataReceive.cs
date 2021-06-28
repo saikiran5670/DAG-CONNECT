@@ -4,27 +4,27 @@ namespace net.atos.daf.ct2.tcucore
 {
     public class TCUDataReceive
     {
-        public TCUDataReceive(string _vin
-            , string _deviceIdentifier
-            , string _deviceSerialNumber
-            , Correlations _correlations
-            , DateTime _referenceDate)
+        public TCUDataReceive(string vin
+            , string deviceIdentifier
+            , string deviceSerialNumber
+            , Correlations correlations
+            , DateTime referenceDate)
         {
-            this.Vin = _vin;
-            this.DeviceIdentifier = _deviceIdentifier;
-            this.DeviceSerialNumber = _deviceSerialNumber;
-            this.Correlations = _correlations;
-            this.ReferenceDate = _referenceDate;
+            this.Vin = vin;
+            this.DeviceIdentifier = deviceIdentifier;
+            this.DeviceSerialNumber = deviceSerialNumber;
+            this.Correlations = correlations;
+            this.ReferenceDate = referenceDate;
         }
 
-        public string Vin { get;  }
+        public string Vin { get; }
 
-        public string DeviceIdentifier { get;  }
+        public string DeviceIdentifier { get; }
 
-        public string DeviceSerialNumber { get;  }
+        public string DeviceSerialNumber { get; }
 
-        public Correlations Correlations { get;  }
+        public Correlations Correlations { get; }
 
-        public DateTime ReferenceDate { get;}
+        public DateTime ReferenceDate { get; }
     }
 }

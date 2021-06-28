@@ -47,14 +47,14 @@ namespace net.atos.daf.ct2.poigeofence
             return routeCorridor1;
         }
 
-        public async Task<CorridorID> DeleteCorridor(int CorridorId)
+        public async Task<CorridorID> DeleteCorridor(int corridorId)
         {
             CorridorID corridorID = new CorridorID();
-            var isAlertExist = await _corridorRepository.GetAssociateAlertbyId(CorridorId);
+            var isAlertExist = await _corridorRepository.GetAssociateAlertbyId(corridorId);
 
             if (isAlertExist <= 0)
             {
-                var deleteID = await _corridorRepository.DeleteCorridor(CorridorId);
+                var deleteID = await _corridorRepository.DeleteCorridor(corridorId);
                 if (deleteID.Id > 0)
                     corridorID.Id = deleteID.Id;
                 else
@@ -132,16 +132,16 @@ namespace net.atos.daf.ct2.poigeofence
         public async Task<ExistingTripCorridor> UpdateExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
         {
 
-            var _existingTripCorridor = new ExistingTripCorridor();
+            var varExistingTripCorridor = new ExistingTripCorridor();
             var isExist = await _corridorRepository.CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id,
                                                                        Convert.ToChar(existingTripCorridor.CorridorType));
             if (isExist)
             {
-                _existingTripCorridor = await _corridorRepository.UpdateExistingTripCorridor(existingTripCorridor);
+                varExistingTripCorridor = await _corridorRepository.UpdateExistingTripCorridor(existingTripCorridor);
             }
             else
-                _existingTripCorridor.Id = -1;
-            return _existingTripCorridor;
+                varExistingTripCorridor.Id = -1;
+            return varExistingTripCorridor;
 
 
         }

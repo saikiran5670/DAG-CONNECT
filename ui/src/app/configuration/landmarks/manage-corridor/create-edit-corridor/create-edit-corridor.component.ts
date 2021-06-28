@@ -13,14 +13,16 @@ export class CreateEditCorridorComponent implements OnInit {
   @Input() actionType: any;
   @Input() selectedElementData : any;
   @Input() corridorNameList : any;
+  @Input() selectedCorridorTypeId:number;
   @Output() backToPage = new EventEmitter<any>();
   typeForm: FormGroup;
   breadcumMsg: any = '';
   organizationId: number;
   localStLanguage: any;
+  accountRoleId: number;
   accountId: any = 0;
   corridorTypeList = [{id:1,value:'Route Calculating'},{id:2,value:'Existing Trips'}];
-  selectedCorridorTypeId : any = 46;
+  //selectedCorridorTypeId : any = 46;
   exclusionList : any;
   vehicleGroupList : any;
 
@@ -32,14 +34,19 @@ export class CreateEditCorridorComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
+    this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
     this.loadDropdownData();
+    if(this.actionType ==='create'){
+      this.selectedCorridorTypeId = 46;
+    }
     //console.log(this.selectedCorridorTypeId)
   }
 
   loadDropdownData(){
-    this.alertService.getAlertFilterData(this.accountId, this.organizationId).subscribe((data) => {
+    // this.alertService.getAlertFilterData(this.accountId, this.organizationId).subscribe((data) => {
+    this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
       let filterData = data["enumTranslation"];
-      let vehicleGroup = data["vehicleGroup"];
+      let vehicleGroup = data["associatedVehicleRequest"];
       filterData.forEach(element => {
         element["value"]= this.translationData[element["key"]];
       });

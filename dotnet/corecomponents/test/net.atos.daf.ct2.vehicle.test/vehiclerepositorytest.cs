@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -24,13 +25,13 @@ namespace net.atos.daf.ct2.vehicle.test
 
         public Vehiclerepositorytest()
         {
-            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
-            string datamartconnectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=vehicledatamart;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+            string connectionString = "Server=10.193.124.168;Database=dafconnectmasterdatabase;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master;Password=9RQkJM2hwfe!;Ssl Mode=Require; Trust Server Certificate=True;";
+            string datamartconnectionString = "Server=10.193.124.165;Database=vehicledatamart;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-datamart;Password=9RQkJM2hwfe!;Ssl Mode=Require; Trust Server Certificate=True;";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _datamartDataacess = new PgSQLDataMartDataAccess(datamartconnectionString);
             _vehicleRepository = new VehicleRepository(_dataAccess, _datamartDataacess);
             _groupRepository = new GroupRepository(_dataAccess);
-            _vehiclemanager = new VehicleManager(_vehicleRepository, _auditlog);
+            _vehiclemanager = new VehicleManager(_vehicleRepository);
 
         }
         //[TestCategory("Unit-Test-Case")]
@@ -192,6 +193,26 @@ namespace net.atos.daf.ct2.vehicle.test
             var results = await _vehiclemanager.GetVehicleGroupbyAccountId(accountId, orgId);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for update vehicle")]
+        [TestMethod]
+        public async void UpdateVehicleConnection()
+        {
+
+
+            var ObjFilter = new List<VehicleConnect>() {
+            new VehicleConnect(){ VehicleId =10,Opt_In='I',ModifiedBy=1 },
+            new VehicleConnect(){ VehicleId =253,Opt_In='I',ModifiedBy=1},
+            };
+
+            var resultvehicleList = await _vehicleRepository.UpdateVehicleConnection(ObjFilter);
+
+
+            //  Assert.IsNotNull(resultvehicleList.VehicleConnectedList.Count > 0);
+            Assert.IsTrue(resultvehicleList.VehicleConnectedList.Count > 0);
+
         }
 
         #region Vehicle Mileage
@@ -422,5 +443,10 @@ namespace net.atos.daf.ct2.vehicle.test
         //   //  Assert.IsTrue(resultUpdatevehicle.ID > 0);
 
         // }
+
+
+
+
+
     }
 }

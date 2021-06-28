@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod",
+    "build": "export NODE_OPTIONS=--max_old_space_size=8192 && ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -24,10 +24,14 @@
     "@angular/platform-browser": "~9.1.12",
     "@angular/platform-browser-dynamic": "~9.1.12",
     "@angular/router": "~9.1.12",
+    "@fullcalendar/angular": "^5.8.0",
+    "@fullcalendar/daygrid": "^5.8.0",
     "@ngx-config/core": "^9.0.0",
     "@ngx-config/http-loader": "^9.0.0",
+    "angular-ng-autocomplete": "^2.0.5",
     "bootstrap": "^4.5.2",
     "chart.js": "^2.9.3",
+    "chartjs-plugin-zoom": "^0.7.7",
     "detect-passive-events": "^2.0.3",
     "exceljs": "^4.2.1",
     "faker": "^5.5.3",

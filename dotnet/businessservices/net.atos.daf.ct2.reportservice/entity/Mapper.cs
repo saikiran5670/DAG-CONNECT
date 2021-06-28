@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reports.ENUM;
 
@@ -7,25 +8,27 @@ namespace net.atos.daf.ct2.reportservice.entity
 {
     public class Mapper
     {
-        internal IEnumerable<UserPreferenceDataColumn> MapUserPrefences(IEnumerable<UserPrefernceReportDataColumn> userPrefernces)
+        internal IEnumerable<UserPreferenceDataColumn> MapUserPreferences(IEnumerable<UserPreferenceReportDataColumn> userPreferences)
         {
             var userPreferenceResult = new List<UserPreferenceDataColumn>();
-            foreach (var userpreference in userPrefernces)
+            foreach (var userpreference in userPreferences)
             {
                 userPreferenceResult.Add(new UserPreferenceDataColumn
                 {
                     DataAtrributeId = userpreference.DataAtrributeId,
-                    Name = userpreference.Name,
-                    Description = userpreference.Description ?? string.Empty,
-                    Type = userpreference.Type,
-                    Key = userpreference.Key,
+                    Name = userpreference.Name ?? string.Empty,
+                    Type = userpreference.Type ?? string.Empty,
+                    Key = userpreference.Key ?? string.Empty,
                     State = userpreference.State ?? ((char)ReportPreferenceState.InActive).ToString(),
+                    ChartType = userpreference.ChartType ?? string.Empty,
+                    ThresholdType = userpreference.ThresholdType ?? string.Empty,
+                    ThresholdValue = userpreference.ThresholdValue
                 });
             }
             return userPreferenceResult;
         }
 
-        internal net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest MapCreateUserPrefences(UserPreferenceCreateRequest objUserPreferenceCreateRequest)
+        internal net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest MapCreateUserPreferences(UserPreferenceCreateRequest objUserPreferenceCreateRequest)
         {
             net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest obj
                    = new net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest
@@ -37,10 +40,11 @@ namespace net.atos.daf.ct2.reportservice.entity
                        AccountId = objUserPreferenceCreateRequest.AccountId
                    };
             obj.ReportId = objUserPreferenceCreateRequest.ReportId;
-            obj.Type = Convert.ToChar(objUserPreferenceCreateRequest.Type);
-            obj.ChartType = Convert.ToChar(objUserPreferenceCreateRequest.CharType);
             obj.CreatedAt = objUserPreferenceCreateRequest.CreatedAt;
             obj.ModifiedAt = objUserPreferenceCreateRequest.ModifiedAt;
+            //obj.ChartType = Convert.ToChar(objUserPreferenceCreateRequest.CharType);
+            //obj.ThresholdType = objUserPreferenceCreateRequest.ThresholdType;
+            //obj.ThresholdValue = objUserPreferenceCreateRequest.ThresholdValue;
 
             for (int i = 0; i < objUserPreferenceCreateRequest.AtributesShowNoShow.Count; i++)
             {
@@ -48,6 +52,10 @@ namespace net.atos.daf.ct2.reportservice.entity
                 {
                     DataAttributeId = objUserPreferenceCreateRequest.AtributesShowNoShow[i].DataAttributeId,
                     State = objUserPreferenceCreateRequest.AtributesShowNoShow[i].State == ((char)ReportPreferenceState.Active).ToString() ? Convert.ToChar(ReportPreferenceState.Active) : Convert.ToChar(ReportPreferenceState.InActive),
+                    Type = objUserPreferenceCreateRequest.AtributesShowNoShow[i].Type.ToCharArray().FirstOrDefault(),
+                    ChartType = objUserPreferenceCreateRequest.AtributesShowNoShow[i].CharType == "" ? new char() : (char)objUserPreferenceCreateRequest.AtributesShowNoShow[i].CharType[0],
+                    ThresholdType = objUserPreferenceCreateRequest.AtributesShowNoShow[i].ThresholdType,
+                    ThresholdValue = objUserPreferenceCreateRequest.AtributesShowNoShow[i].ThresholdValue,
                 });
             }
             return obj;
@@ -61,6 +69,34 @@ namespace net.atos.daf.ct2.reportservice.entity
                 vinListResult.Add(vin);
             }
             return vinListResult;
+        }
+
+        internal reports.entity.ReportUserPreferenceCreateRequest MapCreateReportUserPreferences(ReportUserPreferenceCreateRequest request)
+        {
+            reports.entity.ReportUserPreferenceCreateRequest objRequest
+                   = new reports.entity.ReportUserPreferenceCreateRequest
+                   {
+                       Attributes = new List<reports.entity.UserPreferenceAttribute>(),
+
+                       OrganizationId = request.OrganizationId,
+                       ReportId = request.ReportId,
+                       AccountId = request.AccountId
+                   };
+            objRequest.ReportId = request.ReportId;
+
+            for (int i = 0; i < request.Attributes.Count; i++)
+            {
+                objRequest.Attributes.Add(new reports.entity.UserPreferenceAttribute
+                {
+                    DataAttributeId = request.Attributes[i].DataAttributeId,
+                    State = request.Attributes[i].State == ((char)ReportPreferenceState.Active).ToString() ? Convert.ToChar(ReportPreferenceState.Active) : Convert.ToChar(ReportPreferenceState.InActive),
+                    Type = request.Attributes[i].Type.ToCharArray().FirstOrDefault(),
+                    ChartType = request.Attributes[i].ChartType == "" ? new char() : (char)request.Attributes[i].ChartType[0],
+                    ThresholdType = request.Attributes[i].ThresholdType,
+                    ThresholdValue = request.Attributes[i].ThresholdValue,
+                });
+            }
+            return objRequest;
         }
     }
 }

@@ -11,6 +11,17 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { MatTableExporterModule } from 'mat-table-exporter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core'
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import { DriverTimeManagementComponent } from './driver-time-management/driver-time-management.component';
+import { FleetUtilisationComponent } from './fleet-utilisation/fleet-utilisation.component';
+import { DriverTimeDetailComponent } from './driver-time-management/driver-time-detail/driver-time-detail.component';
+import { FullCalendarModule } from '@fullcalendar/angular'; 
+import dayGridPlugin from '@fullcalendar/daygrid';
+import 'chartjs-plugin-zoom';
+// import interactionPlugin from '@fullcalendar/interaction';
+
+FullCalendarModule.registerPlugins([ // register FullCalendar plugins
+  dayGridPlugin
+]);
 
 export const MY_DATE_FORMAT = {
   display: {
@@ -22,7 +33,7 @@ export const MY_DATE_FORMAT = {
 }
 
 @NgModule({
-  declarations: [ReportComponent, TripReportComponent, TripTracingComponent],
+  declarations: [ReportComponent, TripReportComponent, TripTracingComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent],
   imports: [
     CommonModule,
     ReportRoutingModule,
@@ -31,7 +42,8 @@ export const MY_DATE_FORMAT = {
     SharedModule,
     ChartsModule,
     NgxMaterialTimepickerModule,
-    MatTableExporterModule
+    MatTableExporterModule,
+    FullCalendarModule
   ],
   providers: [
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMAT },

@@ -12,6 +12,14 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reportschedulerservice.Services;
 using net.atos.daf.ct2.reportscheduler;
 using net.atos.daf.ct2.reportscheduler.repository;
+using net.atos.daf.ct2.visibility.repository;
+using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.audit.repository;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.notification;
+using net.atos.daf.ct2.notification.repository;
+using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.translation.repository;
 
 namespace net.atos.daf.ct2.reportschedulerservice
 {
@@ -38,13 +46,25 @@ namespace net.atos.daf.ct2.reportschedulerservice
             }));
 
             string connectionString = Configuration.GetConnectionString("ConnectionString");
-            //var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
+            string dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
             });
+            services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
+            {
+                return new PgSQLDataMartDataAccess(dataMartconnectionString);
+            });
             services.AddTransient<IReportSchedulerManager, ReportSchedulerManager>();
             services.AddTransient<IReportSchedulerRepository, ReportSchedulerRepository>();
+            services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+            services.AddTransient<IVisibilityManager, VisibilityManager>();
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+            services.AddTransient<IAuditTraillib, AuditTraillib>();
+            services.AddTransient<IEmailRepository, EmailRepository>();
+            services.AddTransient<IEmailNotificationManager, EmailNotificationManager>();
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
+            services.AddTransient<ITranslationManager, TranslationManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

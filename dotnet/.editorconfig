@@ -191,6 +191,10 @@ dotnet_naming_rule.constant_should_be_allcapitals.severity = error
 dotnet_naming_rule.constant_should_be_allcapitals.symbols = constant
 dotnet_naming_rule.constant_should_be_allcapitals.style = allcapitals
 
+dotnet_naming_rule.method_parameters_should_be_camel_case_mp.symbols = method_parameters
+dotnet_naming_rule.method_parameters_should_be_camel_case_mp.style = camel_case_mp
+dotnet_naming_rule.method_parameters_should_be_camel_case_mp.severity = warning
+
 # Symbol specifications
 
 dotnet_naming_symbols.interface.applicable_kinds = interface
@@ -201,8 +205,12 @@ dotnet_naming_symbols.method.applicable_kinds = method
 dotnet_naming_symbols.method.applicable_accessibilities = public
 dotnet_naming_symbols.method.required_modifiers = 
 
+# dotnet_naming_symbols.method_parameters.applicable_kinds = Parameter
+# dotnet_naming_symbols.method_parameters.applicable_accessibilities = public
+# dotnet_naming_symbols.method_parameters.required_modifiers = 
+
 dotnet_naming_symbols.private_or_internal_field.applicable_kinds = field
-dotnet_naming_symbols.private_or_internal_field.applicable_accessibilities = internal, private, private_protected
+dotnet_naming_symbols.private_or_internal_field.applicable_accessibilities = internal, private, private_protected, protected
 dotnet_naming_symbols.private_or_internal_field.required_modifiers = 
 
 dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum
@@ -238,3 +246,11 @@ dotnet_naming_style.allcapitals.required_prefix =
 dotnet_naming_style.allcapitals.required_suffix = 
 dotnet_naming_style.allcapitals.word_separator = _
 dotnet_naming_style.allcapitals.capitalization = all_upper
+
+dotnet_naming_style.camel_case_mp.required_prefix = 
+dotnet_naming_style.camel_case_mp.required_suffix = 
+dotnet_naming_style.camel_case_mp.word_separator = 
+dotnet_naming_style.camel_case_mp.capitalization = camel_case
+
+dotnet_diagnostic.IDE0055.severity = error
+dotnet_diagnostic.IDE0044.severity = error

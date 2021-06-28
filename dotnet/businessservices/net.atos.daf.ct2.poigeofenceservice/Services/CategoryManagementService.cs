@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.poigeofenservice
 {
     public class CategoryManagementService : CategoryService.CategoryServiceBase
     {
-        private ILog _logger;
+        private readonly ILog _logger;
         // private readonly Mapper _mapper;
         private readonly ICategoryManager _categoryManager;
         private readonly DeleteCategoryMapper _deleteCategoryMapper;
@@ -200,7 +200,8 @@ namespace net.atos.daf.ct2.poigeofenservice
             GetResponse response = new GetResponse();
             try
             {
-                var categoryListDetails = _categoryManager.GetCategoryDetails().Result;
+                int orgId = Convert.ToInt32(context.RequestHeaders.Get("orgid").Value);
+                var categoryListDetails = _categoryManager.GetCategoryDetails(orgId).Result;
 
                 foreach (var item in categoryListDetails)
                 {

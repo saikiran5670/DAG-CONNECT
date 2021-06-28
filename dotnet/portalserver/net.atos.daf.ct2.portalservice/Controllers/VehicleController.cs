@@ -21,12 +21,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
         private readonly Mapper _mapper;
 
-        private ILog _logger;
-        private string _fk_Constraint = "violates foreign key constraint";
-        private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+        private readonly ILog _logger;
+        private readonly string _fk_Constraint = "violates foreign key constraint";
+        private readonly string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly AuditHelper _auditHelper;
 
-        public VehicleController(VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+        public VehicleController(VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _vehicleClient = vehicleClient;
@@ -980,6 +980,63 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        [HttpPut]
+        [Route("updatevehicleconnection")]
+        public async Task<IActionResult> UpdateVehicleConnection(List<VehicleConnectionSettings> request)
+
+        {
+
+            try
+            {
+                _logger.Info("Connect_All method in vehicle API called.");
+
+                // Validation
+                if (request.Count <= 0)
+                {
+                    return StatusCode(400, "The vehicle settings data is required.");
+                }
+                var vehicleSettings = _mapper.ToUpdateVehicleConnection(request);
+
+                VehicleBusinessService.VehicleConnectResponse vehicleConnectResponse = _vehicleClient.UpdateVehicleConnection(vehicleSettings);
+                if (vehicleConnectResponse != null && vehicleConnectResponse.Code == VehicleBusinessService.Responcecode.Failed
+                     && vehicleConnectResponse.Message == "There is an error updating vehicle opt in status.")
+                {
+                    return StatusCode(500, "There is an error updating vehicle opt in status.");
+                }
+                else if (vehicleConnectResponse != null && vehicleConnectResponse.Code == VehicleBusinessService.Responcecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
+                "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                "Connect_All method in Vehicle controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
+
+                    return Ok(vehicleConnectResponse);
+                }
+                else
+                {
+                    return StatusCode(500, "vehicleResponse is null");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
+              "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+              "Connect_All  method in Vehicle controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
+                _logger.Error(null, ex);
+                // check for fk violation
+                if (ex.Message.Contains(_fk_Constraint))
+                {
+                    return StatusCode(500, "Internal Server Error.(01)");
+                }
+                // check for fk violation
+                if (ex.Message.Contains(_socketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
     }
 
 }

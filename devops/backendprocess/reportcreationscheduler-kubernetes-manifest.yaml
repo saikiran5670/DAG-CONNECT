@@ -1,0 +1,57 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: reportcreationscheduler
+  labels:
+    app.kubernetes.io/name: reportcreationscheduler
+    app.kubernetes.io/type: reportcreationscheduler
+spec:
+  schedule: "#{ReportCreationSchedulerCronJobFirstRunMin}# #{ReportCreationSchedulerCronJobFirstRun}# * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          automountServiceAccountToken: false
+          securityContext:
+            runAsUser: 10001
+            runAsGroup: 3000
+            fsGroup: 10001
+            runAsNonRoot: true
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - reportcreationscheduler
+                  - key: app.kubernetes.io/type
+                    operator: In
+                    values:
+                    - reportcreationscheduler
+                topologyKey: "kubernetes.io/hostname"
+          containers:
+          - name: reportcreationscheduler
+            image: #{acrurl}#/reportcreationscheduler
+            imagePullPolicy: "Always"
+            volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                - all
+            resources:
+              limits:
+                cpu: 100m
+                memory: 256Mi
+              requests:
+                cpu: 50m
+                memory: 128Mi
+          volumes:
+          - name: tmp
+            emptyDir: {}
+          restartPolicy: OnFailure

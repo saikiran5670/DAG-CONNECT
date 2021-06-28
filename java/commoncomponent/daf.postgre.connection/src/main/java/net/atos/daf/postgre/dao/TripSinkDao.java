@@ -29,7 +29,7 @@ public class TripSinkDao implements Serializable {
 				tripInsertQry = fillStatement(tripInsertQry, dataObject);
 				tripInsertQry.addBatch();
 				tripInsertQry.executeBatch();
-				logger.info("after executeBatch ");
+				
 			} else {
 				if (connection == null) {
 					logger.error(" Issue trip connection is null : " + connection);
@@ -251,7 +251,11 @@ public class TripSinkDao implements Serializable {
 		else
 			statement.setDouble(40, 0);
 
-		statement.setString(41, rec.getDriverId());
+		if(rec.getDriverId() != null)
+			statement.setString(41, rec.getDriverId());
+		else
+			statement.setString(41, DafConstants.UNKNOWN);
+		
 		statement.setString(42, rec.getDriver2Id());
 
 		if (rec.getTripCalGpsVehTime() != null)
@@ -468,7 +472,11 @@ public class TripSinkDao implements Serializable {
 		else
 			statement.setDouble(85, 0);
 
-		statement.setString(86, rec.getDriverId());
+		if(rec.getDriverId() != null)
+			statement.setString(86, rec.getDriverId());
+		else
+			statement.setString(86, DafConstants.UNKNOWN);
+		
 		statement.setString(87, rec.getDriver2Id());
 
 		if (rec.getTripCalGpsVehTime() != null)
