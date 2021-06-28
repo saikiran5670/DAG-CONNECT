@@ -139,7 +139,7 @@ spec:
       - backend:
           serviceName: portalservice
           servicePort: 80
-        path: /NotificationHub
+        path: /notificationservice
   tls:
   - hosts:
     - #{IngressURL}#
