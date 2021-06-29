@@ -71,7 +71,12 @@ namespace net.atos.daf.ct2.notificationservice.services
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.Error(null, ex);
+                await Task.FromResult(new AlertMessageData
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = ResponseCode.InternalServerError
+                });
             }
         }
     }
