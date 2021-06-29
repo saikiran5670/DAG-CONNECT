@@ -462,6 +462,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 var isSuccess = await _reportManager.CreateReportUserPreference(_mapper.MapCreateReportUserPreferences(request));
                 if (isSuccess)
                 {
+                    response.Message = String.Format(ReportConstants.USER_PREFERENCE_CREATE_SUCCESS_MSG, request.AccountId, request.ReportId);
                     response.Code = Responsecode.Success;
                 }
                 else
@@ -497,7 +498,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
                 var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
                 var roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
-
+                var res = JsonConvert.SerializeObject(roleBasedUserPreferences);
                 if (userPreferencesExists)
                 {
                     var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);

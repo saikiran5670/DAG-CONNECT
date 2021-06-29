@@ -55,7 +55,7 @@ export class VehicleManagementComponent implements OnInit {
   checkVehicleConnectionSetting(){
     localStorage.getItem("accountFeatures");
     this.accountOrganizationSetting = localStorage.getItem('accountFeatures');
-    let data = JSON.parse(this.accountOrganizationSetting)["menus"];
+    let data = JSON.parse(this.accountOrganizationSetting)["features"];
     console.log(data);
    data.forEach(element => {
       if(element.key == 'feat_vehiclemanagement_vehicleconnectionsetting')

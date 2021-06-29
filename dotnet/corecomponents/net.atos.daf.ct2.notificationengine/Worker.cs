@@ -26,20 +26,22 @@ namespace net.atos.daf.ct2.notificationengine
                             consumer.Commit(msg);
                             return msg;
                         }
-                        catch (ConsumeException)
+                        catch (ConsumeException ex)
                         {
                             consumer.Close();
+                            throw ex;
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
                             consumer.Close();
+                            throw ex;
                         }
                     }
                 }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                return null;
+                throw ex;
             }
         }
     }

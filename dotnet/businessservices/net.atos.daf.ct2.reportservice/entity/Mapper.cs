@@ -77,23 +77,22 @@ namespace net.atos.daf.ct2.reportservice.entity
                    = new reports.entity.ReportUserPreferenceCreateRequest
                    {
                        Attributes = new List<reports.entity.UserPreferenceAttribute>(),
-
                        OrganizationId = request.OrganizationId,
                        ReportId = request.ReportId,
-                       AccountId = request.AccountId
+                       AccountId = request.AccountId,
+                       ContextOrgId = request.ContextOrgId
                    };
-            objRequest.ReportId = request.ReportId;
 
-            for (int i = 0; i < request.Attributes.Count; i++)
+            foreach (var attribute in request.Attributes)
             {
                 objRequest.Attributes.Add(new reports.entity.UserPreferenceAttribute
                 {
-                    DataAttributeId = request.Attributes[i].DataAttributeId,
-                    State = request.Attributes[i].State == ((char)ReportPreferenceState.Active).ToString() ? Convert.ToChar(ReportPreferenceState.Active) : Convert.ToChar(ReportPreferenceState.InActive),
-                    Type = request.Attributes[i].Type.ToCharArray().FirstOrDefault(),
-                    ChartType = request.Attributes[i].ChartType == "" ? new char() : (char)request.Attributes[i].ChartType[0],
-                    ThresholdType = request.Attributes[i].ThresholdType,
-                    ThresholdValue = request.Attributes[i].ThresholdValue,
+                    DataAttributeId = attribute.DataAttributeId,
+                    State = (ReportUserPreferenceState)(char)attribute.State,
+                    Type = (ReportPreferenceType)(char)attribute.Type,
+                    ChartType = attribute.ChartType > 0 ? (ReportPreferenceChartType)(char)attribute.ChartType : new ReportPreferenceChartType?(),
+                    ThresholdType = attribute.ThresholdType > 0 ? (ReportPreferenceThresholdType?)(char)attribute.ThresholdType : new ReportPreferenceThresholdType?(),
+                    ThresholdValue = attribute.ThresholdValue,
                 });
             }
             return objRequest;
@@ -113,19 +112,22 @@ namespace net.atos.daf.ct2.reportservice.entity
             {
                 foreach (var item in flatObjects.Where(x => parentIds.Contains(x.DataAttributeId)))
                 {
-                    var preference = new ReportUserPreference
+                    if (item.ReportAttributeType == ReportAttributeType.Simple ||
+                        item.ReportAttributeType == ReportAttributeType.Complex)
                     {
-                        DataAttributeId = item.DataAttributeId,
-                        Name = item.Name ?? string.Empty,
-                        DataAttributeType = item.DataAttributeType ?? string.Empty,
-                        Key = item.Key ?? string.Empty,
-                        State = item.State ?? ((char)ReportPreferenceState.InActive).ToString(),
-                        ChartType = item.ChartType ?? string.Empty,
-                        ThresholdType = item.ThresholdType ?? string.Empty,
-                        ThresholdValue = item.ThresholdValue
-                    };
-                    preference.SubReportUserPreferences.AddRange(FillRecursive(flatObjects, item.SubDataAttributes));
-                    recursiveObjects.Add(preference);
+                        var preference = new ReportUserPreference
+                        {
+                            DataAttributeId = item.DataAttributeId,
+                            Name = item.Name ?? string.Empty,
+                            Key = item.Key ?? string.Empty,
+                            State = item.State ?? ((char)ReportPreferenceState.InActive).ToString(),
+                            ChartType = item.ChartType ?? string.Empty,
+                            ThresholdType = item.ThresholdType ?? string.Empty,
+                            ThresholdValue = item.ThresholdValue
+                        };
+                        preference.SubReportUserPreferences.AddRange(FillRecursive(flatObjects, item.SubDataAttributes));
+                        recursiveObjects.Add(preference);
+                    }
                 }
             }
             return recursiveObjects;

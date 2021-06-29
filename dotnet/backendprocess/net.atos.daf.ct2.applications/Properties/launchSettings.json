@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Docker": {
-      "commandName": "Docker"
+      "commandName": "Docker",
+      "commandLineArgs": "ReportCreationScheduler"
     },
     "net.atos.daf.ct2.applications": {
       "commandName": "Project",

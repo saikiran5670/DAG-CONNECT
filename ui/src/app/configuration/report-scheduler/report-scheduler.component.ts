@@ -9,6 +9,7 @@ import { VehicleService } from 'src/app/services/vehicle.service';
 import { ActiveInactiveDailogComponent } from 'src/app/shared/active-inactive-dailog/active-inactive-dailog.component';
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-report-scheduler',
@@ -18,7 +19,7 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 
 export class ReportSchedulerComponent implements OnInit {
 
-  displayedColumns: string[] = ['reportType','vehicleGroupName','frequency','recipient','driver','lastRun','nextRun','state','action'];
+  displayedColumns: string[] = ['reportName','vehicleGroupName','frequency','scheduledReportRecipient','scheduledReportDriverRef','lastScheduleRunDate','nextScheduleRunDate','status','action'];
   grpTitleVisible : boolean = false;
   errorMsgVisible: boolean = false;
   displayMessage: any;
@@ -128,76 +129,111 @@ export class ReportSchedulerComponent implements OnInit {
   }
 
    loadScheduledReports(){    
-    let obj: any = {
+    // let obj: any = {
       
-    } 
-    let data = [
-      {
-        reportType : "Fuel Report",
-        vehicleGroupName : "Vehicle Group 1",
-        frequency : "Monthly",
-        recipient : "abc@xyz.com",
-        driver : "Driver name 1",
-        lastRun : "19/10/2020",
-        nextRun : "19/11/2020",
-        state : "A",
-        createdAt : new Date().getTime(),
-        reportTypeId : 1
-      },
-      {
-        reportType : "Distance Report",
-        vehicleGroupName : "Vehicle Group 1",
-        frequency : "Weekly",
-        recipient : "abc@xyz.com",
-        driver : "Driver name 2",
-        lastRun : "19/10/2020",
-        nextRun : "19/11/2020",
-        state : "I",
-        createdAt : new Date().getTime(),
-        reportTypeId : 2
-      },
-      {
-        reportType : "Milage Report",
-        vehicleGroupName : "Vehicle Group 2",
-        frequency : "Daily",
-        recipient : "pqr@xyz.com",
-        driver : "Driver name 1",
-        lastRun : "19/10/2020",
-        nextRun : "19/11/2020",
-        state : "A",
-        reportTypeId : 3
-      },
-      {
-        reportType : "Fuel Report",
-        vehicleGroupName : "Vehicle Group 2",
-        frequency : "Monthly",
-        recipient : "mno@xyz.com",
-        driver : "Driver name 2",
-        lastRun : "19/10/2020",
-        nextRun : "19/11/2020",
-        state : "A",
-        reportTypeId : 1
-      },
-      {
-        reportType : "Distance Report",
-        vehicleGroupName : "Vehicle Group 1",
-        frequency : "Quarterly",
-        recipient : "abc@abc.com",
-        driver : "Driver name 1",
-        lastRun : "19/10/2020",
-        nextRun : "19/11/2020",
-        state : "I",
-        reportTypeId : 2
-      }
-    ]
-       
-    // this.reportSchedulerService.getReportSchedulerData().subscribe((data) => {
-       this.schedulerData =data;  
-       this.updateDatasource(data);  
-    // }, (error) => {
-    // })   
-   this.hideloader();     
+    // } 
+    // let data = [
+    //   {
+    //     reportType : "Fuel Report",
+    //     vehicleGroupName : "Vehicle Group 1",
+    //     frequency : "Monthly",
+    //     recipient : "abc@xyz.com",
+    //     driver : "Driver name 1",
+    //     lastRun : "19/10/2020",
+    //     nextRun : "19/11/2020",
+    //     state : "A",
+    //     createdAt : new Date().getTime(),
+    //     reportTypeId : 1
+    //   },
+    //   {
+    //     reportType : "Distance Report",
+    //     vehicleGroupName : "Vehicle Group 1",
+    //     frequency : "Weekly",
+    //     recipient : "abc@xyz.com",
+    //     driver : "Driver name 2",
+    //     lastRun : "19/10/2020",
+    //     nextRun : "19/11/2020",
+    //     state : "I",
+    //     createdAt : new Date().getTime(),
+    //     reportTypeId : 2
+    //   },
+    //   {
+    //     reportType : "Milage Report",
+    //     vehicleGroupName : "Vehicle Group 2",
+    //     frequency : "Daily",
+    //     recipient : "pqr@xyz.com",
+    //     driver : "Driver name 1",
+    //     lastRun : "19/10/2020",
+    //     nextRun : "19/11/2020",
+    //     state : "A",
+    //     reportTypeId : 3
+    //   },
+    //   {
+    //     reportType : "Fuel Report",
+    //     vehicleGroupName : "Vehicle Group 2",
+    //     frequency : "Monthly",
+    //     recipient : "mno@xyz.com",
+    //     driver : "Driver name 2",
+    //     lastRun : "19/10/2020",
+    //     nextRun : "19/11/2020",
+    //     state : "A",
+    //     reportTypeId : 1
+    //   },
+    //   {
+    //     reportType : "Distance Report",
+    //     vehicleGroupName : "Vehicle Group 1",
+    //     frequency : "Quarterly",
+    //     recipient : "abc@abc.com",
+    //     driver : "Driver name 1",
+    //     lastRun : "19/10/2020",
+    //     nextRun : "19/11/2020",
+    //     state : "I",
+    //     reportTypeId : 2
+    //   }
+    // ]
+     this.showLoadingIndicator = true;
+     this.reportSchedulerService.getReportSchedulerData(this.accountId, this.accountOrganizationId).subscribe((data) => {
+       this.schedulerData =this.makeLists(data["reportSchedulerRequest"]);  
+       this.updateDatasource(this.schedulerData);  
+
+       this.hideloader();     
+    }, (error) => {
+       this.hideloader();     
+    })   
+   
  }
+
+ makeLists(initdata: any){
+  let accountId =  localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+  initdata.forEach((element, index) => {
+    let recipientTxt: any = '';
+    let driverTxt: any = '';
+    element.scheduledReportRecipient.forEach(resp => {
+      recipientTxt += resp.email + '\n';
+    });
+    if(element.scheduledReportDriverRef.length == 1){
+      driverTxt += element.scheduledReportDriverRef[0].driverName;
+    }
+    else{
+      element.scheduledReportDriverRef.forEach(resp => {
+        driverTxt += resp.driverName + ', ';
+      });
+    }
+    // if(recipientTxt != ''){
+    //   recipientTxt = recipientTxt.slice(0, -2);
+    // }
+    // if(driverTxt != ''){
+    //   driverTxt = driverTxt.slice(0, -2);
+    // }
+
+    initdata[index].recipientList = recipientTxt; 
+    initdata[index].driverList = driverTxt;
+    initdata[index].lastScheduleRunDate = Util.convertUtcToDateFormat(element.lastScheduleRunDate, "MM/DD/YYYY");
+    initdata[index].nextScheduleRunDate = Util.convertUtcToDateFormat(element.nextScheduleRunDate, "MM/DD/YYYY");
+  });
+  
+  return initdata;
+}
 
   updateDatasource(data){
     this.initData = data;
@@ -245,20 +281,20 @@ export class ReportSchedulerComponent implements OnInit {
   onDeleteReportScheduler(item: any) {
     const options = {
       title: this.translationData.lblDeleteReportScheduler || "Delete Report Scheduler",
-      message: this.translationData.lblAreousureyouwanttodeleteReportScheduler || "Are you sure you want to delete report scheduler?",
+      message: this.translationData.lblAreousureyouwanttodeleteReportScheduler || "Are you sure you want to delete '$' report scheduler?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
-    let name = item.name;
+    let name = item.reportName;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
-      // this.reportSchedulerService.deleteReportScheduler(item.id).subscribe((res) => {
-      //     this.successMsgBlink(this.getDeletMsg(name));
-      //     this.loadScheduledReports();
-      //   }, error => {
+      this.reportSchedulerService.deleteScheduledReport(item.id).subscribe((res) => {
+          this.successMsgBlink(this.getDeletMsg(name));
+          this.loadScheduledReports();
+        }, error => {
       
-      //   });
+        });
     }
    });
   }
@@ -304,9 +340,9 @@ export class ReportSchedulerComponent implements OnInit {
       title: this.translationData.lblReportScheduler || "Report Scheduler",
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",   
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.state == 'A') ? this.translationData.lblDeactivate || " Suspend" : this.translationData.lblActivate || " Activate",
-      status: rowData.state == 'A' ? 'Suspend' : 'Activate' ,
-      name: rowData.name
+      confirmText: (rowData.status == 'A') ? this.translationData.lblDeactivate || " Suspend" : this.translationData.lblActivate || " Activate",
+      status: rowData.status == 'A' ? 'Suspend' : 'Activate' ,
+      name: rowData.reportName
     };
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
@@ -315,24 +351,15 @@ export class ReportSchedulerComponent implements OnInit {
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
       if(res == true){ 
-      //  if(rowData.state == 'A'){
-      //     this.reportSchedulerService.suspendAlert(rowData.id).subscribe((data) => {
-      //       this.loadScheduledReports();
-            
-      //     }, error => {
-      //       this.loadScheduledReports();
-      //     });
-      //  }
-      //  else{
-      //   this.alertService.activateAlert(rowData.id).subscribe((data) => {
-      //     this.loadScheduledReports();
-          
-      //   }, error => {
-      //     this.loadScheduledReports();
-      //   });
-
-      //  }
-        
+        let obj = {
+          "reportId": rowData.id,
+          "status": rowData.status
+        }
+        this.reportSchedulerService.enableDisableScheduledReport(obj).subscribe((data) => {
+          this.loadScheduledReports();
+        }, error => {
+          this.loadScheduledReports();
+        });
       }else {
         this.loadScheduledReports();
       }
@@ -427,7 +454,5 @@ export class ReportSchedulerComponent implements OnInit {
       this.updateDatasource(reportSchedulerData);
     }
   }
-
-
 
 }
