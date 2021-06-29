@@ -152,7 +152,8 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   onCreate(){
     this.createButtonClicked = true;
     this.duplicateEmailMsg = false;
-    let selectedId = this.selectionIDs();
+   // let selectedId = this.selectionIDs();
+    let selectedId = this.selectionForDataAttribute.selected.map(item => item.id)
     let createFeatureParams = {
       id: 0,
       name: this.featureFormGroup.controls.dataAttributeSetName.value,
@@ -192,7 +193,8 @@ export class CreateEditViewFeaturesComponent implements OnInit {
       });
     }
     else if(this.actionType == 'edit'){
-      let selectedId = this.selectionIDs();
+      //let selectedId = this.selectionIDs();
+      let selectedId =  this.selectionForDataAttribute.selected.map(item => item.id)
       let updatedFeatureParams = {
         id: this.selectedElementData.id,
         name: this.featureFormGroup.controls.dataAttributeSetName.value,
