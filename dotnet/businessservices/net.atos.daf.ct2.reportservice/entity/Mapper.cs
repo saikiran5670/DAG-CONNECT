@@ -119,7 +119,6 @@ namespace net.atos.daf.ct2.reportservice.entity
                         {
                             DataAttributeId = item.DataAttributeId,
                             Name = item.Name ?? string.Empty,
-                            DataAttributeType = item.DataAttributeType ?? string.Empty,
                             Key = item.Key ?? string.Empty,
                             State = item.State ?? ((char)ReportPreferenceState.InActive).ToString(),
                             ChartType = item.ChartType ?? string.Empty,

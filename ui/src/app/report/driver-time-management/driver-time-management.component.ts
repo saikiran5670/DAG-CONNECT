@@ -774,8 +774,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
             
           // ]
           //let updateData = tripData.driverActivities;
-          this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
           this.driverDetails = tripData.driverActivities;
+          this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
           this.setGeneralDriverDetailValue();
           this.setSingleDriverData();
         }
