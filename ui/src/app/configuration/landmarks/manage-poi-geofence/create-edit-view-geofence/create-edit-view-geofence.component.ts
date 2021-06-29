@@ -586,7 +586,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         //thisRef.uiElem.removeBubble(bubble); //- remove bubble
         var coord = map.screenToGeo(evt.currentPointer.viewportX,
                 evt.currentPointer.viewportY);
-        if(!thisRef.isPolyCreated && pointsArray.length <= 12){ //-- Min-3 & Max-5
+        if(!thisRef.isPolyCreated && pointsArray.length <= 21){ //-- Min-3 & Max-5 //changing to max to 8
           nodeNo++;
           let x = Math.abs(coord.lat.toFixed(4));
           let y = Math.abs(coord.lng.toFixed(4));
