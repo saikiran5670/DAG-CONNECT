@@ -114,6 +114,7 @@ public mapElement: ElementRef;
     regNo: true
   };
   userPOIList: any = [];
+  displayPOIList: any = [];
   internalSelection: boolean = false;
   prefMapData: any = [
     // {
@@ -535,6 +536,8 @@ public mapElement: ElementRef;
 
   onSearch(){
     this.tripTraceArray = [];
+    this.selectedPOI.clear();
+    this.displayPOIList = [];
     //this.trackType = 'snail';
     //this.internalSelection = true;
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
@@ -825,7 +828,7 @@ public mapElement: ElementRef;
       });
       this.showMap = true;
       let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList);
     }
   }
 
@@ -854,13 +857,13 @@ public mapElement: ElementRef;
     if(event.checked){ //-- add new marker
       this.tripTraceArray.push(row);
       let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList);
     }
     else{ //-- remove existing marker
       let arr = this.tripTraceArray.filter(item => item.id != row.id);
       this.tripTraceArray = arr;
       let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList);
     }
   }
 
@@ -1018,25 +1021,6 @@ public mapElement: ElementRef;
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any){
-    if(type == "start"){
-      console.log("--date type--",date)
-      console.log("--date type--",timeObj)
-      // this.globalSearchFilterData["startDateStamp"] = date;
-      // this.globalSearchFilterData.testDate = date;
-      // this.globalSearchFilterData["startTimeStamp"] = timeObj;
-      // this.setGlobalSearchData(this.globalSearchFilterData)
-      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
-      // console.log("---time after function called--",timeObj)
-    }else if(type == "end") {
-      // this.globalSearchFilterData["endDateStamp"] = date;
-      // this.globalSearchFilterData["endTimeStamp"] = timeObj;
-      // this.setGlobalSearchData(this.globalSearchFilterData)
-      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
-    }
-
-    // console.log("-----this.globalSearchFilterData updated--",this.globalSearchFilterData);
-    // this.tripForm.get('setDate').setValue(this.globalSearchFilterData.startTimeStamp);
-    // this.tripForm.controls.setDate.value = this.globalSearchFilterData
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
     if(this.prefTimeFormat == 12){
@@ -1052,8 +1036,6 @@ public mapElement: ElementRef;
     }
 
     date.setSeconds(type == 'start' ? '00' : '59');
-
-    // console.log("---time after function called--",date.getTime())
     return date;
   }
 
@@ -1139,11 +1121,20 @@ public mapElement: ElementRef;
   onDisplayChange(event: any){
     this.displayRouteView = event.value;
     let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView);
+    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList);
   }
 
   changeUserPOISelection(event: any, poiData: any){
-    //console.log(this.selectedPOI.selected);
+    this.displayPOIList = [];
+    this.selectedPOI.selected.forEach(item => {
+      if(item.poiList && item.poiList.length > 0){
+        item.poiList.forEach(element => {
+          this.displayPOIList.push(element);
+        });
+      }
+    });
+    let _ui = this.reportMapService.getUI();
+    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList);
   }
 
   onMapModeChange(event: any){
@@ -1153,7 +1144,7 @@ public mapElement: ElementRef;
   onMapRepresentationChange(event: any){
     this.trackType = event.value;
     let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView);
+    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList);
   }
 
   backToFleetUtilReport(){
@@ -1210,11 +1201,11 @@ SearchListItems(item){
   this.removeMapObjects();
   console.log("---this.map from SearchList()--",getHereMap)
 
-getHereMap.setCenter({lat:item.position[0], lng:item.position[1]});
-getHereMap.setZoom(14);
-let getSelectedLatitude = item.position[0];//this.poiFormGroup.get("lattitude").value;
-let getSelectedLongitude = item.position[1];//this.poiFormGroup.get("longitude").value;
-this.drawMarkerOnMap(getSelectedLatitude,getSelectedLongitude);
+  getHereMap.setCenter({lat:item.position[0], lng:item.position[1]});
+  getHereMap.setZoom(14);
+  let getSelectedLatitude = item.position[0];//this.poiFormGroup.get("lattitude").value;
+  let getSelectedLongitude = item.position[1];//this.poiFormGroup.get("longitude").value;
+  this.drawMarkerOnMap(getSelectedLatitude,getSelectedLongitude);
 }
 
 }
