@@ -19,6 +19,7 @@ import 'chartjs-plugin-zoom';
 import { FleetFuelReportComponent } from './fleet-fuel-report/fleet-fuel-report.component';
 import { FleetFuelReportVehicleComponent } from './fleet-fuel-report/fleet-fuel-report-vehicle/fleet-fuel-report-vehicle.component';
 import { FleetFuelReportDriverComponent } from './fleet-fuel-report/fleet-fuel-report-driver/fleet-fuel-report-driver.component';
+import { Ng2CompleterModule } from 'ng2-completer';
 
 // import interactionPlugin from '@fullcalendar/interaction';
 
@@ -46,7 +47,8 @@ export const MY_DATE_FORMAT = {
     ChartsModule,
     NgxMaterialTimepickerModule,
     MatTableExporterModule,
-    FullCalendarModule
+    FullCalendarModule,
+    Ng2CompleterModule
   ],
   providers: [
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMAT },
