@@ -9,6 +9,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int Repsch_id { get; set; }
         public int Repsch_organization_id { get; set; }
         public int Repsch_report_id { get; set; }
+        public string Rep_reportname { get; set; }
         public string Repsch_frequency_type { get; set; }
         public string Repsch_status { get; set; }
         public string Repsch_type { get; set; }
@@ -27,6 +28,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public long Repsch_report_dispatch_time { get; set; }
         public int Driveref_report_schedule_id { get; set; }
         public int Driveref_driver_id { get; set; }
+        public string Dr_driverName { get; set; }
         public string Driveref_state { get; set; }
         public long Driveref_created_at { get; set; }
         public int Driveref_created_by { get; set; }
