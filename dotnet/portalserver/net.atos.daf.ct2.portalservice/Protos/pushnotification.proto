@@ -27,4 +27,14 @@ message AlertMessageData {
 	int64 MessageTimestamp=14;
 	int64 CreatedAt=15;
 	int64 ModifiedAt=16;
+	ResponseCode Code=17;
+    string message = 18;
+}
+enum ResponseCode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
 }
