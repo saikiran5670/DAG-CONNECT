@@ -19,7 +19,8 @@
       "alertRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/alert",
       "corridorRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/corridor",
       "authZuoraSSOServiceURL": "#{AUTHENTICATIONSERVICEURL}#/account/sso",
-      "reportRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/report"
+      "reportRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/report",
+      "reportSchedulerRESTServiceURL" : "#{AUTHENTICATIONSERVICEURL}#/reportscheduler"
     },
     "hereMap":{
       "app_id":"LRJH9LmTMNbwteXRz03L",
