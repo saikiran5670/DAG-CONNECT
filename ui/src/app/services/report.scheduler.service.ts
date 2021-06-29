@@ -50,6 +50,17 @@ export class ReportSchedulerService {
       )
       .pipe(catchError(this.handleError));
   }
+
+  deleteScheduledReport(id: any): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
+    };
+    return this.httpClient
+      .delete<void>(`${this.reportSchedulerServiceURL}/delete?ReportId=${id}`, headers)
+      .pipe(catchError(this.handleError));
+  }
   
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);

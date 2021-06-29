@@ -281,20 +281,20 @@ export class ReportSchedulerComponent implements OnInit {
   onDeleteReportScheduler(item: any) {
     const options = {
       title: this.translationData.lblDeleteReportScheduler || "Delete Report Scheduler",
-      message: this.translationData.lblAreousureyouwanttodeleteReportScheduler || "Are you sure you want to delete report scheduler?",
+      message: this.translationData.lblAreousureyouwanttodeleteReportScheduler || "Are you sure you want to delete '$' report scheduler?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
-    let name = item.name;
+    let name = item.reportName;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
-      // this.reportSchedulerService.deleteReportScheduler(item.id).subscribe((res) => {
-      //     this.successMsgBlink(this.getDeletMsg(name));
-      //     this.loadScheduledReports();
-      //   }, error => {
+      this.reportSchedulerService.deleteScheduledReport(item.id).subscribe((res) => {
+          this.successMsgBlink(this.getDeletMsg(name));
+          this.loadScheduledReports();
+        }, error => {
       
-      //   });
+        });
     }
    });
   }
