@@ -12,10 +12,12 @@ import { ReportMapService } from '../report-map.service';
 import { filter } from 'rxjs/operators';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
+import { ConfigService } from '@ngx-config/core';
 import 'jspdf-autotable';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { LandmarkCategoryService } from '../../services/landmarkCategory.service'; 
 //var jsPDF = require('jspdf');
+import { HereService } from '../../services/here.service';
 import * as moment from 'moment-timezone';
 import { Util } from '../../shared/util';
 import { Router, NavigationExtras } from '@angular/router';
@@ -23,6 +25,9 @@ import { OrganizationService } from '../../services/organization.service';
 
 //Add for Search Functionality With Zoom
 import { POIService } from 'src/app/services/poi.service';
+import {
+  CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData
+} from 'ng2-completer';
 
 
 declare var H: any;
@@ -35,12 +40,11 @@ declare var H: any;
 
 export class TripReportComponent implements OnInit, OnDestroy {
 
-
+searchStr: string = "";
+suggestionData:  any;
 //Add Search Functionality with Zoom
 
 selectedMarker: any;
-searchData: any = [];
-activeSearchList: any = false;
 private platform: any;
 private search: any;
 map: any;
@@ -48,6 +52,7 @@ private ui: any;
 lat: any = '37.7397';
 lng: any = '-121.4252';
 query: any;
+searchMarker: any = {};
 // getHereMap : any;
 @ViewChild("map")
 public mapElement: ElementRef;
@@ -183,17 +188,16 @@ public mapElement: ElementRef;
     }
   ];
  _state: any ;
+ map_key: any = '';
   
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private POIService: POIService, private router: Router, private organizationService: OrganizationService) {
-    
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private POIService: POIService, private router: Router, private organizationService: OrganizationService, private completerService: CompleterService, private _configService: ConfigService, private hereService: HereService) {
+    this.map_key =  _configService.getSettings("hereMap").api_key;
     //Add for Search Fucntionality with Zoom
     this.query = "starbucks";
     this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
-
-
-
+    this.configureAutoSuggest();
 
     this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
@@ -828,7 +832,7 @@ public mapElement: ElementRef;
       });
       this.showMap = true;
       let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker);
     }
   }
 
@@ -857,13 +861,13 @@ public mapElement: ElementRef;
     if(event.checked){ //-- add new marker
       this.tripTraceArray.push(row);
       let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker);
     }
     else{ //-- remove existing marker
       let arr = this.tripTraceArray.filter(item => item.id != row.id);
       this.tripTraceArray = arr;
       let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker);
     }
   }
 
@@ -1121,7 +1125,7 @@ public mapElement: ElementRef;
   onDisplayChange(event: any){
     this.displayRouteView = event.value;
     let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList);
+    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker);
   }
 
   changeUserPOISelection(event: any, poiData: any){
@@ -1134,7 +1138,7 @@ public mapElement: ElementRef;
       }
     });
     let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList);
+    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker);
   }
 
   onMapModeChange(event: any){
@@ -1144,7 +1148,7 @@ public mapElement: ElementRef;
   onMapRepresentationChange(event: any){
     this.trackType = event.value;
     let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList);
+    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker);
   }
 
   backToFleetUtilReport(){
@@ -1156,56 +1160,39 @@ public mapElement: ElementRef;
     this.router.navigate(['report/fleetutilisation'], navigationExtras);
   }
 
-
-
-
-
-
-
-
-//Add Search functionality with Zoom
-
-
-searchValue(event: any) {
-  this.activeSearchList = true;
-  if(event.target.value == "") {
-    this.activeSearchList = false;
+  dataService: any;
+  private configureAutoSuggest(){
+    let searchParam = this.searchStr != null ? this.searchStr : '';
+    let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?'+'apiKey='+this.map_key +'&limit=5'+'&q='+searchParam ;
+  // let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
+    this.suggestionData = this.completerService.remote(
+    URL,'title','title');
+    this.suggestionData.dataField("items");
+    this.dataService = this.suggestionData;
   }
-  ////console.log("----search value called--",event.target.value);
-  let inputData = event.target.value;
-        // "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-    // var a = https://places.ls.hereapi.com/places/v1/autosuggest?at=40.74917,-73.98529&q=chrysler&apiKey="BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
 
-    this.POIService.getAutoSuggestMap(inputData).subscribe((res: any) => {
-   let newData = res.results;
-        this.searchData = newData;
-     });
-     
-}
+  onSearchFocus(){
+    this.searchStr = null;
+  }
 
-drawMarkerOnMap(getSelectedLatitude,getSelectedLongitude){
-  let getHereMap = this.reportMapService.getHereMap();
-  // let getSelectedLatitude = this.selectedElementData.latitude;//this.poiFormGroup.get("lattitude").value;
-  // let getSelectedLongitude = this.selectedElementData.longitude;//this.poiFormGroup.get("longitude").value;
-  this.selectedMarker = new H.map.Marker({ lat: getSelectedLatitude, lng: getSelectedLongitude });
-  getHereMap.addObject(this.selectedMarker);
-}
-
-removeMapObjects(){
-  let getHereMap = this.reportMapService.getHereMap();
-  getHereMap.removeObjects(getHereMap.getObjects());
-}
-
-SearchListItems(item){
-  let getHereMap = this.reportMapService.getHereMap();
-  this.removeMapObjects();
-  console.log("---this.map from SearchList()--",getHereMap)
-
-  getHereMap.setCenter({lat:item.position[0], lng:item.position[1]});
-  getHereMap.setZoom(14);
-  let getSelectedLatitude = item.position[0];//this.poiFormGroup.get("lattitude").value;
-  let getSelectedLongitude = item.position[1];//this.poiFormGroup.get("longitude").value;
-  this.drawMarkerOnMap(getSelectedLatitude,getSelectedLongitude);
+onSearchSelected(selectedAddress: CompleterItem){
+  if(selectedAddress){
+    let id = selectedAddress["originalObject"]["id"];
+    let qParam = 'apiKey='+this.map_key + '&id='+ id;
+    this.hereService.lookUpSuggestion(qParam).subscribe((data: any) => {
+      let startAddressPositionLat = data.position.lat;
+      let startAddressPositionLong = data.position.lng;
+      this.searchMarker = {};
+      if(data && data.position && data.position.lat && data.position.lng){
+        this.searchMarker = {
+          lat: data.position.lat,
+          lng: data.position.lng
+        }
+        let _ui = this.reportMapService.getUI();
+        this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker);
+      }
+    });
+  }
 }
 
 }

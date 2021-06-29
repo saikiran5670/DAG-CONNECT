@@ -58,7 +58,7 @@ message ReportTypeRequest
     int32 Id =  1;
     string ReportName =  2;
     string Key = 3;
-    bool IsDriver =  4;
+    string IsDriver =  4;
 }
 message DriverDetailRequest
 {

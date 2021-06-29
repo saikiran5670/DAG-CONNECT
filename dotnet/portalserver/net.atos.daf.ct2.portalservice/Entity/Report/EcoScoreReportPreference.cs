@@ -42,8 +42,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
     public enum ReportPreferenceChartType
     {
         Bar = 'B',
-        Donut_or_Pie = 'D',
-        Line = 'L'
+        Donut = 'D',
+        Line = 'L',
+        Pie = 'P'
     }
 
     public enum ReportPreferenceThresholdType

@@ -1,6 +1,7 @@
 import { Injectable,Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { HereService } from '../services/here.service';
 import { Util } from '../shared/util';
+import { ConfigService } from '@ngx-config/core';
 
 declare var H: any;
 
@@ -27,14 +28,16 @@ export class ReportMapService {
   corridorWidth : number = 100;
   corridorWidthKm : number = 0.1;
   group = new H.map.Group();
+  map_key : string = "";
+  defaultLayers : any;
 
-  constructor(private hereSerive : HereService) {
+  constructor(private hereSerive : HereService, private _configService: ConfigService) {
+    this.map_key =  _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
-   }
+  }
 
-   defaultLayers : any;
   initMap(mapElement: any){
     this.defaultLayers = this.platform.createDefaultLayers();
     this.hereMap = new H.Map(mapElement.nativeElement,
@@ -154,8 +157,19 @@ export class ReportMapService {
     });
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any){
+  showSearchMarker(markerData: any){
+    if(markerData && markerData.lat && markerData.lng){
+      let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
+      this.hereMap.setCenter({lat: markerData.lat, lng: markerData.lng}, 'default');
+      this.group.addObject(selectedMarker);
+    }
+  }
+
+  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any){
     this.clearRoutesFromMap();
+    if(_searchMarker){
+      this.showSearchMarker(_searchMarker);
+    }
     if(_displayPOIList && _displayPOIList.length > 0){ 
       this.showCategoryPOI(_displayPOIList, _ui); //-- show category POi
     }
@@ -232,7 +246,7 @@ export class ReportMapService {
       }
       this.setMarkerCluster(_selectedRoutes, _ui, this.hereMap); // cluster route marker
     }else{
-      if(_displayPOIList.length > 0){
+      if(_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng)){
         this.hereMap.addObject(this.group);
       }
     }
