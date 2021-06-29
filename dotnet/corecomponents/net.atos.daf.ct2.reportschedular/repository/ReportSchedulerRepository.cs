@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             try
             {
                 var parameterType = new DynamicParameters();
-                var queryStatement = @"SELECT distinct r.id as Id,r.name as ReportName
+                var queryStatement = @"SELECT distinct r.id as Id,r.name as ReportName, r.key as Key
 					                      FROM master.report r						                     
 						                     INNER JOIN master.Feature f ON f.id = r.feature_id AND f.state = 'A' 
 						                     INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_id = f.id
@@ -496,7 +496,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 
                 string queryAlert = @"SELECT repsch.id as repsch_id, 
                                             repsch.organization_id as repsch_organization_id, 
-                                            repsch.report_id as repsch_report_id, 
+                                            repsch.report_id as repsch_report_id,
+											rep.name as rep_reportname,
                                             repsch.frequency_type as repsch_frequency_type, 
                                             repsch.status as repsch_status, 
                                             repsch.type as repsch_type,                                            
@@ -513,7 +514,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                             repsch.mail_description as repsch_mail_description,
                                             repsch.report_dispatch_time as repsch_report_dispatch_time,
                                             driveref.report_schedule_id as driveref_report_schedule_id, 
-                                            driveref.driver_id as driveref_driver_id, 
+                                            driveref.driver_id as driveref_driver_id,
+											dr.first_name ||' '||dr.last_name as dr_driverName,
                                             driveref.state as driveref_state, 
                                             driveref.created_at as driveref_created_at, 
                                             driveref.created_by as driveref_created_by, 
@@ -562,7 +564,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 					                    LEFT JOIN master.vehicle veh
 					                    on vgrpref.ref_id=veh.id 
                                         LEFT JOIN master.vehicle vehs
-					                    on grp.ref_id=vehs.id and grp.group_type='S'";
+					                    on grp.ref_id=vehs.id and grp.group_type='S'
+										LEFT JOIN master.driver dr
+										on driveref.driver_id = dr.id and dr.state='A'
+										INNER JOIN master.report rep
+										on rep.id=repsch.report_id ";
 
                 queryAlert = queryAlert + " where repsch.organization_id = @organization_id and repsch.status<>'D'";
                 parameterAlert.Add("@organization_id", organizationid);

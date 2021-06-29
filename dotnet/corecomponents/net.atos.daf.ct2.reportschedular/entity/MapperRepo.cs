@@ -79,6 +79,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         {
             ReportSchedulerMap reportScheduler = new ReportSchedulerMap();
             reportScheduler.Id = request.Repsch_id;
+            reportScheduler.ReportName = request.Rep_reportname;
             reportScheduler.OrganizationId = request.Repsch_organization_id;
             reportScheduler.ReportId = request.Repsch_report_id;
             reportScheduler.FrequencyType = request.Repsch_frequency_type;
@@ -108,6 +109,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
             ScheduledReportDriverRef scheduledReportDriverRef = new ScheduledReportDriverRef();
             scheduledReportDriverRef.ScheduleReportId = request.Driveref_report_schedule_id;
             scheduledReportDriverRef.DriverId = request.Driveref_driver_id;
+            scheduledReportDriverRef.DriverName = request.Dr_driverName;
             scheduledReportDriverRef.State = request.Driveref_state;
             scheduledReportDriverRef.CreatedAt = request.Driveref_created_at;
             scheduledReportDriverRef.CreatedBy = request.Driveref_created_by;

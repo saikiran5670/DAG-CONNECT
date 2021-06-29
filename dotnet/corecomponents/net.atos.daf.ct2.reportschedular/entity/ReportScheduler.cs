@@ -9,6 +9,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int Id { get; set; }
         public int OrganizationId { get; set; }
         public int ReportId { get; set; }
+        public string ReportName { get; set; }
         public string FrequencyType { get; set; }
         public string Status { get; set; }
         public string Type { get; set; }
@@ -54,6 +55,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
     {
         public int ScheduleReportId { get; set; }
         public int DriverId { get; set; }
+        public string DriverName { get; set; }
         public string State { get; set; }
         public long CreatedAt { get; set; }
         public int CreatedBy { get; set; }
