@@ -555,9 +555,7 @@ namespace net.atos.daf.ct2.reports.repository
                                             SET ecoscore_profile_id = @TargetProfileId
                                             WHERE organization_id = @OrgId
                                             AND account_id = @AccountId
-                                            AND report_id = @ReportId
-                                            AND state ='A'
-                                            AND type= 'D'  RETURNING id";
+                                            AND report_id = @ReportId RETURNING id";
 
                 int id = await _dataAccess.ExecuteScalarAsync<int>(updateTargetProfile, parameters);
                 txn.Commit();

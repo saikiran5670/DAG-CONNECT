@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             objreporttype.Id = reportType.Id;
             objreporttype.ReportName = string.IsNullOrEmpty(reportType.ReportName) ? string.Empty : reportType.ReportName;
             objreporttype.Key = string.IsNullOrEmpty(reportType.Key) ? string.Empty : reportType.Key;
-            objreporttype.IsDriver = reportType.ReportName == ReportSchedulerConstant.DRIVE_TIME_MANAGEMENT || reportType.ReportName == ReportSchedulerConstant.ECO_SCORE;
+            objreporttype.IsDriver = reportType.IsDriver;
             return objreporttype;
         }
 

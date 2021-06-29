@@ -35,21 +35,32 @@ export class ReportSchedulerService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.reportSchedulerServiceURL}/get?accountId=${accountId}&organizationid=${orgId}`, headers)
+      .get<any[]>(`${this.reportSchedulerServiceURL}/get?accountId=${accountId}&orgnizationid=${orgId}`, headers)
       .pipe(catchError(this.handleError));
   }
 
-  // createTripReportPreference(data: any): Observable<any[]> {
-  //   let headerObj = this.generateHeader();
-  //   const headers = {
-  //     headers: new HttpHeaders({ headerObj }),
-  //   };
-  //   return this.httpClient
-  //     .post<any[]>(
-  //       `${this.reportServiceUrl}/createuserpreference`, data, headers
-  //     )
-  //     .pipe(catchError(this.handleError));
-  // }
+  enableDisableScheduledReport(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportSchedulerServiceURL}/EnableDisable`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteScheduledReport(id: any): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
+    };
+    return this.httpClient
+      .delete<void>(`${this.reportSchedulerServiceURL}/delete?ReportId=${id}`, headers)
+      .pipe(catchError(this.handleError));
+  }
   
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);

@@ -64,12 +64,12 @@
        <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
         <div *ngIf='initData.length > 0'>
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort >
-             <ng-container matColumnDef="reportType">      
+             <ng-container matColumnDef="reportName">      
               <mat-header-cell *matHeaderCellDef> {{ translationData.lblReportType || 'Report Type'}}</mat-header-cell>     
               <mat-cell *matCellDef="let row" style="word-break: 'break-word'">
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>               
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-                <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.reportType}}</span> 
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.reportName}}</span> 
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="vehicleGroupName">
@@ -93,35 +93,40 @@
                 {{ row.frequency }}
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="recipient">
+            <ng-container matColumnDef="scheduledReportRecipient">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRecipient || 'Recipient' }}</mat-header-cell>
-              <mat-cell *matCellDef="let row">         
+              <!-- <mat-cell *matCellDef="let row">         
                 {{ row.recipient }}            
+              </mat-cell> -->
+              <mat-cell *matCellDef="let row" matTooltip="{{ row.recipientList }}">
+                <span *ngIf="row.scheduledReportRecipient.length != 1" class="text-truncate">{{ row.scheduledReportRecipient.length > 0 ? row.recipientList : '&nbsp; &nbsp; -' }}</span>
+                <span *ngIf="row.scheduledReportRecipient.length == 1">{{ row.recipientList }} </span>
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="driver">
+            <ng-container matColumnDef="scheduledReportDriverRef">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriver || 'Driver' }}</mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.driver }} </mat-cell>
+              <!-- <mat-cell *matCellDef="let row">{{ row.driver }} </mat-cell> -->
+              <mat-cell *matCellDef="let row" matTooltip="{{ row.driverList }}"><span class="text-truncate">{{ row.scheduledReportDriverRef.length > 0 ? row.driverList : '&nbsp; &nbsp; -' }}</span></mat-cell>
             </ng-container>
-            <ng-container matColumnDef="lastRun">
+            <ng-container matColumnDef="lastScheduleRunDate">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblLastRun || 'Last  Run' }}</mat-header-cell>
                <mat-cell *matCellDef="let row">
-                  <span>{{row.lastRun}}</span>               
+                  <span>{{row.lastScheduleRunDate}}</span>               
                 </mat-cell>  
             </ng-container>
-            <ng-container matColumnDef="nextRun">
+            <ng-container matColumnDef="nextScheduleRunDate">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblNextRun || 'Next  Run' }}</mat-header-cell>
                <mat-cell *matCellDef="let row">
-                  <span>{{row.nextRun}}</span>               
+                  <span>{{row.nextScheduleRunDate}}</span>               
                 </mat-cell>  
             </ng-container>
-            <ng-container matColumnDef="state">
+            <ng-container matColumnDef="status">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
               <mat-cell *matCellDef="let row">
-              <button class='actionBtn' mat-flat-button (click)="onChangeReportSchedulerStatus(row)" matTooltip="{{ row.state == 'A' ? (translationData.lblClicktodeactivate || 'Click to Suspended') : translationData.lblClicktoactivate || 'Click to Activate' }}">
-                <mat-slide-toggle color="primary" [checked]='row.state == "A" ? true : false' >
+              <button class='actionBtn' mat-flat-button (click)="onChangeReportSchedulerStatus(row)" matTooltip="{{ row.status == 'A' ? (translationData.lblClicktodeactivate || 'Click to Suspended') : translationData.lblClicktoactivate || 'Click to Activate' }}">
+                <mat-slide-toggle color="primary" [checked]='row.status == "A" ? true : false' >
               </mat-slide-toggle>&nbsp;
-              <span>{{ row.state == "A" ? (translationData.lblActive || 'Active') : translationData.lblSuspended || 'Suspended' }}</span>
+              <span>{{ row.status == "A" ? (translationData.lblActive || 'Active') : translationData.lblSuspended || 'Suspended' }}</span>
               </button>
             </mat-cell>            
             </ng-container>
