@@ -8,16 +8,41 @@ namespace net.atos.daf.ct2.reports.entity
         public int AccountId { get; set; }
         public int ReportId { get; set; }
         public int OrganizationId { get; set; }
-
+        public int ContextOrgId { get; set; }
         public List<UserPreferenceAttribute> Attributes { get; set; }
     }
     public class UserPreferenceAttribute
     {
         public int DataAttributeId { get; set; }
-        public char State { get; set; }
-        public char Type { get; set; }
-        public char? ChartType { get; set; }
-        public string ThresholdType { get; set; }
+        public ReportUserPreferenceState State { get; set; }
+        public ReportPreferenceType Type { get; set; }
+        public ReportPreferenceChartType? ChartType { get; set; }
+        public ReportPreferenceThresholdType? ThresholdType { get; set; }
         public long ThresholdValue { get; set; }
+    }
+
+    public enum ReportUserPreferenceState
+    {
+        Active = 'A',
+        Inactive = 'I'
+    }
+
+    public enum ReportPreferenceType
+    {
+        Data = 'D',
+        Chart = 'C'
+    }
+
+    public enum ReportPreferenceChartType
+    {
+        Bar = 'B',
+        Donut_or_Pie = 'D',
+        Line = 'L'
+    }
+
+    public enum ReportPreferenceThresholdType
+    {
+        Lower = 'L',
+        Upper = 'U'
     }
 }
