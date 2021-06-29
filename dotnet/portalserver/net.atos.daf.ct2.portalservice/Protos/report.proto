@@ -104,13 +104,12 @@ message GetReportUserPreferenceResponse {
 message ReportUserPreference{
     int32 DataAttributeId=1;
     string Name=2;
-    string DataAttributeType=3;
-    string Key=4;
-    string State=5;
-    string ChartType=6;
-    string ThresholdType=7;
-    int64 ThresholdValue=8;
-    repeated ReportUserPreference SubReportUserPreferences=9;
+    string Key=3;
+    string State=4;
+    string ChartType=5;
+    string ThresholdType=6;
+    int64 ThresholdValue=7;
+    repeated ReportUserPreference SubReportUserPreferences=8;
 }
 
 message ReportUserPreferenceCreateRequest{
