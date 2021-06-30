@@ -1,0 +1,19 @@
+{
+   "CompanyUpdatedEvent": {
+      "Company": {
+         "type": "",
+         "ID": "12346",         
+         "Name": "DAF Trucks",
+         "Address":
+            {
+               "type": "Office",
+               "Street": "Aegonplien",
+               "StreetNumber": "50",
+               "PostalCode": "2591AB",
+               "City": "Denhag",
+               "CountryCode": "NL"
+            },         
+      "ReferenceDateTime": "2019-02-02T12:34:56"
+      }
+   }
+}

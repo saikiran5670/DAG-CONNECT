@@ -1,0 +1,20 @@
+{
+   "KeyHandOverEvent": { 
+   "VIN": "XLRASH4300G147270", 
+   "TCUID": "181815121617450502004",     
+   "EndCustomer": { 
+        "ID":  "",               
+        "Name": "NAPA TRUCKS spol s r.o - DEMO", 
+        "Address": { 
+             "type": "Home", 
+             "Street": "Parklaan", 
+             "StreetNumber": "12", 
+             "PostalCode": "1234AB", 
+             "City": "Lutjebroek", 
+             "CountryCode": "NL" 
+            }         
+      }, 
+      "TCUActivation": "Yes", 
+      "ReferenceDateTime": "2017-04-27T18:33:52.1294236+02:00" 
+   } 
+} 
