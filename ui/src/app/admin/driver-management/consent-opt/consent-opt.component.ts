@@ -19,13 +19,14 @@ export class ConsentOptComponent implements OnInit {
   accountOrganizationId: any = 0;
   accountId: any = 0;
   orgInheritMode: any;
-
+  
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     translationData: any,
     driverData: any,
     actionType: any,
     consentType: any,
-    organizationData: any
+    organizationData: any,
+    radioSelected: any
   }, private mdDialogRef: MatDialogRef<ConsentOptComponent>, private driverService: DriverService) {
     this.organizationName = localStorage.getItem('organizationName');
     this.totalDrivers = data.driverData.length;
@@ -38,7 +39,7 @@ export class ConsentOptComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
   }
-
+  
   getConsentMsg(optValue: any){
     let optVal: any = '';
     switch(optValue){
@@ -236,5 +237,20 @@ export class ConsentOptComponent implements OnInit {
       this.getConsentMsg(event.value);
     }
   }
-  
+
+  onUpdateStatusOk(event){
+    let objData: any = {
+      id: this.data.driverData.id,
+      organizationId: this.data.driverData.organizationId,
+      driverIdExt: this.data.driverData.driverIdExt,
+      email: this.data.driverData.email,
+      firstName: this.data.driverData.firstName,
+      lastName: this.data.driverData.lastName,
+      optIn: this.data.consentType,
+      modifiedBy: this.accountId //0
+    }
+    console.log(objData);    
+    this.closePopup = false;
+    this.mdDialogRef.close(event);
+  }  
 }
