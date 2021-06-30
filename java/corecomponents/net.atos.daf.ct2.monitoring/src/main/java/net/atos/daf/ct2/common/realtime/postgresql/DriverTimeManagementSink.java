@@ -17,6 +17,7 @@ import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Monitor;
 import net.atos.daf.postgre.bo.DriverActivityPojo;
+import net.atos.daf.postgre.bo.TwoMinuteRulePojo;
 import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
 import net.atos.daf.postgre.dao.LiveFleetDriverActivityDao;
 
@@ -29,7 +30,6 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 
 	Logger log = LoggerFactory.getLogger(MonitorDataProcess.class);
 
-
 	// private PreparedStatement statement;
 	Connection connection = null;
 
@@ -37,6 +37,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 
 	LiveFleetDriverActivityDao driverDAO;
 
+	
 	DriverActivityPojo DriverActivity;
 
 	private List<Monitor> queue;
@@ -49,10 +50,10 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
 		driverDAO = new LiveFleetDriverActivityDao();
-		System.out.println("read Query--->"+net.atos.daf.postgre.util.DafConstants.DRIVER_ACTIVITY_READ);
-		System.out.println("update Query--->"+net.atos.daf.postgre.util.DafConstants.DRIVER_ACTIVITY_UPDATE);
+		System.out.println("read Query--->" + net.atos.daf.postgre.util.DafConstants.DRIVER_ACTIVITY_READ);
+		System.out.println("update Query--->" + net.atos.daf.postgre.util.DafConstants.DRIVER_ACTIVITY_UPDATE);
 		try {
-			
+
 			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
 					envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
 					Integer.parseInt(envParams.get(DafConstants.DATAMART_POSTGRE_PORT)),
@@ -73,16 +74,16 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 	public void invoke(KafkaRecord<Monitor> monitor) throws Exception {
 
 		Monitor row = monitor.getValue();
-		Integer value=new Integer(7);
+		Integer value = new Integer(7);
 		if (value.equals(row.getMessageType())) {
-		//if (row.getMessageType().equals(7)) {
+			// if (row.getMessageType().equals(7)) {
 			queue = new ArrayList<Monitor>();
 			synchronizedCopy = new ArrayList<Monitor>();
 
 			DriverActivity = new DriverActivityPojo();
 
 			try {
-				
+
 				queue.add(row);
 
 				if (queue.size() >= 1) {
@@ -96,29 +97,52 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 
 							try {
 								endTime = (TimeFormatter.getInstance().convertUTCToEpochMilli(
-										monitorData.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT ));
+										monitorData.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 							} catch (ParseException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 
 							// -----**** DRIVER 1
-							
-							Long driverStartTime = driverDAO.driver_read(monitorData.getDocument().getDriverID(),
+
+							/*
+							 * Long driverStartTime =
+							 * driverDAO.driver_read(monitorData.getDocument().getDriverID(),
+							 * monitorData.getDocument().getDriver1WorkingState().toString());
+							 */
+
+							TwoMinuteRulePojo driverDetails = driverDAO.driver_read(
+									monitorData.getDocument().getDriverID(),
 									monitorData.getDocument().getDriver1WorkingState().toString());
-							
-							if (driverStartTime != null) {
-								
-								Long duration = endTime - driverStartTime;
-								
-								driverDAO.driver_update(monitorData.getDocument().getDriverID(), endTime, duration);
+
+							Long driver1StartTime = driverDetails.getStart_time();
+							String OldCode1 = driverDetails.getCode();
+
+							if (driver1StartTime != null) {
+
+								Long duration1 = endTime - driver1StartTime;
+
+								// Integer workingValue=new Integer(7);
+								if (OldCode1.equalsIgnoreCase("2") && driverDetails.getDuration() <=120) {
+
+									String FormattedCode = monitorData.getDocument().getDriver1WorkingState()
+											.toString();
+
+									driverDAO.driver_update(monitorData.getDocument().getDriverID(), endTime, duration1,
+											FormattedCode);
+
+								} else {
+
+									driverDAO.driver_update(monitorData.getDocument().getDriverID(), endTime, duration1,
+											monitorData.getDocument().getDriver1WorkingState().toString());
+								}
 								DriverActivityPojo DriverDetailsD1 = DriverActivityCalculation(monitorData,
 										DriverActivity, true);
 
 								driverDAO.driver_insert(DriverDetailsD1);
 
 							} else {
-								
+
 								DriverActivityPojo DriverDetailsD1 = DriverActivityCalculation(monitorData,
 										DriverActivity, true);
 
@@ -126,17 +150,26 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 							}
 							/// --------------------------------
 							// --------** DRIVER 2
-
 							
-							driverStartTime = driverDAO.driver_read(monitorData.getDocument().getDriver2ID(),
+							driverDetails = driverDAO.driver_read(monitorData.getDocument().getDriver2ID(),
 									monitorData.getDocument().getDriver2WorkingState().toString());
-
 							
-							if (driverStartTime != null) {
+							Long driver2StartTime = driverDetails.getStart_time();
+							String Old2Code = driverDetails.getCode();
 
+							if (driver2StartTime != null) {
 								
-								Long duration = endTime - driverStartTime;
-								driverDAO.driver_update(monitorData.getDocument().getDriver2ID(), endTime, duration);
+
+								Long duration2 = endTime - driver2StartTime;
+								if (Old2Code.equalsIgnoreCase("2") && driverDetails.getDuration() <=120) {
+									
+									String FormattedCode = monitorData.getDocument().getDriver2WorkingState()
+											.toString();
+									driverDAO.driver_update(monitorData.getDocument().getDriver2ID(), endTime, duration2,FormattedCode);
+									
+								} else {
+									driverDAO.driver_update(monitorData.getDocument().getDriver2ID(), endTime, duration2,monitorData.getDocument().getDriver2WorkingState().toString());
+								}
 
 								DriverActivityPojo DriverDetailsD2 = DriverActivityCalculation(monitorData,
 										DriverActivity, false);
@@ -144,12 +177,38 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 								driverDAO.driver_insert(DriverDetailsD2);
 
 							} else {
-								
+
 								DriverActivityPojo DriverDetailsD2 = DriverActivityCalculation(monitorData,
 										DriverActivity, false);
 
 								driverDAO.driver_insert(DriverDetailsD2);
 							}
+							
+							
+
+							/*
+							 * driverStartTime =
+							 * driverDAO.driver_read(monitorData.getDocument().getDriver2ID(),
+							 * monitorData.getDocument().getDriver2WorkingState().toString());
+							 * 
+							 * if (driverStartTime != null) {
+							 * 
+							 * Long duration = endTime - driverStartTime;
+							 * driverDAO.driver_update(monitorData.getDocument().getDriver2ID(), endTime,
+							 * duration);
+							 * 
+							 * DriverActivityPojo DriverDetailsD2 = DriverActivityCalculation(monitorData,
+							 * DriverActivity, false);
+							 * 
+							 * driverDAO.driver_insert(DriverDetailsD2);
+							 * 
+							 * } else {
+							 * 
+							 * DriverActivityPojo DriverDetailsD2 = DriverActivityCalculation(monitorData,
+							 * DriverActivity, false);
+							 * 
+							 * driverDAO.driver_insert(DriverDetailsD2); }
+							 */
 
 							// -----------------
 						}
@@ -166,32 +225,28 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 	public DriverActivityPojo DriverActivityCalculation(Monitor row, DriverActivityPojo DriverActivity,
 			boolean driverIdentification) {
 
-		//TODO Temporary fix
-		//DriverActivity.setTripId(null);
-		DriverActivity.setTripId(row.getDocument().getTripID());
-		
+		DriverActivity.setTripId(null);
 		DriverActivity.setVid(row.getVid());
-		//DriverActivity.setVin(null);
-		//DriverActivity.setTripStartTimeStamp(Types);
-		//DriverActivity.setTripEndTimeStamp(null);
+		// DriverActivity.setVin(null);
+		// DriverActivity.setTripStartTimeStamp(Types);
+		// DriverActivity.setTripEndTimeStamp(null);
 		try {
 			DriverActivity.setActivityDate(TimeFormatter.getInstance()
-					.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT ));
+					.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} // activity_date
 
-		
 		if (driverIdentification == true) {
 			// Driver 1
-			
+
 			DriverActivity.setDriverID(row.getDocument().getDriverID());
 			DriverActivity.setCode(row.getDocument().getDriver1WorkingState().toString());
 			DriverActivity.setIsDriver1(true);
 		} else {
 			// Driver 2
-			
+
 			DriverActivity.setDriverID(row.getDocument().getDriver2ID());
 			DriverActivity.setCode(row.getDocument().getDriver2WorkingState().toString());
 			DriverActivity.setIsDriver1(false);
@@ -225,7 +280,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 											// creates.
 		DriverActivity.setLastProcessedMessageTimestamp(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
 		DriverActivity.setVin(row.getVin());
-		System.out.println("in driver activity sink class---"+row.getVin());
+		System.out.println("in driver activity sink class---" + row.getVin());
 		return DriverActivity;
 
 	}

@@ -1,0 +1,23 @@
+{
+  "isActive": true,
+  "createdBy": 1,
+  "modifiedBy": 0,
+  "createdOn": "2020-12-01T11:01:13.866Z",
+  "modifiedOn": "2020-12-01T11:01:13.866Z",
+  "userID": 0,
+  "userName": "string",
+  "password": "string",
+  "emailId": "string",
+  "firstName": "string",
+  "lastName": "string",
+  "dob": "2020-12-01T11:01:13.866Z",
+  "salutation": "string",
+  "lastPasswordChangedDate": "2020-12-01T11:01:13.866Z",
+  "lastLoginDate": "2020-12-01T11:01:13.866Z",
+  "loginAttempt": 0,
+  "isLocked": 0,
+  "parentUserId": 0,
+  "userTypeid": 0,
+  "updatedby": 0,
+  "createBy": 1
+}
