@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -122,6 +123,26 @@ namespace net.atos.daf.ct2.account.report
                                                                                 .GetColumnName(ReportSchedulerData.ReportId, ReportSchedulerData.Code)
                             );
             return await Task.FromResult<string>(html);
+        }
+
+        public async Task<string> GenerateTemplate(byte[] logoBytes)
+        {
+            if (!IsAllParameterSet) throw new Exception(TripReportConstants.ALL_PARAM_MSG);
+            var fromDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(FromDate, TripReportConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
+            var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TripReportConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
+
+            StringBuilder html = new StringBuilder();
+            html.AppendFormat(ReportTemplate.REPORT_TEMPLATE
+                              //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
+                              , logoBytes != null ? Convert.ToBase64String(logoBytes)
+                                                : Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), "assets", "DAFLogo.png")))
+                              , ReportSchedulerData.ReportName
+                              , fromDate.ToString(DateTimeFormat)
+                              , toDate.ToString(DateTimeFormat)
+                              , VIN, VehicleName, RegistrationNo
+                              , await GenerateTable()
+                );
+            return html.ToString();
         }
     }
 }

@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             try
             {
                 var parameterType = new DynamicParameters();
-                var queryStatement = @"SELECT distinct r.id as Id,r.name as ReportName, r.key as Key, r.support_driver_sch_rep as IsDriver
+                var queryStatement = @"SELECT distinct r.id as Id,r.name as ReportName, trim(r.key) as Key, r.support_driver_sch_rep as IsDriver
 					                      FROM master.report r						                     
 						                     INNER JOIN master.Feature f ON f.id = r.feature_id AND f.state = 'A' 
 						                     INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_id = f.id

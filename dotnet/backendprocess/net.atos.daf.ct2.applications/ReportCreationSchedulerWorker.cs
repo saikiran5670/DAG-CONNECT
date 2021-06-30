@@ -45,7 +45,6 @@ namespace net.atos.daf.ct2.applications
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 var isSuccess = await _reportCreationSchedulerManager.GenerateReport();
                 await AddAuditLog(isSuccess ? "Process ran successfully" : "Proccess ran failed, For more details, please check audit logs.", isSuccess ? AuditTrailEnum.Event_status.SUCCESS : AuditTrailEnum.Event_status.FAILED);
-                //while (true) { }
             }
             catch (Exception ex)
             {
