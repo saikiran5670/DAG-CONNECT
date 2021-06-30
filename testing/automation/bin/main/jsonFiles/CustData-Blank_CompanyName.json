@@ -1,0 +1,19 @@
+{
+   "CompanyUpdatedEvent": {
+      "Company": {
+         "type": "FleetManager",
+         "ID": "CN686665",         
+         "Name": "",
+         "Address":
+            {
+               "type": "Office",
+               "Street": "Aegonplien",
+               "StreetNumber": "50",
+               "PostalCode": "2591AB",
+               "City": "Denhag",
+               "CountryCode": "NL"
+            },         
+      "ReferenceDateTime": "2019-02-02T12:34:56"
+      }
+   }
+}

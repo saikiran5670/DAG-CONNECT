@@ -1,0 +1,20 @@
+{
+"KeyHandOverEvent": { 
+"VIN": "XLR0998HGFFT74593", 
+ "TCUID": "181815121617450502024",     
+"EndCustomer": { 
+  "ID":  "DAF686665",               
+ "Name": "DAF_UP_Trucks", 
+"Address": { 
+             "type": "Home", 
+             "Street": "Aegonplien", 
+             "StreetNumber": "50", 
+             "PostalCode": "2591AB", 
+             "City": "Denhag", 
+             "CountryCode": "NL" 
+            }         
+      }, 
+      "TCUActivation": "Yes", 
+      "ReferenceDateTime": "2019-02-02T12:34:56" 
+   } 
+} 

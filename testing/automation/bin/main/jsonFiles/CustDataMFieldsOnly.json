@@ -1,0 +1,10 @@
+{
+   "CompanyUpdatedEvent": {
+      "Company": {
+         "type": null,
+         "ID": "MF12345",         
+         "Name": null,   
+		 "ReferenceDateTime": "2019-02-02T12:34:56"		 
+      }
+   }
+}

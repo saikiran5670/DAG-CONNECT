@@ -212,7 +212,7 @@ export class RelationshipManagementComponent implements OnInit {
   deleteRelationship(row: any){
     const options = {
       title: this.translationData.lblDelete || 'Delete',
-      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Are you sure you want to delete '$' relationship?",
+      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Are you sure you want to end '$' relationship?",
       cancelText: this.translationData.lblCancel || 'Cancel',
       confirmText: this.translationData.lblDelete || 'Delete'
     };
@@ -234,7 +234,7 @@ export class RelationshipManagementComponent implements OnInit {
 
   getDeletMsg(relationshipName: any){
     if(this.translationData.lblRelationshipwassuccessfullydeleted)
-      return this.translationData.lblRelationshipDelete.replace('$', relationshipName);
+      return this.translationData.lblRelationshipwassuccessfullydeleted.replace('$', relationshipName);
     else
       return ("Relationship '$' was successfully deleted").replace('$', relationshipName);
   }

@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
             {
                 StringBuilder sb = new StringBuilder();
                 //Table start.
-                sb.Append("<table align='center'>");
+                sb.Append("<table style='width: 100%; border-collapse: collapse;'");
 
                 //Adding HeaderRow.
                 sb.Append("<tr>");
