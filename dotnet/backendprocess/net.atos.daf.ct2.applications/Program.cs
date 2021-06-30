@@ -83,6 +83,7 @@ namespace net.atos.daf.ct2.applications
                             services.AddSingleton<IReportEmailSchedulerManager, ReportEmailSchedulerManager>();
                             services.AddTransient<IEmailNotificationManager, EmailNotificationManager>();
                             services.AddTransient<IEmailRepository, EmailRepository>();
+                            services.AddHostedService<ReportEmailSchedulerWorker>();
 
                         }
                     }

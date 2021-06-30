@@ -1,5 +1,6 @@
-<div class="bgtrans tabs" fxLayout="row">
-    <span style="font-size: 15px;margin-top: 10px;">{{translationData.lblViewDetailsBy || 'View details by:'}}</span>
+<div>
+<span style="font-size: 15px;margin-top: 10px;">{{translationData.lblViewDetailsBy || 'View details by:'}}</span>
+<div class="bgtrans tabs" >
      <mat-tab-group [ngClass]="[ tabVisibilityStatus ? '' : 'hideTabHeader']" [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
       <mat-tab label="{{ translationData.lblVehicle || 'Vehicle' }}">
         <app-fleet-fuel-report-vehicle *ngIf="selectedIndex == 0" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData'></app-fleet-fuel-report-vehicle>
@@ -9,3 +10,4 @@
       </mat-tab>
     </mat-tab-group>
   </div>
+</div>
