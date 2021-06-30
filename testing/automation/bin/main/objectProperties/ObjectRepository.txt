@@ -1,97 +1,193 @@
+/*****Login***************************************************************************************************
+
+USERNAME = XPATH~//input[@formcontrolname="username"]
+PASSWORD = XPATH~//input[@formcontrolname="password"]
+LOGIN_BTN = XPATH~//button[@type="submit"]
+WELLCOME = XPATH~//div[@class="cdk-overlay-pane"]
+SELECT_ROLE = XPATH~//mat-label[text()="Select Role"] /following-sibling :: mat-form-field
+SELECT_ORG = XPATH~//mat-label[text()="Select Organisation"] /following-sibling :: mat-form-field
+CONFIRM_BTN = XPATH~//button[@type="submit"]/span[text() = 'Confirm']
+USER_NMAE = XPATH~//span[@class="mat-tooltip-trigger userName text-truncate"]
+USER_ROLE = XPATH~//*[@id="sideNavConteiner"]/div[1]/div[1]/div[2]/span[2]/span
+USER_ORG = XPATH~//*[@id="sideNavConteiner"]/div[1]/div[1]/div[2]/span[3]/span
+LOGOUT_BTN = XPATH~//mat-icon[@mattooltip="Logout"]
+LOGIN_ERROR = XPATH~//div[@class="invalidMsgContainer"]//span
+LOGIN_USER_ERROR = XPATH~//form/div/div[1]/div[2]/mat-form-field/div/div[3]/div//mat-error[@role="alert"]
+LOGIN_PASS_ERROR = XPATH~//form/div/div[2]/div[2]/mat-form-field/div/div[3]/div//mat-error[@role="alert"]
+DAF_TandC  XPATH~//mat-dialog-container//span[text()='DAF Connect - Terms & Conditions']
+DAF_TandC_AGREED  XPATH~//mat-dialog-container//button/span[text()="I Agree"]
+DAF_TandC_DISAGREE  XPATH~//mat-dialog-container//button/span[text()="Disagree"]
+
 /*****MenuOptions**********************************************************************************************
+
 ADMIN_MENU 		 = XPATH~//*[@menuname="admin"]/a/span[text()='Admin']
-SSD_MENU 		 = XPATH~//*[@href='/admin/servicesubscriberdetails']
-USER_GRP_MENU 	 = XPATH~//*[@href='/admin/usergroupmanagement']
-USER_MENU 		 = XPATH~//*[@href='/admin/usermanagement']
+SSD_MENU 		 = XPATH~//*[@href="#/admin/organisationdetails"]
+USER_GRP_MENU 	 = XPATH~//*[@href="#/admin/accountgroupmanagement"]
+USER_MENU 		 = XPATH~//*[@href="#/admin/accountmanagement"]
+ROLE_MENU 		 = XPATH~//*[@href="#/admin/accountrolemanagement"]
 DASHBOARD_MENU   = XPATH~//div[@class="dashboardMenu ng-star-inserted"]/ul/li
 CONFIG_MENU 	 = XPATH~//*[@menuname="configuration"]/a/span[text()='Configuration']
-VEHICLE_MANAG 	 = XPATH~//*[@href='/configuration/vehiclemanagement']
+VEHICLE_MANAG 	 = XPATH~//*[@href="#/configuration/vehiclemanagement"]
+VEHICLE_GROUP 	= XPATH~//*[@href="#/admin/vehiclegroupmanagement"]
 VEHICLE_MANAG_LBL = XPATH~//*[text()='Vehicle Management ']
+VEHICLE_G_MANAG_LBL = XPATH~//*[text()='Vehicle Group Management ']
+ORG_DETAILS = XPATH~//*[text()='Orgnisation Details']
+ORG_RLP_MGT =  XPATH~//span[text()='Organisation Relationship Management']
+FTR_MGT = XPATH~//span[text()='Feature Management']
+ALERTS_MENU = XPATH~//span[text()='Alerts']
+
+/*****Common ELEMENTS******************************************************************************************
+
+ERROR_MESSAGE = XPATH~//mat-error[@role="alert"]
+BACK_BUTTON = XPATH~//span[@class="backBtnCss"]
+PAGINATION         = XPATH~//*[@class="mat-paginator-range-label"]
+NEXT_PAGINATION    = XPATH~//*[@aria-label="Next page"]
+PREVIOUS_PAGINATION    = XPATH~//*[@aria-label="Previous page"]
+POPUP_PAGINATION         = XPATH~//*[@role="dialog"]//*[@class="mat-paginator-range-label"]
+POPUP_NEXT_PAGINATION    = XPATH~//*[@role="dialog"]//*[@aria-label="Next page"]
+POPUP_PREVIOUS_PAGINATION    = XPATH~//*[@role="dialog"]//*[@aria-label="Previous page"]
+POPUP_GRP_ROW_COUNT_VAL = XPATH~//*[@role="dialog"]//*[@role="combobox"]/div/div/span/span
+POPUP_CLOSE     = XPATH~//*[@role="dialog"]//mat-icon[text()='close']
+TABLE              = XPATH~//mat-table
+POPUP_SEARCH =XPATH~//*[@role="dialog"]//input[@data-placeholder="Search"]
+POPUP_ROW	 = XPATH~//*[@role="dialog"]//mat-row[@role="row"]
+POPUP_COL	 = XPATH~//*[@role="dialog"]//*[@role="columnheader"]
+POPUP_COL_FIRST	 = XPATH~//*[@role="dialog"]//*[@role="columnheader"][
+POPUP_COL_SEC	 = XPATH~]
+PART_COL_F_N_FIRST	 = XPATH~//*[@role="columnheader"][
+PART_COL_F_N_SEC	 = XPATH~]
+TABLE_ROW_PART_ONE = XPATH~//mat-table/mat-row[
+ITEM_PP_ARROW = XPATH~//*[@aria-label="Items per page:"]/div/div[2]
+ITEM_PP_VALUE = XPATH~//*[@role="listbox"]/*[@ng-reflect-value="
+VIEW = XPATH~]/button[1]/span[1]/mat-icon
+LOADING_IMG        = XPATH~//div[@class="lds-roller"]
+NEW_TAG = XPATH~//span[contains(@class,"newTagIcon ")]
+NEW_TAG_NAME = XPATH~//span[text()='New']
+border-top
+PDF_EXPORT_BTN = XPATH~//*[text()='PDF (as snapshot)']
+CSV_EXPORT_BTN = XPATH~//*[text()='CSV (as full data)']
+EXPORT_LINK	= XPATH~//span[text()='Export']
+VIEW_ICON = XPATH~//mat-icon[text()='visibility']
+EDIT_ICON = XPATH~//mat-icon[text()='create']
+DELETE_Icon = XPATH~//mat-icon[text()='delete_outline']
 
 /*****User Group Management************************************************************************************
-NEW_USER_GRP_BTN = XPATH~//*[text()=' New User Group']
-USER_GRP_LB = XPATH~//*[text()='User Group Management ']
-GRP_DETAILS_LB = XPATH~//*[@class="bgtrans"]//div/div/span[contains(text(),'Group Details -')]
-GRP_FILTER_TXT = XPATH~//input[@data-placeholder="Filter"]
+
+NEW_USER_GRP_BTN = XPATH~//*[text()=' New Account Group ']
+USER_GRP_LB = XPATH~//*[text()='Account Group Management ']
+GRP_DETAILS_LB = XPATH~//app-user-group-management/div/mat-card/div[1]/div[1]
+SEARCH_TXT = XPATH~//input[@data-placeholder="Search"]
+SELECT_ALL = XPATH~//*[@role="columnheader"]//mat-checkbox
 GRP_COLUMNHEADER = XPATH~//*[@role="columnheader"]
 GRP_ROW = XPATH~//mat-row[@role="row"]
-GRP_GRIDCELL = XPATH~//*[@role="gridcell"]
+BREADCRUMB = XPATH~//app-create-edit-user-group/div/div[1]/span
 GRP_EDIT1 = XPATH~]/mat-cell[
+////////change is done for edit account ///////////////////
 GRP_EDIT = XPATH~]/button[2]/span[1]/mat-icon
-GRP_EDIT_DIALOG = XPATH~//*[@class="mat-dialog-title" and text()='Edit User Group Name']
-GRP_EDIT_UPDATE = XPATH~//*[@id="mat-dialog-2"]/app-confirm-dialog/div/div[4]/button/span[1]
-GRP_EDIT_CANCEL = XPATH~//*[@id="mat-dialog-0"]/app-confirm-dialog/div/div[3]/button/span[text()=' Cancel ']
-GRP_DELETEs = XPATH~]/mat-cell[4]/button[3]/span[1]/mat-icon
+GRP_EDIT_PEN = XPATH~//button[@mattooltip="Edit"]
+//mat-card[1]/mat-card-content/div/div[3]/button
+GRP_EDIT_CONFIRM =ID~createUpdateButton
+GRP_EDIT_RESET = XPATH~//span[text()='Reset']
+GRP_EDIT_CANCEL = XPATH~//span[text()='Cancel']
 GRP_DELETE1 = XPATH~]/mat-cell[
-GRP_DELETE = XPATH~]/button[3]/span[1]/mat-icon
-GRP_ROW_COUNT_VAL = XPATH~//*[@ng-reflect-aria-label="Items per page:"]/div/div/span/span
+GRP_DELETE = XPATH~]//button[@mattooltip="Delete"]
+GRP_ROW_COUNT_VAL = XPATH~//*[@class="mat-paginator"]//*[@role="combobox"]/div/div/span/span
 SORT_LIST_PART1 = XPATH~//*[text()='
 SORT_LIST_PART2 = XPATH~']/following::div
 GRP_DELETE_DIALOG = XPATH~//app-delete-dialog/div/mat-card/mat-card-content/div[1]/div[1]/span
-GRP_DELETE_NO = XPATH~//app-delete-dialog//button/span[text()='No']
-GRP_DELETE_YES = XPATH~//app-delete-dialog//button/span[text()='Yes']
-GRP_NAME = ID~name
-GRP_CREATEnCONTINUE = XPATH~//button/span[text()=' Create & Continue ']
-GRP_CREATE = XPATH~//button/span[text()=' Create ']
-GRP_ROLE_CANCEL = XPATH~//*[@id="cdk-step-content-0-0"]/form/mat-card/mat-card-actions/div/button[1]
+GRP_DELETE_NO = XPATH~//app-delete-dialog//button/span[text()='Cancel']
+GRP_DELETE_YES = XPATH~//app-delete-dialog//button/span[text()='Delete']
+GRP_USER_COUNT = XPATH~//*[@role="dialog"]
+GRP_NAME = XPATH~//input[@formcontrolname="userGroupName"]
+GRP_DESC =XPATH~//input[@formcontrolname="userGroupDescription"]
+GRP_CREATE = XPATH~//button/span[text()='Create']
 GRP_MESG = XPATH~//app-user-group-management/div/app-user-group-step/div/div[1]
-[contains(text(),'Created Successfully. ')]
-GRP_STEP1_TBL = XPATH~//*[@id="cdk-step-content-0-0"]
+GRP_STEP1_TBL = XPATH~//mat-table[@role="grid"]
+GRP_POPUP_TBL = XPATH~//*[@role="dialog"]
 GRP_STEP2_TBL = XPATH~//*[@id="cdk-step-content-0-1"]
 GRP_STEP3_TBL = XPATH~//*[@id="cdk-step-content-0-2"]
 GRP_STEP2_COL_NAME = XPATH~//mat-header-cell
 GRP_STEP_TBL_CHK = XPATH~]//mat-checkbox/label
 GRP_STEP1_NEXT_BTN = XPATH~//*[@id="cdk-step-content-0-0"]/form/mat-card/mat-card-actions/div/button[2]/span[1]
-GRP_STEP2_NEXT_BTN = XPATH~//*[@id="cdk-step-content-0-1"]/form/mat-card/mat-card-actions/div/button[3]/span[1]
+GRP_STEP2_NEXT_BTN = XPATH~//*[@id="cdk-step-content-0-1"]//span[text()='Next']
 GRP_STEP3_TITLE = XPATH~//*[@id="mat-expansion-panel-header-0"]/span[1]/mat-panel-title/span
 GRP_STEP2_CONFIRM_BTN = XPATH~//*[@id="cdk-step-content-0-2"]/mat-card/mat-card-actions/div/button[3]
-GRP_VG_CANCEL = XPATH~//*[@id="cdk-step-content-0-1"]/form/mat-card/mat-card-actions/div/button[1]
-//*[@id="cdk-step-content-2-1"]/form/mat-card/mat-card-actions/div/button[2]
-GRP_VG_PRIVIOUS = XPATH~//*[@id="cdk-step-content-0-1"]/form/mat-card/mat-card-actions/div/button[2]
-GRP_SUM_CANCEL = XPATH~//*[@id="cdk-step-content-0-2"]/mat-card/mat-card-actions/div/button[1]
-GRP_SUM_PRIVIOUS = XPATH~//*[@id="cdk-step-content-0-2"]/mat-card/mat-card-actions/div/button[2]
-GRP_ROLE_LBL = XPATH~//*[@id="cdk-step-label-0-0"]/div[3]/div
 GRP_GROUP_LBL = XPATH~//*[@id="cdk-step-label-0-1"]/div[3]/div
-STEP1_ITEM_PP_ARROW = XPATH~//*[@id="cdk-step-content-1-0"]//*[@aria-label="Items per page:"]/div/div[2]
-STEP2_ITEM_PP_ARROW = XPATH~//*[@id="cdk-step-content-1-1"]//*[@aria-label="Items per page:"]/div/div[2]
+GROUP_TYPE = XPATH~//mat-select[@formcontrolname="groupType"]
 
-GRP_STEP3_RTITLE = XPATH~//*[@id="mat-expansion-panel-header-2"]/span[1]/mat-panel-title
-GRP_STEP3_VGTITLE = XPATH~//*[@id="mat-expansion-panel-header-3"]/span[1]/mat-panel-title
+/*****User Setting*********************************************************************************************
+
+USER_SETTING_W = XPATH~//mat-icon[@mattooltip="Preferences"]
+USER_SETTING_TITLE = XPATH~//*[text()='Preferences (Personalise your own display settings)']
+ACINFOANDSETTING_TAB = XPATH~//*[text()='Account Info & Settings']
+ACCOUNT_INFO_LBL = XPATH~//*[text()='Account Information ']
+ACC_INFO_EDIT = XPATH~//*[text()='Account Information ']/mat-icon[text()='edit']
+GENERAL_SETTING_EDIT = XPATH~//*[text()='General Settings (Organisation based settings) ']/mat-icon[text()='edit']
+ACCOUNT_INFO_FNAME = XPATH~//input[@formcontrolname="firstName"]
+ACCOUNT_INFO_LNAME = XPATH~//input[@formcontrolname="lastName"]
+ACCOUNT_INFO_SALU = XPATH~//mat-select[@formcontrolname="salutation"]
+ACCOUNT_INFO_EMAIL_LBL = XPATH~//mat-label[text()="Login Email"]/following-sibling::mat-label
+ACCOUNT_INFO_ORG_LBL = XPATH~//mat-label[text()="Organisation"]/following-sibling::mat-label
+ACCOUNT_INFO_CONFIRM = XPATH~//span[text()="Confirm"]
+GENERAL_SETTING_LANGU = XPATH~//mat-select[@formcontrolname="language"]
+GENERAL_SETTING_TZONE = XPATH~//mat-select[@formcontrolname="timeZone"]
+GENERAL_SETTING_UNIT = XPATH~//mat-select[@formcontrolname="unit"]
+GENERAL_SETTING_CURR = XPATH~//mat-select[@formcontrolname="currency"]
+GENERAL_SETTING_DATEF = XPATH~//mat-select[@formcontrolname="dateFormat"]
+GENERAL_SETTING_TIMEF = XPATH~//mat-select[@formcontrolname="timeFormat"]
+GENERAL_SETTING_LANDP = XPATH~//mat-select[@formcontrolname="landingPage"]
+GENERAL_SETTING_VEHPAGE = XPATH~//mat-select[@formcontrolname="vehDisplay"]
+GENERAL_SETTING_LANG = XPATH~//mat-select[@formcontrolname="vehDisplay"]
+GENERAL_SETTING_LANG = XPATH~//mat-select[@formcontrolname="landingPage"]
+CHANGE_PASSWORD_LINK = XPATH~//a[text()="Change Password"]
+NEW_PASSWORD = XPATH~//input[@formcontrolname="newPassword"]
+NEW_PASSWORD_ERR = XPATH~//li[@class="text-danger"]
+CONFIRM_PASSWORD = XPATH~//input[@formcontrolname="confirmPassword"]
+CANCEL_PASSWORD = XPATH~//button/span[text()="Cancel"]
+CHANGE_PASSWORD = XPATH~//button/span[text()="Change Password"]
+CURRENT_PASSWORD = XPATH~//input[@formcontrolname="currentPassword"]
+
 /*****User ****************************************************************************************************
-USER_MANAG_LB = XPATH~//*[text()='User Management ']
-NEW_USER_GRP_BTN = XPATH~//*[text()=' New User ']
+
+USER_MANAG_LB = XPATH~//*[text()='Account Management ']
+NEW_USER_BTN = XPATH~//*[text()=' New Account ']
 ACCOUNT_INFO_LB = XPATH~//*[text()='Account Information']
-SALUTATION = ID~mat-select-value-3
-FNAME = ID~mat-input-1
-LNAME = ID~mat-input-2
-LOGIN_EMAIL = ID~mat-input-3
-BIRTHDATE = ID~mat-input-4
-ORGANIZATION = ID~mat-input-5
-USER_GEN_SET_LB = XPATH~//*[text()='User General Setting']
-USER_LANG = XPATH~//mat-select[@ng-reflect-placeholder='Language']
-USER_TIMEZONE = XPATH~//mat-select[@ng-reflect-placeholder='Time Zone']
-USER_UNIT = XPATH~//mat-select[@ng-reflect-placeholder='Unit']
-USER_CURRENCY = XPATH~//mat-select[@ng-reflect-placeholder='Currency']
-USER_DFORMATE = XPATH~//mat-select[@ng-reflect-placeholder='Date Format']
-USER_VEHDISPLAY = XPATH~//mat-select[@ng-reflect-placeholder='Vehicle Display (Default)']
+---SALUTATION = ID~mat-select-value-3
+--FNAME = ID~mat-input-1
+---LNAME = ID~mat-input-2
+LOGIN_EMAIL = XPATH~//input[@formcontrolname="loginEmail"]
+--BIRTHDATE = ID~mat-input-4
+ORGANIZATION = XPATH~//mat-label[text()="Organisation"]/following-sibling::mat-form-field/div/div/div[3]
+USER_GEN_SET_LB = XPATH~//*[text()='Account General Setting']
+--USER_LANG = XPATH~//mat-select[@ng-reflect-placeholder='Language']
+--USER_TIMEZONE = XPATH~//mat-select[@ng-reflect-placeholder='Time Zone']
+--USER_UNIT = XPATH~//mat-select[@ng-reflect-placeholder='Unit']
+--USER_CURRENCY = XPATH~//mat-select[@ng-reflect-placeholder='Currency']
+--USER_DFORMATE = XPATH~//mat-select[@ng-reflect-placeholder='Date Format']
+--USER_VEHDISPLAY = XPATH~//mat-select[@ng-reflect-placeholder='Vehicle Display (Default)']
 DDOPTION = XPATH~//span[@class="mat-option-text"]
 CREATEnCONTINUE = XPATH~//button/span[text()='Create & Continue']
 CREATE = XPATH~//button/span[text()='Create']
-GRP_STEP3_NEXT_BTN = XPATH~//*[@id="cdk-step-content-0-2"]/form/mat-card/mat-card-actions/div/button[3]/span[1]
+GRP_STEP3_NEXT_BTN = XPATH~//*[@id="cdk-step-content-0-2"]//span[text()='Next']
 GRP_STEP4_NEXT_BTN = XPATH~//*[@id="cdk-step-content-0-3"]/form/mat-card/mat-card-actions/div/button[3]/span[1]
 USER_STEP4_TBL = XPATH~//*[@id="cdk-step-content-0-3"]
-USER_GROUP_LBL = XPATH~//*[@id="cdk-step-label-0-2"]/div[3]/div
+USER_GROUP_LBL = XPATH~//*[@id="cdk-step-label-0-1"]/div[3]/div
 USER_VHGROUP_LBL = XPATH~//*[@id="cdk-step-label-0-3"]/div[3]/div
-USER_SUMM_LBL = XPATH~//*[@id="cdk-step-label-0-4"]/div[3]/div
-USER_SUMM_CONFIRM = XPATH~//*[@id="cdk-step-content-0-4"]/mat-card/mat-card-actions/div/button[3]
-USER_SUMM_PREV = XPATH~//*[@id="cdk-step-content-0-4"]/mat-card/mat-card-actions/div/button[2]/span[1]
-USER_SUMM_CANCEL = XPATH~//*[@id="cdk-step-content-0-4"]/mat-card/mat-card-actions/div/button[1]/span[1]
+USER_SUMM_LBL = XPATH~//*[@id="cdk-step-label-0-2"]/div[3]/div
+USER_SUMM_CONFIRM = XPATH~//*[text()='Confirm']
+USER_SUMM_PREV = XPATH~//*[@id="cdk-step-content-0-2"]//*[text()='Previous']
+//*[@id="cdk-step-content-0-3"]//*[text()='Previous']
+USER_SUMM_CANCEL = XPATH~//*[@id="cdk-step-content-0-2"]//*[text()='Cancel']
+//*[@id="cdk-step-content-0-3"]//*[text()='Cancel']
 USER_UPATE = XPATH~//*[@id="cdk-step-content-0-0"]/form/div/button[2]/span[1]
-USER_CANCEL = XPATH~//*[@id="cdk-step-content-0-0"]/form/div/button[1]/span[1]
-USER_ROLE_CANCEL = XPATH~//*[@id="cdk-step-content-0-1"]/form/mat-card/mat-card-actions/div/button[1]/span[1]
-USER_ROLE_PREV = XPATH~//*[@id="cdk-step-content-0-1"]/form/mat-card/mat-card-actions/div/button[2]
-USER_GRP_PREV = XPATH~//*[@id="cdk-step-content-0-2"]/form/mat-card/mat-card-actions/div/button[2]/span[1]
-USER_GRP_CANCEL = XPATH~//*[@id="cdk-step-content-0-2"]/form/mat-card/mat-card-actions/div/button[1]/span[1]
+USER_CANCEL = XPATH~//*[@id="cdk-step-content-0-0"]/form/div//button/span[text()='Cancel']
+USER_ROLE_CANCEL = XPATH~//*[@id="cdk-step-content-0-1"]//button/span[text()='Cancel']
+//*[@id="cdk-step-content-0-1"]/form/mat-card/mat-card-actions/div/button[1]/span[1]
+---USER_ROLE_PREV = XPATH~//*[@id="cdk-step-content-0-1"]/form/mat-card/mat-card-actions/div/button[2]
+USER_GRP_PREV = XPATH~ //*[@id="cdk-step-content-0-2"]//button/span[text()='Previous']
+USER_GRP_CANCEL = XPATH~//*[@id="cdk-step-content-0-1"]//button/span[text()='Cancel'] 
+//*[@id="cdk-step-content-0-2"]//button/span[text()='Cancel']
+//*[@id="cdk-step-content-0-2"]/form/mat-card/mat-card-actions/div/button[1]/span[1]
 USER_VGRP_PREV = XPATH~//*[@id="cdk-step-content-0-3"]/form/mat-card/mat-card-actions/div/button[2]/span[1]
 USER_VGRP_CANCEL = XPATH~//*[@id="cdk-step-content-0-3"]/form/mat-card/mat-card-actions/div/button[1]/span[1]
 USER_SUMMARY_AI = XPATH~//app-summary-step/mat-card[1]
@@ -99,44 +195,549 @@ USER_SUMMARY_SUROLE = XPATH~//app-summary-step/mat-card[2]//span[contains(text()
 USER_SUMMARY_SUGRP = XPATH~//app-summary-step/mat-card[3]//span[contains(text(),'Selected User Groups')]
 USER_SUMMARY_SUVGRP = XPATH~//app-summary-step/mat-card[4]//span[contains(text(),'Selected Vehicle Groups/Vehicles')]
 USER_SUMMARY_SUROLE_TABLE = XPATH~//app-summary-step/mat-card[2]//mat-table
+ACCOUNT_INFO_EDIT = XPATH~//*[text()='Account Information']/following-sibling::button/span
+USER_GEN_SETTING_EDIT = XPATH~//*[text()='User General Setting']/parent::span/following-sibling::button/span
+SELE_USER_ROLE_EDIT = XPATH~//*[contains(text(),'Selected Account Roles')]/following-sibling::button/span
+SELE_USER_GRP_EDIT = XPATH~//*[contains(text(),'Selected Account Groups')]/following-sibling::button/span
+USER_EDIT_CONFIRM = XPATH~//button/span[text()='Confirm']
+USER_GRP_TABLE = XPATH~//*[@id="cdk-step-content-1-2"]//mat-table[@role="grid"]
+USER_BREADCRUMB = XPATH~//app-edit-view-user/div[@fxlayout="row"]/div/span
+ACCOUNT_INFO_TYPE = XPATH~//mat-select[@formcontrolname="userType"]
+ACCOUNT_FILTER_BTN = XPATH~//mat-expansion-panel-header[@role="button"]/span[2]
+ACCOUNT_FILTER_NAME = XPATH~//input[@placeholder="Search Name"]
+ACCOUNT_FILTER_GROUP = XPATH~//mat-label[text()=' Group ']/following-sibling::mat-form-field//mat-select[@role="combobox"]/div/div[2]
+ACCOUNT_FILTER_ROLE = XPATH~//mat-label[text()=' Role ']/following-sibling::mat-form-field//mat-select[@role="combobox"]/div/div[2]
+FILTER_BTN = XPATH~//button/span[text()=' Filter ']
+FILTER_RESET_BTN = XPATH~//button/span[text()=' Reset ']
+GRP_SEARCH = XPATH~//*[@id="cdk-step-content-0-2"]//input[@data-placeholder="Search"]
+ROLE_SEARCH = XPATH~//*[@id="cdk-step-content-0-1"]//input[@placeholder="Search"]
+//*[@id="cdk-step-content-1-1"]//input[@data-placeholder="Search"]
+USER_CANCEL = XPATH~//*[@id="cdk-step-content-0-0"]//button/span[text()='Cancel']
+//*[@id="cdk-step-content-2-0"]//button/span[text()='Cancel']
+USER_LINK_ALERT = XPATH~//span[text()='Alert']
+USER_LINK_ALERT_MSG = XPATH~//span[text()='Do you want to link this account to your organisation?']
+USER_LINK_ALERT_NO = XPATH~//span[text()='No']
+USER_LINK_ALERT_YES = XPATH~//span[text()='Yes']
+USER_LINK_BTN = XPATH~//button/span[text()='Link']
+USER_LINKandCONTINUE_BTN = XPATH~//button/span[text()='Link & Continue']
+USER_GRP_SEARCH = XPATH~//*[@id="cdk-step-content-0-1"]//input[@data-placeholder="Search"]
 
-/*****Dashboard ***********************************************************************************************
+/*****Role ****************************************************************************************************
+
+ROLE_MANAG_LB = XPATH~//*[text()='Account Role Management ']
+ROLE_DETAIL_LB = XPATH~//*[text()='All Account Role Details']
+ROLE_ACCESS = XPATH~//*[text()='Access ']//input[@role="switch"]
+ROLE_ACCESS_TOGGLE = XPATH~//*[text()='Access ']//mat-slide-toggle
+ROLE_NAME_LB = XPATH~//*[text()='Account Role Name']/following-sibling::mat-label
+ROLE_DESC_LB = XPATH~//*[text()='Account Role Description (Optional)']/following-sibling::mat-label
+COPY = XPATH~]/button[2]/span[1]/mat-icon
+ROLE_EDIT = XPATH~]/button[3]/span[1]/mat-icon
+ROLE_CreateButton = XPATH~//span[text()='Create']
+ROLE_DELETE = XPATH~]/button[3]/span[1]/mat-icon
+ROLENAME = XPATH~//input[@formcontrolname="userRoleName"]
+NEW_ROLE = XPATH~//span[text()=' New Account Role ']
+ROLEDESC = XPATH~//input[@formcontrolname="userRoleDescription"]
+ROLETYPEDD = XPATH~//*[@formcontrolname="roleType"]
+ROLETYPE = XPATH~//span[text()='Regular']
+ROLL_TBL = XPATH~//*[@id="accountRoleData"]
+ROLE_EDIT_SINGLERECORD_TBL = XPATH~//mat-icon[text()='create']
+
 /*****Vehicle Management***************************************************************************************
-VEHICLE_GRP_OPT  = XPATH~//*[@ng-reflect-value="group"]
-VEHICLE_OPT 	 = XPATH~//*[@ng-reflect-value="vehicle"]
-VEHICLE_BOTH_OPT = XPATH~//*[@ng-reflect-value="both"]
+
+//OPTION_BTNS  = XPATH~//mat-radio-group[@role="radiogroup"]
+//VEHICLE_GRP_OPT  = XPATH~//mat-radio-button[@value="group"]/label/div[2]
+//VEHICLE_OPT 	 = XPATH~//mat-radio-button[@value="vehicle"]/label/div[2]
+//VEHICLE_BOTH_OPT = XPATH~//mat-radio-button[@value="both"]/label/div[2]
 NEW_VEH_GRP_BTN  = XPATH~//*[text()=' New Vehicle Group ']
-NEW_VEH_GRP_LBL  = XPATH~//*[text()='Create New Vehicle Group']
-VEH_GRP_NAME	 = XPATH~//input[@ng-reflect-name="vehicleGroupName"]
-VEH_GRP_DESC	 = XPATH~//input[@ng-reflect-name="vehicleGroupDescription"]
-VEH_GRP_CANCEL_BTN  = XPATH~//button/span[text()='Cancel']
+NEW_VEH_GRP_LBL  = XPATH~//*[text()='New Vehicle Group']
+VEH_GRP_NAME	 = XPATH~//input[@formcontrolname="vehicleGroupName"]
+VEH_GRP_DESC	 = XPATH~//input[@formcontrolname="vehicleGroupDescription"]
 VEH_GRP_CREATE_BTN  = XPATH~//button/span[text()='Create']
-VEH_LIST_LBL 	 = XPATH~//span[text()='Select Vehicle List (Optional)']
-VEH_DETAIL_LBL 	 = XPATH~//*[contains(text(),'Vehicle Details')]
+VEH_DETAIL_LBL 	 = XPATH~//*[contains(text(),'All Vehicle Group Details')]
+V_DETAIL_LBL 	 = XPATH~//*[contains(text(),'All Vehicle Details')]
 VEH_TABLE_ROW 	 = XPATH~//mat-table/mat-row[1]/mat-cell[1]
+VEH_TBL_ROW 	 = XPATH~//mat-row
+VEH_TBL_CELL 	 = XPATH~/mat-cell
 VEH_GRP_CANCEL 	 	= XPATH~//mat-card-actions//button/span[text()='Cancel']
 VEH_GRP_RESET 	 	= XPATH~//mat-card-actions//button/span[text()='Reset']
-VEH_GRP_UPDATE	= XPATH~//mat-card-actions//button/span[text()='Update']
+VEH_GRP_UPDATE	= XPATH~//mat-card-actions//button/span[text()='Confirm']
 VEH_NAME 	 	= XPATH~//input[@formcontrolname="vehicleName"]
 VEH_REG_NO 	 	= XPATH~//input[@formcontrolname="registrationNumber"]
-VEH_UPDATE 	 	= XPATH~//app-edit-vin-setting/form/div/button[3]/span[1]
-VEH_RESET	 	= XPATH~//app-edit-vin-setting/form/div/button[2]/span[1]
-VEH_CANCEL		= XPATH~//app-edit-vin-setting/form/div/button[1]/span[1]
+//VEH_UPDATE 	 	= XPATH~//app-edit-vin-setting/form/div/button[3]/span[1]
+//VEH_RESET	 	= XPATH~//app-edit-vin-setting/form/div/button[2]/span[1]
+//VEH_CANCEL		= XPATH~//app-edit-vin-setting/form/div/button[1]/span[1]
+VEH_SELECT_ALL	= XPATH~//input[@aria-label="select row"]/parent::div
+VEH_GROUP_TYPE	= XPATH~//mat-select[@formcontrolname="vehicleGroupType"]
+VEH_EDIT_BREADCRUMB	= XPATH~//app-edit-view-vehicle/div/div
 
+/*****Organization Management**************************************************************************************
+
+VEH_POPUP = XPATH~//app-user-detail-table//mat-card-content
+VEG_POPUP_CLOSE = XPATH~//app-user-detail-table//mat-card-content//mat-icon[text()='close']
 
 /*****User Reset Password**************************************************************************************
 
 /*****Common ELEMENTS******************************************************************************************
+
+ERROR_MESSAGE = XPATH~//mat-error[@role="alert"]
+BACK_BUTTON = XPATH~//span[@class="backBtnCss"]
 PAGINATION         = XPATH~//*[@class="mat-paginator-range-label"]
 NEXT_PAGINATION    = XPATH~//*[@aria-label="Next page"]
+PREVIOUS_PAGINATION    = XPATH~//*[@aria-label="Previous page"]
+POPUP_PAGINATION         = XPATH~//*[@role="dialog"]//*[@class="mat-paginator-range-label"]
+POPUP_NEXT_PAGINATION    = XPATH~//*[@role="dialog"]//*[@aria-label="Next page"]
+POPUP_PREVIOUS_PAGINATION    = XPATH~//*[@role="dialog"]//*[@aria-label="Previous page"]
+POPUP_GRP_ROW_COUNT_VAL = XPATH~//*[@role="dialog"]//*[@role="combobox"]/div/div/span/span
+POPUP_CLOSE     = XPATH~//*[@role="dialog"]//mat-icon[text()='close']
 TABLE              = XPATH~//mat-table
+POPUP_SEARCH =XPATH~//*[@role="dialog"]//input[@data-placeholder="Search"]
+POPUP_ROW	 = XPATH~//*[@role="dialog"]//mat-row[@role="row"]
+POPUP_COL	 = XPATH~//*[@role="dialog"]//*[@role="columnheader"]
+POPUP_COL_FIRST	 = XPATH~//*[@role="dialog"]//*[@role="columnheader"][
+POPUP_COL_SEC	 = XPATH~]
 PART_COL_F_N_FIRST	 = XPATH~//*[@role="columnheader"][
 PART_COL_F_N_SEC	 = XPATH~]
-]/div/div[1]
 TABLE_ROW_PART_ONE = XPATH~//mat-table/mat-row[
 ITEM_PP_ARROW = XPATH~//*[@aria-label="Items per page:"]/div/div[2]
 ITEM_PP_VALUE = XPATH~//*[@role="listbox"]/*[@ng-reflect-value="
-TBL_COL_NAME_LIST  = XPATH~//*[@class="thead-dark"]/tr/th
-LOADING_IMG        = XPATH~//*[@class="lds-ripple float-center"]
+VIEW = XPATH~]/button[1]/span[1]/mat-icon
+LOADING_IMG        = XPATH~//div[@class="lds-roller"]
+NEW_TAG = XPATH~//span[contains(@class,"newTagIcon ")]
+NEW_TAG_NAME = XPATH~//span[text()='New']
+border-top
+PDF_EXPORT_BTN = XPATH~//*[text()='PDF (as snapshot)']
+CSV_EXPORT_BTN = XPATH~//*[text()='CSV (as full data)']
+EXPORT_LINK	= XPATH~//span[text()='Export']
 
-/*****Common ELEMENTS******************************************************************************************
+/****************Organisation Details****************************************************************************
+
+Organisation_Details_Title = XPATH~//span[text()='Organisation Details ']
+Org_Details_Org_DropdownValue = XPATH~//span[text()='Organisation Details ']/following::mat-select[@role='combobox']
+Org_Details_ID = XPATH~//mat-label/span[text()='ID']  
+Org_Details_ID_Value = XPATH~//div/span[text()='RT12345']
+Org_Details_ID_Value2 = XPATH~//div/span[text()='JTC12345']
+Org_Details_Name = XPATH~//mat-label/span[text()='Name']
+Org_Details_Name_Value = XPATH~//div/span[text()='RTC Admin123']
+Org_Details_Street_Name = XPATH~//mat-label/span[text()='Street Name']
+Org_Details_Street_name_Value = XPATH~//div/span[text()='Aegonplien']
+Org_Details_Street_Number = XPATH~//mat-label/span[text()='Street Number']
+Org_Details_Street_Number_Value = XPATH~//div/span[text()='50']
+Org_Details_Postal_Code = XPATH~//mat-label/span[text()='Postal Code']
+Org_Details_Postal_Code_Value = XPATH~//div/span[text()='2591AB']
+Org_Details_City_Name = XPATH~//mat-label/span[text()='City']
+Org_Details_City_Name_Value = XPATH~//div/span[text()='Denhag']
+Org_Details_Country_Name = XPATH~//mat-label/span[contains(text(),'Country')]
+Org_Details_Country_Name_Value = XPATH~//div/span[contains(text(),'NL')]
+Org_Details_Preferences_Settings = XPATH~//span[contains(text(),'Preferences Settings ')]
+Org_Details_Edit_Preference_Settings = XPATH~//div/span/mat-icon[text()='edit']
+Org_Details_Language = XPATH~//span[text()='Language']
+Org_Details_Time_Zone = XPATH~//mat-label/span[text()='Time Zone']
+Org_Details_Unit = XPATH~//mat-label/span[text()='Unit']
+Org_Details_Currency = XPATH~//mat-label/span[text()='Currency']
+Org_Details_Date_Format= XPATH~//mat-label/span[text()='Date Format']
+Org_Details_Time_Format = XPATH~//mat-label/span[text()='Time Format']
+Org_Details_Vehicle_Default_Status = XPATH~//span[contains(text(),'Vehicle Default Status')]
+Org_Details_Driver_Default_Status = XPATH~//mat-label/span[text()='Driver Default Status']
+Org_Details_Language_dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div[@id='mat-select-value-9']/following::div[2]
+Org_Details_TimeZone_dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div[@id='mat-select-value-11']/following::div[2]
+Org_Details_Unit_dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div[@id='mat-select-value-13']/following::div[2]
+Org_Details_Currency_dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div[@id='mat-select-value-15']/following::div[2]
+Org_Details_Date_Format_dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div[@id='mat-select-value-17']/following::div[2]   
+Org_Details_Time_Format_dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div[@id='mat-select-value-19']/following::div[2]  
+Org_Details_Vehicle_Default_Status_dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div[@id='mat-select-value-21']/following::div[2] 
+Org_Details_Driver_Default_Status_dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div[@id='mat-select-value-23']/following::div[2] 
+Org_Details_Confirm_Button = XPATH~//span[text()='Confirm']
+Org_Details_Language_Value = XPATH~//span[text()='Language']/following::span[1]
+Org_Details_TimeZone_Value = XPATH~//span[text()='Time Zone']/following::span[1]
+Org_Details_Unit_Value = XPATH~//span[text()='Unit']/following::span[1]
+Org_Details_Currency_Value = XPATH~//span[text()='Currency']/following::span[1]
+Org_Details_DateFormat_Value = XPATH~//span[text()='Date Format']/following::span[1]
+Org_Details_TimeFormat_Value = XPATH~//span[text()='Time Format']/following::span[1]
+Org_Details_Vehicle_Default_Status_Value = XPATH~//span[text()='Vehicle Default Status']/following::span[1]
+Org_Details_Driver_Default_Status_Value = XPATH~//span[text()='Driver Default Status']/following::span[1]
+Org_Details_Reset_Button = XPATH~//span[text()='Reset']
+Org_Details_Cancel_Button = XPATH~//span[text()='Cancel']
+Org_Details_GlobalRole = XPATH~//span/mat-icon[text()='keyboard_arrow_down']
+Org_Details_Name2 = XPATH~//span[text()='NAPA TRUCKS spol s r.o - DEMO']
+Org_Details_ID_Value2 = XPATH~//span[text()='ID']/following::div/span[text()='C0686609']
+For Arrow to select for Vehicle Default Status  =  XPATH~ //mat-select[@role='combobox']/child::div[1]/div[@id='mat-select-value-71']/following::div[2]
+
+/***** Driver Management ******************************************************************************************
+
+DRIVER_MANAGEMENT_M = XPATH~//*[@href="#/configuration/drivermanagement"]
+DRIVER_MANAGEMENT_T = XPATH~//*[text()='Driver Management ']
+DRIVER_IMPORT_T = XPATH~//span[text()='Import New Drivers']
+DM_UPLOAD_TXT = XPATH~//*[@formcontrolname="uploadFile"]
+DM_BROWSER_BTN = XPATH~//*[text()='Browse']
+DM_IMPORT_D_BTN = XPATH~//*[text()=' Import Driver(s) ']
+DM_RESETALL_BTN = XPATH~//*[text()=' Reset All ']
+DM_OPTINALL_BTN = XPATH~//*[text()=' Opt-In All ']
+DM_OPTIN_DONE_ALL_ICON = XPATH~//*[text()=' Opt-In All ']/mat-icon[text()='done']
+DM_OPTOUTALL_BTN = XPATH~//*[text()='Opt-Out All ']
+DM_OPTOUT_ALL_CL_ICON = XPATH~//span[text()='Opt-Out All ']/mat-icon[text()='close']
+///---DM_OPTIN_DONE_ALL_ICON = XPATH~//*[@src="assets/images/icons/driverOpt/opt-out.svg"]
+DM_OPTOUT_ICON = XPATH~//*[@src="assets/images/icons/driverOpt/opt-in.svg"]
+DM_DOWNLOAD_TEMP = XPATH~//*[text()='Download a Template']
+DM_IMPORTED_TXT = XPATH~//span[contains(text(),'Imported file details')]
+DM_COCSENT_TYPE_DD = XPATH~//mat-select[@formcontrolname="consentType"]
+DM_EDIT_LABLE = XPATH~//*[text()='Edit Driver Details']
+DM_BREADCRUMB = XPATH~//app-edit-driver-details/div[@fxlayout="row"]/div[1]/span
+DD_CONSENT_POPUP = XPATH~//app-consent-opt//*[text()='Driver ID Consent']
+DD_INHERIT_BTN = XPATH~//mat-radio-button[@value="H"]/label/div[1]
+DD_OPTIN_REDIO_BTN = XPATH~//mat-radio-button[@value="I"]/label/div[1]
+DD_OPTOUT_REDIO_BTN = XPATH~//mat-radio-button[@value="U"]/label/div[1]
+FNAME = XPATH~//input[@formcontrolname="firstName"]
+LNAME = XPATH~//input[@formcontrolname="lastName"]
+D_DETAILS = XPATH~//span[text()='View Driver Details']
+
+/***** Package Management ******************************************************************************************
+
+PACKAGE_MANAGEMENT = XPATH~//*[@href="#/admin/packagemanagement"]
+PACKAGE_MANAGEMENT_TXT = XPATH~//*[text()='Package Management ']
+NEW_PACKAGE_BTN = XPATH~//span[text()=' New Package ']
+PM_TOGGLE_BTN = XPATH~//mat-header-cell[@role="columnheader"]//mat-slide-toggle
+PM_CELL_TOGGLE_BTN = XPATH~//mat-cell[@role="gridcell"]//mat-slide-toggle
+PM_CODE_TXT = XPATH~//input[@formcontrolname="code"]
+PM_NAME_TXT = XPATH~//input[@formcontrolname="name"]
+PM_DESC_TXT = XPATH~//input[@formcontrolname="description"]
+PM_TYPE_DD = XPATH~//mat-select[@formcontrolname="type"]
+PM_INACTIVE_RB = XPATH~//mat-radio-button[@value="Inactive"]/label/div[1]
+PM_ACTIVE_RB = XPATH~//mat-radio-button[@value="Active"]/label/div[1]
+PM_VIEW_LBL = XPATH~//span[text()='View Package Details ']
+PM_CODE_LBL = XPATH~//span[text()='Package Code']/parent::mat-label/following-sibling::div/span
+PM_NAME_LBL = XPATH~//span[text()='Package Name']/parent::mat-label/following-sibling::div/span
+PM_DESC_LBL = XPATH~//span[text()='Description']/parent::mat-label/following-sibling::div/span
+PM_TYPE_LBL = XPATH~//span[text()='Type']/parent::mat-label/following-sibling::div/span
+PM_STATUS_LBL = XPATH~//mat-label[text()=' Status ']/following-sibling::div/span
+PM_BREADCRUMB = XPATH~//app-create-edit-package-details/div[@fxlayout="row"]/div/span
+PM_EDIT_LABLE = XPATH~//*[text()='Edit Package Details ']
+PM_MANDATORY_TXT=XPATH~//form//mat-icon[text()='info']/following-sibling::span
+PM_EXPORT_BTN = XPATH~//span[text()='Export']
+PM_PDF_EXPORT_BTN = XPATH~//*[text()='PDF (as snapshot)']
+PM_CSV_EXPORT_BTN = XPATH~//*[text()='CSV (as full data)']
+PM_IMPORT_BTN = XPATH~//span[text()=' Import']
+PM_IMPORT_NEW_PKG = XPATH~//span[text()='Import New Package']
+PM_UPLOAD_PKG = XPATH~//*[text()=' Upload Package ']
+PM_IMPORTED_TXT = XPATH~//*[contains(text(),'Imported file details ')]
+
+
+/******************** Organisation Relationship Management ****************************************************************************************
+
+ORG_RLP_MGT_Title = XPATH~//div[text()='Organisation Relationship Management ']
+ORG_RLP_MGT_Details = XPATH~//div/span[text()='Organisation Relationship Details']
+ORG_RLP_MGT_Search = XPATH~//input[@data-placeholder='Search']
+ORG_RLP_MGT_Relationship = XPATH~//span[text()='Relationship']
+ORG_RLP_MGT_Relationship_Dropdown = XPATH~//span[text()='Relationship']/following::div[2]
+ORG_RLP_MGT_Vehicle_Group = XPATH~//div/span[contains(text(),'Vehicle Group')]
+ORG_RLP_MGT_Vehicle_Group_Dropdown = XPATH~//span[text()='Vehicle Group']/following::div[2]
+ORG_RLP_MGT_Organisation = XPATH~//span[text()='Organisation']
+ORG_RLP_MGT_Organisation_Dropdown = XPATH~//span[text()='Organisation']/following::div[2]
+ORG_RLP_MGT_AllType = XPATH~//span[text()='All Type']
+ORG_RLP_MGT_AllTypes_Dropdown = XPATH~//span[text()='All Type']/following::div[2]
+ORG_RLP_MGT_Exporticon = XPATH~//mat-icon[@role='img'][text()='more_vert']
+ORG_RLP_MGT_Exporticon2 = XPATH~//mat-icon[@role='img'][text()='file_upload']
+ORG_RLP_MGT_ExportPDF = XPATH~//button[text()='PDF (as snapshot)']
+ORG_RLP_MGT_NewRelationship_Button = XPATH~//span[text()=' New Relationship ']
+ORG_RLP_MGT_EndRelationship_Button = XPATH~//span[text()=' End Relationship ']
+ORG_RLP_MGT_All_ColumnName = XPATH~//span[text()='All']
+ORG_RLP_MGT_Relationship_ColumnName = XPATH~//div[text()='Relationship Name']
+ORG_RLP_MGT_VehicleGroup_ColumnName = XPATH~//div[text()='Vehicle Group']
+ORG_RLP_MGT_TargetOrganisation_ColumnName = XPATH~//div[contains(text(),'Target Organisation')]
+ORG_RLP_MGT_StartDate_ColumnName = XPATH~//div[text()='Start Date']
+ORG_RLP_MGT_EndDate_ColumnName = XPATH~//div[text()='End Date']
+ORG_RLP_MGT_AllowChaining_ColumnName = XPATH~//div[text()='Allow Chaining']
+ORG_RLP_MGT_EndRelationship_ColumnName = XPATH~//mat-header-cell[text()='End Relationship']
+ORG_RLP_MGT_SearchFilter = XPATH~//mat-row/mat-cell/a[text()=' Configurable Owner Relationship ']
+ORG_RLP_MGT_Table_Row = XPATH~//mat-row[1]
+ORG_RLP_MGT_Table_RelationshipNameSearch = XPATH~//mat-row/mat-cell/a[text()=' Configurable Owner Relationship ']
+ORG_RLP_MGT_Table_VehicleGroupSearch = XPATH~//mat-row/mat-cell[text()='RTC Fleet Group ']
+ORG_RLP_MGT_Table_TargetOrganisationSearch = XPATH~//mat-row/mat-cell[text()='DAF-PACCAR ']
+ORG_RLP_MGT_Table_EndRelationshipButton2 = XPATH~//mat-row[1]/child::mat-cell/mat-icon
+ORG_RLP_MGT_Table_EndRelationConfirmYes = XPATH~//button/span[text()='Yes']
+ORG_RLP_MGT_RelationshipTest = XPATH~//span[text()='Test']
+ORG_RLP_MGT_RelationshipHims = XPATH~//span[text()='Hims 123']
+ORG_RLP_MGT_New_Relationship_dropdown = XPATH~//span[text()='Select Relationship']/following::div[2]
+ORG_RLP_MGT_Inactive_Radio_Button = XPATH~//*[text()='Inactive ']
+ORG_RLP_MGT_VehicleGroup_Checkbox = XPATH~//mat-cell[text()='VehicleGroup_10_11 ']/preceding::mat-checkbox[1]
+ORG_RLP_MGT_VehicleGroup_Checkbox2 = XPATH~//mat-cell[text()='VehicleGroup_12_42 ']/preceding::mat-checkbox[1]
+ORG_RLP_MGT_Organisation_Checkbox = XPATH~//mat-cell[text()='DAF-PACCAR ']/preceding::mat-checkbox[1]
+ORG_RLP_MGT_CreateButton = XPATH~//span[text()='Create']
+ORG_RLP_MGT_ConfirmButton = XPATH~//span[text()=' Confirm']
+ORG_RLP_MGT_ResetButton = XPATH~//span[text()='Reset']
+ORG_RLP_MGT_CancelButton = XPATH~//span[text()='Cancel']
+ORG_RLP_MGT_Add_New_Relationship = XPATH~//mat-label[text()='Add New Relationship ']
+ORG_RLP_MGT_PAGINATION = XPATH~//div[text()=' Page 1 of 17 lists ']
+ORG_RLP_MGT_NEXT_PAGINATION = XPATH~//*[@aria-label="Next page"]
+ORG_RLP_MGT_NEXT_PREVIOUS_PAGINATION = XPATH~//*[@aria-label="Previous page"]
+GRP_STEP_TBL_LINK = XPATH~/mat-cell/a
+ORG_RLP_EDIT_BREADCRUMB = XPATH~//span[contains(text(),'Home / Admin / Relationship Management')]
+
+/******************** Feature Management ****************************************************************************************
+
+FTR_MGT_Title = XPATH~//div[text()='Feature Management ']
+FTR_MGT_AddFeatureRelationship_Title = XPATH~//span[text()='Add Feature Relationship']
+FTR_MGT_DataAttributeFeatures = XPATH~//span[text()='Data Attribute Features']
+FTR__MGT_Exporticon = XPATH~//mat-icon[@role='img'][text()='more_vert']
+FTR_MGT_Exporticon2 = XPATH~//mat-icon[@role='img'][text()='file_upload']
+FTR_MGT_ExportPDF = XPATH~//button[text()='PDF (as snapshot)']
+FTR_MGT_ExportCSV = XPATH~//button[text()='CSV (as full data)']
+FTR_MGT_NewFeature_Button = XPATH~//span[text()=' New Feature ']
+FTR_MGT_Data_Attribute_SetName_ColumnName = XPATH~//div[text()='Data Attribute Set Name']
+FTR_MGT_Data_Attribute_SetType_ColumnName = XPATH~//div[text()='Data Attribute Set Type']
+FTR_MGT_Status_ColumnName = XPATH~//div[text()='Status ']
+FTR_MGT_Action_ColumnName = XPATH~//mat-header-cell[text()=' Action ']
+FTR_MGT_ViewIcon = XPATH~//mat-icon[text()='visibility']
+FTR_MGT_EditIcon = XPATH~//mat-icon[text()='create']
+FTR_MGT_DeleteIcon = XPATH~//mat-icon[text()='delete_outline']
+FTR_MGT_EditFeatureRelationshipTitle = XPATH~//span[text()='Edit Feature Relationship']
+FTR_MGT_DataAttributeSetName = XPATH~//div[text()='Data Attribute Set Name ']
+FTR_MGT_DataAttributeSearch = XPATH~//input[@data-placeholder='Enter Data Attribute Set Name']
+FTR_MGT_DataAttributeDescription = XPATH~//mat-label/span[text()='Data Attribute Description ']
+FTR_MGT_DataAttributeDescriptionSearch = XPATH~//input[@data-placeholder='Enter Data Attribute Description']
+FTR_MGT_DataAttributeSetType = XPATH~//span[text()='Data Attribute Set Type:']
+FTR_MGT_Inclusive_Radio_Button = XPATH~//*[text()='Inclusive ']
+FTR_MGT_Active_Radio_Button = XPATH~//div[text()='Active ']
+FTR_MGT_Inactive_Radio_Button = XPATH~//*[text()='Inactive ']
+FTR_MGT_CancelButton = XPATH~//span[text()='Cancel']
+FTR_MGT_ConfirmButton = XPATH~//span[text()='Confirm']
+FTR_MGT_Reset_Button = XPATH~//span[text()='Reset']
+FTR_MGT_CreateButton = XPATH~//span[text()='Create']
+FTR_MGT_ActivateButton = XPATH~//span[text()='Activate']
+FTR_MGT_DeactivateButton = XPATH~//span[text()='Deactivate']
+FTR_MGT_SelectDataAttribute = XPATH~//span[text()='Select Data Attribute']
+FTR_MGT_Search = XPATH~//input[@data-placeholder='Search']
+FTR_MGT_DataAttributeSetNameTextBox = XPATH~//input[@data-placeholder='Enter Data Attribute Set Name']
+FTR_MGT_DataAttributeDescriptionTextBox = XPATH~//input[@data-placeholder='Enter Data Attribute Description']
+FTR_MGT_DataAttributeColumnName = XPATH~//div[text()='Data Attribute']
+FTR_MGT_DataAttributeColumnName = XPATH~//span[text()='Exclude']
+FTR_MGT_DataAttributeFeaturesTitle = XPATH~//span[text()='Data Attribute Features']
+FTR_MGT_ExcludeToggle = XPATH~//mat-header-cell[@role="columnheader"]//mat-slide-toggle
+FTR_MGT_Active/InactiveToggle = XPATH~//mat-cell[@role="gridcell"]//mat-slide-toggle
+FTR_MGT_AlertPopup = XPATH~//span[text()='Alert']
+FTR_MGT_AlertPopupMessage = XPATH~//span[text()='Alert']/following::div[3]/span
+FTR_MGT_DataAttributeSetNameErrorMessage = XPATH~//mat-error[text()='Duplicate Data Attribute Set Name']
+FTR_MGT_DataAttributeSetNameErrorMessage2 = XPATH~//mat-error[text()=' Special characters not allowed ']
+FTR_MGT_ActiveVehiclesperday_Toggle = XPATH~//mat-cell[text()=' Report.ActiveVehiclesperday ']/following::input[@type='checkbox']
+FTR_MGT_View_Breadcrumb = XPATH~//span[text()='Home / Admin / Feature Management / View Feature Relationship']
+FTR_MGT_View_DataAttributeSetNameLabel = XPATH~//span[text()='250 characters max']
+FTR_MGT_View_DataAttributeDescriptionLabel = XPATH~//span[text()='100 characters max']
+
+/******************** Access Relationship Management ****************************************************************************************
+
+ACCESS_REL_MGT = XPATH~//*[@href="#/admin/accessrelationshipmanagement"]
+ACCESS_REL_MGT_LBL = XPATH~//*[text()='Access Relationship Management ']
+ACCESS_REL_DETAILS_LBL = XPATH~//*[text()='All Access Relationship Details']
+VIEW_LIST_BY_GROUP = XPATH~//*[text()='View list by:']/parent::div/mat-radio-group/*[@value="group"]
+VIEW_LIST_BY_VEHICLE = XPATH~//*[text()='View list by:']/parent::div/mat-radio-group/*[@value="vehicle"]
+VIEW_LIST_BY_BOTH = XPATH~//*[text()='View list by:']/parent::div/mat-radio-group/*[@value="both"]
+VIEW_ASSOCIATION_BY_VH = XPATH~//*[text()='View association by:']/parent::div/mat-radio-group/*[@value="vehicle"]
+VIEW_ASSOCIATION_BY_ACCOUNT = XPATH~//*[text()='View association by:']/parent::div/mat-radio-group/*[@value="account"]
+NEW_ASSOCIATION_BTN = XPATH~//*[text()=' New Association ']
+ASSOCIATION_TYPE = XPATH~//*[@formcontrolname="associationType"]
+VH_OR_ACC_TYPE = XPATH~//*[@formcontrolname="vehAccountType"]
+ACCESS_TYPE = XPATH~//*[@formcontrolname="accessType"]
+ACCESS_CREATE_BTN = XPATH~//span[text()='Create']
+NEW_ASSOCIATION_LBL = XPATH~//*[text()='Add New Association']
+VIEW_ASSOCIATION_BY = XPATH~//mat-label[text()="Association By"]/following-sibling::div/span
+VIEW_ASSO_VH_GRP = XPATH~//mat-label[text()="Vehicle Group/Vehicle"]/following-sibling::div/span
+VIEW_ACCESS_TYPE = XPATH~//mat-label[text()="Access Type"]/following-sibling::div/span
+VIEW_ACCESS_BREADCRUMB = XPATH~//app-create-edit-view-vehicle-account-access-relationship/div[@fxlayout="row"]/div/span
+
+/******************** Landmark ****************************************************************************************
+
+LANDMARK = XPATH~//*[@href="#/configuration/landmarks"]
+LANDMARK_LB = XPATH~//*[text()='Landmarks ']
+LM_MGT_POI_GEO = XPATH~//div[@role="tablist"]//div[text()='Manage POI and Geofence']
+LM_POI_LBL = XPATH~//span[contains(text(),'POI')]
+LM_MGT_GROUP = XPATH~//div[@role="tablist"]//div[text()='Manage Group']
+LM_MGT_CATEGORY = XPATH~//div[@role="tablist"]//div[text()='Manage Category']
+LM_MGT_CORRIDOR = XPATH~//div[@role="tablist"]//div[text()='Manage Corridor']
+LM_POI_SELECT_CAT = XPATH~//span[contains(text(),'POI')]/../../following-sibling::div//*[text()='Select Category']/../../parent ::mat-select
+LM_POI_SELECT_SUB_CAT = XPATH~//span[contains(text(),'POI')]/../../following-sibling::div//*[text()='Select Sub-Category']/../../parent ::mat-select
+LM_POI_IMPORT = XPATH~//span[contains(text(),'POI')]/../../following-sibling::div//span[text()='Import ']
+LM_POI_EXPORT = XPATH~//span[contains(text(),'POI')]/../../following-sibling::div//span[text()='Export']
+LM_POI_TBL  = XPATH~//span[contains(text(),'POI')]/../../following-sibling::div[2]
+LM_BREADCRUMB = XPATH~//app-common-import/div/div[@fxlayout="row"]/div[1]/span
+LM_BROWSER_BTN = XPATH~//app-common-import//span[text()='Browse']
+LM_UPLOAD_BTN = XPATH~//app-common-import//span[text()=' Upload ']
+LM_POI_IMPORT_FT = XPATH~//*[@id="mat-menu-panel-1"]/div/button
+LM_CREATE_BTN = XPATH~//button/span[contains(text(),'New Landmark ')]
+LM_CREATE_POI_BTN = XPATH~//*[@role="menu"]/div/button[text()='New POI']
+LM_POI_DEL_ALL = XPATH~//span[contains(text(),'POI')]/../../following-sibling::div//span[text()='Delete ']
+
+//----------------
+LM_GEO_SELECT_CAT = XPATH~//span[contains(text(),'Geofence ')]/../../following-sibling::div//*[text()='Select Category']/../../parent ::mat-select
+LM_GEO_SELECT_SUB_CAT = XPATH~//span[contains(text(),'Geofence')]/../../following-sibling::div//*[text()='Select Sub-Category']/../../parent ::mat-select
+LM_GEO_IMPORT = XPATH~//span[contains(text(),'Geofence')]/../../following-sibling::div//span[text()='Import ']
+LM_GEO_EXPORT = XPATH~//span[contains(text(),'Geofence')]/../../following-sibling::div//span[text()='Export']
+LM_GEO_TBL  = XPATH~//span[contains(text(),'Geofence')]/../../following-sibling::div[2]
+LM_BREADCRUMB = XPATH~//app-common-import/div/div[@fxlayout="row"]/div[1]/span
+LM_BROWSER_BTN = XPATH~//app-common-import//span[text()='Browse']
+LM_UPLOAD_BTN = XPATH~//app-common-import//span[text()=' Upload ']
+LM_GEO_IMPORT_FT = XPATH~//*[@id="mat-menu-panel-2"]/div/button
+LM_GEO_SEARCH = XPATH~//span[contains(text(),'Geofence ')]/../../following-sibling::div//*[@placeholder="Search"]
+GEOFENCE_SEC = XPATH~//span[contains(text(),'Geofence ')]/../../following-sibling::div
+POI_SEC = XPATH~//span[contains(text(),'POI')]/../../following-sibling::div
+LM_CREATE_GEO_BTN = XPATH~//*[@role="menu"]/div/button[text()='New Geofence']
+LM_CREATE_POLY_GEO = XPATH~//div[contains(text(),'Create Polygon Geofence')]
+LM_CREATE_CIRCU_GEO = XPATH~//div[contains(text(),'Create Circular Geofence')]
+LM_CREATE_POLY_GEO_BT = XPATH~//span[text()='Create Polygon']
+LM_GEO_POLY_NAME = XPATH~//input[@formcontrolname="name"]
+LM_GEO_POLY_TYPE = XPATH~//mat-select[@formcontrolname="type"]
+LM_GEO_POLY_CAT = XPATH~//mat-select[@formcontrolname="category"]
+LM_GEO_POLY_SCAT = XPATH~//mat-select[@formcontrolname="subCategory"]
+LM_GEO_DEL_ALL = XPATH~//span[contains(text(),'Geofence')]/../../following-sibling::div//span[text()='Delete ']
+
+
+/*********************************************************Language Selection Dropdown**********************************************************************************
+
+DROP_MENU = XPATH~//mat-select[@formcontrolname="languageSelection"]
+ADMINISTRATION_CLICK = XPATH~//*[@menuname="admin"]/a/span[text()='Administration']
+ACC_MANA_LINK = XPATH~//*[@href="#/admin/accountmanagement"]
+ACC_MANA_TEXT = XPATH~//span[text()='Account Management']
+ADMIN_DROP1 = XPATH~//*[@menuname="admin"]/a/span[text()='Administration']
+ALL_ACC_DETAILS = XPATH~//span[text()='All Account Details']
+ALL_ACC_DETAILS_TEXT =XPATH~//span[text()='All Account Details']
+NEW_USER_BTN_TEXT2 = XPATH~//span[text()=' Nouvel utilisateur ']
+NEW_USER_BTN_TEXT3 = XPATH~//span[text()=' Nouvel utilisateur ']
+NEW_USER_BTN2 = XPATH~//span[text()=' Nouvel utilisateur ']
+//mat-icon[text()='add_circle_outline']
+ADDNEWACCSTEP1_TEXT=XPATH~//span[text()='Informations du compte']
+ADDNEWACC_TEXT = XPATH~//div[text()='Étape 1: Ajouter nouvel utilisateur']
+SUMMARY_TEXT = XPATH~//div[contains(text(),'Étape 3: Résumé')]
+SOLUTATION = XPATH~//mat-label[text()='Titre']
+FIRST_NAME = XPATH~//mat-label[text()='Prénom']
+LAST_NAME = XPATH~//mat-label[text()='Nom']
+LOGIN_EMAIL = XPATH~//mat-label[text()='E-mail de connexion']
+LANGUAGE = XPATH~//mat-label[text()='Langue']
+TIME_ZONE = XPATH~//mat-label[text()='Fuseau horaire']
+UNIT = XPATH~//mat-label[text()='Unité']
+CURRENCY = XPATH~//mat-label[text()='Devise']
+DATE-FORMAT = XPATH~//mat-label[text()='Format de date']
+VEHICLE_DISPLAY(DEFAULT) = XPATH~//mat-label[text()='Affichage du véhicule (défaut)']
+METRIC = XPATH~//span[text()=' Métrique ']
+IMPERIAL = XPATH~//span[text()='Impérial']
+US_IMPERIAL = XPATH~//span[text()=' Impérial US ']
+DD/MM/YY = XPATH~//span[text()=' jj/mm/aaaa ']
+MM/DD/YY = XPATH~//span[text()='mm/jj/aaaa']
+DD-MM-YY = XPATH~//span[text()='mm-jj-aaaa']
+MM-DD-YY = XPATH~//span[text()='jj-mm-aaaa']
+NAME = XPATH~//div[text()='Nom']
+VRN_TEXT = XPATH~//*[text()='Immatriculation']
+DASHBOARD_TEXT = XPATH~//*[text()=' Tableau De Bord']
+REPORT_TEXT = XPATH~//span[text()='Rapport']
+TRIP_REPORT_TEXT = XPATH~//*[text()='Rapport de trajets']
+TRIP_TRACKING_TEXT = XPATH~//*[text()='Suivi des trajets (carte)']
+TRIP_REPORT_CLICK = XPATH~//*[@href="#/report/tripreport"]
+TRIP_REPORT_TEXT = XPATH~//*[text()='Rapport de trajets']
+CONF_MENU = XPATH~//*[@menuname="configuration"]/a/span[text()='Configuration']
+ALERT_CLICK = XPATH~//*[@href="#/configuration/alerts"]
+ALERT_TEXT = XPATH~//*[contains(text(),'Alertes')]
+LANDMARKS_CLICK = XPATH~//*[@href="#/configuration/landmarks"]
+LANDMARKS_TEXT = XPATH~//*[contains(text(),'Repères')]
+DRIV_MANA_LINK = XPATH~//*[@href="#/configuration/drivermanagement"]
+DRIVE_MANA_TEXT = XPATH~//*[text()='Gestion des conducteurs']
+IMPORT_NEW_DRIVERS = XPATH~//*[text()='Importer nv conducteurs']
+DOWNLOAD_TEMPLATE = XPATH~//*[text()='Télécharger un modèle']
+IMPORT_DRIVERS_BTN_TEXT = XPATH~//span[text()=' Importer un ou des conducteurs ']
+DRIVER_DETAILS_TEXT = XPATH~//span[text()='Driver Details']
+DRIVER_NAME= XPATH~//div[text()='Nom du conducteur']
+EMAIL = XPATH~//div[text()='E-mail']
+SEARCH_TXT1 = XPATH~//input[@data-placeholder="Rechercher"]
+ORG_REL_MANA_TEXT = XPATH~//div[text()='Organisation Relationship Management']
+ORG_REL_MANA_LINK = XPATH~//*[@href="#/admin/organisationrelationshipmanagement"]
+ORG_REL_DTL_TEXT = XPATH~//span[text()='Organisation Relationship Details']
+ALL = XPATH~//span[text()='Tous']
+REL_NAME = XPATH~//div[text()='Nom de la relation']
+VEHICLE_GROUP = XPATH~//div[text()='Groupe de véhicules']
+NEW_REL_BTN = XPATH~//span[text()=' Nouvelle relation '] 
+CANCEL = XPATH~//span[text()='Annuler']
+SELECT_VEH_GRP_TXT = XPATH~//span[text()='Select Vehicle Group']
+SELECT_OGR = XPATH~//span[text()='Select Organisation']
+ACC_GRP_MANA_CLICK = XPATH~//*[@href="#/admin/accountgroupmanagement"]
+GROUP_NAME1= XPATH~//div[text()='Nom groupe ']
+VEHICLES = XPATH~//div[text()='Véhicules ']
+ACCOUNTS = XPATH~//div[text()='Utilisateurs']
+ACC_ROLE_MANA_CLICK = XPATH~//*[@href="#/admin/accountrolemanagement"]
+ROLE_NAME = XPATH~//div[text()='Nom de rôle']
+NEW_ACC_ROLE = XPATH~//span[text()=' New Account Role ']
+PKG_CLICK = XPATH~//*[@href="#/admin/packagemanagement"]
+PKG_NAME = XPATH~//div[text()='Nom']
+NEW_PKG_BTN = XPATH~//*[text()=' New Package ']
+REL_MANA_CLICK = XPATH~//*[@href="#/admin/relationshipmanagement"]
+NEW_RELL_BTN = XPATH~//span[text()=' Nouvelle relation ']
+VEHICLE_GRP_CLICK = XPATH~//*[@href="#/admin/vehiclegroupmanagement"]
+VEHICLE_GRP_VEHICLE = XPATH~//*[text()='Véhicule ']
+VEH_GRP1 = XPATH~//div[text()='Groupe de véhicules ']
+NEW_VEH_BTN_CLICK = XPATH~//span[text()=' New Vehicle Group ']
+GRP_TYPEDRP = XPATH~//span[text()='Groupe']
+VEHICLE_NAME1 = XPATH~//div[text()='Nom du véhicule']
+REG_NO = XPATH~//div[text()='Immatriculation']
+ACC_REL_MANA_LINK = XPATH~//*[@href="#/admin/accessrelationshipmanagement"]
+ALL_ACCESS_RELSHP_DETAILS_TEXT = XPATH~All Access Relationship Details
+VIEW_LIST_BY1 = XPATH~//span[text()='Voir la liste par:']/following::mat-radio-button[2]/label/div[2]
+VIEW_LIST_BY2 = XPATH~//span[text()='Voir la liste par:']/following::mat-radio-button[1]/label/div[2]
+VIEW_ASS_BY3 = XPATH~//span[text()='View association by:']/following::mat-radio-button[1]/label/div[2]
+NEW_ASS_BTN = XPATH~//span[text()=' New Association ']
+CRT_ASS_BY1_TXT = XPATH~//mat-label[text()='Create Association By']
+VIEW_ASS_BY4 = XPATH~//span[text()='Voir la liste par:']/following::mat-radio-button[1]/label/div[2]
+OPTIN = XPATH~//div[text()='Adhérer']
+OPTOUT = XPATH~//div[text()='Désinscrire']
+CANCEL = XPATH~//span[text()='Annuler']
+RESET = XPATH~//span[text()='Réinitialiser']
+CONFIRM = XPATH~//span[text()='J’accepte']
+ROLE = XPATH~//div[text()='Rôle']
+DROP_CLICK = XPATH~//*[contains(text(),'Italian')]
+DROP_CLICK1 = XPATH~//*[contains(text(),'Bulgarian')]
+
+
+/***************************************************Alerts****************************************************************************************
+
+Alerts_Title = XPATH~//div[text()='Alerts ']
+Alerts_Filter = XPATH~//span[text()='Filter']
+Alerts_Category = XPATH~//mat-label[text()='Category']
+Alerts_Category_Dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div/span[text()='Select Category']/following::div[2]
+Alerts_Type = XPATH~//mat-label[text()=' Type ']
+Alerts_Type_Dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div/span[text()='Select Type']/following::div[2]
+Alerts_VehicleGroup = XPATH~//mat-label[text()=' Vehicle Group ']
+Alerts_VehicleGroup_Dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div/span[text()='Select Vehicle Group']/following::div[2]
+Alerts_Vehicle = XPATH~//span[text()='Select Vehicle']/preceding::mat-label[1]
+Alerts_Vehicle_Dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div/span[text()='Select Vehicle']/following::div[2]
+Alerts_Criticality = XPATH~//mat-label[text()='Criticality']
+Alerts_Criticality_Dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div/span[text()='Select Criticality']/following::div[2]
+Alerts_Status = XPATH~//mat-label[text()='Status']
+Alerts_Status_Dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div/span[text()='Select Status']/following::div[2]
+Alerts_AllCreatedAlertDetails = XPATH~//span[text()='All Created Alert Details ']
+Alerts_NameColumn = XPATH~//div[text()='Name']
+Alerts_Category_ColumnName = XPATH~//div[text()='Category']
+Alerts_AlertType_ColumnName = XPATH~//div[text()='Alert Type']
+Alerts_Threshold_ColumnName = XPATH~//div[text()='Threshold']
+Alerts_Vehicle_Group/Vehicle_ColumnName = XPATH~//div[text()='Vehicle Group/Vehicle']
+Alerts_Status_ColumnName = XPATH~//div[text()='Status']
+Alerts_Action_ColumnName = XPATH~//mat-header-cell[text()=' Action ']
+Alerts_NewAlert_Button = XPATH~//span[text()=' New Alert ']
+Alerts_DuplicateIcon = XPATH~//mat-icon[text()='content_copy']
+Alerts_NewAlert_Title = XPATH~//span[text()='New Alert']
+Alerts_AlertName = XPATH~//mat-label[text()='Alert Name ']
+Alerts_AlertName_TextBox = XPATH~//input[@data-placeholder='Enter Alert Name']
+Alerts_AlertCategory = XPATH~//mat-label[text()='Alert Category ']
+Alerts_AlertCategory_Dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div/span[text()='Select Alert Category']/following::div[2]
+Alerts_AlertType = XPATH~//mat-label[text()='Alert Type ']
+Alerts_AlertType_Dropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div/span[text()='Select Alert Type']/following::div[2]
+Alerts_ApplyOn = XPATH~//mat-label[text()='Apply On ']
+Alerts_Vehicle_RadioButton = XPATH~//*[text()=' Vehicle ']
+Alerts_FilterVehiclesByGroupText = XPATH~//mat-label[text()='Filter Vehicles By Group ']
+Alerts_FilterVehiclesByGroupDropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div/span[text()='Select Vehicle Group']/following::div[2]
+Alerts_VehicleDropdown = XPATH~//mat-select[@role='combobox']/child::div[1]/div/span[text()='Select Vehicle']/following::div[2]
+Alerts_StatusModeText = XPATH~//mat-label[text()='Status Mode ']
+Alerts_Suspended_RadioButton = XPATH~//*[text()=' Suspended ']
+Alerts_ViewVehiclesConcernedText = XPATH~//span[text()='View Vehicles Concerned ']
+Alerts_CreateEditViewBreadCrumb = XPATH~//app-create-edit-view-alerts/div/div[@fxlayout='row']/div[1]/span
+Alerts_ViewAlertTitle = XPATH~//span[text()='View Alert Details']
+Alerts_ViewAlertName = XPATH~//span[text()='Alert SR-D1-31']
+Alerts_ViewAlertVehicle = XPATH~//span[text()='XLR0998HGFFT74592']
+Alerts_EditAlertTitle = XPATH~//span[text()='Edit Alert Details']
+Alerts_EnterAlertName = XPATH~//input[@placeholder='Enter Alert Name']
+Alerts_EditConfirm = XPATH~//span[text()='Confirm']
+Alerts_Reset = XPATH~//span[text()='Reset']
+Alerts_Cancel = XPATH~//span[text()='Cancel']

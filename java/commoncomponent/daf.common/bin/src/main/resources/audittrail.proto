@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+
+option csharp_namespace = "net.atos.daf.ct2.auditservice";
+
+package audittrail;
+
+service AuditService {
+    rpc Addlogs(AuditRecord) returns (AuditResponce);
+    rpc GetAuditLogs (AuditLogRequest) returns (AuditLogResponse);
+}
+
+
+    
+message AuditRecord {
+    google.protobuf.Timestamp  Performed_at=1;     
+    int32 Performed_by =2;
+    string Component_name =3;
+    string Service_name =4;
+    Event_type Type =5;
+    Event_status Status=6;
+    string Message =7;
+    int32 Sourceobject_id =8;
+    int32 Targetobject_id =9;
+    string Updated_data=10;    
+}
+
+message AuditResponce {
+	 Responcecode code=1;
+	string message = 2;
+}
+
+message AuditRequest {
+	string componentname = 1;
+	string eventtype = 2;
+	google.protobuf.Timestamp starttime = 3;
+	google.protobuf.Timestamp endtime = 4;
+}
+
+message AuditLogRequest
+{
+  int32 performed_by =1;
+  string component_name =2;
+}
+
+message AuditLogResponse
+{
+    Responcecode code=1;
+    string message = 2;
+    repeated audittrailproperty audittraillist = 3;
+}
+
+message audittrailproperty
+{
+
+    int32 Audittrailid =1;
+    google.protobuf.Timestamp Created_at =2;
+    google.protobuf.Timestamp  Performed_at=3;     
+    int32 Performed_by =4;
+    string Component_name =5;
+    string Service_name =6;
+    Event_type Type =7;
+    Event_status Status=8;
+    string Message =9;
+    int32 Sourceobject_id =10;
+    int32 Targetobject_id =11;
+    string Updated_data=12;    
+}
+enum Responcecode{
+        Success = 0;
+        Failed = 1;
+      }
+
+      enum Event_type
+        {
+            LOGIN = 0;
+            CREATE = 1;
+            UPDATE = 2;
+            DELETE = 3;
+            GET = 4;
+        }
+
+
+    enum Event_status
+    {
+        SUCCESS = 0;
+        FAILED = 1;
+        PENDING = 2;
+        ABORTED = 3;
+    }
+
+    

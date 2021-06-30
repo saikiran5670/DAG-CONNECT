@@ -1,0 +1,12 @@
+{
+  "SubscribeEvent": {
+  "organizationID": "JMTR001",
+  "packageId": "Package121",
+  "viNs": [ 
+      "ATOSSH76128G364821qq",
+      "ATOSSH54793G657943qq"
+
+  ],
+  "startdatetime": ""
+  }
+}
