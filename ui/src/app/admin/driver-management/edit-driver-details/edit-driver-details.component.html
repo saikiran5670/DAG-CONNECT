@@ -58,11 +58,11 @@
           <mat-label>{{ translationData.lblDriverIDConsentStatus || 'Driver ID Consent Status' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'" style='margin-top: 8px;'>
             <mat-radio-group (change)='onConsentChange($event)' class='margin-top-10' formControlName="consentStatus">
-              <mat-radio-button style='margin-right: 20px;' [checked]="selectedConsentType === 'H' ? true : false" value="H">{{ translationData.lblInherit || 'Inherit' }}</mat-radio-button>
-              <mat-radio-button style='margin-right: 20px;' [checked]="selectedConsentType === 'I' ? true : false" value="I">{{ translationData.lblOptIn || 'Opt-In' }}</mat-radio-button>
-              <mat-radio-button [checked]="selectedConsentType === 'U' ? true : false" value="U">{{ translationData.lblOptOut || 'Opt-Out' }}</mat-radio-button>
+              <mat-radio-button style='margin-right: 20px;' [checked]="selectedConsentType === 'H' ? true : false" value="H" (click)='changeOptStatus(driverData,"H")' >{{ translationData.lblInherit || 'Inherit' }}</mat-radio-button>
+              <mat-radio-button style='margin-right: 20px;' [checked]="selectedConsentType === 'I' ? true : false" value="I" (click)='changeOptStatus(driverData,"I")' >{{ translationData.lblOptIn || 'Opt-In' }}</mat-radio-button>
+              <mat-radio-button [checked]="selectedConsentType === 'U' ? true : false" value="U" (click)='changeOptStatus(driverData,"U")' >{{ translationData.lblOptOut || 'Opt-Out' }}</mat-radio-button>
             </mat-radio-group>
-          </div>
+           </div>
           <div *ngIf="actionType == 'view'">
             <span style='font-weight: 500!important;'>{{ (driverData.status == 'I') ? (translationData.lblOptIn || 'Opt-In') : (driverData.status == 'U') ? (translationData.lblOptOut || 'Opt-Out') : (translationData.lblInherit || 'Inherit') }}</span>
           </div>
@@ -117,8 +117,8 @@
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
       </div>
-    </mat-card-content>
-  </mat-card>
+     </mat-card-content>
+  </mat-card> 
   <div *ngIf="actionType == 'edit'" fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
     <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
     <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>

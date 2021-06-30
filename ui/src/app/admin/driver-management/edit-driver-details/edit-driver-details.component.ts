@@ -2,7 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../shared/custom.validators';
 import { DriverService } from '../../../services/driver.service';
-
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { ConsentOptComponent } from '../consent-opt/consent-opt.component';
 @Component({
   selector: 'app-edit-driver-details',
   templateUrl: './edit-driver-details.component.html',
@@ -14,14 +15,16 @@ export class EditDriverDetailsComponent implements OnInit {
   @Input() driverData: any;
   @Input() translationData: any;
   @Input() actionType: any;
+  @Input() organizationData: any;
+  dialogRef: MatDialogRef<ConsentOptComponent>;
   driverFormGroup: FormGroup;
   breadcumMsg: any = '';
   selectedConsentType: any = '';
   duplicateEmailMsg: boolean = false;
   accountOrganizationId: any = 0;
   accountId: any = 0;
-
-  constructor(private _formBuilder: FormBuilder, private driverService: DriverService) { }
+  
+  constructor(private _formBuilder: FormBuilder,private dialog: MatDialog, private driverService: DriverService) { }
 
   ngOnInit() {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -42,7 +45,7 @@ export class EditDriverDetailsComponent implements OnInit {
       ]
     });
     this.breadcumMsg = this.getBreadcum();
-    this.setDefaultData();
+    this.setDefaultData();   
   }
 
   setDefaultData(){
@@ -79,6 +82,24 @@ export class EditDriverDetailsComponent implements OnInit {
     this.setDefaultData();
   }
   
+  changeOptStatus(driverData: any, status:string){ //--- single opt-in/out mode
+    this.callToCommonTable(driverData, false, status);
+  }
+  callToCommonTable(driverData: any, actionType: any, consentType: any){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;    
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      translationData: this.translationData,
+      driverData: driverData,
+      actionType: actionType,
+      consentType: consentType,
+      organizationData: this.organizationData,
+      radioSelected:true
+    }
+    this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
+  }
+
   onConfirm(){
     let objData: any = {
       id: this.driverData.id,
@@ -111,7 +132,7 @@ export class EditDriverDetailsComponent implements OnInit {
       return ("Driver '$' was successfully updated").replace('$', drvName);
   }
 
-  onConsentChange(event: any){
+   onConsentChange(event: any){
     this.selectedConsentType = event.value;
   }
 
