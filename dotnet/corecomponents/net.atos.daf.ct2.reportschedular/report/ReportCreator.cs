@@ -65,7 +65,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
             {
                 ColorMode = ColorMode.Color,
                 Orientation = Orientation.Landscape,
-                PaperSize = PaperKind.A4,
+                PaperSize = PaperKind.A4Extra,
                 Margins = new MarginSettings { Top = 10, Right = 10, Left = 10, Bottom = 10 },
                 //DocumentTitle = "PDF Report"//,
                 //Out = $@"C:\Harneet\POC\Employee_Report{ReportSchedulerData.Id}.pdf"
