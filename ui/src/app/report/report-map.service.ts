@@ -54,22 +54,22 @@ export class ReportMapService {
     // create custom one
     var ms = new H.ui.MapSettingsControl( {
         baseLayers : [ { 
-          label:"normal",layer:this.defaultLayers.raster.normal.map
+          label:"Normal", layer:this.defaultLayers.raster.normal.map
         },{
-          label:"satellite",layer:this.defaultLayers.raster.satellite.map
+          label:"Satellite", layer:this.defaultLayers.raster.satellite.map
         }, {
-          label:"terrain",layer:this.defaultLayers.raster.terrain.map
+          label:"Terrain", layer:this.defaultLayers.raster.terrain.map
         }
         ],
       layers : [{
-            label: "layer.traffic", layer: this.defaultLayers.vector.normal.traffic
+            label: "Layer.Traffic", layer: this.defaultLayers.vector.normal.traffic
         },
         {
-            label: "layer.incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+            label: "Layer.Incidents", layer: this.defaultLayers.vector.normal.trafficincidents
         }
     ]
       });
-      this.ui.addControl("customized",ms);
+      this.ui.addControl("customized", ms);
   }
 
   clearRoutesFromMap(){
@@ -123,9 +123,43 @@ export class ReportMapService {
    
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any){
+  getCategoryPOIIcon(){
+    let locMarkup = '<svg height="24" version="1.1" width="24" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><g transform="translate(0 -1028.4)"><path d="m12 0c-4.4183 2.3685e-15 -8 3.5817-8 8 0 1.421 0.3816 2.75 1.0312 3.906 0.1079 0.192 0.221 0.381 0.3438 0.563l6.625 11.531 6.625-11.531c0.102-0.151 0.19-0.311 0.281-0.469l0.063-0.094c0.649-1.156 1.031-2.485 1.031-3.906 0-4.4183-3.582-8-8-8zm0 4c2.209 0 4 1.7909 4 4 0 2.209-1.791 4-4 4-2.2091 0-4-1.791-4-4 0-2.2091 1.7909-4 4-4z" fill="#55b242" transform="translate(0 1028.4)"/><path d="m12 3c-2.7614 0-5 2.2386-5 5 0 2.761 2.2386 5 5 5 2.761 0 5-2.239 5-5 0-2.7614-2.239-5-5-5zm0 2c1.657 0 3 1.3431 3 3s-1.343 3-3 3-3-1.3431-3-3 1.343-3 3-3z" fill="#ffffff" transform="translate(0 1028.4)"/></g></svg>';
+    let markerSize = { w: 26, h: 32 };
+    const icon = new H.map.Icon(locMarkup, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+    return icon;
+  }
+
+  showCategoryPOI(categotyPOI: any, _ui: any){
+    categotyPOI.forEach(element => {
+      if(element.latitude && element.longitude){
+        let categoryPOIMarker = new H.map.Marker({lat: element.latitude, lng: element.longitude},{icon: this.getCategoryPOIIcon()});
+        this.group.addObject(categoryPOIMarker);
+        let bubble: any;
+        categoryPOIMarker.addEventListener('pointerenter', function (evt) {
+          bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+            content:`<div>
+            <b>POI Name:</b> ${element.poiName}<br>
+            <b>Category:</b> ${element.categoryName}<br>
+            <b>Address:</b> ${element.poiAddress}
+            </div>`
+          });
+          // show info bubble
+          _ui.addBubble(bubble);
+        }, false);
+        categoryPOIMarker.addEventListener('pointerleave', function(evt) {
+          bubble.close();
+        }, false);
+      }
+    });
+  }
+
+  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any){
     this.clearRoutesFromMap();
-    if(_selectedRoutes){
+    if(_displayPOIList && _displayPOIList.length > 0){ 
+      this.showCategoryPOI(_displayPOIList, _ui); //-- show category POi
+    }
+    if(_selectedRoutes && _selectedRoutes.length > 0){
       for(var i in _selectedRoutes){
         this.startAddressPositionLat = _selectedRoutes[i].startPositionLattitude;
         this.startAddressPositionLong = _selectedRoutes[i].startPositionLongitude;
@@ -196,8 +230,10 @@ export class ReportMapService {
         this.hereMap.addObject(this.group);
         this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
       }
-      if(_selectedRoutes.length > 0){
-        this.setMarkerCluster(_selectedRoutes, _ui, this.hereMap);
+      this.setMarkerCluster(_selectedRoutes, _ui, this.hereMap); // cluster route marker
+    }else{
+      if(_displayPOIList.length > 0){
+        this.hereMap.addObject(this.group);
       }
     }
    }
@@ -280,9 +316,7 @@ export class ReportMapService {
       size: { w: 22, h: 22 },
       anchor: { x: 11, y: 11 }
     });
-  
-
-  
+    
     var clusterSvgTemplate =
     '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px"><circle cx="25px" cy="25px" r="20" fill="red" stroke-opacity="0.5" />' +
     '<text x="24" y="32" font-size="14pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="white">{text}</text>' +

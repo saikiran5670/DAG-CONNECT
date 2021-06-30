@@ -30,17 +30,16 @@
               <mat-option value='T'>{{ translationData.lblStatusTerminate || 'Terminate' }}</mat-option>           
           </mat-select>
       </mat-form-field>
-      </div>
-    
-<div (mouseover)="legendsDisabled=true" (mouseout)="legendsDisabled=false"  style=" padding-left: 170px;cursor:pointer;">  
-  <span class="connectedStatus" style="margin-top: 12px;">Legends <mat-icon class="legendsIcon">error_outline</mat-icon></span> 
-</div>
+      </div>    
+     <div style=" padding-left: 170px;">  
+       <span (mouseover)="legendsDisabled=true" (mouseout)="legendsDisabled=false" class="connectedStatus" style="margin-top: 12px;cursor:pointer;">Legends <mat-icon class="legendsIcon">error_outline</mat-icon></span> 
+     </div>
       <div *ngIf="legendsDisabled" class='areaWidth legendsDiv' fxLayoutGap="3px" style="padding-top: 10px;">
         <ul>
           <li>
-        <span class="connectedStatus">
-          <img src='assets/images/icons/vehicleStatus/Opt_In.svg' />
-          {{ translationData.lbl || 'Connected On' }}
+           <span class="connectedStatus">
+           <img src='assets/images/icons/vehicleStatus/Opt_In.svg' />
+            {{ translationData.lbl || 'Connected On' }}
         </span> 
       </li> 
       <li>
@@ -71,10 +70,9 @@
       </div>
         <div class='areaWidth' fxLayoutGap="3px" fxLayoutAlign="end" style="letter-spacing: 0.2px;font-size: 16px;">
           <span style='padding-top: 10px;'>{{ translationData.lblConnected || 'Connected' }}</span>
-          <button class='actionBtn' mat-flat-button  (click)="onChangeConnectedAllStatus($event)" matTooltip="{{ translationData.lblClicktoactivate || 'Select list checkbox for changing the status' }}" [(ngModel)]="connectedAll">
-          <mat-slide-toggle color="primary" value="false" (change)="fieldsChange($event)">
-          </mat-slide-toggle>&nbsp;         
-          </button>
+          <mat-slide-toggle color="primary" value="false" class='actionBtn' mat-flat-button  style="padding: 10px;"
+          (click)="onChangeConnectedAllStatus($event)" matTooltip="{{ translationData.lblClicktoactivate || 'Select list checkbox for changing the status' }}" [(ngModel)]="connectedAll">
+          </mat-slide-toggle>          
         </div> 
       </div>     
       <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
@@ -125,8 +123,7 @@
           </ng-container>
           <ng-container matColumnDef="connected">
             <mat-header-cell *matHeaderCellDef mat-sort-header  style="min-width: 16%;">{{ translationData.lblConnected || 'Connected(On/Off)'}}</mat-header-cell>
-            <mat-cell *matCellDef="let row"  style="min-width: 16%;">
-             
+            <mat-cell *matCellDef="let row"  style="min-width: 16%;">            
               <button *ngIf="row.status != 'T'" class='actionBtn' mat-flat-button (click)="onChangeConnectedStatus(row)" matTooltip="{{ row.optIn == 'I' ? (translationData.lblClicktodeactivate || 'Click to change the status') : translationData.lblClicktoactivate || 'Click to change the status' }}">
               <mat-slide-toggle color="primary" [checked]='(row.optIn == "I" ? true : false) || ((row.status == "C" && row.optIn == "H") ? true : false) || ((row.status == "N" && row.optIn == "H") ? true : false) ' >
              </mat-slide-toggle>&nbsp;        

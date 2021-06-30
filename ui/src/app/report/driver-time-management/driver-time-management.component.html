@@ -300,7 +300,7 @@
       <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 
     </div>
-    <div *ngIf="!allDriversSelected || driverSelected">
+    <div *ngIf="(!allDriversSelected && detailConvertedData) || driverSelected">
       <app-driver-time-detail [translationData]='translationData' [driverDetails]='tableDetailsInfoObj' [detailConvertedData]='detailConvertedData'
         [displayedColumns]='detaildisplayedColumns'  [showField]='showField' (backToMainPage)="backToMainPage()" [driverSelected]='driverSelected'
       ></app-driver-time-detail>

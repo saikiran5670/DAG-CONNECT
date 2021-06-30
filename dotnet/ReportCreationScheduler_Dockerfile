@@ -2,8 +2,14 @@
 
 FROM mcr.microsoft.com/dotnet/runtime:3.1 AS base
 
-RUN ["apt-get", "update"]
-RUN ["apt-get", "-y", "install", "libgdiplus"]
+# RUN ["apt-get", "update"]
+# RUN ["apt-get", "-y", "install", "libgdiplus"]
+
+RUN apt-get update
+    
+RUN curl -o /usr/lib/libwkhtmltox.so --location https://github.com/rdvojmoc/DinkToPdf/blob/master/v0.12.4/64%20bit/libwkhtmltox.so
+RUN curl -o /usr/lib/libwkhtmltox.dll --location https://github.com/rdvojmoc/DinkToPdf/blob/master/v0.12.4/64%20bit/libwkhtmltox.dll
+RUN curl -o /usr/lib/libwkhtmltox.dylib --location https://github.com/rdvojmoc/DinkToPdf/blob/master/v0.12.4/64%20bit/libwkhtmltox.dylib
 
 WORKDIR /app
 
@@ -33,5 +39,8 @@ RUN dotnet publish "net.atos.daf.ct2.applications.csproj" -c Release -o /app/pub
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN ls -a /app
+RUN ls -a /app/assets
+RUN cat /app/assets/style.css
 
 ENTRYPOINT ["dotnet", "net.atos.daf.ct2.applications.dll", "ReportCreationScheduler"]

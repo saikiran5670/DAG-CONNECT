@@ -383,7 +383,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
 
                 if (data != null)
                 {
-                    if (data.ValidTill < currentdate)
+                    if (data.ValidTill > currentdate)
                     {
                         string strUpdatedToken = await _reportSchedulerManager.UpdatePDFBinaryRecordByToken(data.Token.ToString());
                         ReportPDFResponse response = new ReportPDFResponse()

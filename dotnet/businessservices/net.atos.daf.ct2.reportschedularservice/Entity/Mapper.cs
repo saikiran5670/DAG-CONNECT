@@ -11,7 +11,8 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             ReportTypeRequest objreporttype = new ReportTypeRequest();
             objreporttype.Id = reportType.Id;
             objreporttype.ReportName = string.IsNullOrEmpty(reportType.ReportName) ? string.Empty : reportType.ReportName;
-            objreporttype.IsDriver = reportType.ReportName == ReportSchedulerConstant.DRIVE_TIME_MANAGEMENT || reportType.ReportName == ReportSchedulerConstant.ECO_SCORE;
+            objreporttype.Key = string.IsNullOrEmpty(reportType.Key) ? string.Empty : reportType.Key;
+            objreporttype.IsDriver = reportType.IsDriver;
             return objreporttype;
         }
 
@@ -82,6 +83,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
         {
             ReportSchedulerRequest reportscheduler = new ReportSchedulerRequest();
             reportscheduler.Id = request.Id;
+            reportscheduler.ReportName = string.IsNullOrEmpty(request.ReportName) ? string.Empty : request.ReportName;
             reportscheduler.OrganizationId = request.OrganizationId;
             reportscheduler.ReportId = request.ReportId;
             reportscheduler.FrequencyType = string.IsNullOrEmpty(request.FrequencyType) ? string.Empty : request.FrequencyType;
@@ -163,6 +165,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             ScheduledReportDriverRefRequest schedulereportdr = new ScheduledReportDriverRefRequest();
             schedulereportdr.ScheduleReportId = request.ScheduleReportId;
             schedulereportdr.DriverId = request.DriverId;
+
             schedulereportdr.State = string.IsNullOrEmpty(request.State) ? string.Empty : request.State;
             schedulereportdr.CreatedAt = request.CreatedAt;
             schedulereportdr.CreatedBy = request.CreatedBy;

@@ -6,7 +6,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { ChartsModule } from 'ng2-charts';
 import { TripReportComponent } from './trip-report/trip-report.component';
-import { TripTracingComponent } from './trip-tracing/trip-tracing.component';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { MatTableExporterModule } from 'mat-table-exporter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core'
@@ -17,6 +16,10 @@ import { DriverTimeDetailComponent } from './driver-time-management/driver-time-
 import { FullCalendarModule } from '@fullcalendar/angular'; 
 import dayGridPlugin from '@fullcalendar/daygrid';
 import 'chartjs-plugin-zoom';
+import { FleetFuelReportComponent } from './fleet-fuel-report/fleet-fuel-report.component';
+import { FleetFuelReportVehicleComponent } from './fleet-fuel-report/fleet-fuel-report-vehicle/fleet-fuel-report-vehicle.component';
+import { FleetFuelReportDriverComponent } from './fleet-fuel-report/fleet-fuel-report-driver/fleet-fuel-report-driver.component';
+
 // import interactionPlugin from '@fullcalendar/interaction';
 
 FullCalendarModule.registerPlugins([ // register FullCalendar plugins
@@ -33,7 +36,7 @@ export const MY_DATE_FORMAT = {
 }
 
 @NgModule({
-  declarations: [ReportComponent, TripReportComponent, TripTracingComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent],
+  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent],
   imports: [
     CommonModule,
     ReportRoutingModule,

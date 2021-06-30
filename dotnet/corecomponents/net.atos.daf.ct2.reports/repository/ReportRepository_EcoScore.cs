@@ -555,9 +555,7 @@ namespace net.atos.daf.ct2.reports.repository
                                             SET ecoscore_profile_id = @TargetProfileId
                                             WHERE organization_id = @OrgId
                                             AND account_id = @AccountId
-                                            AND report_id = @ReportId
-                                            AND state ='A'
-                                            AND type= 'D'  RETURNING id";
+                                            AND report_id = @ReportId RETURNING id";
 
                 int id = await _dataAccess.ExecuteScalarAsync<int>(updateTargetProfile, parameters);
                 txn.Commit();
@@ -584,8 +582,9 @@ namespace net.atos.daf.ct2.reports.repository
         public async Task<bool> CreateReportUserPreference(ReportUserPreferenceCreateRequest request)
         {
             string queryInsert = @"INSERT INTO master.reportpreference
-                                   (organization_id,account_id, report_id, type, data_attribute_id,state,chart_type,created_at,modified_at,threshold_limit_type,threshold_value)
-                                   VALUES (@organization_id,@account_id,@report_id,@type,@data_attribute_id,@state,@chart_type,@created_at,@modified_at,@threshold_type,@threshold_value)";
+                                   (organization_id,account_id, report_id, type, data_attribute_id,state,chart_type,created_at,modified_at,threshold_limit_type,threshold_value,reportattribute_id)
+                                   VALUES (@organization_id,@account_id,@report_id,@type,@data_attribute_id,@state,@chart_type,@created_at,@modified_at,@threshold_type,@threshold_value,
+                                   (SELECT id from master.reportattribute WHERE report_id=@report_id AND data_attribute_id=@data_attribute_id))";
 
             string queryDelete = @"DELETE FROM master.reportpreference
                                   WHERE organization_id=@organization_id and account_id=@account_id AND report_id=@report_id";
@@ -603,14 +602,14 @@ namespace net.atos.daf.ct2.reports.repository
                 try
                 {
                     await _dataAccess.ExecuteAsync(queryDelete, userPreference);
-                    for (int i = 0; i < request.Attributes.Count; i++)
+                    foreach (var attribute in request.Attributes)
                     {
-                        userPreference.Add("@data_attribute_id", request.Attributes[i].DataAttributeId);
-                        userPreference.Add("@state", request.Attributes[i].State);
-                        userPreference.Add("@type", request.Attributes[i].Type);
-                        userPreference.Add("@chart_type", request.Attributes[i].ChartType == new char() ? null : request.Attributes[i].ChartType);
-                        userPreference.Add("@threshold_type", request.Attributes[i].ThresholdType);
-                        userPreference.Add("@threshold_value", request.Attributes[i].ThresholdValue);
+                        userPreference.Add("@data_attribute_id", attribute.DataAttributeId);
+                        userPreference.Add("@state", (char)attribute.State);
+                        userPreference.Add("@type", (char)attribute.Type);
+                        userPreference.Add("@chart_type", attribute.ChartType.HasValue ? (char)attribute.ChartType : new char?());
+                        userPreference.Add("@threshold_type", attribute.ThresholdType.HasValue ? (char)attribute.ThresholdType : new char?());
+                        userPreference.Add("@threshold_value", attribute.ThresholdValue);
                         await _dataAccess.ExecuteAsync(queryInsert, userPreference);
                     }
                     transactionScope.Commit();

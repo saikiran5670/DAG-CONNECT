@@ -26,10 +26,17 @@
         public string ThresholdType { get; set; }
         public long ThresholdValue { get; set; }
         public int[] SubDataAttributes { get; set; }
-        public char AttributeType { get; set; }
+        private char AttributeType { get; set; }
+        public ReportAttributeType ReportAttributeType
+        {
+            get
+            {
+                return (ReportAttributeType)AttributeType;
+            }
+        }
     }
 
-    enum ReportAttributeType
+    public enum ReportAttributeType
     {
         Simple = 'S',
         Complex = 'C',

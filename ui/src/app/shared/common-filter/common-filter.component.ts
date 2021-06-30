@@ -119,12 +119,18 @@ export class CommonFilterComponent implements OnInit {
     let filterTerms = {};
     if(this.name != ''){
       filterTerms['firstName'] = this.name.trim().toLowerCase();
+    } else {
+      filterTerms['firstName'] = '';
     }
     if(this.userGroup != 'All'){
       filterTerms['userGroup'] = this.userGroup.trim().toLowerCase();
+    } else {
+      filterTerms['userGroup'] = '';
     }
     if(this.role != 'All'){
       filterTerms['role'] = this.role.trim().toLowerCase();
+    } else {
+      filterTerms['role'] = '';
     }
     this.dataSource.filter = JSON.stringify(filterTerms);
     this.filterValues.emit(this.dataSource);
