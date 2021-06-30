@@ -20,6 +20,7 @@ import { FleetFuelReportComponent } from './fleet-fuel-report/fleet-fuel-report.
 import { FleetFuelReportVehicleComponent } from './fleet-fuel-report/fleet-fuel-report-vehicle/fleet-fuel-report-vehicle.component';
 import { FleetFuelReportDriverComponent } from './fleet-fuel-report/fleet-fuel-report-driver/fleet-fuel-report-driver.component';
 import { Ng2CompleterModule } from 'ng2-completer';
+import { EcoScoreReportComponent } from './eco-score-report/eco-score-report.component';
 
 // import interactionPlugin from '@fullcalendar/interaction';
 
@@ -37,7 +38,7 @@ export const MY_DATE_FORMAT = {
 }
 
 @NgModule({
-  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent],
+  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent, EcoScoreReportComponent],
   imports: [
     CommonModule,
     ReportRoutingModule,

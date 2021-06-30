@@ -30,12 +30,16 @@ export class ReportMapService {
   group = new H.map.Group();
   map_key : string = "";
   defaultLayers : any;
+  herePOISearch: any = '';
+  entryPoint: any = '';
 
   constructor(private hereSerive : HereService, private _configService: ConfigService) {
     this.map_key =  _configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
       "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
+    this.herePOISearch = this.platform.getPlacesService();
+    this.entryPoint = H.service.PlacesService.EntryPoint;
   }
 
   initMap(mapElement: any){
@@ -160,13 +164,83 @@ export class ReportMapService {
   showSearchMarker(markerData: any){
     if(markerData && markerData.lat && markerData.lng){
       let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
-      this.hereMap.setCenter({lat: markerData.lat, lng: markerData.lng}, 'default');
+      if(markerData.from && markerData.from == 'search'){
+        this.hereMap.setCenter({lat: markerData.lat, lng: markerData.lng}, 'default');
+      }
       this.group.addObject(selectedMarker);
     }
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any){
+  showHereMapPOI(POIArr: any, selectedRoutes: any, _ui: any){
+    let lat: any = 53.000751; // DAF Netherland lat
+    let lng: any = 6.580920; // DAF Netherland lng
+    if(selectedRoutes && selectedRoutes.length > 0){
+      lat = selectedRoutes[selectedRoutes.length - 1].startPositionLattitude;
+      lng = selectedRoutes[selectedRoutes.length - 1].startPositionLongitude;
+    }
+    if(POIArr.length > 0){
+      POIArr.forEach(element => {
+        this.herePOISearch.request(this.entryPoint.SEARCH, { 'at': lat + "," + lng, 'q': element }, (data) => {
+          //console.log(data);
+          for(let i = 0; i < data.results.items.length; i++) {
+            this.dropMapPOIMarker({ "lat": data.results.items[i].position[0], "lng": data.results.items[i].position[1] }, data.results.items[i], element, _ui);
+          }
+        }, error => {
+          console.log('ERROR: ' + error);
+        });
+      });
+      if(selectedRoutes && selectedRoutes.length == 0){
+        this.hereMap.setCenter({lat: lat, lng: lng}, 'default');
+      }
+    }
+  }
+
+  dropMapPOIMarker(coordinates: any, data: any, poiType: any, _ui: any) {
+    let marker = this.createMarker(poiType);
+    let markerSize = { w: 26, h: 26 };
+    const icon = new H.map.Icon(marker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+    let poiMarker = new H.map.Marker(coordinates, {icon:icon});
+    poiMarker.addEventListener('tap', event => {
+        let bubble = new H.ui.InfoBubble(event.target.getGeometry(), {
+          content: `<p> ${data.title}<br> ${data.vicinity}</p>`
+        });
+        _ui.addBubble(bubble);
+    }, false);
+    this.group.addObject(poiMarker);
+  }
+
+  createMarker(poiType: any){
+    let homeMarker: any = '';
+    switch(poiType){
+      case 'Hotel':{
+        homeMarker = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><path fill="#ff00f3" d="M25,1.801c-9.703,0-17.602,7.895-17.602,17.598c0,11.227,10.711,22.117,16.461,27.969L25,48.527l1.137-1.16	c5.754-5.848,16.465-16.734,16.465-27.969C42.602,9.695,34.703,1.801,25,1.801z M31.295,27.399h-2.191V20.46h-8.207v6.939h-2.191	V11.898h2.191v6.617h8.207v-6.617h2.191V27.399z" style=""></path></svg>`;
+        break;
+      }
+      case 'Petrol Station':{
+        homeMarker = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><path fill="#008400" d="M 25 1.8007812 C 15.297 1.8007812 7.3984375 9.6954375 7.3984375 19.398438 C 7.3984375 30.625437 18.109375 41.515188 23.859375 47.367188 L 25 48.527344 L 26.136719 47.367188 C 31.890719 41.519188 42.601562 30.633437 42.601562 19.398438 C 42.601562 9.6954375 34.703 1.8007812 25 1.8007812 z M 19.882812 11.898438 L 25.855469 11.898438 C 28.841469 11.898438 30.904297 13.970516 30.904297 16.978516 C 30.903297 19.943516 28.786547 22.007813 25.810547 22.007812 L 22.072266 22.007812 L 22.072266 27.400391 L 19.882812 27.400391 L 19.882812 11.898438 z M 22.072266 13.810547 L 22.072266 20.105469 L 25.285156 20.105469 C 27.412156 20.105469 28.658203 18.977234 28.658203 16.990234 C 28.658203 14.927234 27.455156 13.810547 25.285156 13.810547 L 22.072266 13.810547 z" style="
+        "></path></svg>`;
+        break;
+      }
+      case 'Parking':{
+        homeMarker = `<svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" x="0" y="0" version="1.1" viewBox="0 0 128 128" xml:space="preserve" style="
+        "><circle cx="64" cy="64" r="55" fill="#f14e4e" style="
+        "></circle><path fill="#FFF" d="M64,122C32,122,6,96,6,64S32,6,64,6s58,26,58,58S96,122,64,122z M64,12c-28.7,0-52,23.3-52,52s23.3,52,52,52 s52-23.3,52-52S92.7,12,64,12z" style="
+        "></path><path fill="#FFF" d="M54,92c-1.7,0-3-1.3-3-3V44c0-1.7,1.3-3,3-3h12c9.4,0,17,7.6,17,17s-7.6,17-17,17h-9v14 C57,90.7,55.7,92,54,92z M57,69h9c6.1,0,11-4.9,11-11s-4.9-11-11-11h-9V69z"></path></svg>`;
+        break;
+      }
+      case 'Railway Station':{
+        homeMarker = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><path fill="#0414a0" d="M 25 1.8007812 C 15.297 1.8007812 7.3984375 9.6954375 7.3984375 19.398438 C 7.3984375 30.625437 18.109375 41.515188 23.859375 47.367188 L 25 48.527344 L 26.136719 47.367188 C 31.890719 41.519188 42.601562 30.633437 42.601562 19.398438 C 42.601562 9.6954375 34.703 1.8007812 25 1.8007812 z M 19.683594 11.898438 L 25.720703 11.898438 C 28.782703 11.898438 30.769531 13.734797 30.769531 16.591797 C 30.769531 18.707797 29.620031 20.395297 27.707031 21.029297 L 31.240234 27.398438 L 28.695312 27.398438 L 25.462891 21.373047 L 21.873047 21.373047 L 21.873047 27.398438 L 19.683594 27.398438 L 19.683594 11.898438 z M 21.873047 13.798828 L 21.873047 19.492188 L 25.494141 19.492188 C 27.417141 19.493187 28.513672 18.473484 28.513672 16.646484 C 28.513672 14.863484 27.342922 13.798828 25.419922 13.798828 L 21.873047 13.798828 z" style=""></path></svg>`;
+        break;
+      }
+    }
+    return homeMarker;
+  }
+
+  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any){
     this.clearRoutesFromMap();
+    if(_herePOI){
+      this.showHereMapPOI(_herePOI, _selectedRoutes, _ui);
+    }
     if(_searchMarker){
       this.showSearchMarker(_searchMarker);
     }
@@ -246,7 +320,7 @@ export class ReportMapService {
       }
       this.setMarkerCluster(_selectedRoutes, _ui, this.hereMap); // cluster route marker
     }else{
-      if(_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng)){
+      if(_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)){
         this.hereMap.addObject(this.group);
       }
     }

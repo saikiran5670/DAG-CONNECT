@@ -369,7 +369,7 @@ export class DriverManagementComponent implements OnInit {
     }
     //this.newDriverCount = (this.filelist.length - this.rejectedDriverList.length); // new = (total - rejected)
   }
-
+  
   validateFields(driverList: any){
     let validData: any = [];
     let invalidData: any = [];
@@ -657,7 +657,8 @@ export class DriverManagementComponent implements OnInit {
       driverData: driverData,
       actionType: actionType,
       consentType: consentType,
-      organizationData: this.organizationData
+      organizationData: this.organizationData,
+      radioSelected:false
     }
     this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe(res => {

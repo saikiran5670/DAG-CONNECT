@@ -172,9 +172,9 @@
                 </div>
                 <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
             </form>
-        </mat-card>
-    </div>
+        </mat-card>       
+    </div>    
     <div *ngIf='editFlag'>
-        <app-edit-driver-details [translationData]='translationData' [actionType]='actionType' [driverData]='driverData' (backToPage)="updateEditData($event)"></app-edit-driver-details>
+        <app-edit-driver-details [translationData]='translationData' [organizationData]='organizationData' [actionType]='actionType' [driverData]='driverData' (backToPage)="updateEditData($event)"></app-edit-driver-details>
     </div>
 </div>

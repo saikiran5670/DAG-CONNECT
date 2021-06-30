@@ -12,6 +12,7 @@
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.audit\net.atos.daf.ct2.audit.csproj" />
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.notification\net.atos.daf.ct2.notification.csproj" />
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.template\net.atos.daf.ct2.template.csproj" />
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.visibility\net.atos.daf.ct2.visibility.csproj" />
     <ProjectReference Include="..\net.atos.daf.ct2.reports\net.atos.daf.ct2.reports.csproj" />
   </ItemGroup>
