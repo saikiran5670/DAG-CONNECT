@@ -17,7 +17,6 @@ namespace atos.net.daf.ct2.reportscheduler.test
     {
         private readonly IConfiguration _config;
         private readonly IDataAccess _dataAccess;
-        private readonly IDataMartDataAccess _dataMartdataAccess;
         private readonly ReportSchedulerRepository _reportSchedulerRepository;
         private readonly IReportSchedulerManager _reportSchedulerManager;
         private readonly IEmailNotificationManager _emailNotificationManager;
@@ -28,10 +27,8 @@ namespace atos.net.daf.ct2.reportscheduler.test
             _config = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json")
                                                        .Build();
             var connectionString = _config.GetConnectionString("DevAzure");
-
-            _dataMartdataAccess = new PgSQLDataMartDataAccess(_config.GetConnectionString("DataMartConnectionString"));
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _reportSchedulerRepository = new ReportSchedulerRepository(_dataAccess, _dataMartdataAccess);
+            _reportSchedulerRepository = new ReportSchedulerRepository(_dataAccess);
             _reportSchedulerManager = new ReportSchedulerManager(_reportSchedulerRepository);
             _helper = new Helper();
         }

@@ -13,12 +13,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
     public partial class ReportSchedulerRepository : IReportSchedulerRepository
     {
         private readonly IDataAccess _dataAccess;
-        private readonly IDataMartDataAccess _dataMartdataAccess;
+
         private readonly Helper _helper;
-        public ReportSchedulerRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
+        public ReportSchedulerRepository(IDataAccess dataAccess)
         {
             _dataAccess = dataAccess;
-            _dataMartdataAccess = dataMartdataAccess;
             _helper = new Helper();
         }
 
