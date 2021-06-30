@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.reportscheduler
             return flag;
         }
 
-        private static bool CheckForSubscription(ReportCreationScheduler reportSchedulerData, IEnumerable<ReportType> reportSubscriptions) => reportSubscriptions.Any(w => w.Key == reportSchedulerData.ReportKey) && reportSubscriptions.Any(w => w.Key == ReportNameConstants.REPORT_SCHEDULE) || true;
+        private static bool CheckForSubscription(ReportCreationScheduler reportSchedulerData, IEnumerable<ReportType> reportSubscriptions) => reportSubscriptions.Any(w => w.Key == reportSchedulerData.ReportKey) && reportSubscriptions.Any(w => w.Key == ReportNameConstants.REPORT_SCHEDULE);
 
         private async Task AddAuditLog(string message, AuditTrailEnum.Event_status eventStatus)
         {
