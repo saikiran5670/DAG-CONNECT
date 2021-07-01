@@ -124,7 +124,7 @@ namespace net.atos.daf.ct2.account.report
                         DrivingTime = tripData.DrivingTime,
                         Alerts = tripData.Alert,
                         Events = tripData.Events,
-                        FuelConsumed100km = Math.Round(tripData.FuelConsumed100km,2)
+                        FuelConsumed100km = Math.Round(tripData.FuelConsumed100km, 2)
                     });
             }
             var html = ReportHelper
@@ -158,7 +158,7 @@ namespace net.atos.daf.ct2.account.report
                               , VehicleName, RegistrationNo
                               , await GenerateTable()
                 );
-            return html.Replace("{{","{").Replace("}}", "}").ToString();
+            return html.Replace("{{", "{").Replace("}}", "}").ToString();
         }
     }
 }
