@@ -1,4 +1,4 @@
-﻿namespace net.atos.daf.ct2.reports.entity.fleetOverview
+﻿namespace net.atos.daf.ct2.reports.entity
 {
     public class VehicleHealthStatusRequest
     {
