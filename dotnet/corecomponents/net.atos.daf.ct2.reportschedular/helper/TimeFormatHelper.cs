@@ -34,8 +34,8 @@ namespace net.atos.daf.ct2.reportscheduler.helper
 
         public string GetTimeFormatName(int timeFormatId)
         {
-            var formatName = _userTimeFormat.Where(w => w.Id == timeFormatId).FirstOrDefault()?.Key ?? FormatConstants.DATE_FORMAT_LABLE;
-            return formatName == FormatConstants.DATE_FORMAT_LABLE ? FormatConstants.TIME_FORMAT_24 : FormatConstants.TIME_FORMAT_12;
+            var formatName = _userTimeFormat.Where(w => w.Id == timeFormatId).FirstOrDefault()?.Key ?? FormatConstants.TIME_FORMAT_LABLE;
+            return formatName == FormatConstants.TIME_FORMAT_LABLE ? FormatConstants.TIME_FORMAT_24 : FormatConstants.TIME_FORMAT_12;
         }
 
     }

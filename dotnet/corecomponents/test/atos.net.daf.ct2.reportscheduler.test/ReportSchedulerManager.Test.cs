@@ -49,7 +49,9 @@ namespace atos.net.daf.ct2.reportscheduler.test
         {
             int accountId = 393;
             int orgnisationId = 1;
-            var result = await _reportSchedulerManager.GetReportParameter(accountId, orgnisationId);
+            int contextorgId = 36;
+            int roleId = 33;
+            var result = await _reportSchedulerManager.GetReportParameter(accountId, orgnisationId, contextorgId, roleId);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
         }

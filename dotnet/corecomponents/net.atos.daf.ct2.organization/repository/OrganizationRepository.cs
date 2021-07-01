@@ -331,7 +331,7 @@ namespace net.atos.daf.ct2.organization.repository
                             l.id LanguageName,
                             u.id Unit
                             FROM master.organization o
-                            left join  master.accountpreference a on o.id=a.id
+                            left join  master.accountpreference a on o.preference_id=a.id
                             left join  master.currency c on c.id=a.currency_id
                             left join  master.timezone t on t.id=a.timezone_id
                             left join  master.timeformat tf on tf.id=a.time_format_id
@@ -341,9 +341,9 @@ namespace net.atos.daf.ct2.organization.repository
                             left join  translation.language l on l.id=a.language_id
                             where o.id=@Id";
                 parameter.Add("@Id", organizationId);
-                IEnumerable<PreferenceResponse> PreferenceDetails = await _dataAccess.QueryAsync<PreferenceResponse>(query, parameter);
+                IEnumerable<PreferenceResponse> preferenceDetails = await _dataAccess.QueryAsync<PreferenceResponse>(query, parameter);
                 PreferenceResponse preferenceResponse = new PreferenceResponse();
-                foreach (var item in PreferenceDetails)
+                foreach (var item in preferenceDetails)
                 {
                     preferenceResponse.PreferenceId = item.PreferenceId;
                     preferenceResponse.OrganizationId = item.OrganizationId;

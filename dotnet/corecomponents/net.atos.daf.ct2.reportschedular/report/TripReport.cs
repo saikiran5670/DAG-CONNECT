@@ -12,6 +12,8 @@ using net.atos.daf.ct2.reportscheduler.helper;
 using net.atos.daf.ct2.reportscheduler.report;
 using net.atos.daf.ct2.reportscheduler.repository;
 using net.atos.daf.ct2.template;
+using net.atos.daf.ct2.unitconversion;
+using net.atos.daf.ct2.unitconversion.ENUM;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.visibility;
 using Newtonsoft.Json;
@@ -23,6 +25,7 @@ namespace net.atos.daf.ct2.account.report
         private readonly IReportSchedulerRepository _reportSchedularRepository;
         private readonly IVisibilityManager _visibilityManager;
         private readonly ITemplateManager _templateManager;
+        private readonly IUnitConversionManager _unitConversionManager;
         private readonly EmailEventType _evenType;
         private readonly EmailContentType _contentType;
 
@@ -34,6 +37,7 @@ namespace net.atos.daf.ct2.account.report
         public long FromDate { get; private set; }
         public long ToDate { get; private set; }
         public string TimeFormatName { get; private set; }
+        public UnitToConvert UnitToConvert { get; private set; }
         public bool IsAllParameterSet { get; private set; } = false;
         public ReportCreationScheduler ReportSchedulerData { get; private set; }
         public IReportManager ReportManager { get; }
@@ -42,12 +46,14 @@ namespace net.atos.daf.ct2.account.report
 
         public TripReport(IReportManager reportManager,
                           IReportSchedulerRepository reportSchedularRepository,
-                          IVisibilityManager visibilityManager, ITemplateManager templateManager, EmailEventType evenType, EmailContentType contentType)
+                          IVisibilityManager visibilityManager, ITemplateManager templateManager,
+                          IUnitConversionManager unitConversionManager, EmailEventType evenType, EmailContentType contentType)
         {
             ReportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
             _visibilityManager = visibilityManager;
             _templateManager = templateManager;
+            _unitConversionManager = unitConversionManager;
             _evenType = evenType;
             _contentType = contentType;
         }
@@ -80,6 +86,7 @@ namespace net.atos.daf.ct2.account.report
             TimeZoneName = reportSchedulerData.TimeZoneId > 0 ? TimeZoneSingleton.GetInstance(_reportSchedularRepository).GetTimeZoneName(reportSchedulerData.TimeZoneId) : TripReportConstants.UTC;
             DateFormatName = reportSchedulerData.DateFormatId > 0 ? DateFormatSingleton.GetInstance(_reportSchedularRepository).GetDateFormatName(reportSchedulerData.DateFormatId) : FormatConstants.DATE_FORMAT;
             TimeFormatName = reportSchedulerData.TimeFormatId > 0 ? TimeFormatSingleton.GetInstance(_reportSchedularRepository).GetTimeFormatName(reportSchedulerData.TimeFormatId) : FormatConstants.TIME_FORMAT_24;
+            UnitToConvert = reportSchedulerData.UnitId > 0 ? UnitNameSingleton.GetInstance(_reportSchedularRepository).GetUnitName(reportSchedulerData.UnitId) : UnitToConvert.Metric;
             DateTimeFormat = $"{DateFormatName} {TimeFormatName}";
             IsAllParameterSet = true;
         }
@@ -112,26 +119,25 @@ namespace net.atos.daf.ct2.account.report
                     {
                         StartDate = TimeZoneHelper.GetDateTimeFromUTC(tripData.StartTimeStamp, TimeZoneName, DateTimeFormat),
                         EndDate = TimeZoneHelper.GetDateTimeFromUTC(tripData.EndTimeStamp, TimeZoneName, DateTimeFormat),
-                        VIN = tripData.VIN,
-                        Distance = tripData.Distance,
+                        //VIN = tripData.VIN,
+                        Distance = (int)await _unitConversionManager.GetDistance(tripData.Distance, DistanceUnit.Meter, UnitToConvert),
                         IdleDuration = tripData.IdleDuration,
                         AverageSpeed = tripData.AverageSpeed,
                         AverageWeight = tripData.AverageWeight,
                         Odometer = tripData.Odometer,
                         StartPosition = tripData.StartPosition,
                         EndPosition = tripData.EndPosition,
-                        FuelConsumed = tripData.FuelConsumed,
+                        //FuelConsumed = tripData.FuelConsumed,
                         DrivingTime = tripData.DrivingTime,
                         Alerts = tripData.Alert,
                         Events = tripData.Events,
-                        FuelConsumed100km = tripData.FuelConsumed100km
+                        FuelConsumed100km = Math.Round(tripData.FuelConsumed100km, 2)
                     });
             }
             var html = ReportHelper
                         .ToDataTableAndGenerateHTML<TripReportPdfDetails>
-                            (tripReportPdfDetails, await _reportSchedularRepository
-                                                                                .GetColumnName(ReportSchedulerData.ReportId, ReportSchedulerData.Code)
-                            );
+                            (tripReportPdfDetails);
+            //, await _reportSchedularRepository.GetColumnName(ReportSchedulerData.ReportId, ReportSchedulerData.Code)
             return await Task.FromResult<string>(html);
         }
 
@@ -142,22 +148,23 @@ namespace net.atos.daf.ct2.account.report
             var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TripReportConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
 
             StringBuilder html = new StringBuilder();
-
-            html.AppendFormat(ReportTemplateSingleto.
-                                    GetInstance(_templateManager, ReportSchedulerData.ReportId, _evenType,
-                                                _contentType, ReportSchedulerData.Code)
-                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
-                                                    _contentType, ReportSchedulerData.Code)
+            //ReportTemplateSingleto.
+            //                        GetInstance(_templateManager, ReportSchedulerData.ReportId, _evenType,
+            //                                    _contentType, ReportSchedulerData.Code)
+            //                        .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
+            //                                        _contentType, ReportSchedulerData.Code)
+            html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE
                               //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
-                              , logoBytes != null ? Convert.ToBase64String(logoBytes)
-                                                : Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), "assets", "DAFLogo.png")))
-                              , ReportSchedulerData.ReportName
+                              , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
+                                                : ImageSingleton.GetInstance().GetDefaultLogo()
+                              , ImageSingleton.GetInstance().GetLogo()
                               , fromDate.ToString(DateTimeFormat)
+                              , "All", VIN
                               , toDate.ToString(DateTimeFormat)
-                              , VIN, VehicleName, RegistrationNo
+                              , VehicleName, RegistrationNo
                               , await GenerateTable()
-                ); ;
-            return html.ToString();
+                );
+            return html.Replace("{{", "{").Replace("}}", "}").ToString();
         }
     }
 }
