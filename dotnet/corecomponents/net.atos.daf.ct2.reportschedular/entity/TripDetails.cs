@@ -55,8 +55,8 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int AverageSpeed { get; set; }
         [DisplayName("da_report_details_averageweight")]
         public int AverageWeight { get; set; }
-        //[DisplayName("da_report_details_odometer")]
-        //public long Odometer { get; set; }
+        [DisplayName("da_report_details_odometer")]
+        public long Odometer { get; set; }
         [DisplayName("da_report_details_startposition")]
         public string StartPosition { get; set; }
         [DisplayName("da_report_details_endposition")]
