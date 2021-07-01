@@ -125,11 +125,11 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 								// Integer workingValue=new Integer(7);
 								if (OldCode1.equalsIgnoreCase("2") && driverDetails.getDuration() <=120) {
 
-									String FormattedCode = monitorData.getDocument().getDriver1WorkingState()
+									String logicalCode = monitorData.getDocument().getDriver1WorkingState()
 											.toString();
 
 									driverDAO.driver_update(monitorData.getDocument().getDriverID(), endTime, duration1,
-											FormattedCode);
+											logicalCode);
 
 								} else {
 
@@ -244,13 +244,14 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 			DriverActivity.setDriverID(row.getDocument().getDriverID());
 			DriverActivity.setCode(row.getDocument().getDriver1WorkingState().toString());
 			DriverActivity.setIsDriver1(true);
+			DriverActivity.setLogicalCode(row.getDocument().getDriver1WorkingState().toString());
 		} else {
 			// Driver 2
 
 			DriverActivity.setDriverID(row.getDocument().getDriver2ID());
 			DriverActivity.setCode(row.getDocument().getDriver2WorkingState().toString());
 			DriverActivity.setIsDriver1(false);
-
+			DriverActivity.setLogicalCode(row.getDocument().getDriver2WorkingState().toString());
 		}
 
 		try {
