@@ -4,12 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.helper;
 using net.atos.daf.ct2.reportscheduler.report;
 using net.atos.daf.ct2.reportscheduler.repository;
+using net.atos.daf.ct2.template;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.visibility;
 using Newtonsoft.Json;
@@ -20,6 +22,10 @@ namespace net.atos.daf.ct2.account.report
     {
         private readonly IReportSchedulerRepository _reportSchedularRepository;
         private readonly IVisibilityManager _visibilityManager;
+        private readonly ITemplateManager _templateManager;
+        private readonly EmailEventType _evenType;
+        private readonly EmailContentType _contentType;
+
         public string VIN { get; private set; }
         public string TimeZoneName { get; private set; }
         public string DateFormatName { get; private set; }
@@ -36,11 +42,14 @@ namespace net.atos.daf.ct2.account.report
 
         public TripReport(IReportManager reportManager,
                           IReportSchedulerRepository reportSchedularRepository,
-                          IVisibilityManager visibilityManager)
+                          IVisibilityManager visibilityManager, ITemplateManager templateManager, EmailEventType evenType, EmailContentType contentType)
         {
             ReportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
             _visibilityManager = visibilityManager;
+            _templateManager = templateManager;
+            _evenType = evenType;
+            _contentType = contentType;
         }
 
         public async Task SetParameters(ReportCreationScheduler reportSchedulerData)
@@ -77,15 +86,16 @@ namespace net.atos.daf.ct2.account.report
 
         public Task<string> GenerateSummary()
         {
-            if (!IsAllParameterSet) throw new Exception(TripReportConstants.ALL_PARAM_MSG);
-            var fromDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(FromDate, TripReportConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
-            var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TripReportConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
-            StringBuilder html = new StringBuilder();
-            html.AppendFormat(ReportTemplate.REPORT_SUMMARY_TEMPLATE,
-                       fromDate.ToString(DateTimeFormat),
-                       toDate.ToString(DateTimeFormat),
-                       VIN, VehicleName, RegistrationNo
-                            );
+            //if (!IsAllParameterSet) throw new Exception(TripReportConstants.ALL_PARAM_MSG);
+            //var fromDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(FromDate, TripReportConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
+            //var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TripReportConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
+            //StringBuilder html = new StringBuilder();
+            //html.AppendFormat(ReportTemplate.REPORT_SUMMARY_TEMPLATE,
+            //           fromDate.ToString(DateTimeFormat),
+            //           toDate.ToString(DateTimeFormat),
+            //           VIN, VehicleName, RegistrationNo
+            //  
+            var html = string.Empty;
             return Task.FromResult<string>(html.ToString());
         }
 
@@ -132,7 +142,12 @@ namespace net.atos.daf.ct2.account.report
             var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TripReportConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
 
             StringBuilder html = new StringBuilder();
-            html.AppendFormat(ReportTemplate.REPORT_TEMPLATE
+
+            html.AppendFormat(ReportTemplateSingleto.
+                                    GetInstance(_templateManager, ReportSchedulerData.ReportId, _evenType,
+                                                _contentType, ReportSchedulerData.Code)
+                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
+                                                    _contentType, ReportSchedulerData.Code)
                               //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
                               , logoBytes != null ? Convert.ToBase64String(logoBytes)
                                                 : Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), "assets", "DAFLogo.png")))
@@ -141,7 +156,7 @@ namespace net.atos.daf.ct2.account.report
                               , toDate.ToString(DateTimeFormat)
                               , VIN, VehicleName, RegistrationNo
                               , await GenerateTable()
-                );
+                ); ;
             return html.ToString();
         }
     }
