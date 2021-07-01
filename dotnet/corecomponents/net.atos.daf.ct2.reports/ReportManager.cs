@@ -278,9 +278,9 @@ namespace net.atos.daf.ct2.reports
         #endregion
 
         #region Fleet Utilizaiton Report
-        public async Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter FleetFilter)
+        public async Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter fleetFilter)
         {
-            List<FleetUtilizationDetails> lstFleetUtilizationDetails = await _reportRepository.GetFleetUtilizationDetails(FleetFilter);
+            List<FleetUtilizationDetails> lstFleetUtilizationDetails = await _reportRepository.GetFleetUtilizationDetails(fleetFilter);
             return lstFleetUtilizationDetails;
         }
 
@@ -303,6 +303,22 @@ namespace net.atos.daf.ct2.reports
             List<AlertLevel> lstAlertLevel = await _reportRepository.GetAlertLevelList();
             return lstAlertLevel;
         }
+        #endregion
+
+        #region Feet Fuel Report
+
+        public async Task<List<FleetFuelDetails>> GetFleetFuelDetailsByVehicle(FleetFuelFilter fleetFuelFilters)
+        {
+            List<FleetFuelDetails> lstFleetFuelDetails = await _reportRepository.GetFleetFuelDetailsByVehicle(fleetFuelFilters);
+            return lstFleetFuelDetails;
+        }
+
+        public async Task<List<FleetFuelDetails>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters)
+        {
+            List<FleetFuelDetails> lstFleetFuelDetails = await _reportRepository.GetFleetFuelDetailsByVehicle(fleetFuelFilters);
+            return lstFleetFuelDetails;
+        }
+
         #endregion
     }
 }
