@@ -4,7 +4,7 @@ import { TranslationService } from '../../services/translation.service';
 @Component({
   selector: 'app-fleet-fuel-report',
   templateUrl: './fleet-fuel-report.component.html',
-  styleUrls: ['./fleet-fuel-report.component.css']
+  styleUrls: ['./fleet-fuel-report.component.less']
 })
 export class FleetFuelReportComponent implements OnInit {
   localStLanguage: any;

@@ -70,7 +70,7 @@
         </mat-card-content>
         <mat-card-actions fxLayoutAlign="end end" class='no-margin' style="padding: 0px 20px;">
             <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
-                <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ data.translationData.lblCancel || 'Cancel' }}</button>
+                <button *ngIf="!data.radioSelected" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ data.translationData.lblCancel || 'Cancel' }}</button>
                 <button *ngIf="!data.radioSelected" (click)="onConfirm()" class='no-margin' mat-raised-button color="primary">{{ data.translationData.lblConfirm || 'Confirm' }}</button>
                 <button *ngIf="data.radioSelected" (click)="onUpdateStatusOk($event)" class='no-margin' mat-raised-button color="primary">{{ data.translationData.lblStatusOk || 'OK' }}</button>
             </div>

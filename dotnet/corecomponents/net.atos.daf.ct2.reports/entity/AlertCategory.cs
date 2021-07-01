@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string Name { get; set; }
         public string Value { get; set; }
     }
-    public class AlertLevel
+    public class FilterProperty
     {
         public string Name { get; set; }
         public string Value { get; set; }
