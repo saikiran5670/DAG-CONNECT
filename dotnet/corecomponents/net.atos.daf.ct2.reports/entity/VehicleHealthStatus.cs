@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace net.atos.daf.ct2.reports.entity.fleetoverview
+namespace net.atos.daf.ct2.reports.entity
 {
     public class Summary
     {

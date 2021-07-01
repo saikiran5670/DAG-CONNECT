@@ -38,7 +38,6 @@ namespace net.atos.daf.ct2.reports.repository
         Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId, int organizationId);
         Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId, int organizationId, int contextOrgId);
         Task<List<AlertCategory>> GetAlertCategoryList();
-        Task<List<AlertLevel>> GetAlertLevelList();
 
         #region FleetFuel
         Task<List<CO2CoEfficient>> GetCO2CoEfficientData();
@@ -47,5 +46,8 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<FleetFuelDetails>> GetFleetFuelDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
         Task<List<FleetFuelDetails>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters);
         #endregion
+        Task<List<FilterProperty>> GetAlertLevelList();
+        Task<List<FilterProperty>> GetHealthStatusList();
+        Task<List<FilterProperty>> GetOtherFilter();
     }
 }

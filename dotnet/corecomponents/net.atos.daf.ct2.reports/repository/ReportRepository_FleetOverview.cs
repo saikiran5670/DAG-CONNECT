@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.reports.repository
     public partial class ReportRepository : IReportRepository
     {
         #region Fleet Overview Filter
-        public async Task<List<AlertLevel>> GetAlertLevelList()
+        public async Task<List<FilterProperty>> GetAlertLevelList()
         {
             var parameter = new DynamicParameters();
             parameter.Add("@type", "U");
@@ -19,14 +19,14 @@ namespace net.atos.daf.ct2.reports.repository
 	                                          FROM translation.enumtranslation 
                                               Where type=@type";
 
-            List<AlertLevel> lstAlertLevel = (List<AlertLevel>)await _dataAccess.QueryAsync<AlertLevel>(queryAlertLevelPull, parameter);
+            List<FilterProperty> lstAlertLevel = (List<FilterProperty>)await _dataAccess.QueryAsync<FilterProperty>(queryAlertLevelPull, parameter);
             if (lstAlertLevel.Count > 0)
             {
                 return lstAlertLevel;
             }
             else
             {
-                return new List<AlertLevel>();
+                return new List<FilterProperty>();
             }
         }
 
@@ -50,6 +50,45 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
+        public async Task<List<FilterProperty>> GetHealthStatusList()
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@type", "H");
+            string queryHealthStatusPull = @"SELECT key as Name,
+                                                     enum as Value
+	                                          FROM translation.enumtranslation 
+                                              Where type=@type";
+
+            List<FilterProperty> lstHealthStatus = (List<FilterProperty>)await _dataAccess.QueryAsync<FilterProperty>(queryHealthStatusPull, parameter);
+            if (lstHealthStatus.Count > 0)
+            {
+                return lstHealthStatus;
+            }
+            else
+            {
+                return new List<FilterProperty>();
+            }
+        }
+
+        public async Task<List<FilterProperty>> GetOtherFilter()
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@type", "L");
+            string queryOtherFilterPull = @"SELECT key as Name,
+                                                     enum as Value
+	                                          FROM translation.enumtranslation 
+                                              Where type=@type";
+
+            List<FilterProperty> lstOtherFilter = (List<FilterProperty>)await _dataAccess.QueryAsync<FilterProperty>(queryOtherFilterPull, parameter);
+            if (lstOtherFilter.Count > 0)
+            {
+                return lstOtherFilter;
+            }
+            else
+            {
+                return new List<FilterProperty>();
+            }
+        }
         #endregion
 
     }
