@@ -13,6 +13,9 @@ namespace net.atos.daf.ct2.reports.entity.fleetOverview
         public string From { get; set; }
         public string To { get; set; }
         public string WarningType { get; set; }
+        public long LastLatitude { get; set; }
+        public string LastLongitude { get; set; }
+
     }
 
     public class CurrentWarning
@@ -37,6 +40,9 @@ namespace net.atos.daf.ct2.reports.entity.fleetOverview
         public string DeactivatedTime { get; set; }
         public string DriverName { get; set; }
         public string Advice { get; set; }
+        public string VehicleName { get; set; }
+        public long Latitude { get; set; }
+        public string Longitude { get; set; }
     }
 
     public class Hitory
