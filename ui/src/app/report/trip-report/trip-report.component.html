@@ -164,16 +164,16 @@
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
                 translationData.lblHerePOIs || 'Here POI(s)'}}</div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-                  <mat-checkbox (change)='poiSelected($event,"Hotel")'>{{ translationData.lblHotel || 'Hotel' }}</mat-checkbox>
+                  <mat-checkbox (change)='poiSelected($event, "Hotel")'>{{ translationData.lblHotel || 'Hotel' }}</mat-checkbox>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-                  <mat-checkbox>{{ translationData.lblParking || 'Parking' }}</mat-checkbox>
+                  <mat-checkbox (change)='poiSelected($event, "Parking")'>{{ translationData.lblParking || 'Parking' }}</mat-checkbox>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-                  <mat-checkbox>{{ translationData.lblPetrolStation || 'Petrol Station' }}</mat-checkbox>
+                  <mat-checkbox (change)='poiSelected($event, "Petrol Station")'>{{ translationData.lblPetrolStation || 'Petrol Station' }}</mat-checkbox>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-                  <mat-checkbox>{{ translationData.lblRailwayStation || 'Railway Station' }}</mat-checkbox>
+                  <mat-checkbox (change)='poiSelected($event, "Railway Station")'>{{ translationData.lblRailwayStation || 'Railway Station' }}</mat-checkbox>
                 </div>
             </div>
             <!-- <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">

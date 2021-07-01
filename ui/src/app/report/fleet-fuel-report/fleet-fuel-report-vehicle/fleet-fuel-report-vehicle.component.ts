@@ -15,6 +15,13 @@ import { Util } from 'src/app/shared/util';
 })
 export class FleetFuelReportVehicleComponent implements OnInit {
   @Input() translationData: any;
+  displayedColumns = ['vehicleName', 'vin', 'plateNo', 'distance', 'averageDistance', 'averageSpeed',
+  'maxSpeed', 'noOfTrips', 'avgGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'CO2Emisson', 
+  'isIdleDuration','PTODuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistanceBelow50',
+  'cruiseControlDistanceBelow75','cruiseControlDistanceAbove75', 'avgTrafficClassification',
+  'CCFuelConsumption','CCFuelConsumptionNon','IdlingConsumption','DPAScore','DPAAnticipation',
+  'DPABraking','idlingWithPTO','idlingWithoutPTOWheelbase','idlingWithoutPTOVIdleDuration','footBrake',
+  'CO2EmmisionFuelEfficiency','idlingConsumptionWithPTO'];
   tripForm: FormGroup;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
@@ -37,7 +44,81 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   last3MonthDate: any;
   todayDate: any;
   vehicleDD: any = [];
+  showLoadingIndicator: boolean = false;
   searchExpandPanel: boolean = true;
+  displayData : any =[
+    {
+      vehicleName: 'Name List 001',
+      vin : 'XLRTEM4100G041999',
+      plateNo : '12 HH 70',
+      distance : 20.10,
+      averageDistance:35.2,
+      averageSpeed :50.6,
+      maxSpeed:85.5,
+      noOfTrips:12,
+      avgGrossWeightComb:'25.6',
+      fuelConsumed:'25',
+      fuelConsumption:'30',
+      CO2Emisson:'89',
+      isIdleDuration:'2',
+      PTODuration:'3',
+      harshBrakeDuration:'7',
+      heavyThrottleDuration:'87',
+      cruiseControlDistanceBelow50:'32',
+      cruiseControlDistanceBelow75:'60',
+      cruiseControlDistanceAbove75:'80',
+      avgTrafficClassification:'0.3',
+      CCFuelConsumption:'88',
+      CCFuelConsumptionNon:'100',
+      IdlingConsumption:'250',
+      DPAScore:'1.3',
+      DPAAnticipation:'56',
+      DPABraking:'87',
+      idlingWithPTO:'0.5',
+      idlingWithoutPTOWheelbase:'0.7',
+      idlingWithoutPTOVIdleDuration:'2.8',
+      footBrake:'7.5',
+      CO2EmmisionFuelEfficiency:'9.0',
+      idlingConsumptionWithPTO:'5.5'
+
+    },
+    {
+      vehicleName: 'Name List 001',
+      vin : 'XLRTEM4100G041999',
+      plateNo : '12 HH 70',
+      distance : 20.10,
+      averageDistance:35.2,
+      averageSpeed :50.6,
+      maxSpeed:85.5,
+      noOfTrips:12,
+      avgGrossWeightComb:'25.6',
+      fuelConsumed:'25',
+      fuelConsumption:'30',
+      CO2Emisson:'89',
+      isIdleDuration:'2',
+      PTODuration:'3',
+      harshBrakeDuration:'7',
+      heavyThrottleDuration:'87',
+      cruiseControlDistanceBelow50:'32',
+      cruiseControlDistanceBelow75:'60',
+      cruiseControlDistanceAbove75:'80',
+      avgTrafficClassification:'0.3',
+      CCFuelConsumption:'88',
+      CCFuelConsumptionNon:'100',
+      IdlingConsumption:'250',
+      DPAScore:'1.3',
+      DPAAnticipation:'56',
+      DPABraking:'87',
+      idlingWithPTO:'0.5',
+      idlingWithoutPTOWheelbase:'0.7',
+      idlingWithoutPTOVIdleDuration:'2.8',
+      footBrake:'7.5',
+      CO2EmmisionFuelEfficiency:'9.0',
+      idlingConsumptionWithPTO:'5.5'
+
+    },
+    
+  ]
   
   constructor(private _formBuilder: FormBuilder, 
               private translationService: TranslationService,
@@ -413,6 +494,16 @@ getLast3MonthDate(){
     var date = Util.getUTCDate(this.prefTimeZone);
     date.setMonth(date.getMonth()-1);
     return date;
+  }
+
+  pageSizeUpdated(event: any){
+
+  }
+
+  applyFilter(filterValue: string) {
+    // filterValue = filterValue.trim(); 
+    // filterValue = filterValue.toLowerCase(); 
+    // this.dataSource.filter = filterValue;
   }
 
 }

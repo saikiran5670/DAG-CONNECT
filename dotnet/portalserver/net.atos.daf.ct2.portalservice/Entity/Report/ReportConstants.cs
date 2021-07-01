@@ -61,5 +61,10 @@
         public const string GET_FLEET_UTILIZATION_SUCCESS_MSG = "Fleet Utilizaiton details fetched successfully";
         public const string GET_FLEET_UTILIZATION_FAILURE_MSG = "No Result Found";
         #endregion
+
+        #region FleetOverview
+        public const string FLEETOVERVIEW_SERVICE_NAME = "Report Service";
+        public const string FLEETOVERVIEW_FILTER_FAILURE_MSG = "Error fetching fleet over view filter details.";
+        #endregion
     }
 }
