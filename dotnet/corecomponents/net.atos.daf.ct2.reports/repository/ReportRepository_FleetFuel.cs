@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.reports.entity;
-using net.atos.daf.ct2.reports.entity.fleetFuel;
+
 
 namespace net.atos.daf.ct2.reports.repository
 {
@@ -15,14 +15,14 @@ namespace net.atos.daf.ct2.reports.repository
         /// Get CO2 Co-Efficient data from master
         /// </summary>
         /// <returns>Data in Fule_type and Coefficient fields </returns>
-        public async Task<List<CO2CoEfficient>> GetCO2CoEfficientData()
+        public async Task<List<CO2Coefficient>> GetCO2CoEfficientData()
         {
             try
             {
                 string queryMasterData = @"select id, Description, Fuel_type, Coefficient from master.co2coefficient";
 
-                List<CO2CoEfficient> lstCO2CoEfficient = (List<CO2CoEfficient>)await _dataAccess.QueryAsync<CO2CoEfficient>(queryMasterData);
-                return lstCO2CoEfficient?.Count > 0 ? lstCO2CoEfficient : new List<CO2CoEfficient>();
+                List<CO2Coefficient> lstCO2CoEfficient = (List<CO2Coefficient>)await _dataAccess.QueryAsync<CO2Coefficient>(queryMasterData);
+                return lstCO2CoEfficient?.Count > 0 ? lstCO2CoEfficient : new List<CO2Coefficient>();
             }
             catch (System.Exception) { throw; }
         }
@@ -70,7 +70,7 @@ namespace net.atos.daf.ct2.reports.repository
                 var parameterOfFilters = new DynamicParameters();
                 parameterOfFilters.Add("@FromDate", fleetFuelFilters.StartDateTime);
                 parameterOfFilters.Add("@ToDate", fleetFuelFilters.EndDateTime);
-                parameterOfFilters.Add("@Vins", fleetFuelFilters.VIN);
+                parameterOfFilters.Add("@Vins", fleetFuelFilters.VINs);
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
                                                 (
                                                     SELECT
@@ -170,7 +170,7 @@ namespace net.atos.daf.ct2.reports.repository
                 var parameterOfFilters = new DynamicParameters();
                 parameterOfFilters.Add("@FromDate", fleetFuelFilters.StartDateTime);
                 parameterOfFilters.Add("@ToDate", fleetFuelFilters.EndDateTime);
-                parameterOfFilters.Add("@Vins", fleetFuelFilters.VIN);
+                parameterOfFilters.Add("@Vins", fleetFuelFilters.VINs);
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
                                                 (
                                                     SELECT

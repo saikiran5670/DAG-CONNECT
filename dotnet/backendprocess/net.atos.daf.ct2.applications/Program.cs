@@ -13,6 +13,7 @@ using net.atos.daf.ct2.reports.repository;
 using net.atos.daf.ct2.reportscheduler;
 using net.atos.daf.ct2.reportscheduler.report;
 using net.atos.daf.ct2.reportscheduler.repository;
+using net.atos.daf.ct2.template;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.visibility;
@@ -62,6 +63,8 @@ namespace net.atos.daf.ct2.applications
                             services.AddTransient<IReportRepository, ReportRepository>();
                             services.AddTransient<IVisibilityManager, VisibilityManager>();
                             services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+                            services.AddTransient<ITemplateManager, TemplateManager>();
+
                             //services.AddControllersWithViews();
                             //services.AddRazorPages();
                             //services.AddControllers();

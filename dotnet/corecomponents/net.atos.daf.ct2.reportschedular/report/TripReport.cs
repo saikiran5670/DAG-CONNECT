@@ -112,26 +112,25 @@ namespace net.atos.daf.ct2.account.report
                     {
                         StartDate = TimeZoneHelper.GetDateTimeFromUTC(tripData.StartTimeStamp, TimeZoneName, DateTimeFormat),
                         EndDate = TimeZoneHelper.GetDateTimeFromUTC(tripData.EndTimeStamp, TimeZoneName, DateTimeFormat),
-                        VIN = tripData.VIN,
+                        //VIN = tripData.VIN,
                         Distance = tripData.Distance,
                         IdleDuration = tripData.IdleDuration,
                         AverageSpeed = tripData.AverageSpeed,
                         AverageWeight = tripData.AverageWeight,
-                        Odometer = tripData.Odometer,
+                        //Odometer = tripData.Odometer,
                         StartPosition = tripData.StartPosition,
                         EndPosition = tripData.EndPosition,
-                        FuelConsumed = tripData.FuelConsumed,
+                        //FuelConsumed = tripData.FuelConsumed,
                         DrivingTime = tripData.DrivingTime,
                         Alerts = tripData.Alert,
                         Events = tripData.Events,
-                        FuelConsumed100km = tripData.FuelConsumed100km
+                        FuelConsumed100km = Math.Round(tripData.FuelConsumed100km, 2)
                     });
             }
             var html = ReportHelper
                         .ToDataTableAndGenerateHTML<TripReportPdfDetails>
-                            (tripReportPdfDetails, await _reportSchedularRepository
-                                                                                .GetColumnName(ReportSchedulerData.ReportId, ReportSchedulerData.Code)
-                            );
+                            (tripReportPdfDetails);
+            //, await _reportSchedularRepository.GetColumnName(ReportSchedulerData.ReportId, ReportSchedulerData.Code)
             return await Task.FromResult<string>(html);
         }
 
@@ -142,22 +141,23 @@ namespace net.atos.daf.ct2.account.report
             var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TripReportConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
 
             StringBuilder html = new StringBuilder();
-
-            html.AppendFormat(ReportTemplateSingleto.
-                                    GetInstance(_templateManager, ReportSchedulerData.ReportId, _evenType,
-                                                _contentType, ReportSchedulerData.Code)
-                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
-                                                    _contentType, ReportSchedulerData.Code)
+            //ReportTemplateSingleto.
+            //                        GetInstance(_templateManager, ReportSchedulerData.ReportId, _evenType,
+            //                                    _contentType, ReportSchedulerData.Code)
+            //                        .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
+            //                                        _contentType, ReportSchedulerData.Code)
+            html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE
                               //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
-                              , logoBytes != null ? Convert.ToBase64String(logoBytes)
-                                                : Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), "assets", "DAFLogo.png")))
-                              , ReportSchedulerData.ReportName
+                              ,  logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
+                                                : ImageSingleton.GetInstance().GetDefaultLogo()
+                              , ImageSingleton.GetInstance().GetLogo()
                               , fromDate.ToString(DateTimeFormat)
+                              , "All", VIN
                               , toDate.ToString(DateTimeFormat)
-                              , VIN, VehicleName, RegistrationNo
+                              , VehicleName, RegistrationNo
                               , await GenerateTable()
-                ); ;
-            return html.ToString();
+                );
+            return html.Replace("{{", "{").Replace("}}", "}").ToString();
         }
     }
 }
