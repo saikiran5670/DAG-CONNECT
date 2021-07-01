@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.reports.entity.fleetFuel;
 using net.atos.daf.ct2.reports.repository;
 using System.Linq;
 
@@ -278,9 +279,9 @@ namespace net.atos.daf.ct2.reports
         #endregion
 
         #region Fleet Utilizaiton Report
-        public async Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter FleetFilter)
+        public async Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter fleetFilter)
         {
-            List<FleetUtilizationDetails> lstFleetUtilizationDetails = await _reportRepository.GetFleetUtilizationDetails(FleetFilter);
+            List<FleetUtilizationDetails> lstFleetUtilizationDetails = await _reportRepository.GetFleetUtilizationDetails(fleetFilter);
             return lstFleetUtilizationDetails;
         }
 
@@ -298,11 +299,37 @@ namespace net.atos.daf.ct2.reports
             List<AlertCategory> lstAlertCategory = await _reportRepository.GetAlertCategoryList();
             return lstAlertCategory;
         }
-        public async Task<List<AlertLevel>> GetAlertLevelList()
+        public async Task<List<FilterProperty>> GetAlertLevelList()
         {
-            List<AlertLevel> lstAlertLevel = await _reportRepository.GetAlertLevelList();
+            List<FilterProperty> lstAlertLevel = await _reportRepository.GetAlertLevelList();
             return lstAlertLevel;
         }
+        public async Task<List<FilterProperty>> GetHealthStatusList()
+        {
+            List<FilterProperty> lstHealthStatus = await _reportRepository.GetHealthStatusList();
+            return lstHealthStatus;
+        }
+        public async Task<List<FilterProperty>> GetOtherFilter()
+        {
+            List<FilterProperty> lstHealthStatus = await _reportRepository.GetOtherFilter();
+            return lstHealthStatus;
+        }
+        #endregion
+
+        #region Feet Fuel Report
+
+        public async Task<List<FleetFuelDetails>> GetFleetFuelDetailsByVehicle(FleetFuelFilter fleetFuelFilters)
+        {
+            List<FleetFuelDetails> lstFleetFuelDetails = await _reportRepository.GetFleetFuelDetailsByVehicle(fleetFuelFilters);
+            return lstFleetFuelDetails;
+        }
+
+        public async Task<List<FleetFuelDetails>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters)
+        {
+            List<FleetFuelDetails> lstFleetFuelDetails = await _reportRepository.GetFleetFuelDetailsByVehicle(fleetFuelFilters);
+            return lstFleetFuelDetails;
+        }
+
         #endregion
     }
 }

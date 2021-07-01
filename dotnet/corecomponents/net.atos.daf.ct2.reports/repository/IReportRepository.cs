@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.reports.entity.fleetFuel;
 
 namespace net.atos.daf.ct2.reports.repository
 {
@@ -37,6 +38,16 @@ namespace net.atos.daf.ct2.reports.repository
         Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId, int organizationId);
         Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId, int organizationId, int contextOrgId);
         Task<List<AlertCategory>> GetAlertCategoryList();
-        Task<List<AlertLevel>> GetAlertLevelList();
+
+        #region FleetFuel
+        Task<List<CO2CoEfficient>> GetCO2CoEfficientData();
+        Task<List<IdlingConsumption>> GetIdlingConsumptionData();
+        Task<List<AverageTrafficClassification>> GetAverageTrafficClassificationData();
+        Task<List<FleetFuelDetails>> GetFleetFuelDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
+        Task<List<FleetFuelDetails>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters);
+        #endregion
+        Task<List<FilterProperty>> GetAlertLevelList();
+        Task<List<FilterProperty>> GetHealthStatusList();
+        Task<List<FilterProperty>> GetOtherFilter();
     }
 }
