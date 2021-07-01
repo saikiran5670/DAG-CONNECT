@@ -522,7 +522,7 @@ message AssociatedVehicleRequest {
          string RegistrationNo =  6;
 }
 
-message AlertLevelFilterResponse {
+message FilterResponse {
 		 string Name =  1;
          string Value =  2;
 }
@@ -534,10 +534,12 @@ message AlertCategoryFilterResponse {
 
 message FleetOverviewFilterResponse {
   repeated AssociatedVehicleRequest AssociatedVehicleRequest = 1;
-  repeated AlertLevelFilterResponse ALFilterResponse = 2;
+  repeated FilterResponse ALFilterResponse = 2;
   repeated AlertCategoryFilterResponse ACFilterResponse = 3;
-  Responsecode code = 4;
-  string message = 5;
+  repeated FilterResponse HSFilterResponse = 4;
+  repeated FilterResponse OFilterResponse = 5;
+  Responsecode code = 6;
+  string message = 7;
 }
 
 

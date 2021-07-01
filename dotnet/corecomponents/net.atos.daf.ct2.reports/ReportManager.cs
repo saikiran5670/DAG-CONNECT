@@ -299,10 +299,20 @@ namespace net.atos.daf.ct2.reports
             List<AlertCategory> lstAlertCategory = await _reportRepository.GetAlertCategoryList();
             return lstAlertCategory;
         }
-        public async Task<List<AlertLevel>> GetAlertLevelList()
+        public async Task<List<FilterProperty>> GetAlertLevelList()
         {
-            List<AlertLevel> lstAlertLevel = await _reportRepository.GetAlertLevelList();
+            List<FilterProperty> lstAlertLevel = await _reportRepository.GetAlertLevelList();
             return lstAlertLevel;
+        }
+        public async Task<List<FilterProperty>> GetHealthStatusList()
+        {
+            List<FilterProperty> lstHealthStatus = await _reportRepository.GetHealthStatusList();
+            return lstHealthStatus;
+        }
+        public async Task<List<FilterProperty>> GetOtherFilter()
+        {
+            List<FilterProperty> lstHealthStatus = await _reportRepository.GetOtherFilter();
+            return lstHealthStatus;
         }
         #endregion
 

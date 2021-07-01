@@ -33,13 +33,25 @@ namespace net.atos.daf.ct2.reportservice.Services
                 var alertLevel = await _reportManager.GetAlertLevelList();
                 var resalertLevel = JsonConvert.SerializeObject(alertLevel);
                 response.ALFilterResponse.AddRange(
-                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertLevelFilterResponse>>(resalertLevel)
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resalertLevel)
                     );
 
                 var alertCategory = await _reportManager.GetAlertCategoryList();
                 var resAlertCategory = JsonConvert.SerializeObject(alertCategory);
                 response.ACFilterResponse.AddRange(
                     JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterResponse>>(resAlertCategory)
+                    );
+
+                var healthStatus = await _reportManager.GetHealthStatusList();
+                var resHealthStatus = JsonConvert.SerializeObject(healthStatus);
+                response.HSFilterResponse.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resHealthStatus)
+                    );
+
+                var otherFilter = await _reportManager.GetOtherFilter();
+                var resOtherFilter = JsonConvert.SerializeObject(otherFilter);
+                response.OFilterResponse.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resOtherFilter)
                     );
 
                 response.Message = ReportConstants.FLEETOVERVIEW_FILTER_SUCCESS_MSG;
