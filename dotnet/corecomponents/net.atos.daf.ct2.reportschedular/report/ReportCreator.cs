@@ -11,6 +11,7 @@ using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.repository;
 using net.atos.daf.ct2.template;
+using net.atos.daf.ct2.unitconversion;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.visibility;
 
@@ -24,6 +25,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
         private readonly IReportSchedulerRepository _reportSchedularRepository;
         private readonly IVisibilityManager _visibilityManager;
         private readonly ITemplateManager _templateManager;
+        private readonly IUnitConversionManager _unitConversionManager;
 
         public string ReportName { get; private set; }
         public string ReportKey { get; private set; }
@@ -34,13 +36,15 @@ namespace net.atos.daf.ct2.reportscheduler.report
         public ReportCreator(ILogger<ReportCreator> logger,
                             IConverter generatePdf, IReportManager reportManager,
                              IReportSchedulerRepository reportSchedularRepository,
-                             IVisibilityManager visibilityManager, ITemplateManager templateManager)
+                             IVisibilityManager visibilityManager, ITemplateManager templateManager,
+                             IUnitConversionManager unitConversionManager)
         {
             _generatePdf = generatePdf;
             _reportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
             _visibilityManager = visibilityManager;
             _templateManager = templateManager;
+            _unitConversionManager = unitConversionManager;
             _logger = logger;
         }
 
@@ -57,7 +61,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
         reportKey switch
         {
             ReportNameConstants.REPORT_TRIP => new TripReport(_reportManager, _reportSchedularRepository, _visibilityManager,
-                                                              _templateManager, EmailEventType.TripReport, EmailContentType.Html),
+                                                              _templateManager, _unitConversionManager, EmailEventType.TripReport, EmailContentType.Html),
             ReportNameConstants.REPORT_TRIP_TRACING => null,
             _ => throw new ArgumentException(message: "invalid Report Key value", paramName: nameof(reportKey)),
         };
@@ -73,7 +77,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 PaperSize = PaperKind.A4,
                 Margins = new MarginSettings { Top = 10, Right = 10, Left = 10, Bottom = 10 },
                 //DocumentTitle = "PDF Report"//,
-                Out = $@"C:\Harneet\POC\Employee_Report{ReportSchedulerData.Id}.pdf"
+                //Out = $@"C:\Users\harneet.r (58879009)\Documents\POC\Employee_Report{ReportSchedulerData.Id}.pdf"
             };
             string htmlText = await Report.GenerateTemplate(await GetLogoImage());
 
@@ -94,7 +98,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 GlobalSettings = globalSettings,
                 Objects = { objectSettings }
             };
-
+            //var pdf123 = _generatePdf.Convert(pdf);
             return await _reportSchedularRepository
                             .InsertReportPDF(new ScheduledReport
                             {

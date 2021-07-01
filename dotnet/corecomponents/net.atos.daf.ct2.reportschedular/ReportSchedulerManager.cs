@@ -13,10 +13,10 @@ namespace net.atos.daf.ct2.reportscheduler
         {
             _reportSchedulerRepository = reportSchedularRepository;
         }
-        public async Task<ReportParameter> GetReportParameter(int accountid, int organizationid)
+        public async Task<ReportParameter> GetReportParameter(int accountid, int organizationid, int contextorgId, int roleId)
         {
             ReportParameter reportparameter = new ReportParameter();
-            reportparameter.ReportType = await _reportSchedulerRepository.GetReportType(accountid, organizationid);
+            reportparameter.ReportType = await _reportSchedulerRepository.GetReportType(accountid, organizationid, contextorgId, roleId);
             reportparameter.DriverDetail = await _reportSchedulerRepository.GetDriverDetails(organizationid);
             reportparameter.ReceiptEmails = await _reportSchedulerRepository.GetRecipientsEmails(organizationid);
             return reportparameter;

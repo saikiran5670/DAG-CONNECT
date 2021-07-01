@@ -133,6 +133,19 @@ date_trunc('day', NOW() AT TIME ZONE 'UTC') and rs.status = 'A' and r.id = rs.re
             }
         }
 
+        public Task<IEnumerable<UnitName>> GetUnitName()
+        {
+            try
+            {
+                var query = @"select id as Id, key as Key from master.unit";
+                return _dataAccess.QueryAsync<UnitName>(query);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public Task<ReportLogo> GetReportLogo(int accountId)
         {
             try

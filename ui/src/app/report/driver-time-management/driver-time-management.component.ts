@@ -810,6 +810,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.resetdriverTimeFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
     this.tableInfoObj = {};
+    this.allDriversSelected = true;
+    this.initData=[];
+    this.updateDataSource(this.initData);
     //this.advanceFilterOpen = false;
    // this.selectedPOI.clear();
   }

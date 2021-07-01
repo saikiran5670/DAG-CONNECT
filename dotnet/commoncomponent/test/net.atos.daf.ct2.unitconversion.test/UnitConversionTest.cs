@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.unitconversion.test
         [Description("Test for GetDistance Sucess case")]
         [TestMethod]
         [Timeout(TestTimeout.Infinite)]
-        public async Task GetVehicleByAccountVisibility_Success()
+        public async Task GetDistance_Success()
         {
 
             var result = await _unitConversionManager
@@ -28,6 +28,20 @@ namespace net.atos.daf.ct2.unitconversion.test
                                    , DistanceUnit.Meter
                                    , UnitToConvert.Imperial);
             Assert.IsTrue(result == 1234454.54);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for GetVolume Sucess case")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetVolume_Success()
+        {
+
+            var result = await _unitConversionManager
+                                   .GetVolume(124.45
+                                   ,VolumeUnit.MilliLiter
+                                   , UnitToConvert.Metric);
+            Assert.IsTrue(result == 0);
         }
     }
 }

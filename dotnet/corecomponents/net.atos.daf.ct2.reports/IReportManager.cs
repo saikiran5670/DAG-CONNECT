@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.reports.entity;
-using net.atos.daf.ct2.reports.entity.fleetFuel;
 
 namespace net.atos.daf.ct2.reports
 {
