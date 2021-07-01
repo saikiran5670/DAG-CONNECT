@@ -435,7 +435,9 @@ export class ExistingTripsComponent implements OnInit {
     // this.existingTripForm.get('endTime').setValue(this.selectedEndTime);
     this.vinListSelectedValue = '';
     this.vinList = [];
-  }
+    this.initData = [];
+    this.updatedTableData(this.initData);
+   }
 
   setDefaultTodayDate() {
     this.selectionTab = 'today';

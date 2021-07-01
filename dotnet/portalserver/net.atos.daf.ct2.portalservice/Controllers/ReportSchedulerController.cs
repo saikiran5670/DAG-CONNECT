@@ -45,8 +45,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (orgnizationid == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
                 orgnizationid = GetContextOrgId();
+                int contextorgid = GetContextOrgId();
                 int roleid = AssignOrgContextByRoleId(0);
-                ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid, RoleId = roleid });
+                ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = GetUserSelectedOrgId(), RoleId = roleid, ContextOrgId = contextorgid });
 
                 if (response == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);

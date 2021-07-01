@@ -66,5 +66,14 @@
         public const string FLEETOVERVIEW_SERVICE_NAME = "Report Service";
         public const string FLEETOVERVIEW_FILTER_FAILURE_MSG = "Error fetching fleet over view filter details.";
         #endregion
+
+        #region Feet Fuel Report
+        public const string GET_FLEET_FUEL_VALIDATION_STARTDATE_MSG = "Invalid start date.";
+        public const string GET_FLEET_FUEL_VALIDATION_ENDDATE_MSG = "Invalid end date.";
+        public const string GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG = "Invalid VIN details.";
+        public const string GET_FLEET_FUEL_VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
+        public const string GET_FLEET_FUEL_SUCCESS_MSG = "Fleet Fueld details fetched successfully";
+        public const string GET_FLEET_FUEL_FAILURE_MSG = "No Result Found";
+        #endregion
     }
 }

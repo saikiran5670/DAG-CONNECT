@@ -1,6 +1,8 @@
 import { Inject } from '@angular/core';
 import { Input } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
+import { ChartDataSets, ChartOptions } from 'chart.js';
+import { Color, Label } from 'ng2-charts';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
@@ -22,7 +24,13 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   'CCFuelConsumption','CCFuelConsumptionNon','IdlingConsumption','DPAScore','DPAAnticipation',
   'DPABraking','idlingWithPTO','idlingWithoutPTOWheelbase','idlingWithoutPTOVIdleDuration','footBrake',
   'CO2EmmisionFuelEfficiency','idlingConsumptionWithPTO'];
+  rankingColumns = ['ranking','vehicleName','vin','plateNo','consumption'];
   tripForm: FormGroup;
+  searchExpandPanel: boolean = true;
+  tableExpandPanel: boolean = true;
+  rankingExpandPanel: boolean = true;
+  isSummaryOpen: boolean = true;
+  isChartsOpen: boolean = true;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   startTimeDisplay: any = '00:00:00';
@@ -45,13 +53,27 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   todayDate: any;
   vehicleDD: any = [];
   showLoadingIndicator: boolean = false;
-  searchExpandPanel: boolean = true;
+  tableInfoObj: any;
+  summaryObj: any;
+  lineChartData: any;
+  lineChartLabels: any;
+  lineChartOptions: any;
+  lineChartColors: any;
+  lineChartLegend: any;
+  lineChartType: any;
+  lineChartPlugins: any;
+  barChartOptions
+  barChartLabels: any;
+  barChartType: any;
+  barChartLegend: any;
+  barChartPlugins: any;
+  barChartData: any;
   displayData : any =[
     {
       vehicleName: 'Name List 001',
       vin : 'XLRTEM4100G041999',
       plateNo : '12 HH 70',
-      distance : 20.10,
+      dist : 20.10,
       averageDistance:35.2,
       averageSpeed :50.6,
       maxSpeed:85.5,
@@ -86,7 +108,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       vehicleName: 'Name List 001',
       vin : 'XLRTEM4100G041999',
       plateNo : '12 HH 70',
-      distance : 20.10,
+      dist : 20.10,
       averageDistance:35.2,
       averageSpeed :50.6,
       maxSpeed:85.5,
@@ -118,6 +140,15 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
     },
     
+  ]
+  rankingData : any =[
+    {
+      ranking: 1,
+      vehicleName: 'Name List 0001',
+      vin :'XLRTEMP4100G041999',
+      plateNo: '12 HH 71',
+      consumption: 25
+    }
   ]
   
   constructor(private _formBuilder: FormBuilder, 
@@ -164,6 +195,45 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         }
       });
     });
+
+    this.LineChart();
+    this.BarChart();
+  }
+
+  LineChart(){
+    this.lineChartData= [
+      { data: [85, 72, 78, 75, 77, 75], label: 'Crude oil prices' },
+    ];
+  
+    this.lineChartLabels = ['January', 'February', 'March', 'April', 'May', 'June'];
+  
+    this.lineChartOptions = {
+      responsive: true,
+    };
+  
+    this.lineChartColors= [
+      {
+        borderColor:'rgba(9,126,204,0.82)'
+      },
+    ];
+  
+    this.lineChartLegend = true;
+    this.lineChartPlugins = [];
+    this.lineChartType = 'line';
+  }
+  
+  BarChart(){
+    this.barChartOptions= {
+      responsive: true,
+    };
+    this.barChartLabels= ['Jan', 'Feb', 'March', 'Apr', 'May', 'Jun'];
+    this.barChartType= 'bar';
+    this.barChartLegend = true;
+    this.barChartPlugins = [];
+  
+    this.barChartData= [
+      { data: [45, 37, 60, 70, 46, 33], label: 'Number of Trips' }
+    ];
   }
 
   onSearch(){
@@ -188,6 +258,22 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       this.prefTimeZone = prefData.timezone[0].value;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
+    }
+
+    this.tableInfoObj = {
+      fromDate:'05/24/2021 00:00:00',
+      toDate:'05/24/2021 23:59:59',
+      vehGroupName: 'All',
+      vehName: 'All'
+    }
+
+    this.summaryObj={
+      noOfTrips:15,
+      distance: '144.1km',
+      fuelconsumed:'33.5 I',
+      idleDuration:'01:47 hh:mm',
+      fuelConsumption:'23.3 Ltrs/100km',
+      co2emission:'0.097t'
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
@@ -504,6 +590,14 @@ getLast3MonthDate(){
     // filterValue = filterValue.trim(); 
     // filterValue = filterValue.toLowerCase(); 
     // this.dataSource.filter = filterValue;
+  }
+
+  exportAsExcelFile(){
+
+  }
+
+  exportAsPDFFile(){
+    
   }
 
 }
