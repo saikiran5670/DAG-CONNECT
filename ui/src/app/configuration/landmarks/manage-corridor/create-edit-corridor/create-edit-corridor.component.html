@@ -20,8 +20,8 @@
                     class='mandatoryColor'>*</span></div>
 
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <span class="col-sm">
-                <mat-form-field appearance="outline">
+                <span class="col-sm" style="padding-left:0px;">
+                <mat-form-field appearance="outline" style="top:0.75em;">
                     <mat-select [(value)]="selectedCorridorTypeId" (selectionChange)="corridorTypeChanged($event)" required>
                         <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
                             {{ type.value }}
