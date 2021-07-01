@@ -38,7 +38,7 @@ date_trunc('day', NOW() AT TIME ZONE 'UTC') and rs.status = 'A' and r.id = rs.re
 								 left Join master.account ac on ac.id = rs.created_by and ac.state='A'
 	                             left join master.accountpreference ap on ap.id = ac.preference_id								 
 								 left join master.scheduledreport sr on sr.schedule_report_id = rs.id and rs.start_date = sr.start_date and  sr.end_date = rs.end_date
-                            where sr.id is null";
+                            where sr.id is null order by rs.next_schedule_run_date";
                 #endregion
                 return _dataAccess.QueryAsync<ReportCreationScheduler>(query);
             }
