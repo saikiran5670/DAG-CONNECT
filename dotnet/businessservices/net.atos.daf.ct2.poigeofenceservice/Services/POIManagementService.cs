@@ -41,8 +41,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     //objPOI.SubCategoryId = item.SubCategoryId;
                     objPOI.Name = item.Name;// == null ? string.Empty : item.Name;
                     objPOI.Address = item.Address;// == null ? string.Empty : item.Name;
-                    objPOI.City = item.City;
-                    objPOI.CategoryName = item.CategoryName;
+                    objPOI.City = item.City ?? string.Empty;
+                    objPOI.CategoryName = item.CategoryName ?? string.Empty;
                     //objPOI.Country = item.Country;
                     //objPOI.Zipcode = item.Zipcode;
                     objPOI.Latitude = item.Latitude;

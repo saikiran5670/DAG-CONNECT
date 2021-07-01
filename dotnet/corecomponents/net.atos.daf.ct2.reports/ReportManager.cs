@@ -291,5 +291,18 @@ namespace net.atos.daf.ct2.reports
         }
 
         #endregion
+
+        #region FleetOverview
+        public async Task<List<AlertCategory>> GetAlertCategoryList()
+        {
+            List<AlertCategory> lstAlertCategory = await _reportRepository.GetAlertCategoryList();
+            return lstAlertCategory;
+        }
+        public async Task<List<AlertLevel>> GetAlertLevelList()
+        {
+            List<AlertLevel> lstAlertLevel = await _reportRepository.GetAlertLevelList();
+            return lstAlertLevel;
+        }
+        #endregion
     }
 }

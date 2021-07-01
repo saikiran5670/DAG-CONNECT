@@ -708,5 +708,41 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
+        #region FleetOverview
+        [HttpGet]
+        [Route("fleetoverview/getfilterdetails")]
+        public async Task<IActionResult> GetFleetOverviewFilter()
+        {
+            try
+            {
+                var fleetOverviewFilterRequest = new FleetOverviewFilterIdRequest();
+                fleetOverviewFilterRequest.AccountId = _userDetails.AccountId;
+                fleetOverviewFilterRequest.OrganizationId = GetContextOrgId();
+                fleetOverviewFilterRequest.RoleId = _userDetails.RoleId;
+                //fleetOverviewFilterRequest.AccountId = 171;
+                //fleetOverviewFilterRequest.OrganizationId = 36;
+                //fleetOverviewFilterRequest.RoleId = 61;
+                var response = await _reportServiceClient.GetFleetOverviewFilterAsync(fleetOverviewFilterRequest);
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (response.Code == Responsecode.Success)
+                    return Ok(response);
+                if (response.Code == Responsecode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                 ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"{ nameof(GetFleetOverviewFilter) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        #endregion
     }
 }
