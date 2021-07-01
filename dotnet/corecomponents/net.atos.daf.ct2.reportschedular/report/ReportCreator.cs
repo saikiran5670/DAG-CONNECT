@@ -6,9 +6,11 @@ using DinkToPdf;
 using DinkToPdf.Contracts;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.account.report;
+using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.repository;
+using net.atos.daf.ct2.template;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.visibility;
 
@@ -21,6 +23,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
         private readonly IReportManager _reportManager;
         private readonly IReportSchedulerRepository _reportSchedularRepository;
         private readonly IVisibilityManager _visibilityManager;
+        private readonly ITemplateManager _templateManager;
 
         public string ReportName { get; private set; }
         public string ReportKey { get; private set; }
@@ -31,12 +34,13 @@ namespace net.atos.daf.ct2.reportscheduler.report
         public ReportCreator(ILogger<ReportCreator> logger,
                             IConverter generatePdf, IReportManager reportManager,
                              IReportSchedulerRepository reportSchedularRepository,
-                             IVisibilityManager visibilityManager)
+                             IVisibilityManager visibilityManager, ITemplateManager templateManager)
         {
             _generatePdf = generatePdf;
             _reportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
             _visibilityManager = visibilityManager;
+            _templateManager = templateManager;
             _logger = logger;
         }
 
@@ -52,7 +56,8 @@ namespace net.atos.daf.ct2.reportscheduler.report
         private IReport InitializeReport(string reportKey) =>
         reportKey switch
         {
-            ReportNameConstants.REPORT_TRIP => new TripReport(_reportManager, _reportSchedularRepository, _visibilityManager),
+            ReportNameConstants.REPORT_TRIP => new TripReport(_reportManager, _reportSchedularRepository, _visibilityManager,
+                                                              _templateManager, EmailEventType.TripReport, EmailContentType.Html),
             ReportNameConstants.REPORT_TRIP_TRACING => null,
             _ => throw new ArgumentException(message: "invalid Report Key value", paramName: nameof(reportKey)),
         };

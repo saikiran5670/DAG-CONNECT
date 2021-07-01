@@ -5,7 +5,7 @@ namespace net.atos.daf.ct2.unitconversion
 {
     public interface IUnitConversionManager
     {
-        Task<double> GetDistance(double value, DistanceUnit inputUnit, UnitToConvert convertTo);
+        Task<double> GetDistance(double value, DistanceUnit inputUnit, UnitToConvert convertTo, int decimals = 2);
         Task<double> GetSpeed(double value, SpeedUnit inputUnit, UnitToConvert convertTo);
         Task<double> GetTime(double value, TimeUnit inputUnit, UnitToConvert convertTo);
         Task<double> GetVolume(double value, VolumeUnit inputUnit, UnitToConvert convertTo);
