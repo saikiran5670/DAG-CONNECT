@@ -148,10 +148,9 @@ namespace net.atos.daf.ct2.account.report
             //                                        _contentType, ReportSchedulerData.Code)
             html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE
                               //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
-                              , string.Format("data:image/gif;base64,{0}", logoBytes != null ? Convert.ToBase64String(logoBytes)
-                                                : ImageSingleton.GetInstance().GetDefaultLogo())
-                              , string.Format("data:image/gif;base64,{0}",
-                                                    ImageSingleton.GetInstance().GetLogo())
+                              ,  logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
+                                                : ImageSingleton.GetInstance().GetDefaultLogo()
+                              , ImageSingleton.GetInstance().GetLogo()
                               , fromDate.ToString(DateTimeFormat)
                               , "All", VIN
                               , toDate.ToString(DateTimeFormat)
