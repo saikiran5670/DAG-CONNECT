@@ -105,6 +105,24 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public int TargetProfileId { get; set; }
         public int ReportId { get; set; }
     }
+
+    public class EcoScoreReportCompareDriversRequest
+    {
+        [Required]
+        public long StartDateTime { get; set; }
+        [Required]
+        public long EndDateTime { get; set; }
+        [Required]
+        public List<string> VINs { get; set; }
+        [Required]
+        public List<string> DriverIds { get; set; }
+        [Range(0, 100, ErrorMessage = "Minimum Trip Distance should be non-negative and less than 100.")]
+        public double MinTripDistance { get; set; }
+        [Range(0, 100, ErrorMessage = "Minimum Driver Total Distance should be non-negative and less than 100.")]
+        public double MinDriverTotalDistance { get; set; }
+        public int TargetProfileId { get; set; }
+        public int ReportId { get; set; }
+    }
 }
 
 public enum LimitType

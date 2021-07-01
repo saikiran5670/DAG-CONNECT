@@ -28,7 +28,7 @@ rpc CreateReportUserPreference (ReportUserPreferenceCreateRequest) returns (Repo
 rpc GetFleetOverviewFilter (FleetOverviewFilterIdRequest) returns (FleetOverviewFilterResponse);
 rpc GetFleetFuelDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
-
+rpc GetEcoScoreReportCompareDrivers (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
 }
 
 enum Responsecode{
@@ -598,4 +598,47 @@ message FleetFuelDetails {
 }
 
 
-/// END Fleet Fuel Repor
+/// END Fleet Fuel Report
+
+/// START: Eco Score Report Compare Drivers
+
+message GetEcoScoreReportCompareDriversRequest {
+  int64 StartDateTime = 1;
+  int64 EndDateTime = 2; 
+  repeated string VINs = 3;
+  repeated string DriverIds = 4;
+  double MinTripDistance = 5;
+  double MinDriverTotalDistance = 6;
+  int32 TargetProfileId = 7;
+  int32 ReportId = 8;
+  int32 OrgId = 9;
+  int32 AccountId = 10;
+  }
+
+ message EcoScoreReportDrivers {
+  string DriverName = 1; 
+  string DriverId = 2;
+  }
+
+ message EcoScoreReportAttribute {
+  string DriverId = 1;
+  double Value = 2; 
+  string Color = 3;
+  }
+
+ message EcoScoreReportCompareDrivers {
+  int32 DataAttributeId = 1;
+  string Name = 2;
+  string Key = 3;
+  double Target = 4;
+  repeated EcoScoreReportAttribute Score = 5;
+  repeated EcoScoreReportCompareDrivers SubCompareDrivers = 6;
+  }
+  
+ message GetEcoScoreReportCompareDriversResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+  repeated EcoScoreReportDrivers Drivers = 3;
+  EcoScoreReportCompareDrivers CompareDrivers = 4;
+  }
+/// END: Eco Score Report Compare Drivers

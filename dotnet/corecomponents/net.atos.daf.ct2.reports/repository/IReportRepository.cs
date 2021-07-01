@@ -36,8 +36,9 @@ namespace net.atos.daf.ct2.reports.repository
         Task<bool> CheckIfReportUserPreferencesExist(int reportId, int accountId, int organizationId);
         Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId, int organizationId);
         Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId, int organizationId, int contextOrgId);
+        Task<List<EcoScoreReportCompareDrivers>> GetEcoScoreReportCompareDrivers(EcoScoreReportCompareDriversRequest request);
+        Task<List<EcoScoreCompareReportAtttributes>> GetEcoScoreCompareReportAttributes(int reportId, int targetProfileId);
         Task<List<AlertCategory>> GetAlertCategoryList();
-
         #region FleetFuel
         Task<List<CO2Coefficient>> GetCO2CoEfficientData();
         Task<List<IdlingConsumption>> GetIdlingConsumptionData();

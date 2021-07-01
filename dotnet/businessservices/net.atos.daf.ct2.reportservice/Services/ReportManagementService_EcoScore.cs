@@ -373,11 +373,11 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
-                var result = await _reportManager.GetEcoScoreReportByAllDrivers(MapEcoScoreReportByAllDriversRequest(request));
+                var result = await _reportManager.GetEcoScoreReportByAllDrivers(_mapper.MapEcoScoreReportByAllDriversRequest(request));
                 var response = new GetEcoScoreReportByAllDriversResponse();
                 if (result?.Count > 0)
                 {
-                    response.DriverRanking.AddRange(MapEcoScoreReportByAllDriversResponse(result));
+                    response.DriverRanking.AddRange(_mapper.MapEcoScoreReportByAllDriversResponse(result));
                     response.Code = Responsecode.Success;
                     response.Message = ReportConstants.GET_REPORT_DETAILS_SUCCESS_MSG;
                 }
@@ -399,49 +399,46 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
         }
 
-        /// <summary>
-        /// Mapper to covert GRPC request object
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        private EcoScoreReportByAllDriversRequest MapEcoScoreReportByAllDriversRequest(GetEcoScoreReportByAllDriversRequest request)
-        {
-            var objRequest = new EcoScoreReportByAllDriversRequest
-            {
-                StartDateTime = request.StartDateTime,
-                EndDateTime = request.EndDateTime,
-                VINs = request.VINs.ToList<string>(),
-                MinTripDistance = request.MinTripDistance,
-                MinDriverTotalDistance = request.MinDriverTotalDistance,
-                OrgId = request.OrgId,
-                AccountId = request.AccountId,
-                TargetProfileId = request.TargetProfileId,
-                ReportId = request.ReportId
-            };
-            return objRequest;
-        }
+        #endregion
+
+        #region Eco Score Report Compare Drivers
 
         /// <summary>
-        /// Mapper to covert object to  GRPC response
+        /// Get Eco Score Report Compare Drivers
         /// </summary>
-        /// <param name="response"></param>
+        /// <param name="request"> Search Parameter object</param>
+        /// <param name="context"> GRPC context</param>
         /// <returns></returns>
-        private IEnumerable<EcoScoreReportDriversRanking> MapEcoScoreReportByAllDriversResponse(List<EcoScoreReportByAllDrivers> response)
+        public override async Task<GetEcoScoreReportCompareDriversResponse> GetEcoScoreReportCompareDrivers(GetEcoScoreReportCompareDriversRequest request, ServerCallContext context)
         {
-            var lstDriverRanking = new List<EcoScoreReportDriversRanking>();
-            foreach (var item in response)
+            try
             {
-                var ranking = new EcoScoreReportDriversRanking
+                var resultDataMart = await _reportManager.GetEcoScoreReportCompareDrivers(_mapper.MapEcoScoreReportCompareDriversRequest(request));
+                var reportAttributes = await _reportManager.GetEcoScoreCompareReportAttributes(request.ReportId, request.TargetProfileId);
+                var response = new GetEcoScoreReportCompareDriversResponse();
+                if (resultDataMart?.Count > 0)
                 {
-                    Ranking = item.Ranking,
-                    DriverName = item.DriverName ?? string.Empty,
-                    DriverId = item.DriverId ?? string.Empty,
-                    EcoScoreRanking = item.EcoScoreRanking,
-                    EcoScoreRankingColor = item.EcoScoreRankingColor ?? string.Empty
-                };
-                lstDriverRanking.Add(ranking);
+                    response.Drivers.AddRange(_mapper.MapEcoScoreReportDrivers(resultDataMart));
+                    response.CompareDrivers = _mapper.MapEcoScoreReportCompareDriversResponse(resultDataMart, reportAttributes);
+                    response.Code = Responsecode.Success;
+                    response.Message = ReportConstants.GET_REPORT_DETAILS_SUCCESS_MSG;
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_NOTFOUND_MSG;
+                }
+                return await Task.FromResult(response);
             }
-            return lstDriverRanking;
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GetEcoScoreReportCompareDriversResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetEcoScoreReportCompareDrivers get failed due to - " + ex.Message
+                });
+            }
         }
 
         #endregion

@@ -42,4 +42,11 @@
         Complex = 'C',
         Derived = 'D'
     }
+
+    public enum ReportAttribute
+    {
+        EcoScore,
+        FuelConsumption,
+        CruiseCcontrol
+    }
 }

@@ -192,7 +192,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                     query.Append("from master.ecoscoreprofile pro ");
                     query.Append("left join master.ecoscoreprofilekpi prokpi ");
-                    query.Append("on pro.id= prokpi.profile_id ");
+                    query.Append("on pro.id= prokpi.ecoscore_profile_id ");
                     query.Append("left join master.ecoscorekpi kpi ");
                     query.Append("on prokpi.ecoscore_kpi_id = kpi.id ");
                     query.Append("left join master.ecoscoresection sec ");
@@ -731,6 +731,305 @@ namespace net.atos.daf.ct2.reports.repository
                 throw;
             }
         }
+        #endregion
+
+        #region Eco Score Report Compare Drivers
+        /// <summary>
+        /// Get Eco Score Report Compare Drivers
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
+        public async Task<List<EcoScoreReportCompareDrivers>> GetEcoScoreReportCompareDrivers(EcoScoreReportCompareDriversRequest request)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@FromDate", request.StartDateTime);
+                parameters.Add("@ToDate", request.EndDateTime);
+                parameters.Add("@Vins", request.VINs.ToArray());
+                parameters.Add("@DriverIds", request.DriverIds.ToArray());
+                parameters.Add("@MinTripDistance", request.MinTripDistance > 0 ? request.MinTripDistance : (double?)null);
+                parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance > 0 ? request.MinDriverTotalDistance : (double?)null);
+
+                string query = @"WITH ecoscore AS (
+                               SELECT dr.first_name, dr.last_name, eco.driver1_id, eco.trip_distance,eco.trip_id,
+                               eco.dpa_braking_score, eco.dpa_braking_count, eco.dpa_anticipation_score, eco.dpa_anticipation_count, eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,
+                               eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration
+                               FROM tripdetail.ecoscoredata eco
+                               JOIN master.driver dr 
+                                   ON dr.driver_id = eco.driver1_id
+                               WHERE eco.start_time >= @FromDate --1204336888377
+                                   AND eco.end_time <= @ToDate  --1820818919744
+                               AND eco.vin = ANY(@Vins) -- AND eco.vin = ANY('{XLR0998HGFFT76657,XLR0998HGFFT74600}')
+                               --AND eco.driver1_id = ANY(@DriverIds)
+                               --AND (eco.trip_distance < @MinTripDistance OR eco.trip_distance IS NULL)
+                               	),
+                               	
+                               generalblk as 
+                               (
+                                  select eco.driver1_id, eco.first_name || ' ' || eco.last_name AS driverName, count(eco.driver1_id)  as drivercnt
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id,eco.first_name,eco.last_name
+                               ),
+                               averagegrossweight as 
+                               (
+                                  select eco.driver1_id, 0 as averagegrossweight
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               ),
+                               distance as 
+                               (
+                                  select eco.driver1_id, SUM (eco.trip_distance) as distance
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               ),
+                               numberoftrips as 
+                               (
+                                  select eco.driver1_id, COUNT (eco.trip_id) as numberoftrips
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               ),
+                               numberofvehicles as 
+                               (
+                                  select eco.driver1_id, COUNT (eco.vin) as numberofvehicles
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               ),
+                               averagedistanceperday as 
+                               (
+                                  select eco.driver1_id, 0 as averagedistanceperday
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               ),
+                               ecosco as
+                               (
+                                  SELECT eco.driver1_id ,
+                                  --(((CAST(SUM(dpa_braking_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_braking_count)AS DOUBLE PRECISION)) +
+                                  --(CAST(SUM(dpa_anticipation_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION)))/2)/10 as ecoscore
+                                  	0 as ecoscore
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               ),
+                               fuelconsumption as 
+                               (
+                                  SELECT eco.driver1_id, SUM (eco.used_fuel)  as fuelconsumption
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               
+                               ),
+                               cruisecontrolusage as 
+                               (
+                                  SELECT eco.driver1_id, 0  as cruisecontrolusage
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               
+                               ),
+                               cruisecontrolusage3050 as 
+                               (
+                                  SELECT eco.driver1_id, 0  as cruisecontrolusage3050
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               
+                               ),
+                               cruisecontrolusage5075 as 
+                               (
+                                  SELECT eco.driver1_id, 0  as cruisecontrolusage5075
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               
+                               ),
+                               cruisecontrolusage75 as 
+                               (
+                                  SELECT eco.driver1_id, 0  as cruisecontrolusage75
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               
+                               ),
+                               ptousage as 
+                               (
+                               	 SELECT eco.driver1_id,  SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) as ptousage
+                               	 FROM ecoscore eco
+                               	 GROUP BY eco.driver1_id			 
+                               ),
+                               ptoduration as 
+                               (
+                               	 SELECT eco.driver1_id,  SUM(eco.pto_duration) as ptoduration
+                               	 FROM ecoscore eco
+                               	 GROUP BY eco.driver1_id	
+                               ),
+                               averagedrivingspeed as
+                               (
+                               	 SELECT eco.driver1_id,  SUM(eco.trip_distance)/(((SUM (eco.end_time)- SUM (eco.start_time))/1000)- SUM(eco.idle_duration) )  as averagedrivingspeed
+                               	 FROM ecoscore eco
+                               	 GROUP BY eco.driver1_id
+                               ),
+                               averagespeed as
+                               (
+                               	 SELECT eco.driver1_id,  SUM(eco.trip_distance)/((SUM (eco.end_time)- SUM (eco.start_time))/1000)  as averagespeed
+                               	 FROM ecoscore eco
+                               	 GROUP BY eco.driver1_id
+                               ),
+                                heavythrottling as
+                               (
+                                  SELECT eco.driver1_id, SUM(eco.heavy_throttle_pedal_duration)/((SUM (eco.end_time)- SUM (eco.start_time))/1000)  as heavythrottling
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                                 -- sum(Trip Maximum Accelerator Pedal Position Duration) / sum(Trip Accelaration Duration) ?
+                               ),
+                               heavythrottleduration  as
+                               (
+                                  SELECT eco.driver1_id, SUM(eco.heavy_throttle_pedal_duration )  as heavythrottleduration
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               ),
+                               idling  as
+                               (
+                                  SELECT eco.driver1_id,( SUM(eco.idle_duration)/ ((SUM (eco.end_time)- SUM (eco.start_time))/1000))* 100
+                                  as idling
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               ),
+                               idleduration  as
+                               (
+                                  SELECT eco.driver1_id,  SUM(eco.idle_duration)  as idleduration
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               ),
+                               brakingscore  as
+                               (
+                                  SELECT eco.driver1_id,(SUM(eco.dpa_braking_score)/ NULLIF (SUM (eco.dpa_braking_count),0))/10   as brakingscore
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               ),
+                               harshbraking  as
+                               (
+                                  SELECT eco.driver1_id, SUM(eco.harsh_brake_duration)/ NULLIF( SUM(eco.brake_duration),0) as harshbraking
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               ),
+                               harshbrakingduration  as
+                               (
+                                  SELECT eco.driver1_id, 0 as harshbrakingduration
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               ),
+                               brakeduration as
+                               (
+                                  SELECT eco.driver1_id, SUM(eco.brake_duration)/ 86400 as brakeduration
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               ),
+                               braking as
+                               (
+                                  SELECT eco.driver1_id, (SUM(eco.brake_duration)/ ((SUM (eco.end_time)- SUM (eco.start_time))/1000))*100 as braking
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               ),
+                               anticipationscore as
+                               (
+                                  SELECT eco.driver1_id, ( SUM(eco.dpa_anticipation_score)/ NULLIF( SUM(eco.dpa_anticipation_count),0) )/10 as anticipationscore
+                                  FROM ecoscore eco
+                                  GROUP BY eco.driver1_id
+                               )
+                               select 
+                               eco.driver1_id,
+                               eco.driverName
+                               
+                               ,avrg.averagegrossweight
+                               ,dis.distance
+                               ,notrp.numberoftrips
+                               ,noveh.numberofvehicles
+                               ,avgdperday.averagedistanceperday
+                               
+                               ,ecos.ecoscore
+                               ,f.fuelconsumption
+                               ,crus.cruisecontrolusage
+                               ,crusa.cruisecontrolusage3050
+                               ,crucon.cruisecontrolusage5075
+                               ,crucont.cruisecontrolusage75
+                               ,p.ptousage
+                               ,pto.ptoduration
+                               ,ads.averagedrivingspeed
+                               ,aspeed.averagespeed
+                               ,h.heavythrottling
+                               ,he.heavythrottleduration
+                               ,i.idling
+                               ,ide.idleduration
+                               ,br.brakingscore
+                               ,hr.harshbraking
+                               ,hrdur.harshbrakingduration
+                               ,anc.anticipationscore 
+                               ,brdur.brakeduration
+                               ,brk.braking
+                               
+                               from generalblk eco
+                               Left join averagegrossweight avrg on avrg.driver1_id = eco.driver1_id
+                               Left join distance dis on dis.driver1_id = avrg.driver1_id
+                               Left join numberoftrips notrp on notrp.driver1_id = dis.driver1_id
+                               Left join numberofvehicles noveh on noveh.driver1_id = notrp.driver1_id
+                               Left join averagedistanceperday avgdperday on avgdperday.driver1_id = noveh.driver1_id
+                               Left join ecosco ecos on ecos.driver1_id = avgdperday.driver1_id
+                               Left join fuelconsumption f on f.driver1_id = ecos.driver1_id
+                               Left join cruisecontrolusage crus  on crus.driver1_id = f.driver1_id   
+                               Left join cruisecontrolusage3050 crusa  on crusa.driver1_id = crus.driver1_id
+                               Left join cruisecontrolusage5075 crucon on crucon.driver1_id = crusa.driver1_id
+                               Left join cruisecontrolusage75 crucont on crucont.driver1_id = crucon.driver1_id
+                               Left join ptousage p on p.driver1_id = crucont.driver1_id
+                               Left join ptoduration pto on pto.driver1_id = p.driver1_id
+                               Left join averagedrivingspeed ads on ads.driver1_id = pto.driver1_id
+                               Left join averagespeed aspeed on aspeed.driver1_id = ads.driver1_id
+                               Left join heavythrottling h on h.driver1_id = aspeed.driver1_id
+                               Left join heavythrottleduration he on he.driver1_id = h.driver1_id
+                               Left join idling i on i.driver1_id = he.driver1_id
+                               Left join idleduration ide on ide.driver1_id = i.driver1_id
+                               Left join brakingscore br on br.driver1_id = ide.driver1_id
+                               Left join harshbraking hr on hr.driver1_id = br.driver1_id
+                               Left join harshbrakingduration hrdur on hrdur.driver1_id = hr.driver1_id
+                               Left join anticipationscore anc on anc.driver1_id = hrdur.driver1_id
+                               Left join brakeduration brdur on brdur.driver1_id = anc.driver1_id
+                               Left join braking brk on brk.driver1_id = brdur.driver1_id";
+
+                List<EcoScoreReportCompareDrivers> lstCompareDrivers = (List<EcoScoreReportCompareDrivers>)await _dataMartdataAccess.QueryAsync<EcoScoreReportCompareDrivers>(query, parameters);
+                return lstCompareDrivers?.Count > 0 ? lstCompareDrivers : new List<EcoScoreReportCompareDrivers>();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get Eco Score Compare Report Attributes with KPI Details
+        /// </summary>
+        /// <param name="reportId">ReportID</param>
+        /// <param name="targetProfileId">ProfileID</param>
+        /// <returns></returns>
+        public async Task<List<EcoScoreCompareReportAtttributes>> GetEcoScoreCompareReportAttributes(int reportId, int targetProfileId)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@ReportId", reportId);
+                parameters.Add("@ProfileId", targetProfileId);
+
+                string query = @"SELECT da.id as DataAttributeId,da.name as Name, ra.key as Key, ra.sub_attribute_ids as SubDataAttributes, ra.name as dbcolumnname,
+                                 eco.limit_type as LimitType, prokpi.limit_val as LimitValue, prokpi.target_val as TargetValue, eco.range_value_Type as RangeValueType
+                                 FROM master.reportattribute ra 
+                                 INNER JOIN master.dataattribute da ON ra.data_attribute_id = da.id and da.name not like '%Graph%'
+                                 LEFT JOIN master.ecoscorekpi eco ON eco.data_attribute_id = da.id
+                                 LEFT JOIN master.ecoscoreprofilekpi prokpi ON prokpi.ecoscore_kpi_id = eco.id AND prokpi.ecoscore_profile_id = @ProfileId --2
+                                 WHERE ra.report_id = @ReportId --10
+                                 ORDER BY ra.data_attribute_id";
+
+                List<EcoScoreCompareReportAtttributes> lstByAllDrivers = (List<EcoScoreCompareReportAtttributes>)await _dataMartdataAccess.QueryAsync<EcoScoreCompareReportAtttributes>(query, parameters);
+                return lstByAllDrivers?.Count > 0 ? lstByAllDrivers : new List<EcoScoreCompareReportAtttributes>();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         #endregion
     }
 }
