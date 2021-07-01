@@ -122,6 +122,7 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div>
+        <form [formGroup]="mapFilterForm">
         <a (click)='onAdvanceFilterOpen()' class='advanceFilterAnchor'>
           <span style='text-decoration: underline;'>{{ translationData.lblAdvancedMapFilter || 'Advanced Map Filter' }}</span>
           <mat-icon>
@@ -140,7 +141,7 @@
                 <mat-checkbox>{{ translationData.lblEvents || 'Events' }}</mat-checkbox>
               </div> -->
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-                <mat-radio-group (change)='onDisplayChange($event)' class='radioAlign'>
+                <mat-radio-group (change)='onDisplayChange($event)' class='radioAlign' formControlName='routeType'>
                   <mat-radio-button class='margin-bottom-5' value="C" [checked]="true">{{ translationData.lblClassic || 'Classic' }}</mat-radio-button>
                   <mat-radio-button class='margin-bottom-5' value="F">{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</mat-radio-button>
                   <mat-radio-button value="CO">{{ translationData.lblCo2emission || 'Co2 emission' }}</mat-radio-button>
@@ -170,7 +171,7 @@
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
                 translationData.lblTripRepresentation || 'Trip Representation'}}</div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-                  <mat-radio-group (change)='onMapRepresentationChange($event)' class='radioAlign'>
+                  <mat-radio-group (change)='onMapRepresentationChange($event)' class='radioAlign' formControlName='trackType'>
                     <mat-radio-button class='margin-bottom-5' value="snail" [checked]="true">{{ translationData.lblSnailTrack || 'Snail Track' }}</mat-radio-button>
                     <mat-radio-button value="dotted">{{ translationData.lblDottedTrack || 'Dotted Track' }}</mat-radio-button>
                   </mat-radio-group>
@@ -178,6 +179,7 @@
             </div>
           </div>
         </div>
+      </form>
       </div>
 
       <div class="searchBoxContainer">

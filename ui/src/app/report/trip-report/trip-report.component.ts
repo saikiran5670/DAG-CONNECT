@@ -49,6 +49,7 @@ reportPrefData: any = [];
 selectedStartTime: any = '00:00';
 selectedEndTime: any = '23:59'; 
 tripForm: FormGroup;
+mapFilterForm: FormGroup;
 displayedColumns = ['All', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
 translationData: any;
 showMap: boolean = false;
@@ -228,6 +229,10 @@ ngOnDestroy(){
       startTime: ['', []],
       endTime: ['', []]
     });
+    this.mapFilterForm = this._formBuilder.group({
+      routeType: ['', []],
+      trackType: ['', []]
+    });
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -239,6 +244,8 @@ ngOnDestroy(){
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
+      this.mapFilterForm.get('trackType').setValue('snail');
+      this.mapFilterForm.get('routeType').setValue('C');
       this.makeHerePOIList();
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
@@ -507,7 +514,12 @@ ngOnDestroy(){
     this.herePOIArr = [];
     this.selectedPOI.clear();
     this.selectedHerePOI.clear();
-    //this.trackType = 'snail';
+    this.trackType = 'snail';
+    this.displayRouteView = 'C';
+    this.mapFilterForm.get('routeType').setValue('C');
+    this.mapFilterForm.get('trackType').setValue('snail');
+    this.advanceFilterOpen = false;
+    this.searchMarker = {};
     //this.internalSelection = true;
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
