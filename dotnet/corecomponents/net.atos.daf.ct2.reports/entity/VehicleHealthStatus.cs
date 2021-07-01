@@ -14,25 +14,15 @@ namespace net.atos.daf.ct2.reports.entity
         public long ToDate { get; set; }
         public string WarningType { get; set; }
         public long LastLatitude { get; set; }
-        public string LastLongitude { get; set; }
-
-    }
-
-    public class CurrentWarning
-    {
-        public string Name { get; set; }
-        public string ActivatedTime { get; set; }
-        public string DriverName { get; set; }
-        public string Advice { get; set; }
-        public string DeactivatedTime { get; set; }
+        public long LastLongitude { get; set; }
     }
 
     public class CurrentHealthStatus
     {
-        public List<CurrentWarning> CurrentWarning { get; set; }
+        public List<Warning> CurrentWarning { get; set; }
     }
 
-    public class WarningHistory
+    public class Warning
     {
         public string Name { get; set; }
         public string ActivatedTime { get; set; }
@@ -41,12 +31,12 @@ namespace net.atos.daf.ct2.reports.entity
         public string Advice { get; set; }
         public string VehicleName { get; set; }
         public long Latitude { get; set; }
-        public string Longitude { get; set; }
+        public long Longitude { get; set; }
     }
 
     public class VehicleHealthStatusHitory
     {
-        public List<WarningHistory> WarningHistory { get; set; }
+        public List<Warning> WarningHistory { get; set; }
     }
 
     public class VehicleHealthStatus
