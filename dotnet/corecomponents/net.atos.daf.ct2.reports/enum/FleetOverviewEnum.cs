@@ -22,6 +22,6 @@ namespace net.atos.daf.ct2.reports.ENUM
     }
     public enum OtherState
     {
-    Nevermoved = 'N'
+        Nevermoved = 'N'
     }
 }
