@@ -95,19 +95,19 @@ stages:
     condition: eq(variables['Build.SourceBranchName'],  'testing')
 
 # Commented out because ACC 1 builds should not be triggered. It will be un-commented in future
-  # - stage: stage_acc1
-  #   jobs:
-  #   - template: dotnet-pipeline-template.yaml  # Template reference
-  #     parameters:
-  #       subscription: 'DAF CT AZURE DTA LANDING ZONE ACC1'
-  #       containerRegistry: '{"loginServer":"acraksk3kcvqdoasw7w.azurecr.io", "id" : "/subscriptions/72b19713-3728-48ab-95ac-3edf02341c45/resourceGroups/daf-lan7-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acraksk3kcvqdoasw7w"}'
-  #       variableGroup: 'ACC01-Build-Variables'
-  #       imageName: $(imageName)
-  #       dockerFile: $(dockerFile)
-  #       manifestFile: $(manifestFile)
-  #       appsettingsPath: $(appsettingsFile)
-  #       log4netConfigPath: $(log4netConfigFile)
-  #   condition: eq(variables['Build.SourceBranchName'],  'release')
+  - stage: stage_acc1
+    jobs:
+    - template: dotnet-pipeline-template.yaml  # Template reference
+      parameters:
+        subscription: 'DAF CT AZURE DTA LANDING ZONE ACC1'
+        containerRegistry: '{"loginServer":"acraksk3kcvqdoasw7w.azurecr.io", "id" : "/subscriptions/72b19713-3728-48ab-95ac-3edf02341c45/resourceGroups/daf-lan7-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acraksk3kcvqdoasw7w"}'
+        variableGroup: 'ACC01-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFile)
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'],  'release')
 
   - stage: stage_acc3
     jobs:

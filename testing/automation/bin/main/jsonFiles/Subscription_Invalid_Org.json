@@ -1,0 +1,10 @@
+{
+  "SubscribeEvent": {
+  "organizationID": "DAF12345X",
+  "packageId": "PAPackage12345",
+  "viNs": [ 
+     
+  ],
+  "startdatetime": ""
+  }
+}

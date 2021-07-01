@@ -1,0 +1,12 @@
+{
+  "vehicleID": 0,
+  "vin": "string",
+  "registrationNo": "string",
+  "chassisNo": "string",
+  "terminationDate": "2020-12-04T11:46:19.569Z",
+  "isActive": true,
+  "createdDate": "2020-12-04T11:46:19.569Z",
+  "createdBy": 0,
+  "updatedDate": "2020-12-04T11:46:19.569Z",
+  "updatedBy": 0
+}

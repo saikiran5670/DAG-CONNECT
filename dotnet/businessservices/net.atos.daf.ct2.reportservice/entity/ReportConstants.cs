@@ -36,5 +36,10 @@
         public const string DELETE_ECOSCORE_PROFILE_DEFAULT_PROFILE_MSG = "Is a default profile, Can't delete.";
         public const string DELETE_ECOSCORE_PROFILE_GLOBAL_PROFILE_MSG = "Is a global profile, Can't delete.";
         #endregion
+
+        #region FleetOverview
+        public const string FLEETOVERVIEW_FEATURE_NAME = "FleetOverview";
+        public const string FLEETOVERVIEW_FILTER_SUCCESS_MSG = "Filter details fetched successfully.";
+        #endregion
     }
 }

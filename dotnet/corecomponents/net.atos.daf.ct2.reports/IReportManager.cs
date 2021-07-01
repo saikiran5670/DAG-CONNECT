@@ -31,5 +31,11 @@ namespace net.atos.daf.ct2.reports
         Task<bool> CheckIfReportUserPreferencesExist(int reportId, int accountId, int organizationId);
         Task<IEnumerable<ReportUserPreference>> GetReportUserPreferences(int reportId, int accountId, int organizationId);
         Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId, int organizationId, int contextOrgId);
+        Task<List<AlertCategory>> GetAlertCategoryList();
+        Task<List<FleetFuelDetails>> GetFleetFuelDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
+        Task<List<FleetFuelDetails>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters);
+        Task<List<FilterProperty>> GetAlertLevelList();
+        Task<List<FilterProperty>> GetHealthStatusList();
+        Task<List<FilterProperty>> GetOtherFilter();
     }
 }

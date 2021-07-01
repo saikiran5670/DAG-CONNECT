@@ -46,9 +46,9 @@
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="30px">
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                             <mat-radio-group (change)='onChange($event)'>
-                                <mat-radio-button style='margin-right: 20px;' value="H" [checked]="data.consentType === 'H' ? true : false">{{ data.translationData.lblInherit || 'Inherit' }}</mat-radio-button>
-                                <mat-radio-button style='margin-right: 20px;' value="I" [checked]="data.consentType === 'I' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptInAll || 'Opt-In All') : (data.translationData.lblOptIn || 'Opt-In') }}</mat-radio-button>
-                                <mat-radio-button value="U" [checked]="data.consentType === 'U' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptOutAll || 'Opt-Out All') : (data.translationData.lblOptOut || 'Opt-Out') }}</mat-radio-button>
+                                <mat-radio-button style='margin-right: 20px;' [disabled]="data.radioSelected" value="H" [checked]="data.consentType === 'H' ? true : false">{{ data.translationData.lblInherit || 'Inherit' }}</mat-radio-button>
+                                <mat-radio-button style='margin-right: 20px;' [disabled]="data.radioSelected" value="I" [checked]="data.consentType === 'I' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptInAll || 'Opt-In All') : (data.translationData.lblOptIn || 'Opt-In') }}</mat-radio-button>
+                                <mat-radio-button value="U" [disabled]="data.radioSelected" [checked]="data.consentType === 'U' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptOutAll || 'Opt-Out All') : (data.translationData.lblOptOut || 'Opt-Out') }}</mat-radio-button>
                             </mat-radio-group>
                         </div>
                     </div>
@@ -70,8 +70,9 @@
         </mat-card-content>
         <mat-card-actions fxLayoutAlign="end end" class='no-margin' style="padding: 0px 20px;">
             <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
-                <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ data.translationData.lblCancel || 'Cancel' }}</button>
-                <button (click)="onConfirm()" class='no-margin' mat-raised-button color="primary">{{ data.translationData.lblConfirm || 'Confirm' }}</button>
+                <button *ngIf="!data.radioSelected" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ data.translationData.lblCancel || 'Cancel' }}</button>
+                <button *ngIf="!data.radioSelected" (click)="onConfirm()" class='no-margin' mat-raised-button color="primary">{{ data.translationData.lblConfirm || 'Confirm' }}</button>
+                <button *ngIf="data.radioSelected" (click)="onUpdateStatusOk($event)" class='no-margin' mat-raised-button color="primary">{{ data.translationData.lblStatusOk || 'OK' }}</button>
             </div>
         </mat-card-actions>
     </mat-card>

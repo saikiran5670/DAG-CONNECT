@@ -1,0 +1,12 @@
+{
+  "SubscribeEvent": {
+   "organizationID": "JMTR000",
+  "packageId": "PH Test Vin Pkg1",
+  "viNs": [ 
+       "XLR0998HGFFT74334",
+      "XLR0998HGFFT74335"
+
+  ],
+  "startdatetime": ""
+  } 
+}
