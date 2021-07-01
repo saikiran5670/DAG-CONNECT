@@ -824,7 +824,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.driverTimeForm.get('vehicle').setValue('');
       this.driverTimeForm.get('driver').setValue('');
     }
-    this.driverTimeForm.get('vehicle').setValue('');
+    this.driverTimeForm.get('vehicle').setValue(0);
 
 
     // this.searchFilterpersistData["vehicleGroupDropDownValue"] = 0;

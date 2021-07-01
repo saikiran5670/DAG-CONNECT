@@ -5,9 +5,10 @@ using net.atos.daf.ct2.unitconversion.ENUM;
 
 namespace net.atos.daf.ct2.unitconversion
 {
+
     public class UnitConversionManager : IUnitConversionManager
     {
-        public Task<double> GetDistance(double value, DistanceUnit inputUnit, UnitToConvert convertTo)
+        public Task<double> GetDistance(double value, DistanceUnit inputUnit, UnitToConvert convertTo, int decimals = 2)
         {
             double result = value;
             switch (inputUnit)
@@ -27,7 +28,7 @@ namespace net.atos.daf.ct2.unitconversion
                     result = value;
                     break;
             }
-            return Task.FromResult(result);
+            return Task.FromResult(Math.Round(result, decimals));
         }
 
         public Task<double> GetSpeed(double value, SpeedUnit inputUnit, UnitToConvert convertTo)
