@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 PaperSize = PaperKind.A4,
                 Margins = new MarginSettings { Top = 10, Right = 10, Left = 10, Bottom = 10 },
                 //DocumentTitle = "PDF Report"//,
-                Out = $@"C:\Harneet\POC\Employee_Report{ReportSchedulerData.Id}.pdf"
+                //Out = $@"C:\Users\harneet.r (58879009)\Documents\POC\Employee_Report{ReportSchedulerData.Id}.pdf"
             };
             string htmlText = await Report.GenerateTemplate(await GetLogoImage());
 
@@ -94,11 +94,11 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 GlobalSettings = globalSettings,
                 Objects = { objectSettings }
             };
-
+            var pdf123 = _generatePdf.Convert(pdf);
             return await _reportSchedularRepository
                             .InsertReportPDF(new ScheduledReport
                             {
-                                Report = _generatePdf.Convert(pdf),
+                                Report = pdf123,
                                 ScheduleReportId = ReportSchedulerData.Id,
                                 StartDate = ReportSchedulerData.StartDate,
                                 EndDate = ReportSchedulerData.EndDate,
