@@ -54,6 +54,48 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 throw;
             }
         }
+        public async Task<IEnumerable<ReportType>> GetReportType(int accountId, int organizationId, int contextorgId, int roleId)
+        {
+            try
+            {
+                var parameterType = new DynamicParameters();
+                var queryStatement = @"SELECT distinct rpt.id as Id,rpt.name as ReportName, trim(rpt.key) as Key, rpt.support_driver_sch_rep as IsDriver
+                                        from 
+                                        (
+	                                                            --Account Route
+	                                                            SELECT f.id
+	                                                            FROM master.Account acc
+	                                                            INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.organization_id = @organization_id AND ar.role_id = @role_id AND acc.state = 'A'
+	                                                            INNER JOIN master.Role r ON ar.role_id = r.id AND r.state = 'A'
+	                                                            INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
+ 	                                                            INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                                                            INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' 
+			                                            INNER JOIN master.Report rpt ON rpt.feature_id = f.id
+	                                                            INTERSECT
+	                                                            --Subscription Route
+	                                                            SELECT f.id
+	                                                            FROM master.Subscription s
+	                                                            INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @context_org_id 	AND s.state = 'A' AND pkg.state = 'A'
+	                                                            INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
+ 	                                                            INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                                                            INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D'
+			                                            INNER JOIN master.Report rpt ON  rpt.feature_id = f.id
+                                        ) fsets
+                                        INNER JOIN master.Report rpt ON rpt.feature_id = fsets.id ; ";
+
+                parameterType.Add("@organization_id", organizationId);
+                parameterType.Add("@account_id", accountId);
+                parameterType.Add("@context_org_id", contextorgId);
+                parameterType.Add("@role_id", roleId);
+
+                IEnumerable<ReportType> reporttype = await _dataAccess.QueryAsync<ReportType>(queryStatement, parameterType);
+                return reporttype;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         public async Task<IEnumerable<ReceiptEmails>> GetRecipientsEmails(int organizationid)
         {
             try
