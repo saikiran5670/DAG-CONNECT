@@ -325,6 +325,11 @@ namespace net.atos.daf.ct2.reports
             List<FilterProperty> lstHealthStatus = await _reportRepository.GetOtherFilter();
             return lstHealthStatus;
         }
+        public async Task<List<DriverFilter>> GetDriverList(List<string> vins)
+        {
+            List<DriverFilter> lstDriver = await _reportRepository.GetDriverList(vins);
+            return lstDriver;
+        }
         #endregion
 
         #region Feet Fuel Report

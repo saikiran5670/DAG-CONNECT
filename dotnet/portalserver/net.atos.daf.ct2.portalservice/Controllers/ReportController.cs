@@ -763,17 +763,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 ReportFleetOverviewFilter reportFleetOverviewFilter = new ReportFleetOverviewFilter();
                 var fleetOverviewFilterRequest = new FleetOverviewFilterIdRequest();
-                //fleetOverviewFilterRequest.AccountId = _userDetails.AccountId;
-                //fleetOverviewFilterRequest.OrganizationId = GetContextOrgId();
-                //fleetOverviewFilterRequest.RoleId = _userDetails.RoleId;
-                fleetOverviewFilterRequest.AccountId = 171;
-                fleetOverviewFilterRequest.OrganizationId = 36;
-                fleetOverviewFilterRequest.RoleId = 61;
+                fleetOverviewFilterRequest.AccountId = _userDetails.AccountId;
+                fleetOverviewFilterRequest.OrganizationId = GetContextOrgId();
+                fleetOverviewFilterRequest.RoleId = _userDetails.RoleId;
+                //fleetOverviewFilterRequest.AccountId = 171;
+                //fleetOverviewFilterRequest.OrganizationId = 36;
+                //fleetOverviewFilterRequest.RoleId = 61;
                 FleetOverviewFilterResponse response = await _reportServiceClient.GetFleetOverviewFilterAsync(fleetOverviewFilterRequest);
 
                 reportFleetOverviewFilter = _mapper.ToFleetOverviewEntity(response);
                 poiservice.POIRequest poiRequest = new poiservice.POIRequest();
-                poiRequest.OrganizationId = 36;
+                poiRequest.OrganizationId = GetContextOrgId(); //36;
                 poiRequest.Type = "POI";
                 var data = await _poiServiceClient.GetAllPOIAsync(poiRequest);
                 reportFleetOverviewFilter.UserPois = new List<POI.POIResponse>();
