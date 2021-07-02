@@ -9,6 +9,10 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { OrganizationService } from 'src/app/services/organization.service';
 import { TranslationService } from 'src/app/services/translation.service';
 import { Util } from 'src/app/shared/util';
+import { ReportService } from 'src/app/services/report.service';
+import { truncate } from 'fs';
+import { ReportMapService } from '../../report-map.service';
+
 
 @Component({
   selector: 'app-fleet-fuel-report-driver',
@@ -17,19 +21,20 @@ import { Util } from 'src/app/shared/util';
 })
 export class FleetFuelReportDriverComponent implements OnInit {
   @Input() translationData: any;
-  displayedColumns = ['vehicleName', 'vin', 'plateNo', 'distance', 'averageDistance', 'averageSpeed',
+  displayedColumns = ['driverName','driverID','vehicleName', 'vin', 'plateNo', 'distance', 'averageDistance', 'averageSpeed',
   'maxSpeed', 'noOfTrips', 'avgGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'CO2Emisson', 
   'isIdleDuration','PTODuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistanceBelow50',
   'cruiseControlDistanceBelow75','cruiseControlDistanceAbove75', 'avgTrafficClassification',
   'CCFuelConsumption','CCFuelConsumptionNon','IdlingConsumption','DPAScore','DPAAnticipation',
   'DPABraking','idlingWithPTO','idlingWithoutPTOWheelbase','idlingWithoutPTOVIdleDuration','footBrake',
   'CO2EmmisionFuelEfficiency','idlingConsumptionWithPTO'];
+  rankingColumns = ['ranking','vehicleName','vin','plateNo','consumption'];
   tripForm: FormGroup;
   searchExpandPanel: boolean = true;
   tableExpandPanel: boolean = true;
-  rankingExpandPanel: boolean = true;
-  isSummaryOpen: boolean = true;
-  isChartsOpen: boolean = true;
+  rankingExpandPanel: boolean = false;
+  isSummaryOpen: boolean = false;
+  isChartsOpen: boolean = false;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   startTimeDisplay: any = '00:00:00';
@@ -37,6 +42,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   fleetFuelSearchData: any = {};
   localStLanguage: any;
   accountOrganizationId: any;
+  wholeTripData: any = [];
   accountId: any;
   internalSelection: boolean = false;
   accountPrefObj: any;
@@ -67,8 +73,15 @@ export class FleetFuelReportDriverComponent implements OnInit {
   barChartLegend: any;
   barChartPlugins: any;
   barChartData: any;
+  vehicleGroupListData: any = [];
+  reportPrefData: any = [];
+  vehicleListData: any = [];
+  tripData: any = [];
+  fromTripPageBack: boolean = false;
   displayData : any =[
     {
+      driverName:'Driver001',
+      driverID:'XS100G041999',
       vehicleName: 'Name List 001',
       vin : 'XLRTEM4100G041999',
       plateNo : '12 HH 70',
@@ -104,6 +117,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
 
     },
     {
+      driverName:'Driver002',
+      driverID:'XS100G041996',
       vehicleName: 'Name List 001',
       vin : 'XLRTEM4100G041999',
       plateNo : '12 HH 70',
@@ -140,12 +155,22 @@ export class FleetFuelReportDriverComponent implements OnInit {
     },
     
   ]
-
+  rankingData : any =[
+    {
+      ranking: 1,
+      vehicleName: 'Name List 0001',
+      vin :'XLRTEMP4100G041999',
+      plateNo: '12 HH 71',
+      consumption: 25
+    }
+  ]
   
   constructor(private _formBuilder: FormBuilder, 
               private translationService: TranslationService,
               private organizationService: OrganizationService,
-              @Inject(MAT_DATE_FORMATS) private dateFormats) { }
+              private reportService: ReportService,
+              @Inject(MAT_DATE_FORMATS) private dateFormats,
+              private reportMapService: ReportMapService) { }
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
@@ -227,7 +252,120 @@ export class FleetFuelReportDriverComponent implements OnInit {
     ];
   }
 
+  getFleetPreferences(){
+    this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+      
+      this.reportPrefData = data["userPreferences"];
+      this.resetPref();
+      // this.preparePrefData(this.reportPrefData);
+      this.loadWholeTripData();
+    }, (error) => {
+      this.reportPrefData = [];
+      this.resetPref();
+      // this.preparePrefData(this.reportPrefData);
+      this.loadWholeTripData();
+    });
+  }
+
+  loadWholeTripData(){
+    this.showLoadingIndicator = true;
+    this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
+      this.hideloader();
+      this.wholeTripData = tripData;
+      this.filterDateData();
+    }, (error)=>{
+      this.hideloader();
+      this.wholeTripData.vinTripList = [];
+      this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
+      //this.loadUserPOI();
+    });
+  }
+
+  hideloader() {
+    // Setting display of spinner
+    this.showLoadingIndicator = false;
+  }
+
+  resetPref(){
+
+  }
+
   onSearch(){
+    this.isChartsOpen = true;
+    // this.resetChartData(); // reset chart data
+    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
+    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+    let _vinData: any = [];
+    if( parseInt(this.tripForm.controls.vehicle.value ) == 0){
+         _vinData = this.vehicleDD.filter(i => i.vehicleId != 0).map(item => item.vin);
+    }else{
+       let search = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+       if(search.length > 0){
+         _vinData.push(search[0].vin);
+       }
+    }
+    if(_vinData.length > 0){
+      this.showLoadingIndicator = true;
+      let searchDataParam = {
+        "startDateTime":_startTime,
+        "endDateTime":_endTime,
+        "viNs":  _vinData,
+      }
+      this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
+
+       this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+      // this.setTableInfo();
+      // this.updateDataSource(this.tripData);
+      this.hideloader();
+      this.isChartsOpen = true;
+      this.isSummaryOpen = true;
+      // this.tripData.forEach(element => {
+      //   if(element.distance > this.mileagebasedThreshold){
+      //     this.greaterMileageCount = this.greaterMileageCount + 1;
+      //   }
+      //   if(element.drivingTime > this.timebasedThreshold){
+      //     this.greaterTimeCount = this.greaterTimeCount + 1;
+      //   }
+      // });
+      // let percentage1 = (this.greaterMileageCount/this.tripData.length)*100 ;
+      // this.doughnutChartData = [percentage1, 100- percentage1];
+      // this.mileagePieChartData = [percentage1,  100- percentage1]
+      // let percentage2 = (this.greaterTimeCount/this.tripData.length)* 100;
+      // this.doughnutChartDataForTime = [percentage2, 100- percentage2];
+      // this.timePieChartData = [percentage2, 100- percentage2];
+      
+      // }, (error)=>{
+      //    //console.log(error);
+      //   this.hideloader();
+      //   this.tripData = [];
+      //    this.tableInfoObj = {};
+      //   this.updateDataSource(this.tripData);
+      // });
+    });
+  }
+  }
+ 
+  
+  onDriverSelected(){
+
+  }
+ 
+
+  resetChartData(){
+    this.lineChartData=[];
+    this.lineChartLabels=[];
+    this.lineChartOptions=[];
+    this.lineChartColors=[];;
+    this.lineChartLegend=[];
+    this.lineChartType=[];
+    this.lineChartPlugins=[];
+    this.barChartOptions=[];
+    this.barChartLabels=[];
+    this.barChartType=[];
+    this.barChartLegend=[];
+    this.barChartPlugins=[];
+    this.barChartData=[];
   }
 
   processTranslation(transData: any) {
@@ -269,7 +407,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
-    // this.getFleetPreferences();
+    this.getFleetPreferences();
   }
 
   setDefaultStartEndTime()
@@ -437,7 +575,18 @@ getLast3MonthDate(){
   }
 
   onReset(){
-    
+    this.internalSelection = false;
+    this.setDefaultStartEndTime();
+    this.setDefaultTodayDate();
+    this.tripData = [];
+    this.vehicleListData = [];
+    // this.vehicleGroupListData = this.vehicleGroupListData;
+    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+    // this.updateDataSource(this.tripData);
+    // this.tableInfoObj = {};
+    // this.selectedPOI.clear();
+    this.resetTripFormControlValue();
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
   
   endTimeChanged(selectedTime: any) {
@@ -468,13 +617,89 @@ getLast3MonthDate(){
   }
 
   filterDateData(){
+    let distinctVIN: any = [];
+    let finalVINDataList: any = [];
+    this.vehicleListData = [];
+    this.vehicleGrpDD = [];
+
+    let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
+    let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
+    if(this.wholeTripData.vinTripList.length > 0){
+      let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
+      if(filterVIN.length > 0){
+        distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
+
+        if(distinctVIN.length > 0){
+          distinctVIN.forEach(element => {
+            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
+            if(_item.length > 0){
+              this.vehicleListData.push(_item[0]); //-- unique VIN data added 
+              _item.forEach(element => {
+                finalVINDataList.push(element);
+              });
+            }
+          });
+        }
+      }else{
+        this.tripForm.get('vehicle').setValue('');
+        this.tripForm.get('vehicleGroup').setValue('');
+      }
   }
+  this.vehicleGroupListData = finalVINDataList;
+    if(this.vehicleGroupListData.length > 0){
+      let _s = this.vehicleGroupListData.map(item => item.vehicleGroupId).filter((value, index, self) => self.indexOf(value) === index);
+      if(_s.length > 0){
+        _s.forEach(element => {
+          let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
+          if(count.length > 0){
+            this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
+          }
+        });
+      }
+     this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+
+    }
+
+    this.vehicleDD = this.vehicleListData;
+    if(this.vehicleListData.length > 0){
+      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+      this.resetTripFormControlValue();
+    };
+    this.setVehicleGroupAndVehiclePreSelection();
+    if(this.fromTripPageBack){
+      this.onSearch();
+    }
+}
+
+setVehicleGroupAndVehiclePreSelection() {
+  if(!this.internalSelection && this.fleetFuelSearchData.modifiedFrom !== "") {
+    this.onVehicleGroupChange(this.fleetFuelSearchData.vehicleGroupDropDownValue)
+  }
+}
 
   onVehicleGroupChange(event: any){
+    if(event.value || event.value == 0){
+      this.internalSelection = true; 
+      this.tripForm.get('vehicle').setValue(0); //- reset vehicle dropdown
+      if(parseInt(event.value) == 0){ //-- all group
+        this.vehicleDD = this.vehicleListData;
+      }else{
+      let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+        if(search.length > 0){
+          this.vehicleDD = [];
+          search.forEach(element => {
+            this.vehicleDD.push(element);  
+          });
+        }
+      }
+    }else {
+      this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetFuelSearchData.vehicleGroupDropDownValue));
+      this.tripForm.get('vehicle').setValue(parseInt(this.fleetFuelSearchData.vehicleDropDownValue));
+    }
   }
 
   onVehicleChange(event: any){
-    // this.internalSelection = true; 
+    this.internalSelection = true; 
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
