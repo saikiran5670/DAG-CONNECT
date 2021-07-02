@@ -665,15 +665,15 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@organization_id", organizationId);
 
                 #region Query Select User Preferences
-                var query = @"SELECT d.id as DataAttributeId,d.name as Name,d.type as DataAttributeType, 
-                                     ra.key as Key, rp.state, rp.chart_type as ChartType, rp.type as ReportPreferenceType, 
-                                     rp.threshold_limit_type as ThresholdType, rp.threshold_value as ThresholdValue,
-                                     ra.sub_attribute_ids as SubDataAttributes, ra.type as AttributeType
-                FROM master.reportpreference rp
-                INNER JOIN master.reportattribute ra ON rp.reportattribute_id = ra.id and ra.report_id = @report_id and 
-                                                        rp.account_id = @account_id and rp.organization_id = @organization_id and 
-                                                        rp.report_id = ra.report_id
-                INNER JOIN master.dataattribute d ON ra.data_attribute_id = d.id";
+                var query = @"SELECT d.id as DataAttributeId, d.name as Name, ra.key as Key, ra.sub_attribute_ids as SubDataAttributes, ra.type as AttributeType,
+					                 CASE WHEN rp.state IS NULL THEN 'A' ELSE rp.state END as State, rp.chart_type as ChartType, rp.type as ReportPreferenceType, 
+					                 rp.threshold_limit_type as ThresholdType, rp.threshold_value as ThresholdValue
+                            FROM master.reportattribute ra
+                            INNER JOIN master.dataattribute d ON ra.data_attribute_id = d.id
+                            LEFT JOIN master.reportpreference rp ON rp.reportattribute_id = ra.id and 
+										                            rp.account_id = @account_id and rp.organization_id = @organization_id and 
+										                            rp.report_id = ra.report_id
+                            WHERE ra.report_id = @report_id";
                 #endregion
 
                 return await _dataAccess.QueryAsync<ReportUserPreference>(query, parameter);
@@ -697,7 +697,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@context_org_id", contextOrgId);
 
                 #region Query RoleBasedDataColumn
-                var query = @"SELECT DISTINCT d.id as DataAttributeId,d.name as Name,d.type as DataAttributeType, ra.key as Key, 'A' as state,
+                var query = @"SELECT DISTINCT d.id as DataAttributeId,d.name as Name, ra.key as Key, 'A' as state,
                                               ra.sub_attribute_ids as SubDataAttributes, ra.type as AttributeType
                               FROM master.reportattribute ra
                               INNER JOIN master.dataattribute d ON ra.report_id = @report_id and d.id = ra.data_attribute_id 

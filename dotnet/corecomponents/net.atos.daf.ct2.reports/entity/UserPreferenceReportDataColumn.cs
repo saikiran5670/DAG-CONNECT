@@ -18,7 +18,6 @@
     {
         public int DataAttributeId { get; set; }
         public string Name { get; set; }
-        public string DataAttributeType { get; set; }
         public string Key { get; set; }
         public string State { get; set; }
         public string ChartType { get; set; }
