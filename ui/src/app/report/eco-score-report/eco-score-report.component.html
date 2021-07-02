@@ -233,26 +233,34 @@
             </div>
           </div>
         </div>
-        </mat-expansion-panel>
+        <!-- </mat-expansion-panel>
     </mat-card>
 
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='initData.length > 0'>
-      <mat-expansion-panel  [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
-        <mat-expansion-panel-header class="full-width">
+      <mat-expansion-panel  [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px"> -->
+        <!-- <mat-expansion-panel-header class="full-width">
           <mat-panel-title >
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails || 'All Details' }}</span>
           </mat-panel-title>
-        </mat-expansion-panel-header>
+        </mat-expansion-panel-header> -->
         <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
-
+          <!-- <div fxLayout="row" class='margin-bottom-sm margin-top-sm' fxLayoutGap="10px">
+            <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+             <span>&nbsp;</span>
+            </div>
+            <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <span>{{ translationData.lblVehicleGroup|| 'Target Profile' }} </span>
+            </div>
+            
+          </div> -->
           <div fxLayout="row" class='margin-bottom-sm' fxLayoutGap="10px">
-            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style="align-self: flex-end;">
               <mat-form-field appearance="outline">
                   <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
                   <span matPrefix><mat-icon>search</mat-icon></span>
               </mat-form-field>
             </div>
-            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <span>{{ translationData.lblVehicleGroup|| 'Target Profile' }} </span>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="profileList.length == 0" (selectionChange)="onProfileChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Profile' }}" formControlName="profile">
@@ -261,22 +269,26 @@
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-            </div>
-            
+            </div>            
           </div>
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
-            <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
-              <button [disabled]="false" class='no-margin' mat-raised-button color="primary"
+            <div fxLayout="row" fxLayoutAlign="end" class='areaWidth' fxLayoutGap="10px">             
+              <button mat-button *ngFor="let driver of selectedDriversEcoScore" (click)="deselectDriver(driver)">
+                {{driver.driverName}}
+                <mat-icon>close</mat-icon>
+              </button>
+              <button [disabled]="false" class='no-margin min-width-35-per' mat-raised-button color="primary"
                 (click)='onCompare($event)'>{{ translationData.lblSearch || 'Compare' }}</button>
             </div>
           </div>
-          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
-            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+            <div class='areaWidth' fxLayout="column" fxLayoutAlign="left">
+              <div fxLayout="row" fxLayoutAlign='center center'>
+                <mat-icon class='margin-right-10'>info</mat-icon>
+                <span>{{ translationData.lblVehicleGroup|| 'You can select minimum 2 and 4 Drivers to compare' }} </span>
+              </div>
             </div>
-            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-              <span>{{ translationData.lblVehicleGroup|| 'You can select minimum 2 and 4 Drivers to compare' }} </span>
-            </div>
-            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+            <div class='areaWidth' fxLayout="column" fxLayoutAlign="end">
               <button mat-button [matMenuTriggerFor]="menu">
                 <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
               </button>
@@ -289,58 +301,55 @@
           
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items"
               matSort #exporter="matTableExporter">
-             
+              <ng-container matColumnDef="select">
+                <mat-header-cell *matHeaderCellDef>
+                  <!-- <mat-checkbox (change)='$event ? masterToggleForOrgRelationship() : null'
+                    [checked]='selectedOrgRelations.hasValue() && isAllSelectedForOrgRelationship()'
+                    [indeterminate]='selectedOrgRelations.hasValue() && !isAllSelectedForOrgRelationship()'
+                    [aria-label]='checkboxLabelForOrgRelationship()'>
+                  </mat-checkbox> -->
+                  <mat-checkbox (change)='$event ? masterToggleForEcoScore() : null' [checked]='selectedEcoScore.hasValue()'></mat-checkbox>
+                  <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <!-- <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+                  <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span> -->
+                  <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
+                  <!-- <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedOrgRelations.toggle(row) : null'
+                    [checked]='selectedOrgRelations.isSelected(row)' [aria-label]='checkboxLabelForOrgRelationship(row)' [disabled]="row.endDate != 0">
+                  </mat-checkbox> -->
+                  <mat-checkbox (click)='rowSelected(row)'  [checked]='selectedEcoScore.isSelected(row)'></mat-checkbox>
+                </mat-cell>
+              </ng-container>
+              <ng-container *ngIf='showField.ecoScoreRanking' matColumnDef="ecoScoreRanking">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Ranking' }}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" class="driverClick">{{ row.ranking != '' ? row.ranking : '-' }}</mat-cell>
+              </ng-container>
               <ng-container *ngIf='showField.detailsdrivername' matColumnDef="detailsdrivername">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" (click)="onDriverSelected(row)" class="driverClick">{{ row.driverName != '' ? row.driverName : '-' }}</mat-cell>
               </ng-container>
               <ng-container *ngIf='showField.detailsdriverid' matColumnDef="detailsdriverid">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverId || 'Driver Id' }}
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverId || 'Driver ID' }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.driverId != '' ? row.driverId : '-' }}</mat-cell>
               </ng-container>
-              <ng-container *ngIf='showField.detailsstarttime' matColumnDef="detailsstarttime">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartTime || 'Start Time' }} <span style="font-weight: normal;"></span>
+              <ng-container *ngIf='showField.ecoScore' matColumnDef="ecoScore">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverId || 'Eco-Score' }}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.startTime != '' ? row.startTime : '-' }}</mat-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="bar-container">
+                    <div [ngStyle]="setStyle(row)">{{ row.ecoScore != '' ? row.ecoScore : '-' }}</div>
+                  </div>
+                </mat-cell>
               </ng-container>
-              <ng-container *ngIf='showField.detailsendtime' matColumnDef="detailsendtime">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndTime || 'End Time' }} <span style="font-weight: normal;"></span>
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.endTime != '' ? row.endTime : '-' }}</mat-cell>
-              </ng-container>
-              <ng-container *ngIf='showField.detailsdrivetime' matColumnDef="detailsdrivetime">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriveTime || 'Drive Time' }} (hh:mm)
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.driveTime != '' ? row.driveTime : '-' }}</mat-cell>
-              </ng-container>
-              <ng-container *ngIf='showField.detailsworktime' matColumnDef="detailsworktime">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWorkTime || 'Work Time' }} (hh:mm)
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.workTime != '' ? row.workTime : '-' }}</mat-cell>
-              </ng-container>
-              <ng-container *ngIf='showField.detailsservicetime' matColumnDef="detailsservicetime">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblServiceTime || 'Service Time' }} (hh:mm)
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.serviceTime != '' ? row.serviceTime : '-' }}</mat-cell>
-              </ng-container>
-              <ng-container *ngIf='showField.detailsresttime' matColumnDef="detailsresttime">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRestTime || 'Rest Time' }} (hh:mm)
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.restTime != '' ? row.restTime : '-' }}</mat-cell>
-              </ng-container>
-              <ng-container *ngIf='showField.detailsavailabletime' matColumnDef="detailsavailabletime">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAvailableTime || 'Available Time' }} (hh:mm)
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.detailsavailabletime != '' ? row.detailsavailabletime : '-' }}</mat-cell>
-              </ng-container>
-             
               <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
               <mat-row *matRowDef="let row; columns: displayedColumns;">
               </mat-row>
             </mat-table>
-            <div class='mt-1'><mat-label>* {{ translationData.lblTableInstruction || 'values are processed with partial data'}}</mat-label></div>
+            <!-- <div class='mt-1'><mat-label>* {{ translationData.lblTableInstruction || 'values are processed with partial data'}}</mat-label></div> -->
           <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
         </div>
         </mat-expansion-panel>
