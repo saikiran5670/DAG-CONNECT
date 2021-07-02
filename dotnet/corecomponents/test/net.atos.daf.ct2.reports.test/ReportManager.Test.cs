@@ -10,7 +10,7 @@ using net.atos.daf.ct2.reports.repository;
 namespace net.atos.daf.ct2.reports.test
 {
     [TestClass]
-    public class ReportManagerTest
+    public partial class ReportManagerTest
     {
         private readonly IConfiguration _config;
         private readonly IDataAccess _dataAccess;

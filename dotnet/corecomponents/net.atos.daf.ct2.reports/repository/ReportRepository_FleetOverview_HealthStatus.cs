@@ -5,23 +5,28 @@ using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.reports.entity;
 using System.Linq;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.reports.repository
 {
     public partial class ReportRepository : IReportRepository
     {
-        public async Task<VehicleHealthStatus> GetVehicleHealthStatus(VehicleHealthStatusHistoryRequest vehicleHealthStatusHistoryRequest)
+        public async Task<VehicleHealthStatus> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest)
         {
             var parameter = new DynamicParameters();
             var vehicleHealthStatus = new VehicleHealthStatus();
-            vehicleHealthStatus.VehicleSummary = await GetVehicleSummary(vehicleHealthStatusHistoryRequest.VIN);
-            //get quarter fisrt date and last date on load
-            vehicleHealthStatus.VehicleSummary.FromDate = vehicleHealthStatusHistoryRequest.FromDate;
-            vehicleHealthStatus.VehicleSummary.ToDate = vehicleHealthStatusHistoryRequest.ToDate;
+            vehicleHealthStatus.VehicleSummary = await GetVehicleHealthSummary(vehicleHealthStatusRequest.VIN);
+            if (vehicleHealthStatusRequest.FromDate == null && vehicleHealthStatusRequest.FromDate == null)
+            {
+                GetNextQuarterTime(vehicleHealthStatusRequest);
+            }
+            vehicleHealthStatus.VehicleSummary.FromDate = vehicleHealthStatusRequest?.FromDate;
+            vehicleHealthStatus.VehicleSummary.ToDate = vehicleHealthStatusRequest?.ToDate;
+
             return vehicleHealthStatus;
         }
 
-        private async Task<VehicleSummary> GetVehicleSummary(string vin)
+        private async Task<VehicleSummary> GetVehicleHealthSummary(string vin)
         {
             //TODO add preference condition
             var parameter = new DynamicParameters();
@@ -34,12 +39,12 @@ namespace net.atos.daf.ct2.reports.repository
                                     cts.latest_received_position_longitude
                                     FROM livefleet.livefleet_current_trip_statistics cts
                                     left join master.vehicle V on cts.vin = v.vin where vin =@vin";
-            var currentHealthStatusSummary = await _dataAccess.QueryFirstOrDefaultAsync<VehicleSummary>(query, parameter);
-            currentHealthStatusSummary.Alert = 0;
-            return currentHealthStatusSummary;
+            var healthStatusSummary = await _dataAccess.QueryFirstOrDefaultAsync<VehicleSummary>(query, parameter);
+            healthStatusSummary.Alert = 0;
+            return healthStatusSummary;
         }
 
-        private async Task<List<VehicleHealthStatusHitory>> GetWarnningSummary(string vin)
+        private async Task<List<VehicleHealthStatusHitory>> GetCurrentWarnning(string vin)
         {
             //TODO add preference condition
             var parameter = new DynamicParameters();
@@ -56,5 +61,21 @@ namespace net.atos.daf.ct2.reports.repository
             var data = await _dataAccess.QueryAsync<VehicleHealthStatusHitory>(query, parameter);
             return data.ToList();
         }
+
+        public void GetNextQuarterTime(VehicleHealthStatusRequest vehicleHealthStatusHitory)
+        {
+            var date = DateTime.Now;
+            var quarterNumber = ((date.Month - 1) / 3) + 1;
+            var firstDayOfQuarter = new DateTime(date.Year, ((quarterNumber - 1) * 3) + 1, 1);
+            var lastDayOfQuarter = firstDayOfQuarter.AddMonths(3).AddDays(-1);
+            var nextQuarter = quarterNumber + 1;
+            var firstDayOfnextQuarter = new DateTime(date.Year, ((nextQuarter - 1) * 3) + 1, 1);
+            var lastDayOfnextQuarter = firstDayOfnextQuarter.AddMonths(3).AddDays(-1);
+
+            vehicleHealthStatusHitory.FromDate = UTCHandling.GetUTCFromDateTime(firstDayOfnextQuarter);
+            vehicleHealthStatusHitory.ToDate = UTCHandling.GetUTCFromDateTime(lastDayOfnextQuarter);
+
+        }
+
     }
 }

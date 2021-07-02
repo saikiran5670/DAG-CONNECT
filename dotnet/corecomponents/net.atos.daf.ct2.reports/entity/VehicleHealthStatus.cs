@@ -10,8 +10,8 @@ namespace net.atos.daf.ct2.reports.entity
         public string DrivingStatus { get; set; }
         public int Alert { get; set; }
         public string Address { get; set; }
-        public long FromDate { get; set; }
-        public long ToDate { get; set; }
+        public long? FromDate { get; set; }
+        public long? ToDate { get; set; }
         public string WarningType { get; set; }
         public long LastLatitude { get; set; }
         public long LastLongitude { get; set; }
@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.reports.entity
 
     public class VehicleHealthStatus
     {
-        public CurrentHealthStatus Current { get; set; }
+       // public CurrentHealthStatus Current { get; set; }
         public VehicleHealthStatusHitory Hitory { get; set; }
         public VehicleSummary VehicleSummary { get; set; }
     }
