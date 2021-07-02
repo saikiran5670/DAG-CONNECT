@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.reports.repository
             return currentHealthStatusSummary;
         }
 
-        private async Task<List<VehicleHealthStatusHitory>> GetWarnningSummary(string vin)
+        private async Task<List<VehicleHealthWarning>> GetWarnningSummary(string vin)
         {
             //TODO add preference condition
             var parameter = new DynamicParameters();
@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     wd.advice
                                     FROM livefleet.livefleet_warning_statistics ws
                                     left join master.warning_details wd on ws.vin = v.vin where vin =@vin";
-            var data = await _dataAccess.QueryAsync<VehicleHealthStatusHitory>(query, parameter);
+            var data = await _dataAccess.QueryAsync<VehicleHealthWarning>(query, parameter);
             return data.ToList();
         }
     }
