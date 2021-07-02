@@ -330,6 +330,11 @@ namespace net.atos.daf.ct2.reports
             IEnumerable<FleetOverviewDetails> fleetOverviewDetails = await _reportRepository.GetFleetOverviewDetails(fleetOverviewFilter);
             return fleetOverviewDetails;
         }
+        public async Task<List<DriverFilter>> GetDriverList(List<string> vins)
+        {
+            List<DriverFilter> lstDriver = await _reportRepository.GetDriverList(vins);
+            return lstDriver;
+        }
         #endregion
 
         #region Feet Fuel Report

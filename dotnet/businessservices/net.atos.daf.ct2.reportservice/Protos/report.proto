@@ -557,6 +557,7 @@ message FleetOverviewFilterResponse {
   repeated FleetOverviewVGFilterRequest FleetOverviewVGFilterResponse = 6;
   Responsecode code = 7;
   string message = 8;
+  repeated DriverListResponse DriverList = 9;
 }
 
 message FleetOverviewVGFilterRequest {
@@ -566,6 +567,13 @@ message FleetOverviewVGFilterRequest {
          string FeatureKey =  4;
          bool Subscribe =  5;
          string VehicleGroupName =  6;
+}
+
+message DriverListResponse {
+		 string DriverId =  1;
+         string FirstName =  2;
+         string LastName =  3;
+         int32 OrganizationId =  4;
 }
 
 /// END: FleetOverview
