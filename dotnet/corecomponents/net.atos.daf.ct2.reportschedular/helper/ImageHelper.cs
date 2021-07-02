@@ -8,8 +8,8 @@ namespace net.atos.daf.ct2.reportscheduler.helper
     public class ImageSingleton
     {
         private static ImageSingleton _instance;
-        private static string _defaultlogoImage;
-        private static string _logoImage;
+        private string _defaultlogoImage;
+        private string _logoImage;
         private static readonly Object _root = new object();
         private ImageSingleton()
         {
@@ -21,11 +21,12 @@ namespace net.atos.daf.ct2.reportscheduler.helper
             {
                 if (_instance == null)
                 {
-                    _defaultlogoImage = string.Format("data:image/gif;base64,{0}",
-                        Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), "assets", "logo.png"))));
-                    _logoImage = string.Format("data:image/gif;base64,{0}",
-                                                    Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), "assets", "logo_daf.png"))));
                     _instance = new ImageSingleton();
+                    _instance._defaultlogoImage = string.Format("data:image/gif;base64,{0}",
+                        Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), "assets", "logo.png"))));
+                    _instance._logoImage = string.Format("data:image/gif;base64,{0}",
+                                                    Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), "assets", "logo_daf.png"))));
+
                 }
             }
             return _instance;

@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
     public class UnitNameSingleton
     {
         private static UnitNameSingleton _instance;
-        private static IEnumerable<UnitName> _unitName;
+        private IEnumerable<UnitName> _unitName;
         private static readonly Object _root = new object();
         private UnitNameSingleton()
         {
@@ -23,8 +23,8 @@ namespace net.atos.daf.ct2.reportscheduler.helper
             {
                 if (_instance == null)
                 {
-                    _unitName = reportSchedularRepository.GetUnitName().Result;
                     _instance = new UnitNameSingleton();
+                    _instance._unitName = reportSchedularRepository.GetUnitName().Result;
                 }
             }
             return _instance;
