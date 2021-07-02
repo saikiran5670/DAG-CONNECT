@@ -2,7 +2,7 @@
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
       <span>{{ breadcumMsg }}</span>
     </div>
-    <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
       <span class='custom-font' (click)="onCancel()">
         <span><&nbsp;</span>
         <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
@@ -18,93 +18,88 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px"  *ngIf="actionType != 'view'">
         <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
-          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-            <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
-                <div class="bgtrans tabs">
-                    <mat-tab-group [ngClass]="[ tabVisibilityStatus ? '' : 'hideTabHeader']" [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
-                      <mat-tab label="{{ translationData.lblDaily || 'Daily' }}">
-                        <div *ngIf="selectedIndex == 0" (tabVisibility)="tabVisibilityHandler($event)" >
-                            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-                                <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                                    <mat-label>
-                                        {{ translationData.lblEverydayStartTime || 'Everyday Start Time' }}
-                                    </mat-label>
-                                    <mat-form-field appearance="outline">
-                                        <input type="time"  matInput formControlName="dailyStartTime">
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-                                <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                                    <mat-label>
-                                        {{ translationData.lblEverydayEndTime || 'Everyday End Time' }}
-                                    </mat-label>
-                                    <mat-form-field appearance="outline">
-                                        <input type="time"  matInput formControlName="dailyEndTime">
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                            
-                        </div>
-                      </mat-tab>
-                      <mat-tab label="{{ translationData.lblWeekly || 'Weekly' }}">
-                        <div *ngIf="selectedIndex == 1" (tabVisibility)="tabVisibilityHandler($event)">
-                            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-                                <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                                    <mat-label>
-                                        {{ translationData.lblStartDay || 'Start Day' }}
-                                    </mat-label>
-                                    <mat-form-field appearance="outline">
-                                        <input matInput formControlName="weeklyStartDay">
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-                                <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                                    <mat-label>
-                                        {{ translationData.lblEndDay || 'End Day' }}
-                                    </mat-label>
-                                    <mat-form-field appearance="outline">
-                                        <input matInput formControlName="weeklyEndDay">
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                            
-                        </div>
-                      </mat-tab>
-                      <mat-tab label="{{ translationData.lblBiweekly || 'Biweekly' }}">
-                        <div *ngIf="selectedIndex == 2" (tabVisibility)="tabVisibilityHandler($event)"></div>
-                      </mat-tab>
-                      <mat-tab label="{{ translationData.lblMonthly || 'Monthly' }}">
-                        <div *ngIf="selectedIndex == 3" (tabVisibility)="tabVisibilityHandler($event)"></div>
-                      </mat-tab>
-                      <mat-tab label="{{ translationData.lblQuarterly || 'Quarterly' }}">
-                        <div *ngIf="selectedIndex == 4" (tabVisibility)="tabVisibilityHandler($event)"></div>
-                      </mat-tab>
-                    </mat-tab-group>
-                    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-                        <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                            <mat-label>
-                                {{ translationData.lblReportDispatchTime || 'Report Dispatch Time' }}
-                            </mat-label>
-                            <mat-form-field appearance="outline">
-                                <input type="time"  matInput formControlName="dailyReportDispatchTime">
-                            </mat-form-field>
-                        </div>
-                    </div>
+          <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
+          <div style='margin-top: 5px;'>
+              <button [disabled]="selectionTab == 'daily'" (click)="selectionTimeRange('daily')" [ngClass]="{'selectedBtn': selectionTab == 'daily'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblDaily || 'Daily' }}</button>
+              <button [disabled]="selectionTab == 'weekly'" (click)="selectionTimeRange('weekly')" [ngClass]="{'selectedBtn': selectionTab == 'weekly'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblWeekly || 'Weekly' }}</button>
+              <button [disabled]="selectionTab == 'biweekly'" (click)="selectionTimeRange('biweekly')" [ngClass]="{'selectedBtn': selectionTab == 'biweekly'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblBiweekly || 'Biweekly' }}</button>
+              <button [disabled]="selectionTab == 'monthly'" (click)="selectionTimeRange('monthly')" [ngClass]="{'selectedBtn': selectionTab == 'monthly'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblMonthly|| 'Monthly' }}</button>
+              <button [disabled]="selectionTab == 'quarterly'" (click)="selectionTimeRange('quarterly')" [ngClass]="{'selectedBtn': selectionTab == 'quarterly'}" class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblQuarterly || 'Quarterly' }}</button>
+          </div>
+         
+          <div *ngIf="selectionTab == 'daily'">
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm timepicker" fxLayoutGap="10px">
+                <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>
+                        {{ translationData.lblEverydayStartTime || 'Everyday Start Time' }}
+                    </mat-label>
+                    <mat-form-field appearance="outline">
+                      <span class='timeAdjustSpan'>{{ dailyStartTimeDisplay }}</span> 
+                      <input matInput [(ngModel)]="selectedDailyStartTime" class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="dailyStartTime" readonly>
+                      <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
+                      <ngx-material-timepicker #toggleStartTimepicker></ngx-material-timepicker>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm timepicker" fxLayoutGap="10px">
+                <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>
+                        {{ translationData.lblEverydayEndTime || 'Everyday End Time' }}
+                    </mat-label>
+                    <mat-form-field appearance="outline">
+                      <span class='timeAdjustSpan'>{{ dailyEndTimeDisplay }}</span> 
+                      <input matInput [(ngModel)]="selectedDailyEndTime" class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true" formControlName="dailyEndTime" readonly>
+                      <ngx-material-timepicker-toggle [for]="toggleEndTimepicker"></ngx-material-timepicker-toggle>
+                      <ngx-material-timepicker #toggleEndTimepicker></ngx-material-timepicker>
+                    </mat-form-field>
+                    
                 </div>
             </div>
           </div>
-          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-            <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
-              
+          <div *ngIf="selectionTab == 'weekly'">
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>
+                        {{ translationData.lblStartDay || 'Start Day' }}
+                    </mat-label>
+                    <mat-form-field appearance="outline">
+                      <mat-select formControlName="weeklyStartDay" (selectionChange)="onChangeWeekDay($event)">
+                          <mat-option *ngFor="let rer of weekdays" [value]="rer.id">
+                              {{rer.value}}
+                          </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>
+                        {{ translationData.lblEndDay || 'End Day' }}
+                    </mat-label>
+                    <mat-form-field appearance="outline">
+                        <input matInput formControlName="weeklyEndDay">
+                    </mat-form-field>
+                </div>
             </div>
           </div>
-            
+                            
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm timepicker" fxLayoutGap="10px">
+              <div class="areaWidth max-width-50-per timepicker" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label>
+                      {{ translationData.lblReportDispatchTime || 'Report Dispatch Time' }}
+                  </mat-label>
+                  <mat-form-field appearance="outline">
+                    <span class='timeAdjustSpan'>{{ dispatchTimeDisplay }}</span> 
+                    <input matInput [(ngModel)]="selectedDispatchTime" class='inputBox' hoursOnly [format]="'HH'" [ngxTimepicker]="toggleDispatchTimepicker" formControlName="reportDispatchTime">
+                    <ngx-material-timepicker-toggle hoursOnly [for]="toggleDispatchTimepicker"></ngx-material-timepicker-toggle>
+                    <ngx-material-timepicker hoursOnly="true" (timeChanged)="reportDispatchTimeChanged($event)" #toggleDispatchTimepicker></ngx-material-timepicker>
+                  </mat-form-field>
+              </div>
+          </div>
         </div>
         <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
           <div class='full-width' fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="left">
-              <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
+              <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start" class="margin-bottom-sm">
                   <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                       <mat-label>{{ translationData.lblReportType || 'Report Type' }}<span class='mandatoryColor'>*</span></mat-label>
                       <mat-form-field appearance="outline">
