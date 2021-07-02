@@ -18,30 +18,28 @@ namespace net.atos.daf.ct2.reports.repository
             vehicleHealthStatus.VehicleSummary = await GetVehicleHealthSummary(vehicleHealthStatusRequest.VIN);
             if (vehicleHealthStatusRequest.FromDate == null && vehicleHealthStatusRequest.ToDate == null)
             {
-                GetNextQuarterTime(vehicleHealthStatusRequest);
+                GetPreviousQuarterTime(vehicleHealthStatusRequest);
             }
             vehicleHealthStatus.VehicleSummary.FromDate = vehicleHealthStatusRequest?.FromDate;
             vehicleHealthStatus.VehicleSummary.ToDate = vehicleHealthStatusRequest?.ToDate;
-
+            vehicleHealthStatus.VehicleSummary.WarningType = vehicleHealthStatusRequest.WarningType ?? "All";
             return vehicleHealthStatus;
         }
-  
-
         private async Task<VehicleSummary> GetVehicleHealthSummary(string vin)
         {
-            //TODO add preference condition
             var parameter = new DynamicParameters();
             parameter.Add("@vin", vin);
             string query = @" SELECT v.vin as VIN,
                                     v.registration_no as VehicleRegNo,
                                     v.name as VehicleName,
-                                    cts.vehicle_driving_status_type as VehicleDrivingStatus,
+                                    cts.vehicle_driving_status_type as VehicleDrivingStatusEnum,
                                     cts.latest_received_position_lattitude as LastLatitude,
                                     cts.latest_received_position_longitude as LastLongitude
                                     FROM livefleet.livefleet_current_trip_statistics cts
                                     left join master.vehicle V on cts.vin = v.vin where v.vin =@vin";
-            var healthStatusSummary = await _dataMartdataAccess.QueryFirstOrDefaultAsync<dynamic>(query, parameter);
-         //   healthStatusSummary.Alert = 0;
+            var healthStatusSummary = await _dataMartdataAccess.QueryFirstOrDefaultAsync<VehicleSummary>(query, parameter);
+            healthStatusSummary.Alert = 0;
+            healthStatusSummary.DrivingStatus = await GetVehicleRunningStatus(healthStatusSummary.VehicleDrivingStatusEnum);
             return healthStatusSummary;
         }
 
@@ -63,20 +61,26 @@ namespace net.atos.daf.ct2.reports.repository
             return data.ToList();
         }
 
-        public void GetNextQuarterTime(VehicleHealthStatusRequest vehicleHealthStatusHitory)
+        public void GetPreviousQuarterTime(VehicleHealthStatusRequest vehicleHealthStatusHitory)
         {
-            var date = DateTime.Now;
-            var quarterNumber = ((date.Month - 1) / 3) + 1;
-            var firstDayOfQuarter = new DateTime(date.Year, ((quarterNumber - 1) * 3) + 1, 1);
-            var lastDayOfQuarter = firstDayOfQuarter.AddMonths(3).AddDays(-1);
-            var nextQuarter = quarterNumber + 1;
-            var firstDayOfnextQuarter = new DateTime(date.Year, ((nextQuarter - 1) * 3) + 1, 1);
-            var lastDayOfnextQuarter = firstDayOfnextQuarter.AddMonths(3).AddDays(-1);
-
-            vehicleHealthStatusHitory.FromDate = UTCHandling.GetUTCFromDateTime(firstDayOfnextQuarter);
-            vehicleHealthStatusHitory.ToDate = UTCHandling.GetUTCFromDateTime(lastDayOfnextQuarter);
-
+            var firstDayOfLastQMonth = DateTime.Now.AddMonths(-3);
+            vehicleHealthStatusHitory.FromDate = UTCHandling.GetUTCFromDateTime(firstDayOfLastQMonth);
+            vehicleHealthStatusHitory.ToDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
         }
+
+        private async Task<string> GetVehicleRunningStatus(string vehicleStatus)
+        {
+            //TODO add preference condition
+            var parameter = new DynamicParameters();
+            parameter.Add("@vehicleStatus", vehicleStatus);
+            string query = @"SELECT 
+                         t.value 
+                        FROM translation.enumtranslation te
+                        inner join translation.translation t on te.key = t.name 
+                        Where te.type= 'D' and te.enum=@vehicleStatus";
+            return await _dataAccess.QueryFirstOrDefaultAsync<string>(query, parameter);
+        }
+
 
     }
 }

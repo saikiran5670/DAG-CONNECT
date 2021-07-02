@@ -7,7 +7,6 @@ using net.atos.daf.ct2.reports.entity;
 
 namespace net.atos.daf.ct2.reports.test
 {
-    
     public partial class ReportManagerTest
     {
         [TestMethod]
