@@ -45,36 +45,37 @@ tr {{ page-break-inside: avoid }}
 		<img style='margin:20px 50px' align='left' width='180px' height='80px'  src='{0}'>
 		<img style='margin:20px 50px' align='right' width='180px' height='80px' src='{1}'><br/><br/><br/><br/>
 	
-    <h2 style='margin:50px 50px'>[lblTripReportDetails]</h2>
+    <h2 style='margin:50px 50px'>Trip Report Details</h2>
 	<div class='detailsDiv'>
 	  <table  style='width: 100%;'>
 		<tr>
-			<td style='width: 30%;'><p><strong>[lblFrom] : </strong>  {2}</P></td>
-			<td style='width: 30%;'><p><strong>[lblVehicleGroup] : </strong>  {3}</P></td>
-			<td style='width: 30%;'><p><strong>[lblVehicleVIN] : </strong>  {4}</P></td>
+			<td style='width: 30%;'><p><strong>From : </strong>  {2}</P></td>
+			<td style='width: 30%;'><p><strong>Vehicle Group : </strong>  {3}</P></td>
+			<td style='width: 30%;'><p><strong>Vehicle VIN : </strong>  {4}</P></td>
 		</tr>
 		<tr>
-			<td style='width: 30%;'><p><strong>[lblTo] : </strong>  {5}</P></td>
-			<td style='width: 30%;'><p><strong>[lblVehicleName] : </strong>  {6}</P></td>
-			<td style='width: 30%;'><p><strong>[lblRegPlateNumber] : </strong>  {7}</P></td>
+			<td style='width: 30%;'><p><strong>To : </strong>  {5}</P></td>
+			<td style='width: 30%;'><p><strong>Vehicle Name : </strong>  {6}</P></td>
+			<td style='width: 30%;'><p><strong>Reg. Plate Number : </strong>  {7}</P></td>
 		</tr>
 	  </table>
 	</div><br/><br/>
 	
 	<table class='reportDetailsTable'>
 		<thead>
-			<th>[lblStartDate]</th>
-			<th>[lblEndDate]</th>
-			<th>[lblDistance]</th>
-			<th>[lblIdleDuration]</th>
-			<th>[lblAverageSpeed]</th>
-			<th>[lblAverageWeight]</th>
-			<th>[lblStartPosition]</th>
-			<th>[lblEndPosition]</th>
-			<th>[lblFuelConsumption]</th>
-			<th>[lblDrivingTime]</th>
-			<th>[lblAlerts]</th>
-			<th>[lblEvents]</th>
+			<th>Start Date</th>
+			<th>End Date</th>
+			<th>Distance</th>
+			<th>Idle Duration</th>
+			<th>Average Speed</th>
+			<th>Average Weight</th>
+            <th>Odometer</th>
+			<th>Start Position</th>
+			<th>End Position</th>
+			<th>Fuel Consumption</th>
+			<th>Driving Time</th>
+			<th>lAlerts</th>
+			<th>Events</th>
 		</thead>
 		{8}
 	</table>

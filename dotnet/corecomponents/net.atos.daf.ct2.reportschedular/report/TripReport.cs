@@ -121,17 +121,17 @@ namespace net.atos.daf.ct2.account.report
                         EndDate = TimeZoneHelper.GetDateTimeFromUTC(tripData.EndTimeStamp, TimeZoneName, DateTimeFormat),
                         //VIN = tripData.VIN,
                         Distance = (int)await _unitConversionManager.GetDistance(tripData.Distance, DistanceUnit.Meter, UnitToConvert),
-                        IdleDuration = tripData.IdleDuration,
-                        AverageSpeed = tripData.AverageSpeed,
-                        AverageWeight = tripData.AverageWeight,
-                        Odometer = tripData.Odometer,
+                        IdleDuration = await _unitConversionManager.GetTimeSpan(tripData.IdleDuration, TimeUnit.Seconds, UnitToConvert),
+                        AverageSpeed = (int)await _unitConversionManager.GetSpeed(tripData.AverageSpeed, SpeedUnit.MeterPerMilliSec, UnitToConvert),
+                        AverageWeight = (int)await _unitConversionManager.GetWeight(tripData.AverageWeight, WeightUnit.KiloGram, UnitToConvert),
+                        Odometer = (int)await _unitConversionManager.GetDistance(tripData.Odometer, DistanceUnit.Meter, UnitToConvert),
                         StartPosition = tripData.StartPosition,
                         EndPosition = tripData.EndPosition,
                         //FuelConsumed = tripData.FuelConsumed,
-                        DrivingTime = tripData.DrivingTime,
+                        DrivingTime = await _unitConversionManager.GetTimeSpan(tripData.DrivingTime, TimeUnit.Seconds, UnitToConvert),
                         Alerts = tripData.Alert,
                         Events = tripData.Events,
-                        FuelConsumed100km = Math.Round(tripData.FuelConsumed100km, 2)
+                        FuelConsumed100km = await _unitConversionManager.GetVolumePerDistance(tripData.FuelConsumed100km, VolumePerDistanceUnit.MilliLiterPerMeter, UnitToConvert)
                     });
             }
             var html = ReportHelper
