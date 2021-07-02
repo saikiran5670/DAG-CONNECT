@@ -35,7 +35,8 @@ export class ReportService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.reportServiceUrl}/getvinsfromtripstatisticsandvehicledetails?accountId=${accountId}&organizationId=${orgId}`, headers)
+    // .get<any[]>(`${this.reportServiceUrl}/getvinsfromtripstatisticsandvehicledetails?accountId=${accountId}&organizationId=${orgId}`, headers)
+      .get<any[]>(`${this.reportServiceUrl}/trip/getparameters?accountId=${accountId}&organizationId=${orgId}`, headers)
       .pipe(catchError(this.handleError));
   }
 
