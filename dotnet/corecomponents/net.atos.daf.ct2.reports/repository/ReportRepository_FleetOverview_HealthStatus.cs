@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.reports.repository
             return healthStatusSummary;
         }
 
-        private async Task<List<VehicleHealthStatusHitory>> GetCurrentWarnning(string vin)
+        private async Task<List<VehicleHealthWarning>> GetCurrentWarnning(string vin)
         {
             //TODO add preference condition
             var parameter = new DynamicParameters();
