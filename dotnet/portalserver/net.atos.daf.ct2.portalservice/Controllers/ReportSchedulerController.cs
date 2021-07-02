@@ -46,7 +46,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (orgnizationid == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
                 orgnizationid = GetContextOrgId();
                 int contextorgid = GetContextOrgId();
-                int roleid = AssignOrgContextByRoleId(0);
+                int roleid = _userDetails.RoleId;
                 ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = GetUserSelectedOrgId(), RoleId = roleid, ContextOrgId = contextorgid });
 
                 if (response == null)
@@ -452,7 +452,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         var pdfStreamResult = new MemoryStream();
                         pdfStreamResult.Write(data.Report.ToByteArray(), 0, data.Report.Length);
                         pdfStreamResult.Position = 0;
-                        return File(pdfStreamResult, "application/pdf", data.FileName);
+                        string filename = data.FileName + ".pdf";
+                        return File(pdfStreamResult, "application/pdf", filename);
                     }
                     else
                     {

@@ -11,5 +11,6 @@ namespace net.atos.daf.ct2.unitconversion
         Task<double> GetVolume(double value, VolumeUnit inputUnit, UnitToConvert convertTo, int decimals = 2);
         Task<double> GetVolumePerDistance(double value, VolumePerDistanceUnit inputUnit, UnitToConvert convertTo, int decimals = 2);
         Task<double> GetWeight(double value, WeightUnit inputUnit, UnitToConvert convertTo, int decimals = 2);
+        Task<string> GetTimeSpan(double value, TimeUnit inputUnit, UnitToConvert convertTo);
     }
 }

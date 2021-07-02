@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.poigeofence.test
                                                 .Build();
 
 
-            string datamartconnectionString = "Server=10.193.124.165;Database=vehicledatamart;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-datamart;Password=9RQkJM2hwfe!;Ssl Mode=Require; Trust Server Certificate=True;";
+            string datamartconnectionString = "Server=dafct-lan1-d-euwe-cdp-pgsql-datamart.postgres.database.azure.com;Database=vehicledatamart;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-datamart;Password=9RQkJM2hwfe!;Ssl Mode=Require;";
             _dataMartDataAccess = new PgSQLDataMartDataAccess(datamartconnectionString);
 
             var connectionString = _config.GetConnectionString("DevAzure");
