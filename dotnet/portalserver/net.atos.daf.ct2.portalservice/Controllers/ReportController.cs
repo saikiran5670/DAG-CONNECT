@@ -47,10 +47,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _hereMapAddressProvider = new HereMapAddressProvider(_mapServiceClient, _poiServiceClient);
         }
 
+
+        #region User Perferences
+
         #region Select User Preferences
 
         [HttpGet]
-        [Route("getreportdetails")]
+        //[Route("getreportdetails")]
         [Route("getdetails")]
         public async Task<IActionResult> GetReportDetails()
         {
@@ -82,7 +85,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("getuserpreferencereportdatacolumn")]
+        //[Route("getuserpreferencereportdatacolumn")]
         [Route("userpreference/get")]
         public async Task<IActionResult> GetUserPreferenceReportDataColumn(int reportId, int accountId, int organizationId)
         {
@@ -126,50 +129,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
-        #region - Trip Report Table Details
-        [HttpGet]
-        [Route("gettripdetails")]
-        [Route("trip/getdetails")]
-        public async Task<IActionResult> GetFilteredTripDetails([FromQuery] TripFilterRequest request)
-        {
-            try
-            {
-                if (!(request.StartDateTime > 0)) return BadRequest(ReportConstants.GET_TRIP_VALIDATION_STARTDATE_MSG);
-                if (!(request.EndDateTime > 0)) return BadRequest(ReportConstants.GET_TRIP_VALIDATION_ENDDATE_MSG);
-                if (string.IsNullOrEmpty(request.VIN)) return BadRequest(ReportConstants.GET_TRIP_VALIDATION_VINREQUIRED_MSG);
-                if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG);
-
-                _logger.Info("GetFilteredTripDetailsAsync method in Report (Trip Report) API called.");
-                var data = await _reportServiceClient.GetFilteredTripDetailsAsync(request);
-
-                data.TripData.Select(x =>
-                {
-                    x = _hereMapAddressProvider.UpdateTripReportAddress(x);
-                    return x;
-                }).ToList();
-
-
-                if (data?.TripData?.Count > 0)
-                {
-                    data.Message = ReportConstants.GET_TRIP_SUCCESS_MSG;
-                    return Ok(data);
-                }
-                else
-                {
-                    return StatusCode(404, ReportConstants.GET_TRIP_FAILURE_MSG);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
-            }
-        }
-        #endregion
-
         #region Create User Preference
         [HttpPost]
-        [Route("createuserpreference")]
+        //[Route("createuserpreference")]
         [Route("userpreference/create")]
         public async Task<IActionResult> CreateUserPreference(net.atos.daf.ct2.portalservice.Entity.Report.UserPreferenceCreateRequest objUserPreferenceCreateRequest)
         {
@@ -207,9 +169,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
-        #region Select User Preferences
+        #endregion
+
+        #region Trip Report
+        #region Select Trip User Preferences
         [HttpGet]
-        [Route("getvinsfromtripstatisticsandvehicledetails")]
+        //[Route("getvinsfromtripstatisticsandvehicledetails")]
         [Route("trip/getparameters")]
         public async Task<IActionResult> GetVinsFromTripStatisticsAndVehicleDetails(int accountId, int organizationId)
         {
@@ -248,6 +213,48 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        #endregion
+
+        #region - Trip Report Table Details
+        [HttpGet]
+        //[Route("gettripdetails")]
+        [Route("trip/getdetails")]
+        public async Task<IActionResult> GetFilteredTripDetails([FromQuery] TripFilterRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) return BadRequest(ReportConstants.GET_TRIP_VALIDATION_STARTDATE_MSG);
+                if (!(request.EndDateTime > 0)) return BadRequest(ReportConstants.GET_TRIP_VALIDATION_ENDDATE_MSG);
+                if (string.IsNullOrEmpty(request.VIN)) return BadRequest(ReportConstants.GET_TRIP_VALIDATION_VINREQUIRED_MSG);
+                if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG);
+
+                _logger.Info("GetFilteredTripDetailsAsync method in Report (Trip Report) API called.");
+                var data = await _reportServiceClient.GetFilteredTripDetailsAsync(request);
+
+                data.TripData.Select(x =>
+                {
+                    x = _hereMapAddressProvider.UpdateTripReportAddress(x);
+                    return x;
+                }).ToList();
+
+
+                if (data?.TripData?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_TRIP_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_TRIP_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
         #endregion
 
         #region - Driver Time Management Report Table Details
@@ -323,8 +330,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG); }
-                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG); }
+                if (request.StartDateTime<= 2177449200000) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG); }
+                if (request.EndDateTime <= 2177449200000) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG); }
                 if (!(request.OrganizationId > 0)) { return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG); }
                 if (!(request.AccountId > 0)) { return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG); }
 
@@ -643,6 +650,42 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #endregion
 
+        #region  Eco Score Report - Compare Drivers
+        [HttpGet]
+        [Route("ecoscore/comparedrivers")]
+        public async Task<IActionResult> GetEcoScoreReportCompareDrivers([FromBody] EcoScoreReportCompareDriversRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_DATEMISMATCH_MSG); }
+                if (request.DriverIds.Count < 2 || request.DriverIds.Count > 4) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_COMPAREDRIVER_MSG); }
+
+                var grpcRequest = _mapper.MapEcoScoreReportCompareDriver(request);
+                grpcRequest.AccountId = _userDetails.AccountId;
+                grpcRequest.OrgId = GetContextOrgId();
+
+                var response = await _reportServiceClient.GetEcoScoreReportCompareDriversAsync(grpcRequest);
+                if (response?.Drivers?.Count > 0)
+                {
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode((int)response.Code, response.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
         #endregion
 
         #region Fleet utilization report details
@@ -663,12 +706,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var data = await _reportServiceClient.GetFleetUtilizationDetailsAsync(objFleetFilter);
                 if (data?.FleetDetails?.Count > 0)
                 {
-                    data.Message = ReportConstants.GET_TRIP_SUCCESS_MSG;
+                    data.Message = ReportConstants.GET_FLEET_UTILIZATION_SUCCESS_MSG;
                     return Ok(data);
                 }
                 else
                 {
-                    return StatusCode(404, ReportConstants.GET_TRIP_FAILURE_MSG);
+                    return StatusCode(404, ReportConstants.GET_FLEET_UTILIZATION_FAILURE_MSG);
                 }
             }
             catch (Exception ex)
@@ -695,12 +738,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var data = await _reportServiceClient.GetFleetCalenderDetailsAsync(objFleetFilter);
                 if (data?.CalenderDetails?.Count > 0)
                 {
-                    data.Message = ReportConstants.GET_TRIP_SUCCESS_MSG;
+                    data.Message = ReportConstants.GET_FLEET_UTILIZATION_SUCCESS_MSG;
                     return Ok(data);
                 }
                 else
                 {
-                    return StatusCode(404, ReportConstants.GET_TRIP_FAILURE_MSG);
+                    return StatusCode(404, ReportConstants.GET_FLEET_UTILIZATION_FAILURE_MSG);
                 }
             }
             catch (Exception ex)
@@ -761,6 +804,74 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        #endregion
+
+        #region Fleet Fuel Report Details
+        [HttpPost]
+        [Route("fleetfuel/getdetails/vehicle")]
+        public async Task<IActionResult> GetFleetFuelDetailsByVehicle([FromBody] Entity.Report.ReportFleetFuelFilter request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DATEMISMATCH_MSG); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                FleetFuelFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetFuelFilterRequest>(filters);
+                _logger.Info("GetFleetFuelDetailsByVehicle method in Report (for Fleet Fuel consumption details by vehicle) API called.");
+                var data = await _reportServiceClient.GetFleetFuelDetailsByVehicleAsync(objFleetFilter);
+                if (data?.FleetFuelDetails?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_FLEET_FUEL_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_FLEET_FUEL_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        /* TODO :: Un Comment Once Setup of Driver is completed
+        [HttpPost]
+        [Route("fleetfuel/getdetails/driver")]
+        public async Task<IActionResult> GetFleetFuelDetailsByDriver([FromBody] Entity.Report.ReportFleetFuelFilter request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DATEMISMATCH_MSG); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                FleetFuelFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetFuelFilterRequest>(filters);
+                _logger.Info("GetFleetFuelDetailsByDriver method in Report (for Fleet Fuel consumption details by Driver) API called.");
+                var data = await _reportServiceClient.GetFleetFuelDetailsByDriverAsync(objFleetFilter);
+                if (data?.FleetFuelDetails?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_FLEET_FUEL_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_FLEET_FUEL_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        */
         #endregion
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.reports.entity;
-using net.atos.daf.ct2.reports.entity.fleetFuel;
 using net.atos.daf.ct2.reports.repository;
 using System.Linq;
 
@@ -233,10 +232,10 @@ namespace net.atos.daf.ct2.reports
                 foreach (var driver in lstDriverRanking)
                 {
                     //< Min = Red
-                    if (driver.EcoScoreRanking < objEcoScoreKPI.MinValue)
+                    if (driver.EcoScoreRanking <= objEcoScoreKPI.MinValue)
                         driver.EcoScoreRankingColor = RankingColor.RED.ToString();
                     //> Target = Green
-                    else if (driver.EcoScoreRanking > objEcoScoreKPI.TargetValue)
+                    else if (driver.EcoScoreRanking >= objEcoScoreKPI.TargetValue)
                         driver.EcoScoreRankingColor = RankingColor.GREEN.ToString();
                     //Between Min and Target = Amber
                     else
@@ -274,6 +273,18 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.GetPrivilegeBasedReportUserPreferences(reportId, accountId, roleId, organizationId, contextOrgId);
         }
 
+        #endregion
+
+        #region Eco Score Report Compare Drivers
+        public async Task<List<EcoScoreReportCompareDrivers>> GetEcoScoreReportCompareDrivers(EcoScoreReportCompareDriversRequest request)
+        {
+            return await _reportRepository.GetEcoScoreReportCompareDrivers(request);
+        }
+
+        public async Task<List<EcoScoreCompareReportAtttributes>> GetEcoScoreCompareReportAttributes(int reportId, int targetProfileId)
+        {
+            return await _reportRepository.GetEcoScoreCompareReportAttributes(reportId, targetProfileId);
+        }
         #endregion
 
         #endregion

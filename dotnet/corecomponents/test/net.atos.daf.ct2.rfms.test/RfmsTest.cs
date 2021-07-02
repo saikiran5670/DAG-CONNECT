@@ -16,8 +16,8 @@ namespace net.atos.daf.ct2.rfms.test
 
         public RfmsTest()
         {
-            string connectionString = "Server=10.193.124.168;Database=dafconnectmasterdatabase;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master;Password=9RQkJM2hwfe!;Ssl Mode=Require; Trust Server Certificate=True;";
-            string dataMartConnectionString = "Server=10.193.124.165;Database=vehicledatamart;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-datamart;Password=9RQkJM2hwfe!;Ssl Mode=Require; Trust Server Certificate=True;";
+            string connectionString = "Server=dafct-lan1-d-euwe-cdp-pgsql-master.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master;Password=9RQkJM2hwfe!;Ssl Mode=Require;";
+            string dataMartConnectionString = "Server=dafct-lan1-d-euwe-cdp-pgsql-datamart.postgres.database.azure.com;Database=vehicledatamart;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-datamart;Password=9RQkJM2hwfe!;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _dataMartDataAccess = new PgSQLDataMartDataAccess(dataMartConnectionString);
 

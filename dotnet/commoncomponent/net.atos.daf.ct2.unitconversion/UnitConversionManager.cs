@@ -17,10 +17,10 @@ namespace net.atos.daf.ct2.unitconversion
                     switch (convertTo)
                     {
                         case UnitToConvert.Imperial:
-                            result = value / 0.001;
+                            result = value / 1609.344;
                             break;
                         case UnitToConvert.Metric:
-                            result = value;
+                            result = value / 1000;
                             break;
                     }
                     break;
@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.unitconversion
             return Task.FromResult(Math.Round(result, decimals));
         }
 
-        public Task<double> GetSpeed(double value, SpeedUnit inputUnit, UnitToConvert convertTo)
+        public Task<double> GetSpeed(double value, SpeedUnit inputUnit, UnitToConvert convertTo, int decimals = 2)
         {
             double result = value;
             switch (inputUnit)
@@ -51,10 +51,10 @@ namespace net.atos.daf.ct2.unitconversion
                     result = value;
                     break;
             }
-            return Task.FromResult(result);
+            return Task.FromResult(Math.Round(result, decimals));
         }
 
-        public Task<double> GetTime(double value, TimeUnit inputUnit, UnitToConvert convertTo)
+        public Task<double> GetTime(double value, TimeUnit inputUnit, UnitToConvert convertTo, int decimals = 2)
         {
             double result = value;
             switch (inputUnit)
@@ -72,10 +72,10 @@ namespace net.atos.daf.ct2.unitconversion
                     result = value;
                     break;
             }
-            return Task.FromResult(result);
+            return Task.FromResult(Math.Round(result, decimals));
         }
 
-        public Task<double> GetVolume(double value, VolumeUnit inputUnit, UnitToConvert convertTo)
+        public Task<double> GetVolume(double value, VolumeUnit inputUnit, UnitToConvert convertTo, int decimals = 2)
         {
             double result = value;
             switch (inputUnit)
@@ -95,10 +95,10 @@ namespace net.atos.daf.ct2.unitconversion
                     result = value;
                     break;
             }
-            return Task.FromResult(result);
+            return Task.FromResult(Math.Round(result, decimals));
         }
 
-        public Task<double> GetVolumePerDistance(double value, VolumePerDistanceUnit inputUnit, UnitToConvert convertTo)
+        public Task<double> GetVolumePerDistance(double value, VolumePerDistanceUnit inputUnit, UnitToConvert convertTo, int decimals = 2)
         {
             double result = value;
             switch (inputUnit)
@@ -118,10 +118,10 @@ namespace net.atos.daf.ct2.unitconversion
                     result = value;
                     break;
             }
-            return Task.FromResult(result);
+            return Task.FromResult(Math.Round(result, decimals));
         }
 
-        public Task<double> GetWeight(double value, WeightUnit inputUnit, UnitToConvert convertTo)
+        public Task<double> GetWeight(double value, WeightUnit inputUnit, UnitToConvert convertTo, int decimals = 2)
         {
             double result = value;
             switch (inputUnit)
@@ -139,6 +139,31 @@ namespace net.atos.daf.ct2.unitconversion
                     break;
                 default:
                     result = value;
+                    break;
+            }
+            return Task.FromResult(Math.Round(result, decimals));
+        }
+
+        public Task<string> GetTimeSpan(double value, TimeUnit inputUnit, UnitToConvert convertTo)
+        {
+            string result = "00:00";
+            switch (inputUnit)
+            {
+                case TimeUnit.Seconds:
+                    switch (convertTo)
+                    {
+                        case UnitToConvert.Imperial:
+                        case UnitToConvert.Metric:
+                            TimeSpan t = TimeSpan.FromSeconds(value);
+
+                            result = string.Format("{0:D2}:{1:D2}",
+                                            t.Hours,
+                                            t.Minutes);
+                            break;
+                    }
+                    break;
+                default:
+                    result = "00:00";
                     break;
             }
             return Task.FromResult(result);

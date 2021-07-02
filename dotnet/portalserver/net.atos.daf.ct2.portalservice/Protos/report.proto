@@ -26,6 +26,9 @@ rpc GetEcoScoreReportByAllDrivers (GetEcoScoreReportByAllDriversRequest) returns
 rpc GetReportUserPreference (GetReportUserPreferenceRequest) returns (GetReportUserPreferenceResponse);
 rpc CreateReportUserPreference (ReportUserPreferenceCreateRequest) returns (ReportUserPreferenceCreateResponse);
 rpc GetFleetOverviewFilter (FleetOverviewFilterIdRequest) returns (FleetOverviewFilterResponse);
+rpc GetFleetFuelDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
+rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
+rpc GetEcoScoreReportCompareDrivers (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
 }
 
 enum Responsecode{
@@ -555,3 +558,98 @@ message FleetOverviewVGFilterRequest {
 
 
 /// END: FleetOverview
+
+/// START Fleet Fuel Report
+
+message FleetFuelFilterRequest {
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    repeated string VINs = 3;
+}
+
+message FleetFuelDetailsResponse {
+    repeated FleetFuelDetails FleetFuelDetails = 1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+
+message FleetFuelDetails {
+    string VehicleName = 1;
+    string VIN = 2;
+    string VehicleRegistrationNo = 3;
+    string Distance = 4;
+    string AverageDistancePerDay = 5;
+    string AverageSpeed = 6;
+    string MaxSpeed = 7;
+    string NumberOfTrips = 8;
+    string AverageGrossWeightComb = 9;
+    string FuelConsumed = 10;
+    string FuelConsumption = 11;
+    string CO2Emission = 12;
+    string IdleDuration = 13;
+    string PTODuration = 14;
+    string HarshBrakeDuration = 15;
+    string HeavyThrottleDuration = 16;
+    string CruiseControlDistance30_50 = 17;
+    string CruiseControlDistance50_75 = 18;
+    string CruiseControlDistance75 = 19;
+    string AverageTrafficClassification = 20;
+    string CCFuelConsumption = 21;
+    string FuelconsumptionCCnonactive = 22;
+    string IdlingConsumption = 23;
+    string DPAScore = 24;
+    string DPAAnticipationScore = 25;
+    string DPABrakingScore = 26;
+    string IdlingPTOScore = 27;
+    string IdlingPTO = 28;
+    string IdlingWithoutPTO = 29;
+    string IdlingWithoutPTOpercent = 30;
+    string FootBrake = 31;
+    string CO2Emmision = 32;
+}
+
+
+/// END Fleet Fuel report
+
+/// START: Eco Score Report Compare Drivers
+
+message GetEcoScoreReportCompareDriversRequest {
+  int64 StartDateTime = 1;
+  int64 EndDateTime = 2; 
+  repeated string VINs = 3;
+  repeated string DriverIds = 4;
+  double MinTripDistance = 5;
+  double MinDriverTotalDistance = 6;
+  int32 TargetProfileId = 7;
+  int32 ReportId = 8;
+  int32 OrgId = 9;
+  int32 AccountId = 10;
+  }
+
+ message EcoScoreReportDrivers {
+  string DriverName = 1; 
+  string DriverId = 2;
+  }
+
+ message EcoScoreReportAttribute {
+  string DriverId = 1;
+  double Value = 2; 
+  string Color = 3;
+  }
+
+ message EcoScoreReportCompareDrivers {
+  int32 DataAttributeId = 1;
+  string Name = 2;
+  string Key = 3;
+  double Target = 4;
+  repeated EcoScoreReportAttribute Score = 5;
+  repeated EcoScoreReportCompareDrivers SubCompareDrivers = 6;
+  }
+  
+ message GetEcoScoreReportCompareDriversResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+  repeated EcoScoreReportDrivers Drivers = 3;
+  EcoScoreReportCompareDrivers CompareDrivers = 4;
+  }
+/// END: Eco Score Report Compare Drivers
