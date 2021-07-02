@@ -89,8 +89,7 @@ date_trunc('day', NOW() AT TIME ZONE 'UTC') and rs.status = 'A' and r.id = rs.re
                             select distinct ref_id as VehicleId 
 						    from master.group g 
 								inner join master.scheduledreportvehicleref srvr 
-								on srvr.report_schedule_id =@report_schedule_id and srvr.vehicle_group_id = g.id and g.group_type = 'S' and g.object_type = 'V'
-                            union
+								on srvr.report_schedule_id =@report_schedule_id and srvr.vehicle_group_id = g.id and g.group_type = 'S' and g.object_type = 'V'                            
                             )
                             select distinct v.id as Id ,v.vin as VIN ,v.name as VehicleName,v.license_plate_number as RegistrationNo
                             from cte_VehicaleList vl
