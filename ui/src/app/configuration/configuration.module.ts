@@ -37,6 +37,7 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { CreateEditViewReportSchedulerComponent } from './report-scheduler/create-edit-view-report-scheduler/create-edit-view-report-scheduler.component';
 import { VehicleConnectSettingsComponent } from './vehicle-management/vehicle-connect-settings/vehicle-connect-settings.component';
 import { VehicleDetailsComponent } from './vehicle-management/vehicle-details/vehicle-details.component';
+import { EcoScoreProfileManagementComponent } from './eco-score-profile-management/eco-score-profile-management.component';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import { VehicleDetailsComponent } from './vehicle-management/vehicle-details/ve
     CreateEditViewReportSchedulerComponent,
     VehicleConnectSettingsComponent,
     VehicleDetailsComponent,
+    EcoScoreProfileManagementComponent,
   ],
   imports: [
     CommonModule,

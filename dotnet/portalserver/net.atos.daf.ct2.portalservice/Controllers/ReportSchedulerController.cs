@@ -452,7 +452,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         var pdfStreamResult = new MemoryStream();
                         pdfStreamResult.Write(data.Report.ToByteArray(), 0, data.Report.Length);
                         pdfStreamResult.Position = 0;
-                        return File(pdfStreamResult, "application/pdf", data.FileName);
+                        string filename = data.FileName + ".pdf";
+                        return File(pdfStreamResult, "application/pdf", filename);
                     }
                     else
                     {
