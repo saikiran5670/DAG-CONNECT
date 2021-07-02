@@ -76,6 +76,12 @@ tr {{ page-break-inside: avoid }}
 			<th>Driving Time</th>
 			<th>lAlerts</th>
 			<th>Events</th>
+<th>Start Date</th>
+			<th>End Date</th>
+<th>Start Date</th>
+			<th>End Date</th>
+<th>Start Date</th>
+			<th>End Date</th>
 		</thead>
 		{8}
 	</table>
