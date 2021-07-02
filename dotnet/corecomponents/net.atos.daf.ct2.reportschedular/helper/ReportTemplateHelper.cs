@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
         {
         }
 
-        public static ReportTemplateSingleto GetInstance(ITemplateManager templateManager, int reportId, EmailEventType evenType, EmailContentType contentType, string languageCode)
+        public static ReportTemplateSingleto GetInstance()
         {
             lock (_root)
             {
@@ -27,20 +27,6 @@ namespace net.atos.daf.ct2.reportscheduler.helper
                 {
                     _instance = new ReportTemplateSingleto();
                     _instance._reportTemplate = new List<ReportTemplate>();
-                    _instance._reportTemplate.Add(
-                        new ReportTemplate
-                        {
-                            ReportId = reportId,
-                            ReportTranslatedContent = templateManager
-                                            .GetMultiLingualTemplate(
-                                            new TemplateRequest
-                                            {
-                                                ContentType = contentType,
-                                                EventType = evenType,
-                                                LanguageCode = languageCode
-                                            }).Result
-                        }
-                        );
                 }
             }
             return _instance;
