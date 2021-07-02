@@ -342,5 +342,13 @@ namespace net.atos.daf.ct2.reports
         }
 
         #endregion
+
+        #region Eco-Score Data service
+
+        public Task<bool> GetKPIInfo(EcoScoreDataServiceRequest request) => _reportRepository.GetKPIInfo(request);
+
+        public Task<bool> GetChartInfo(EcoScoreDataServiceRequest request) => _reportRepository.GetChartInfo(request);
+
+        #endregion
     }
 }

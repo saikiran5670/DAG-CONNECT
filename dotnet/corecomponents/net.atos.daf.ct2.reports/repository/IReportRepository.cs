@@ -49,5 +49,7 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<FilterProperty>> GetAlertLevelList();
         Task<List<FilterProperty>> GetHealthStatusList();
         Task<List<FilterProperty>> GetOtherFilter();
+        Task<bool> GetKPIInfo(EcoScoreDataServiceRequest request);
+        Task<bool> GetChartInfo(EcoScoreDataServiceRequest request);
     }
 }
