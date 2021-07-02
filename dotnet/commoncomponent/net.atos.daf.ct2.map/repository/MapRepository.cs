@@ -25,12 +25,12 @@ namespace net.atos.daf.ct2.map.repository
             {
 
                 DynamicParameters parameter = new DynamicParameters();
-                MapLatLngRange addressRange = _mapHelper.GetLatLonRange(lookupAddress.Latitude, lookupAddress.Longitude);
+                //MapLatLngRange addressRange = _mapHelper.GetLatLonRange(lookupAddress.Latitude, lookupAddress.Longitude);
                 string queryStatement = @"select   id, longitude, latitude, address, created_at, modified_at                                 
                                    from master.geolocationaddress 
                                    where 1=1 and latitude =any(@latitudeRange) or  longitude =any(@longitudeRange)";
-                parameter.Add("@latitudeRange", addressRange.Latitude);
-                parameter.Add("@longitudeRange", addressRange.Longitude);
+                parameter.Add("@latitudeRange", lookupAddress.Latitude);
+                parameter.Add("@longitudeRange", lookupAddress.Longitude);
 
                 var result = await _dataMartDataAccess.QueryFirstOrDefaultAsync<LookupAddress>(queryStatement, parameter);
                 lookupAddress = result as LookupAddress;

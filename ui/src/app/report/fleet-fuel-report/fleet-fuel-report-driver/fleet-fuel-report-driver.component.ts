@@ -347,7 +347,9 @@ export class FleetFuelReportDriverComponent implements OnInit {
   }
  
   
-  onDriverSelected(){
+  onDriverSelected(row){
+
+
 
   }
  
