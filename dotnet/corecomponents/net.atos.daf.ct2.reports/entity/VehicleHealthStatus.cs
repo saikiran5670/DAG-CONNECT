@@ -7,7 +7,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string VIN { get; set; }
         public string VehicleName { get; set; }
         public string VehicleRegNo { get; set; }
-        public string DrivingStatus { get; set; }
+        public string VehicleDrivingStatusKey { get; set; }
         public string VehicleDrivingStatusEnum { get; set; }
         public int Alert { get; set; }
         public string Address { get; set; }
