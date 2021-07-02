@@ -179,6 +179,8 @@ export class CreateEditUserGroupComponent implements OnInit {
     }if(columnName == "roles" && (Array.isArray(a) || Array.isArray(b))) { //Condition added for Role columns
       a= Object.keys(a).length > 0 ? a[0].name : "";
       b= Object.keys(b).length > 0 ? b[0].name : "";
+      a = a.toUpperCase();
+      b = b.toUpperCase();
       // a.roles.forEach(rolesValue => {
       //   a = rolesValue.name
       // });
