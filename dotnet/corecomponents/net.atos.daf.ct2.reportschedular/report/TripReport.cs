@@ -132,16 +132,6 @@ namespace net.atos.daf.ct2.account.report
                         Alerts = tripData.Alert,
                         Events = tripData.Events,
                         FuelConsumed100km = await _unitConversionManager.GetVolumePerDistance(tripData.FuelConsumed100km, VolumePerDistanceUnit.MilliLiterPerMeter, UnitToConvert),
-                        StartDate1 = TimeZoneHelper.GetDateTimeFromUTC(tripData.StartTimeStamp, TimeZoneName, DateTimeFormat),
-                        EndDate1 = TimeZoneHelper.GetDateTimeFromUTC(tripData.EndTimeStamp, TimeZoneName, DateTimeFormat),
-
-                        StartDate2 = TimeZoneHelper.GetDateTimeFromUTC(tripData.StartTimeStamp, TimeZoneName, DateTimeFormat),
-                        EndDate2 = TimeZoneHelper.GetDateTimeFromUTC(tripData.EndTimeStamp, TimeZoneName, DateTimeFormat),
-
-                        StartDate3 = TimeZoneHelper.GetDateTimeFromUTC(tripData.StartTimeStamp, TimeZoneName, DateTimeFormat),
-                        EndDate3 = TimeZoneHelper.GetDateTimeFromUTC(tripData.EndTimeStamp, TimeZoneName, DateTimeFormat),
-
-
                     });
             }
             var html = ReportHelper
@@ -173,7 +163,8 @@ namespace net.atos.daf.ct2.account.report
                               , VehicleName, RegistrationNo
                               , await GenerateTable()
                 );
-            return html.Replace("{{", "{").Replace("}}", "}").ToString();
+            //return html.Replace("{{", "{").Replace("}}", "}").ToString();
+            return html.ToString();
         }
     }
 }

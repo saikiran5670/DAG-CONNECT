@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     wd.advice
                                     FROM livefleet.livefleet_warning_statistics ws
                                     left join master.warning_details wd on ws.vin = v.vin where vin =@vin";
-            var data = await _dataMartdataAccess.QueryAsync<VehicleHealthStatusHitory>(query, parameter);
+            var data = await _dataMartdataAccess.QueryAsync<VehicleHealthWarning>(query, parameter);
             return data.ToList();
         }
 
