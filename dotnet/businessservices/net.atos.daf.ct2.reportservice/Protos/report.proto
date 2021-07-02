@@ -31,6 +31,19 @@ rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetail
 rpc GetEcoScoreReportCompareDrivers (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
 }
 
+//Start FleetOverview
+message FleetRequestFilter {
+ string GroupId =1;
+ string AlertLevel =2;
+ string AlertCategory =3;
+ string HealthStatus =4;
+ string OtherFilter =5;
+ string DriverId =6;
+ string Days =7;
+}
+
+//End FleetOverview
+
 enum Responsecode{
   None = 0;
   Success = 200;
