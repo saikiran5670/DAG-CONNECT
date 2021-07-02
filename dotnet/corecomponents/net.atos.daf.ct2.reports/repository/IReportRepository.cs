@@ -49,6 +49,11 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<FilterProperty>> GetAlertLevelList();
         Task<List<FilterProperty>> GetHealthStatusList();
         Task<List<FilterProperty>> GetOtherFilter();
+        #region FleetOverviewDetails
+        Task<IEnumerable<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter);
+        #endregion
+        Task<bool> GetKPIInfo(EcoScoreDataServiceRequest request);
+        Task<bool> GetChartInfo(EcoScoreDataServiceRequest request);
         Task<List<DriverFilter>> GetDriverList(List<string> vins);
 
     }

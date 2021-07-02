@@ -325,6 +325,11 @@ namespace net.atos.daf.ct2.reports
             List<FilterProperty> lstHealthStatus = await _reportRepository.GetOtherFilter();
             return lstHealthStatus;
         }
+        public async Task<IEnumerable<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
+        {
+            IEnumerable<FleetOverviewDetails> fleetOverviewDetails = await _reportRepository.GetFleetOverviewDetails(fleetOverviewFilter);
+            return fleetOverviewDetails;
+        }
         public async Task<List<DriverFilter>> GetDriverList(List<string> vins)
         {
             List<DriverFilter> lstDriver = await _reportRepository.GetDriverList(vins);
@@ -345,6 +350,14 @@ namespace net.atos.daf.ct2.reports
             List<FleetFuelDetails> lstFleetFuelDetails = await _reportRepository.GetFleetFuelDetailsByVehicle(fleetFuelFilters);
             return lstFleetFuelDetails;
         }
+
+        #endregion
+
+        #region Eco-Score Data service
+
+        public Task<bool> GetKPIInfo(EcoScoreDataServiceRequest request) => _reportRepository.GetKPIInfo(request);
+
+        public Task<bool> GetChartInfo(EcoScoreDataServiceRequest request) => _reportRepository.GetChartInfo(request);
 
         #endregion
     }

@@ -3,6 +3,9 @@
     public class VehicleHealthStatusRequest
     {
         public string VIN { get; set; }
+        public long? FromDate { get; set; }
+        public long? ToDate { get; set; }
+        public string WarningType { get; set; }
     }
 
 }

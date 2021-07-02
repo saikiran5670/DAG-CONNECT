@@ -132,16 +132,6 @@ namespace net.atos.daf.ct2.account.report
                         Alerts = tripData.Alert,
                         Events = tripData.Events,
                         FuelConsumed100km = await _unitConversionManager.GetVolumePerDistance(tripData.FuelConsumed100km, VolumePerDistanceUnit.MilliLiterPerMeter, UnitToConvert),
-                        StartDate1 = TimeZoneHelper.GetDateTimeFromUTC(tripData.StartTimeStamp, TimeZoneName, DateTimeFormat),
-                        EndDate1 = TimeZoneHelper.GetDateTimeFromUTC(tripData.EndTimeStamp, TimeZoneName, DateTimeFormat),
-
-                        StartDate2 = TimeZoneHelper.GetDateTimeFromUTC(tripData.StartTimeStamp, TimeZoneName, DateTimeFormat),
-                        EndDate2 = TimeZoneHelper.GetDateTimeFromUTC(tripData.EndTimeStamp, TimeZoneName, DateTimeFormat),
-
-                        StartDate3 = TimeZoneHelper.GetDateTimeFromUTC(tripData.StartTimeStamp, TimeZoneName, DateTimeFormat),
-                        EndDate3 = TimeZoneHelper.GetDateTimeFromUTC(tripData.EndTimeStamp, TimeZoneName, DateTimeFormat),
-
-
                     });
             }
             var html = ReportHelper
@@ -158,14 +148,12 @@ namespace net.atos.daf.ct2.account.report
             var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
 
             StringBuilder html = new StringBuilder();
-
-            //ReportTemplateSingleto.
-            //                        GetInstance()
-            //                        .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
-            //                                        _contentType, ReportSchedulerData.Code)
-
-            html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE
-                              //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
+            //ReportTemplateContants.REPORT_TEMPLATE
+            html.AppendFormat(ReportTemplateSingleto.
+                                    GetInstance()
+                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
+                                                    _contentType, ReportSchedulerData.Code)
+            //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
                               , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
                               , ImageSingleton.GetInstance().GetLogo()
@@ -175,7 +163,8 @@ namespace net.atos.daf.ct2.account.report
                               , VehicleName, RegistrationNo
                               , await GenerateTable()
                 );
-            return html.Replace("{{", "{").Replace("}}", "}").ToString();
+            //return html.Replace("{{", "{").Replace("}}", "}").ToString();
+            return html.ToString();
         }
     }
 }

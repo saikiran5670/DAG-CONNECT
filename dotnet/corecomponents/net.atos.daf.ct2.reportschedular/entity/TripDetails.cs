@@ -71,17 +71,5 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int Alerts { get; set; }
         [DisplayName("Events")]
         public int Events { get; set; }
-        [DisplayName("da_report_details_startdate")]
-        public string StartDate1 { get; set; }
-        [DisplayName("da_report_details_enddate")]
-        public string EndDate1 { get; set; }
-        [DisplayName("da_report_details_startdate")]
-        public string StartDate2 { get; set; }
-        [DisplayName("da_report_details_enddate")]
-        public string EndDate2 { get; set; }
-        [DisplayName("da_report_details_startdate")]
-        public string StartDate3 { get; set; }
-        [DisplayName("da_report_details_enddate")]
-        public string EndDate3 { get; set; }
     }
 }
