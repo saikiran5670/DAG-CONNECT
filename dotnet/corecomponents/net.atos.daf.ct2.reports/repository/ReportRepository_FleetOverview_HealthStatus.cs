@@ -16,7 +16,7 @@ namespace net.atos.daf.ct2.reports.repository
             var parameter = new DynamicParameters();
             var vehicleHealthStatus = new VehicleHealthStatus();
             vehicleHealthStatus.VehicleSummary = await GetVehicleHealthSummary(vehicleHealthStatusRequest.VIN);
-            if (vehicleHealthStatusRequest.FromDate == null && vehicleHealthStatusRequest.FromDate == null)
+            if (vehicleHealthStatusRequest.FromDate == null && vehicleHealthStatusRequest.ToDate == null)
             {
                 GetNextQuarterTime(vehicleHealthStatusRequest);
             }
@@ -25,22 +25,23 @@ namespace net.atos.daf.ct2.reports.repository
 
             return vehicleHealthStatus;
         }
+  
 
         private async Task<VehicleSummary> GetVehicleHealthSummary(string vin)
         {
             //TODO add preference condition
             var parameter = new DynamicParameters();
             parameter.Add("@vin", vin);
-            string query = @" SELECT v.vin,
-                                    v.registration_no,
-                                    v.name,
-                                    cts.vehicle_driving_status_type,
-                                    cts.latest_received_position_lattitude,
-                                    cts.latest_received_position_longitude
+            string query = @" SELECT v.vin as VIN,
+                                    v.registration_no as VehicleRegNo,
+                                    v.name as VehicleName,
+                                    cts.vehicle_driving_status_type as VehicleDrivingStatus,
+                                    cts.latest_received_position_lattitude as LastLatitude,
+                                    cts.latest_received_position_longitude as LastLongitude
                                     FROM livefleet.livefleet_current_trip_statistics cts
-                                    left join master.vehicle V on cts.vin = v.vin where vin =@vin";
-            var healthStatusSummary = await _dataAccess.QueryFirstOrDefaultAsync<VehicleSummary>(query, parameter);
-            healthStatusSummary.Alert = 0;
+                                    left join master.vehicle V on cts.vin = v.vin where v.vin =@vin";
+            var healthStatusSummary = await _dataMartdataAccess.QueryFirstOrDefaultAsync<dynamic>(query, parameter);
+         //   healthStatusSummary.Alert = 0;
             return healthStatusSummary;
         }
 
@@ -58,7 +59,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     wd.advice
                                     FROM livefleet.livefleet_warning_statistics ws
                                     left join master.warning_details wd on ws.vin = v.vin where vin =@vin";
-            var data = await _dataAccess.QueryAsync<VehicleHealthStatusHitory>(query, parameter);
+            var data = await _dataMartdataAccess.QueryAsync<VehicleHealthStatusHitory>(query, parameter);
             return data.ToList();
         }
 

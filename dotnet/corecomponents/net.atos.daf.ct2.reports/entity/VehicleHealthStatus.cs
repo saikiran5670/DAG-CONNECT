@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.reports.entity
 
     public class VehicleHealthStatus
     {
-       // public CurrentHealthStatus Current { get; set; }
+        // public CurrentHealthStatus Current { get; set; }
         public VehicleHealthStatusHitory Hitory { get; set; }
         public VehicleSummary VehicleSummary { get; set; }
     }
