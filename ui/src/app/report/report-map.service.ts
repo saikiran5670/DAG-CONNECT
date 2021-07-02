@@ -347,26 +347,45 @@ export class ReportMapService {
    }
 
    getFilterDataPoints(_dataPoints: any, _displayRouteView: any){
-    let fuelThreshold: any = 400; // hard coded
-    let co2Threshold: any = 1; // hard coded
-    let threshold: any = 0;
+    //-----------------------------------------------------------------//
+    // Fuel Consumption	Green	 	Orange	 	Red	 
+    // VehicleSerie	Min	Max	Min	Max	Min	Max
+    // LF	0	100	100	500	500	infinity
+    // CF	0	100	100	500	500	infinity
+    // XF	0	100	100	500	500	infinity
+    // XG	0	100	100	500	500	infinity
+    
+    // CO2	A	 	B	 	C	 	D	 	E	 	F	 
+    // VehicleSerie	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max
+    // LF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+    // CF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+    // XF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+    // XG	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+    //--------------------------------------------------------------------//
+  
     let innerArray: any = [];
     let outerArray: any = [];
     let finalDataPoints: any = [];
     _dataPoints.forEach((element) => { 
-      let elemChecker: any;
-      if(_displayRouteView == 'F'){ // fuel consumption
-        threshold = fuelThreshold;
+      let elemChecker: any = 0;
+      if(_displayRouteView == 'F'){ //------ fuel consumption
         elemChecker = element.fuelconsumtion;
-      }else{ // co2 emission
-        threshold = co2Threshold;
+        if(elemChecker <= 100){ // <= 100
+          element.color = '#12a802'; // green
+        }else if(elemChecker > 100 && elemChecker <= 500){ // >100 & <=500
+          element.color = 'orange';
+        }else{ // >500
+          element.color = 'red';   
+        }
+      }else{ //---- co2 emission
         elemChecker = element.co2Emission;
-      }
-      
-      if(elemChecker < threshold){
-        element.color = '#12a802'; // green
-      }else{
-        element.color = '#f2f200'; // yellow  and #FFBF00 - Amber
+        if(elemChecker <= 270){
+          element.color = '#12a802'; // green
+        }else if(elemChecker > 270 && elemChecker <= 540){
+          element.color = 'orange'; 
+        }else{
+          element.color = 'red'; 
+        }
       }
       finalDataPoints.push(element);
     });

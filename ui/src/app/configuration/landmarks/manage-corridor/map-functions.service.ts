@@ -178,6 +178,7 @@ export class MapFunctionsService {
         this.endMarker.setData(endMarkerHtml);
         this.mapGroup.addObject(this.endMarker);
 
+        if(accountOrganizationId){
         // add end tooltip
         let bubble;
         this.endMarker.addEventListener('pointerenter',  (evt)=> {
@@ -202,6 +203,7 @@ export class MapFunctionsService {
           bubble.close();
           bubble.dispose();
         }, false);
+      }
         //this.group.addObjects([this.startMarker, this.endMarker]);
         if (accountOrganizationId) {
           if (_selectedRoutes[i].id) {

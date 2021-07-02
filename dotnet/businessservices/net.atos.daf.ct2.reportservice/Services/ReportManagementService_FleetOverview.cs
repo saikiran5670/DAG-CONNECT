@@ -28,6 +28,17 @@ namespace net.atos.daf.ct2.reportservice.Services
                     response.AssociatedVehicleRequest.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AssociatedVehicleRequest>>(res)
                         );
+
+                    var vehicleByVisibilityAndFeature
+                                                = await _visibilityManager
+                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
+                                                                                       request.RoleId, vehicleDetailsAccountVisibilty,
+                                                                                       ReportConstants.FLEETOVERVIEW_FEATURE_NAME);
+
+                    res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
+                    response.FleetOverviewVGFilterResponse.AddRange(
+                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetOverviewVGFilterRequest>>(res)
+                        );
                 }
 
                 var alertLevel = await _reportManager.GetAlertLevelList();

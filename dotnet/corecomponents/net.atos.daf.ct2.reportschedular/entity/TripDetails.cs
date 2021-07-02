@@ -50,13 +50,13 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         [DisplayName("da_report_details_distance")]
         public int Distance { get; set; }
         [DisplayName("da_report_details_idleduration")]
-        public int IdleDuration { get; set; }
+        public string IdleDuration { get; set; }
         [DisplayName("da_report_details_averagespeed")]
         public int AverageSpeed { get; set; }
         [DisplayName("da_report_details_averageweight")]
         public int AverageWeight { get; set; }
-        //[DisplayName("da_report_details_odometer")]
-        //public long Odometer { get; set; }
+        [DisplayName("da_report_details_odometer")]
+        public long Odometer { get; set; }
         [DisplayName("da_report_details_startposition")]
         public string StartPosition { get; set; }
         [DisplayName("da_report_details_endposition")]
@@ -66,7 +66,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         [DisplayName("Fuel Consumed 100km")]
         public double FuelConsumed100km { get; set; }
         [DisplayName("da_report_details_drivingtime")]
-        public int DrivingTime { get; set; }
+        public string DrivingTime { get; set; }
         [DisplayName("da_report_details_alerts")]
         public int Alerts { get; set; }
         [DisplayName("Events")]

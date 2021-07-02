@@ -15,8 +15,4 @@ namespace net.atos.daf.ct2.reports.entity
         public string Days { get; set; }
     }
 
-    public class FleetRequestFilter
-    {
-        public FleetOverviewFilter FleetOverviewFilter { get; set; }
-    }
 }

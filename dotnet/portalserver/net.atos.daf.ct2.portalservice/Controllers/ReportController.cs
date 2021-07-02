@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.mapservice;
 using net.atos.daf.ct2.portalservice.Common;
+using POI = net.atos.daf.ct2.portalservice.Entity.POI;
 using net.atos.daf.ct2.portalservice.Entity.Report;
 using net.atos.daf.ct2.reportservice;
 using Newtonsoft.Json;
@@ -648,6 +650,42 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #endregion
 
+        #region  Eco Score Report - Compare Drivers
+        [HttpGet]
+        [Route("ecoscore/comparedrivers")]
+        public async Task<IActionResult> GetEcoScoreReportCompareDrivers([FromBody] EcoScoreReportCompareDriversRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_DATEMISMATCH_MSG); }
+                if (request.DriverIds.Count < 2 || request.DriverIds.Count > 4) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_COMPAREDRIVER_MSG); }
+
+                var grpcRequest = _mapper.MapEcoScoreReportCompareDriver(request);
+                grpcRequest.AccountId = _userDetails.AccountId;
+                grpcRequest.OrgId = GetContextOrgId();
+
+                var response = await _reportServiceClient.GetEcoScoreReportCompareDriversAsync(grpcRequest);
+                if (response?.Drivers?.Count > 0)
+                {
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode((int)response.Code, response.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
         #endregion
 
         #region Fleet utilization report details
@@ -723,18 +761,34 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                ReportFleetOverviewFilter reportFleetOverviewFilter = new ReportFleetOverviewFilter();
                 var fleetOverviewFilterRequest = new FleetOverviewFilterIdRequest();
-                fleetOverviewFilterRequest.AccountId = _userDetails.AccountId;
-                fleetOverviewFilterRequest.OrganizationId = GetContextOrgId();
-                fleetOverviewFilterRequest.RoleId = _userDetails.RoleId;
-                //fleetOverviewFilterRequest.AccountId = 171;
-                //fleetOverviewFilterRequest.OrganizationId = 36;
-                //fleetOverviewFilterRequest.RoleId = 61;
-                var response = await _reportServiceClient.GetFleetOverviewFilterAsync(fleetOverviewFilterRequest);
+                //fleetOverviewFilterRequest.AccountId = _userDetails.AccountId;
+                //fleetOverviewFilterRequest.OrganizationId = GetContextOrgId();
+                //fleetOverviewFilterRequest.RoleId = _userDetails.RoleId;
+                fleetOverviewFilterRequest.AccountId = 171;
+                fleetOverviewFilterRequest.OrganizationId = 36;
+                fleetOverviewFilterRequest.RoleId = 61;
+                FleetOverviewFilterResponse response = await _reportServiceClient.GetFleetOverviewFilterAsync(fleetOverviewFilterRequest);
+
+                reportFleetOverviewFilter = _mapper.ToFleetOverviewEntity(response);
+                poiservice.POIRequest poiRequest = new poiservice.POIRequest();
+                poiRequest.OrganizationId = 36;
+                poiRequest.Type = "POI";
+                var data = await _poiServiceClient.GetAllPOIAsync(poiRequest);
+                reportFleetOverviewFilter.UserPois = new List<POI.POIResponse>();
+                reportFleetOverviewFilter.GlobalPois = new List<POI.POIResponse>();
+                foreach (var item in data.POIList)
+                {
+                    if (item.OrganizationId > 0)
+                        reportFleetOverviewFilter.UserPois.Add(_mapper.ToPOIEntity(item));
+                    else
+                        reportFleetOverviewFilter.GlobalPois.Add(_mapper.ToPOIEntity(item));
+                }
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
                 if (response.Code == Responsecode.Success)
-                    return Ok(response);
+                    return Ok(reportFleetOverviewFilter);
                 if (response.Code == Responsecode.InternalServerError)
                     return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
                 return StatusCode((int)response.Code, response.Message);
