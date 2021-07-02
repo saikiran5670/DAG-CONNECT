@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     left join master.vehicle V on cts.vin = v.vin where v.vin =@vin";
             var healthStatusSummary = await _dataMartdataAccess.QueryFirstOrDefaultAsync<VehicleSummary>(query, parameter);
             healthStatusSummary.Alert = 0;
-            healthStatusSummary.DrivingStatus = await GetVehicleRunningStatus(healthStatusSummary.VehicleDrivingStatusEnum);
+            healthStatusSummary.VehicleDrivingStatusKey = await GetVehicleRunningStatus(healthStatusSummary.VehicleDrivingStatusEnum);
             return healthStatusSummary;
         }
 
@@ -74,9 +74,8 @@ namespace net.atos.daf.ct2.reports.repository
             var parameter = new DynamicParameters();
             parameter.Add("@vehicleStatus", vehicleStatus);
             string query = @"SELECT 
-                         t.value 
-                        FROM translation.enumtranslation te
-                        inner join translation.translation t on te.key = t.name 
+                         te.key as Name
+                        FROM translation.enumtranslation te                      
                         Where te.type= 'D' and te.enum=@vehicleStatus";
             return await _dataAccess.QueryFirstOrDefaultAsync<string>(query, parameter);
         }
