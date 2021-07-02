@@ -91,5 +91,13 @@ namespace net.atos.daf.ct2.reports.repository
         }
         #endregion
 
+        public async Task<List<FleetOverviewDetails>> GetFleetOverviewDetail(FleetRequestFilter request)
+        {
+            List<FleetOverviewDetails> fleetOverviewDetails = new List<FleetOverviewDetails>();
+
+            return fleetOverviewDetails;
+
+        }
+
     }
 }

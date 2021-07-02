@@ -49,5 +49,8 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<FilterProperty>> GetAlertLevelList();
         Task<List<FilterProperty>> GetHealthStatusList();
         Task<List<FilterProperty>> GetOtherFilter();
+        #region FleetOverviewDetails
+        Task<List<FleetOverviewDetails>> GetFleetOverviewDetail(FleetRequestFilter request);
+        #endregion
     }
 }
