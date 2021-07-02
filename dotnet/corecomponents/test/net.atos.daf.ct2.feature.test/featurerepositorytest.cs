@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.feature.test
         private readonly FeatureRepository _featureRepository;
         public Featurerepositorytest()
         {
-            // string connectionString = "Server=10.193.124.168;Database=dafconnectmasterdatabase;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master;Password=9RQkJM2hwfe!;Ssl Mode=Require; Trust Server Certificate=True;";
+            // string connectionString = "Server=dafct-lan1-d-euwe-cdp-pgsql-master.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master;Password=9RQkJM2hwfe!;Ssl Mode=Require;";
 
             _config = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json").Build();
 
