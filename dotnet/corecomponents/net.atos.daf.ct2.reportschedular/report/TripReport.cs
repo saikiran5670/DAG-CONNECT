@@ -158,14 +158,12 @@ namespace net.atos.daf.ct2.account.report
             var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
 
             StringBuilder html = new StringBuilder();
-
-            //ReportTemplateSingleto.
-            //                        GetInstance()
-            //                        .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
-            //                                        _contentType, ReportSchedulerData.Code)
-
-            html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE
-                              //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
+            //ReportTemplateContants.REPORT_TEMPLATE
+            html.AppendFormat(ReportTemplateSingleto.
+                                    GetInstance()
+                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
+                                                    _contentType, ReportSchedulerData.Code)
+            //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
                               , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
                               , ImageSingleton.GetInstance().GetLogo()
