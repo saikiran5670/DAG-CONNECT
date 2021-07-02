@@ -200,11 +200,15 @@ export class ReportMapService {
     let markerSize = { w: 26, h: 26 };
     const icon = new H.map.Icon(marker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
     let poiMarker = new H.map.Marker(coordinates, {icon:icon});
-    poiMarker.addEventListener('tap', event => {
-        let bubble = new H.ui.InfoBubble(event.target.getGeometry(), {
+    let bubble: any = '';
+    poiMarker.addEventListener('pointerenter', event => {
+        bubble = new H.ui.InfoBubble(event.target.getGeometry(), {
           content: `<p> ${data.title}<br> ${data.vicinity}</p>`
         });
         _ui.addBubble(bubble);
+    }, false);
+    poiMarker.addEventListener('pointerleave', evt => {
+      bubble.close();
     }, false);
     this.group.addObject(poiMarker);
   }
