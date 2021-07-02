@@ -116,7 +116,7 @@
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary || 'Summary'
                       }}</span>
                       <div>
-                    <button mat-button [matMenuTriggerFor]="menu" style="margin-left: 745px;">
+                    <button mat-button [matMenuTriggerFor]="menu" style="margin-left: 900px;">
                       <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #menu="matMenu">
@@ -320,6 +320,23 @@
         </div>
       </div>
       <mat-table matTableExporter [dataSource]="displayData" class="table-items" matSort #exporter="matTableExporter">
+          <ng-container matColumnDef="driverName">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'driver Name' }}
+              </mat-header-cell>
+             <mat-cell *matCellDef="let row">
+              <span class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.driverName != '' ? row.driverName : '-' }}</span>
+            </mat-cell> 
+          </ng-container>
+          <ng-container matColumnDef="driverID">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverID || 'driverID' }}
+              </mat-header-cell>
+              <!-- <mat-cell *matCellDef="let row">
+              <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>
+            </mat-cell> -->
+              <mat-cell *matCellDef="let row">
+                <span>{{row.driverID}}</span>
+              </mat-cell>
+          </ng-container>
         <ng-container matColumnDef="vehicleName">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
           </mat-header-cell>
@@ -333,7 +350,7 @@
         <ng-container matColumnDef="vin">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
           </mat-header-cell>
-          <mat-cell *matCellDef="let row">
+          <mat-cell *matCellDef="let row" >
             <span>{{row.vin}}</span>
           </mat-cell>
           <!-- <mat-cell *matCellDef="let row">{{ row.vin != '' ? row.vin : '-' }}</mat-cell> -->

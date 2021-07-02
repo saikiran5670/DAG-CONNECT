@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
     public class TimeFormatSingleton
     {
         private static TimeFormatSingleton _instance;
-        private static IEnumerable<UserTimeFormat> _userTimeFormat;
+        private IEnumerable<UserTimeFormat> _userTimeFormat;
         private static readonly Object _root = new object();
         private TimeFormatSingleton()
         {
@@ -25,8 +25,8 @@ namespace net.atos.daf.ct2.reportscheduler.helper
             {
                 if (_instance == null)
                 {
-                    _userTimeFormat = reportSchedularRepository.GetUserTimeFormat().Result;
                     _instance = new TimeFormatSingleton();
+                    _instance._userTimeFormat = reportSchedularRepository.GetUserTimeFormat().Result;
                 }
             }
             return _instance;

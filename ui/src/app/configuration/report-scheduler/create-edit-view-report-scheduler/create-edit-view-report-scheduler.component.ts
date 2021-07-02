@@ -1,6 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { OrganizationService } from 'src/app/services/organization.service';
 import { ReportSchedulerService } from 'src/app/services/report.scheduler.service';
+import { TranslationService } from 'src/app/services/translation.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 
 @Component({
@@ -28,13 +31,33 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
   DriverList: any= [];
   selectedIndex: number = 0;
   tabVisibilityStatus: boolean = true;
+  selectionTab: string = 'daily';
+  dailyStartTimeDisplay: any = '00:00:00';
+  dailyEndTimeDisplay: any = '23:59:59';
+  dispatchTimeDisplay: any = '23:59:59';
+  selectedDailyStartTime: any = '00:00';
+  selectedDailyEndTime: any = '23:59'; 
+  selectedDispatchTime: any = '23:59';
+  prefTimeFormat: any; //-- coming from pref setting
+  prefTimeZone: any; //-- coming from pref setting
+  prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
+  accountPrefObj: any;
+  localStLanguage: any;
+  weekdays: any= [];
+  
 
-  constructor(private _formBuilder: FormBuilder, private reportSchedulerService: ReportSchedulerService) { }
+  constructor(private _formBuilder: FormBuilder, 
+              private reportSchedulerService: ReportSchedulerService,
+              private translationService: TranslationService,
+              private organizationService: OrganizationService,
+              @Inject(MAT_DATE_FORMATS) private dateFormats) { }
 
   ngOnInit() {
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.userType= localStorage.getItem("userType");
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.reportSchedulerForm = this._formBuilder.group({
       reportType : ['', [Validators.required]],
       vehicleGroup : ['', [Validators.required]],
@@ -44,18 +67,92 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
       driver : ['', [Validators.required]],
       mailSubject : ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       mailDescription : ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
-      dailyStartTime : new FormControl({value: '00:00', disabled: true}),
-      dailyEndTime : new FormControl({value: '23:59', disabled: true}),
-      dailyReportDispatchTime : new FormControl({value: '23:59'}),
-      weeklyStartDay : new FormControl({value: 'Monday', disabled: true}),
-      weeklyEndDay : new FormControl({value: 'Sunday', disabled: true})
+      dailyStartTime : new FormControl({value: '', disabled: true}),
+      dailyEndTime : new FormControl({value: '', disabled: true}),
+      reportDispatchTime : ['', []],
+      weeklyStartDay : new FormControl({value: 1, disabled: true}),
+      weeklyEndDay : new FormControl({value: 7, disabled: true})
     });
+
+    this.weekdays=[{id : 1, value : 'Monday'},{id : 2, value : 'Tuesday'},{id : 3, value : 'Wednesday'},{id : 4, value : 'Thursday'},{id : 5, value : 'Friday'},{id : 6, value : 'Saturday'},{id : 7, value : 'Sunday'}]
     
     this.breadcumMsg = this.getBreadcum();
     if(this.actionType == 'edit' || this.actionType == 'view'){
       this.setDefaultValues();
     }
+
+    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+        this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+      }else{ // org pref
+        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+          this.proceedStep(prefData, orgPref);
+        }, (error) => { // failed org API
+          let pref: any = {};
+          this.proceedStep(prefData, pref);
+        });
+      }
+    });
   }
+
+  proceedStep(prefData: any, preference: any){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+    }else{
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+    }
+    this.setPrefFormatTime();
+    this.setPrefFormatDate();
+    // this.setDefaultTodayDate();
+  }
+
+  setPrefFormatTime(){
+      if(this.prefTimeFormat == 24){
+        this.dailyStartTimeDisplay = '00:00:00';
+        this.dailyEndTimeDisplay = '23:59:59';
+        this.dispatchTimeDisplay = '23:59:59';
+        this.selectedDailyStartTime = "00:00";
+        this.selectedDailyEndTime = "23:59";
+        this.selectedDispatchTime = "23:59";
+      } else{
+        this.dailyStartTimeDisplay = '12:00 AM';
+        this.dailyEndTimeDisplay = '11:59 PM';
+        this.dispatchTimeDisplay = '11:59 PM';
+        this.selectedDailyStartTime = "00:00";
+        this.selectedDailyEndTime = "23:59";
+        this.selectedDispatchTime = "23:59";
+      }
+  }
+
+  setPrefFormatDate(){
+    switch(this.prefDateFormat){
+      case 'ddateformat_dd/mm/yyyy': {
+        this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        break;
+      }
+      default:{
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+      }
+    }
+  }
+
 
   setDefaultValues(){
     // this.imageMaxMsg = false;
@@ -141,6 +238,24 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
   tabVisibilityHandler(tabVisibility: boolean){
     this.tabVisibilityStatus = tabVisibility;
   }
-  
+
+  selectionTimeRange(timeRange: string){
+    this.selectionTab = timeRange;
+  }
+
+  reportDispatchTimeChanged(selectedTime){
+    this.selectedDispatchTime = selectedTime;
+    if(this.prefTimeFormat == 24){
+      this.dispatchTimeDisplay = selectedTime + ':00';
+    }
+    else{
+      this.dispatchTimeDisplay = selectedTime;
+    }
+    //this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+  }
+
+  onChangeWeekDay(event){
+    
+  }
  
 }

@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
     public class TimeZoneSingleton
     {
         private static TimeZoneSingleton _instance;
-        private static IEnumerable<UserTimeZone> _userTimeZone;
+        private IEnumerable<UserTimeZone> _userTimeZone;
         private static readonly Object _root = new object();
         private TimeZoneSingleton()
         {
@@ -39,8 +39,8 @@ namespace net.atos.daf.ct2.reportscheduler.helper
             {
                 if (_instance == null)
                 {
-                    _userTimeZone = reportSchedularRepository.GetUserTimeZone().Result;
                     _instance = new TimeZoneSingleton();
+                    _instance._userTimeZone = reportSchedularRepository.GetUserTimeZone().Result;
                 }
             }
             return _instance;
@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
 
         public string GetTimeZoneName(int timezoneId)
         {
-            return _userTimeZone.Where(w => w.Id == timezoneId).FirstOrDefault()?.Name ?? "UTC";
+            return _userTimeZone.Where(w => w.Id == timezoneId).FirstOrDefault()?.Name ?? TimeConstants.UTC;
         }
 
     }

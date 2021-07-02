@@ -325,6 +325,11 @@ namespace net.atos.daf.ct2.reports
             List<FilterProperty> lstHealthStatus = await _reportRepository.GetOtherFilter();
             return lstHealthStatus;
         }
+        public async Task<IEnumerable<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
+        {
+            IEnumerable<FleetOverviewDetails> fleetOverviewDetails = await _reportRepository.GetFleetOverviewDetails(fleetOverviewFilter);
+            return fleetOverviewDetails;
+        }
         #endregion
 
         #region Feet Fuel Report

@@ -143,5 +143,30 @@ namespace net.atos.daf.ct2.unitconversion
             }
             return Task.FromResult(Math.Round(result, decimals));
         }
+
+        public Task<string> GetTimeSpan(double value, TimeUnit inputUnit, UnitToConvert convertTo)
+        {
+            string result = "00:00";
+            switch (inputUnit)
+            {
+                case TimeUnit.Seconds:
+                    switch (convertTo)
+                    {
+                        case UnitToConvert.Imperial:
+                        case UnitToConvert.Metric:
+                            TimeSpan t = TimeSpan.FromSeconds(value);
+
+                            result = string.Format("{0:D2}:{1:D2}",
+                                            t.Hours,
+                                            t.Minutes);
+                            break;
+                    }
+                    break;
+                default:
+                    result = "00:00";
+                    break;
+            }
+            return Task.FromResult(result);
+        }
     }
 }
