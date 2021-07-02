@@ -22,7 +22,7 @@
 //            // .Build();
 //            //Get connection string
 //            // var connectionString = _config.GetConnectionString("DevAzure");
-//            var connectionString = "Server=10.193.124.168;Database=dafconnectmasterdatabase;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master;Password=9RQkJM2hwfe!;Ssl Mode=Require; Trust Server Certificate=True;";
+//            var connectionString = "Server=dafct-lan1-d-euwe-cdp-pgsql-master.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master;Password=9RQkJM2hwfe!;Ssl Mode=Require;";
 
 //            //string connectionString = "Server = 127.0.0.1; Port = 5432; Database = DAFCT; User Id = postgres; Password = Admin@1978; CommandTimeout = 90; ";
 //            _dataAccess = new PgSQLDataAccess(connectionString);

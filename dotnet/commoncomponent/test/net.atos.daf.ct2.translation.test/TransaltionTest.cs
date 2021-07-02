@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.translation.test
 
         public TransaltionTest()
         {
-            string connectionString = "Server=10.193.124.168;Database=dafconnectmasterdatabase;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master;Password=9RQkJM2hwfe!;Ssl Mode=Require; Trust Server Certificate=True;";
+            string connectionString = "Server=dafct-lan1-d-euwe-cdp-pgsql-master.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master;Password=9RQkJM2hwfe!;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _translationRepository = new TranslationRepository(_dataAccess);
             //  _logs = new AuditTraillib(_ITranslationRepository);

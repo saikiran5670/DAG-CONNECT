@@ -39,9 +39,22 @@ namespace net.atos.daf.ct2.unitconversion.test
 
             var result = await _unitConversionManager
                                    .GetVolume(124.45
-                                   ,VolumeUnit.MilliLiter
+                                   , VolumeUnit.MilliLiter
                                    , UnitToConvert.Metric);
             Assert.IsTrue(result == 0);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for GetTimeSpan Sucess case")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetTimeSpan_Success()
+        {
+            var result = await _unitConversionManager
+                                   .GetTimeSpan(3540
+                                   , TimeUnit.Seconds
+                                   , UnitToConvert.Metric);
+            Assert.IsNotNull(result);
         }
     }
 }

@@ -55,6 +55,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
             }
             return grpcRequest;
         }
+
         internal reportservice.UpdateEcoScoreProfileRequest MapUpdateEcoScoreProfile(EcoScoreProfileUpdateRequest request)
         {
             var grpcRequest = new reportservice.UpdateEcoScoreProfileRequest();
@@ -89,6 +90,22 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 ReportId = request.ReportId
             };
             grpcRequest.VINs.AddRange(request.VINs);
+            return grpcRequest;
+        }
+
+        internal reportservice.GetEcoScoreReportCompareDriversRequest MapEcoScoreReportCompareDriver(EcoScoreReportCompareDriversRequest request)
+        {
+            var grpcRequest = new reportservice.GetEcoScoreReportCompareDriversRequest
+            {
+                StartDateTime = request.StartDateTime,
+                EndDateTime = request.EndDateTime,
+                MinTripDistance = request.MinTripDistance,
+                MinDriverTotalDistance = request.MinDriverTotalDistance,
+                TargetProfileId = request.TargetProfileId,
+                ReportId = request.ReportId,
+            };
+            grpcRequest.VINs.AddRange(request.VINs);
+            grpcRequest.DriverIds.AddRange(request.DriverIds);
             return grpcRequest;
         }
 
