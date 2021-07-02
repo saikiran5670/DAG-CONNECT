@@ -8,6 +8,7 @@ import { DriverManagementComponent } from '../admin/driver-management/driver-man
 import { TermsConditionsManagementComponent } from './terms-conditions-management/terms-conditions-management.component';
 import { DtcTranslationComponent } from './dtc-translation/dtc-translation.component';
 import { ReportSchedulerComponent } from "./report-scheduler/report-scheduler.component";
+import { EcoScoreProfileManagementComponent } from "./eco-score-profile-management/eco-score-profile-management.component"
 
 const routes: Routes = [
   {
@@ -15,6 +16,7 @@ const routes: Routes = [
       { path: "alerts", component: AlertsComponent },
       { path: "landmarks", component: LandmarksComponent },
       { path: "reportscheduler", component: ReportSchedulerComponent },
+      { path: "ecoscoreprofilemanagement", component: EcoScoreProfileManagementComponent },
       { path: "drivermanagement", component: DriverManagementComponent },
       { path: "vehiclemanagement", component: VehicleManagementComponent },
       { path: "termsandcondition", component: TermsConditionsManagementComponent },
