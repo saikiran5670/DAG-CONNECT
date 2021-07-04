@@ -159,7 +159,7 @@
       </mat-card>
   </div>
   <div *ngIf='createViewEditStatus'>
-      <app-create-edit-view-report-scheduler [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"
+      <app-create-edit-view-report-scheduler [reportSchedulerParameterData]="reportSchedulerParameterData" [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"
         (backToPage)='onBackToPage($event)'></app-create-edit-view-report-scheduler>
   </div>
 </div>

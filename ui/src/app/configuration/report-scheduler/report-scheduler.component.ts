@@ -47,6 +47,7 @@ export class ReportSchedulerComponent implements OnInit {
   statusSelection: any= 0;
   ReportTypeList: any= [];
   StatusList: any= [];
+  reportSchedulerParameterData: any= {};
 
   constructor(
     private translationService: TranslationService,
@@ -74,11 +75,11 @@ export class ReportSchedulerComponent implements OnInit {
       }); 
 
       this.reportSchedulerService.getReportSchedulerParameter(this.accountId, this.accountOrganizationId).subscribe(parameterData => {
-        this.ReportTypeList = parameterData["reportType"];
+        this.reportSchedulerParameterData = parameterData;
+        this.ReportTypeList = this.reportSchedulerParameterData["reportType"];
         this.StatusList= [{id : "A", name : "Active"}, {id : "I", name : "Suspended"}]
       })
       
-      // this.ReportTypeList= [{id : 1, name : "Fuel Report"}, {id : 2, name : "Distance Report"}, {id : 3, name : "Milage Report"}]
     }
     
   
@@ -217,9 +218,10 @@ getUnique(arr, comp) {
     this.dataSource = new MatTableDataSource(this.initData);
     // this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
     //   return (
-    //     data.name.toString().toLowerCase().includes(filter) ||
-    //     data.poiCount.toString().toLowerCase().includes(filter) ||
-    //     data.geofenceCount.toString().toLowerCase().includes(filter)
+    //     data.reportName.toString().toLowerCase().includes(filter) ||
+    //     data.recipientList.toString().toLowerCase().includes(filter) ||
+    //     data.driverList.toString().toLowerCase().includes(filter) ||
+    //     data.status.toString().toLowerCase().includes(filter) 
     //   );
     // };
     setTimeout(()=>{
