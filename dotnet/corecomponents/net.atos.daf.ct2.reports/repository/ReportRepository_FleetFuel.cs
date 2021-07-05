@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.reports.entity;
-
+using net.atos.daf.ct2.reports.entity.fleetFuel;
 
 namespace net.atos.daf.ct2.reports.repository
 {
@@ -304,6 +304,62 @@ namespace net.atos.daf.ct2.reports.repository
             catch (Exception)
             {
 
+                throw;
+            }
+        }
+
+        public async Task<List<FleetFuelTripDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters)
+        {
+            try
+            {
+                var parameterOfFilters = new DynamicParameters();
+                parameterOfFilters.Add("@FromDate", fleetFuelFilters.StartDateTime);
+                parameterOfFilters.Add("@ToDate", fleetFuelFilters.EndDateTime);
+                parameterOfFilters.Add("@Vins", fleetFuelFilters.VINs);
+                string queryFleetUtilization = @"SELECT 
+                                                ,TS.vin
+                                                ,VH.name AS Name
+                                                ,VH.registration_no AS RegistrationNo
+                                                ,count(TS.trip_id) as numberoftrips
+                                                ,SUM(TS.etl_gps_trip_time) as etl_gps_trip_time
+                                                ,sum(TS.end_time_stamp) 
+                                                ,SUM(TS.etl_gps_distance) as etl_gps_distance
+                                                ,SUM(TS.veh_message_driving_time) as veh_message_driving_time
+                                                ,SUM(TS.idle_duration) as idle_duration
+                                                ,SUM(TS.veh_message_distance) as veh_message_distance
+                                                ,SUM(TS.average_speed) as average_speed
+                                                ,SUM(TS.average_weight) as average_weight
+                                                ,Max(TS.max_speed) as maxspeed
+                                                ,sum(TS.fuel_consumption) as FuelConsumption
+                                                ,sum(TS.co2_emission) As Co2Emission
+                                                ,sum(TS.harsh_brake_duration) As HarshBreakDuration
+                                                ,sum(TS.heavy_throttle_duration) As HeavyThrottleDuration
+                                                ,sum(TS.cruise_control_distance_30_50) As CruiseControlDistance30_50
+                                                ,sum(TS.cruise_control_distance_50_75) As CruiseControlDistance50_75
+                                                ,sum(TS.cruise_control_distance_more_than_75) As CruiseControlDistanceMoreThan_75
+                                                ,max(TS.average_traffic_classification) As AverageTrafficClassification
+                                                ,sum (TS.cc_fuel_consumption) As CcFuelConsumption
+                                                ,sum (TS.fuel_consumption_cc_non_active) As CcFuelConsumptionCCNonActive
+                                                ,sum (TS.idling_consumption) As IdlingConsumption
+                                                ,sum (TS.dpa_score) As DPAScore
+                                                ,CASE WHEN TS.start_position IS NULL THEN '' ELSE TS.start_position END AS StartPosition
+                                                ,CASE WHEN TS.end_position IS NULL THEN '' ELSE TS.end_position END AS EndPosition
+                                                ,TS.start_position_lattitude AS StartPositionLattitude
+                                                ,TS.start_position_longitude AS StartPositionLongitude
+                                                ,TS.end_position_lattitude AS EndPositionLattitude
+                                                ,TS.end_position_longitude AS EndPositionLongitude
+                                                FROM 
+                                                tripdetail.trip_statistics TS
+                                                left join master.vehicle VH on TS.vin=VH.vin
+                                                where TS.vin=@Vins and(start_time_stamp >= @FromDate and end_time_stamp<= @ToDate)
+                                                GROUP by TS.VIN,date_trunc('day', to_timestamp(TS.start_time_stamp/1000)),VH.name ,VH.registration_no";
+
+                List<FleetFuelTripDetails> lstFleetDetails = (List<FleetFuelTripDetails>)await _dataMartdataAccess.QueryAsync<FleetFuelTripDetails>(queryFleetUtilization, parameterOfFilters);
+                return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelTripDetails>();
+
+            }
+            catch (System.Exception)
+            {
                 throw;
             }
         }
