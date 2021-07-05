@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.reports.repository
         public async Task<List<FilterProperty>> GetOtherFilter()
         {
             var parameter = new DynamicParameters();
-            parameter.Add("@type", "L");
+            parameter.Add("@type", "D");
             string queryOtherFilterPull = @"SELECT key as Name,
                                                      enum as Value
 	                                          FROM translation.enumtranslation 
@@ -89,6 +89,31 @@ namespace net.atos.daf.ct2.reports.repository
                 return new List<FilterProperty>();
             }
         }
+
+        public async Task<List<DriverFilter>> GetDriverList(List<string> vins)
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@VehicleIds", vins);
+            string queryDriverFilterPull = @"select dri.driver_id as DriverId
+                                                ,dri.first_name as FirstName
+                                                ,dri.last_name as LastName
+                                                ,dri.organization_id as OrganizationId
+                                                from livefleet.livefleet_current_trip_statistics cts
+                                                inner join master.driver dri
+                                                on cts.driver1_id=driver_id
+                                                where cts.vin= ANY(@VehicleIds)";
+
+            List<DriverFilter> lstOtherFilter = (List<DriverFilter>)await _dataMartdataAccess.QueryAsync<DriverFilter>(queryDriverFilterPull, parameter);
+            if (lstOtherFilter.Count > 0)
+            {
+                return lstOtherFilter;
+            }
+            else
+            {
+                return new List<DriverFilter>();
+            }
+        }
+
         #endregion
 
         public async Task<IEnumerable<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)

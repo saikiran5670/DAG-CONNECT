@@ -1,1 +1,84 @@
-<p>eco-score-profile-management works!</p>
+<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <span>{{ breadcumMsg }}</span>
+    </div>
+    <div *ngIf="actionType == 'create'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+        <span class='custom-font' (click)="toBack()">
+            <span>
+                <&nbsp;</span>
+                    <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+        </span>
+    </div>
+</div>
+<form [formGroup]="ecoScoreProfileForm">
+    <mat-card class='mat-elevation-z'>
+        <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblCreateProfile || 'Create Profile') : (translationData.lblManageProfile || 'Manage Profile')  }}</span>
+            </div>
+            <div  *ngIf="!adminAccessType.adminReadOnlyAccess" >
+                <button mat-flat-button color="primary" (click)="createNewProfile()">
+                  <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewProfile || 'New Profile' }}
+                  </button>
+                </div>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+            <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                <mat-label style='display: flex;'>
+                    <span>{{ translationData.lblProfileName || 'Profile Name' }}</span><span *ngIf="actionType != 'manage'" class='mandatoryColor'>*</span>
+                </mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                        <input maxlength="50" placeholder="{{ translationData.lblTestProfileName || 'Test Profile Name' }}" matInput
+                            formControlName="name">
+                    </mat-form-field>
+                    <mat-error *ngIf="ecoScoreProfileForm.get('name').hasError('required')">
+                        {{ translationData.lblPleasenterpackagename || 'Please enter Profile Name'}}
+                    </mat-error>
+                    <mat-error *ngIf="ecoScoreProfileForm.get('name').hasError('whitespace')">
+                        {{ translationData.lblPackagenamecannotcontainonlywhitespace || 'Profile Name
+                        cannot contain only whitespace' }}
+                    </mat-error>
+                    <mat-error *ngIf="ecoScoreProfileForm.get('name').hasError('specialCharsNotAllowed')">
+                        {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                    </mat-error>
+                </div>
+            <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+                <mat-label style='display: flex; place-content: space-between;'>
+                    <span>{{ translationData.lblProfileDescription || 'Profile Description' }}</span>
+                    <span *ngIf="actionType != 'manage'">{{ translationData.lbl120CharMax || '120 characters max' }}</span>
+                </mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                        <input maxlength="120" placeholder="{{ translationData.lblTestProfileDescription || 'Test Profile Description' }}" matInput
+                            formControlName="description">
+                    </mat-form-field>
+                    <mat-error *ngIf=" ecoScoreProfileForm.get('description').hasError('whitespace')">
+                        {{ translationData.lblDescriptioncannotcontainonlywhitespace || 'Feature Description cannot contain only whitespace' }}
+                    </mat-error>
+                    <mat-error *ngIf="ecoScoreProfileForm.get('description').hasError('specialCharsNotAllowed')">
+                        {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                    </mat-error>
+            </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+        <div  fxLayout="column" fxLayoutAlign="start">   
+            <span *ngIf="actionType != 'manage'">DAF Standard</span>
+            <span *ngIf="actionType == 'manage'">Last Update:</span>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="end">
+            <div fxLayout="row" class='areaWidth'>
+                <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" *ngIf="actionType == 'manage'"
+                (click)='onDelete()'>{{ (translationData.lblDelete || 'Delete') }}</button>
+                <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" 
+                    (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
+                <button class='no-margin' [disabled]="!ecoScoreProfileForm.valid " mat-raised-button color="primary"
+                    (click)='onCreate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
+                    (translationData.lblSave || 'Save') }}</button>
+                <!-- <button class='no-margin' [disabled]="!ecoScoreProfileForm.valid " mat-raised-button color="primary" *ngIf="actionType == 'create'"
+                    (click)='onCreate()'>{{     (translationData.lblSave || 'Save') }}</button> -->
+            </div>
+        </div>
+    </div>
+    </mat-card>
+
+</form>

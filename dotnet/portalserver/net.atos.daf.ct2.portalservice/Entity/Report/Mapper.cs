@@ -215,6 +215,16 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 other.Value = item.Value;
                 reportFleetOverview.OtherFilter.Add(other);
             }
+            reportFleetOverview.DriverList = new List<DriverFilter>();
+            foreach (var item in fleetOverviewFilterResponse.DriverList)
+            {
+                DriverFilter driver = new DriverFilter();
+                driver.DriverId = item.DriverId;
+                driver.FirstName = item.FirstName;
+                driver.LastName = item.LastName;
+                driver.OrganizationId = item.OrganizationId;
+                reportFleetOverview.DriverList.Add(driver);
+            }
             return reportFleetOverview;
         }
 
