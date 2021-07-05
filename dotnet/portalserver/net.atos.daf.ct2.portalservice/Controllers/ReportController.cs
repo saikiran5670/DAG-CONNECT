@@ -872,6 +872,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         */
+
+        [HttpPost]
+        [Route("fleetfuel/getdetails/vehiclegraph")]
+        public async Task<IActionResult> GetFleetFuelDetailsForVehicleGraphs([FromBody] Entity.Report.ReportFleetFuelFilter request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DATEMISMATCH_MSG); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                FleetFuelFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetFuelFilterRequest>(filters);
+                _logger.Info("GetFleetFuelDetailsByDriver method in Report (for Fleet Fuel consumption details by Driver) API called.");
+                var data = await _reportServiceClient.GetFleetFuelDetailsForVehicleGraphsAsync(objFleetFilter);
+                if (data?.FleetfuelGraph?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_FLEET_FUEL_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_FLEET_FUEL_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
     }
 }

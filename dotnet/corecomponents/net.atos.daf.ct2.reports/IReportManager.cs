@@ -43,5 +43,6 @@ namespace net.atos.daf.ct2.reports
         Task<bool> GetKPIInfo(EcoScoreDataServiceRequest request);
         Task<bool> GetChartInfo(EcoScoreDataServiceRequest request);
         Task<List<DriverFilter>> GetDriverList(List<string> vins);
+        Task<List<FleetFuel_VehicleGraph>> GetFleetFuelDetailsForVehicleGraphs(FleetFuelFilter fleetFuelFilters);
     }
 }

@@ -22,6 +22,7 @@ rpc DeleteEcoScoreProfile (DeleteEcoScoreProfileRequest) returns (DeleteEcoScore
 rpc GetReportSearchParameter (IdRequestForDriverActivity) returns (ReportSearchParameterResponse);
 rpc GetFleetUtilizationDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationDetailsResponse);
 rpc GetFleetCalenderDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationCalenderResponse);
+rpc GetFleetFuelDetailsForVehicleGraphs(FleetFuelFilterRequest) returns (FleetFuelGraphsResponse);
 rpc GetEcoScoreReportByAllDrivers (GetEcoScoreReportByAllDriversRequest) returns (GetEcoScoreReportByAllDriversResponse);
 rpc GetReportUserPreference (GetReportUserPreferenceRequest) returns (GetReportUserPreferenceResponse);
 rpc CreateReportUserPreference (ReportUserPreferenceCreateRequest) returns (ReportUserPreferenceCreateResponse);
@@ -592,6 +593,23 @@ message FleetFuelDetailsResponse {
     string message = 3;
 }
 
+message FleetFuelGraphsResponse {
+    repeated FleetFuelGraphs FleetfuelGraph = 1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+
+message FleetFuelGraphs {
+        int64 VehicleID = 1;
+        string VIN = 2;
+        int64 NumberofTrips = 3;
+        double FuelConsumed = 4;
+        double Co2Emission = 5;
+        double Distance = 6;
+        double FuelConsumtion = 7;
+        double IdleDuration = 8;
+        double Date = 9;
+}
 message FleetFuelDetails {
     string VehicleName = 1;
     string VIN = 2;

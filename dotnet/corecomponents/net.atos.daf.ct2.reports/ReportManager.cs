@@ -351,6 +351,12 @@ namespace net.atos.daf.ct2.reports
             return lstFleetFuelDetails;
         }
 
+        public async Task<List<FleetFuel_VehicleGraph>> GetFleetFuelDetailsForVehicleGraphs(FleetFuelFilter fleetFuelFilters)
+        {
+            List<FleetFuel_VehicleGraph> lstFleetFuelDetails = await _reportRepository.GetFleetFuelDetailsForVehicleGraphs(fleetFuelFilters);
+            return lstFleetFuelDetails;
+        }
+
         #endregion
 
         #region Eco-Score Data service
