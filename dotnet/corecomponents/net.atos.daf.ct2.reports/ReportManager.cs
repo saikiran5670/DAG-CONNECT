@@ -362,7 +362,7 @@ namespace net.atos.daf.ct2.reports
         {
             List<FleetFuelTripDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByVehicle(fleetFuelFilters);
             return lstFleetFuelTripDetails;
-        }       
+        }
         #endregion
 
         #region Eco-Score Data service

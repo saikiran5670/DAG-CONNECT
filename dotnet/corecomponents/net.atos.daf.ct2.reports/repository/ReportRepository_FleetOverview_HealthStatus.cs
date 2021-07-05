@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.reports.repository
             }
             vehicleHealthStatus.VehicleSummary.FromDate = vehicleHealthStatusRequest?.FromDate;
             vehicleHealthStatus.VehicleSummary.ToDate = vehicleHealthStatusRequest?.ToDate;
-            vehicleHealthStatus.VehicleSummary.WarningType = vehicleHealthStatusRequest.WarningType ?? "All";          
+            vehicleHealthStatus.VehicleSummary.WarningType = vehicleHealthStatusRequest.WarningType ?? "All";
             vehicleHealthStatus.HistoryWarning = await GetHistoryWarnning(vehicleHealthStatusRequest.VIN);
             return vehicleHealthStatus;
         }
