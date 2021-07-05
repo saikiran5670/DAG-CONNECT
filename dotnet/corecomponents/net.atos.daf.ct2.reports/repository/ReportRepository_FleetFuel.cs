@@ -282,7 +282,7 @@ namespace net.atos.daf.ct2.reports.repository
 						on CT.vin = v.vin
                         where (start_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) 
-						and vin=ANY(@vins)
+						and CT.vin=ANY(@vins)
                         group by date_trunc('day', to_timestamp(start_time_stamp/1000))                     
                         )
                         select

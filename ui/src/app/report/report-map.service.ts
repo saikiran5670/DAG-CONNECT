@@ -438,7 +438,7 @@ export class ReportMapService {
         // Maximum radius of the neighbourhood
         eps: 32,
         // minimum weight of points required to form a cluster
-        minWeight: 9
+        minWeight: 4
       },
       theme: {
         getClusterPresentation: (markerCluster: any) => {
@@ -482,7 +482,7 @@ export class ReportMapService {
           // Bind cluster data to the marker:
           clusterMarker.setData(markerCluster);
           let infoBubble: any
-          clusterMarker.addEventListener("pointerenter",  (event) => {
+          clusterMarker.addEventListener("tap",  (event) => {
   
             var point = event.target.getGeometry(),
               screenPosition = hereMap.geoToScreen(point),
@@ -517,13 +517,13 @@ export class ReportMapService {
           });
           
           
-          clusterMarker.addEventListener("pointerleave", (event) => { 
-            if(infoBubble)
-            {
-              ui.removeBubble(infoBubble);
-              infoBubble = null;
-            }
-          });				
+          // clusterMarker.addEventListener("pointerleave", (event) => { 
+          //   if(infoBubble)
+          //   {
+          //     ui.removeBubble(infoBubble);
+          //     infoBubble = null;
+          //   }
+          // });				
   
           return clusterMarker;
         },
@@ -543,7 +543,7 @@ export class ReportMapService {
           // Bind cluster data to the marker:
           noiseMarker.setData(noisePoint);
   
-          noiseMarker.addEventListener("pointerenter", (event) => { 
+          noiseMarker.addEventListener("tap", (event) => { 
             
             var point = event.target.getGeometry();
             var tooltipContent = ["Latitude: ", point.lat, ", Longitude: ", point.lng].join("");
@@ -555,13 +555,13 @@ export class ReportMapService {
           
           });
           
-          noiseMarker.addEventListener("pointerleave", (event) => { 
-            if(infoBubble)
-            {
-              ui.removeBubble(infoBubble);
-              infoBubble = null;
-            }
-          });
+          // noiseMarker.addEventListener("pointerleave", (event) => { 
+          //   if(infoBubble)
+          //   {
+          //     ui.removeBubble(infoBubble);
+          //     infoBubble = null;
+          //   }
+          // });
           
   
           return noiseMarker;

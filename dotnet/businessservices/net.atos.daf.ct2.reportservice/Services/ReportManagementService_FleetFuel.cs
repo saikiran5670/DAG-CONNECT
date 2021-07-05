@@ -127,9 +127,9 @@ namespace net.atos.daf.ct2.reportservice.Services
                 }
                 return await Task.FromResult(response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _logger.Error(null, ex);
                 throw;
             }
         }
