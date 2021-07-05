@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TranslationService } from '../../services/translation.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../shared/custom.validators';
+import { ReportService } from 'src/app/services/report.service';
 
 @Component({
   selector: 'app-eco-score-profile-management',
@@ -14,9 +15,10 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   actionType: any = "manage";
   ecoScoreProfileForm: FormGroup;
   translationData: any = {};
+  profileList: any = [];
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
 
-  constructor(private _formBuilder: FormBuilder,private translationService: TranslationService) { }
+  constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportService: ReportService) { }
 
   ngOnInit(): void {
     this.breadcumMsg = this.getBreadcum(this.actionType);
@@ -44,6 +46,9 @@ export class EcoScoreProfileManagementComponent implements OnInit {
         CustomValidators.specialCharValidationForNameWithoutRequired('description')
       ]
     });
+    this.reportService.getEcoScoreProfiles().subscribe((data: any) =>{
+      this.profileList = data["profiles"];
+    })
   }
   
   processTranslation(transData: any) {
@@ -75,4 +80,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.actionType = 'manage'
   }
 
+  profileSelectionDropDown(filterValue: string){
+    
+ }
 }

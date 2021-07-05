@@ -142,6 +142,16 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
+  getEcoScoreProfiles(){
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.reportServiceUrl}/ecoscore/getprofiles`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
   getCalendarDetails(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
