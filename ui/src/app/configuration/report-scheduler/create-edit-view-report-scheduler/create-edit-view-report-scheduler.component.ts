@@ -79,7 +79,7 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
       vehicleGroup : ['', [Validators.required]],
       language : ['', [Validators.required]],
       vehicle : ['', [Validators.required]],
-      recipientEmailAddress : ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+      recipientEmail : ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       driver : ['', [Validators.required]],
       mailSubject : ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       mailDescription : ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],

@@ -388,18 +388,18 @@
                         {{ translationData.lblRecipientsEmail || 'Recipients Email' }}<span class='mandatoryColor'>*</span>
                         <span *ngIf="actionType != 'view'">{{ translationData.lbl10EmailMax || '10 email max' }}</span>
                     </mat-label>
-                    <!-- <mat-form-field appearance="outline">
+                    <mat-form-field appearance="outline">
                         <input placeholder="{{ translationData.lblEnterRecipientEmail || 'Enter Recipient Email' }}"  matInput formControlName="recipientEmail">
-                    </mat-form-field> -->
-                    <div class="ng-autocomplete">
+                    </mat-form-field>
+                    <!-- <div class="ng-autocomplete">
                       <ng-autocomplete [data]="RecipientList" [searchKeyword]="keyword"
-                          [itemTemplate]="itemTemplateRecipientEmail" formControlName="recipientEmailAddress">
+                          [itemTemplate]="itemTemplateRecipientEmail" formControlName="recipientEmail">
                       </ng-autocomplete>
 
                       <ng-template #itemTemplateRecipientEmail let-item>
                           <a [innerHTML]="item.email"></a>
                       </ng-template>
-                  </div>
+                  </div> -->
                     <!-- <mat-error *ngIf="categoryForm.get('uploadFile').hasError('required')">
                         {{ translationData.lblPleaseselectafile || 'Please select a file' }}
                     </mat-error>
