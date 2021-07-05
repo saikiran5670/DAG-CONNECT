@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
             var globalSettings = new GlobalSettings
             {
                 ColorMode = ColorMode.Color,
-                Orientation = Orientation.Landscape,
+                Orientation = Orientation.Portrait,
                 PaperSize = PaperKind.A4,
                 Margins = new MarginSettings { Top = 10 }
                 //DocumentTitle = "PDF Report"//,
