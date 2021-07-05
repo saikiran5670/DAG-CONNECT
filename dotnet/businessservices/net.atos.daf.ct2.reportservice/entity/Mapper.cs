@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reports.ENUM;
 
@@ -132,5 +133,136 @@ namespace net.atos.daf.ct2.reportservice.entity
             }
             return recursiveObjects;
         }
+
+        /// <summary>
+        /// Mapper to covert GRPC request object
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        internal EcoScoreReportByAllDriversRequest MapEcoScoreReportByAllDriversRequest(GetEcoScoreReportByAllDriversRequest request)
+        {
+            var objRequest = new EcoScoreReportByAllDriversRequest
+            {
+                StartDateTime = request.StartDateTime,
+                EndDateTime = request.EndDateTime,
+                VINs = request.VINs.ToList<string>(),
+                MinTripDistance = request.MinTripDistance,
+                MinDriverTotalDistance = request.MinDriverTotalDistance,
+                OrgId = request.OrgId,
+                AccountId = request.AccountId,
+                TargetProfileId = request.TargetProfileId,
+                ReportId = request.ReportId
+            };
+            return objRequest;
+        }
+
+        /// <summary>
+        /// Mapper to covert object to  GRPC response
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        internal IEnumerable<EcoScoreReportDriversRanking> MapEcoScoreReportByAllDriversResponse(List<EcoScoreReportByAllDrivers> response)
+        {
+            var lstDriverRanking = new List<EcoScoreReportDriversRanking>();
+            foreach (var item in response)
+            {
+                var ranking = new EcoScoreReportDriversRanking
+                {
+                    Ranking = item.Ranking,
+                    DriverName = item.DriverName ?? string.Empty,
+                    DriverId = item.DriverId ?? string.Empty,
+                    EcoScoreRanking = item.EcoScoreRanking,
+                    EcoScoreRankingColor = item.EcoScoreRankingColor ?? string.Empty
+                };
+                lstDriverRanking.Add(ranking);
+            }
+            return lstDriverRanking;
+        }
+
+        /// <summary>
+        /// Mapper to covert GRPC request object
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        internal EcoScoreReportCompareDriversRequest MapEcoScoreReportCompareDriversRequest(GetEcoScoreReportCompareDriversRequest request)
+        {
+            var objRequest = new EcoScoreReportCompareDriversRequest
+            {
+                StartDateTime = request.StartDateTime,
+                EndDateTime = request.EndDateTime,
+                VINs = request.VINs.ToList<string>(),
+                DriverIds = request.DriverIds.ToList<string>(),
+                MinTripDistance = request.MinTripDistance,
+                MinDriverTotalDistance = request.MinDriverTotalDistance,
+                TargetProfileId = request.TargetProfileId,
+                ReportId = request.ReportId,
+                OrgId = request.OrgId,
+                AccountId = request.AccountId
+            };
+            return objRequest;
+        }
+
+        internal IEnumerable<EcoScoreReportDrivers> MapEcoScoreReportDrivers(IEnumerable<reports.entity.EcoScoreReportCompareDrivers> result)
+        {
+            var lstDrivers = new List<EcoScoreReportDrivers>();
+            foreach (var item in result)
+            {
+                var obj = new EcoScoreReportDrivers
+                {
+                    DriverName = item.DriverName,
+                    DriverId = item.DriverId
+                };
+                lstDrivers.Add(obj);
+            }
+            return lstDrivers;
+        }
+
+        internal EcoScoreReportCompareDrivers MapEcoScoreReportCompareDriversResponse(IEnumerable<reports.entity.EcoScoreReportCompareDrivers> compareResult, IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> reportAttributes)
+        {
+            var root = reportAttributes.Where(up => up.Name.IndexOf('.') == -1).First();
+
+            return FillRecursiveEcoScoreCompareReport(reportAttributes, new int[] { root.DataAttributeId }, compareResult).FirstOrDefault();
+        }
+
+        private static List<EcoScoreReportCompareDrivers> FillRecursiveEcoScoreCompareReport(IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> flatObjects, int[] parentIds, IEnumerable<reports.entity.EcoScoreReportCompareDrivers> compareResult)
+        {
+            List<EcoScoreReportCompareDrivers> recursiveObjects = new List<EcoScoreReportCompareDrivers>();
+            if (parentIds != null)
+            {
+                foreach (var item in flatObjects.Where(x => parentIds.Contains(x.DataAttributeId)))
+                {
+                    var preference = new EcoScoreReportCompareDrivers
+                    {
+                        DataAttributeId = item.DataAttributeId,
+                        Name = item.Name ?? item.Name,
+                        Key = item.Key ?? item.Key,
+                        Target = item.TargetValue
+                    };
+
+                    preference.Score.AddRange(GetEcoScoreCompareReportAttributeValues(item.DBColumnName, compareResult));
+                    preference.SubCompareDrivers.AddRange(FillRecursiveEcoScoreCompareReport(flatObjects, item.SubDataAttributes, compareResult));
+
+                    recursiveObjects.Add(preference);
+                }
+            }
+            return recursiveObjects;
+        }
+
+        private static List<EcoScoreReportAttribute> GetEcoScoreCompareReportAttributeValues(string attributeName, IEnumerable<reports.entity.EcoScoreReportCompareDrivers> compareResult)
+        {
+            var lstAttributes = new List<EcoScoreReportAttribute>();
+            EcoScoreReportAttribute obj;
+            foreach (var item in compareResult)
+            {
+                obj = new EcoScoreReportAttribute();
+                obj.DriverId = item.DriverId;
+                obj.Color = string.Empty;
+                obj.Value = Convert.ToDouble(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(x)));
+                lstAttributes.Add(obj);
+            }
+
+            return lstAttributes;
+        }
+
     }
 }

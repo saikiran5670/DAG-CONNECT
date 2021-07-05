@@ -23,19 +23,19 @@ variables:
    value: 'dotnet/businessservices/net.atos.daf.ct2.notificationservice/log4net.config'
 
 stages:
-  - stage: stage_dev0
-    jobs:
-    - template: dotnet-pipeline-template.yaml  # Template reference
-      parameters:
-        subscription: 'ats-sub1-d-app-automation'
-        containerRegistry: '{"loginServer":"dafdev017756.azurecr.io", "id" : "/subscriptions/f0b7c74e-ef18-46e8-ae31-7abbd0e5fd8f/resourceGroups/DAFCT_DEV0_DTA_K8S/providers/Microsoft.ContainerRegistry/registries/dafdev017756"}'
-        variableGroup: 'DEV0-Build-Variables'
-        imageName: $(imageName)
-        dockerFile: $(dockerFile)
-        manifestFile: $(manifestFileDev0)
-        appsettingsPath: $(appsettingsFile)
-        log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'], 'development')
+  #- stage: stage_dev0
+  #  jobs:
+  #  - template: dotnet-pipeline-template.yaml  # Template reference
+  #    parameters:
+  #      subscription: 'ats-sub1-d-app-automation'
+  #      containerRegistry: '{"loginServer":"dafdev017756.azurecr.io", "id" : "/subscriptions/f0b7c74e-ef18-46e8-ae31-7abbd0e5fd8f/resourceGroups/DAFCT_DEV0_DTA_K8S/providers/Microsoft.ContainerRegistry/registries/dafdev017756"}'
+  #      variableGroup: 'DEV0-Build-Variables'
+  #      imageName: $(imageName)
+  #      dockerFile: $(dockerFile)
+  #      manifestFile: $(manifestFileDev0)
+  #      appsettingsPath: $(appsettingsFile)
+  #      log4netConfigPath: $(log4netConfigFile)
+  #  condition: eq(variables['Build.SourceBranchName'], 'development')
 
   - stage: stage_dev1
     jobs:

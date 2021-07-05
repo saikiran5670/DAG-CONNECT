@@ -19,7 +19,7 @@ import { Util } from 'src/app/shared/util';
 
 export class ReportSchedulerComponent implements OnInit {
 
-  displayedColumns: string[] = ['reportName','vehicleGroupName','frequency','scheduledReportRecipient','scheduledReportDriverRef','lastScheduleRunDate','nextScheduleRunDate','status','action'];
+  displayedColumns: string[] = ['reportName','scheduledReportVehicleRef','frequencyType','scheduledReportRecipient','scheduledReportDriverRef','lastScheduleRunDate','nextScheduleRunDate','status','action'];
   grpTitleVisible : boolean = false;
   errorMsgVisible: boolean = false;
   displayMessage: any;
@@ -47,6 +47,7 @@ export class ReportSchedulerComponent implements OnInit {
   statusSelection: any= 0;
   ReportTypeList: any= [];
   StatusList: any= [];
+  reportSchedulerParameterData: any= {};
 
   constructor(
     private translationService: TranslationService,
@@ -72,9 +73,13 @@ export class ReportSchedulerComponent implements OnInit {
         this.processTranslation(data);    
         this.loadScheduledReports();  
       }); 
+
+      this.reportSchedulerService.getReportSchedulerParameter(this.accountId, this.accountOrganizationId).subscribe(parameterData => {
+        this.reportSchedulerParameterData = parameterData;
+        this.ReportTypeList = this.reportSchedulerParameterData["reportType"];
+        this.StatusList= [{id : "A", name : "Active"}, {id : "I", name : "Suspended"}]
+      })
       
-      this.ReportTypeList= [{id : 1, name : "Fuel Report"}, {id : 2, name : "Distance Report"}, {id : 3, name : "Milage Report"}]
-      this.StatusList= [{id : "A", name : "Active"}, {id : "I", name : "Suspended"}]
     }
     
   
@@ -129,68 +134,6 @@ export class ReportSchedulerComponent implements OnInit {
   }
 
    loadScheduledReports(){    
-    // let obj: any = {
-      
-    // } 
-    // let data = [
-    //   {
-    //     reportType : "Fuel Report",
-    //     vehicleGroupName : "Vehicle Group 1",
-    //     frequency : "Monthly",
-    //     recipient : "abc@xyz.com",
-    //     driver : "Driver name 1",
-    //     lastRun : "19/10/2020",
-    //     nextRun : "19/11/2020",
-    //     state : "A",
-    //     createdAt : new Date().getTime(),
-    //     reportTypeId : 1
-    //   },
-    //   {
-    //     reportType : "Distance Report",
-    //     vehicleGroupName : "Vehicle Group 1",
-    //     frequency : "Weekly",
-    //     recipient : "abc@xyz.com",
-    //     driver : "Driver name 2",
-    //     lastRun : "19/10/2020",
-    //     nextRun : "19/11/2020",
-    //     state : "I",
-    //     createdAt : new Date().getTime(),
-    //     reportTypeId : 2
-    //   },
-    //   {
-    //     reportType : "Milage Report",
-    //     vehicleGroupName : "Vehicle Group 2",
-    //     frequency : "Daily",
-    //     recipient : "pqr@xyz.com",
-    //     driver : "Driver name 1",
-    //     lastRun : "19/10/2020",
-    //     nextRun : "19/11/2020",
-    //     state : "A",
-    //     reportTypeId : 3
-    //   },
-    //   {
-    //     reportType : "Fuel Report",
-    //     vehicleGroupName : "Vehicle Group 2",
-    //     frequency : "Monthly",
-    //     recipient : "mno@xyz.com",
-    //     driver : "Driver name 2",
-    //     lastRun : "19/10/2020",
-    //     nextRun : "19/11/2020",
-    //     state : "A",
-    //     reportTypeId : 1
-    //   },
-    //   {
-    //     reportType : "Distance Report",
-    //     vehicleGroupName : "Vehicle Group 1",
-    //     frequency : "Quarterly",
-    //     recipient : "abc@abc.com",
-    //     driver : "Driver name 1",
-    //     lastRun : "19/10/2020",
-    //     nextRun : "19/11/2020",
-    //     state : "I",
-    //     reportTypeId : 2
-    //   }
-    // ]
      this.showLoadingIndicator = true;
      this.reportSchedulerService.getReportSchedulerData(this.accountId, this.accountOrganizationId).subscribe((data) => {
        this.schedulerData =this.makeLists(data["reportSchedulerRequest"]);  
@@ -208,6 +151,8 @@ export class ReportSchedulerComponent implements OnInit {
   initdata.forEach((element, index) => {
     let recipientTxt: any = '';
     let driverTxt: any = '';
+    let vehicleGroupTxt: any = '';
+
     element.scheduledReportRecipient.forEach(resp => {
       recipientTxt += resp.email + '\n';
     });
@@ -219,6 +164,21 @@ export class ReportSchedulerComponent implements OnInit {
         driverTxt += resp.driverName + ', ';
       });
     }
+
+    if(element.scheduledReportVehicleRef.length > 1){
+      let vehicleGroups = element.scheduledReportVehicleRef.filter(item => item.vehicleGroupType == 'G');
+      if(vehicleGroups.length > 0){
+        vehicleGroups = this.getUnique(vehicleGroups, 'vehicleGroupId');
+      }
+      vehicleGroups.forEach(resp => {
+        vehicleGroupTxt += resp.vehicleGroupName + ', ';
+      });
+
+      let vehicles = element.scheduledReportVehicleRef.filter(item => item.vehicleGroupType == 'S');
+      vehicles.forEach(resp => {
+        vehicleGroupTxt += resp.vin + ', ';
+      });
+    }
     // if(recipientTxt != ''){
     //   recipientTxt = recipientTxt.slice(0, -2);
     // }
@@ -228,11 +188,26 @@ export class ReportSchedulerComponent implements OnInit {
 
     initdata[index].recipientList = recipientTxt; 
     initdata[index].driverList = driverTxt;
+    initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt;
     initdata[index].lastScheduleRunDate = Util.convertUtcToDateFormat(element.lastScheduleRunDate, "MM/DD/YYYY");
     initdata[index].nextScheduleRunDate = Util.convertUtcToDateFormat(element.nextScheduleRunDate, "MM/DD/YYYY");
   });
   
   return initdata;
+}
+
+getUnique(arr, comp) {
+
+  // store the comparison  values in array
+  const unique =  arr.map(e => e[comp])
+
+    // store the indexes of the unique objects
+    .map((e, i, final) => final.indexOf(e) === i && i)
+
+    // eliminate the false indexes & return unique objects
+  .filter((e) => arr[e]).map(e => arr[e]);
+
+  return unique;
 }
 
   updateDatasource(data){
@@ -243,9 +218,10 @@ export class ReportSchedulerComponent implements OnInit {
     this.dataSource = new MatTableDataSource(this.initData);
     // this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
     //   return (
-    //     data.name.toString().toLowerCase().includes(filter) ||
-    //     data.poiCount.toString().toLowerCase().includes(filter) ||
-    //     data.geofenceCount.toString().toLowerCase().includes(filter)
+    //     data.reportName.toString().toLowerCase().includes(filter) ||
+    //     data.recipientList.toString().toLowerCase().includes(filter) ||
+    //     data.driverList.toString().toLowerCase().includes(filter) ||
+    //     data.status.toString().toLowerCase().includes(filter) 
     //   );
     // };
     setTimeout(()=>{
@@ -369,9 +345,9 @@ export class ReportSchedulerComponent implements OnInit {
   onVehicleGroupClick(data: any) {   
     const colsList = ['name','vin','licensePlateNumber'];
     const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
-    const tableTitle =`${data.vehicleGroupName} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+    const tableTitle =`${data.scheduledReportVehicleRef[0].vehicleGroupName} - ${this.translationData.lblVehicles || 'Vehicles'}`;
     let objData = {
-      groupId: data.vehicleGroupId,
+      groupId: data.scheduledReportVehicleRef[0].vehicleGroupId,
       groupType: 'G',
       functionEnum: 'A',
       organizationId: data.organizationId    
@@ -402,7 +378,7 @@ export class ReportSchedulerComponent implements OnInit {
       this.updateDatasource(this.schedulerData); //-- load all data
     }
     else if(this.reportTypeSelection == 0 && this.statusSelection != 0){
-      let filterData = this.schedulerData.filter(item => item.state == this.statusSelection);
+      let filterData = this.schedulerData.filter(item => item.status == this.statusSelection);
       if(filterData){
         this.updateDatasource(filterData);
       }
@@ -413,9 +389,9 @@ export class ReportSchedulerComponent implements OnInit {
     else{
       let selectedReportType = this.reportTypeSelection;
       let selectedStatus = this.statusSelection;
-      let reportSchedulerData = this.schedulerData.filter(item => item.reportTypeId === selectedReportType);
+      let reportSchedulerData = this.schedulerData.filter(item => item.reportId === selectedReportType);
       if(selectedStatus != 0){
-        reportSchedulerData = reportSchedulerData.filter(item => item.state === selectedStatus);
+        reportSchedulerData = reportSchedulerData.filter(item => item.status === selectedStatus);
       }
       this.updateDatasource(reportSchedulerData);
     }
@@ -427,7 +403,7 @@ export class ReportSchedulerComponent implements OnInit {
       this.updateDatasource(this.schedulerData); //-- load all data
     }
     else if(this.statusSelection == 0 && this.reportTypeSelection != 0){
-      let filterData = this.schedulerData.filter(item => item.reportTypeId === this.reportTypeSelection);
+      let filterData = this.schedulerData.filter(item => item.reportId === this.reportTypeSelection);
       if(filterData){
         this.updateDatasource(filterData);
       }
@@ -436,7 +412,7 @@ export class ReportSchedulerComponent implements OnInit {
       }
     }
     else if(this.statusSelection != 0 && this.reportTypeSelection == 0){
-      let filterData = this.schedulerData.filter(item => item.state == this.statusSelection);
+      let filterData = this.schedulerData.filter(item => item.status == this.statusSelection);
       if(filterData){
         this.updateDatasource(filterData);
       }
@@ -447,9 +423,9 @@ export class ReportSchedulerComponent implements OnInit {
     else{
       let selectedReportType = this.reportTypeSelection;
       let selectedStatus = this.statusSelection;
-      let reportSchedulerData = this.schedulerData.filter(item => item.reportTypeId === selectedReportType);
+      let reportSchedulerData = this.schedulerData.filter(item => item.reportId === selectedReportType);
       if(selectedStatus != 0){
-        reportSchedulerData = reportSchedulerData.filter(item => item.state === selectedStatus);
+        reportSchedulerData = reportSchedulerData.filter(item => item.status === selectedStatus);
       }
       this.updateDatasource(reportSchedulerData);
     }

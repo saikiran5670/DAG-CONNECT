@@ -23,15 +23,21 @@ export class AlertsFilterComponent implements OnInit {
 
   isDisabledAlerts = true; 
   localData : any; 
-  tempData: any;
-  alertType:any;
-  vehicleGroup:any;
+  tempData: any; 
+ 
   alertTypeEnum:any;
   dataResultTypes:any=[];
   @Output() filterValues : EventEmitter<any> = new EventEmitter();
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
  
+  alertCategory = ''; 
+  alertType = ''; 
+  alertVehicleGroup = '';
+  alertVehicle = ''; 
+  alertCriticality = ''; 
+  alertStatus = '';
+
   localStLanguage: any;
   accountOrganizationId: any;
   roleObj = { 
@@ -56,7 +62,7 @@ export class AlertsFilterComponent implements OnInit {
       menuId: 18 //-- for landmark
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-     this.processTranslation(data);  
+     this.processTranslation(data);     
      this.updatedTableData(this.initData);     
      this.dataSource.filterPredicate = this.createFilter();  
     });
@@ -114,7 +120,7 @@ export class AlertsFilterComponent implements OnInit {
         }
         }else if(filter == "vehicleGroupName"){
           if(event.value == ''){
-            this.vehicleGroup='';
+            this.alertVehicleGroup='';
             event_val = event.value.trim();  
           }
           else{

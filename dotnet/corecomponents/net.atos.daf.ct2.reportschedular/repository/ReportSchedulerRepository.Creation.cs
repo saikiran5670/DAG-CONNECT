@@ -56,12 +56,17 @@ date_trunc('day', NOW() AT TIME ZONE 'UTC') and rs.status = 'A' and r.id = rs.re
                 parameter.Add("@report_schedule_id", reprotSchedulerId);
                 var query = @"with cte_VehicaleList
                             AS (
-                            select distinct ref_id as VehicleId from master.group where id  in (select vehicle_group_id from master.scheduledreportvehicleref where report_schedule_id = @report_schedule_id) and group_type = 'S' and object_type = 'V'
-                            union
                             select distinct ref_id as VehicleId 
-                            from master.groupref
-                            where group_id in (select distinct id from master.group where id in (select vehicle_group_id from master.scheduledreportvehicleref where report_schedule_id = @report_schedule_id) and group_type = 'G' and object_type = 'V')
-                            )
+						    from master.group g 
+								inner join master.scheduledreportvehicleref srvr 
+								on srvr.report_schedule_id =@report_schedule_id and srvr.vehicle_group_id = g.id and g.group_type = 'S' and g.object_type = 'V'
+                            union
+                            select distinct gr.ref_id as VehicleId 
+						    from master.group g 
+								inner join master.scheduledreportvehicleref srvr 
+								on srvr.report_schedule_id =@report_schedule_id  and srvr.vehicle_group_id = g.id and g.group_type = 'G' and g.object_type = 'V'
+								inner join master.groupref gr
+								on gr.group_id = g.id)
                             select distinct v.id as Id ,v.vin as VIN ,v.name as VehicleName,v.license_plate_number as RegistrationNo
                             from cte_VehicaleList vl
                                  inner join master.vehicle v on v.id = vl.VehicleId";
@@ -81,7 +86,10 @@ date_trunc('day', NOW() AT TIME ZONE 'UTC') and rs.status = 'A' and r.id = rs.re
                 parameter.Add("@report_schedule_id", reprotSchedulerId);
                 var query = @"with cte_VehicaleList
                             AS (
-                            select distinct ref_id as VehicleId from master.group where id  in (select vehicle_group_id from master.scheduledreportvehicleref where report_schedule_id = @report_schedule_id) and group_type = 'S' and object_type = 'V'
+                            select distinct ref_id as VehicleId 
+						    from master.group g 
+								inner join master.scheduledreportvehicleref srvr 
+								on srvr.report_schedule_id =@report_schedule_id and srvr.vehicle_group_id = g.id and g.group_type = 'S' and g.object_type = 'V'                            
                             )
                             select distinct v.id as Id ,v.vin as VIN ,v.name as VehicleName,v.license_plate_number as RegistrationNo
                             from cte_VehicaleList vl
@@ -126,6 +134,19 @@ date_trunc('day', NOW() AT TIME ZONE 'UTC') and rs.status = 'A' and r.id = rs.re
             {
                 var query = @"select id as Id, key as Key from master.timeformat";
                 return _dataAccess.QueryAsync<UserTimeFormat>(query);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public Task<IEnumerable<UnitName>> GetUnitName()
+        {
+            try
+            {
+                var query = @"select id as Id, key as Key from master.unit";
+                return _dataAccess.QueryAsync<UnitName>(query);
             }
             catch (Exception)
             {

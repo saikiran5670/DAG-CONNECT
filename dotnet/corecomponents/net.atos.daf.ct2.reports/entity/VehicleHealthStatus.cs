@@ -2,38 +2,22 @@
 
 namespace net.atos.daf.ct2.reports.entity
 {
-    public class Summary
+    public class VehicleSummary
     {
         public string VIN { get; set; }
         public string VehicleName { get; set; }
         public string VehicleRegNo { get; set; }
-        public string DrivingStatus { get; set; }
+        public string VehicleDrivingStatusKey { get; set; }
+        public string VehicleDrivingStatusEnum { get; set; }
         public int Alert { get; set; }
         public string Address { get; set; }
-        public string From { get; set; }
-        public string To { get; set; }
+        public long? FromDate { get; set; }
+        public long? ToDate { get; set; }
         public string WarningType { get; set; }
-        public long LastLatitude { get; set; }
-        public string LastLongitude { get; set; }
-
+        public double LastLatitude { get; set; }
+        public double LastLongitude { get; set; }
     }
-
-    public class CurrentWarning
-    {
-        public string Name { get; set; }
-        public string ActivatedTime { get; set; }
-        public string DriverName { get; set; }
-        public string Advice { get; set; }
-        public string DeactivatedTime { get; set; }
-    }
-
-    public class Current
-    {
-        public Summary Summary { get; set; }
-        public List<CurrentWarning> CurrentWarning { get; set; }
-    }
-
-    public class WarningHistory
+    public class VehicleHealthWarning
     {
         public string Name { get; set; }
         public string ActivatedTime { get; set; }
@@ -41,20 +25,14 @@ namespace net.atos.daf.ct2.reports.entity
         public string DriverName { get; set; }
         public string Advice { get; set; }
         public string VehicleName { get; set; }
-        public long Latitude { get; set; }
-        public string Longitude { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
-
-    public class Hitory
-    {
-        public Summary Summary { get; set; }
-        public List<WarningHistory> WarningHistory { get; set; }
-    }
-
     public class VehicleHealthStatus
     {
-        public Current Current { get; set; }
-        public Hitory Hitory { get; set; }
+        public List<VehicleHealthWarning> CurrentWarning { get; set; }
+        public List<VehicleHealthWarning> HistoryWarning { get; set; }
+        public VehicleSummary VehicleSummary { get; set; }
     }
 
 

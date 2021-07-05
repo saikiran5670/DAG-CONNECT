@@ -35,7 +35,8 @@ export class ReportService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.reportServiceUrl}/getvinsfromtripstatisticsandvehicledetails?accountId=${accountId}&organizationId=${orgId}`, headers)
+    // .get<any[]>(`${this.reportServiceUrl}/getvinsfromtripstatisticsandvehicledetails?accountId=${accountId}&organizationId=${orgId}`, headers)
+      .get<any[]>(`${this.reportServiceUrl}/trip/getparameters?accountId=${accountId}&organizationId=${orgId}`, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -125,6 +126,18 @@ export class ReportService {
     return this.httpClient
       .post<any[]>(
         `${this.reportServiceUrl}/fleetutilization/getdetails`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getEcoScoreDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/ecoscore/getdetailsbyalldriver`, data, headers
       )
       .pipe(catchError(this.handleError));
   }

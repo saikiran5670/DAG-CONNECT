@@ -29,7 +29,7 @@
                 <mat-select [(ngModel)]="reportTypeSelection" (selectionChange)="onReportTypeChange($event)" placeholder="{{ translationData.lblSelectReportType || 'Select Report Type' }}">
                 <mat-option value="0">--All--</mat-option>
                 <mat-option *ngFor="let rer of ReportTypeList" [value]="rer.id">
-                    {{ rer.name }}
+                    {{ rer.reportName }}
                 </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -72,25 +72,30 @@
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.reportName}}</span> 
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="vehicleGroupName">
+            <ng-container matColumnDef="scheduledReportVehicleRef">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group/Vehicle' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">
+                <mat-cell *matCellDef="let row" matTooltip="{{ row.vehicleGroupAndVehicleList }}">
                   <!-- <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
                   (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
                   {{ row.vehicleGroupName }}</span>
                 </span> -->
-                  <span *ngIf="row.vehicleGroupName!=''">
-                  <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
-                  (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
-                  {{ row.vehicleGroupName }}</span>
+                  <span *ngIf="row.scheduledReportVehicleRef.length ==1 && row.scheduledReportVehicleRef[0].vehicleGroupType == 'G'">
+                  <span [ngClass]="row.scheduledReportVehicleRef[0].vehicleGroupName != '' ? 'row-hover' : ''"
+                  (click)="row.scheduledReportVehicleRef[0].vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
+                  {{ row.scheduledReportVehicleRef[0].vehicleGroupName }}</span>
                   </span>              
-                  <span *ngIf="row.vehicleName!=''">{{ row.vehicleName }}</span>
+                  <span *ngIf="row.scheduledReportVehicleRef.length ==1 && row.scheduledReportVehicleRef[0].vehicleGroupType == 'S'">{{ row.scheduledReportVehicleRef[0].vehicleName }}</span>
+                  <span *ngIf="row.scheduledReportVehicleRef.length != 1" class="text-truncate">{{ row.scheduledReportVehicleRef.length > 0 ? row.vehicleGroupAndVehicleList : '&nbsp; &nbsp; -' }}</span>
                 </mat-cell>
              </ng-container> 
-             <ng-container matColumnDef="frequency">
+             <ng-container matColumnDef="frequencyType">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFrequency || 'Frequency' }}</mat-header-cell>
               <mat-cell *matCellDef="let row">
-                {{ row.frequency }}
+                <span *ngIf="row.frequencyType=='D'">Daily</span>
+                <span *ngIf="row.frequencyType=='W'">Weekly</span>
+                <span *ngIf="row.frequencyType=='B'">Biweekly</span>
+                <span *ngIf="row.frequencyType=='M'">Monthly</span>
+                <span *ngIf="row.frequencyType=='Q'">Quarterly</span>
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="scheduledReportRecipient">
@@ -154,7 +159,7 @@
       </mat-card>
   </div>
   <div *ngIf='createViewEditStatus'>
-      <app-create-edit-view-report-scheduler [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"
+      <app-create-edit-view-report-scheduler [reportSchedulerParameterData]="reportSchedulerParameterData" [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"
         (backToPage)='onBackToPage($event)'></app-create-edit-view-report-scheduler>
   </div>
 </div>
