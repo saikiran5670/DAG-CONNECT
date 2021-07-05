@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.reports.entity.fleetFuel;
 
 namespace net.atos.daf.ct2.reports.repository
 {
@@ -45,12 +46,18 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<AverageTrafficClassification>> GetAverageTrafficClassificationData();
         Task<List<FleetFuelDetails>> GetFleetFuelDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
         Task<List<FleetFuelDetails>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters);
+        Task<List<FleetFuel_VehicleGraph>> GetFleetFuelDetailsForVehicleGraphs(FleetFuelFilter fleetFuelFilters);
+        Task<List<FleetFuelTripDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
         #endregion
         Task<List<FilterProperty>> GetAlertLevelList();
         Task<List<FilterProperty>> GetHealthStatusList();
         Task<List<FilterProperty>> GetOtherFilter();
         #region FleetOverviewDetails
-        Task<IEnumerable<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter);
+        Task<List<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter);
         #endregion
+        Task<bool> GetKPIInfo(EcoScoreDataServiceRequest request);
+        Task<bool> GetChartInfo(EcoScoreDataServiceRequest request);
+        Task<List<DriverFilter>> GetDriverList(List<string> vins);
+
     }
 }

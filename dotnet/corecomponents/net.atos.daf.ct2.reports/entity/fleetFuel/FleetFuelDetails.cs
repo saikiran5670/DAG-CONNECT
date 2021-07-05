@@ -9,27 +9,27 @@ namespace net.atos.daf.ct2.reports.entity
         public string VehicleName { get; set; }
         public string VIN { get; set; }
         public string VehicleRegistrationNo { get; set; }
-        public string Distance { get; set; }
-        public string AverageDistancePerDay { get; set; }
-        public string AverageSpeed { get; set; }
-        public string MaxSpeed { get; set; }
-        public string NumberOfTrips { get; set; }
-        public string AverageGrossWeightComb { get; set; }
-        public string FuelConsumed { get; set; }
-        public string FuelConsumption { get; set; }
-        public string CO2Emission { get; set; }
-        public string IdleDuration { get; set; }
-        public string PTODuration { get; set; }
-        public string HarshBrakeDuration { get; set; }
-        public string HeavyThrottleDuration { get; set; }
-        public string CruiseControlDistance30_50 { get; set; }
-        public string CruiseControlDistance50_75 { get; set; }
-        public string CruiseControlDistance75 { get; set; }
-        public string AverageTrafficClassification { get; set; }
-        public string CCFuelConsumption { get; set; }
-        public string FuelconsumptionCCnonactive { get; set; }
-        public string IdlingConsumption { get; set; }
-        public string DPAScore { get; set; }
+        public long Distance { get; set; }
+        public long AverageDistancePerDay { get; set; }
+        public double AverageSpeed { get; set; }
+        public int MaxSpeed { get; set; }
+        public int NumberOfTrips { get; set; }
+        public double AverageGrossWeightComb { get; set; }
+        public double FuelConsumed { get; set; }
+        public double FuelConsumption { get; set; }
+        public double CO2Emission { get; set; }
+        public double IdleDuration { get; set; }
+        public double PTODuration { get; set; }
+        public double HarshBrakeDuration { get; set; }
+        public double HeavyThrottleDuration { get; set; }
+        public double CruiseControlDistance30_50 { get; set; }
+        public double CruiseControlDistance50_75 { get; set; }
+        public double CruiseControlDistance75 { get; set; }
+        public double AverageTrafficClassification { get; set; }
+        public double CCFuelConsumption { get; set; }
+        public double FuelconsumptionCCnonactive { get; set; }
+        public int IdlingConsumption { get; set; }
+        public double DPAScore { get; set; }
         public string DPAAnticipationScore { get; set; }
         public string DPABrakingScore { get; set; }
         public string IdlingPTOScore { get; set; }

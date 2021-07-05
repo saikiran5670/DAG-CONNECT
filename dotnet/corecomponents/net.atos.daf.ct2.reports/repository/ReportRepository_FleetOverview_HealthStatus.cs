@@ -34,9 +34,15 @@ namespace net.atos.daf.ct2.reports.repository
                                     v.name as VehicleName,
                                     cts.vehicle_driving_status_type as VehicleDrivingStatusEnum,
                                     cts.latest_received_position_lattitude as LastLatitude,
-                                    cts.latest_received_position_longitude as LastLongitude
+                                    cts.latest_received_position_longitude as LastLongitude,
+                                    latgeoadd.Address as Address
                                     FROM livefleet.livefleet_current_trip_statistics cts
-                                    left join master.vehicle V on cts.vin = v.vin where v.vin =@vin";
+                                    left join master.vehicle V on cts.vin = v.vin
+                                    left join master.geolocationaddress latgeoadd
+                                    on TRUNC(CAST(cts.latest_received_position_lattitude as numeric),4)= TRUNC(CAST(latgeoadd.latitude as numeric),4) 
+                                    and TRUNC(CAST(cts.latest_received_position_longitude as numeric),4) = TRUNC(CAST(latgeoadd.longitude as numeric),4)
+                                    where v.vin =@vin"
+;
             var healthStatusSummary = await _dataMartdataAccess.QueryFirstOrDefaultAsync<VehicleSummary>(query, parameter);
             healthStatusSummary.Alert = 0;
             healthStatusSummary.VehicleDrivingStatusKey = await GetVehicleRunningStatus(healthStatusSummary.VehicleDrivingStatusEnum);

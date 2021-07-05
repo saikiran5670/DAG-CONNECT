@@ -6,7 +6,7 @@ namespace net.atos.daf.ct2.reports.entity
 {
     public class MapperRepo
     {
-        public IEnumerable<FleetOverviewDetails> GetFleetOverviewDetails(IEnumerable<FleetOverviewResult> fleetOverviewResult)
+        public List<FleetOverviewDetails> GetFleetOverviewDetails(IEnumerable<FleetOverviewResult> fleetOverviewResult)
         {
             List<FleetOverviewDetails> fleetOverviewDetailsList = new List<FleetOverviewDetails>();
 
