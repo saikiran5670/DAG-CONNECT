@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reports.ENUM;
 
@@ -238,8 +239,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                         Target = item.TargetValue
                     };
 
-                    /// Score needs to be updated by getting the result from GetEcoScoreCompareReportAttributeValues()
-                    preference.Score.AddRange(new List<EcoScoreReportAttribute>());
+                    preference.Score.AddRange(GetEcoScoreCompareReportAttributeValues(item.DBColumnName, compareResult));
                     preference.SubCompareDrivers.AddRange(FillRecursiveEcoScoreCompareReport(flatObjects, item.SubDataAttributes, compareResult));
 
                     recursiveObjects.Add(preference);
@@ -251,33 +251,16 @@ namespace net.atos.daf.ct2.reportservice.entity
         private static List<EcoScoreReportAttribute> GetEcoScoreCompareReportAttributeValues(string attributeName, IEnumerable<reports.entity.EcoScoreReportCompareDrivers> compareResult)
         {
             var lstAttributes = new List<EcoScoreReportAttribute>();
-            var obj = new EcoScoreReportAttribute();
-            var lst = new List<reports.entity.EcoScoreReportCompareDrivers>();
-            switch ((ReportAttribute)Enum.Parse(typeof(ReportAttribute), attributeName))
+            EcoScoreReportAttribute obj;
+            foreach (var item in compareResult)
             {
-                case ReportAttribute.EcoScore:
-                    foreach (var item in compareResult.Select(x => new { x.DriverId, x.EcoScore }).OrderBy(x => x.DriverId).ToList())
-                    {
-                        obj.DriverId = item.DriverId;
-                        obj.Value = item.EcoScore;
-                        obj.Color = string.Empty;
-                        lstAttributes.Add(obj);
-                    }
-                    break;
-
-                case ReportAttribute.FuelConsumption:
-                    foreach (var item in compareResult.Select(x => new { x.DriverId, x.FuelConsumption }).OrderBy(x => x.DriverId).ToList())
-                    {
-                        obj.DriverId = item.DriverId;
-                        obj.Value = item.FuelConsumption;
-                        obj.Color = string.Empty;
-                        lstAttributes.Add(obj);
-                    }
-                    break;
-
-                default:
-                    break;
+                obj = new EcoScoreReportAttribute();
+                obj.DriverId = item.DriverId;
+                obj.Color = string.Empty;
+                obj.Value = Convert.ToDouble(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(x)));
+                lstAttributes.Add(obj);
             }
+
             return lstAttributes;
         }
 
