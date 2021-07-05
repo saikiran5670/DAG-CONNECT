@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reports.repository;
 using System.Linq;
+using net.atos.daf.ct2.reports.entity.fleetFuel;
 
 namespace net.atos.daf.ct2.reports
 {
@@ -357,6 +358,11 @@ namespace net.atos.daf.ct2.reports
             return lstFleetFuelDetails;
         }
 
+        public async Task<List<FleetFuelTripDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters)
+        {
+            List<FleetFuelTripDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByVehicle(fleetFuelFilters);
+            return lstFleetFuelTripDetails;
+        }
         #endregion
 
         #region Eco-Score Data service

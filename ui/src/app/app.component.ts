@@ -97,7 +97,7 @@ export class AppComponent {
     shop: 'Shop',
     information: 'Information',
     legalnotices: 'Legal Notices',
-    termsAndconditionhistory: 'Terms & Conditions History',
+    termsAndconditionhistory: 'Terms And Conditions History',
     dtctranslation: 'DTC Translation'
   }
 
@@ -219,7 +219,7 @@ export class AppComponent {
       icon: "notes",
       externalLink: false,
       pageTitles: {
-        termsAndconditionhistory: 'Terms & Conditions History'
+        termsAndconditionhistory: 'Terms And Conditions History'
       }
     }
   }
@@ -575,7 +575,7 @@ export class AppComponent {
       lblShop: 'Shop',
       lblInformation: 'Information',
       lblLegalNotices: 'Legal Notices',
-      lblTermsAndConditionHistory: 'Terms & Conditions History',
+      lblTermsAndConditionHistory: 'Terms And Conditions History',
       lblDTCTranslation: "DTC Translation"
     }
   }

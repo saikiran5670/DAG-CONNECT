@@ -19,14 +19,25 @@ namespace net.atos.daf.ct2.reports.entity
     }
     public class VehicleHealthWarning
     {
+        public string Vin { get; set; }
         public string Name { get; set; }
         public string ActivatedTime { get; set; }
         public string DeactivatedTime { get; set; }
-        public string DriverName { get; set; }
+        public string DriverFirstName { get; set; }
+        public string DriverLastName { get; set; }
+        public string DriverId { get; set; }
         public string Advice { get; set; }
         public string VehicleName { get; set; }
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+        public double WarningLat { get; set; }
+        public double WarningLng { get; set; }
+        public long? WarningTimestamp { get; set; }
+        public string VehicleDrivingStatusEnum { get; set; }
+        public string VehicleHealthStatusEnum { get; set; }
+        public string WarningTypeEnum { get; set; }
+        public string Driver1Id { get; set; }
+        public long? LastestProcessedMessageTimestamp { get; set; }
+        public int WarningClass { get; set; }
+        public int WarningNumber { get; set; }
     }
     public class VehicleHealthStatus
     {
