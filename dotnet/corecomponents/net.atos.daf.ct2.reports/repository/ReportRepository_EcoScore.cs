@@ -520,7 +520,7 @@ namespace net.atos.daf.ct2.reports.repository
                                  kpi.limit_val as minvalue, kpi.target_val as targetvalue
                                  FROM master.ecoscoreprofile eco
                                  JOIN master.ecoscoreprofilekpi kpi
-                                 	ON eco.id=kpi.profile_id
+                                 	ON eco.id=kpi.ecoscore_profile_id
                                  JOIN master.ecoscorekpi kpimst
                                  	ON kpimst.id = kpi.ecoscore_kpi_id
                                  WHERE eco.id = @TargetProfileId
