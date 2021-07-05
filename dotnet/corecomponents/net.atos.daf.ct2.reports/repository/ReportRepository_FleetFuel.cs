@@ -288,7 +288,7 @@ namespace net.atos.daf.ct2.reports.repository
                         select
                         '' as VIN,
                         startdate,
-						extract(epoch from startdate) * 1000 as Calenderdate,
+						extract(epoch from startdate) * 1000 as Date,
                        	totalworkingdays,
 						vehiclecount,
                         tripcount as NumberofTrips,
