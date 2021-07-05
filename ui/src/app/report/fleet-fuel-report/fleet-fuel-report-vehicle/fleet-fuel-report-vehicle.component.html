@@ -132,8 +132,9 @@
                 <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblFrom || 'From' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.fromDate }}</span>                  </span>
-                </div>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.fromDate }}</span>
+                  </span>
+                  </div>
                 <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblTo || 'To' }}: </span>
@@ -197,99 +198,160 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-          <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
-            <div class="chart-wrapper">
+            <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
+              <div *ngIf="ConsumedChartType =='Line'" class="chart-wrapper">
+                <canvas baseChart 
+                    [datasets]="lineChartData1" 
+                    [labels]="lineChartLabels" 
+                    [options]="lineChartOptions"
+                    [colors]="lineChartColors" 
+                    [legend]="lineChartLegend" 
+                    [chartType]="lineChartType" 
+                    [plugins]="lineChartPlugins">
+                </canvas>
+            </div>
+            <div *ngIf="ConsumedChartType =='Bar'" class="chart-wrapper">
               <canvas baseChart 
-              [datasets]="lineChartData"
-              [labels]="lineChartLabels"
-              [options]="lineChartOptions"
-              [colors]= "lineChartColors"
-              [plugins]="lineChartPlugins"
-              [legend]="lineChartLegend"
-              [chartType]="lineChartType">
+              [datasets]="barChartData1"
+              [labels]="barChartLabels"
+              [options]="barChartOptions"
+              [plugins]="barChartPlugins"
+              [legend]="barChartLegend"
+              [chartType]="barChartType">
             </canvas>
           </div>
-        </div>
-        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblNumberofTrips || 'Number of Trips' }}</span>
-          <div class="chart-wrapper">
+          </div>
+          <div  class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
+            <div *ngIf="TripsChartType =='Bar'" class="chart-wrapper">
+              <canvas baseChart 
+              [datasets]="barChartData2"
+              [labels]="barChartLabels"
+              [options]="barChartOptions"
+              [plugins]="barChartPlugins"
+              [legend]="barChartLegend"
+              [chartType]="barChartType">
+            </canvas>
+          </div>
+          <div *ngIf="TripsChartType =='Line'" class="chart-wrapper">
             <canvas baseChart 
-            [datasets]="barChartData"
-            [labels]="barChartLabels"
-            [options]="barChartOptions"
-            [plugins]="barChartPlugins"
-            [legend]="barChartLegend"
-            [chartType]="barChartType">
+                [datasets]="lineChartData2" 
+                [labels]="lineChartLabels" 
+                [options]="lineChartOptions"
+                [colors]="lineChartColors" 
+                [legend]="lineChartLegend" 
+                [chartType]="lineChartType" 
+                [plugins]="lineChartPlugins">
             </canvas>
         </div>
-      </div>
-
-      </div>
-      <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</span>
-          <div class="chart-wrapper">
-            <canvas baseChart 
-            [datasets]="lineChartData" 
-            [labels]="lineChartLabels" 
-            [options]="lineChartOptions"
-            [colors]="lineChartColors" 
-            [legend]="lineChartLegend" 
-            [chartType]="lineChartType" 
-            [plugins]="lineChartPlugins">
-          </canvas>
-        </div>
-        </div>
-        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistance || 'Distance' }}</span>
-          <div class="chart-wrapper">
-            <canvas baseChart 
-            [datasets]="lineChartData" 
-            [labels]="lineChartLabels" 
-            [options]="lineChartOptions"
-            [colors]="lineChartColors" 
-            [legend]="lineChartLegend" 
-            [chartType]="lineChartType" 
-            [plugins]="lineChartPlugins">
-          </canvas>
-        </div>
         </div>
       </div>
 
       <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
-          <div class="chart-wrapper">
-            <canvas baseChart 
-            [datasets]="lineChartData" 
-            [labels]="lineChartLabels" 
-            [options]="lineChartOptions"
-            [colors]="lineChartColors" 
-            [legend]="lineChartLegend" 
-            [chartType]="lineChartType" 
-            [plugins]="lineChartPlugins">
-          </canvas>
-        </div>
-        </div>
         <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
-          <div  class="chart-wrapper">
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblCo2Emission || 'Co2Emission' }}</span>
+          <div *ngIf="Co2ChartType =='Line'" class="chart-wrapper">
             <canvas baseChart 
-            [datasets]="lineChartData" 
+                [datasets]="lineChartData3" 
+                [labels]="lineChartLabels" 
+                [options]="lineChartOptions"
+                [colors]="lineChartColors" 
+                [legend]="lineChartLegend" 
+                [chartType]="lineChartType" 
+                [plugins]="lineChartPlugins">
+            </canvas>
+        </div>
+        <div *ngIf="Co2ChartType =='Bar'" class="chart-wrapper">
+          <canvas baseChart 
+          [datasets]="barChartData3"
+          [labels]="barChartLabels"
+          [options]="barChartOptions"
+          [plugins]="barChartPlugins"
+          [legend]="barChartLegend"
+          [chartType]="barChartType">
+        </canvas>
+      </div>
+      </div>
+      <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblDistance || 'Distance' }}</span>
+        <div *ngIf="DistanceChartType =='Line'" class="chart-wrapper">
+          <canvas baseChart 
+          [datasets]="lineChartData4" 
+          [labels]="lineChartLabels" 
+          [options]="lineChartOptions"
+          [colors]="lineChartColors" 
+          [legend]="lineChartLegend" 
+          [chartType]="lineChartType" 
+          [plugins]="lineChartPlugins">
+        </canvas>
+      </div>
+      <div *ngIf="DistanceChartType =='Bar'" class="chart-wrapper">
+        <canvas baseChart 
+        [datasets]="barChartData4"
+        [labels]="barChartLabels"
+        [options]="barChartOptions"
+        [plugins]="barChartPlugins"
+        [legend]="barChartLegend"
+        [chartType]="barChartType">
+      </canvas>
+    </div>
+    </div>
+  </div>
+
+  <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+    <div  class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px;'>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
+      <div *ngIf="ConsumptionChartType =='Line'" class="chart-wrapper">
+        <canvas baseChart 
+            [datasets]="lineChartData5" 
             [labels]="lineChartLabels" 
             [options]="lineChartOptions"
             [colors]="lineChartColors" 
             [legend]="lineChartLegend" 
             [chartType]="lineChartType" 
             [plugins]="lineChartPlugins">
-          </canvas>
-        </div>
-        </div>
-      </div>
-      </mat-expansion-panel>
-      </mat-card>
+        </canvas>
+    </div>
+    <div *ngIf="ConsumptionChartType =='Bar'" class="chart-wrapper">
+      <canvas baseChart 
+      [datasets]="barChartData5"
+      [labels]="barChartLabels"
+      [options]="barChartOptions"
+      [plugins]="barChartPlugins"
+      [legend]="barChartLegend"
+      [chartType]="barChartType">
+    </canvas>
+  </div>
+  </div>
+  <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
+    <div *ngIf="DurationChartType =='Line'" class="chart-wrapper">
+      <canvas baseChart 
+      [datasets]="lineChartData6" 
+      [labels]="lineChartLabels" 
+      [options]="lineChartOptions"
+      [colors]="lineChartColors" 
+      [legend]="lineChartLegend" 
+      [chartType]="lineChartType" 
+      [plugins]="lineChartPlugins">
+    </canvas>
+  </div>
+  <div *ngIf="DurationChartType =='Bar'" class="chart-wrapper">
+    <canvas baseChart 
+    [datasets]="barChartData6"
+    [labels]="barChartLabels"
+    [options]="barChartOptions"
+    [plugins]="barChartPlugins"
+    [legend]="barChartLegend"
+    [chartType]="barChartType">
+  </canvas>
+</div>
+</div>
+</div>
 
+    </mat-expansion-panel>
+  </mat-card>     
 
            <!-- Fleet Table -->
 <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>

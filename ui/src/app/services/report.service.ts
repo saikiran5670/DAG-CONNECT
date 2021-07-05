@@ -162,4 +162,16 @@ export class ReportService {
       );
   }
 
+  getGraphDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/fleetfuel/getdetails/vehiclegraph`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
 }
