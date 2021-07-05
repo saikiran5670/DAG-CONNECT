@@ -322,11 +322,19 @@ export class ReportMapService {
         this.hereMap.addObject(this.group);
         this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
       }
-      this.setMarkerCluster(_selectedRoutes, _ui, this.hereMap); // cluster route marker
+      this.makeCluster(_selectedRoutes, _ui);
     }else{
       if(_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)){
         this.hereMap.addObject(this.group);
       }
+    }
+   }
+
+   makeCluster(_selectedRoutes: any, _ui: any){
+    if(_selectedRoutes.length > 9){
+      this.setInitialCluster(_selectedRoutes, _ui); 
+    }else{
+      this.afterPlusClick(_selectedRoutes, _ui);
     }
    }
 
@@ -414,7 +422,7 @@ export class ReportMapService {
     return outerArray;
   }
 
-  setMarkerCluster(data: any, ui: any, hereMap: any){
+  setInitialCluster(data: any, ui: any){
     let dataPoints = data.map((item) => {
       return new H.clustering.DataPoint(item.startPositionLattitude, item.startPositionLongitude);
     });
@@ -438,7 +446,180 @@ export class ReportMapService {
         // Maximum radius of the neighbourhood
         eps: 32,
         // minimum weight of points required to form a cluster
-        minWeight: 4
+        minWeight: 10
+      },
+      theme: {
+        getClusterPresentation: (markerCluster: any) => {
+  
+          // Use cluster weight to change icon size:
+          var svgString = clusterSvgTemplate.replace('{radius}', markerCluster.getWeight());
+          if(data && data.length > 9){
+            svgString = svgString.replace('{text}', '+');
+          }else{
+            svgString = svgString.replace('{text}', markerCluster.getWeight());
+          }
+  
+          var w, h;
+          var weight = markerCluster.getWeight();
+  
+          //Set cluster size depending on the weight
+          if (weight <= 6)
+          {
+            w = 35;
+            h = 35;
+          }
+          else if (weight <= 12) {
+            w = 50;
+            h = 50;
+          }
+          else {
+            w = 75;
+            h = 75;
+          }
+  
+          var clusterIcon = new H.map.Icon(svgString, {
+            size: { w: w, h: h },
+            anchor: { x: (w/2), y: (h/2) }
+          });
+  
+          // Create a marker for clusters:
+          var clusterMarker = new H.map.Marker(markerCluster.getPosition(), {
+            icon: clusterIcon,
+            // Set min/max zoom with values from the cluster, otherwise
+            // clusters will be shown at all zoom levels:
+            min: markerCluster.getMinZoom(),
+            max: markerCluster.getMaxZoom()
+          });
+  
+          // Bind cluster data to the marker:
+          clusterMarker.setData(markerCluster);
+          //clusterMarker.setZIndex(10);
+          //let infoBubble: any
+          // clusterMarker.addEventListener("tap",  (event) => {
+  
+          //   var point = event.target.getGeometry(),
+          //     screenPosition = this.hereMap.geoToScreen(point),
+          //     t = event.target,
+          //     data = t.getData(),
+          //     tooltipContent = "<table border='1'><thead><th>Action</th><th>Latitude</th><th>Longitude</th></thead><tbody>"; 
+          //     var chkBxId = 0;
+          //   data.forEachEntry(
+          //     (p) => 
+          //     { 
+          //       tooltipContent += "<tr>";
+          //       tooltipContent += "<td><input type='checkbox' id='"+ chkBxId +"' onclick='infoBubbleCheckBoxClick("+ chkBxId +","+ p.getPosition().lat +", "+ p.getPosition().lng +")'></td>" + "<td>" + p.getPosition().lat + "</td><td>" + p.getPosition().lng + "</td>";
+          //       tooltipContent += "</tr>";
+          //       chkBxId++;
+          //       //alert(chkBxId);
+          //     }
+          //   ); 
+          //   tooltipContent += "</tbody></table>";
+            
+          //   // function infoBubbleCheckBoxClick(chkBxId, latitude, longitude){
+          //   //   // Get the checkbox
+          //   //   let checkBox: any = document.getElementById(chkBxId);
+          //   //   if (checkBox.checked == true){
+          //   //     alert("Latitude:" + latitude + " Longitude:" + longitude + " Enabled")
+          //   //   } else {
+          //   //     alert("Latitude:" + latitude + " Longitude:" + longitude + " Disabled")
+          //   //   }
+          //   // }
+
+          //   infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
+          //   ui.addBubble(infoBubble);
+          // });
+          
+          
+          // clusterMarker.addEventListener("pointerleave", (event) => { 
+          //   if(infoBubble)
+          //   {
+          //     ui.removeBubble(infoBubble);
+          //     infoBubble = null;
+          //   }
+          // });				
+  
+          return clusterMarker;
+        },
+        getNoisePresentation: (noisePoint) => {
+          //let infoBubble: any;
+  
+          // Create a marker for noise points:
+          var noiseMarker = new H.map.Marker(noisePoint.getPosition(), {
+            icon: noiseIcon,
+  
+            // Use min zoom from a noise point to show it correctly at certain
+            // zoom levels:
+            min: noisePoint.getMinZoom(),
+            max: 20
+          });
+  
+          // Bind cluster data to the marker:
+          noiseMarker.setData(noisePoint);
+  
+          // noiseMarker.addEventListener("tap", (event) => { 
+            
+          //   var point = event.target.getGeometry();
+          //   var tooltipContent = ["Latitude: ", point.lat, ", Longitude: ", point.lng].join("");
+  
+          //   var screenPosition = this.hereMap.geoToScreen(point);
+  
+          //   infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
+          //   ui.addBubble(infoBubble);
+          
+          // });
+          
+          // noiseMarker.addEventListener("pointerleave", (event) => { 
+          //   if(infoBubble)
+          //   {
+          //     ui.removeBubble(infoBubble);
+          //     infoBubble = null;
+          //   }
+          // });
+          
+  
+          return noiseMarker;
+        }
+      }
+    });
+  
+    // // Create a layer tha will consume objects from our clustering provider
+    this.clusteringLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
+  
+    // // To make objects from clustering provder visible,
+    // // we need to add our layer to the map
+    this.hereMap.addLayer(this.clusteringLayer, 100); // set z-index to cluster
+    clusteredDataProvider.addEventListener('tap', (event) => {
+      // Log data bound to the marker that has been tapped:
+      //console.log(event.target.getData(), data)
+      this.afterPlusClick(data, ui);
+    });
+  }
+
+  setMarkerCluster(data: any, ui: any){
+    let dataPoints = data.map((item) => {
+      return new H.clustering.DataPoint(item.startPositionLattitude, item.startPositionLongitude);
+    });
+    var noiseSvg =
+    '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px">' +
+    '<circle cx="20px" cy="20px" r="20" fill="red" />' +
+    '<text x="20" y="35" font-size="30pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="white" textContent="!">!</text></svg>';
+  
+    var noiseIcon = new H.map.Icon(noiseSvg, {
+      size: { w: 22, h: 22 },
+      anchor: { x: 11, y: 11 }
+    });
+    
+    var clusterSvgTemplate =
+    '<svg xmlns="http://www.w3.org/2000/svg" height="50px" width="50px"><circle cx="25px" cy="25px" r="20" fill="red" stroke-opacity="0.5" />' +
+    '<text x="24" y="32" font-size="14pt" font-family="arial" font-weight="bold" text-anchor="middle" fill="white">{text}</text>' +
+    '</svg>';
+    // // Create a clustering provider with custom options for clusterizing the input
+    let clusteredDataProvider = new H.clustering.Provider(dataPoints, {
+      clusteringOptions: {
+        // Maximum radius of the neighbourhood
+        eps: 32,
+        // minimum weight of points required to form a cluster
+        minWeight: 2
       },
       theme: {
         getClusterPresentation: (markerCluster: any) => {
@@ -481,22 +662,24 @@ export class ReportMapService {
   
           // Bind cluster data to the marker:
           clusterMarker.setData(markerCluster);
+          // this.hereMap.getViewModel().setLookAtData({bounds: clusterMarker.getBoundingBox()});
+          //clusterMarker.setZIndex(10);
           let infoBubble: any
-          clusterMarker.addEventListener("tap",  (event) => {
+           clusterMarker.addEventListener("tap",  (event) => {
   
             var point = event.target.getGeometry(),
-              screenPosition = hereMap.geoToScreen(point),
+              screenPosition = this.hereMap.geoToScreen(point),
               t = event.target,
-              data = t.getData(),
-              tooltipContent = "<table border='1'><thead><th>Action</th><th>Latitude</th><th>Longitude</th></thead><tbody>"; 
+              _data = t.getData(),
+              tooltipContent = "<table border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>"; 
               var chkBxId = 0;
-            data.forEachEntry(
+              _data.forEachEntry(
               (p) => 
               { 
                 tooltipContent += "<tr>";
-                tooltipContent += "<td><input type='checkbox' id='"+ chkBxId +"' onclick='infoBubbleCheckBoxClick("+ chkBxId +","+ p.getPosition().lat +", "+ p.getPosition().lng +")'></td>" + "<td>" + p.getPosition().lat + "</td><td>" + p.getPosition().lng + "</td>";
+                tooltipContent += "<td><input type='checkbox' class='checkbox' id='"+ chkBxId +"'></td>"+ "<td>"+ (chkBxId+1) +"</td>" + "<td>" + data[chkBxId].convertedStartTime + "</td><td>" + data[chkBxId].convertedEndTime + "</td>";
                 tooltipContent += "</tr>";
-                chkBxId++;
+               chkBxId++;
                 //alert(chkBxId);
               }
             ); 
@@ -512,8 +695,15 @@ export class ReportMapService {
             //   }
             // }
 
-            infoBubble = new H.ui.InfoBubble(hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
+            infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
             ui.addBubble(infoBubble);
+            document.querySelectorAll('.checkbox').forEach(item => {
+              item.addEventListener('click', event => {
+                //handle click
+                this.infoBubbleCheckBoxClick(item.id,data[chkBxId])
+        
+              })
+            })
           });
           
           
@@ -525,6 +715,8 @@ export class ReportMapService {
           //   }
           // });				
   
+          
+   
           return clusterMarker;
         },
         getNoisePresentation: (noisePoint) => {
@@ -548,9 +740,9 @@ export class ReportMapService {
             var point = event.target.getGeometry();
             var tooltipContent = ["Latitude: ", point.lat, ", Longitude: ", point.lng].join("");
   
-            var screenPosition = hereMap.geoToScreen(point);
+            var screenPosition = this.hereMap.geoToScreen(point);
   
-            infoBubble = new H.ui.InfoBubble(hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
+            infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
             ui.addBubble(infoBubble);
           
           });
@@ -568,25 +760,58 @@ export class ReportMapService {
         }
       }
     });
+
+    
   
     // // Create a layer tha will consume objects from our clustering provider
     this.clusteringLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
   
     // // To make objects from clustering provder visible,
     // // we need to add our layer to the map
-    hereMap.addLayer(this.clusteringLayer);
-    clusteredDataProvider.addEventListener('tap', (event) => {
-      // Log data bound to the marker that has been tapped:
-      console.log(event.target.getData())
-    });
+    this.hereMap.addLayer(this.clusteringLayer, 100);
+    // clusteredDataProvider.addEventListener('tap', (event) => {
+    //   // Log data bound to the marker that has been tapped:
+    //   // console.log(event.target.getData())
+    // });
+
   }
 
-  infoBubbleCheckBoxClick(chkBxId, latitude, longitude){
+  // function infoBubbleCheckBoxClick(chkBxId, latitude, longitude){
+            //   // Get the checkbox
+            //   let checkBox: any = document.getElementById(chkBxId);
+            //   if (checkBox.checked == true){
+            //     alert("Latitude:" + latitude + " Longitude:" + longitude + " Enabled")
+            //   } else {
+            //     alert("Latitude:" + latitude + " Longitude:" + longitude + " Disabled")
+            //   }
+            // }
+
+  afterPlusClick(_selectedRoutes: any, _ui: any){
+    this.hereMap.removeLayer(this.clusteringLayer);
+    this.hereMap.setCenter({lat: _selectedRoutes[0].startPositionLattitude, lng: _selectedRoutes[0].startPositionLongitude}, 'default');
+    this.hereMap.setZoom(10);
+    if(_selectedRoutes.length > 1){
+      let _arr = _selectedRoutes.filter((elem, index) => _selectedRoutes.findIndex(obj => obj.startPositionLattitude === elem.startPositionLattitude && obj.startPositionLongitude === elem.startPositionLongitude) === index);
+      let _a: any = [];
+      _arr.forEach(i=> {
+        let b: any = _selectedRoutes.filter(j => i.startPositionLattitude == j.startPositionLattitude && i.startPositionLongitude == j.startPositionLongitude)
+        _a.push(b)
+      }); 
+      if(_a.length > 0){
+        _a.forEach(element => {
+          this.setMarkerCluster(element, _ui); // cluster route marker    
+        });
+      }
+    }
+  }
+
+  infoBubbleCheckBoxClick(chkBxId, _checkedData){
     var checkBox: any = document.getElementById(chkBxId);
+    console.log(_checkedData)
     if (checkBox.checked == true){
-      alert("Latitude:" + latitude + " Longitude:" + longitude + " Enabled")
+      alert(" Enabled")
     } else {
-      alert("Latitude:" + latitude + " Longitude:" + longitude + " Disabled")
+      alert(" Disabled")
     }
   }
    

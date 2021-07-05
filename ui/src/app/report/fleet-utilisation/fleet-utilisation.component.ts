@@ -796,6 +796,8 @@ calendarOptions: CalendarOptions = {
     this.lineChartVehicleCount = [];
     this.chartsLabelsdefined = [];
     this.averageDistanceBarData = [];
+    this.calendarValue=[]; 
+    this.calendarOptions.events = this.calendarValue;
   }
 
   onReset(){
@@ -932,7 +934,8 @@ calendarOptions: CalendarOptions = {
       default: {
         this.calendarValue = [];
       }
-    }
+    
+    }    
     this.calendarValue.push(this.calendarOptions.events[0]); 
     this.calendarOptions.events = this.calendarValue;
     return this.calendarOptions.events;    

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using net.atos.daf.ct2.reportservice.entity;
 using Newtonsoft.Json;
+using ReportComponent = net.atos.daf.ct2.reports;
 
 namespace net.atos.daf.ct2.reportservice.Services
 {
@@ -93,7 +94,47 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
         }
 
+        public override async Task<FleetOverviewDetailsResponse> GetFleetOverviewDetails(FleetOverviewDetailsRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.Info("Get GetFleetOverviewDetails ");
+                ReportComponent.entity.FleetOverviewFilter fleetOverviewFilter = new ReportComponent.entity.FleetOverviewFilter
+                {
+                    GroupId = request.GroupIds,
+                    AlertCategory = request.AlertCategories,
+                    AlertLevel = request.AlertLevels,
+                    HealthStatus = request.HealthStatus,
+                    OtherFilter = request.OtherFilters,
+                    DriverId = request.DriverIds,
+                    Days = request.Days
+                };
+                var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);
+                FleetOverviewDetailsResponse response = new FleetOverviewDetailsResponse();
+                if (result?.Count > 0)
+                {
+                    string res = JsonConvert.SerializeObject(result);
+                    response.FleetOverviewDetailList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetOverviewDetails>>(res));
+                    response.Code = Responsecode.Success;
+                    response.Message = Responsecode.Success.ToString();
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = "No Result Found";
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new FleetOverviewDetailsResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetFleetOverviewDetails get failed due to - " + ex.Message
+                });
+            }
+        }
         #endregion 
-
     }
 }

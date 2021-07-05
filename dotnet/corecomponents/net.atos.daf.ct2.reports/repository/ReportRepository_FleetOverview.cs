@@ -116,7 +116,7 @@ namespace net.atos.daf.ct2.reports.repository
 
         #endregion
 
-        public async Task<IEnumerable<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
+        public async Task<List<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
         {
             List<FleetOverviewDetails> fleetOverviewDetails = new List<FleetOverviewDetails>();
             MapperRepo repositoryMapper = new MapperRepo();

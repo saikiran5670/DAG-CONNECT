@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reports.repository;
 using System.Linq;
+using net.atos.daf.ct2.reports.entity.fleetFuel;
 
 namespace net.atos.daf.ct2.reports
 {
@@ -325,9 +326,9 @@ namespace net.atos.daf.ct2.reports
             List<FilterProperty> lstHealthStatus = await _reportRepository.GetOtherFilter();
             return lstHealthStatus;
         }
-        public async Task<IEnumerable<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
+        public async Task<List<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
         {
-            IEnumerable<FleetOverviewDetails> fleetOverviewDetails = await _reportRepository.GetFleetOverviewDetails(fleetOverviewFilter);
+            List<FleetOverviewDetails> fleetOverviewDetails = await _reportRepository.GetFleetOverviewDetails(fleetOverviewFilter);
             return fleetOverviewDetails;
         }
         public async Task<List<DriverFilter>> GetDriverList(List<string> vins)
@@ -357,6 +358,11 @@ namespace net.atos.daf.ct2.reports
             return lstFleetFuelDetails;
         }
 
+        public async Task<List<FleetFuelTripDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters)
+        {
+            List<FleetFuelTripDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByVehicle(fleetFuelFilters);
+            return lstFleetFuelTripDetails;
+        }       
         #endregion
 
         #region Eco-Score Data service

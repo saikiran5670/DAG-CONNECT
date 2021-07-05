@@ -30,20 +30,42 @@ rpc GetFleetOverviewFilter (FleetOverviewFilterIdRequest) returns (FleetOverview
 rpc GetFleetFuelDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetEcoScoreReportCompareDrivers (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
+rpc GetFleetOverviewDetails(FleetOverviewDetailsRequest) returns (FleetOverviewDetailsResponse);
+rpc GetVehicleHealthReport (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
+rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelTripDetailsResponse);
 }
 
-//Start FleetOverview
-message FleetRequestFilter {
- string GroupId =1;
- string AlertLevel =2;
- string AlertCategory =3;
- string HealthStatus =4;
- string OtherFilter =5;
- string DriverId =6;
- string Days =7;
+message VehicleSummary {
+    string VIN =1;
+    string VehicleName=2;
+    string VehicleRegNo = 3;
+    string DrivingStatus = 4;
+    int32 Alert = 5;
+    string Address = 6;
+    int64 FromDate = 7;
+    int64 ToDate = 8;
+    string WarningType = 9;
+    double LastLatitude = 10;
+    double LastLongitude = 11;
 }
 
-//End FleetOverview
+message  VehicleHealthWarning{
+    string WarningName =1;
+    string ActivatedTime=2;
+    string DeactivatedTime = 3;
+    string DriverName = 4;
+    string Advice = 5;
+    string VehicleName = 6;
+    double Latitude = 10;
+    double Longitude = 11;
+}
+
+message VehicleHealthStatus{
+repeated VehicleSummary Summary = 1;
+repeated VehicleHealthWarning CurrentWarning= 2;
+repeated VehicleHealthWarning HistoryWarning= 3;
+Responsecode Code = 4;
+}
 
 enum Responsecode{
   None = 0;
@@ -562,12 +584,12 @@ message FleetOverviewFilterResponse {
 }
 
 message FleetOverviewVGFilterRequest {
-		 int32 VehicleGroupId =  1;
-         int32 VehicleId =  2;
-         string FeatureName =  3;
-         string FeatureKey =  4;
-         bool Subscribe =  5;
-         string VehicleGroupName =  6;
+    int32 VehicleGroupId =  1;
+    int32 VehicleId =  2;
+    string FeatureName =  3;
+    string FeatureKey =  4;
+    bool Subscribe =  5;
+    string VehicleGroupName =  6;
 }
 
 message DriverListResponse {
@@ -577,6 +599,62 @@ message DriverListResponse {
          int32 OrganizationId =  4;
 }
 
+message FleetOverviewDetailsRequest {
+repeated string GroupIds =1;
+repeated string AlertLevels =2;
+repeated string AlertCategories =3;
+repeated string HealthStatus =4;
+repeated string OtherFilters =5;
+repeated string DriverIds =6;
+int32 Days =7;
+}
+
+message FleetOverviewDetails
+{
+	int32 Id=1;
+	string TripId=2;
+	string Vin=3;
+	int64 StartTimeStamp=4;
+	int64 EndTimeStamp=5;
+	string Driver1Id=6;
+	string TripDistance=7;
+	string DrivingTime=8;
+	int32 FuelConsumption=9;
+	int32 VehicleDrivingStatusType=10;
+	int32 OdometerVal=11;
+	int64 DistanceUntilNextService=12;
+	int64 LatestReceivedPositionLattitude=13;
+	double LatestReceivedPositionint64itude=14;
+	double LatestReceivedPositionHeading=15;
+	int32 StartPositionLattitude=16;
+	double StartPositionint64itude=17;
+	double StartPositionHeading=18;
+	int32 LatestProcessedMessageTimeStamp=19;
+	int64 VehicleHealthStatusType=20;
+	int32 LatestWarningClass=21;
+	int32 LatestWarningNumber=22;
+	string LatestWarningType=23;
+	int64 LatestWarningTimestamp=24;
+	double LatestWarningPositionLatitude=25;
+	double LatestWarningPositionint64itude=26;
+	string Vid=27;
+	string RegistrationNo=28;
+	string DriverFirstName=29;
+	string DriverLastName=30;
+	int32 LatestGeolocationAddressId=31;
+	string LatestGeolocationAddress=32;
+	int32 StartGeolocationAddressId=33;
+	string StartGeolocationAddress=34;
+	int32 LatestWarningGeolocationAddressId=35;
+	string LatestWarningGeolocationAddress=36;
+	repeated LiveFleetPosition LiveFleetPosition=37;
+}
+
+message FleetOverviewDetailsResponse {
+    repeated FleetOverviewDetails FleetOverviewDetailList= 1;   
+    Responsecode Code = 2;
+    string Message = 3;
+}
 /// END: FleetOverview
 
 /// START Fleet Fuel Report
@@ -644,6 +722,45 @@ message FleetFuelDetails {
     string FootBrake = 31;
     string CO2Emmision = 32;
 }
+message FleetFuelTripDetails {
+    string VehicleName = 1;
+    string VIN = 2;
+    string VehicleRegistrationNo = 3;
+    int64 StartTimeStamp=4;
+    int64 EndTimeStamp=5;    
+    string AverageSpeed = 6;
+    string MaxSpeed = 7;
+    string Distance = 8;
+    string StartPosition =9;
+    string EndPosition=10;
+    string FuelConsumed = 11;
+    string FuelConsumption = 12;
+    string CO2Emission = 13;
+    string IdleDuration = 14;
+    string PTODuration = 15;
+    string CruiseControlDistance30_50 = 16;
+    string CruiseControlDistance50_75 = 17;
+    string CruiseControlDistance75 = 18;
+    string HarshBrakeDuration = 19;
+    string HeavyThrottleDuration = 20;
+    string GrossWeightCombination = 21;
+    string AverageTrafficClassification = 22;
+    string CCFuelConsumption = 23;
+    string FuelconsumptionCCnonactive = 24;
+    string IdlingConsumption = 25;
+    string DPAScore = 26;
+    double StartPositionLattitude=27;
+    double StartPositionLongitude=28;
+    double EndPositionLattitude=29;
+    double EndPositionLongitude=30;
+    repeated LiveFleetPosition LiveFleetPosition=31;   
+}
+message FleetFuelTripDetailsResponse {
+    repeated FleetFuelTripDetails FleetFuelTripDetails = 1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+
 
 
 /// END Fleet Fuel Report

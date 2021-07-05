@@ -308,7 +308,14 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
     this.getReportPreferences();
+    // this.setDefaultDriverValue();
   }
+
+    // setDefaultDriverValue() {
+    //   if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "") {
+    //     this.driverTimeForm.get('driver').setValue(this.searchFilterpersistData.driverDropDownValue); //- reset vehicle dropdown
+    //   }
+    // }
 
   setPrefFormatTime(){
     if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "" &&  ((this.searchFilterpersistData.startTimeStamp || this.searchFilterpersistData.endTimeStamp) !== "") ) {
@@ -460,7 +467,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     if(event.value){
       this.internalSelection = true; 
     this.driverTimeForm.get('vehicle').setValue(''); //- reset vehicle dropdown
-    this.driverTimeForm.get('driver').setValue(''); //- reset vehicle dropdown
+    this.driverTimeForm.get('driver').setValue(''); //- reset driver dropdown
     this.driverListData = this.finalDriverList;
     this.vehicleListData = this.finalVehicleList;
     //console.log(this.driverListData)
@@ -490,6 +497,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
     this.driverTimeForm.get('vehicleGroup').setValue(parseInt(this.searchFilterpersistData.vehicleGroupDropDownValue));
     this.driverTimeForm.get('vehicle').setValue(parseInt(this.searchFilterpersistData.vehicleDropDownValue));
+    this.driverTimeForm.get('driver').setValue(this.searchFilterpersistData.driverDropDownValue);
   }
   }
 
@@ -510,7 +518,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   onDriverChange(event: any){
-
+    this.searchFilterpersistData["driverDropDownValue"] = event.value;
+    this.setGlobalSearchData(this.searchFilterpersistData)
+    this.internalSelection = true; 
   }
 
   allDriversSelected = true;
@@ -8552,7 +8562,7 @@ let finalGroupDataList = [];
     if(this.vehicleListData.length >0)
     this.selectedVehicle = this.vehicleListData[0].vehicleName;
 
-   
+   this.setVehicleGroupAndVehiclePreSelection();
   }
 
   setGeneralDriverValue(){
