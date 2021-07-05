@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 ColorMode = ColorMode.Color,
                 Orientation = Orientation.Portrait,
                 PaperSize = PaperKind.A4,
-                Margins = new MarginSettings { Top = 10},
+                Margins = new MarginSettings { Top = 10 },
                 //Out = $@"C:\Users\harneet.r (58879009)\Documents\POC\Employee_Report{ReportSchedulerData.Id}.pdf"
             };
             //string htmlText = await Report.GenerateTemplate(await GetLogoImage());
