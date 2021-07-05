@@ -28,6 +28,7 @@ export class ReportMapService {
   corridorWidth : number = 100;
   corridorWidthKm : number = 0.1;
   group = new H.map.Group();
+  disableGroup = new H.map.Group();
   map_key : string = "";
   defaultLayers : any;
   herePOISearch: any = '';
@@ -80,14 +81,20 @@ export class ReportMapService {
   }
 
   clearRoutesFromMap(){
-    this.hereMap.removeObjects(this.hereMap.getObjects())
+    this.hereMap.removeObjects(this.hereMap.getObjects());
     this.group.removeAll();
+    this.disableGroup.removeAll();
     this.startMarker = null; 
     this.endMarker = null; 
-    if(this.clusteringLayer)
+    if(this.clusteringLayer){
+      this.clusteringLayer.dispose();
       this.hereMap.removeLayer(this.clusteringLayer);
-    if(this.overlayLayer)
+      this.clusteringLayer = null;
+    }
+    if(this.overlayLayer){
       this.hereMap.removeLayer(this.overlayLayer);
+      this.overlayLayer = null;
+    }
   }
 
   getUI(){
@@ -356,6 +363,24 @@ export class ReportMapService {
     );
     
     this.group.addObject(polyline);
+   }
+
+   selectionPolylineRoute(dataPoints: any, _index: any, checkStatus?: any){
+    let lineString: any = new H.geo.LineString();
+    dataPoints.map((element) => {
+      lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+    });
+
+    let _style: any = {
+      lineWidth: 4, 
+      strokeColor: checkStatus ? 'blue' : 'grey'
+    }
+    let polyline = new H.map.Polyline(
+      lineString, { style: _style }
+    );
+    polyline.setData({id: _index});
+    
+    this.disableGroup.addObject(polyline);
    }
 
    getFilterDataPoints(_dataPoints: any, _displayRouteView: any){
@@ -666,6 +691,13 @@ export class ReportMapService {
           //clusterMarker.setZIndex(10);
           let infoBubble: any
            clusterMarker.addEventListener("tap",  (event) => {
+            this.removedDisabledGroup();
+            data.forEach((element, _index) => {
+              let liveFleetPoints: any = element.liveFleetPosition;
+              liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); 
+              this.selectionPolylineRoute(liveFleetPoints, _index);   
+            });
+            this.hereMap.addObject(this.disableGroup);
   
             var point = event.target.getGeometry(),
               screenPosition = this.hereMap.geoToScreen(point),
@@ -700,8 +732,7 @@ export class ReportMapService {
             document.querySelectorAll('.checkbox').forEach((item: any) => {
               item.addEventListener('click', event => {
                 //handle click
-                this.infoBubbleCheckBoxClick(item.id, data[parseInt(item.id)], item.checked)
-        
+                this.infoBubbleCheckBoxClick(item.id, data, item.checked);
               })
             })
           });
@@ -776,6 +807,11 @@ export class ReportMapService {
 
   }
 
+  removedDisabledGroup(){
+    this.disableGroup.removeAll();
+    //this.disableGroup = null;
+  }
+
   // function infoBubbleCheckBoxClick(chkBxId, latitude, longitude){
             //   // Get the checkbox
             //   let checkBox: any = document.getElementById(chkBxId);
@@ -805,14 +841,45 @@ export class ReportMapService {
     }
   }
 
-  infoBubbleCheckBoxClick(chkBxId, _checkedData, _checked: any){
-    var checkBox: any = document.getElementById(chkBxId);
-    console.log(_checkedData)
-    if (_checked){
-      //alert(" Enabled")
-    } else {
-      //alert(" Disabled")
+  checkPolylineSelection(chkBxId: any, _checked: any){
+    let _a = this.disableGroup.getObjects();
+    if(_a && _a.length > 0){
+      _a.forEach(element => {
+        if((chkBxId+1) == element.data.id){
+          element.setStyle({
+              lineWidth: 4, 
+              strokeColor: _checked ? 'transparent' : 'grey'
+          });
+        } 
+      });
     }
+  }
+
+  infoBubbleCheckBoxClick(chkBxId, _data, _checked: any){
+    var checkBox: any = document.getElementById(chkBxId);
+    //console.log(_data)
+    //if (_checked){
+      //alert(" Enabled")
+      //this.removedDisabledGroup();
+      this.checkPolylineSelection(parseInt(chkBxId), _checked);
+      // let liveFleetPoints: any = _data[parseInt(checkBox)].liveFleetPosition;
+      // liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); 
+      //this.selectionPolylineRoute(liveFleetPoints, _checked);   
+
+      // _data.forEach((element, index) => {
+      //   let liveFleetPoints: any = element.liveFleetPosition;
+      //   liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); 
+      //   let _c: any = false;
+      //   if((index+1) == parseInt(chkBxId) && _checked){
+      //     _c = true;
+      //   }
+      //   this.selectionPolylineRoute(liveFleetPoints, _c);   
+      // });
+    // } else {
+    //   //alert(" Disabled")
+    //   this.selectionPolylineRoute(_checkedData, _checked);
+    // }
+    //this.hereMap.addObject(this.disableGroup);
   }
    
   drawPolyline(finalDatapoints: any, trackType?: any){
