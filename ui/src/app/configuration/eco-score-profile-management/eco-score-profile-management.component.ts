@@ -17,6 +17,8 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   translationData: any = {};
   profileList: any = [];
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  selectedElementData: any;
+  selectedProfile: any;
 
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportService: ReportService) { }
 
@@ -37,18 +39,25 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     });
 
     this.ecoScoreProfileForm = this._formBuilder.group({
-      name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc ]],
-      description: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
+      profileName: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc ]],
+      profileDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
     },
     {
       validator: [
-        CustomValidators.specialCharValidationForName('name'),
-        CustomValidators.specialCharValidationForNameWithoutRequired('description')
+        CustomValidators.specialCharValidationForName('profileName'),
+        CustomValidators.specialCharValidationForNameWithoutRequired('profileDescription')
       ]
     });
     this.reportService.getEcoScoreProfiles().subscribe((data: any) =>{
       this.profileList = data["profiles"];
-    })
+      this.selectedProfile = this.profileList[0].profileId;
+      if(this.actionType == 'manage'){
+        this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile);  
+        console.log(this.selectedElementData);
+        this.setDefaultValue();
+      }
+    });
+    
   }
   
   processTranslation(transData: any) {
@@ -58,6 +67,12 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   getBreadcum(type: any){
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / ${this.translationData.lblEcoScoreProfileManagement ? this.translationData.lblEcoScoreProfileManagement : "Eco-Score Profile Management"} / ${(type == 'create') ? (this.translationData.lblCreateProfile ? this.translationData.lblCreateProfile : 'Create Profile') : (this.translationData.lblManageProfile ? this.translationData.lblManageProfile : 'Manage Profile')}`;
+  }
+
+  setDefaultValue(){
+    this.ecoScoreProfileForm.get("profileDescription").setValue(this.selectedElementData[0].profileDescription);
+    this.ecoScoreProfileForm.get("profileName").setValue(this.selectedElementData[0].profileName);
+    // this.ecoScoreProfileForm.get("type").setValue(this.selectedElementData.type);   
   }
 
   createNewProfile(){
@@ -81,6 +96,9 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   }
 
   profileSelectionDropDown(filterValue: string){
-    
+    // this.selectedElementData = [];
+    this.selectedProfile = filterValue;
+    this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile); 
+    this.setDefaultValue();
  }
 }

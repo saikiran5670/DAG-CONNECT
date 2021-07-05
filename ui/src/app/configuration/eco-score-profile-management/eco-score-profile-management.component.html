@@ -44,16 +44,16 @@
                 </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                         <input maxlength="50" placeholder="{{ translationData.lblTestProfileName || 'Test Profile Name' }}" matInput
-                            formControlName="name">
+                            formControlName="profileName">
                     </mat-form-field>
-                    <mat-error *ngIf="ecoScoreProfileForm.get('name').hasError('required')">
-                        {{ translationData.lblPleasenterpackagename || 'Please enter Profile Name'}}
+                    <mat-error *ngIf="ecoScoreProfileForm.get('profileName').hasError('required')">
+                        {{ translationData.lblPleasenterprofilename || 'Please enter Profile Name'}}
                     </mat-error>
-                    <mat-error *ngIf="ecoScoreProfileForm.get('name').hasError('whitespace')">
+                    <mat-error *ngIf="ecoScoreProfileForm.get('profileName').hasError('whitespace')">
                         {{ translationData.lblPackagenamecannotcontainonlywhitespace || 'Profile Name
                         cannot contain only whitespace' }}
                     </mat-error>
-                    <mat-error *ngIf="ecoScoreProfileForm.get('name').hasError('specialCharsNotAllowed')">
+                    <mat-error *ngIf="ecoScoreProfileForm.get('profileName').hasError('specialCharsNotAllowed')">
                         {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                     </mat-error>
                 </div>
@@ -64,12 +64,12 @@
                 </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                         <input maxlength="120" placeholder="{{ translationData.lblTestProfileDescription || 'Test Profile Description' }}" matInput
-                            formControlName="description">
+                            formControlName="profileDescription">
                     </mat-form-field>
-                    <mat-error *ngIf=" ecoScoreProfileForm.get('description').hasError('whitespace')">
+                    <mat-error *ngIf=" ecoScoreProfileForm.get('profileDescription').hasError('whitespace')">
                         {{ translationData.lblDescriptioncannotcontainonlywhitespace || 'Feature Description cannot contain only whitespace' }}
                     </mat-error>
-                    <mat-error *ngIf="ecoScoreProfileForm.get('description').hasError('specialCharsNotAllowed')">
+                    <mat-error *ngIf="ecoScoreProfileForm.get('profileDescription').hasError('specialCharsNotAllowed')">
                         {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                     </mat-error>
             </div>
