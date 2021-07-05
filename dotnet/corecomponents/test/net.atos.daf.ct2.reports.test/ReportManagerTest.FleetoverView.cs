@@ -26,8 +26,5 @@ namespace net.atos.daf.ct2.reports.test
             var result = await _reportRepository.GetCurrentWarnning("XLRAS47MS0E808080");
             Assert.IsNotNull(result);
         }
-
-
-        
     }
 }

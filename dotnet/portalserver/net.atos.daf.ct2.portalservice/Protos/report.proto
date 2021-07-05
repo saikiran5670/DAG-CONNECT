@@ -600,13 +600,16 @@ message DriverListResponse {
 }
 
 message FleetOverviewDetailsRequest {
-repeated string GroupIds =1;
-repeated string AlertLevels =2;
-repeated string AlertCategories =3;
-repeated string HealthStatus =4;
-repeated string OtherFilters =5;
-repeated string DriverIds =6;
-int32 Days =7;
+    repeated string GroupIds =1;
+    repeated string AlertLevels =2;
+    repeated string AlertCategories =3;
+    repeated string HealthStatus =4;
+    repeated string OtherFilters =5;
+    repeated string DriverIds =6;
+    int32 Days =7;
+    int32 AccountId = 8;
+    int32 OrganizationId = 9;
+    int32 RoleId = 10;
 }
 
 message FleetOverviewDetails

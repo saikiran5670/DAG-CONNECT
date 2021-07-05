@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string Driver1Id { get; set; }
         public long? LastestProcessedMessageTimestamp { get; set; }
         public int WarningClass { get; set; }
-        public int WarningNumber { get; set; }   
+        public int WarningNumber { get; set; }
     }
     public class VehicleHealthStatus
     {
