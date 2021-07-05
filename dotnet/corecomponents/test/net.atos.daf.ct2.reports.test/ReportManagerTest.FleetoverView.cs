@@ -27,7 +27,14 @@ namespace net.atos.daf.ct2.reports.test
             Assert.IsNotNull(result);
         }
 
-
-
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetFleetVehicleDetails_Test()
+        {
+            //var fleetOverviewFilter = new FleetOverviewFilter() { GroupId = " ", AlertLevel = " ", AlertCategory = " ", HealthStatus = " ", OtherFilter = " ", DriverId = "SK 0000000012340437", Days = "7" };
+            var fleetOverviewFilter = new FleetOverviewFilter();
+            var result = await _reportRepository.GetFleetOverviewDetails(fleetOverviewFilter);
+            Assert.IsNotNull(result);
+        }
     }
 }

@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
                 var parameterFleetOverview = new DynamicParameters();
-                parameterFleetOverview.Add("@name", fleetOverviewFilter.GroupId);
+                parameterFleetOverview.Add("@vin", fleetOverviewFilter.VINIds);
                 string queryFleetOverview = @"select 
                     lcts.id as lcts_Id,
                     lcts.trip_id as lcts_TripId,
@@ -164,13 +164,13 @@ namespace net.atos.daf.ct2.reports.repository
                     lps.gps_longitude as lps_GpsLongitude,
                     lps.co2_emission as lps_Co2Emission,
                     lps.fuel_consumption as lps_FuelConsumption,
-                    lps.last_odometer_val as lps_LastOdometerVal
+                    lps.last_odometer_val as lps_LastOdometerVal,
                     latgeoadd.id as latgeoadd_LatestGeolocationAddressId,
                     latgeoadd.address as latgeoadd_LatestGeolocationAddress,
                     stageoadd.id as stageoadd_StartGeolocationAddressId,
                     stageoadd.address as stageoadd_StartGeolocationAddress,
                     wangeoadd.id as wangeoadd_LatestWarningGeolocationAddressId,
-                    wangeoadd.address as wangeoadd_LatestWarningGeolocationAddress,
+                    wangeoadd.address as wangeoadd_LatestWarningGeolocationAddress
                     from livefleet.livefleet_current_trip_statistics lcts
                     left join 
                     livefleet.livefleet_position_statistics lps
@@ -187,8 +187,19 @@ namespace net.atos.daf.ct2.reports.repository
                     and TRUNC(CAST(lcts.latest_received_position_longitude as numeric),4) = TRUNC(CAST(stageoadd.longitude as numeric),4)
                     left join master.geolocationaddress wangeoadd
                     on TRUNC(CAST(lcts.latest_received_position_lattitude as numeric),4)= TRUNC(CAST(wangeoadd.latitude as numeric),4) 
-                    and TRUNC(CAST(lcts.latest_received_position_longitude as numeric),4) = TRUNC(CAST(wangeoadd.longitude as numeric),4) ";
-                IEnumerable<FleetOverviewResult> alertResult = await _dataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
+                    and TRUNC(CAST(lcts.latest_received_position_longitude as numeric),4) = TRUNC(CAST(wangeoadd.longitude as numeric),4)
+                    where lcts.vin = Any(@vins) ";
+                if (fleetOverviewFilter.DriverId.Count > 0)
+                {
+                    parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
+                    queryFleetOverview += " and lcts.driver1_id = Any(@driverids) ";
+                }
+                if (fleetOverviewFilter.HealthStatus.Count > 0)
+                {
+                    parameterFleetOverview.Add("@healthstatus", fleetOverviewFilter.HealthStatus);
+                    queryFleetOverview += " and lcts.vehicle_health_status_type = Any(@healthstatus) ";
+                }
+                IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
                 return repositoryMapper.GetFleetOverviewDetails(alertResult);
             }
             catch (Exception)

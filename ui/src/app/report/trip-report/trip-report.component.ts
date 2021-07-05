@@ -472,6 +472,8 @@ ngOnDestroy(){
       this.hideloader();
       this.wholeTripData.vinTripList = [];
       this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
+      this.filterDateData();
+      this.loadUserPOI();
     });
   }
 
