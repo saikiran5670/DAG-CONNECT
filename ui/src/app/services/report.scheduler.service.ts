@@ -71,6 +71,18 @@ export class ReportSchedulerService {
       .delete<void>(`${this.reportSchedulerServiceURL}/delete?ReportId=${id}`, headers)
       .pipe(catchError(this.handleError));
   }
+
+  createReportScheduler(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportSchedulerServiceURL}/create`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
   
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);

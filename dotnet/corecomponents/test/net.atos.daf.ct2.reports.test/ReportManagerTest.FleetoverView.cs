@@ -17,5 +17,14 @@ namespace net.atos.daf.ct2.reports.test
             var result = await _reportRepository.GetVehicleHealthStatus(vehicleHealthStatusRequest);
             Assert.IsNotNull(result);
         }
+
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetCurrentWarnning_Test()
+        {
+            var vehicleHealthStatusRequest = new VehicleHealthStatusRequest() { VIN = "XLRAS47MS0E808080" };
+            var result = await _reportRepository.GetCurrentWarnning("XLRAS47MS0E808080");
+            Assert.IsNotNull(result);
+        }
     }
 }

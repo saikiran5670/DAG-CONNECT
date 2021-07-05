@@ -584,12 +584,12 @@ message FleetOverviewFilterResponse {
 }
 
 message FleetOverviewVGFilterRequest {
-		 int32 VehicleGroupId =  1;
-         int32 VehicleId =  2;
-         string FeatureName =  3;
-         string FeatureKey =  4;
-         bool Subscribe =  5;
-         string VehicleGroupName =  6;
+    int32 VehicleGroupId =  1;
+    int32 VehicleId =  2;
+    string FeatureName =  3;
+    string FeatureKey =  4;
+    bool Subscribe =  5;
+    string VehicleGroupName =  6;
 }
 
 message DriverListResponse {
@@ -600,13 +600,16 @@ message DriverListResponse {
 }
 
 message FleetOverviewDetailsRequest {
- string GroupId =1;
- string AlertLevel =2;
- string AlertCategory =3;
- string HealthStatus =4;
- string OtherFilter =5;
- string DriverId =6;
- string Days =7;
+    repeated string GroupIds =1;
+    repeated string AlertLevels =2;
+    repeated string AlertCategories =3;
+    repeated string HealthStatus =4;
+    repeated string OtherFilters =5;
+    repeated string DriverIds =6;
+    int32 Days =7;
+    int32 AccountId = 8;
+    int32 OrganizationId = 9;
+    int32 RoleId = 10;
 }
 
 message FleetOverviewDetails

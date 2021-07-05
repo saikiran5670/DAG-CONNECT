@@ -99,19 +99,29 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 _logger.Info("Get GetFleetOverviewDetails ");
+                FleetOverviewDetailsResponse response = new FleetOverviewDetailsResponse();
+                var vehicleDeatilsWithAccountVisibility =
+                                await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+
+                if (vehicleDeatilsWithAccountVisibility.Count() == 0)
+                {
+                    response.Message = string.Format(ReportConstants.GET_VIN_VISIBILITY_FAILURE_MSG, request.AccountId, request.OrganizationId);
+                    response.Code = Responsecode.Failed;
+                    return response;
+                }
+
                 ReportComponent.entity.FleetOverviewFilter fleetOverviewFilter = new ReportComponent.entity.FleetOverviewFilter
                 {
-                    GroupId = request.GroupId,
-                    AlertCategory = request.AlertCategory,
-                    AlertLevel = request.AlertLevel,
-                    HealthStatus = request.HealthStatus,
-                    OtherFilter = request.OtherFilter,
-                    DriverId = request.DriverId,
-                    Days = request.Days,
-
+                    GroupId = request.GroupIds.ToList(),
+                    AlertCategory = request.AlertCategories.ToList(),
+                    AlertLevel = request.AlertLevels.ToList(),
+                    HealthStatus = request.HealthStatus.ToList(),
+                    OtherFilter = request.OtherFilters.ToList(),
+                    DriverId = request.DriverIds.ToList(),
+                    VINIds = vehicleDeatilsWithAccountVisibility.Select(s => s.Vin).ToList(),
+                    Days = request.Days
                 };
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);
-                FleetOverviewDetailsResponse response = new FleetOverviewDetailsResponse();
                 if (result?.Count > 0)
                 {
                     string res = JsonConvert.SerializeObject(result);
