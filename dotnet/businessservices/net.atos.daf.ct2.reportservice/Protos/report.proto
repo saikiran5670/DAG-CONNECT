@@ -30,20 +30,8 @@ rpc GetFleetOverviewFilter (FleetOverviewFilterIdRequest) returns (FleetOverview
 rpc GetFleetFuelDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetEcoScoreReportCompareDrivers (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
+rpc GetFleetOverviewDetails(FleetOverviewDetailsRequest) returns (FleetOverviewDetailsResponse);
 }
-
-//Start FleetOverview
-message FleetRequestFilter {
- string GroupId =1;
- string AlertLevel =2;
- string AlertCategory =3;
- string HealthStatus =4;
- string OtherFilter =5;
- string DriverId =6;
- string Days =7;
-}
-
-//End FleetOverview
 
 enum Responsecode{
   None = 0;
@@ -577,6 +565,62 @@ message DriverListResponse {
          int32 OrganizationId =  4;
 }
 
+message FleetOverviewDetailsRequest {
+ string GroupId =1;
+ string AlertLevel =2;
+ string AlertCategory =3;
+ string HealthStatus =4;
+ string OtherFilter =5;
+ string DriverId =6;
+ string Days =7;
+}
+
+message FleetOverviewDetails
+{
+	int32 Id=1;
+	string TripId=2;
+	string Vin=3;
+	int64 StartTimeStamp=4;
+	int64 EndTimeStamp=5;
+	string Driver1Id=6;
+	string TripDistance=7;
+	string DrivingTime=8;
+	int32 FuelConsumption=9;
+	int32 VehicleDrivingStatusType=10;
+	int32 OdometerVal=11;
+	int64 DistanceUntilNextService=12;
+	int64 LatestReceivedPositionLattitude=13;
+	double LatestReceivedPositionint64itude=14;
+	double LatestReceivedPositionHeading=15;
+	int32 StartPositionLattitude=16;
+	double StartPositionint64itude=17;
+	double StartPositionHeading=18;
+	int32 LatestProcessedMessageTimeStamp=19;
+	int64 VehicleHealthStatusType=20;
+	int32 LatestWarningClass=21;
+	int32 LatestWarningNumber=22;
+	string LatestWarningType=23;
+	int64 LatestWarningTimestamp=24;
+	double LatestWarningPositionLatitude=25;
+	double LatestWarningPositionint64itude=26;
+	string Vid=27;
+	string RegistrationNo=28;
+	string DriverFirstName=29;
+	string DriverLastName=30;
+	int32 LatestGeolocationAddressId=31;
+	string LatestGeolocationAddress=32;
+	int32 StartGeolocationAddressId=33;
+	string StartGeolocationAddress=34;
+	int32 LatestWarningGeolocationAddressId=35;
+	string LatestWarningGeolocationAddress=36;
+	repeated LiveFleetPosition LiveFleetPosition=37;
+}
+
+message FleetOverviewDetailsResponse {
+    repeated FleetOverviewDetails FleetOverviewDetailList= 1;   
+    Responsecode Code = 2;
+    string Message = 3;
+}
 /// END: FleetOverview
 
 /// START Fleet Fuel Report
