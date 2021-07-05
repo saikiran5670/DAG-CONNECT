@@ -101,14 +101,13 @@ namespace net.atos.daf.ct2.reportservice.Services
                 _logger.Info("Get GetFleetOverviewDetails ");
                 ReportComponent.entity.FleetOverviewFilter fleetOverviewFilter = new ReportComponent.entity.FleetOverviewFilter
                 {
-                    GroupId = request.GroupId,
-                    AlertCategory = request.AlertCategory,
-                    AlertLevel = request.AlertLevel,
+                    GroupId = request.GroupIds,
+                    AlertCategory = request.AlertCategories,
+                    AlertLevel = request.AlertLevels,
                     HealthStatus = request.HealthStatus,
-                    OtherFilter = request.OtherFilter,
-                    DriverId = request.DriverId,
-                    Days = request.Days,
-
+                    OtherFilter = request.OtherFilters,
+                    DriverId = request.DriverIds,
+                    Days = request.Days
                 };
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);
                 FleetOverviewDetailsResponse response = new FleetOverviewDetailsResponse();
