@@ -677,9 +677,9 @@ export class ReportMapService {
               (p) => 
               { 
                 tooltipContent += "<tr>";
-                tooltipContent += "<td><input type='checkbox' id='"+ chkBxId +"' onclick='infoBubbleCheckBoxClick("+ chkBxId +","+ p.getPosition().lat +", "+ p.getPosition().lng +")'></td>"+ "<td>"+ (chkBxId+1) +"</td>" + "<td>" + data[chkBxId].convertedStartTime + "</td><td>" + data[chkBxId].convertedEndTime + "</td>";
+                tooltipContent += "<td><input type='checkbox' class='checkbox' id='"+ chkBxId +"'></td>"+ "<td>"+ (chkBxId+1) +"</td>" + "<td>" + data[chkBxId].convertedStartTime + "</td><td>" + data[chkBxId].convertedEndTime + "</td>";
                 tooltipContent += "</tr>";
-                chkBxId++;
+               chkBxId++;
                 //alert(chkBxId);
               }
             ); 
@@ -697,6 +697,13 @@ export class ReportMapService {
 
             infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
             ui.addBubble(infoBubble);
+            document.querySelectorAll('.checkbox').forEach(item => {
+              item.addEventListener('click', event => {
+                //handle click
+                this.infoBubbleCheckBoxClick(item.id,data[chkBxId])
+        
+              })
+            })
           });
           
           
@@ -708,6 +715,8 @@ export class ReportMapService {
           //   }
           // });				
   
+          
+   
           return clusterMarker;
         },
         getNoisePresentation: (noisePoint) => {
@@ -751,6 +760,8 @@ export class ReportMapService {
         }
       }
     });
+
+    
   
     // // Create a layer tha will consume objects from our clustering provider
     this.clusteringLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
@@ -762,7 +773,18 @@ export class ReportMapService {
     //   // Log data bound to the marker that has been tapped:
     //   // console.log(event.target.getData())
     // });
+
   }
+
+  // function infoBubbleCheckBoxClick(chkBxId, latitude, longitude){
+            //   // Get the checkbox
+            //   let checkBox: any = document.getElementById(chkBxId);
+            //   if (checkBox.checked == true){
+            //     alert("Latitude:" + latitude + " Longitude:" + longitude + " Enabled")
+            //   } else {
+            //     alert("Latitude:" + latitude + " Longitude:" + longitude + " Disabled")
+            //   }
+            // }
 
   afterPlusClick(_selectedRoutes: any, _ui: any){
     this.hereMap.removeLayer(this.clusteringLayer);
@@ -783,12 +805,13 @@ export class ReportMapService {
     }
   }
 
-  infoBubbleCheckBoxClick(chkBxId, latitude, longitude){
+  infoBubbleCheckBoxClick(chkBxId, _checkedData){
     var checkBox: any = document.getElementById(chkBxId);
+    console.log(_checkedData)
     if (checkBox.checked == true){
-      alert("Latitude:" + latitude + " Longitude:" + longitude + " Enabled")
+      alert(" Enabled")
     } else {
-      alert("Latitude:" + latitude + " Longitude:" + longitude + " Disabled")
+      alert(" Disabled")
     }
   }
    
