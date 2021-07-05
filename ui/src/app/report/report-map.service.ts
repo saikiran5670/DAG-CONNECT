@@ -671,7 +671,7 @@ export class ReportMapService {
               screenPosition = this.hereMap.geoToScreen(point),
               t = event.target,
               _data = t.getData(),
-              tooltipContent = "<table border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>"; 
+              tooltipContent = "<table class='cust-table' border='1'><thead><th></th><th>Trip</th><th>Start Date</th><th>End Date</th></thead><tbody>"; 
               var chkBxId = 0;
               _data.forEachEntry(
               (p) => 
@@ -697,10 +697,10 @@ export class ReportMapService {
 
             infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
             ui.addBubble(infoBubble);
-            document.querySelectorAll('.checkbox').forEach(item => {
+            document.querySelectorAll('.checkbox').forEach((item: any) => {
               item.addEventListener('click', event => {
                 //handle click
-                this.infoBubbleCheckBoxClick(item.id,data[chkBxId])
+                this.infoBubbleCheckBoxClick(item.id, data[parseInt(item.id)], item.checked)
         
               })
             })
@@ -805,13 +805,13 @@ export class ReportMapService {
     }
   }
 
-  infoBubbleCheckBoxClick(chkBxId, _checkedData){
+  infoBubbleCheckBoxClick(chkBxId, _checkedData, _checked: any){
     var checkBox: any = document.getElementById(chkBxId);
     console.log(_checkedData)
-    if (checkBox.checked == true){
-      alert(" Enabled")
+    if (_checked){
+      //alert(" Enabled")
     } else {
-      alert(" Disabled")
+      //alert(" Disabled")
     }
   }
    
