@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.reports.repository
                 foreach (var profileKPI in dto.ProfileKPIs)
                 {
                     query = @"INSERT INTO master.ecoscoreprofilekpi
-                        (profile_id,ecoscore_kpi_id,limit_val,target_val, lower_val, upper_val, created_at, created_by)
+                        (ecoscore_profile_id,ecoscore_kpi_id,limit_val,target_val, lower_val, upper_val, created_at, created_by)
                         VALUES
                         (@profile_id, @ecoscore_kpi_id, @limit_val, @target_val, @lower_val, @upper_val, @created_at, @created_by) RETURNING id";
 
@@ -364,7 +364,7 @@ namespace net.atos.daf.ct2.reports.repository
                 query.Append(", lower_val=@LowerValue");
                 query.Append(", upper_val=@UpperValue");
                 query.Append(", modified_by=@modified_by");
-                query.Append(" where profile_id=@Id and ecoscore_kpi_id = @KPIId RETURNING id");
+                query.Append(" where ecoscore_profile_id=@Id and ecoscore_kpi_id = @KPIId RETURNING id");
 
                 id = await _dataAccess.ExecuteScalarAsync<int>(query.ToString(), updateParameter);
             }
@@ -520,7 +520,7 @@ namespace net.atos.daf.ct2.reports.repository
                                  kpi.limit_val as minvalue, kpi.target_val as targetvalue
                                  FROM master.ecoscoreprofile eco
                                  JOIN master.ecoscoreprofilekpi kpi
-                                 	ON eco.id=kpi.profile_id
+                                 	ON eco.id=kpi.ecoscore_profile_id
                                  JOIN master.ecoscorekpi kpimst
                                  	ON kpimst.id = kpi.ecoscore_kpi_id
                                  WHERE eco.id = @TargetProfileId
