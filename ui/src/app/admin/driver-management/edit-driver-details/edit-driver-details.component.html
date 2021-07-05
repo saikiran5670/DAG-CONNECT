@@ -35,7 +35,7 @@
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblEmailID || 'Email ID' }}</mat-label>
+          <mat-label>{{ translationData.lblEmailID || 'Email ID' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
               <input maxlength="100" placeholder="{{ translationData.lblEmailId || 'Email Id' }}" matInput formControlName="emailId" pattern="[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}">
@@ -70,7 +70,7 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblFirstName || 'First Name' }}</mat-label>
+          <mat-label>{{ translationData.lblFirstName || 'First Name' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
               <input maxlength="30" placeholder="{{ translationData.lblFirstName || 'First Name' }}" matInput formControlName="firstName">
@@ -93,7 +93,7 @@
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblLastName || 'Last Name' }}</mat-label>
+          <mat-label>{{ translationData.lblLastName || 'Last Name' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
               <input maxlength="20" placeholder="{{ translationData.lblLastName || 'Last Name' }}" matInput formControlName="lastName">

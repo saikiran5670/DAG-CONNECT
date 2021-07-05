@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.reports.entity.fleetFuel;
 
 namespace net.atos.daf.ct2.reports
 {
@@ -44,5 +45,7 @@ namespace net.atos.daf.ct2.reports
         Task<bool> GetChartInfo(EcoScoreDataServiceRequest request);
         Task<List<DriverFilter>> GetDriverList(List<string> vins);
         Task<List<FleetFuel_VehicleGraph>> GetFleetFuelDetailsForVehicleGraphs(FleetFuelFilter fleetFuelFilters);
+
+        Task<List<FleetFuelTripDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
     }
 }
