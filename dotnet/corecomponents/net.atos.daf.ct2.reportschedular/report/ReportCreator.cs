@@ -73,9 +73,9 @@ namespace net.atos.daf.ct2.reportscheduler.report
             var globalSettings = new GlobalSettings
             {
                 ColorMode = ColorMode.Color,
-                Orientation = Orientation.Landscape,
+                Orientation = Orientation.Portrait,
                 PaperSize = PaperKind.A4,
-                Margins = new MarginSettings { Top = 10, Right = 10, Left = 10, Bottom = 10 },
+                Margins = new MarginSettings { Top = 10 }
                 //DocumentTitle = "PDF Report"//,
                 //Out = $@"C:\Users\harneet.r (58879009)\Documents\POC\Employee_Report{ReportSchedulerData.Id}.pdf"
             };
@@ -86,11 +86,9 @@ namespace net.atos.daf.ct2.reportscheduler.report
             var objectSettings = new ObjectSettings
             {
                 PagesCount = true,
-                HtmlContent = htmlText,
-                //Page = "https://code-maze.com/", //USE THIS PROPERTY TO GENERATE PDF CONTENT FROM AN HTML PAGE
-                //WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css") },
+                HtmlContent = htmlText,//WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css") },
                 HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
-                FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = "Report Footer", Spacing = 0 }
+                FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = ReportSchedulerData.ReportName, Spacing = 0 }
             };
 
             var pdf = new HtmlToPdfDocument()
