@@ -26,11 +26,16 @@ namespace net.atos.daf.ct2.map.repository
 
                 DynamicParameters parameter = new DynamicParameters();
                 //MapLatLngRange addressRange = _mapHelper.GetLatLonRange(lookupAddress.Latitude, lookupAddress.Longitude);
+                //Consider Co-ordinates decimal upto 4 places, that means accurancy of 11 meter or less 
+                //There would be only 9 address under 11 metere range 
+                //an accuracy of 4 decimal places is accurate to 11.1 meters (+/- 5.55 m) 
                 string queryStatement = @"select   id, longitude, latitude, address, created_at, modified_at                                 
-                                   from master.geolocationaddress 
-                                   where 1=1 and latitude =any(@latitudeRange) or  longitude =any(@longitudeRange)";
-                parameter.Add("@latitudeRange", lookupAddress.Latitude);
-                parameter.Add("@longitudeRange", lookupAddress.Longitude);
+                                            from master.geolocationaddress 
+                                            where TRUNC(CAST(latitude as numeric),4)= TRUNC(CAST(@latitude as numeric),4) 
+                                            and TRUNC(CAST(longitude as numeric),4)= TRUNC(CAST(@longitude as numeric),4) ";
+
+                parameter.Add("@latitude", lookupAddress.Latitude);
+                parameter.Add("@longitude", lookupAddress.Longitude);
 
                 var result = await _dataMartDataAccess.QueryFirstOrDefaultAsync<LookupAddress>(queryStatement, parameter);
                 lookupAddress = result as LookupAddress;

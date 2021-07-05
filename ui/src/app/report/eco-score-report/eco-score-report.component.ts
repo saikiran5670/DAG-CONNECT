@@ -65,7 +65,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy';
   prefUnitFormat: any = 'dunit_Metric';
   accountPrefObj: any;
-  displayedColumns = ['detailsdrivername', 'detailsdriverid', 'detailsstarttime', 'detailsendtime', 'detailsdrivetime', 'detailsworktime', 'detailsservicetime', 'detailsresttime', 'detailsavailabletime'];
+  displayedColumns = ['select', 'ecoScoreRanking', 'detailsdrivername', 'detailsdriverid', 'ecoScore'];
   detaildisplayedColumns = ['specificdetailstarttime', 'specificdetaildrivetime', 'specificdetailworktime', 'specificdetailservicetime', 'specificdetailresttime', 'specificdetailavailabletime'];
   fromDisplayDate: any;
   toDisplayDate : any;
@@ -88,26 +88,31 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   minDriverValue: any;
   profileList: any=[];
   showField: any = {
+    select: true,
+    ecoScoreRanking: true,
     detailsdriverid:true,
     detailsdrivername:true,
-    detailsendtime:true,
-    detailsstarttime:true,
-    detailsworktime:true,
-    detailsavailabletime:true,
-    detailsservicetime:true,
-    detailsresttime:true,
-    detailsdrivetime:true,
-    specificdetailsendtime:true,
-    specificdetailstarttime:true,
-    specificdetailworktime:true,
-    specificdetailavailabletime:true,
-    specificdetailservicetime:true,
-    specificdetailresttime:true,
-    specificdetaildrivetime:true,
-    specificdetailchart : true,
+    ecoScore: true,
+    // detailsendtime:true,
+    // detailsstarttime:true,
+    // detailsworktime:true,
+    // detailsavailabletime:true,
+    // detailsservicetime:true,
+    // detailsresttime:true,
+    // detailsdrivetime:true,
+    // specificdetailsendtime:true,
+    // specificdetailstarttime:true,
+    // specificdetailworktime:true,
+    // specificdetailavailabletime:true,
+    // specificdetailservicetime:true,
+    // specificdetailresttime:true,
+    // specificdetaildrivetime:true,
+    // specificdetailchart : true,
   };  
   finalDriverList : any = [];
   finalVehicleList : any =[];
+  selectedEcoScore = new SelectionModel(true, []);
+  
   prefMapData: any = [
     {
       key: 'da_report_alldriver_general_driverscount',
@@ -254,7 +259,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       minTripCheck: [false, []],
       minTripValue: ['', []],
       minDriverCheck: [false, []],
-      minDriverValue: ['', []]
+      minDriverValue: ['', []],
+      profile: ['', []]
     });
     let translationObj = {
       id: 0,
@@ -527,7 +533,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
           "driverActivities": [
             {
               "driverId": "NL B000384974000000",
-              "driverName": "Helloupdated Helloupdated",
+              "driverName": "James Brooks",
               "vin": "RERAE75PC0E261011",
               "activityDate": 1604338846000,
               "startTime": 0,
@@ -537,11 +543,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "availableTime": 0,
               "workTime": 0,
               "driveTime": 1218000,
-              "serviceTime": 1218000
+              "serviceTime": 1218000,
+              "ranking": 1,
+              "ecoScore":9.75
             },
             {
               "driverId": "D2",
-              "driverName": "Ayrton Senna",
+              "driverName": "Victor",
               "vin": "RERAE75PC0E261011",
               "activityDate": 1604338846000,
               "startTime": 0,
@@ -551,11 +559,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "availableTime": 1218000,
               "workTime": 0,
               "driveTime": 0,
-              "serviceTime": 1218000
+              "serviceTime": 1218000,
+              "ranking": 3,
+              "ecoScore":9.25
             },
             {
               "driverId": "UK DB08176162022802",
-              "driverName": "Helloupdated Helloupdated",
+              "driverName": "John davis",
               "vin": "RERAE75PC0E261011",
               "activityDate": 1604338846000,
               "startTime": 0,
@@ -565,11 +575,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "availableTime": 0,
               "workTime": 0,
               "driveTime": 1218000,
-              "serviceTime": 1218000
+              "serviceTime": 1218000,
+              "ranking": 2,
+              "ecoScore":9.5
             },
             {
               "driverId": "D2",
-              "driverName": "Ayrton Senna",
+              "driverName": "Frank D",
               "vin": "RERAE75PC0E261011",
               "activityDate": 1604338846000,
               "startTime": 0,
@@ -579,11 +591,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "availableTime": 1218000,
               "workTime": 0,
               "driveTime": 0,
-              "serviceTime": 1218000
+              "serviceTime": 1218000,
+              "ranking": 4,
+              "ecoScore":9
             },
             {
               "driverId": "UK DB08176162022802",
-              "driverName": "Helloupdated Helloupdated",
+              "driverName": "Louis",
               "vin": "RERAE75PC0E261011",
               "activityDate": 1604338846000,
               "startTime": 0,
@@ -593,11 +607,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "availableTime": 0,
               "workTime": 0,
               "driveTime": 1218000,
-              "serviceTime": 1218000
+              "serviceTime": 1218000,
+              "ranking": 7,
+              "ecoScore":7.25
             },
             {
               "driverId": "D2",
-              "driverName": "Ayrton Senna",
+              "driverName": "Louis",
               "vin": "RERAE75PC0E261011",
               "activityDate": 1604338846000,
               "startTime": 0,
@@ -607,11 +623,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "availableTime": 1218000,
               "workTime": 0,
               "driveTime": 0,
-              "serviceTime": 1218000
+              "serviceTime": 1218000,
+              "ranking": 5,
+              "ecoScore":8.25
             },
             {
               "driverId": "UK DB08176162022802",
-              "driverName": "Helloupdated Helloupdated",
+              "driverName": "Chris",
               "vin": "RERAE75PC0E261011",
               "activityDate": 1604338846000,
               "startTime": 0,
@@ -621,11 +639,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "availableTime": 0,
               "workTime": 0,
               "driveTime": 1218000,
-              "serviceTime": 1218000
+              "serviceTime": 1218000,
+              "ranking": 6,
+              "ecoScore":8.15
             },
             {
               "driverId": "D2",
-              "driverName": "Ayrton Senna",
+              "driverName": "Harry",
               "vin": "RERAE75PC0E261011",
               "activityDate": 1604338846000,
               "startTime": 0,
@@ -635,11 +655,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "availableTime": 1218000,
               "workTime": 0,
               "driveTime": 0,
-              "serviceTime": 1218000
+              "serviceTime": 1218000,
+              "ranking": 8,
+              "ecoScore":7.25
             },
             {
               "driverId": "UK DB08176162022802",
-              "driverName": "Helloupdated Helloupdated",
+              "driverName": "Dale",
               "vin": "RERAE75PC0E261011",
               "activityDate": 1604338846000,
               "startTime": 0,
@@ -649,11 +671,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "availableTime": 0,
               "workTime": 0,
               "driveTime": 1218000,
-              "serviceTime": 1218000
+              "serviceTime": 1218000,
+              "ranking": 9,
+              "ecoScore":6.75
             },
             {
               "driverId": "D2",
-              "driverName": "Ayrton Senna",
+              "driverName": "Wayne",
               "vin": "RERAE75PC0E261011",
               "activityDate": 1604338846000,
               "startTime": 0,
@@ -663,11 +687,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "availableTime": 1218000,
               "workTime": 0,
               "driveTime": 0,
-              "serviceTime": 1218000
+              "serviceTime": 1218000,
+              "ranking": 15,
+              "ecoScore":5.25
             },
             {
               "driverId": "UK DB08176162022802",
-              "driverName": "Helloupdated Helloupdated",
+              "driverName": "Marcus",
               "vin": "RERAE75PC0E261011",
               "activityDate": 1604338846000,
               "startTime": 0,
@@ -677,11 +703,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "availableTime": 0,
               "workTime": 0,
               "driveTime": 1218000,
-              "serviceTime": 1218000
+              "serviceTime": 1218000,
+              "ranking": 16,
+              "ecoScore":5.25
             },
             {
               "driverId": "D2",
-              "driverName": "Ayrton Senna",
+              "driverName": "Philip",
               "vin": "RERAE75PC0E261011",
               "activityDate": 1604338846000,
               "startTime": 0,
@@ -691,7 +719,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "availableTime": 1218000,
               "workTime": 0,
               "driveTime": 0,
-              "serviceTime": 1218000
+              "serviceTime": 1218000,
+              "ranking": 17,
+              "ecoScore":4.75
             }
           ],
           "code": 200,
@@ -1258,6 +1288,47 @@ let finalGroupDataList = [];
   }
 
   onCompare(event: any){
-    
+    const numSelected = this.selectedEcoScore.selected.length;
+    if(numSelected > 4){
+      return;
+    }
+  }
+
+  masterToggleForEcoScore(){
+    this.isAllSelectedForEcoScore()
+    ? this.selectedEcoScore.clear()
+    : this.dataSource.data.forEach((row) =>
+      this.selectedEcoScore.select(row)
+    );
+  }
+
+  isAllSelectedForEcoScore() {
+    const numSelected = this.selectedEcoScore.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  setClass(row: any){
+    //console.log(row);
+  }
+
+  setStyle(row: any){
+    if(row.ecoScore < 5)
+      return {'width': + ((row.ecoScore / 10) * 100) +'%', 'height': '18px', 'background-color': '#f44336'};
+    else if(row.ecoScore > 7.5)
+      return {'width': + ((row.ecoScore / 10) * 100) +'%', 'height': '18px', 'background-color': '#33cc33'};
+    else
+      return {'width': + ((row.ecoScore / 10) * 100) +'%', 'height': '18px', 'background-color': '#ff9900'};
+  }
+  selectedDriversEcoScore = [];
+  rowSelected(row: any){
+    console.log(row);
+    const numSelected = this.selectedEcoScore.selected.length;
+    if(numSelected <= 4)
+      this.selectedDriversEcoScore.push(row);
+  }
+  deselectDriver(driver: any){
+    console.log(driver);
+    //this.selectedDriversEcoScore.
   }
 }
