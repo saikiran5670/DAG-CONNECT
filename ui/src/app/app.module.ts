@@ -41,8 +41,8 @@ import { NotificationAdvancedFilterComponent } from './configuration/alerts/crea
 import {AutocompleteLibModule} from 'angular-ng-autocomplete';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
-  return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
-  //return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
+  //return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
+  return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
 @NgModule({
