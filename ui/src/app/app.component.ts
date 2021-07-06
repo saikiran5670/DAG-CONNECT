@@ -71,7 +71,7 @@ export class AppComponent {
     fueldeviationreport: 'Fuel Deviation Report',
     vehicleperformancereport: 'Vehicle Performance Report',
     drivetimemanagement: 'Drive Time Management',
-    ecoscorereport: 'Ecoscore Report',
+    ecoscorereport: 'Eco Score Report',
     ecoscoreprofilemanagement: 'EcoScore Profile Management',
     alerts: 'Alerts',
     landmarks: 'Landmarks',
@@ -134,7 +134,7 @@ export class AppComponent {
         fueldeviationreport: 'Fuel Deviation Report',
         vehicleperformancereport: 'Vehicle Performance Report',
         drivetimemanagement: 'Drive Time Management',
-        ecoscorereport: 'Ecoscore Report'
+        ecoscorereport: 'Eco Score Report'
       }
     },
     configuration: {
@@ -548,7 +548,7 @@ export class AppComponent {
       lblFuelDeviationReport: 'Fuel Deviation Report',
       lblvehiclePerformanceReport: 'Vehicle Performance Report',
       lblDriveTimeManagement: 'Drive Time Management',
-      lblEcoscoreReport: 'Ecoscore Report',
+      lblEcoscoreReport: 'Eco Score Report',
       lblConfiguration: "Configuration",
       lblAlerts: 'Alerts',
       lblLandmarks: 'Landmarks',

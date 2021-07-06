@@ -15,6 +15,10 @@ import { ReportMapService } from '../../report-map.service';
 import {ThemePalette} from '@angular/material/core';
 import {ProgressBarMode} from '@angular/material/progress-bar';
 
+import { Router, NavigationExtras } from '@angular/router';
+
+
+
 @Component({
   selector: 'app-fleet-fuel-report-vehicle',
   templateUrl: './fleet-fuel-report-vehicle.component.html',
@@ -78,6 +82,32 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   lineChartData5:  ChartDataSets[] = [{ data: [], label: '' },];
   lineChartData6:  ChartDataSets[] = [{ data: [], label: '' },];
   lineChartLabels: Label[] =this.chartsLabelsdefined;
+  lineChartOptions1 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'values(Minutes)'    
+        }
+      }]
+    }
+  };
   lineChartOptions = {
     responsive: true,
     legend: {
@@ -99,7 +129,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'value()'    
+          labelString: 'values()'    
         }
       }]
     }
@@ -192,7 +222,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
     },
     {
-      vehicleName: 'Name List 001',
+      vehicleName: 'Name List 002',
       vin : 'XLRTEM4100G041999',
       plateNo : '12 HH 70',
       dist : 20.10,
@@ -250,6 +280,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
               private translationService: TranslationService,
               private organizationService: OrganizationService,
               private reportService: ReportService,
+              private router: Router,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private reportMapService: ReportMapService) { }
 
@@ -409,7 +440,9 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       this.co2Chart.push(e.co2Emission);
       this.distanceChart.push(e.distance);
       this.fuelConsumptionChart.push(e.fuelConsumtion);
-      this.idleDuration.push(e.idleDuration);
+      let minutes = this.convertTimeToMinutes(e.idleDuration);
+      // this.idleDuration.push(e.idleDuration);
+      this.idleDuration.push(minutes);
     })
 
     this.barChartLegend = true;
@@ -511,7 +544,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
   
 
- 
+  convertTimeToMinutes(milisec: any){
+    let newMin = milisec / 60000;
+    return newMin;
+  }
 
   resetChartData(){
     this.lineChartLabels=[];
@@ -975,6 +1011,15 @@ setVehicleGroupAndVehiclePreSelection() {
 
   exportAsPDFFile(){
     
+  }
+  gotoTrip(vehData: any){
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromFleetUtilReport: true,
+        vehicleData: vehData
+      }
+    };
+    this.router.navigate(['report/tripreport'], navigationExtras);
   }
 
 }
