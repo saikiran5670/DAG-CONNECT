@@ -46,7 +46,8 @@ export class ReportService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.reportServiceUrl}/getuserpreferencereportdatacolumn?reportId=${reportId}&accountId=${accountId}&organizationId=${orgId}`, headers)
+      //.get<any[]>(`${this.reportServiceUrl}/getuserpreferencereportdatacolumn?reportId=${reportId}&accountId=${accountId}&organizationId=${orgId}`, headers)
+      .get<any[]>(`${this.reportServiceUrl}/userpreference/get?reportId=${reportId}&accountId=${accountId}&organizationId=${orgId}`, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -56,7 +57,8 @@ export class ReportService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.reportServiceUrl}/gettripdetails?StartDateTime=${startTime}&EndDateTime=${endTime}&VIN=${vin}`, headers)
+      //.get<any[]>(`${this.reportServiceUrl}/gettripdetails?StartDateTime=${startTime}&EndDateTime=${endTime}&VIN=${vin}`, headers)
+      .get<any[]>(`${this.reportServiceUrl}/trip/getdetails?StartDateTime=${startTime}&EndDateTime=${endTime}&VIN=${vin}`, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -114,7 +116,8 @@ export class ReportService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.reportServiceUrl}/getreportdetails`, headers)
+      //.get<any[]>(`${this.reportServiceUrl}/getreportdetails`, headers)
+      .get<any[]>(`${this.reportServiceUrl}/getdetails`, headers)
       .pipe(catchError(this.handleError));
   }
 
