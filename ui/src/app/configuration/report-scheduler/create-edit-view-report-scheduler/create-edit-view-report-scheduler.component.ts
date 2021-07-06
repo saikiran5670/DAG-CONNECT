@@ -127,7 +127,7 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
     this.RecipientList = this.reportSchedulerParameterData["receiptEmails"];
 
     this.breadcumMsg = this.getBreadcum();
-    if(this.actionType == 'edit' || this.actionType == 'view'){
+    if(this.actionType == 'edit'){
       this.setDefaultValues();
     }
 
@@ -182,14 +182,14 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
         this.dispatchTimeDisplay = '23:59:59';
         this.selectedStartTime = "00:00";
         this.selectedEndTime = "23:59";
-        this.selectedDispatchTime = "23:59";
+        // this.selectedDispatchTime = "23:59";
       } else{
         this.startTimeDisplay = '12:00 AM';
         this.endTimeDisplay = '11:59 PM';
         this.dispatchTimeDisplay = '11:59 PM';
         this.selectedStartTime = "00:00";
         this.selectedEndTime = "23:59";
-        this.selectedDispatchTime = "23:59";
+        // this.selectedDispatchTime = "23:59";
       }
   }
 
@@ -219,14 +219,17 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
 
 
   setDefaultValues(){
-    // this.imageMaxMsg = false;
-    // this.imageEmptyMsg = false;
-    // this.categoryForm.get('categoryName').setValue(this.selectedRowData.subCategoryId == 0 ? this.selectedRowData.parentCategoryName : this.selectedRowData.subCategoryName);
-    // this.categoryForm.get('type').setValue(this.selectedRowData.organizationId ? (this.selectedRowData.organizationId  > 0 ? 'Regular': 'Global' ) : 'Global');
-    // this.categoryForm.get('categoryDescription').setValue(this.selectedRowData.description);
-    // this.selectedCategoryType = this.selectedRowData.subCategoryId == 0 ? 'category' : 'subcategory';
-    // this.categoryForm.get('parentCategory').setValue(this.selectedRowData.parentCategoryId);
-    // //this.categoryForm.get('uploadFile').setValue(this.selectedRowData.icon);
+    this.selectionTab= this.selectedRowData.frequencyType;
+
+    this.reportSchedulerForm.get('reportType').setValue(this.selectedRowData.reportType);
+    // this.reportSchedulerForm.get('vehicleGroup').setValue(this.selectedRowData.vehicleGroup);
+    // this.reportSchedulerForm.get('vehicle').setValue(this.selectedRowData);
+    this.reportSchedulerForm.get('language').setValue(this.selectedRowData.code);
+    this.reportSchedulerForm.get('recipientEmail').setValue(this.selectedRowData);
+    this.reportSchedulerForm.get('driver').setValue(this.selectedRowData.scheduledReportDriverRef.length > 1 ? 0 : this.selectedRowData.scheduledReportDriverRef[0].driverId);
+    this.reportSchedulerForm.get('mailSubject').setValue(this.selectedRowData.mailSubject);
+    this.reportSchedulerForm.get('mailDescription').setValue(this.selectedRowData.mailDescription);
+
   }
   
   getBreadcum() {
@@ -517,8 +520,7 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
       }
 
     }
-    if(this.actionType == 'create'){ //-- create schedule
-      let scheduledReportObj = 
+    let scheduledReportObj = 
         {
           "id": 0,
           "scheduleReportId": 0,
@@ -531,6 +533,8 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
           "createdAt": 0
         }
       scheduledReport.push(scheduledReportObj);
+    if(this.actionType == 'create'){ //-- create schedule
+      
 
       this.recipientEmailList.forEach(element => {
         let scheduledReportRecipientObj = 
@@ -605,18 +609,81 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
        }, (error) => {
         
        });
-    }else{ //-- update category
+    }else{ //-- update schedule
+
+      this.recipientEmailList.forEach(element => {
+        let emailAddress= this.selectedRowData.scheduledReportRecipient.filter(item => item.email == element);
+        
+        let scheduledReportRecipientObj = 
+        {
+          "id": emailAddress.length > 0 ? emailAddress.id : 0,
+          "scheduleReportId": this.selectedRowData.id,
+          "email": element,
+          "state": emailAddress.length > 0 ? emailAddress.state : "A",
+          "createdAt": emailAddress.length > 0 ? emailAddress.createdAt : 0,
+          "modifiedAt": 0
+        }
+        scheduledReportRecipient.push(scheduledReportRecipientObj);
+      });
+
+      let scheduledReportVehicleRef = [
+        {
+          "scheduleReportId": this.selectedRowData.id,
+          "vehicleGroupId": this.reportSchedulerForm.controls.vehicleGroup.value,
+          "vehicleId": this.reportSchedulerForm.controls.vehicle.value,
+          "state": "A",
+          "createdAt": 0,
+          "createdBy": this.selectedRowData.createdBy,
+          "modifiedAt": 0,
+          "modifiedBy": this.accountId
+        }
+      ]
+
+      let scheduledReportDriverRef = [
+        {
+          "scheduleReportId": this.selectedRowData.id,
+          "driverId": this.reportSchedulerForm.controls.driver.value,
+          "state": "A",
+          "createdAt": 0,
+          "createdBy": this.selectedRowData.createdBy,
+          "modifiedAt": 0,
+          "modifiedBy": this.accountId
+        }
+      ]
+     
       let updateObj: any = {
+        "id": this.selectedRowData.id,
+        "organizationId": this.selectedRowData.organizationId,
+        "reportId": this.selectedRowData.reportId,
+        "frequencyType": this.selectionTab,
+        "status": this.selectedRowData.status,
+        "type": "",
+        "startDate": startDate,
+        "endDate": endDate,
+        "code": this.reportSchedulerForm.controls.language.value,
+        "lastScheduleRunDate": 0,
+        "nextScheduleRunDate": nextScheduledRunDate,
+        "createdAt": this.selectedRowData.createdAt,
+        "createdBy": this.selectedRowData.createdBy,
+        "modifiedAt": 0,
+        "modifiedBy": this.accountId,
+        "mailSubject": this.reportSchedulerForm.controls.mailSubject.value,
+        "mailDescription": this.reportSchedulerForm.controls.mailDescription.value,
+        "reportDispatchTime": this.reportSchedulerForm.controls.reportDispatchTime.value,
+        "scheduledReport": scheduledReport,
+        "scheduledReportRecipient": scheduledReportRecipient,
+        "scheduledReportVehicleRef": scheduledReportVehicleRef,
+        "scheduledReportDriverRef": scheduledReportDriverRef
       }
-      // this.reportSchedulerService.updateLandmarkCategory(updateObj).subscribe((updatedData: any) => {
-      //   if(updatedData){
+      this.reportSchedulerService.updateReportScheduler(updateObj).subscribe((updatedData: any) => {
+        if(updatedData){
           this.scheduleCreatedMsg = this.getScheduleCreatedUpdatedMessage();
           let emitObj = { actionFlag: false, successMsg: this.scheduleCreatedMsg };
           this.backToPage.emit(emitObj);
-      //   }
-      // }, (error) => {
+        }
+      }, (error) => {
         
-      // });
+      });
     }
   }
 
