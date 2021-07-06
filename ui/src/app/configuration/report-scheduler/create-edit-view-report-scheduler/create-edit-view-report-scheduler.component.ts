@@ -7,6 +7,7 @@ import { TranslationService } from 'src/app/services/translation.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { Util } from '../../../shared/util';
 import * as moment from 'moment-timezone';
+import { start } from 'repl';
 
 @Component({
   selector: 'app-create-edit-view-report-scheduler',
@@ -65,6 +66,7 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
   invalidEmail: string;
   only10Emails: boolean= false;
   recipientEmailList: any= [];
+  status: boolean= true;
 
   constructor(private _formBuilder: FormBuilder, 
               private reportSchedulerService: ReportSchedulerService,
@@ -127,9 +129,7 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
     this.RecipientList = this.reportSchedulerParameterData["receiptEmails"];
 
     this.breadcumMsg = this.getBreadcum();
-    if(this.actionType == 'edit'){
-      this.setDefaultValues();
-    }
+    
 
     this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
       if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
@@ -141,6 +141,9 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
           let pref: any = {};
           this.proceedStep(prefData, pref);
         });
+      }
+      if(this.actionType == 'edit'){
+        this.setDefaultValues();
       }
     });
   }
@@ -219,16 +222,21 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
 
 
   setDefaultValues(){
-    this.selectionTab= this.selectedRowData.frequencyType;
+    this.selectionTab= this.selectedRowData[0].frequencyType;
+    this.selectionTimeRange(this.selectionTab);
+    this.reportSchedulerForm.get('reportDispatchTime').setValue(this.selectedRowData[0].reportDispatchTime)
 
-    this.reportSchedulerForm.get('reportType').setValue(this.selectedRowData.reportType);
-    // this.reportSchedulerForm.get('vehicleGroup').setValue(this.selectedRowData.vehicleGroup);
-    // this.reportSchedulerForm.get('vehicle').setValue(this.selectedRowData);
-    this.reportSchedulerForm.get('language').setValue(this.selectedRowData.code);
-    this.reportSchedulerForm.get('recipientEmail').setValue(this.selectedRowData);
-    this.reportSchedulerForm.get('driver').setValue(this.selectedRowData.scheduledReportDriverRef.length > 1 ? 0 : this.selectedRowData.scheduledReportDriverRef[0].driverId);
-    this.reportSchedulerForm.get('mailSubject').setValue(this.selectedRowData.mailSubject);
-    this.reportSchedulerForm.get('mailDescription').setValue(this.selectedRowData.mailDescription);
+    this.reportSchedulerForm.get('reportType').setValue(this.selectedRowData[0].reportId);
+    this.onChangeReportType(this.selectedRowData[0].reportId);
+    this.reportSchedulerForm.get('vehicleGroup').setValue(this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupId);
+    this.reportSchedulerForm.get('vehicle').setValue(this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleId);
+    this.reportSchedulerForm.get('language').setValue((this.selectedRowData[0].code).trim());
+    let recipientList= (this.selectedRowData[0].recipientList).replace(" ", "");
+    this.reportSchedulerForm.get('recipientEmail').setValue(recipientList);
+    this.reportSchedulerForm.get('driver').setValue(this.selectedRowData[0].scheduledReportDriverRef.length!= 0 ? (this.selectedRowData[0].scheduledReportDriverRef.length > 1 ? 0 : this.selectedRowData[0].scheduledReportDriverRef[0].driverId) : 0);
+    this.reportSchedulerForm.get('mailSubject').setValue(this.selectedRowData[0].mailSubject);
+    this.reportSchedulerForm.get('mailDescription').setValue(this.selectedRowData[0].mailDescription);
+    this.status= this.selectedRowData[0].status == 'A' ? true : false;
 
   }
   
@@ -278,36 +286,52 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
   }
 
   selectionTimeRange(timeRange: string){
+    let startDate, endDate;
+    if(this.actionType == 'create'){
+      startDate= this.getTodayDate();
+      endDate=  this.getTodayDate();
+    }
+    else{
+      startDate= Util.convertUtcToDateNoFormat(this.selectedRowData[0].startDate, this.prefTimeZone);
+      endDate= Util.convertUtcToDateNoFormat(this.selectedRowData[0].endDate, this.prefTimeZone);
+    }
     this.selectionTab = timeRange;
     switch(timeRange){
       case 'W': {
-        this.reportSchedulerForm.get('weeklyStartDay').setValue(1);
-        this.reportSchedulerForm.get('weeklyEndDay').setValue(0);
+        if(this.actionType == 'edit'){
+          this.reportSchedulerForm.get('weeklyStartDay').setValue(startDate.getDay());
+          this.reportSchedulerForm.get('weeklyEndDay').setValue(endDate.getDay());
+        }
+        else{
+          this.reportSchedulerForm.get('weeklyStartDay').setValue(1);
+          this.reportSchedulerForm.get('weeklyEndDay').setValue(0);
+        }
         break;
       }
       case 'B': {
-        this.biweeklyEndDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
-        this.reportSchedulerForm.get('biweeklyEndDay').setValue(this.weekdays.filter(item => item.id == (this.biweeklyEndDateValue.getDay()))[0].value);
+       
+          this.biweeklyEndDateValue = this.setStartEndDateTime(endDate, this.selectedEndTime, 'end');
+          this.reportSchedulerForm.get('biweeklyEndDay').setValue(this.weekdays.filter(item => item.id == (this.biweeklyEndDateValue.getDay()))[0].value);
 
-        let startDate = new Date();
-        startDate.setDate(startDate.getDate() - 13);
-        this.biweeklyStartDateValue = (this.setStartEndDateTime(startDate, this.selectedStartTime, 'start'));
-        this.reportSchedulerForm.get('biweeklyStartDay').setValue(this.weekdays.filter(item => item.id == (this.biweeklyStartDateValue.getDay()))[0].value);
+          startDate= new Date(endDate);
+          startDate.setDate(startDate.getDate() - 13);
+          this.biweeklyStartDateValue = (this.setStartEndDateTime(startDate, this.selectedStartTime, 'start'));
+          this.reportSchedulerForm.get('biweeklyStartDay').setValue(this.weekdays.filter(item => item.id == (this.biweeklyStartDateValue.getDay()))[0].value);
         break;
       }
       case 'M': {
-        this.reportSchedulerForm.get('month').setValue((new Date()).getMonth());
-        this.selectedMonth = this.reportSchedulerForm.controls.month.value;
-        let date = new Date();
-        let year = date.getFullYear();
-        this.monthlyStartDateValue = new Date(year, this.selectedMonth, 1);
-        this.monthlyEndDateValue = new Date(year, this.selectedMonth + 1, 0);
+          this.reportSchedulerForm.get('month').setValue(startDate.getMonth());
+          this.selectedMonth = this.reportSchedulerForm.controls.month.value;
+          // let date = new Date();
+          let year = startDate.getFullYear();
+          this.monthlyStartDateValue = new Date(year, this.selectedMonth, 1);
+          this.monthlyEndDateValue = new Date(year, this.selectedMonth + 1, 0);
         break;
       }
       case 'Q': {
-        let date = new Date();
-        let currentMonth = date.getMonth();
-        let year = date.getFullYear();
+        // let date = new Date();
+        let currentMonth = startDate.getMonth();
+        let year = startDate.getFullYear();
 
         if(currentMonth >=0 && currentMonth<=2){
           this.reportSchedulerForm.get('quarter').setValue(0);
@@ -432,19 +456,24 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
     
   }
 
-  onChangeReportType(event){
-    this.showDriverList = this.ReportTypeList.filter(item => item.id == event.value)[0].isDriver == 'Y' ? true : false;
+  onChangeReportType(value){
+    this.showDriverList = this.ReportTypeList.filter(item => item.id == value)[0].isDriver == 'Y' ? true : false;
   }
 
   onChangeVehicleGroup(event){
     this.VehicleList = this.reportSchedulerParameterData["associatedVehicle"].filter(item => item.vehicleGroupId == event.value);
   }
 
-  validateRecipientEmails(event : any){
+  onChangeReportSchedulerStatus(){
+    this.status= !this.status;
+  }
+
+  validateRecipientEmails(value : any){
+    this.recipientEmailList= [];
     this.only10Emails= false;
     this.isInvalidEmail= false;
     this.invalidEmail = '';
-    this.recipientEmailList = event.target.value.split(",");
+    this.recipientEmailList = value.split(",");
     if(this.recipientEmailList.length <= 10){
       let pattern=/[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}/
       this.recipientEmailList.forEach(element => {
@@ -470,25 +499,45 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
 
     switch(this.selectionTab){
       case 'D': {
-        startDate = Util.convertDateToUtc(this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start'));
-        endDate = Util.convertDateToUtc(this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end'));
+        if(this.actionType= 'edit'){
+          startDate= this.selectedRowData[0].startDate;
+          endDate= this.selectedRowData[0].endDate;
 
-        let nextDate= new Date();
-        nextDate.setDate(nextDate.getDate()+1);
-        nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'));
+          let nextDate= new Date(endDate);
+          nextDate.setDate(nextDate.getDate()+1);
+          nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'));
+        }
+        else{
+          startDate = Util.convertDateToUtc(this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start'));
+          endDate = Util.convertDateToUtc(this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end'));
+
+          let nextDate= new Date();
+          nextDate.setDate(nextDate.getDate()+1);
+          nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDate, this.reportSchedulerForm.controls.reportDispatchTime.value+":00", 'start'));
+        }
         break;
       }
       case 'W': {
-        let startDateFromDay = this.getDateFromDay(this.reportSchedulerForm.controls.weeklyStartDay.value);
-        startDate = Util.convertDateToUtc(this.setStartEndDateTime(startDateFromDay, this.selectedStartTime, 'start'));
+        if(this.actionType == 'edit' && Util.convertUtcToDateNoFormat(this.selectedRowData[0].startDate, this.prefTimeZone).getDay() == this.reportSchedulerForm.controls.weeklyStartDay.value){
+          startDate= this.selectedRowData[0].startDate;
+          endDate= this.selectedRowData[0].endDate;
+          
+          let nextDateFromDay= new Date(endDate);
+          nextDateFromDay.setDate(nextDateFromDay.getDate()+1);
+          nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDateFromDay, this.selectedStartTime, 'start'));
+        }
+        else{
+          let startDateFromDay = this.getDateFromDay(this.reportSchedulerForm.controls.weeklyStartDay.value);
+          startDate = Util.convertDateToUtc(this.setStartEndDateTime(startDateFromDay, this.selectedStartTime, 'start'));
 
-        let endDateFromDay = startDateFromDay;
-        endDateFromDay.setDate(endDateFromDay.getDate()+6);
-        endDate = Util.convertDateToUtc(this.setStartEndDateTime(endDateFromDay, this.selectedEndTime, 'end'));
+          let endDateFromDay = startDateFromDay;
+          endDateFromDay.setDate(endDateFromDay.getDate()+6);
+          endDate = Util.convertDateToUtc(this.setStartEndDateTime(endDateFromDay, this.selectedEndTime, 'end'));
 
-        let nextDateFromDay= endDateFromDay;
-        nextDateFromDay.setDate(nextDateFromDay.getDate()+1);
-        nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDateFromDay, this.selectedStartTime, 'start'));
+          let nextDateFromDay= endDateFromDay;
+          nextDateFromDay.setDate(nextDateFromDay.getDate()+1);
+          nextScheduledRunDate = Util.convertDateToUtc(this.setStartEndDateTime(nextDateFromDay, this.selectedStartTime, 'start'));
+        }
         break;
       }
       case 'B': {
@@ -610,17 +659,20 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
         
        });
     }else{ //-- update schedule
+      if(this.recipientEmailList.length == 0){
+        this.validateRecipientEmails(this.reportSchedulerForm.controls.recipientEmail.value);
+      }
 
       this.recipientEmailList.forEach(element => {
-        let emailAddress= this.selectedRowData.scheduledReportRecipient.filter(item => item.email == element);
+        let emailAddress= this.selectedRowData[0].scheduledReportRecipient.filter(item => item.email == element);
         
         let scheduledReportRecipientObj = 
         {
-          "id": emailAddress.length > 0 ? emailAddress.id : 0,
-          "scheduleReportId": this.selectedRowData.id,
+          "id": emailAddress.length > 0 ? emailAddress[0].id : 0,
+          "scheduleReportId": this.selectedRowData[0].id,
           "email": element,
-          "state": emailAddress.length > 0 ? emailAddress.state : "A",
-          "createdAt": emailAddress.length > 0 ? emailAddress.createdAt : 0,
+          "state": emailAddress.length > 0 ? emailAddress[0].state : "A",
+          "createdAt": emailAddress.length > 0 ? emailAddress[0].createdAt : 0,
           "modifiedAt": 0
         }
         scheduledReportRecipient.push(scheduledReportRecipientObj);
@@ -628,12 +680,12 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
 
       let scheduledReportVehicleRef = [
         {
-          "scheduleReportId": this.selectedRowData.id,
+          "scheduleReportId": this.selectedRowData[0].id,
           "vehicleGroupId": this.reportSchedulerForm.controls.vehicleGroup.value,
           "vehicleId": this.reportSchedulerForm.controls.vehicle.value,
           "state": "A",
           "createdAt": 0,
-          "createdBy": this.selectedRowData.createdBy,
+          "createdBy": this.selectedRowData[0].createdBy,
           "modifiedAt": 0,
           "modifiedBy": this.accountId
         }
@@ -641,30 +693,30 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
 
       let scheduledReportDriverRef = [
         {
-          "scheduleReportId": this.selectedRowData.id,
+          "scheduleReportId": this.selectedRowData[0].id,
           "driverId": this.reportSchedulerForm.controls.driver.value,
           "state": "A",
           "createdAt": 0,
-          "createdBy": this.selectedRowData.createdBy,
+          "createdBy": this.selectedRowData[0].createdBy,
           "modifiedAt": 0,
           "modifiedBy": this.accountId
         }
       ]
      
       let updateObj: any = {
-        "id": this.selectedRowData.id,
-        "organizationId": this.selectedRowData.organizationId,
-        "reportId": this.selectedRowData.reportId,
+        "id": this.selectedRowData[0].id,
+        "organizationId": this.selectedRowData[0].organizationId,
+        "reportId": this.selectedRowData[0].reportId,
         "frequencyType": this.selectionTab,
-        "status": this.selectedRowData.status,
+        "status": this.status ? "A" : "I",
         "type": "",
         "startDate": startDate,
         "endDate": endDate,
         "code": this.reportSchedulerForm.controls.language.value,
         "lastScheduleRunDate": 0,
         "nextScheduleRunDate": nextScheduledRunDate,
-        "createdAt": this.selectedRowData.createdAt,
-        "createdBy": this.selectedRowData.createdBy,
+        "createdAt": this.selectedRowData[0].createdAt,
+        "createdBy": this.selectedRowData[0].createdBy,
         "modifiedAt": 0,
         "modifiedBy": this.accountId,
         "mailSubject": this.reportSchedulerForm.controls.mailSubject.value,

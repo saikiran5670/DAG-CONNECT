@@ -19,6 +19,11 @@ export class Util {
         return (_date);
     }
 
+    public static convertUtcToDateNoFormat(_utc: any, timeZone: any){
+        let _date: any = moment.utc(_utc).tz(timeZone);
+        return (_date._d);
+    }
+
     public static convertUtcToDateFormat(_utc: any,_format){
         let _date: any = moment.utc(_utc).format(_format);
         return (_date);

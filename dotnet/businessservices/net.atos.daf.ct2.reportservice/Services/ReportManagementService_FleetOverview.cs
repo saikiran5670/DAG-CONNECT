@@ -118,7 +118,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     HealthStatus = request.HealthStatus.ToList(),
                     OtherFilter = request.OtherFilters.ToList(),
                     DriverId = request.DriverIds.ToList(),
-                    VINIds = vehicleDeatilsWithAccountVisibility.Select(s => s.Vin).ToList(),
+                    VINIds = vehicleDeatilsWithAccountVisibility.Where(x => request.GroupIds.ToList().Contains(x.VehicleGroupId.ToString())).Select(x => x.Vin).ToList(),
                     Days = request.Days
                 };
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);

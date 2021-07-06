@@ -14,6 +14,14 @@ import { truncate } from 'fs';
 import { ReportMapService } from '../../report-map.service';
 import {ThemePalette} from '@angular/material/core';
 import {ProgressBarMode} from '@angular/material/progress-bar';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import { ViewChild } from '@angular/core';
+
+import { Router, NavigationExtras } from '@angular/router';
+
+
 
 @Component({
   selector: 'app-fleet-fuel-report-vehicle',
@@ -31,6 +39,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   'CO2EmmisionFuelEfficiency','idlingConsumptionWithPTO'];
   rankingColumns = ['ranking','vehicleName','vin','plateNo','consumption'];
   tripForm: FormGroup;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   searchExpandPanel: boolean = true;
   tableExpandPanel: boolean = true;
   rankingExpandPanel: boolean = false;
@@ -78,6 +87,32 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   lineChartData5:  ChartDataSets[] = [{ data: [], label: '' },];
   lineChartData6:  ChartDataSets[] = [{ data: [], label: '' },];
   lineChartLabels: Label[] =this.chartsLabelsdefined;
+  lineChartOptions1 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'values(Minutes)'    
+        }
+      }]
+    }
+  };
   lineChartOptions = {
     responsive: true,
     legend: {
@@ -99,7 +134,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'value()'    
+          labelString: 'values()'    
         }
       }]
     }
@@ -192,7 +227,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
     },
     {
-      vehicleName: 'Name List 001',
+      vehicleName: 'Name List 002',
       vin : 'XLRTEM4100G041999',
       plateNo : '12 HH 70',
       dist : 20.10,
@@ -250,6 +285,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
               private translationService: TranslationService,
               private organizationService: OrganizationService,
               private reportService: ReportService,
+              private router: Router,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private reportMapService: ReportMapService) { }
 
@@ -409,7 +445,9 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       this.co2Chart.push(e.co2Emission);
       this.distanceChart.push(e.distance);
       this.fuelConsumptionChart.push(e.fuelConsumtion);
-      this.idleDuration.push(e.idleDuration);
+      let minutes = this.convertTimeToMinutes(e.idleDuration);
+      // this.idleDuration.push(e.idleDuration);
+      this.idleDuration.push(minutes);
     })
 
     this.barChartLegend = true;
@@ -511,7 +549,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
   
 
- 
+  convertTimeToMinutes(milisec: any){
+    let newMin = milisec / 60000;
+    return newMin;
+  }
 
   resetChartData(){
     this.lineChartLabels=[];
@@ -970,11 +1011,131 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   exportAsExcelFile(){
-
+    this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Vehicle', sheet: 'sheet_name'});
   }
 
   exportAsPDFFile(){
+   
+    var doc = new jsPDF('p', 'mm', 'a4');
     
+  // let pdfColumns = this.getPDFHeaders();
+  let prepare = []
+    this.displayData.forEach(e=>{
+      var tempObj =[];
+      this.displayedColumns.forEach(element => {
+        switch(element){
+          case 'vehiclename' :{
+            tempObj.push(e.vehicleName);
+            break;
+          }
+          case 'vin' :{
+            tempObj.push(e.vin);
+            break;
+          }
+          case 'registrationnumber' :{
+            tempObj.push(e.registrationNumber);
+            break;
+          }
+          case 'distance' :{
+            tempObj.push(e.convertedDistance);
+            break;
+          }
+          case 'numberOfTrips' :{
+            tempObj.push(e.numberOfTrips);
+            break;
+          }
+          case 'tripTime' :{
+            tempObj.push(e.convertedTripTime);
+            break;
+          }
+          case 'drivingTime' :{
+            tempObj.push(e.convertedDrivingTime);
+            break;
+          }
+          case 'idleDuration' :{
+            tempObj.push(e.convertedIdleDuration);
+            break;
+          }
+          case 'stopTime' :{
+            tempObj.push(e.convertedStopTime);
+            break;
+          }
+          case 'averageSpeed' :{
+            tempObj.push(e.convertedAverageSpeed);
+            break;
+          }
+          case 'averageWeight' :{
+            tempObj.push(e.convertedAverageWeight);
+            break;
+          }
+          case 'averageDistancePerDay' :{
+            tempObj.push(e.convertedAverageDistance);
+            break;
+          }
+          case 'odometer' :{
+            tempObj.push(e.odometer);
+            break;
+          }
+        }
+      })
+
+      prepare.push(tempObj);    
+    });
+    
+    
+    let DATA = document.getElementById('charts');
+    html2canvas( DATA)
+    .then(canvas => {  
+      (doc as any).autoTable({
+        styles: {
+            cellPadding: 0.5,
+            fontSize: 12
+        },       
+        didDrawPage: function(data) {     
+            // Header
+            doc.setFontSize(14);
+            var fileTitle = "Fleet Fuel Report by Vehicle Details";
+            var img = "/assets/logo.png";
+            doc.addImage(img, 'JPEG',10,10,0,0);
+  
+            var img = "/assets/logo_daf.png"; 
+            doc.text(fileTitle, 14, 35);
+            doc.addImage(img, 'JPEG',150, 10, 0, 10);            
+        },
+        margin: {
+            bottom: 20, 
+            top:30 
+        }  
+      });
+        let fileWidth = 170;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
+        
+        const FILEURI = canvas.toDataURL('image/png')
+        // let PDF = new jsPDF('p', 'mm', 'a4');
+        let position = 0;
+        doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
+        doc.addPage();
+
+      (doc as any).autoTable({
+      // head: this.displayedColumns,
+      body: prepare,
+      theme: 'striped',
+      didDrawCell: data => {
+        //console.log(data.column.index)
+      }
+    })
+    doc.save('fleetFuelByVehicle.pdf');
+       
+    });     
+  }
+  gotoTrip(vehData: any){
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromFleetUtilReport: true,
+        vehicleData: vehData
+      }
+    };
+    this.router.navigate(['report/tripreport'], navigationExtras);
   }
 
 }

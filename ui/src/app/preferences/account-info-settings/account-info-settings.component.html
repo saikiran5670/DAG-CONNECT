@@ -390,13 +390,17 @@
                 </button>
                 <img *ngIf="uploadLogo != ''" [src]="uploadLogo" style="display: block; width: 30px; height: 30px;" />
               </div>
-              <div class="areaWidth max-width-20-per mobile-margin-right-0 myform-wrappe uploadArea" fxLayout="column" fxLayoutAlign="left">
-                <div fxLayout="row" fxLayoutAlign="space-between" class="areaWidth" style='margin-top: 4px;'>
+              <div class="areaWidth max-width-80-per mobile-margin-right-0 myform-wrappe uploadArea" fxLayout="column" fxLayoutAlign="left">
+                <mat-form-field appearance="outline">
+                  <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="Upload Logo" ></ngx-mat-file-input>
+                  <button mat-flat-button color="primary" matSuffix>{{ translationData.lblbrowse || 'Browse' }}</button>
+                </mat-form-field>
+                <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="areaWidth" style='margin-top: 4px;'>
                   <mat-form-field appearance="outline">
                       <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="Upload Logo" ></ngx-mat-file-input>
                       <button mat-flat-button color="primary" matSuffix>{{ translationData.lblbrowse || 'Browse' }}</button>
                   </mat-form-field>
-                </div>
+                </div> -->
               </div>
             </div>
             <span>{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting file format - .jpg, .png, .gif and Max size- 5 MB' }}</span>
