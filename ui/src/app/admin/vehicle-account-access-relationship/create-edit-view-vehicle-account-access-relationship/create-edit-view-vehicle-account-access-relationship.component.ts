@@ -95,7 +95,7 @@ export class CreateEditViewVehicleAccountAccessRelationshipComponent implements 
   getBreadcum(type: any){
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / 
     ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / 
-    ${this.translationData.lblAccessRelationshipManagement ? this.translationData.AccessRelationshipManagement : 'Access Relationship Management'} / 
+    ${this.translationData.lblAccessRelationshipManagement ? this.translationData.lblAccessRelationshipManagement : 'Access Relationship Management'} / 
     ${(type == 'view') ? (this.translationData.lblViewAccountAssociationDetails ? this.translationData.lblViewAccountAssociationDetails : 'View Account Association Details') : (this.translationData.lblEditAccountAssociationDetails ? this.translationData.lblEditAccountAssociationDetails : 'Edit Account Association Details')}`;
   }
 

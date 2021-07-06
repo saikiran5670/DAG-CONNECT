@@ -120,14 +120,13 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         /// <param name="orgId"></param>
         /// <returns></returns>
         internal reportservice.ReportUserPreferenceCreateRequest MapCreateReportUserPreferences(ReportUserPreferenceCreateRequest objUserPreferenceCreateRequest,
-                                                                                                int accountId, int orgId, int contextOrgId)
+                                                                                                int accountId, int orgId)
         {
             reportservice.ReportUserPreferenceCreateRequest objRequest = new reportservice.ReportUserPreferenceCreateRequest();
 
             objRequest.ReportId = objUserPreferenceCreateRequest.ReportId;
             objRequest.AccountId = accountId;
             objRequest.OrganizationId = orgId;
-            objRequest.ContextOrgId = contextOrgId;
 
             foreach (var attribute in objUserPreferenceCreateRequest.Attributes)
             {

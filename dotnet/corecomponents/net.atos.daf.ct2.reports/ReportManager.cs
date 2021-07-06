@@ -358,11 +358,11 @@ namespace net.atos.daf.ct2.reports
             return lstFleetFuelDetails;
         }
 
-        public async Task<List<FleetFuelTripDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters)
+        public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters)
         {
-            List<FleetFuelTripDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByVehicle(fleetFuelFilters);
+            List<FleetFuelDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByVehicle(fleetFuelFilters);
             return lstFleetFuelTripDetails;
-        }       
+        }
         #endregion
 
         #region Eco-Score Data service
@@ -371,6 +371,14 @@ namespace net.atos.daf.ct2.reports
 
         public Task<bool> GetChartInfo(EcoScoreDataServiceRequest request) => _reportRepository.GetChartInfo(request);
 
+        #endregion
+
+        #region VehicleHealthStatus
+        public async Task<VehicleHealthStatus> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest)
+        {
+            var data = await _reportRepository.GetVehicleHealthStatus(vehicleHealthStatusRequest);
+            return data;
+        }
         #endregion
     }
 }

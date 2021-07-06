@@ -6,6 +6,7 @@
         public long? FromDate { get; set; }
         public long? ToDate { get; set; }
         public string WarningType { get; set; }
+        public string LngCode { get; set; }
     }
 
 }
