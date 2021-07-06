@@ -126,7 +126,7 @@
         </mat-form-field>
       </div>
     </div>
-    <mat-table matTableExporter [dataSource]="rankingData" matSort>
+    <mat-table matTableExporter [dataSource]="rankingData" matSort #exporter="matTableExporter">
       <ng-container matColumnDef="ranking">
         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRanking || 'Ranking' }}
         </mat-header-cell>

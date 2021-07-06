@@ -186,9 +186,9 @@ export class ReportSchedulerComponent implements OnInit {
     //   driverTxt = driverTxt.slice(0, -2);
     // }
 
-    initdata[index].recipientList = recipientTxt; 
-    initdata[index].driverList = driverTxt;
-    initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt;
+    initdata[index].recipientList = recipientTxt.slice(0, -2); 
+    initdata[index].driverList = driverTxt.slice(0, -2);
+    initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt == "" ? vehicleGroupTxt : vehicleGroupTxt.slice(0, -2);
     initdata[index].lastScheduleRunDate = Util.convertUtcToDateFormat(element.lastScheduleRunDate, "MM/DD/YYYY");
     initdata[index].nextScheduleRunDate = Util.convertUtcToDateFormat(element.nextScheduleRunDate, "MM/DD/YYYY");
   });
@@ -283,15 +283,17 @@ getUnique(arr, comp) {
   }
 
   onViewReportScheduler(row: any, action: any) {
+    this.rowsData= [];
     this.createViewEditStatus= true;
     this.actionType = action;
     this.rowsData.push(row);
   }
 
   onEditReportScheduler(row: any, action : string) {
+    this.rowsData= [];
     this.createViewEditStatus= true;
     this.actionType = 'edit';
-    this.titleText = this.translationData.lblEditAlertDetails || "Edit Alert Details";
+    this.titleText = this.translationData.lblEditReportScheduler || "Edit Report Scheduler";
     this.rowsData.push(row);
   }
 

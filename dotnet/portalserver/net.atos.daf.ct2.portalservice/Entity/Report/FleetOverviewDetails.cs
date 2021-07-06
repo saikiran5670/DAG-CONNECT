@@ -45,4 +45,13 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public string LatestWarningGeolocationAddress { get; set; }
         public List<LiveFleetPosition> LiveFleetPositions { get; set; }
     }
+
+    public class VehicleHealthStatusRequest
+    {
+        public string VIN { get; set; }
+        public long? FromDate { get; set; }
+        public long? ToDate { get; set; }
+        public string WarningType { get; set; }
+        public string LngCode { get; set; }
+    }
 }
