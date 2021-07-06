@@ -301,7 +301,7 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
-        public async Task<List<FleetFuelTripDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters)
+        public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters)
         {
             try
             {
@@ -310,7 +310,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameterOfFilters.Add("@ToDate", fleetFuelFilters.EndDateTime);
                 parameterOfFilters.Add("@Vins", fleetFuelFilters.VINs);
                 string queryFleetUtilization = @"SELECT 
-                                                ,TS.vin
+                                                TS.vin
                                                 ,VH.name AS Name
                                                 ,VH.registration_no AS RegistrationNo
                                                 ,count(TS.trip_id) as numberoftrips
@@ -334,24 +334,20 @@ namespace net.atos.daf.ct2.reports.repository
                                                 ,sum (TS.cc_fuel_consumption) As CcFuelConsumption
                                                 ,sum (TS.fuel_consumption_cc_non_active) As CcFuelConsumptionCCNonActive
                                                 ,sum (TS.idling_consumption) As IdlingConsumption
-                                                ,sum (TS.dpa_score) As DPAScore
-                                                ,CASE WHEN TS.start_position IS NULL THEN '' ELSE TS.start_position END AS StartPosition
-                                                ,CASE WHEN TS.end_position IS NULL THEN '' ELSE TS.end_position END AS EndPosition
-                                                ,TS.start_position_lattitude AS StartPositionLattitude
-                                                ,TS.start_position_longitude AS StartPositionLongitude
-                                                ,TS.end_position_lattitude AS EndPositionLattitude
-                                                ,TS.end_position_longitude AS EndPositionLongitude
+                                                ,sum (TS.dpa_score) As DPAScore                                                                                          
                                                 FROM 
                                                 tripdetail.trip_statistics TS
-                                                left join master.vehicle VH on TS.vin=VH.vin
-                                                where TS.vin=@Vins and(start_time_stamp >= @FromDate and end_time_stamp<= @ToDate)
+                                                left join master.vehicle VH on TS.vin=VH.vin       
+                                                where TS.vin =ANY(@Vins) and (start_time_stamp >= @FromDate and end_time_stamp <= @ToDate)
                                                 GROUP by TS.VIN,date_trunc('day', to_timestamp(TS.start_time_stamp/1000)),VH.name ,VH.registration_no";
 
-                List<FleetFuelTripDetails> lstFleetDetails = (List<FleetFuelTripDetails>)await _dataMartdataAccess.QueryAsync<FleetFuelTripDetails>(queryFleetUtilization, parameterOfFilters);
-                return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelTripDetails>();
+
+
+                List<FleetFuelDetails> lstFleetDetails = (List<FleetFuelDetails>)await _dataMartdataAccess.QueryAsync<FleetFuelDetails>(queryFleetUtilization, parameterOfFilters);
+                return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
 
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
                 throw;
             }

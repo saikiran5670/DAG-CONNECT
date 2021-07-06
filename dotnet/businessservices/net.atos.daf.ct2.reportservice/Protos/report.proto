@@ -31,8 +31,15 @@ rpc GetFleetFuelDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetai
 rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetEcoScoreReportCompareDrivers (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
 rpc GetFleetOverviewDetails(FleetOverviewDetailsRequest) returns (FleetOverviewDetailsResponse);
-rpc GetVehicleHealthReport (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
-rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelTripDetailsResponse);
+rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthStatusResponse);
+rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
+}
+
+message VehicleHealthReportRequest{
+ string VIN = 1;
+ int64 FromDate = 2;
+ int64 ToDate = 3;
+ string WarningType = 4;
 }
 
 message VehicleSummary {
@@ -60,11 +67,12 @@ message  VehicleHealthWarning{
     double Longitude = 11;
 }
 
-message VehicleHealthStatus{
+message VehicleHealthStatusResponse{
 repeated VehicleSummary Summary = 1;
 repeated VehicleHealthWarning CurrentWarning= 2;
 repeated VehicleHealthWarning HistoryWarning= 3;
 Responsecode Code = 4;
+string Message = 5; 
 }
 
 enum Responsecode{
@@ -157,7 +165,6 @@ message ReportUserPreferenceCreateRequest{
     int32 AccountId=2;
     int32 ReportId=3;
     int32 OrganizationId=4;
-    int32 ContextOrgId=5;
 }
 
 message ReportUserPreferenceCreateResponse{
@@ -620,20 +627,20 @@ message FleetOverviewDetails
 	int64 StartTimeStamp=4;
 	int64 EndTimeStamp=5;
 	string Driver1Id=6;
-	string TripDistance=7;
-	string DrivingTime=8;
+	int32 TripDistance=7;
+	int32 DrivingTime=8;
 	int32 FuelConsumption=9;
-	int32 VehicleDrivingStatusType=10;
-	int32 OdometerVal=11;
+	string VehicleDrivingStatusType=10;
+	int64 OdometerVal=11;
 	int64 DistanceUntilNextService=12;
-	int64 LatestReceivedPositionLattitude=13;
+	double LatestReceivedPositionLattitude=13;
 	double LatestReceivedPositionLongitude=14;
 	double LatestReceivedPositionHeading=15;
-	int32 StartPositionLattitude=16;
+	double StartPositionLattitude=16;
 	double StartPositionLongitude=17;
 	double StartPositionHeading=18;
-	int32 LatestProcessedMessageTimeStamp=19;
-	int64 VehicleHealthStatusType=20;
+	int64 LatestProcessedMessageTimeStamp=19;
+	string VehicleHealthStatusType=20;
 	int32 LatestWarningClass=21;
 	int32 LatestWarningNumber=22;
 	string LatestWarningType=23;
@@ -692,38 +699,38 @@ message FleetFuelGraphs {
         double Date = 9;
 }
 message FleetFuelDetails {
-    string VehicleName = 1;
-    string VIN = 2;
-    string VehicleRegistrationNo = 3;
-    string Distance = 4;
-    string AverageDistancePerDay = 5;
-    string AverageSpeed = 6;
-    string MaxSpeed = 7;
-    string NumberOfTrips = 8;
-    string AverageGrossWeightComb = 9;
-    string FuelConsumed = 10;
-    string FuelConsumption = 11;
-    string CO2Emission = 12;
-    string IdleDuration = 13;
-    string PTODuration = 14;
-    string HarshBrakeDuration = 15;
-    string HeavyThrottleDuration = 16;
-    string CruiseControlDistance30_50 = 17;
-    string CruiseControlDistance50_75 = 18;
-    string CruiseControlDistance75 = 19;
-    string AverageTrafficClassification = 20;
-    string CCFuelConsumption = 21;
-    string FuelconsumptionCCnonactive = 22;
-    string IdlingConsumption = 23;
-    string DPAScore = 24;
-    string DPAAnticipationScore = 25;
-    string DPABrakingScore = 26;
-    string IdlingPTOScore = 27;
-    string IdlingPTO = 28;
-    string IdlingWithoutPTO = 29;
-    string IdlingWithoutPTOpercent = 30;
-    string FootBrake = 31;
-    string CO2Emmision = 32;
+    google.protobuf.StringValue VehicleName = 1;
+    google.protobuf.StringValue VIN = 2;
+    google.protobuf.StringValue VehicleRegistrationNo = 3;
+    int64 Distance = 4;
+    int64 AverageDistancePerDay = 5;
+    double AverageSpeed = 6;
+    int32 MaxSpeed = 7;
+    int32 NumberOfTrips = 8;
+   double AverageGrossWeightComb = 9;
+    double FuelConsumed = 10;
+    double FuelConsumption = 11;
+   double CO2Emission = 12;
+    double IdleDuration = 13;
+   double PTODuration = 14;
+   double HarshBrakeDuration = 15;
+   double HeavyThrottleDuration = 16;
+   double CruiseControlDistance30_50 = 17;
+   double CruiseControlDistance50_75 = 18;
+   double CruiseControlDistance75 = 19;
+   double AverageTrafficClassification = 20;
+   double CCFuelConsumption = 21;
+   double FuelconsumptionCCnonactive = 22;
+   int32 IdlingConsumption = 23;
+    double DPAScore = 24;
+    google.protobuf.StringValue DPAAnticipationScore = 25;
+    google.protobuf.StringValue DPABrakingScore = 26;
+    google.protobuf.StringValue IdlingPTOScore = 27;
+    google.protobuf.StringValue IdlingPTO = 28;
+    google.protobuf.StringValue IdlingWithoutPTO = 29;
+    google.protobuf.StringValue IdlingWithoutPTOpercent = 30;
+    google.protobuf.StringValue FootBrake = 31;
+    google.protobuf.StringValue CO2Emmision = 32;
 }
 message FleetFuelTripDetails {
     string VehicleName = 1;

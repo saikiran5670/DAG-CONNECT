@@ -575,7 +575,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                var request = _mapper.MapCreateReportUserPreferences(objUserPreferenceCreateRequest, _userDetails.AccountId, GetUserSelectedOrgId(), GetContextOrgId());
+                var request = _mapper.MapCreateReportUserPreferences(objUserPreferenceCreateRequest, _userDetails.AccountId, GetContextOrgId());
                 var response = await _reportServiceClient.CreateReportUserPreferenceAsync(request);
 
                 if (response.Code == Responsecode.Success)
@@ -803,7 +803,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        [HttpGet]
+        [HttpPost]
         [Route("fleetoverview/getfleetoverviewdetails")]
         public async Task<IActionResult> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
         {
@@ -825,19 +825,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     foreach (var fleetoverviewItem in response.FleetOverviewDetailList)
                     {
-                        if (fleetoverviewItem.LatestGeolocationAddressId == 0)
+                        if (fleetoverviewItem.LatestGeolocationAddressId == 0 && fleetoverviewItem.LatestReceivedPositionLattitude != 0 && fleetoverviewItem.LatestReceivedPositionLongitude != 0)
                         {
                             GetMapRequest getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.LatestReceivedPositionLattitude, fleetoverviewItem.LatestReceivedPositionLongitude);
                             fleetoverviewItem.LatestGeolocationAddressId = getMapRequestLatest.Id;
                             fleetoverviewItem.LatestGeolocationAddress = getMapRequestLatest.Address;
                         }
-                        if (fleetoverviewItem.LatestWarningGeolocationAddressId == 0)
+                        if (fleetoverviewItem.LatestWarningGeolocationAddressId == 0 && fleetoverviewItem.LatestWarningPositionLatitude != 0 && fleetoverviewItem.LatestWarningPositionLongitude != 0)
                         {
                             GetMapRequest getMapRequestWarning = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.LatestWarningPositionLatitude, fleetoverviewItem.LatestWarningPositionLongitude);
                             fleetoverviewItem.LatestWarningGeolocationAddressId = getMapRequestWarning.Id;
                             fleetoverviewItem.LatestWarningGeolocationAddress = getMapRequestWarning.Address;
                         }
-                        if (fleetoverviewItem.StartGeolocationAddressId == 0)
+                        if (fleetoverviewItem.StartGeolocationAddressId == 0 && fleetoverviewItem.StartPositionLattitude != 0 && fleetoverviewItem.StartPositionLongitude != 0)
                         {
                             GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.StartPositionLattitude, fleetoverviewItem.StartPositionLongitude);
                             fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
@@ -977,7 +977,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FleetFuelFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetFuelFilterRequest>(filters);
                 _logger.Info("GetFleetFuelDetailsByVehicle method in Report (for Fleet Fuel consumption details by vehicle) API called.");
                 var data = await _reportServiceClient.GetFleetFuelTripDetailsByVehicleAsync(objFleetFilter);
-                if (data?.FleetFuelTripDetails?.Count > 0)
+                if (data?.FleetFuelDetails?.Count > 0)
                 {
                     data.Message = ReportConstants.GET_FLEET_FUEL_SUCCESS_MSG;
                     return Ok(data);

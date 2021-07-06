@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.reports.repository
             vehicleHealthStatus.VehicleSummary.FromDate = vehicleHealthStatusRequest?.FromDate;
             vehicleHealthStatus.VehicleSummary.ToDate = vehicleHealthStatusRequest?.ToDate;
             vehicleHealthStatus.VehicleSummary.WarningType = vehicleHealthStatusRequest.WarningType ?? "All";
-            vehicleHealthStatus.HistoryWarning = await GetHistoryWarnning(vehicleHealthStatusRequest.VIN);
+            vehicleHealthStatus.HistoryWarning = await GetHistoryWarning(vehicleHealthStatusRequest);
             return vehicleHealthStatus;
         }
         private async Task<VehicleSummary> GetVehicleHealthSummary(string vin)
@@ -73,10 +73,10 @@ namespace net.atos.daf.ct2.reports.repository
         }
 
 
-        public async Task<List<VehicleHealthWarning>> GetHistoryWarnning(string vin)
+        public async Task<List<VehicleHealthWarning>> GetHistoryWarning(VehicleHealthStatusRequest request)
         {
             var parameter = new DynamicParameters();
-            parameter.Add("@vin", vin);
+            parameter.Add("@vin", request.VIN);
             string query = @" SELECT lws.id, dri.driver_id as DriverId ,dri.first_name as DriverFirstName ,dri.last_name as DriverLastName,
                               lcs.vin as Vin, lws.warning_time_stamp as WarningTimestamp, lws.warning_class as WarningClass, lws.warning_number as WarningNumber, lws.latitude as WarningLat,
                               lws.longitude as WarningLng, lws.vehicle_health_status_type as VehicleHealthStatusEnum, lws.vehicle_driving_status_type as VehicleDrivingStatusEnum,
@@ -88,7 +88,25 @@ namespace net.atos.daf.ct2.reports.repository
                               where lcs.vin =@vin   
                               order by lcs.end_time_stamp DESC";
             var data = await _dataMartdataAccess.QueryAsync<VehicleHealthWarning>(query, parameter);
-            return data.ToList();
+            var warningList = data.ToList();
+            GetWarningDetails(warningList, request.LngCode);
+            return warningList;
+        }
+        public async void GetWarningDetails(List<VehicleHealthWarning> warningList, string lngCode)
+        {
+            foreach (var vehicleHealthWarning in warningList)
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@warningClass", vehicleHealthWarning.WarningClass);
+                parameter.Add("@warningNumber", vehicleHealthWarning.WarningNumber);
+                parameter.Add("@code", lngCode);
+                string query = @" SELECT id, code, type, veh_type, class, number, description as Name, advice as Advice from master.dtcwarning
+                               where class=@warningClass and number =@warningNumber and((@code != '' and code = 'EN-GB') or(@code = '' and code = ''))";
+                var data = await _dataAccess.QueryFirstOrDefaultAsync<VehicleHealthWarning>(query, parameter);
+                vehicleHealthWarning.Name = data.Name;
+                vehicleHealthWarning.Advice = data.Advice;
+            }
+
         }
 
 
