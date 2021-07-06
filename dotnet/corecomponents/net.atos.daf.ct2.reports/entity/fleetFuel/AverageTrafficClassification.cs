@@ -7,8 +7,9 @@ namespace net.atos.daf.ct2.reports.entity
     public class AverageTrafficClassification
     {
         public int Id { get; set; }
-        public decimal MaxValue { get; set; }
-        public decimal MinValue { get; set; }
+        public double MaxValue { get; set; }
+        public double MinValue { get; set; }
         public string Key { get; set; }
+        public string Value { get; set; }
     }
 }

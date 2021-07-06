@@ -160,7 +160,7 @@
         </div> 
       </mat-expansion-panel>
     </mat-card>
-    <div *ngIf="allDriversSelected && !driverSelected">
+    <div *ngIf="allDriversSelected && !driverSelected && !compareEcoScore">
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='initData.length == 0'>
       <mat-expansion-panel [(expanded)]="noDetailsExpandPanel" class="full-width" fxLayoutGap="10px">
         <mat-expansion-panel-header class="full-width" >
@@ -374,5 +374,11 @@
       [displayedColumns]='detaildisplayedColumns'  [showField]='showField' (backToMainPage)="backToMainPage()" [driverSelected]='driverSelected'
     ></app-driver-time-detail>
   </div> -->
+  <div *ngIf="compareEcoScore">
+    <!-- <app-eco-score-driver-compare [translationData]='translationData' [driverDetails]='tableDetailsInfoObj' [detailConvertedData]='detailConvertedData'
+      [displayedColumns]='detaildisplayedColumns'  [showField]='showField' (backToMainPage)="backToMainPage()" [driverSelected]='driverSelected'>
+    </app-eco-score-driver-compare> -->
+    <app-eco-score-driver-compare (backToMainPage)='backToMainPage()'></app-eco-score-driver-compare>
+  </div>
   </form>
 </div>

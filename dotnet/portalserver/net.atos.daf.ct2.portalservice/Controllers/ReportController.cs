@@ -905,7 +905,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-        /* TODO :: Un Comment Once Setup of Driver is completed
+        /* TODO :: Un Comment Once Setup of Driver is completed      */
         [HttpPost]
         [Route("fleetfuel/getdetails/driver")]
         public async Task<IActionResult> GetFleetFuelDetailsByDriver([FromBody] Entity.Report.ReportFleetFuelFilter request)
@@ -937,7 +937,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        */
+  
 
         [HttpPost]
         [Route("fleetfuel/getdetails/vehiclegraph")]
