@@ -78,6 +78,32 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   lineChartData5:  ChartDataSets[] = [{ data: [], label: '' },];
   lineChartData6:  ChartDataSets[] = [{ data: [], label: '' },];
   lineChartLabels: Label[] =this.chartsLabelsdefined;
+  lineChartOptions1 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'values(Minutes)'    
+        }
+      }]
+    }
+  };
   lineChartOptions = {
     responsive: true,
     legend: {
@@ -99,7 +125,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'value()'    
+          labelString: 'values()'    
         }
       }]
     }
@@ -409,7 +435,9 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       this.co2Chart.push(e.co2Emission);
       this.distanceChart.push(e.distance);
       this.fuelConsumptionChart.push(e.fuelConsumtion);
-      this.idleDuration.push(e.idleDuration);
+      let minutes = this.convertTimeToMinutes(e.idleDuration);
+      // this.idleDuration.push(e.idleDuration);
+      this.idleDuration.push(minutes);
     })
 
     this.barChartLegend = true;
@@ -511,7 +539,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
   
 
- 
+  convertTimeToMinutes(milisec: any){
+    let newMin = milisec / 60000;
+    return newMin;
+  }
 
   resetChartData(){
     this.lineChartLabels=[];
