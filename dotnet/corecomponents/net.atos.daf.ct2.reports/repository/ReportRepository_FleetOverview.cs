@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
                 var parameterFleetOverview = new DynamicParameters();
-                parameterFleetOverview.Add("@vin", fleetOverviewFilter.VINIds);
+                parameterFleetOverview.Add("@vins", fleetOverviewFilter.VINIds);
                 string queryFleetOverview = @"select 
                     lcts.id as lcts_Id,
                     lcts.trip_id as lcts_TripId,

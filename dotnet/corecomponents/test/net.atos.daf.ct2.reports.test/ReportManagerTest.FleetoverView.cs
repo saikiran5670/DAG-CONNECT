@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.reports.test
         public async Task GetHistoryWarnning_Test()
         {
             var vehicleHealthStatusRequest = new VehicleHealthStatusRequest() { VIN = "XLRAS47MS0E808080" };
-            var result = await _reportRepository.GetHistoryWarnning("XLRAS47MS0E808080");
+            var result = await _reportRepository.GetHistoryWarnning(vehicleHealthStatusRequest);
             Assert.IsNotNull(result);
         }
 
