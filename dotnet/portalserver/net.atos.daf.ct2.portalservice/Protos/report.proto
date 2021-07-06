@@ -157,7 +157,6 @@ message ReportUserPreferenceCreateRequest{
     int32 AccountId=2;
     int32 ReportId=3;
     int32 OrganizationId=4;
-    int32 ContextOrgId=5;
 }
 
 message ReportUserPreferenceCreateResponse{
