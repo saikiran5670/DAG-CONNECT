@@ -80,8 +80,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                        Attributes = new List<reports.entity.UserPreferenceAttribute>(),
                        OrganizationId = request.OrganizationId,
                        ReportId = request.ReportId,
-                       AccountId = request.AccountId,
-                       ContextOrgId = request.ContextOrgId
+                       AccountId = request.AccountId
                    };
 
             foreach (var attribute in request.Attributes)

@@ -154,7 +154,7 @@ export class ReportSchedulerComponent implements OnInit {
     let vehicleGroupTxt: any = '';
 
     element.scheduledReportRecipient.forEach(resp => {
-      recipientTxt += resp.email + '\n';
+      recipientTxt += resp.email + ', ';
     });
     if(element.scheduledReportDriverRef.length == 1){
       driverTxt += element.scheduledReportDriverRef[0].driverName;

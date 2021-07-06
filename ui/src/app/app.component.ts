@@ -71,7 +71,7 @@ export class AppComponent {
     fueldeviationreport: 'Fuel Deviation Report',
     vehicleperformancereport: 'Vehicle Performance Report',
     drivetimemanagement: 'Drive Time Management',
-    ecoscorereport: 'Ecoscore Report',
+    ecoscorereport: 'Eco Score Report',
     ecoscoreprofilemanagement: 'EcoScore Profile Management',
     alerts: 'Alerts',
     landmarks: 'Landmarks',
@@ -97,7 +97,7 @@ export class AppComponent {
     shop: 'Shop',
     information: 'Information',
     legalnotices: 'Legal Notices',
-    termsAndconditionhistory: 'Terms & Conditions History',
+    termsAndconditionhistory: 'Terms And Conditions History',
     dtctranslation: 'DTC Translation'
   }
 
@@ -134,7 +134,7 @@ export class AppComponent {
         fueldeviationreport: 'Fuel Deviation Report',
         vehicleperformancereport: 'Vehicle Performance Report',
         drivetimemanagement: 'Drive Time Management',
-        ecoscorereport: 'Ecoscore Report'
+        ecoscorereport: 'Eco Score Report'
       }
     },
     configuration: {
@@ -219,7 +219,7 @@ export class AppComponent {
       icon: "notes",
       externalLink: false,
       pageTitles: {
-        termsAndconditionhistory: 'Terms & Conditions History'
+        termsAndconditionhistory: 'Terms And Conditions History'
       }
     }
   }
@@ -548,7 +548,7 @@ export class AppComponent {
       lblFuelDeviationReport: 'Fuel Deviation Report',
       lblvehiclePerformanceReport: 'Vehicle Performance Report',
       lblDriveTimeManagement: 'Drive Time Management',
-      lblEcoscoreReport: 'Ecoscore Report',
+      lblEcoscoreReport: 'Eco Score Report',
       lblConfiguration: "Configuration",
       lblAlerts: 'Alerts',
       lblLandmarks: 'Landmarks',
@@ -575,7 +575,7 @@ export class AppComponent {
       lblShop: 'Shop',
       lblInformation: 'Information',
       lblLegalNotices: 'Legal Notices',
-      lblTermsAndConditionHistory: 'Terms & Conditions History',
+      lblTermsAndConditionHistory: 'Terms And Conditions History',
       lblDTCTranslation: "DTC Translation"
     }
   }

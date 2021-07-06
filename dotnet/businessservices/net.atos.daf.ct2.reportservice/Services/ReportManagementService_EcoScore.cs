@@ -495,7 +495,6 @@ namespace net.atos.daf.ct2.reportservice.Services
                 IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
                 var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
                 var roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
-                var res = JsonConvert.SerializeObject(roleBasedUserPreferences);
                 if (userPreferencesExists)
                 {
                     var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);

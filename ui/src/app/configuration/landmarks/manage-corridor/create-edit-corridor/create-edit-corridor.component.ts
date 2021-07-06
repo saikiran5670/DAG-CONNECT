@@ -60,7 +60,7 @@ export class CreateEditCorridorComponent implements OnInit {
   getBreadcum() {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
-    ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / 
+    ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmarks"} / 
     ${(this.actionType == 'edit') ? (this.translationData.lblEditCorridorDetails ? this.translationData.lblEditCorridorDetails : 'Edit Corridor Details') : (this.actionType == 'view') ? (this.translationData.lblViewCorridorDetails ? this.translationData.lblViewCorridorDetails : 'View Corridor Details') : (this.translationData.lblCreateNewCorridor ? this.translationData.lblCreateNewCorridor : 'Create New Corridor')}`;
   }
 

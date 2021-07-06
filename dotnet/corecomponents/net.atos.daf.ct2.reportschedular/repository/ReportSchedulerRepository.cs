@@ -189,7 +189,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
                 parameterReportSchedular.Add("@status", report.Status);
                 parameterReportSchedular.Add("@type", report.Type);
-                parameterReportSchedular.Add("@start_date", report.OrganizationId);
+                parameterReportSchedular.Add("@start_date", report.StartDate);
                 parameterReportSchedular.Add("@end_date", report.EndDate);
                 parameterReportSchedular.Add("@code", report.Code);
                 parameterReportSchedular.Add("@last_schedule_run_date", report.LastScheduleRunDate);
@@ -447,7 +447,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
                 parameterReportSchedular.Add("@status", report.Status);
                 parameterReportSchedular.Add("@type", report.Type);
-                parameterReportSchedular.Add("@start_date", report.OrganizationId);
+                parameterReportSchedular.Add("@start_date", report.StartDate);
                 parameterReportSchedular.Add("@end_date", report.EndDate);
                 parameterReportSchedular.Add("@code", report.Code);
                 parameterReportSchedular.Add("@last_schedule_run_date", report.LastScheduleRunDate);
