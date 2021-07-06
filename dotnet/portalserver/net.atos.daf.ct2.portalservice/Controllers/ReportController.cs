@@ -809,19 +809,43 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                Entity.Report.FleetOverviewDetails fleetOverviewDetails = new Entity.Report.FleetOverviewDetails();
-                var fleetOverviewDetailsRequest = new FleetOverviewDetailsRequest();
-                //fleetOverviewFilterRequest.AccountId = _userDetails.AccountId;
-                //fleetOverviewFilterRequest.OrganizationId = GetContextOrgId();
-                //fleetOverviewFilterRequest.RoleId = _userDetails.RoleId;
-                //fleetOverviewFilterRequest.AccountId = 171;
-                //fleetOverviewFilterRequest.OrganizationId = 36;
-                //fleetOverviewFilterRequest.RoleId = 61;
+                string filters = JsonConvert.SerializeObject(fleetOverviewFilter);
+                FleetOverviewDetailsRequest fleetOverviewDetailsRequest = JsonConvert.DeserializeObject<FleetOverviewDetailsRequest>(filters);
+                fleetOverviewDetailsRequest.AccountId = _userDetails.AccountId;
+                fleetOverviewDetailsRequest.OrganizationId = GetContextOrgId();
+                fleetOverviewDetailsRequest.RoleId = _userDetails.RoleId;
+
+                fleetOverviewDetailsRequest.AccountId = 171;
+                fleetOverviewDetailsRequest.OrganizationId = 36;
+                fleetOverviewDetailsRequest.RoleId = 61;
                 FleetOverviewDetailsResponse response = await _reportServiceClient.GetFleetOverviewDetailsAsync(fleetOverviewDetailsRequest);
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
                 if (response.Code == Responsecode.Success)
+                {
+                    foreach (var fleetoverviewItem in response.FleetOverviewDetailList)
+                    {
+                        if (fleetoverviewItem.LatestGeolocationAddressId == 0)
+                        {
+                            GetMapRequest getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.LatestReceivedPositionLattitude, fleetoverviewItem.LatestReceivedPositionLongitude);
+                            fleetoverviewItem.LatestGeolocationAddressId = getMapRequestLatest.Id;
+                            fleetoverviewItem.LatestGeolocationAddress = getMapRequestLatest.Address;
+                        }
+                        if (fleetoverviewItem.LatestWarningGeolocationAddressId == 0)
+                        {
+                            GetMapRequest getMapRequestWarning = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.LatestWarningPositionLatitude, fleetoverviewItem.LatestWarningPositionLongitude);
+                            fleetoverviewItem.LatestWarningGeolocationAddressId = getMapRequestWarning.Id;
+                            fleetoverviewItem.LatestWarningGeolocationAddress = getMapRequestWarning.Address;
+                        }
+                        if (fleetoverviewItem.StartGeolocationAddressId == 0)
+                        {
+                            GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.StartPositionLattitude, fleetoverviewItem.StartPositionLongitude);
+                            fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
+                            fleetoverviewItem.StartGeolocationAddress = getMapRequestStart.Address;
+                        }
+                    }
                     return Ok(response.FleetOverviewDetailList);
+                }
                 if (response.Code == Responsecode.InternalServerError)
                     return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
                 return StatusCode((int)response.Code, response.Message);

@@ -627,10 +627,10 @@ message FleetOverviewDetails
 	int32 OdometerVal=11;
 	int64 DistanceUntilNextService=12;
 	int64 LatestReceivedPositionLattitude=13;
-	double LatestReceivedPositionint64itude=14;
+	double LatestReceivedPositionLongitude=14;
 	double LatestReceivedPositionHeading=15;
 	int32 StartPositionLattitude=16;
-	double StartPositionint64itude=17;
+	double StartPositionLongitude=17;
 	double StartPositionHeading=18;
 	int32 LatestProcessedMessageTimeStamp=19;
 	int64 VehicleHealthStatusType=20;
@@ -639,7 +639,7 @@ message FleetOverviewDetails
 	string LatestWarningType=23;
 	int64 LatestWarningTimestamp=24;
 	double LatestWarningPositionLatitude=25;
-	double LatestWarningPositionint64itude=26;
+	double LatestWarningPositionLongitude=26;
 	string Vid=27;
 	string RegistrationNo=28;
 	string DriverFirstName=29;
