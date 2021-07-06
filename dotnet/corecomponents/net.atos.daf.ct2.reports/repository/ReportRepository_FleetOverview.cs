@@ -183,7 +183,7 @@ namespace net.atos.daf.ct2.reports.repository
                     on TRUNC(CAST(lcts.latest_received_position_lattitude as numeric),4)= TRUNC(CAST(latgeoadd.latitude as numeric),4) 
                     and TRUNC(CAST(lcts.latest_received_position_longitude as numeric),4) = TRUNC(CAST(latgeoadd.longitude as numeric),4)
                     left join master.geolocationaddress stageoadd
-                    on TRUNC(CAST(lcts.start_position_latitude as numeric),4)= TRUNC(CAST(stageoadd.latitude as numeric),4) 
+                    on TRUNC(CAST(lcts.start_position_lattitude as numeric),4)= TRUNC(CAST(stageoadd.latitude as numeric),4) 
                     and TRUNC(CAST(lcts.start_position_longitude as numeric),4) = TRUNC(CAST(stageoadd.longitude as numeric),4)
                     left join master.geolocationaddress wangeoadd
                     on TRUNC(CAST(lcts.latest_warning_position_latitude as numeric),4)= TRUNC(CAST(wangeoadd.latitude as numeric),4) 
