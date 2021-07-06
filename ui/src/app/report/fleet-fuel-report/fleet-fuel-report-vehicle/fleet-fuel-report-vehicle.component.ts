@@ -17,8 +17,6 @@ import {ProgressBarMode} from '@angular/material/progress-bar';
 
 import { Router, NavigationExtras } from '@angular/router';
 
-import {ThemePalette} from '@angular/material/core';
-import {ProgressBarMode} from '@angular/material/progress-bar';
 
 
 @Component({
