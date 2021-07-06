@@ -37,6 +37,9 @@ export class VehicleConnectSettingsComponent implements OnInit {
   connectedAll:any;
   totalVehicles: any = 0;
   legendsDisabled: boolean = false;
+  loadVehData: any = [];
+  connectedOn:any=[];
+  connectedOff:any=[];
  
   constructor(private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private translationService: TranslationService, private dialog: MatDialog,) {
     this.defaultTranslation();  
@@ -82,6 +85,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
     this.vehicleService.getVehiclesData(this.accountOrganizationId).subscribe((vehData: any) => {
       this.hideloader();
       this.updateDataSource(vehData);
+      this.loadVehData = vehData;
       this.vehicleOptInOut = [];
       this.connectedAll = false;  
       this.totalVehicles= vehData.length;
@@ -164,35 +168,54 @@ export class VehicleConnectSettingsComponent implements OnInit {
   }
 
   getVehicleData(item: any){
-    let obj = {
-      opt_In: 'I',
-      modifiedBy: this.accountId,
-      vehicleId:Number(item)
-    }    
+    let obj = {};    
+    this.loadVehData.forEach(element => {
+      if(element.id == item)
+      {
+        let optInStatus='';
+        if(element.optIn == 'U' ||element.optIn == 'H'){
+          optInStatus = 'I';
+          this.connectedOn.push(element.id)
+        }
+        else{
+          optInStatus = 'U';
+          this.connectedOff.push(element.id)
+        }
+        obj = {
+          opt_In: optInStatus,
+          modifiedBy: this.accountId,
+          vehicleId:Number(item)
+        }
+      }    
+    }); 
     return obj;
   }
  
   onChangeConnectedAllStatus(rowData: any){    
     if( this.vehicleOptInOut.length > 0){    
+    let connectedData: any = []; 
+    this.connectedOn=[];
+    this.connectedOff=[];
+    this.vehicleOptInOut.forEach(element => {
+      connectedData.push(this.getVehicleData(element));
+    });
+    let connectedOffData = this.connectedOff.length != 0  ? this.connectedOff.length  + ' will be change the status from the connected On to Off!   ' : '';
+    let connectedOnData = this.connectedOn.length != 0  ? this.connectedOn.length  + ' will be change the status from the connected Off to On!     ' : '';
     const options = {
       title: this.translationData.lblConnected || "Confirmation",
-      message: this.translationData.lblYouwanttoDetails || "Are you sure want to change all vehicle status Connected  # ?\n Out of "+ this.totalVehicles +" vehicles "+ this.vehicleOptInOut.length  + " will be change the status from the connected Off to On!",   
+      message: this.translationData.lblYouwanttoDetails || "Are you sure want to change all vehicle status? \n Out of "+ this.totalVehicles +" vehicles    "+ connectedOnData  + connectedOffData,   
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.optIn == 'I') ? this.translationData.lblDeactivate || "Connected Off" : this.translationData.lblActivate || " Connected On",
+      confirmText: this.translationData.lblConnected || "Confirm",
       status: rowData.optIn == 'I' ? 'On to Off' : 'Off to On' ,
       name: rowData.name
-    };
+    };      
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = false;
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
-      if(res == true){           
-       let connectedData: any = []; 
-        this.vehicleOptInOut.forEach(element => {
-          connectedData.push(this.getVehicleData(element));
-        });  
+      if(res == true){     
         this.vehicleService.updatevehicleconnection(connectedData).subscribe((data) => {
             this.loadVehicleData();           
           }, error => {
