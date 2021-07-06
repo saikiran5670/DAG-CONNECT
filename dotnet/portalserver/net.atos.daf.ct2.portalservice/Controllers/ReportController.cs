@@ -575,7 +575,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                var request = _mapper.MapCreateReportUserPreferences(objUserPreferenceCreateRequest, _userDetails.AccountId, GetUserSelectedOrgId(), GetContextOrgId());
+                var request = _mapper.MapCreateReportUserPreferences(objUserPreferenceCreateRequest, _userDetails.AccountId, GetContextOrgId());
                 var response = await _reportServiceClient.CreateReportUserPreferenceAsync(request);
 
                 if (response.Code == Responsecode.Success)
