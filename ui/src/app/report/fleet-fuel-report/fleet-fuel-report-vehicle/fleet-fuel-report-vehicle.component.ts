@@ -19,6 +19,10 @@ import { jsPDF } from 'jspdf';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import { ViewChild } from '@angular/core';
 
+import { Router, NavigationExtras } from '@angular/router';
+
+
+
 @Component({
   selector: 'app-fleet-fuel-report-vehicle',
   templateUrl: './fleet-fuel-report-vehicle.component.html',
@@ -223,7 +227,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
     },
     {
-      vehicleName: 'Name List 001',
+      vehicleName: 'Name List 002',
       vin : 'XLRTEM4100G041999',
       plateNo : '12 HH 70',
       dist : 20.10,
@@ -281,6 +285,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
               private translationService: TranslationService,
               private organizationService: OrganizationService,
               private reportService: ReportService,
+              private router: Router,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private reportMapService: ReportMapService) { }
 
@@ -1122,6 +1127,15 @@ setVehicleGroupAndVehiclePreSelection() {
     doc.save('fleetFuelByVehicle.pdf');
        
     });     
+  }
+  gotoTrip(vehData: any){
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromFleetUtilReport: true,
+        vehicleData: vehData
+      }
+    };
+    this.router.navigate(['report/tripreport'], navigationExtras);
   }
 
 }
