@@ -125,7 +125,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   selectedDriverOption: any;
   selectedDriverId: String;
   selectedDriverName: String;
-  
+  compareEcoScore: boolean = false;
   prefMapData: any = [
     {
       key: 'da_report_alldriver_general_driverscount',
@@ -1034,7 +1034,7 @@ let finalGroupDataList = [];
       didDrawPage: function(data) {     
           // Header
           doc.setFontSize(14);
-          var fileTitle = "Driver Details";
+          var fileTitle = "Eco Score Report";
           var img = "/assets/logo.png";
           doc.addImage(img, 'JPEG',10,10,0,0);
  
@@ -1087,6 +1087,7 @@ let finalGroupDataList = [];
   }
 
   backToMainPage(){
+    this.compareEcoScore = false;
     this.driverSelected = false;
     this.updateDataSource(this.initData);
     this.ecoScoreForm.get('driver').setValue(0);
@@ -1345,6 +1346,7 @@ let finalGroupDataList = [];
   }
 
   onCompare(event: any){
+    this.compareEcoScore = true;
     const numSelected = this.selectedEcoScore.selected.length;
     if(numSelected > 4){
       return;
