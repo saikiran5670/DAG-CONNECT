@@ -90,9 +90,9 @@ namespace net.atos.daf.ct2.notification.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@email", emailId.ToLower());
-                var query = @"select id, email, salutation, first_name, last_name,organization_id from master.account where lower(email) = @email and state='A'";
+                var query = @"select id, email, salutation, first_name, last_name from master.account where lower(email) = @email and state='A'";
 
-                dynamic result = await _dataAccess.QuerySingleAsync<dynamic>(query, parameter);
+                dynamic result = await _dataAccess.QueryFirstOrDefaultAsync<dynamic>(query, parameter);
 
                 return MapAccount(result);
             }
