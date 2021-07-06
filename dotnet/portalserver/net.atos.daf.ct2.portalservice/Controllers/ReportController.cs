@@ -803,7 +803,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        [HttpGet]
+        [HttpPost]
         [Route("fleetoverview/getfleetoverviewdetails")]
         public async Task<IActionResult> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
         {
@@ -825,19 +825,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     foreach (var fleetoverviewItem in response.FleetOverviewDetailList)
                     {
-                        if (fleetoverviewItem.LatestGeolocationAddressId == 0)
+                        if (fleetoverviewItem.LatestGeolocationAddressId == 0 && fleetoverviewItem.LatestReceivedPositionLattitude != 0 && fleetoverviewItem.LatestReceivedPositionLongitude != 0)
                         {
                             GetMapRequest getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.LatestReceivedPositionLattitude, fleetoverviewItem.LatestReceivedPositionLongitude);
                             fleetoverviewItem.LatestGeolocationAddressId = getMapRequestLatest.Id;
                             fleetoverviewItem.LatestGeolocationAddress = getMapRequestLatest.Address;
                         }
-                        if (fleetoverviewItem.LatestWarningGeolocationAddressId == 0)
+                        if (fleetoverviewItem.LatestWarningGeolocationAddressId == 0 && fleetoverviewItem.LatestWarningPositionLatitude != 0 && fleetoverviewItem.LatestWarningPositionLongitude != 0)
                         {
                             GetMapRequest getMapRequestWarning = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.LatestWarningPositionLatitude, fleetoverviewItem.LatestWarningPositionLongitude);
                             fleetoverviewItem.LatestWarningGeolocationAddressId = getMapRequestWarning.Id;
                             fleetoverviewItem.LatestWarningGeolocationAddress = getMapRequestWarning.Address;
                         }
-                        if (fleetoverviewItem.StartGeolocationAddressId == 0)
+                        if (fleetoverviewItem.StartGeolocationAddressId == 0 && fleetoverviewItem.StartPositionLattitude != 0 && fleetoverviewItem.StartPositionLongitude != 0)
                         {
                             GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.StartPositionLattitude, fleetoverviewItem.StartPositionLongitude);
                             fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;

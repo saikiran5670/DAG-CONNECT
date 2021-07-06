@@ -142,16 +142,6 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
-  getEcoScoreProfiles(){
-    let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
-    return this.httpClient
-      .get<any[]>(`${this.reportServiceUrl}/ecoscore/getprofiles`, headers)
-      .pipe(catchError(this.handleError));
-  }
-
   getCalendarDetails(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -163,13 +153,59 @@ export class ReportService {
       )
       .pipe(catchError(this.handleError));
   }
-  
-  
-  private handleError(errResponse: HttpErrorResponse) {
-      console.error('Error : ', errResponse.error);
-      return throwError(
-        errResponse
-      );
+
+  getEcoScoreProfiles(){
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.reportServiceUrl}/ecoscore/getprofiles`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getEcoScoreProfileKPIs(profileId: number): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+   return this.httpClient
+      .get<any>(`${this.reportServiceUrl}/ecoscore/getprofilekpis?ProfileId=${profileId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  createEcoScoreProfile(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/ecoscore/createprofile`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }  
+
+  updateEcoScoreProfile(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .put<any[]>(
+        `${this.reportServiceUrl}/ecoscore/updateprofile`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }  
+
+  deleteEcoScoreProfile(profileId: number): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+   return this.httpClient
+      .delete<any>(`${this.reportServiceUrl}/ecoscore/deleteprofile?ProfileId=${profileId}`, headers)
+      .pipe(catchError(this.handleError));
   }
 
   getGraphDetails(data: any): Observable<any[]> {
@@ -183,5 +219,12 @@ export class ReportService {
       )
       .pipe(catchError(this.handleError));
   }
+
+  private handleError(errResponse: HttpErrorResponse) {
+    console.error('Error : ', errResponse.error);
+    return throwError(
+      errResponse
+    );
+}
 
 }
