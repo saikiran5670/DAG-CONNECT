@@ -152,11 +152,17 @@ export class ReportMapService {
         let bubble: any;
         categoryPOIMarker.addEventListener('pointerenter', function (evt) {
           bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-            content:`<div>
-            <b>POI Name:</b> ${element.poiName}<br>
-            <b>Category:</b> ${element.categoryName}<br>
-            <b>Address:</b> ${element.poiAddress}
-            </div>`
+            content:`<table style='width: 350px;'>
+            <tr>
+              <td style='width: 100px;'>POI Name:</td> <td><b>${element.poiName}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>Category:</td> <td><b>${element.categoryName}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>Address:</td> <td><b>${element.poiAddress}</b></td>
+            </tr>
+          </table>`
           });
           // show info bubble
           _ui.addBubble(bubble);
@@ -280,11 +286,17 @@ export class ReportMapService {
           // for all objects that it contains
           startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
             // read custom data
-            content:`<div>
-            <b>Start Location:</b> ${_selectedRoutes[i].startPosition}<br>
-            <b>Start Date:</b> ${_selectedRoutes[i].convertedStartTime}<br>
-            <b>Total Alerts:</b> ${_selectedRoutes[i].alert}
-            </div>`
+            content:`<table style='width: 350px;'>
+              <tr>
+                <td style='width: 100px;'>Start Location:</td> <td><b>${_selectedRoutes[i].startPosition}</b></td>
+              </tr>
+              <tr>
+                <td style='width: 100px;'>Start Date:</td> <td><b>${_selectedRoutes[i].convertedStartTime}</b></td>
+              </tr>
+              <tr>
+                <td style='width: 100px;'>Total Alerts:</td> <td><b>${_selectedRoutes[i].alert}</b></td>
+              </tr>
+            </table>`
           });
           // show info bubble
           _ui.addBubble(startBubble);
@@ -299,11 +311,17 @@ export class ReportMapService {
           // for all objects that it contains
           endBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
             // read custom data
-            content:`<div>
-            <b>End Location:</b> ${_selectedRoutes[i].endPosition}<br>
-            <b>End Date:</b> ${_selectedRoutes[i].convertedEndTime}<br>
-            <b>Total Alerts:</b> ${_selectedRoutes[i].alert}
-            </div>`
+            content:`<table style='width: 350px;'>
+              <tr>
+                <td style='width: 100px;'>End Location:</td> <td><b>${_selectedRoutes[i].endPosition}</b></td>
+              </tr>
+              <tr>
+                <td style='width: 100px;'>End Date:</td> <td><b>${_selectedRoutes[i].convertedEndTime}</b></td>
+              </tr>
+              <tr>
+                <td style='width: 100px;'>Total Alerts:</td> <td><b>${_selectedRoutes[i].alert}</b></td>
+              </tr>
+            </table>`
           });
           // show info bubble
           _ui.addBubble(endBubble);
