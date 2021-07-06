@@ -365,7 +365,12 @@ namespace net.atos.daf.ct2.reports
             List<FleetFuelDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByVehicle(fleetFuelFilters);
             return lstFleetFuelTripDetails;
         }
-
+        /// <summary>
+        /// To apply formula and mapped values according to language code
+        /// </summary>
+        /// <param name="fleetFuelDetails">List of Fleet Fuel result without formula</param>
+        /// <param name="languageCode">requested language code </param>
+        /// <returns>list of details with formulated values</returns>
         private async Task<List<FleetFuelDetails>> PrepareDetails(List<FleetFuelDetails> fleetFuelDetails, string languageCode)
         {
 
@@ -375,7 +380,7 @@ namespace net.atos.daf.ct2.reports
 
             Parallel.ForEach(fleetFuelDetails, item =>
             {
-                // Mapping expected value (as Poor,Good, Very Good) from range
+                // Mapping expected value (as Modrate, Good, Very Good) from range
                 double idlConsumptionHighValue = idlingConsumption.Where(idl => idl.MaxValue <= 0).Select(item => item.MinValue).FirstOrDefault();
                 if (item.IdlingConsumption > idlConsumptionHighValue)
                 {

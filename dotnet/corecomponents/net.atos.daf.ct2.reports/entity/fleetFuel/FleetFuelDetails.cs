@@ -26,11 +26,11 @@ namespace net.atos.daf.ct2.reports.entity
         public double CruiseControlDistance50_75 { get; set; }
         public double CruiseControlDistance75 { get; set; }
         public double AverageTrafficClassification { get; set; }
-        public string AverageTrafficClassificationValue { get; set; }
+        public string AverageTrafficClassificationValue { get; set; } = string.Empty;
         public double CCFuelConsumption { get; set; }
         public double FuelconsumptionCCnonactive { get; set; }
         public int IdlingConsumption { get; set; }
-        public string IdlingConsumptionValue { get; set; }
+        public string IdlingConsumptionValue { get; set; } = string.Empty;
         public double DPAScore { get; set; }
         //public string DPAAnticipationScore { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
         //public string DPABrakingScore { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }

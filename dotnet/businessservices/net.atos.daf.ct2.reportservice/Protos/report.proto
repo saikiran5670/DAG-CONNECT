@@ -673,6 +673,7 @@ message FleetFuelFilterRequest {
     int64 StartDateTime = 1;
     int64 EndDateTime = 2;
     repeated string VINs = 3;
+    string LanguageCode = 4;
 }
 
 message FleetFuelDetailsResponse {
