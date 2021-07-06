@@ -14,6 +14,10 @@ import { truncate } from 'fs';
 import { ReportMapService } from '../../report-map.service';
 import {ThemePalette} from '@angular/material/core';
 import {ProgressBarMode} from '@angular/material/progress-bar';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import { ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-fleet-fuel-report-vehicle',
@@ -31,6 +35,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   'CO2EmmisionFuelEfficiency','idlingConsumptionWithPTO'];
   rankingColumns = ['ranking','vehicleName','vin','plateNo','consumption'];
   tripForm: FormGroup;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   searchExpandPanel: boolean = true;
   tableExpandPanel: boolean = true;
   rankingExpandPanel: boolean = false;
@@ -1001,11 +1006,122 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   exportAsExcelFile(){
-
+    this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Vehicle', sheet: 'sheet_name'});
   }
 
   exportAsPDFFile(){
+   
+    var doc = new jsPDF('p', 'mm', 'a4');
     
+  // let pdfColumns = this.getPDFHeaders();
+  let prepare = []
+    this.displayData.forEach(e=>{
+      var tempObj =[];
+      this.displayedColumns.forEach(element => {
+        switch(element){
+          case 'vehiclename' :{
+            tempObj.push(e.vehicleName);
+            break;
+          }
+          case 'vin' :{
+            tempObj.push(e.vin);
+            break;
+          }
+          case 'registrationnumber' :{
+            tempObj.push(e.registrationNumber);
+            break;
+          }
+          case 'distance' :{
+            tempObj.push(e.convertedDistance);
+            break;
+          }
+          case 'numberOfTrips' :{
+            tempObj.push(e.numberOfTrips);
+            break;
+          }
+          case 'tripTime' :{
+            tempObj.push(e.convertedTripTime);
+            break;
+          }
+          case 'drivingTime' :{
+            tempObj.push(e.convertedDrivingTime);
+            break;
+          }
+          case 'idleDuration' :{
+            tempObj.push(e.convertedIdleDuration);
+            break;
+          }
+          case 'stopTime' :{
+            tempObj.push(e.convertedStopTime);
+            break;
+          }
+          case 'averageSpeed' :{
+            tempObj.push(e.convertedAverageSpeed);
+            break;
+          }
+          case 'averageWeight' :{
+            tempObj.push(e.convertedAverageWeight);
+            break;
+          }
+          case 'averageDistancePerDay' :{
+            tempObj.push(e.convertedAverageDistance);
+            break;
+          }
+          case 'odometer' :{
+            tempObj.push(e.odometer);
+            break;
+          }
+        }
+      })
+
+      prepare.push(tempObj);    
+    });
+    
+    
+    let DATA = document.getElementById('charts');
+    html2canvas( DATA)
+    .then(canvas => {  
+      (doc as any).autoTable({
+        styles: {
+            cellPadding: 0.5,
+            fontSize: 12
+        },       
+        didDrawPage: function(data) {     
+            // Header
+            doc.setFontSize(14);
+            var fileTitle = "Fleet Fuel Report by Vehicle Details";
+            var img = "/assets/logo.png";
+            doc.addImage(img, 'JPEG',10,10,0,0);
+  
+            var img = "/assets/logo_daf.png"; 
+            doc.text(fileTitle, 14, 35);
+            doc.addImage(img, 'JPEG',150, 10, 0, 10);            
+        },
+        margin: {
+            bottom: 20, 
+            top:30 
+        }  
+      });
+        let fileWidth = 170;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
+        
+        const FILEURI = canvas.toDataURL('image/png')
+        // let PDF = new jsPDF('p', 'mm', 'a4');
+        let position = 0;
+        doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
+        doc.addPage();
+
+      (doc as any).autoTable({
+      // head: this.displayedColumns,
+      body: prepare,
+      theme: 'striped',
+      didDrawCell: data => {
+        //console.log(data.column.index)
+      }
+    })
+    doc.save('fleetFuelByVehicle.pdf');
+       
+    });     
   }
 
 }
