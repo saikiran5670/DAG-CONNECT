@@ -12,6 +12,8 @@ import { Util } from 'src/app/shared/util';
 import { ReportService } from 'src/app/services/report.service';
 import { truncate } from 'fs';
 import { ReportMapService } from '../../report-map.service';
+import {ThemePalette} from '@angular/material/core';
+import {ProgressBarMode} from '@angular/material/progress-bar';
 
 import { Router, NavigationExtras } from '@angular/router';
 
