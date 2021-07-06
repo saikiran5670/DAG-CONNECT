@@ -809,15 +809,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                string filters = JsonConvert.SerializeObject(fleetOverviewFilter);
-                FleetOverviewDetailsRequest fleetOverviewDetailsRequest = JsonConvert.DeserializeObject<FleetOverviewDetailsRequest>(filters);
-                fleetOverviewDetailsRequest.AccountId = _userDetails.AccountId;
-                fleetOverviewDetailsRequest.OrganizationId = GetContextOrgId();
-                fleetOverviewDetailsRequest.RoleId = _userDetails.RoleId;
-
+                FleetOverviewDetailsRequest fleetOverviewDetailsRequest = new FleetOverviewDetailsRequest
+                {
+                    AccountId = _userDetails.AccountId,
+                    OrganizationId = GetContextOrgId(),
+                    RoleId = _userDetails.RoleId
+                };
+                fleetOverviewDetailsRequest.GroupIds.AddRange(fleetOverviewFilter.GroupId);
+                fleetOverviewDetailsRequest.AlertCategories.AddRange(fleetOverviewFilter.AlertCategory);
+                fleetOverviewDetailsRequest.AlertLevels.AddRange(fleetOverviewFilter.AlertLevel);
+                fleetOverviewDetailsRequest.HealthStatus.AddRange(fleetOverviewFilter.HealthStatus);
+                fleetOverviewDetailsRequest.OtherFilters.AddRange(fleetOverviewFilter.OtherFilter);
+                fleetOverviewDetailsRequest.DriverIds.AddRange(fleetOverviewFilter.DriverId);
+                fleetOverviewDetailsRequest.Days = fleetOverviewFilter.Days;
+                /* Need to comment Start */
                 fleetOverviewDetailsRequest.AccountId = 171;
                 fleetOverviewDetailsRequest.OrganizationId = 36;
                 fleetOverviewDetailsRequest.RoleId = 61;
+                /* Need to comment End */
                 FleetOverviewDetailsResponse response = await _reportServiceClient.GetFleetOverviewDetailsAsync(fleetOverviewDetailsRequest);
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");

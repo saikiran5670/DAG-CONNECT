@@ -188,7 +188,15 @@ namespace net.atos.daf.ct2.reports.repository
                     left join master.geolocationaddress wangeoadd
                     on TRUNC(CAST(lcts.latest_warning_position_latitude as numeric),4)= TRUNC(CAST(wangeoadd.latitude as numeric),4) 
                     and TRUNC(CAST(lcts.latest_warning_position_longitude as numeric),4) = TRUNC(CAST(wangeoadd.longitude as numeric),4)
-                            where lcts.vin = Any(@vins) ";
+                    where lcts.vin = Any(@vins) ";
+                if (fleetOverviewFilter.Days == 1)
+                {
+                    queryFleetOverview += " and (lcts.start_time_stamp > (extract(epoch from (now()::date + interval '1s'))*1000) or lcts.end_time_stamp is null ) ";
+                }
+                if (fleetOverviewFilter.Days == 90)
+                {
+                    queryFleetOverview += " and (lcts.start_time_stamp > (extract(epoch from (now()::date + interval '90d'))*1000) or lcts.end_time_stamp is null ) ";
+                }
                 if (fleetOverviewFilter.DriverId.Count > 0)
                 {
                     parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
