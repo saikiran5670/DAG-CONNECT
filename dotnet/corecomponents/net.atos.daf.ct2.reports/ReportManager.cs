@@ -372,5 +372,13 @@ namespace net.atos.daf.ct2.reports
         public Task<bool> GetChartInfo(EcoScoreDataServiceRequest request) => _reportRepository.GetChartInfo(request);
 
         #endregion
+
+        #region VehicleHealthStatus
+        public async Task<VehicleHealthStatus> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest)
+        {
+            var data = await _reportRepository.GetVehicleHealthStatus(vehicleHealthStatusRequest);
+            return data;
+        }
+        #endregion
     }
 }

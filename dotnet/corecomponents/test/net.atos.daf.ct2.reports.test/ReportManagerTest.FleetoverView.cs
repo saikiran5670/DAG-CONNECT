@@ -29,6 +29,15 @@ namespace net.atos.daf.ct2.reports.test
 
         [TestMethod]
         [Timeout(TestTimeout.Infinite)]
+        public async Task GetHistoryWarnning_Test()
+        {
+            var vehicleHealthStatusRequest = new VehicleHealthStatusRequest() { VIN = "XLRAS47MS0E808080" };
+            var result = await _reportRepository.GetHistoryWarnning("XLRAS47MS0E808080");
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
         public async Task GetFleetVehicleDetails_Test()
         {
             //var fleetOverviewFilter = new FleetOverviewFilter() { GroupId = " ", AlertLevel = " ", AlertCategory = " ", HealthStatus = " ", OtherFilter = " ", DriverId = "SK 0000000012340437", Days = "7" };
