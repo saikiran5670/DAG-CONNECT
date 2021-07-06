@@ -11,6 +11,7 @@ declare var H: any;
 export class ReportMapService {
   platform: any;
   clusteringLayer: any;
+  markerClusterLayer: any = [];
   overlayLayer: any;
   map: any;
   ui: any
@@ -90,6 +91,12 @@ export class ReportMapService {
       this.clusteringLayer.dispose();
       this.hereMap.removeLayer(this.clusteringLayer);
       this.clusteringLayer = null;
+    }
+    if(this.markerClusterLayer && this.markerClusterLayer.length > 0){
+      this.markerClusterLayer.forEach(element => {
+        this.hereMap.removeLayer(element);
+      });
+      this.markerClusterLayer = [];
     }
     if(this.overlayLayer){
       this.hereMap.removeLayer(this.overlayLayer);
@@ -582,46 +589,46 @@ export class ReportMapService {
           // });				
   
           return clusterMarker;
-        },
-        getNoisePresentation: (noisePoint) => {
-          //let infoBubble: any;
-  
-          // Create a marker for noise points:
-          var noiseMarker = new H.map.Marker(noisePoint.getPosition(), {
-            icon: noiseIcon,
-  
-            // Use min zoom from a noise point to show it correctly at certain
-            // zoom levels:
-            min: noisePoint.getMinZoom(),
-            max: 20
-          });
-  
-          // Bind cluster data to the marker:
-          noiseMarker.setData(noisePoint);
-  
-          // noiseMarker.addEventListener("tap", (event) => { 
-            
-          //   var point = event.target.getGeometry();
-          //   var tooltipContent = ["Latitude: ", point.lat, ", Longitude: ", point.lng].join("");
-  
-          //   var screenPosition = this.hereMap.geoToScreen(point);
-  
-          //   infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
-          //   ui.addBubble(infoBubble);
-          
-          // });
-          
-          // noiseMarker.addEventListener("pointerleave", (event) => { 
-          //   if(infoBubble)
-          //   {
-          //     ui.removeBubble(infoBubble);
-          //     infoBubble = null;
-          //   }
-          // });
-          
-  
-          return noiseMarker;
         }
+        // getNoisePresentation: (noisePoint) => {
+        //   //let infoBubble: any;
+  
+        //   // Create a marker for noise points:
+        //   var noiseMarker = new H.map.Marker(noisePoint.getPosition(), {
+        //     icon: noiseIcon,
+  
+        //     // Use min zoom from a noise point to show it correctly at certain
+        //     // zoom levels:
+        //     min: noisePoint.getMinZoom(),
+        //     max: 20
+        //   });
+  
+        //   // Bind cluster data to the marker:
+        //   noiseMarker.setData(noisePoint);
+  
+        //   // noiseMarker.addEventListener("tap", (event) => { 
+            
+        //   //   var point = event.target.getGeometry();
+        //   //   var tooltipContent = ["Latitude: ", point.lat, ", Longitude: ", point.lng].join("");
+  
+        //   //   var screenPosition = this.hereMap.geoToScreen(point);
+  
+        //   //   infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
+        //   //   ui.addBubble(infoBubble);
+          
+        //   // });
+          
+        //   // noiseMarker.addEventListener("pointerleave", (event) => { 
+        //   //   if(infoBubble)
+        //   //   {
+        //   //     ui.removeBubble(infoBubble);
+        //   //     infoBubble = null;
+        //   //   }
+        //   // });
+          
+  
+        //   return noiseMarker;
+        // }
       }
     });
   
@@ -666,7 +673,6 @@ export class ReportMapService {
       },
       theme: {
         getClusterPresentation: (markerCluster: any) => {
-  
           // Use cluster weight to change icon size:
           var svgString = clusterSvgTemplate.replace('{radius}', markerCluster.getWeight());
           svgString = svgString.replace('{text}', markerCluster.getWeight());
@@ -705,8 +711,6 @@ export class ReportMapService {
   
           // Bind cluster data to the marker:
           clusterMarker.setData(markerCluster);
-          // this.hereMap.getViewModel().setLookAtData({bounds: clusterMarker.getBoundingBox()});
-          //clusterMarker.setZIndex(10);
           let infoBubble: any
            clusterMarker.addEventListener("tap",  (event) => {
             this.removedDisabledGroup();
@@ -730,23 +734,18 @@ export class ReportMapService {
                 tooltipContent += "<td><input type='checkbox' class='checkbox' id='"+ chkBxId +"'></td>"+ "<td>"+ (chkBxId+1) +"</td>" + "<td>" + data[chkBxId].convertedStartTime + "</td><td>" + data[chkBxId].convertedEndTime + "</td>";
                 tooltipContent += "</tr>";
                chkBxId++;
-                //alert(chkBxId);
               }
             ); 
             tooltipContent += "</tbody></table>";
-            
-            // function infoBubbleCheckBoxClick(chkBxId, latitude, longitude){
-            //   // Get the checkbox
-            //   let checkBox: any = document.getElementById(chkBxId);
-            //   if (checkBox.checked == true){
-            //     alert("Latitude:" + latitude + " Longitude:" + longitude + " Enabled")
-            //   } else {
-            //     alert("Latitude:" + latitude + " Longitude:" + longitude + " Disabled")
-            //   }
-            // }
 
-            infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
+            infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent, 
+              onStateChange: (event) => {​​​
+                this.removedDisabledGroup();
+              }​​​
+            });
+
             ui.addBubble(infoBubble);
+
             document.querySelectorAll('.checkbox').forEach((item: any) => {
               item.addEventListener('click', event => {
                 //handle click
@@ -755,74 +754,54 @@ export class ReportMapService {
             })
           });
           
-          
-          // clusterMarker.addEventListener("pointerleave", (event) => { 
-          //   if(infoBubble)
-          //   {
-          //     ui.removeBubble(infoBubble);
-          //     infoBubble = null;
-          //   }
-          // });				
-  
-          
-   
           return clusterMarker;
-        },
-        getNoisePresentation: (noisePoint) => {
-          let infoBubble: any;
-  
-          // Create a marker for noise points:
-          var noiseMarker = new H.map.Marker(noisePoint.getPosition(), {
-            icon: noiseIcon,
-  
-            // Use min zoom from a noise point to show it correctly at certain
-            // zoom levels:
-            min: noisePoint.getMinZoom(),
-            max: 20
-          });
-  
-          // Bind cluster data to the marker:
-          noiseMarker.setData(noisePoint);
-  
-          noiseMarker.addEventListener("tap", (event) => { 
-            
-            var point = event.target.getGeometry();
-            var tooltipContent = ["Latitude: ", point.lat, ", Longitude: ", point.lng].join("");
-  
-            var screenPosition = this.hereMap.geoToScreen(point);
-  
-            infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
-            ui.addBubble(infoBubble);
-          
-          });
-          
-          // noiseMarker.addEventListener("pointerleave", (event) => { 
-          //   if(infoBubble)
-          //   {
-          //     ui.removeBubble(infoBubble);
-          //     infoBubble = null;
-          //   }
-          // });
-          
-  
-          return noiseMarker;
         }
+        // getNoisePresentation: (noisePoint) => {
+        //   let infoBubble: any;
+  
+        //   // Create a marker for noise points:
+        //   var noiseMarker = new H.map.Marker(noisePoint.getPosition(), {
+        //     icon: noiseIcon,
+  
+        //     // Use min zoom from a noise point to show it correctly at certain
+        //     // zoom levels:
+        //     min: noisePoint.getMinZoom(),
+        //     max: 20
+        //   });
+  
+        //   // Bind cluster data to the marker:
+        //   noiseMarker.setData(noisePoint);
+  
+        //   noiseMarker.addEventListener("tap", (event) => { 
+            
+        //     var point = event.target.getGeometry();
+        //     var tooltipContent = ["Latitude: ", point.lat, ", Longitude: ", point.lng].join("");
+  
+        //     var screenPosition = this.hereMap.geoToScreen(point);
+  
+        //     infoBubble = new H.ui.InfoBubble(this.hereMap.screenToGeo(screenPosition.x, screenPosition.y), { content: tooltipContent });
+        //     ui.addBubble(infoBubble);
+          
+        //   });
+          
+        //   // noiseMarker.addEventListener("pointerleave", (event) => { 
+        //   //   if(infoBubble)
+        //   //   {
+        //   //     ui.removeBubble(infoBubble);
+        //   //     infoBubble = null;
+        //   //   }
+        //   // });
+        //   return noiseMarker;
+        // }
       }
     });
 
-    
-  
-    // // Create a layer tha will consume objects from our clustering provider
-    this.clusteringLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
-  
+    // Create a layer tha will consume objects from our clustering provider
+    let _markerClusterLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
     // // To make objects from clustering provder visible,
     // // we need to add our layer to the map
-    this.hereMap.addLayer(this.clusteringLayer, 100);
-    // clusteredDataProvider.addEventListener('tap', (event) => {
-    //   // Log data bound to the marker that has been tapped:
-    //   // console.log(event.target.getData())
-    // });
-
+    this.markerClusterLayer.push(_markerClusterLayer);
+    this.hereMap.addLayer(_markerClusterLayer, 100);
   }
 
   removedDisabledGroup(){

@@ -803,7 +803,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        [HttpGet]
+        [HttpPost]
         [Route("fleetoverview/getfleetoverviewdetails")]
         public async Task<IActionResult> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
         {
@@ -977,7 +977,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FleetFuelFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetFuelFilterRequest>(filters);
                 _logger.Info("GetFleetFuelDetailsByVehicle method in Report (for Fleet Fuel consumption details by vehicle) API called.");
                 var data = await _reportServiceClient.GetFleetFuelTripDetailsByVehicleAsync(objFleetFilter);
-                if (data?.FleetFuelTripDetails?.Count > 0)
+                if (data?.FleetFuelDetails?.Count > 0)
                 {
                     data.Message = ReportConstants.GET_FLEET_FUEL_SUCCESS_MSG;
                     return Ok(data);
