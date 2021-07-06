@@ -32,7 +32,7 @@ rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetail
 rpc GetEcoScoreReportCompareDrivers (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
 rpc GetFleetOverviewDetails(FleetOverviewDetailsRequest) returns (FleetOverviewDetailsResponse);
 rpc GetVehicleHealthReport (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
-rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelTripDetailsResponse);
+rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 }
 
 message VehicleSummary {
