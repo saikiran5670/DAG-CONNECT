@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string TripDistance { get; set; }
         public string DrivingTime { get; set; }
         public int FuelConsumption { get; set; }
-        public int VehicleDrivingStatusType { get; set; }
+        public string VehicleDrivingStatusType { get; set; }
         public int OdometerVal { get; set; }
         public long DistanceUntilNextService { get; set; }
         public long LatestReceivedPositionLattitude { get; set; }

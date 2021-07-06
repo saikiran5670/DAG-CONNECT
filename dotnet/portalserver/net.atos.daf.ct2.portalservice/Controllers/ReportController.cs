@@ -803,7 +803,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        [HttpGet]
+        [HttpPost]
         [Route("fleetoverview/getfleetoverviewdetails")]
         public async Task<IActionResult> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter)
         {

@@ -622,7 +622,7 @@ message FleetOverviewDetails
 	string TripDistance=7;
 	string DrivingTime=8;
 	int32 FuelConsumption=9;
-	int32 VehicleDrivingStatusType=10;
+	string VehicleDrivingStatusType=10;
 	int32 OdometerVal=11;
 	int64 DistanceUntilNextService=12;
 	int64 LatestReceivedPositionLattitude=13;
