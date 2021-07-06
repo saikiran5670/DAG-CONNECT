@@ -31,8 +31,15 @@ rpc GetFleetFuelDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetai
 rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetEcoScoreReportCompareDrivers (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
 rpc GetFleetOverviewDetails(FleetOverviewDetailsRequest) returns (FleetOverviewDetailsResponse);
-rpc GetVehicleHealthReport (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
+rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthStatusResponse);
 rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
+}
+
+message VehicleHealthReportRequest{
+ string VIN = 1;
+ int64 FromDate = 2;
+ int64 ToDate = 3;
+ string WarningType = 4;
 }
 
 message VehicleSummary {
@@ -60,11 +67,12 @@ message  VehicleHealthWarning{
     double Longitude = 11;
 }
 
-message VehicleHealthStatus{
+message VehicleHealthStatusResponse{
 repeated VehicleSummary Summary = 1;
 repeated VehicleHealthWarning CurrentWarning= 2;
 repeated VehicleHealthWarning HistoryWarning= 3;
 Responsecode Code = 4;
+string Message = 5; 
 }
 
 enum Responsecode{
