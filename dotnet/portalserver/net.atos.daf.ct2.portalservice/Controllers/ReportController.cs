@@ -994,5 +994,36 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
+        #region Vehicle Health Summary
+        [HttpGet]
+        [Route("getvehiclesummary")]
+        public async Task<IActionResult> GetVehicleHealthReport([FromQuery] Entity.Report.VehicleHealthStatusRequest request)
+        {
+            try
+            {
+                if (request.FromDate > request.ToDate) { return BadRequest(ReportConstants.VALIDATION_MSG_FROMDATE); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                net.atos.daf.ct2.reportservice.VehicleHealthReportRequest objVehicleHealthStatusRequest = JsonConvert.DeserializeObject<VehicleHealthReportRequest>(filters);
+                _logger.Info("GetVehicleHealthReport method in Report (for Vehicle Current and History Summary) API called.");
+                var data = await _reportServiceClient.GetVehicleHealthReportAsync(objVehicleHealthStatusRequest);
+                if (data != null)
+                {
+                    data.Message = ReportConstants.SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+            }
+        }
+        #endregion
     }
 }
