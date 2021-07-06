@@ -27,7 +27,8 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     VINs = request.VINs.ToList<string>(),
                     StartDateTime = request.StartDateTime,
-                    EndDateTime = request.EndDateTime
+                    EndDateTime = request.EndDateTime,
+                    LanguageCode = request.LanguageCode
                 };
                 var result = await _reportManager.GetFleetFuelDetailsByVehicle(objFleetFilter);
                 FleetFuelDetailsResponse response = new FleetFuelDetailsResponse();

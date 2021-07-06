@@ -26,18 +26,20 @@ namespace net.atos.daf.ct2.reports.entity
         public double CruiseControlDistance50_75 { get; set; }
         public double CruiseControlDistance75 { get; set; }
         public double AverageTrafficClassification { get; set; }
+        public string AverageTrafficClassificationValue { get; set; } = string.Empty;
         public double CCFuelConsumption { get; set; }
         public double FuelconsumptionCCnonactive { get; set; }
         public int IdlingConsumption { get; set; }
+        public string IdlingConsumptionValue { get; set; } = string.Empty;
         public double DPAScore { get; set; }
-        public string DPAAnticipationScore { get; set; }
-        public string DPABrakingScore { get; set; }
-        public string IdlingPTOScore { get; set; }
-        public string IdlingPTO { get; set; }
-        public string IdlingWithoutPTO { get; set; }
-        public string IdlingWithoutPTOpercent { get; set; }
-        public string FootBrake { get; set; }
-        public string CO2Emmision { get; set; }
+        //public string DPAAnticipationScore { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
+        //public string DPABrakingScore { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
+        //public string IdlingPTOScore { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
+        //public string IdlingPTO { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
+        //public string IdlingWithoutPTO { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
+        //public string IdlingWithoutPTOpercent { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
+        //public string FootBrake { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
+        //public string CO2Emmision { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
 
     }
 }
