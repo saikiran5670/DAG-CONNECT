@@ -125,7 +125,8 @@ namespace net.atos.daf.ct2.reports.repository
                 var parameterFleetOverview = new DynamicParameters();
                 parameterFleetOverview.Add("@vins", fleetOverviewFilter.VINIds);
                 //filter trip data by n days
-                parameterFleetOverview.Add("@days", string.Concat(fleetOverviewFilter.Days.ToString(), "d"));
+                //parameterFleetOverview.Add("@days", string.Concat("'", fleetOverviewFilter.Days.ToString(), "d", "'"));
+                parameterFleetOverview.Add("@days", fleetOverviewFilter.Days, System.Data.DbType.Int32);
                 string queryFleetOverview = @"With CTE_Trips_By_Vin as(
                     select 
                     lcts.id,
@@ -157,7 +158,7 @@ namespace net.atos.daf.ct2.reports.repository
                     RANK() Over ( Partition By lcts.vin Order by  lcts.start_time_stamp desc ) Veh_trip_rank
                     from livefleet.livefleet_current_trip_statistics lcts
                     where lcts.vin = Any(@vins) 
-                    and (lcts.start_time_stamp > (extract(epoch from (now()::date - interval '@days' ))*1000) or lcts.end_time_stamp is null)
+                    and (lcts.start_time_stamp > (extract(epoch from (now()::date - @days ))*1000) or lcts.end_time_stamp is null)
                     )
                     ,CTE_Unique_latest_trip as (
                      select 
@@ -230,8 +231,7 @@ namespace net.atos.daf.ct2.reports.repository
                     left join master.geolocationaddress wangeoadd
                     on TRUNC(CAST(lcts.latest_warning_position_latitude as numeric),4)= TRUNC(CAST(wangeoadd.latitude as numeric),4) 
                     and TRUNC(CAST(lcts.latest_warning_position_longitude as numeric),4) = TRUNC(CAST(wangeoadd.longitude as numeric),4)
-                    where row_num=1
-                    ";
+                    where row_num=1 ";
                 if (fleetOverviewFilter.DriverId.Count > 0)
                 {
                     parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
