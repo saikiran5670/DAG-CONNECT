@@ -334,25 +334,25 @@ namespace net.atos.daf.ct2.reports.repository
                                                 ,count(TS.trip_id) as numberoftrips
                                                 ,SUM(TS.etl_gps_trip_time) as etl_gps_trip_time
                                                 ,sum(TS.end_time_stamp) 
-                                                ,SUM(TS.etl_gps_distance) as etl_gps_distance
-                                                ,SUM(TS.veh_message_driving_time) as veh_message_driving_time
-                                                ,SUM(TS.idle_duration) as idle_duration
-                                                ,SUM(TS.veh_message_distance) as veh_message_distance
-                                                ,SUM(TS.average_speed) as average_speed
-                                                ,SUM(TS.average_weight) as average_weight
+                                                ,round(sum(TS.etl_gps_distance),2) as etl_gps_distance
+                                                ,round(sum(TS.veh_message_driving_time),2) as veh_message_driving_time
+                                                ,round(SUM(TS.idle_duration),2) as idle_duration
+                                                ,round(sum(TS.veh_message_distance),2) as veh_message_distance
+                                                ,round(sum(TS.average_speed),2) as average_speed
+                                                ,round(sum(TS.average_weight),2) as average_weight
                                                 ,Max(TS.max_speed) as maxspeed
-                                                ,sum(TS.fuel_consumption) as FuelConsumption
-                                                ,sum(TS.co2_emission) As Co2Emission
-                                                ,sum(TS.harsh_brake_duration) As HarshBreakDuration
-                                                ,sum(TS.heavy_throttle_duration) As HeavyThrottleDuration
-                                                ,sum(TS.cruise_control_distance_30_50) As CruiseControlDistance30_50
-                                                ,sum(TS.cruise_control_distance_50_75) As CruiseControlDistance50_75
-                                                ,sum(TS.cruise_control_distance_more_than_75) As CruiseControlDistanceMoreThan_75
-                                                ,max(TS.average_traffic_classification) As AverageTrafficClassification
-                                                ,sum (TS.cc_fuel_consumption) As CcFuelConsumption
-                                                ,sum (TS.fuel_consumption_cc_non_active) As CcFuelConsumptionCCNonActive
-                                                ,sum (TS.idling_consumption) As IdlingConsumption
-                                                ,sum (TS.dpa_score) As DPAScore                                                                                          
+                                                ,round(sum(TS.fuel_consumption),2) as FuelConsumption
+                                                ,round(sum(TS.co2_emission),2) As Co2Emission
+                                                ,round(sum(TS.harsh_brake_duration),2) As HarshBreakDuration
+                                                ,round(sum(TS.heavy_throttle_duration),2) As HeavyThrottleDuration
+                                                ,round(sum(TS.cruise_control_distance_30_50),2)As CruiseControlDistance30_50
+                                                ,round(sum(TS.cruise_control_distance_50_75),2) As CruiseControlDistance50_75
+                                                ,round(sum(TS.cruise_control_distance_more_than_75),2) As CruiseControlDistanceMoreThan_75
+                                                ,round(max(TS.average_traffic_classification),2) As AverageTrafficClassification
+                                                ,round(sum (TS.cc_fuel_consumption),2) As CcFuelConsumption
+                                                ,round(sum (TS.fuel_consumption_cc_non_active),2) As CcFuelConsumptionCCNonActive
+                                                ,round(sum (TS.idling_consumption),2) As IdlingConsumption
+                                                ,round(sum (TS.dpa_score),2) As DPAScore                                                                                          
                                                 FROM 
                                                 tripdetail.trip_statistics TS
                                                 left join master.vehicle VH on TS.vin=VH.vin       
