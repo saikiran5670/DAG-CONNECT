@@ -20,11 +20,16 @@
         </div>
         <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
           <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="{{ translationData.lblSelectOrganisation || 'Select Organisation' }}" (selectionChange)="applyFilterOnOrganization($event.value)" >
-              <mat-option *ngFor="let options of organizationList" [value]="options.id" [disabled] = "organizationList.length == 1">
+            <mat-select [(value)]="accountOrganizationId" (selectionChange)="applyFilterOnOrganization($event.value)" [disabled] = "organisationData.length == 1" >
+              <mat-option *ngFor="let options of organisationData" [value]="options.id" >
                 {{options.name}}
               </mat-option>
             </mat-select>
+            <!-- <mat-select placeholder="{{ translationData.lblSelectOrganisation || 'Select Organisation' }}" (selectionChange)="applyFilterOnOrganization($event.value)" >
+              <mat-option *ngFor="let options of organizationList" [value]="options.id" [disabled] = "organizationList.length == 1">
+                {{options.name}}
+              </mat-option>
+            </mat-select> -->
           </mat-form-field>
         </div>
         <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
