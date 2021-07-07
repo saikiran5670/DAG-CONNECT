@@ -139,6 +139,7 @@ message GetReportUserPreferenceResponse {
     ReportUserPreference UserPreference = 1;
     Responsecode Code = 2;
     string Message = 3;
+    int32 TargetProfileId=4;
 }
 
 message ReportUserPreference{

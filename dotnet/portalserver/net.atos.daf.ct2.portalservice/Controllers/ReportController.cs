@@ -630,7 +630,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                      $"{ nameof(GetReportUserPreference) } method", 1, 2, Convert.ToString(reportId),
                       _userDetails);
-                    return Ok(response.UserPreference);
+                    return Ok(new { TargetProfileId = response.TargetProfileId, UserPreferences = response.UserPreference });
                 }
                 if (response.Code == Responsecode.InternalServerError)
                     return StatusCode((int)response.Code, string.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, response.Message));

@@ -667,7 +667,7 @@ namespace net.atos.daf.ct2.reports.repository
                 #region Query Select User Preferences
                 var query = @"SELECT d.id as DataAttributeId, d.name as Name, ra.key as Key, ra.sub_attribute_ids as SubDataAttributes, ra.type as AttributeType,
 					                 CASE WHEN rp.state IS NULL THEN 'A' ELSE rp.state END as State, rp.chart_type as ChartType, rp.type as ReportPreferenceType, 
-					                 rp.threshold_limit_type as ThresholdType, rp.threshold_value as ThresholdValue
+					                 rp.threshold_limit_type as ThresholdType, rp.threshold_value as ThresholdValue, rp.ecoscore_profile_id as TargetProfileId
                             FROM master.reportattribute ra
                             INNER JOIN master.dataattribute d ON ra.data_attribute_id = d.id
                             LEFT JOIN master.reportpreference rp ON rp.reportattribute_id = ra.id and 

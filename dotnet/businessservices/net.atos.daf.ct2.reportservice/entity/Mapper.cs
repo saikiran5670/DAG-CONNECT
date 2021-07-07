@@ -98,11 +98,18 @@ namespace net.atos.daf.ct2.reportservice.entity
             return objRequest;
         }
 
-        internal ReportUserPreference MapReportUserPreferences(IEnumerable<reports.entity.ReportUserPreference> userPreferences)
+        internal GetReportUserPreferenceResponse MapReportUserPreferences(IEnumerable<reports.entity.ReportUserPreference> userPreferences)
         {
             var root = userPreferences.Where(up => up.Name.IndexOf('.') == -1).First();
 
-            return FillRecursive(userPreferences, new int[] { root.DataAttributeId }).FirstOrDefault();
+            var preferences = FillRecursive(userPreferences, new int[] { root.DataAttributeId }).FirstOrDefault();
+
+            return new GetReportUserPreferenceResponse
+            {
+                TargetProfileId = root.TargetProfileId ?? 0,
+                UserPreference = preferences,
+                Code = Responsecode.Success
+            };
         }
 
         private static List<ReportUserPreference> FillRecursive(IEnumerable<reports.entity.ReportUserPreference> flatObjects, int[] parentIds)
