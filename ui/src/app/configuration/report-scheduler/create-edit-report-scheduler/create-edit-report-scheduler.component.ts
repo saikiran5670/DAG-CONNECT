@@ -10,11 +10,11 @@ import * as moment from 'moment-timezone';
 import { start } from 'repl';
 
 @Component({
-  selector: 'app-create-edit-view-report-scheduler',
-  templateUrl: './create-edit-view-report-scheduler.component.html',
-  styleUrls: ['./create-edit-view-report-scheduler.component.less']
+  selector: 'app-create-edit-report-scheduler',
+  templateUrl: './create-edit-report-scheduler.component.html',
+  styleUrls: ['./create-edit-report-scheduler.component.less']
 })
-export class CreateEditViewReportSchedulerComponent implements OnInit {
+export class CreateEditReportSchedulerComponent implements OnInit {
 
   @Input() translationData: any;
   @Input() selectedRowData: any;
