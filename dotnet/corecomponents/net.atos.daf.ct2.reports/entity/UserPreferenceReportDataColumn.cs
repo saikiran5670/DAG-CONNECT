@@ -26,6 +26,7 @@
         public long ThresholdValue { get; set; }
         public int[] SubDataAttributes { get; set; }
         private char AttributeType { get; set; }
+        public int? TargetProfileId { get; set; }
         public ReportAttributeType ReportAttributeType
         {
             get
