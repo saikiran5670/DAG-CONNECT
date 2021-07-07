@@ -41,7 +41,7 @@ public class TripAggregatedData implements Serializable {
 	private Double vTachographSpeed;
 	private Double tripCalAvgGrossWtComb;
 	private Double tripCalPtoDuration;
-	private Double triCalHarshBrakeDuration;
+	private Double tripCalHarshBrakeDuration;
 	private Double tripCalHeavyThrottleDuration;
 	private Double tripCalCrsCntrlDistBelow50;
 	private Double tripCalCrsCntrlDistAbv50;
@@ -69,4 +69,9 @@ public class TripAggregatedData implements Serializable {
 	private Integer vSumTripDPAAnticipationScore;
 	private Long vStopFuel;
 	private Long vStartFuel;
+	private Integer vHarshBrakeDuration;
+	private Integer vBrakeDuration;
+	private Integer vTripIdlePTODuration;
+	private Integer vTripIdleWithoutPTODuration;
+	
 }

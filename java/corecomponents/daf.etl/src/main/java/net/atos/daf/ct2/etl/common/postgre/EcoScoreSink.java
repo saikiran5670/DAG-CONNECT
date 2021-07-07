@@ -45,7 +45,7 @@ public class EcoScoreSink extends RichSinkFunction<EcoScore> implements Serializ
 					queue.clear();
 					for (EcoScore tripData : synchronizedCopy) {
 						ecoScoreDao.insert(tripData, ecoScoreQry);
-						logger.info("EcoScore records inserted to ecoscore table :: "+tripData.getTripId());
+						//logger.info("EcoScore records inserted to ecoscore table :: "+tripData.getTripId());
 					}
 				}
 			}

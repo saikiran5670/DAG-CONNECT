@@ -73,5 +73,6 @@ public class TripStatusData implements Serializable {
 	private String evtDateTimeFirstIndex;
 	private Double co2Emission;
 	private Integer numberOfIndexMessage;
-		
+	private Integer vTripIdlePTODuration;
+	private Integer vTripIdleWithoutPTODuration;
 }

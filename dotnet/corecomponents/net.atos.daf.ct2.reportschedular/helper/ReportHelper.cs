@@ -8,6 +8,38 @@ using net.atos.daf.ct2.reportscheduler.entity;
 
 namespace net.atos.daf.ct2.reportscheduler.helper
 {
+    public class ReportSingleton
+    {
+        private static ReportSingleton _instance;
+        private string _dafSupportEmailId;
+        private static readonly Object _root = new object();
+        private ReportSingleton()
+        {
+        }
+
+        public static ReportSingleton GetInstance()
+        {
+            lock (_root)
+            {
+                if (_instance == null)
+                {
+                    _instance = new ReportSingleton();
+                }
+            }
+            return _instance;
+        }
+
+        public void SetDAFSupportEmailId(string dafSupportEmailId)
+        {
+            _dafSupportEmailId = dafSupportEmailId;
+        }
+
+        public string GetDAFSupportEmailId()
+        {
+            return _dafSupportEmailId;
+        }
+
+    }
     public static class ReportHelper
     {
         public static string ToDataTableAndGenerateHTML<T>(List<T> items, IEnumerable<ReportColumnName> reporyColumns)
