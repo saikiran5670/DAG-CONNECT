@@ -234,6 +234,7 @@ public class ETLConstants {
 	
 	//Gross Weight Threshold Parameters
 	public static final String VEHICLE_GROSS_WEIGHT_THRESHOLD = "vehicle.gross.weight.threshold";
-
-	
+	public static final Integer ZERO = 0;
+	public static final Long ZERO_VAL = 0L;
+	public static final Integer ONE = 1;
 }

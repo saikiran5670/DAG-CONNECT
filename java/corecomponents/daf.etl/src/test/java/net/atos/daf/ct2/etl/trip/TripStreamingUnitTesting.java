@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.java.tuple.Tuple10;
 import org.apache.flink.api.java.tuple.Tuple9;
 import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -21,11 +22,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import junit.framework.Assert;
-import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.etl.common.bo.TripAggregatedData;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.FlinkUtil;
+import net.atos.daf.common.ct2.utc.TimeFormatter;
 
 public class TripStreamingUnitTesting {
 
@@ -86,22 +87,22 @@ public class TripStreamingUnitTesting {
 		final SingleOutputStreamOperator<TripStatusData> tripStsData= env.fromElements(
 				tripData);
 
-		SingleOutputStreamOperator<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> indxData = tripStsData.flatMap(		
-		new FlatMapFunction<TripStatusData, Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>>() {
+		SingleOutputStreamOperator<Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>> indxData = tripStsData.flatMap(		
+		new FlatMapFunction<TripStatusData, Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>>() {
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void flatMap(TripStatusData value, Collector<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> out) throws Exception {
+			public void flatMap(TripStatusData value, Collector<Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>> out) throws Exception {
 				//2020-11-02T16:55:37.000Z
-				out.collect(new Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 0, 655350, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:35.000Z", ETLConstants.DATE_FORMAT ), 11111991L, 111111L) );
+				out.collect(new Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 0, 655350, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:35.000Z", ETLConstants.DATE_FORMAT ), 11111991L, 111111L, 0) );
 				long ts =TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:37.000Z", ETLConstants.DATE_FORMAT );
-				out.collect(new Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 10, 100000, "index", ts, 11111996L, 111113L) );
-				out.collect(new Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 10, 100000, "index", ts, 11111996L, 111113L) );
-				out.collect(new Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 20, 600000, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:36.000Z", ETLConstants.DATE_FORMAT ), 11111993L, 111112L) );
-				out.collect(new Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 20, 600000, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:38.000Z", ETLConstants.DATE_FORMAT) , 11111993L, 111114L) );
+				out.collect(new Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 10, 100000, "index", ts, 11111996L, 111113L, 1) );
+				out.collect(new Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 10, 100000, "index", ts, 11111996L, 111113L, 1) );
+				out.collect(new Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 20, 600000, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:36.000Z", ETLConstants.DATE_FORMAT ), 11111993L, 111112L, 1) );
+				out.collect(new Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 20, 600000, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:38.000Z", ETLConstants.DATE_FORMAT) , 11111993L, 111114L, 1) );
 								
 			}
 		});
