@@ -114,12 +114,9 @@ namespace net.atos.daf.ct2.reportservice.Services
                 _logger.Info("Get GetVehicleHealthReport Called");
                 reports.entity.VehicleHealthStatusRequest objVehicleHealthStatusRequest = new reports.entity.VehicleHealthStatusRequest
                 {
-                    VIN = request.VIN,
-                    FromDate = request.FromDate,
-                    ToDate = request.ToDate,
-                    WarningType = request.WarningType
+                    VIN = request.VIN
                 };
-                reports.entity.VehicleHealthStatus objVehicleHealthStatus = new ReportComponent.entity.VehicleHealthStatus();
+                reports.entity.VehicleHealthResult objVehicleHealthStatus = new ReportComponent.entity.VehicleHealthResult();
                 var result = await _reportManager.GetVehicleHealthStatus(objVehicleHealthStatusRequest);
                 VehicleHealthStatusResponse response = new VehicleHealthStatusResponse();
                 if (result != null)

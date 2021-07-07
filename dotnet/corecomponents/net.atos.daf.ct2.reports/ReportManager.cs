@@ -420,7 +420,7 @@ namespace net.atos.daf.ct2.reports
         #endregion
 
         #region VehicleHealthStatus
-        public async Task<VehicleHealthStatus> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest)
+        public async Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest)
         {
             var data = await _reportRepository.GetVehicleHealthStatus(vehicleHealthStatusRequest);
             return data;
