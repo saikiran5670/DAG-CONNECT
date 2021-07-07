@@ -86,16 +86,17 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   minTripValue: any;
   minDriverCheck: any;
   minDriverValue: any;
-  profileList: any=[
-    {
-      profileName: 'Basic default',
-      profileId: '0'
-    },
-    {
-      profileName: 'Advanced default',
-      profileId: '1'
-    }
-  ];
+  // profileList: any=[
+  //   {
+  //     profileName: 'Basic default',
+  //     profileId: '0'
+  //   },
+  //   {
+  //     profileName: 'Advanced default',
+  //     profileId: '1'
+  //   }
+  // ];
+  profileList: any =[];
   showField: any = {
     select: true,
     ranking: true,
@@ -531,21 +532,24 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     let searchDataParam = {
       "startDateTime":_startTime,
       "endDateTime":_endTime,
+      // "viNs": [
+      //   "M4A14528","M4A1114","M4A1117","XLR0998HGFFT76657","XLRASH4300G1472w0"
+      //   ],
       "viNs": _vehicelIds,
-      "driverIds":_driverIds
-      // "minTripDistance":0,
-      // "minDriverTotalDistance": 0,
-      // "targetProfileId": 0,
-      // "reportId": 0
+      //"driverIds":_driverIds
+      "minTripDistance":0,
+      "minDriverTotalDistance": 0,
+      "targetProfileId": 3,
+      "reportId": 10
     }
     if(_vehicelIds.length > 0){
       this.showLoadingIndicator = true;
-      //this.reportService.getEcoScoreDetails(searchDataParam).subscribe((_tripData: any) => {
-      this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
+      this.reportService.getEcoScoreDetails(searchDataParam).subscribe((_tripData: any) => {
+      // this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
         this.hideloader();
-        //let tripData = _tripData; 
+        let tripData = _tripData; 
         
-        let tripData = {
+        let tripData1 = {
           "driverActivities": [
             {
               "driverId": "NL B000384974000000",
@@ -761,9 +765,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
           this.onSearchData = tripData;
           this.setGeneralDriverValue();
 
-          this.initData = this.reportMapService.getDriverTimeDataBasedOnPref(tripData.driverActivities, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+         // this.initData = this.reportMapService.getDriverTimeDataBasedOnPref(tripData.driverActivities, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
           this.setTableInfo();
-          this.updateDataSource(this.initData);
+          this.updateDataSource(tripData.driverRanking);
           this.setDataForAll();
         }
         else{
@@ -780,6 +784,10 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
        // this.updateDataSource(this.tripData);
       });
     }
+
+    this.reportService.getEcoScoreProfiles().subscribe((profiles: any) => {
+      this.profileList = profiles.profiles;
+    });
   }
 
   setDataForAll(){    
@@ -1348,10 +1356,47 @@ let finalGroupDataList = [];
   onCompare(event: any){
     this.compareEcoScore = true;
     const numSelected = this.selectedEcoScore.selected.length;
+
     if(numSelected > 4){
       return;
+    } else {
+      let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
+      let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+      let _vehicelIds = [];
+      let _driverIds =[];
+      var _minTripVal =0;
+      let _minDriverDist=0;
+
+      _driverIds = this.selectedEcoScore.selected.map(a => a.driverId);
+      _vehicelIds = this.selectedEcoScore.selected.map(a => a.vin);
+      if(this.ecoScoreForm.get('minTripCheck').value){
+        _minTripVal = Number(this.ecoScoreForm.get('minTripValue'));
+      }
+      if(this.ecoScoreForm.get('minDriverCheck').value){
+        _minDriverDist = Number(this.ecoScoreForm.get('minDriverValue'));
+      }
+        let searchDataParam = {
+          "startDateTime":_startTime,
+          "endDateTime":_endTime,
+         // "viNs": _vehicelIds,
+         "viNs": [
+          "M4A14528","M4A1114","M4A1117"
+          ],
+          //"driverIds":_driverIds,
+          "driverIds": ["NL B000171984000002", "P 0000000542878012","NL B000384974000000"],
+          "minTripDistance":_minTripVal,
+          "minDriverTotalDistance": _minDriverDist,
+          "targetProfileId": 2,
+          "reportId": 10
+        }
+        if(_vehicelIds.length > 0){
+          this.showLoadingIndicator = true;
+          this.reportService.getEcoScoreDriverCompare(searchDataParam).subscribe((_drivers: any) => {
+            console.log(_drivers);
+      });
     }
   }
+}
 
   masterToggleForEcoScore(){
     this.isAllSelectedForEcoScore()

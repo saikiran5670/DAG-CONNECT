@@ -145,6 +145,18 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
+  getEcoScoreDriverCompare(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/ecoscore/comparedrivers`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   getCalendarDetails(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
