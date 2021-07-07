@@ -9,5 +9,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int ReportId { get; set; }
 
         public string ReportTranslatedContent { get; set; }
+
+        public string LanguageCode { get; set; }
     }
 }

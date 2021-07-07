@@ -62,16 +62,16 @@ namespace net.atos.daf.ct2.account.report
         {
             FromDate = reportSchedulerData.StartDate;
             ToDate = reportSchedulerData.EndDate;
-            var vehicleAssociationList = await _visibilityManager.GetVehicleByAccountVisibility(reportSchedulerData.CreatedBy, reportSchedulerData.OrganizationId);
-            if (vehicleAssociationList.Count() == 0)
-            {
-                throw new Exception(TripReportConstants.NO_ASSOCIATION_MSG);
-            }
-
             var vehicleList = await _reportSchedularRepository.GetVehicleListForSingle(reportSchedulerData.Id);
             if (vehicleList == null)
             {
                 throw new Exception(TripReportConstants.NO_VEHICLE_MSG);
+            }
+
+            var vehicleAssociationList = await _visibilityManager.GetVehicleByAccountVisibility(reportSchedulerData.CreatedBy, reportSchedulerData.OrganizationId);
+            if (vehicleAssociationList.Count() == 0)
+            {
+                throw new Exception(TripReportConstants.NO_ASSOCIATION_MSG);
             }
 
             if (vehicleList != null && vehicleAssociationList.Where(w => w.VehicleId == vehicleList.Id).Count() == 0)
