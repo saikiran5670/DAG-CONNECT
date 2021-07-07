@@ -121,7 +121,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 VehicleHealthStatusResponse response = new VehicleHealthStatusResponse();
                 if (result != null)
                 {
-                    string res = JsonConvert.SerializeObject(result.CurrentWarning);
+                    // string res = JsonConvert.SerializeObject(result.CurrentWarning);
                     response.Code = Responsecode.Success;
                     response.Message = Responsecode.Success.ToString();
                 }
