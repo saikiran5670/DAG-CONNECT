@@ -972,7 +972,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("fleetfuel/getfleetfueltripbyvehicle")]
+        [Route("fleetfuel/getdetails/trip")]
         public async Task<IActionResult> GetFleetFuelTripByVehicle([FromBody] Entity.Report.ReportFleetFuelFilter request)
         {
             try
