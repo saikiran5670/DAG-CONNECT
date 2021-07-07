@@ -166,7 +166,7 @@ export class AppComponent {
         organisationrelationshipmanagement: 'Organisation Relationship Management',
         relationshipmanagement: 'Relationship Management',
         translationmanagement: 'Translation Management',
-        configurationmanagemnt: 'Configuration Managemnt',
+        configurationmanagemnt: 'Configuration Management',
         packagemanagement: 'Package Management',
         accessrelationshipmanagement: 'Access Relationship Management',
         subscriptionmanagement: 'Subscription Management',
