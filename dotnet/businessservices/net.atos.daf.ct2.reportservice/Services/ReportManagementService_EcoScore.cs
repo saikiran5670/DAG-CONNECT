@@ -419,7 +419,15 @@ namespace net.atos.daf.ct2.reportservice.Services
                 if (resultDataMart?.Count > 0)
                 {
                     response.Drivers.AddRange(_mapper.MapEcoScoreReportDrivers(resultDataMart));
-                    response.CompareDrivers = _mapper.MapEcoScoreReportCompareDriversResponse(resultDataMart, reportAttributes);
+                    try
+                    {
+                        response.CompareDrivers = _mapper.MapEcoScoreReportCompareDriversResponse(resultDataMart, reportAttributes);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(null, ex);
+                        throw new Exception("Error occurred while parsing the EcoScore compare drivers.");
+                    }
                     response.Code = Responsecode.Success;
                     response.Message = ReportConstants.GET_REPORT_DETAILS_SUCCESS_MSG;
                 }
@@ -509,15 +517,14 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 try
                 {
-                    response.UserPreference = _mapper.MapReportUserPreferences(userPreferences);
+                    response = _mapper.MapReportUserPreferences(userPreferences);
                 }
                 catch (Exception ex)
                 {
                     _logger.Error(null, ex);
-                    throw new Exception("Error occurred while parsing the report user preferences.");
+                    throw new Exception("Error occurred while parsing the report user preferences or data is missing.");
                 }
 
-                response.Code = Responsecode.Success;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)

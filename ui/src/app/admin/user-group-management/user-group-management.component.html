@@ -49,7 +49,7 @@
         <ng-container matColumnDef="accountGroupName">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblGroupName || 'Group Name'}}
           </mat-header-cell>
-          <mat-cell *matCellDef="let row" matTooltip={{row.accountGroupName}}> 
+          <mat-cell *matCellDef="let row" matTooltip={{row.accountGroupName}} matTooltipPosition="left"> 
             <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
             <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
             <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.accountGroupName}}</span>
@@ -59,18 +59,18 @@
         <ng-container matColumnDef="vehicleCount">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicles || 'Vehicles'}}
           </mat-header-cell>
-          <mat-cell *matCellDef="let row" matTooltip={{row.vehicleCount}}><span [ngClass]="row.vehicleCount !=0 ? 'row-hover' : '' "
+          <mat-cell *matCellDef="let row"><span [ngClass]="row.vehicleCount !=0 ? 'row-hover' : '' "
               (click)="row.vehicleCount !=0 ? onVehicleClick(row) : ''">{{row.vehicleCount}}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="accountCount">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Accounts'}}</mat-header-cell>
-          <mat-cell *matCellDef="let row" matTooltip={{row.accountCount}}> <span [ngClass]="row.accountCount !=0 ? 'row-hover' : '' "
+          <mat-cell *matCellDef="let row"> <span [ngClass]="row.accountCount !=0 ? 'row-hover' : '' "
               (click)="row.accountCount !=0 ? onUserClick(row) : ''">{{row.accountCount}}</span> </mat-cell>
         </ng-container>
         <ng-container matColumnDef="action">
           <mat-header-cell *matHeaderCellDef class="action">{{ translationData.lblAction || 'Action'}}</mat-header-cell>
           <mat-cell *matCellDef="let row" class="action">
-            <button class='actionBtn' (click)="editViewGroup(row, 'view')" mat-flat-button matTooltip="View">
+            <button class='actionBtn' (click)="editViewGroup(row, 'view')" mat-flat-button matTooltip="View" matTooltipPosition="left">
               <mat-icon>visibility</mat-icon>
             </button>
             <div *ngIf ="row.type == 'G'">

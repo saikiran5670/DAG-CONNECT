@@ -41,7 +41,7 @@ public class Trip implements Serializable {
 	private Double vTachographSpeed;
 	private Double tripCalAvgGrossWtComb;
 	private Double tripCalPtoDuration;
-	private Double triCalHarshBrakeDuration;
+	private Double tripCalHarshBrakeDuration;
 	private Double tripCalHeavyThrottleDuration;
 	private Double tripCalCrsCntrlDistBelow50;
 	private Double tripCalCrsCntrlDistAbv50;
@@ -141,7 +141,7 @@ public class Trip implements Serializable {
 	private Double tripCalPtoDuration;
 	
 	@Column(name = "harsh_brake_duration")
-	private Double triCalHarshBrakeDuration;
+	private Double tripCalHarshBrakeDuration;
 	
 	@Column(name = "heavy_throttle_duration")
 	private Double tripCalHeavyThrottleDuration;

@@ -23,7 +23,8 @@ export class ReportSchedulerComponent implements OnInit {
   grpTitleVisible : boolean = false;
   errorMsgVisible: boolean = false;
   displayMessage: any;
-  createViewEditStatus: boolean = false;
+  createEditStatus: boolean = false;
+  viewStatus: boolean= false;
   showLoadingIndicator: any = false;
   actionType: any = '';
   selectedRowData: any= [];
@@ -48,6 +49,7 @@ export class ReportSchedulerComponent implements OnInit {
   ReportTypeList: any= [];
   StatusList: any= [];
   reportSchedulerParameterData: any= {};
+
 
   constructor(
     private translationService: TranslationService,
@@ -102,7 +104,7 @@ export class ReportSchedulerComponent implements OnInit {
   
   onClickNewReportScheduler(){
     this.actionType = 'create';
-    this.createViewEditStatus = true;
+    this.createEditStatus = true;
   }
 
   onClose(){
@@ -110,7 +112,8 @@ export class ReportSchedulerComponent implements OnInit {
   }
  
   onBackToPage(objData){
-    this.createViewEditStatus = objData.actionFlag;
+    this.createEditStatus = objData.actionFlag;
+    this.viewStatus = objData.actionFlag;
     if(objData.successMsg && objData.successMsg != ''){
       this.successMsgBlink(objData.successMsg);
     }
@@ -186,11 +189,12 @@ export class ReportSchedulerComponent implements OnInit {
     //   driverTxt = driverTxt.slice(0, -2);
     // }
 
-    initdata[index].recipientList = recipientTxt; 
-    initdata[index].driverList = driverTxt;
-    initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt;
+    initdata[index].recipientList = recipientTxt.slice(0, -2); 
+    initdata[index].driverList = driverTxt.slice(0, -2);
+    initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt == "" ? vehicleGroupTxt : vehicleGroupTxt.slice(0, -2);
     initdata[index].lastScheduleRunDate = Util.convertUtcToDateFormat(element.lastScheduleRunDate, "MM/DD/YYYY");
     initdata[index].nextScheduleRunDate = Util.convertUtcToDateFormat(element.nextScheduleRunDate, "MM/DD/YYYY");
+    initdata[index].isDriver = this.ReportTypeList.filter(item => item.id == initdata[index].reportId)[0].isDriver == 'Y' ? true : false;
   });
   
   return initdata;
@@ -283,15 +287,17 @@ getUnique(arr, comp) {
   }
 
   onViewReportScheduler(row: any, action: any) {
-    this.createViewEditStatus= true;
+    this.rowsData= [];
+    this.viewStatus= true;
     this.actionType = action;
     this.rowsData.push(row);
   }
 
   onEditReportScheduler(row: any, action : string) {
-    this.createViewEditStatus= true;
+    this.rowsData= [];
+    this.createEditStatus= true;
     this.actionType = 'edit';
-    this.titleText = this.translationData.lblEditAlertDetails || "Edit Alert Details";
+    this.titleText = this.translationData.lblEditReportScheduler || "Edit Report Scheduler";
     this.rowsData.push(row);
   }
 

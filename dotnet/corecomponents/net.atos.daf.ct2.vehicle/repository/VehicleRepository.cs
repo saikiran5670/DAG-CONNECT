@@ -539,11 +539,12 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
 
             vehicle.ID = await IsVINExists(vehicle.VIN);
-            await VehicleOptInOptOutHistory(vehicle.ID);
-            char VehOptIn = await _dataAccess.QuerySingleAsync<char>("select coalesce((select vehicle_default_opt_in FROM master.organization where id=@id), 'U')", new { id = vehicle.Organization_Id });
-            vehicle.Status = (VehicleCalculatedStatus)await GetCalculatedVehicleStatus(VehOptIn, false);
+            //Found unnecessary so commented here
+            //await VehicleOptInOptOutHistory(vehicle.ID);
+            char vehOptIn = await _dataAccess.QuerySingleAsync<char>("select coalesce((select vehicle_default_opt_in FROM master.organization where id=@id), 'U')", new { id = vehicle.Organization_Id });
+            vehicle.Status = (VehicleCalculatedStatus)await GetCalculatedVehicleStatus(vehOptIn, false);
 
-            var QueryStatement = @" UPDATE master.vehicle
+            var queryStatement = @" UPDATE master.vehicle
                                     SET 
                                      organization_id=@organization_id                                        
                                     ,opt_in=@opt_in
@@ -566,15 +567,14 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
             parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
             parameter.Add("@is_ota", vehicle.Is_Ota);
-            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
 
             return vehicle;
         }
 
-        public async Task<int> IsVINExists(string VIN)
+        public async Task<int> IsVINExists(string vin)
         {
-            int VehicleId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = VIN });
-            return VehicleId;
+            return await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = vin });
         }
 
         public async Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId)

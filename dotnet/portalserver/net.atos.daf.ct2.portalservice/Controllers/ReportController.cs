@@ -630,7 +630,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                      $"{ nameof(GetReportUserPreference) } method", 1, 2, Convert.ToString(reportId),
                       _userDetails);
-                    return Ok(response.UserPreference);
+                    return Ok(new { TargetProfileId = response.TargetProfileId, UserPreferences = response.UserPreference });
                 }
                 if (response.Code == Responsecode.InternalServerError)
                     return StatusCode((int)response.Code, string.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, response.Message));
@@ -651,7 +651,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region  Eco Score Report - Compare Drivers
-        [HttpGet]
+        [HttpPost]
         [Route("ecoscore/comparedrivers")]
         public async Task<IActionResult> GetEcoScoreReportCompareDrivers([FromBody] EcoScoreReportCompareDriversRequest request)
         {
@@ -809,15 +809,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                string filters = JsonConvert.SerializeObject(fleetOverviewFilter);
-                FleetOverviewDetailsRequest fleetOverviewDetailsRequest = JsonConvert.DeserializeObject<FleetOverviewDetailsRequest>(filters);
-                fleetOverviewDetailsRequest.AccountId = _userDetails.AccountId;
-                fleetOverviewDetailsRequest.OrganizationId = GetContextOrgId();
-                fleetOverviewDetailsRequest.RoleId = _userDetails.RoleId;
-
+                FleetOverviewDetailsRequest fleetOverviewDetailsRequest = new FleetOverviewDetailsRequest
+                {
+                    AccountId = _userDetails.AccountId,
+                    OrganizationId = GetContextOrgId(),
+                    RoleId = _userDetails.RoleId
+                };
+                fleetOverviewDetailsRequest.GroupIds.AddRange(fleetOverviewFilter.GroupId);
+                fleetOverviewDetailsRequest.AlertCategories.AddRange(fleetOverviewFilter.AlertCategory);
+                fleetOverviewDetailsRequest.AlertLevels.AddRange(fleetOverviewFilter.AlertLevel);
+                fleetOverviewDetailsRequest.HealthStatus.AddRange(fleetOverviewFilter.HealthStatus);
+                fleetOverviewDetailsRequest.OtherFilters.AddRange(fleetOverviewFilter.OtherFilter);
+                fleetOverviewDetailsRequest.DriverIds.AddRange(fleetOverviewFilter.DriverId);
+                fleetOverviewDetailsRequest.Days = fleetOverviewFilter.Days;
+                /* Need to comment Start */
                 fleetOverviewDetailsRequest.AccountId = 171;
                 fleetOverviewDetailsRequest.OrganizationId = 36;
                 fleetOverviewDetailsRequest.RoleId = 61;
+                /* Need to comment End */
                 FleetOverviewDetailsResponse response = await _reportServiceClient.GetFleetOverviewDetailsAsync(fleetOverviewDetailsRequest);
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
@@ -825,19 +834,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     foreach (var fleetoverviewItem in response.FleetOverviewDetailList)
                     {
-                        if (fleetoverviewItem.LatestGeolocationAddressId == 0)
+                        if (fleetoverviewItem.LatestGeolocationAddressId == 0 && fleetoverviewItem.LatestReceivedPositionLattitude != 0 && fleetoverviewItem.LatestReceivedPositionLongitude != 0)
                         {
                             GetMapRequest getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.LatestReceivedPositionLattitude, fleetoverviewItem.LatestReceivedPositionLongitude);
                             fleetoverviewItem.LatestGeolocationAddressId = getMapRequestLatest.Id;
                             fleetoverviewItem.LatestGeolocationAddress = getMapRequestLatest.Address;
                         }
-                        if (fleetoverviewItem.LatestWarningGeolocationAddressId == 0)
+                        if (fleetoverviewItem.LatestWarningGeolocationAddressId == 0 && fleetoverviewItem.LatestWarningPositionLatitude != 0 && fleetoverviewItem.LatestWarningPositionLongitude != 0)
                         {
                             GetMapRequest getMapRequestWarning = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.LatestWarningPositionLatitude, fleetoverviewItem.LatestWarningPositionLongitude);
                             fleetoverviewItem.LatestWarningGeolocationAddressId = getMapRequestWarning.Id;
                             fleetoverviewItem.LatestWarningGeolocationAddress = getMapRequestWarning.Address;
                         }
-                        if (fleetoverviewItem.StartGeolocationAddressId == 0)
+                        if (fleetoverviewItem.StartGeolocationAddressId == 0 && fleetoverviewItem.StartPositionLattitude != 0 && fleetoverviewItem.StartPositionLongitude != 0)
                         {
                             GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.StartPositionLattitude, fleetoverviewItem.StartPositionLongitude);
                             fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
@@ -896,7 +905,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-        /* TODO :: Un Comment Once Setup of Driver is completed
+        /* TODO :: Un Comment Once Setup of Driver is completed      */
         [HttpPost]
         [Route("fleetfuel/getdetails/driver")]
         public async Task<IActionResult> GetFleetFuelDetailsByDriver([FromBody] Entity.Report.ReportFleetFuelFilter request)
@@ -928,7 +937,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        */
 
         [HttpPost]
         [Route("fleetfuel/getdetails/vehiclegraph")]
@@ -963,7 +971,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("fleetfuel/getfleetfueltripbyvehicle")]
+        [Route("fleetfuel/getdetails/trip")]
         public async Task<IActionResult> GetFleetFuelTripByVehicle([FromBody] Entity.Report.ReportFleetFuelFilter request)
         {
             try
@@ -991,6 +999,37 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
+        #region Vehicle Health Summary
+        [HttpGet]
+        [Route("getvehiclesummary")]
+        public async Task<IActionResult> GetVehicleHealthReport([FromQuery] Entity.Report.VehicleHealthStatusRequest request)
+        {
+            try
+            {
+                if (request.FromDate > request.ToDate) { return BadRequest(ReportConstants.VALIDATION_MSG_FROMDATE); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                net.atos.daf.ct2.reportservice.VehicleHealthReportRequest objVehicleHealthStatusRequest = JsonConvert.DeserializeObject<VehicleHealthReportRequest>(filters);
+                _logger.Info("GetVehicleHealthReport method in Report (for Vehicle Current and History Summary) API called.");
+                var data = await _reportServiceClient.GetVehicleHealthReportAsync(objVehicleHealthStatusRequest);
+                if (data != null)
+                {
+                    data.Message = ReportConstants.SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
             }
         }
         #endregion

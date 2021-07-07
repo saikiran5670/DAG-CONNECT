@@ -46,8 +46,18 @@ namespace net.atos.daf.ct2.reports.test
         [Timeout(TestTimeout.Infinite)]
         public async Task GetFleetVehicleDetails_Test()
         {
-            //var fleetOverviewFilter = new FleetOverviewFilter() { GroupId = " ", AlertLevel = " ", AlertCategory = " ", HealthStatus = " ", OtherFilter = " ", DriverId = "SK 0000000012340437", Days = "7" };
-            var fleetOverviewFilter = new FleetOverviewFilter();
+            var fleetOverviewFilter = new FleetOverviewFilter();// { VINIds = { "XLRAS47MS0E808080" }, Days = 7 };
+            List<string> objvin = new List<string>();
+            objvin.Add("XLR0998HGFFT76657");
+            fleetOverviewFilter.VINIds = objvin;
+            List<string> objdriver = new List<string>();
+            objdriver.Add("SK 2236526558846039");
+            fleetOverviewFilter.DriverId = objdriver;
+            List<string> objhealth = new List<string>();
+            objhealth.Add("S");
+            fleetOverviewFilter.HealthStatus = objhealth;
+            //var fleetOverviewFilter = new FleetOverviewFilter() { GroupId = { " " }, VINIds = { "XLRAS47MS0E808080" }, AlertLevel = { " " }, AlertCategory = { " " }, HealthStatus = { " " }, OtherFilter = { " " }, DriverId = { "SK 0000000012340437" }, Days = 7 };
+            //var fleetOverviewFilter = new FleetOverviewFilter();
             var result = await _reportRepository.GetFleetOverviewDetails(fleetOverviewFilter);
             Assert.IsNotNull(result);
         }

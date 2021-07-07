@@ -616,9 +616,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                    l.latitude as Latitude,
 								   l.longitude as Longitude,
 								   l.width as Width,
-								   l.distance as Distance
-	                            FROM master.category c
-	                            LEFT JOIN  master.landmark l on c.id = l.category_id 
+								   l.distance as Distance,
+	                               l.sub_category_id as SubCategoryId,
+								   s.name as SubCategoryName
+	                            FROM master.landmark l
+	                            LEFT JOIN master.category c  on c.id = l.category_id 
+								LEFT JOIN master.category s  on s.id = l.sub_category_id
 	                            WHERE l.organization_id = @organization_id
 	                            AND l.type = 'P' 
 	                            AND l.state= 'A'";

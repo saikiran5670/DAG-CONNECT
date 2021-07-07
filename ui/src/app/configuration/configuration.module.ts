@@ -34,10 +34,11 @@ import { ExistingTripsComponent } from './landmarks/manage-corridor/create-edit-
 import { Ng2CompleterModule } from 'ng2-completer';
 import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
-import { CreateEditViewReportSchedulerComponent } from './report-scheduler/create-edit-view-report-scheduler/create-edit-view-report-scheduler.component';
 import { VehicleConnectSettingsComponent } from './vehicle-management/vehicle-connect-settings/vehicle-connect-settings.component';
 import { VehicleDetailsComponent } from './vehicle-management/vehicle-details/vehicle-details.component';
 import { EcoScoreProfileManagementComponent } from './eco-score-profile-management/eco-score-profile-management.component';
+import { CreateEditReportSchedulerComponent } from './report-scheduler/create-edit-report-scheduler/create-edit-report-scheduler.component';
+import { ViewReportSchedulerComponent } from './report-scheduler/view-report-scheduler/view-report-scheduler.component';
 
 @NgModule({
   declarations: [
@@ -63,10 +64,11 @@ import { EcoScoreProfileManagementComponent } from './eco-score-profile-manageme
     CreateEditCorridorComponent,
     RouteCalculatingComponent,
     ExistingTripsComponent,
-    CreateEditViewReportSchedulerComponent,
+    CreateEditReportSchedulerComponent,
     VehicleConnectSettingsComponent,
     VehicleDetailsComponent,
     EcoScoreProfileManagementComponent,
+    ViewReportSchedulerComponent,
   ],
   imports: [
     CommonModule,

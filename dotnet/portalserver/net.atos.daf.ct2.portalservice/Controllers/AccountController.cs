@@ -474,10 +474,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "ResetPasswordInitiate  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                                            JsonConvert.SerializeObject(request), _userDetails);
-                    return Ok(response.Message);
+                    return Ok();
                 }
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
-                    return NotFound(response.Message);
+                    return Ok();
                 else
                     return StatusCode(500, "Password reset process failed to initiate or Error while sending email.");
             }

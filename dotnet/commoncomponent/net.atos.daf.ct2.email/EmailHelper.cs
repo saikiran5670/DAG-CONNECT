@@ -85,8 +85,10 @@ namespace net.atos.daf.ct2.email
                     case EmailEventType.PasswordExpiryNotification:
                         emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AccountInfo.FullName, baseUrl.AbsoluteUri, messageRequest.ToAddressList.First().Key, DateTime.Now.AddDays(messageRequest.RemainingDaysToExpire).ToString("dd-MMM-yyyy"));
                         break;
-                    case EmailEventType.SendReport:
+                    case EmailEventType.ScheduledReportEmail:
                         emailContent = GetReportEmailContent(emailTemplateContent, baseUrl, messageRequest);
+                        emailTemplate.Description = emailContent;
+                        emailContent = GetEmailContent(emailTemplate);
                         break;
                 }
 
@@ -107,14 +109,23 @@ namespace net.atos.daf.ct2.email
         }
         public static string GetReportEmailContent(string emailTemplate, Uri baseUrl, MessageRequest messageRequest)
         {
+            System.Text.StringBuilder builder = new System.Text.StringBuilder();
             var downloadUrl = "reportscheduler/download?Token={0}";
-            var replacedContent = emailTemplate;
+            string btnLabel = "\"button\"";
+            string lblBlank = "\"_blank\"";
+            string lblPlaceholder = "\"{0}\"";
+            var urldown = @"<a class=" + btnLabel + " href=" + lblPlaceholder + " target=" + lblBlank + ">[lblDownloadReportButton]</a>";
+
+            Uri downloadReportUrl = null;
             foreach (var token in messageRequest.ReportTokens)
             {
-                var downloadReportUrl = new Uri(baseUrl, string.Format(downloadUrl, token));
+                downloadReportUrl = new Uri(baseUrl, string.Format(downloadUrl, token));
+                urldown += "<br/>";
             }
 
-            return replacedContent;
+            string urlplace = string.Format(urldown, downloadReportUrl);
+            builder.AppendFormat(emailTemplate, messageRequest.AccountInfo.FullName, urlplace);
+            return builder.ToString();
         }
 
         public static string GetEmailContent(EmailTemplate emailTemplate)

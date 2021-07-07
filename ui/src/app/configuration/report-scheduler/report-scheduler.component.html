@@ -8,7 +8,7 @@
       <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
       </div>
   </div>
-  <div *ngIf='!createViewEditStatus'>
+  <div *ngIf='!createEditStatus && !viewStatus'>
       <mat-card class='mat-elevation-z'>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -150,8 +150,12 @@
         <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
       </mat-card>
   </div>
-  <div *ngIf='createViewEditStatus'>
-      <app-create-edit-view-report-scheduler [reportSchedulerParameterData]="reportSchedulerParameterData" [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"
-        (backToPage)='onBackToPage($event)'></app-create-edit-view-report-scheduler>
+  <div *ngIf='createEditStatus'>
+      <app-create-edit-report-scheduler [reportSchedulerParameterData]="reportSchedulerParameterData" [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"
+        (backToPage)='onBackToPage($event)'></app-create-edit-report-scheduler>
   </div>
+  <div *ngIf='viewStatus'>
+    <app-view-report-scheduler [translationData]='translationData' [selectedRowData]="rowsData"
+      (backToPage)='onBackToPage($event)'></app-view-report-scheduler>
+</div>
 </div>

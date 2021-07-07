@@ -92,7 +92,19 @@ export class ReportSchedulerService {
    return this.httpClient
       .put<any>(`${this.reportSchedulerServiceURL}/update`, data, headers)
       .pipe(catchError(this.handleError));
-}
+  }
+
+  downloadReport(id: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any>(
+        `${this.reportSchedulerServiceURL}/getpdf?ReportId=${id}`
+          )
+      .pipe(catchError(this.handleError));
+  }
   
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);

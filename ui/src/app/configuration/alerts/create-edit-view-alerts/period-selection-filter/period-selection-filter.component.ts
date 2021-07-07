@@ -31,7 +31,7 @@ checkboxChecked: boolean = false;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId= parseInt(localStorage.getItem("accountId"));
-    this.days= ['Sunday', 'Monday', 'tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    this.days= ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     
     this.periodSelectionForm = this._formBuilder.group({
       // recipientLabel: ['', [ Validators.required ]],

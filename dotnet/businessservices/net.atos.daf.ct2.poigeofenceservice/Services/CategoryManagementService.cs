@@ -301,6 +301,8 @@ namespace net.atos.daf.ct2.poigeofenservice
                         objCategoryWisePOI.Longitude = data[i].Longitude;
                         objCategoryWisePOI.Width = data[i].Width;
                         objCategoryWisePOI.Distance = data[i].Distance;
+                        objCategoryWisePOI.SubCategoryId = data[i].SubCategoryId == null ? 0 : data[i].SubCategoryId;
+                        objCategoryWisePOI.SubCategoryName = data[i].SubCategoryName ?? string.Empty;
                         objCategoryWisePOIResponse.CategoryWisePOI.Add(objCategoryWisePOI);
                     }
                 }

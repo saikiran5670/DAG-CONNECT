@@ -189,7 +189,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
                 parameterReportSchedular.Add("@status", report.Status);
                 parameterReportSchedular.Add("@type", report.Type);
-                parameterReportSchedular.Add("@start_date", report.OrganizationId);
+                parameterReportSchedular.Add("@start_date", report.StartDate);
                 parameterReportSchedular.Add("@end_date", report.EndDate);
                 parameterReportSchedular.Add("@code", report.Code);
                 parameterReportSchedular.Add("@last_schedule_run_date", report.LastScheduleRunDate);
@@ -447,7 +447,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
                 parameterReportSchedular.Add("@status", report.Status);
                 parameterReportSchedular.Add("@type", report.Type);
-                parameterReportSchedular.Add("@start_date", report.OrganizationId);
+                parameterReportSchedular.Add("@start_date", report.StartDate);
                 parameterReportSchedular.Add("@end_date", report.EndDate);
                 parameterReportSchedular.Add("@code", report.Code);
                 parameterReportSchedular.Add("@last_schedule_run_date", report.LastScheduleRunDate);
@@ -593,11 +593,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                                    LEFT JOIN master.scheduledreportdriverref as driveref
 	                                    ON repsch.id=driveref.report_schedule_id AND driveref.state='A'
 	                                    LEFT JOIN master.scheduledreportrecipient as receipt
-	                                    ON repsch.id=receipt.schedule_report_id AND repsch.status='A' AND receipt.state='A'
+	                                    ON repsch.id=receipt.schedule_report_id AND repsch.status <>'D' AND receipt.state='A'
 	                                    LEFT JOIN master.scheduledreportvehicleref as vehref
-	                                    ON repsch.id=vehref.report_schedule_id AND repsch.status='A' AND vehref.state='A'
+	                                    ON repsch.id=vehref.report_schedule_id AND repsch.status <>'D' AND vehref.state='A'
 	                                    LEFT JOIN master.scheduledreport as schrep
-	                                    ON repsch.id=schrep.schedule_report_id AND repsch.status='A'
+	                                    ON repsch.id=schrep.schedule_report_id AND repsch.status <>'D'
                                         LEFT JOIN master.group grp 
 					                    on vehref.vehicle_group_id=grp.id
 					                    LEFT JOIN master.groupref vgrpref
