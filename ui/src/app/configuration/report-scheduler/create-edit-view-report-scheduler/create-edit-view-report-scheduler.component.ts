@@ -228,8 +228,8 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
 
     this.reportSchedulerForm.get('reportType').setValue(this.selectedRowData[0].reportId);
     this.onChangeReportType(this.selectedRowData[0].reportId);
-    this.reportSchedulerForm.get('vehicleGroup').setValue(this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupId);
-    this.reportSchedulerForm.get('vehicle').setValue(this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleId);
+    this.reportSchedulerForm.get('vehicleGroup').setValue(this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? 0 : (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupId));
+    this.reportSchedulerForm.get('vehicle').setValue(this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? 0 : (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleId));
     this.reportSchedulerForm.get('language').setValue((this.selectedRowData[0].code).trim());
     let recipientList= (this.selectedRowData[0].recipientList).replace(" ", "");
     this.reportSchedulerForm.get('recipientEmail').setValue(recipientList);
@@ -499,7 +499,7 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
 
     switch(this.selectionTab){
       case 'D': {
-        if(this.actionType= 'edit'){
+        if(this.actionType== 'edit'){
           startDate= this.selectedRowData[0].startDate;
           endDate= this.selectedRowData[0].endDate;
 
