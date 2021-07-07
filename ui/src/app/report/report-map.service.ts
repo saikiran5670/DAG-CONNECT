@@ -455,21 +455,27 @@ export class ReportMapService {
       let elemChecker: any = 0;
       if(_displayRouteView == 'F'){ //------ fuel consumption
         elemChecker = element.fuelconsumtion;
-        if(elemChecker <= 100){ // <= 100
-          element.color = '#12a802'; // green
-        }else if(elemChecker > 100 && elemChecker <= 500){ // >100 & <=500
-          element.color = 'orange';
-        }else{ // >500
-          element.color = 'red';   
+        if(elemChecker <= 100){
+          element.color = '#57A952'; // green
+        }else if(elemChecker > 100 && elemChecker <= 500){ 
+          element.color = '#FFA500'; // orange
+        }else{ 
+          element.color = '#FF010F';  // red 
         }
       }else{ //---- co2 emission
         elemChecker = element.co2Emission;
         if(elemChecker <= 270){
-          element.color = '#12a802'; // green
-        }else if(elemChecker > 270 && elemChecker <= 540){
-          element.color = 'orange'; 
-        }else{
-          element.color = 'red'; 
+          element.color = '#01FE75'; // light green
+        }else if(elemChecker > 270 && elemChecker <= 540){ // green
+          element.color = '#57A952'; 
+        }else if(elemChecker > 540 && elemChecker <= 810){ // green-brown
+          element.color = '#867B3F'; 
+        }else if(elemChecker > 810 && elemChecker <= 1080){ // red-brown
+          element.color = '#9C6236'; 
+        }else if(elemChecker > 1080 && elemChecker <= 1350){ // brown
+          element.color = '#C13F28'; 
+        }else{ // red
+          element.color = '#FF010F'; 
         }
       }
       finalDataPoints.push(element);
