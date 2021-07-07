@@ -1,0 +1,102 @@
+<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+      <span>{{ breadcumMsg }}</span>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+      <span class='custom-font' (click)="onCancel()">
+        <span><&nbsp;</span>
+        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+    </div>
+</div>
+<div>
+  <mat-card class='mat-elevation-z'>
+    <mat-card-content>
+      <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblViewScheduleDetails || 'View Schedule Details' }}</span>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblTimeRange || 'Time Range' }}</mat-label>
+            <span *ngIf="selectedRowData[0].frequencyType == 'D'" style='font-weight: 500!important;'>{{ translationData.lblDaily ? translationData.lblDaily : 'Daily' }}</span>
+            <span *ngIf="selectedRowData[0].frequencyType == 'W'" style='font-weight: 500!important;'>{{ translationData.lblWeekly ? translationData.lblWeekly : 'Weekly' }}</span>
+            <span *ngIf="selectedRowData[0].frequencyType == 'B'" style='font-weight: 500!important;'>{{ translationData.lblBiweekly ? translationData.lblBiweekly : 'Biweekly' }}</span>
+            <span *ngIf="selectedRowData[0].frequencyType == 'M'" style='font-weight: 500!important;'>{{ translationData.lblMonthly ? translationData.lblMonthly : 'Monthly' }}</span>
+            <span *ngIf="selectedRowData[0].frequencyType == 'Q'" style='font-weight: 500!important;'>{{ translationData.lblQuarterly ? translationData.lblQuarterly : 'Quarterly' }}</span>
+        </div>
+
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblReportType || 'Report Type' }}</mat-label>
+            <span style='font-weight: 500!important;'>{{ selectedRowData[0].reportName ? selectedRowData[0].reportName : '--' }}</span>
+        </div>
+
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblReportDispatchTime || 'Report Dispatch Time' }}</mat-label>
+            <span style='font-weight: 500!important;'>{{ selectedRowData[0].reportDispatchTime ? selectedRowData[0].reportDispatchTime + ':00:00' : '--' }}</span>
+        </div>
+       </div>
+
+       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+        <div *ngIf="selectedRowData[0].frequencyType == 'D' || selectedRowData[0].frequencyType == 'W' || selectedRowData[0].frequencyType == 'B'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label *ngIf="selectedRowData[0].frequencyType == 'D'">{{ translationData.lblEverydayStartTime || 'Everyday Start Time'}}</mat-label>
+            <mat-label *ngIf="selectedRowData[0].frequencyType == 'W'">{{ translationData.lblStartDay || 'Start Day'}}</mat-label>
+            <mat-label *ngIf="selectedRowData[0].frequencyType == 'B'">{{ translationData.lblStartDate || 'Start Date'}}</mat-label>
+            <span style='font-weight: 500!important;'>{{ startDate }}</span>
+        </div>
+
+        <div *ngIf="selectedRowData[0].frequencyType == 'D' || selectedRowData[0].frequencyType == 'W' || selectedRowData[0].frequencyType == 'B'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label *ngIf="selectedRowData[0].frequencyType == 'D'">{{ translationData.lblEverydayEndTime || 'Everyday End Time'}}</mat-label>
+            <mat-label *ngIf="selectedRowData[0].frequencyType == 'W'">{{ translationData.lblEndDay || 'End Day'}}</mat-label>
+            <mat-label *ngIf="selectedRowData[0].frequencyType == 'B'">{{ translationData.lblEndDate || 'End Date'}}</mat-label>
+            <span style='font-weight: 500!important;'>{{ endDate }}</span>
+        </div>
+
+        <div *ngIf="selectedRowData[0].frequencyType == 'M'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblMonth || 'Month'}}</mat-label>
+            <span style='font-weight: 500!important;'>{{ month }}</span>
+        </div>
+
+        <div *ngIf="selectedRowData[0].frequencyType == 'Q'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblQuarter || 'Quarter'}}</mat-label>
+            <span style='font-weight: 500!important;'>{{ quarter }}</span>
+        </div>
+
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblLanguage || 'Language'}}</mat-label>
+            <span style='font-weight: 500!important;'>{{ language }}</span>
+        </div>
+       </div>
+
+       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblRecipientsEmail || 'Recipients Email' }}</mat-label>
+            <span style='font-weight: 500!important;'>{{ this.selectedRowData[0].recipientList ? this.selectedRowData[0].recipientList : '--' }}</span>
+        </div>
+
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}</mat-label>
+            <span style='font-weight: 500!important;'>{{ vehicleGroupName != "" ? vehicleGroupName  : '--' }}</span>
+        </div>
+
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}</mat-label>
+            <span style='font-weight: 500!important;'>{{ vehicleName != "" ? vehicleName : '--' }}</span>
+        </div>
+       </div>
+
+       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+        <div *ngIf="selectedRowData[0].isDriver" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblDriver || 'Driver'}}</mat-label>
+            <span style='font-weight: 500!important;'>{{ this.selectedRowData[0].scheduledReportDriverRef.length!= 0 ? (this.selectedRowData[0].scheduledReportDriverRef.length > 1 ? "ALL" : this.selectedRowData[0].scheduledReportDriverRef[0].driverName) : "ALL" }}</span>
+        </div>
+
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+       </div>
+
+
+       </mat-card-content>
+  </mat-card>
+</div>

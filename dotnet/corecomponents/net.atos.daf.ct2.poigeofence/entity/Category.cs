@@ -52,5 +52,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public double Longitude { get; set; }
         public double Width { get; set; }
         public double Distance { get; set; }
+        public int SubCategoryId { get; set; }
+        public string SubCategoryName { get; set; }
     }
 }

@@ -31,16 +31,20 @@ namespace net.atos.daf.ct2.reportscheduler
         {
             var reportsSent = new List<ReportEmailDetail>();
             var emailDetails = await _reportSchedulerRepository.GetReportEmailDetails();
+
             foreach (var emailItem in emailDetails)
             {
                 var mailNotifictaion = new MailNotificationRequest()
                 {
                     MessageRequest = new MessageRequest()
                     {
-                        AccountInfo = new AccountInfo() { EmailId = emailItem.EmailId, Organization_Id = emailItem.OrganizationId }
+                        AccountInfo = new AccountInfo() { EmailId = emailItem.EmailId, Organization_Id = emailItem.OrganizationId },
+                        LanguageCode = emailItem.LanguageCode.Trim(),
+                        ReportTokens = new List<string>() { emailItem.ReportToken.ToString() },
+                        ToAddressList = new Dictionary<string, string>() { { emailItem.EmailId, null } }
                     },
                     ContentType = EmailContentType.Html,
-                    EventType = EmailEventType.SendReport
+                    EventType = EmailEventType.ScheduledReportEmail
                 };
                 var isSuccess = await _emailNotificationManager.TriggerSendEmail(mailNotifictaion);
                 var mailSent = new ReportEmailDetail() { EmailId = emailItem.EmailId, IsMailSent = emailItem.IsMailSent, ReportId = emailItem.ReportSchedulerId };
@@ -75,22 +79,60 @@ namespace net.atos.daf.ct2.reportscheduler
 
         private async Task<int> UpdateNextTimeDate(ReportSchedulerEmailResult emailItem)
         {
-
-            var reportEmailFrequency = new ReportEmailFrequency()
+            try
             {
-                ReportId = emailItem.ReportSchedulerId,
-                EndDate = emailItem.EndDate,
-                FrequencyType = (TimeFrequenyType)Enum.Parse(typeof(TimeFrequenyType), emailItem.FrequencyType),
-                ReportNextScheduleRunDate = emailItem.NextScheduleRunDate,
-                ReportPrevioudScheduleRunDate = emailItem.LastScheduleRunDate,
-                StartDate = emailItem.StartDate,
-                ReportScheduleRunDate = emailItem.NextScheduleRunDate
+                var reportEmailFrequency = new ReportEmailFrequency()
+                {
+                    ReportId = emailItem.ReportSchedulerId,
+                    EndDate = emailItem.EndDate,
+                    FrequencyType = (TimeFrequenyType)Enum.Parse(typeof(TimeFrequenyType), GetEnumValue(emailItem.FrequencyType)),
+                    ReportNextScheduleRunDate = emailItem.NextScheduleRunDate,
+                    ReportPrevioudScheduleRunDate = emailItem.LastScheduleRunDate,
+                    StartDate = emailItem.StartDate,
+                    ReportScheduleRunDate = emailItem.NextScheduleRunDate
+                };
 
-            };
-            var timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByDate(reportEmailFrequency);
-            return timeupdated;
+                if (emailItem.FrequencyType == ((char)TimeFrequenyType.Daily).ToString() || emailItem.FrequencyType == ((char)TimeFrequenyType.Weekly).ToString() || emailItem.FrequencyType == ((char)TimeFrequenyType.BiWeekly).ToString())
+                {
+                    var timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByDate(reportEmailFrequency);
+                    return timeupdated;
+                }
+                else
+                {
+                    var timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByCalenderTime(reportEmailFrequency);
+                    return timeupdated;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
+        private string GetEnumValue(string frequencyType)
+        {
+            string enumtype = string.Empty;
+            switch (frequencyType)
+            {
+                case "D":
+                    enumtype = TimeFrequenyType.Daily.ToString();
+                    break;
+                case "W":
+                    enumtype = TimeFrequenyType.Weekly.ToString();
+                    break;
+                case "B":
+                    enumtype = TimeFrequenyType.BiWeekly.ToString();
+                    break;
+                case "M":
+                    enumtype = TimeFrequenyType.Monthly.ToString();
+                    break;
+                case "Q":
+                    enumtype = TimeFrequenyType.Quartly.ToString();
+                    break;
+            }
+            return enumtype;
+        }
 
     }
 }

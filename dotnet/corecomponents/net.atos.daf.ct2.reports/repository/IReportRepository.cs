@@ -42,8 +42,8 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<AlertCategory>> GetAlertCategoryList();
         #region FleetFuel
         Task<List<CO2Coefficient>> GetCO2CoEfficientData();
-        Task<List<IdlingConsumption>> GetIdlingConsumptionData();
-        Task<List<AverageTrafficClassification>> GetAverageTrafficClassificationData();
+        Task<List<IdlingConsumption>> GetIdlingConsumptionData(string languageCode);
+        Task<List<AverageTrafficClassification>> GetAverageTrafficClassificationData(string languageCode);
         Task<List<FleetFuelDetails>> GetFleetFuelDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
         Task<List<FleetFuelDetails>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters);
         Task<List<FleetFuel_VehicleGraph>> GetFleetFuelDetailsForVehicleGraphs(FleetFuelFilter fleetFuelFilters);

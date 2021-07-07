@@ -191,8 +191,8 @@ public class TripSinkDao implements Serializable {
 		else
 			statement.setDouble(28, 0);
 
-		if (rec.getTriCalHarshBrakeDuration() != null)
-			statement.setDouble(29, rec.getTriCalHarshBrakeDuration());
+		if (rec.getTripCalHarshBrakeDuration() != null)
+			statement.setDouble(29, rec.getTripCalHarshBrakeDuration());
 		else
 			statement.setDouble(29, 0);
 
@@ -412,8 +412,8 @@ public class TripSinkDao implements Serializable {
 		else
 			statement.setDouble(73, 0);
 
-		if (rec.getTriCalHarshBrakeDuration() != null)
-			statement.setDouble(74, rec.getTriCalHarshBrakeDuration());
+		if (rec.getTripCalHarshBrakeDuration() != null)
+			statement.setDouble(74, rec.getTripCalHarshBrakeDuration());
 		else
 			statement.setDouble(74, 0);
 

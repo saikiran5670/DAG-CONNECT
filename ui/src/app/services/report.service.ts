@@ -46,7 +46,8 @@ export class ReportService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.reportServiceUrl}/getuserpreferencereportdatacolumn?reportId=${reportId}&accountId=${accountId}&organizationId=${orgId}`, headers)
+      //.get<any[]>(`${this.reportServiceUrl}/getuserpreferencereportdatacolumn?reportId=${reportId}&accountId=${accountId}&organizationId=${orgId}`, headers)
+      .get<any[]>(`${this.reportServiceUrl}/userpreference/get?reportId=${reportId}&accountId=${accountId}&organizationId=${orgId}`, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -56,7 +57,8 @@ export class ReportService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.reportServiceUrl}/gettripdetails?StartDateTime=${startTime}&EndDateTime=${endTime}&VIN=${vin}`, headers)
+      //.get<any[]>(`${this.reportServiceUrl}/gettripdetails?StartDateTime=${startTime}&EndDateTime=${endTime}&VIN=${vin}`, headers)
+      .get<any[]>(`${this.reportServiceUrl}/trip/getdetails?StartDateTime=${startTime}&EndDateTime=${endTime}&VIN=${vin}`, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -114,7 +116,8 @@ export class ReportService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.reportServiceUrl}/getreportdetails`, headers)
+      //.get<any[]>(`${this.reportServiceUrl}/getreportdetails`, headers)
+      .get<any[]>(`${this.reportServiceUrl}/getdetails`, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -138,6 +141,18 @@ export class ReportService {
     return this.httpClient
       .post<any[]>(
         `${this.reportServiceUrl}/ecoscore/getdetailsbyalldriver`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getEcoScoreDriverCompare(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/ecoscore/comparedrivers`, data, headers
       )
       .pipe(catchError(this.handleError));
   }
@@ -216,6 +231,28 @@ export class ReportService {
     return this.httpClient
       .post<any[]>(
         `${this.reportServiceUrl}/fleetfuel/getdetails/vehiclegraph`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getReportUserPreference(reportId: any): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+   return this.httpClient
+      .get<any>(`${this.reportServiceUrl}/reportuserpreference/get?reportId=${reportId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  updateReportUserPreference(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/reportuserpreference/create`, data, headers
       )
       .pipe(catchError(this.handleError));
   }

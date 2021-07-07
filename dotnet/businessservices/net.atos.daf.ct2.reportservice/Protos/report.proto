@@ -674,6 +674,7 @@ message FleetFuelFilterRequest {
     int64 StartDateTime = 1;
     int64 EndDateTime = 2;
     repeated string VINs = 3;
+    string LanguageCode = 4;
 }
 
 message FleetFuelDetailsResponse {
@@ -732,6 +733,8 @@ message FleetFuelDetails {
     google.protobuf.StringValue IdlingWithoutPTOpercent = 30;
     google.protobuf.StringValue FootBrake = 31;
     google.protobuf.StringValue CO2Emmision = 32;
+    string AverageTrafficClassificationValue = 33;
+    string IdlingConsumptionValue = 34;
 }
 message FleetFuelTripDetails {
     string VehicleName = 1;
@@ -764,7 +767,8 @@ message FleetFuelTripDetails {
     double StartPositionLongitude=28;
     double EndPositionLattitude=29;
     double EndPositionLongitude=30;
-    repeated LiveFleetPosition LiveFleetPosition=31;   
+    repeated LiveFleetPosition LiveFleetPosition=31;
+
 }
 message FleetFuelTripDetailsResponse {
     repeated FleetFuelTripDetails FleetFuelTripDetails = 1;   
@@ -807,8 +811,9 @@ message GetEcoScoreReportCompareDriversRequest {
   string Name = 2;
   string Key = 3;
   double Target = 4;
-  repeated EcoScoreReportAttribute Score = 5;
-  repeated EcoScoreReportCompareDrivers SubCompareDrivers = 6;
+  string RangeValueType = 5; 
+  repeated EcoScoreReportAttribute Score = 6;
+  repeated EcoScoreReportCompareDrivers SubCompareDrivers = 7;
   }
   
  message GetEcoScoreReportCompareDriversResponse {

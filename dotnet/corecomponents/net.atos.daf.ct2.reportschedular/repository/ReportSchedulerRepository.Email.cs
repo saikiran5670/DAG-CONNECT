@@ -47,45 +47,59 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 
         public async Task<int> UpdateTimeRangeByDate(ReportEmailFrequency reportEmailFrequency)
         {
-            _helper.GetNextFrequencyTime(reportEmailFrequency);
-            var query = @"UPDATE master.reportscheduler 
+            try
+            {
+                _helper.GetNextFrequencyTime(reportEmailFrequency);
+                var query = @"UPDATE master.reportscheduler 
                           SET start_date=@start_date ,
                               next_schedule_run_date=@next_schedule_run_date ,
-                              previous_schedule_run_date=@previous_schedule_run_date 
+                              last_schedule_run_date=@last_schedule_run_date ,
                               end_date=@end_date 
                           WHERE id=@id RETURNING id";
-            var parameter = new DynamicParameters();
-            parameter.Add("@id", reportEmailFrequency.ReportId);
-            parameter.Add("@start_date", reportEmailFrequency.StartDate);
-            parameter.Add("@end_date", reportEmailFrequency.EndDate);
-            parameter.Add("@next_schedule_run_date", reportEmailFrequency.ReportNextScheduleRunDate);
-            parameter.Add("@previous_schedule_run_date", reportEmailFrequency.ReportPrevioudScheduleRunDate);
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", reportEmailFrequency.ReportId);
+                parameter.Add("@start_date", reportEmailFrequency.StartDate);
+                parameter.Add("@end_date", reportEmailFrequency.EndDate);
+                parameter.Add("@next_schedule_run_date", reportEmailFrequency.ReportNextScheduleRunDate);
+                parameter.Add("@last_schedule_run_date", reportEmailFrequency.ReportPrevioudScheduleRunDate);
 
-            int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
-            return rowEffected;
+                int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
+                return rowEffected;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
         public async Task<int> UpdateTimeRangeByCalenderTime(ReportEmailFrequency reportEmailFrequency)
         {
-
-            var next_schedule_run_date = reportEmailFrequency.FrequencyType == ENUM.TimeFrequenyType.Monthly ?
+            try
+            {
+                var next_schedule_run_date = reportEmailFrequency.FrequencyType == ENUM.TimeFrequenyType.Monthly ?
                                         _helper.GetNextMonthlyTime(reportEmailFrequency.ReportScheduleRunDate) :
                                         _helper.GetNextQuarterTime(reportEmailFrequency.ReportScheduleRunDate);
 
-            var query = @"UPDATE master.reportscheduler 
+                var query = @"UPDATE master.reportscheduler 
                           SET start_date=@start_date ,
                               next_schedule_run_date=@next_schedule_run_date ,
-                              previous_schedule_run_date=@previous_schedule_run_date 
+                              last_schedule_run_date=@last_schedule_run_date , 
                               end_date=@end_date 
                               WHERE id=@id RETURNING id";
-            var parameter = new DynamicParameters();
-            parameter.Add("@id", reportEmailFrequency.ReportId);
-            parameter.Add("@start_date", next_schedule_run_date.StartDate);
-            parameter.Add("@end_date", next_schedule_run_date.EndDate);
-            parameter.Add("@next_schedule_run_date", next_schedule_run_date.ReportNextScheduleRunDate);
-            parameter.Add("@previous_schedule_run_date", next_schedule_run_date.ReportPrevioudScheduleRunDate);
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", reportEmailFrequency.ReportId);
+                parameter.Add("@start_date", next_schedule_run_date.StartDate);
+                parameter.Add("@end_date", next_schedule_run_date.EndDate);
+                parameter.Add("@next_schedule_run_date", next_schedule_run_date.ReportNextScheduleRunDate);
+                parameter.Add("@last_schedule_run_date", next_schedule_run_date.ReportPrevioudScheduleRunDate);
 
-            int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
-            return rowEffected;
+                int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
+                return rowEffected;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
     }

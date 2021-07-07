@@ -367,9 +367,10 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.reportService.createReportUserPreference(objData).subscribe((prefData: any) => {
       this.loadFleetUtilisationPreferences();
       this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-      if((this.router.url).includes("fleetfuelreport")){
-        this.reloadCurrentComponent();
-      }
+      this.reloadCurrentComponent();
+      // if((this.router.url).includes("fleetfuelreport")){
+      //   this.reloadCurrentComponent();
+      // }
     });
   }
 

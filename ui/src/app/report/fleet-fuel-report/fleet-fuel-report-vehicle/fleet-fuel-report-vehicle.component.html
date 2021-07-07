@@ -106,6 +106,74 @@
     </form>
 <!-- </div> -->
 
+<!-- Ranking section -->
+<mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+  <mat-expansion-panel  [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+    <mat-expansion-panel-header class="full-width">
+      <mat-panel-title>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblRanking || 'Ranking' }}</span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngIf='rankingData.length > 0'  [ngClass]="{'reportTable': rankingColumns.length > 7}">
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
+      <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-form-field appearance="outline">
+          <input matInput (keyup)="applyFilterRanking($event.target.value)"
+            placeholder="{{ translationData.lblSearch || 'Search' }}">
+          <span matPrefix>
+            <mat-icon>search</mat-icon>
+          </span>
+        </mat-form-field>
+      </div>
+    </div>
+    <mat-table matTableExporter [dataSource]="rankingData" matSort #exporter="matTableExporter">
+      <ng-container matColumnDef="ranking">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRanking || 'Ranking' }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <span>{{row.ranking}}</span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="vehicleName">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <span>{{row.vehicleName}}</span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="vin">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <span>{{row.vin}}</span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="plateNo">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPlateNo || 'Plate No' }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <span>{{row.plateNo}}</span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="consumption">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblConsumption || 'Consumption' }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <mat-progress-bar  class="example-margin" [color]="color" [mode]="mode" [bufferValue]="bufferValue" value={{row.consumption}}></mat-progress-bar>
+          <div style="position: absolute; padding: 10px; color: white;"> {{row.consumption}} </div>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="rankingColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: rankingColumns;">
+      </mat-row>
+    </mat-table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
+      </div>
+      </mat-expansion-panel>
+      </mat-card>
+
+
+
    <!-- Summary Section -->
    <div id ="charts">
     <mat-card *ngIf='displayData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg' id ="summary">
@@ -330,7 +398,7 @@
       <canvas baseChart 
       [datasets]="lineChartData6" 
       [labels]="lineChartLabels" 
-      [options]="lineChartOptions"
+      [options]="lineChartOptions1"
       [colors]="lineChartColors" 
       [legend]="lineChartLegend" 
       [chartType]="lineChartType" 
@@ -385,9 +453,9 @@
       <ng-container matColumnDef="vehicleName">
         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
         </mat-header-cell>
-        <!-- <mat-cell *matCellDef="let row">
+        <mat-cell *matCellDef="let row">
         <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>
-      </mat-cell> -->
+      </mat-cell> 
         <mat-cell *matCellDef="let row">
           <span>{{row.vehicleName}}</span>
         </mat-cell>
@@ -650,8 +718,8 @@
           <span>{{row.idlingConsumptionWithPTO}}</span>
         </mat-cell>
       </ng-container>
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns;">
+      <mat-header-row *matHeaderRowDef="displayedColumns" class="mat-header-data"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;" class="mat-row-data">
       </mat-row>
     </mat-table>
     <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>

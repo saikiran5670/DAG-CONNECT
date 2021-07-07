@@ -66,7 +66,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
-  displayedColumns = ['detailsdrivername', 'detailsdriverid', 'detailsstarttime', 'detailsendtime', 'detailsdrivetime', 'detailsworktime', 'detailsservicetime', 'detailsresttime', 'detailsavailabletime'];
+  displayedColumns = ['driverName', 'driverId', 'startTime', 'endTime', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
   detaildisplayedColumns = ['specificdetailstarttime', 'specificdetaildrivetime', 'specificdetailworktime', 'specificdetailservicetime', 'specificdetailresttime', 'specificdetailavailabletime'];
   
   fromDisplayDate: any;
@@ -88,15 +88,15 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   reportPrefData: any = [];
   reportId:number = 9;
   showField: any = {
-    detailsdriverid:true,
-    detailsdrivername:true,
-    detailsendtime:true,
-    detailsstarttime:true,
-    detailsworktime:true,
-    detailsavailabletime:true,
-    detailsservicetime:true,
-    detailsresttime:true,
-    detailsdrivetime:true,
+    driverId:true,
+    driverName:true,
+    endTime:true,
+    startTime:true,
+    workTime:true,
+    availableTime:true,
+    serviceTime:true,
+    restTime:true,
+    driveTime:true,
     specificdetailsendtime:true,
     specificdetailstarttime:true,
     specificdetailworktime:true,
@@ -134,39 +134,39 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     },
     {
       key: 'da_report_alldriver_details_driverid',
-      value: 'detailsdriverid'
+      value: 'driverId'
     },
     {
       key: 'da_report_alldriver_details_drivername',
-      value: 'detailsdrivername'
+      value: 'driverName'
     },
     {
       key: 'da_report_alldriver_details_endtime',
-      value: 'detailsendtime'
+      value: 'endTime'
     },
     {
       key: 'da_report_alldriver_details_starttime',
-      value: 'detailsstarttime'
+      value: 'startTime'
     },
     {
       key: 'da_report_alldriver_details_worktime',
-      value: 'detailsworktime'
+      value: 'workTime'
     },
     {
       key: 'da_report_alldriver_details_availabletime',
-      value: 'detailsavailabletime'
+      value: 'availableTime'
     },
     {
       key: 'da_report_alldriver_details_servicetime',
-      value: 'detailsservicetime'
+      value: 'serviceTime'
     },
     {
       key: 'da_report_alldriver_details_resttime',
-      value: 'detailsresttime'
+      value: 'restTime'
     },
     {
       key: 'da_report_alldriver_details_drivetime',
-      value: 'detailsdrivetime'
+      value: 'driveTime'
     },
     {
       key: 'da_report_specificdriver_general_driverid',
@@ -567,188 +567,14 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
         this.hideloader();
         let tripData = _tripData;
-        // let tripData = {
-        //   "driverActivities": [
-        //     {
-        //       "driverId": "NL B000384974000000",
-        //       "driverName": "Helloupdated Helloupdated",
-        //       "vin": "RERAE75PC0E261011",
-        //       "activityDate": 1604338846000,
-        //       "startTime": 0,
-        //       "endTime": 0,
-        //       "code": 3,
-        //       "restTime": 0,
-        //       "availableTime": 0,
-        //       "workTime": 0,
-        //       "driveTime": 1218000,
-        //       "serviceTime": 1218000
-        //     },
-        //     {
-        //       "driverId": "D2",
-        //       "driverName": "Ayrton Senna",
-        //       "vin": "RERAE75PC0E261011",
-        //       "activityDate": 1604338846000,
-        //       "startTime": 0,
-        //       "endTime": 0,
-        //       "code": 1,
-        //       "restTime": 0,
-        //       "availableTime": 1218000,
-        //       "workTime": 0,
-        //       "driveTime": 0,
-        //       "serviceTime": 1218000
-        //     },
-        //     {
-        //       "driverId": "UK DB08176162022802",
-        //       "driverName": "Helloupdated Helloupdated",
-        //       "vin": "RERAE75PC0E261011",
-        //       "activityDate": 1604338846000,
-        //       "startTime": 0,
-        //       "endTime": 0,
-        //       "code": 3,
-        //       "restTime": 0,
-        //       "availableTime": 0,
-        //       "workTime": 0,
-        //       "driveTime": 1218000,
-        //       "serviceTime": 1218000
-        //     },
-        //     {
-        //       "driverId": "D2",
-        //       "driverName": "Ayrton Senna",
-        //       "vin": "RERAE75PC0E261011",
-        //       "activityDate": 1604338846000,
-        //       "startTime": 0,
-        //       "endTime": 0,
-        //       "code": 1,
-        //       "restTime": 0,
-        //       "availableTime": 1218000,
-        //       "workTime": 0,
-        //       "driveTime": 0,
-        //       "serviceTime": 1218000
-        //     },
-        //     {
-        //       "driverId": "UK DB08176162022802",
-        //       "driverName": "Helloupdated Helloupdated",
-        //       "vin": "RERAE75PC0E261011",
-        //       "activityDate": 1604338846000,
-        //       "startTime": 0,
-        //       "endTime": 0,
-        //       "code": 3,
-        //       "restTime": 0,
-        //       "availableTime": 0,
-        //       "workTime": 0,
-        //       "driveTime": 1218000,
-        //       "serviceTime": 1218000
-        //     },
-        //     {
-        //       "driverId": "D2",
-        //       "driverName": "Ayrton Senna",
-        //       "vin": "RERAE75PC0E261011",
-        //       "activityDate": 1604338846000,
-        //       "startTime": 0,
-        //       "endTime": 0,
-        //       "code": 1,
-        //       "restTime": 0,
-        //       "availableTime": 1218000,
-        //       "workTime": 0,
-        //       "driveTime": 0,
-        //       "serviceTime": 1218000
-        //     },
-        //     {
-        //       "driverId": "UK DB08176162022802",
-        //       "driverName": "Helloupdated Helloupdated",
-        //       "vin": "RERAE75PC0E261011",
-        //       "activityDate": 1604338846000,
-        //       "startTime": 0,
-        //       "endTime": 0,
-        //       "code": 3,
-        //       "restTime": 0,
-        //       "availableTime": 0,
-        //       "workTime": 0,
-        //       "driveTime": 1218000,
-        //       "serviceTime": 1218000
-        //     },
-        //     {
-        //       "driverId": "D2",
-        //       "driverName": "Ayrton Senna",
-        //       "vin": "RERAE75PC0E261011",
-        //       "activityDate": 1604338846000,
-        //       "startTime": 0,
-        //       "endTime": 0,
-        //       "code": 1,
-        //       "restTime": 0,
-        //       "availableTime": 1218000,
-        //       "workTime": 0,
-        //       "driveTime": 0,
-        //       "serviceTime": 1218000
-        //     },
-        //     {
-        //       "driverId": "UK DB08176162022802",
-        //       "driverName": "Helloupdated Helloupdated",
-        //       "vin": "RERAE75PC0E261011",
-        //       "activityDate": 1604338846000,
-        //       "startTime": 0,
-        //       "endTime": 0,
-        //       "code": 3,
-        //       "restTime": 0,
-        //       "availableTime": 0,
-        //       "workTime": 0,
-        //       "driveTime": 1218000,
-        //       "serviceTime": 1218000
-        //     },
-        //     {
-        //       "driverId": "D2",
-        //       "driverName": "Ayrton Senna",
-        //       "vin": "RERAE75PC0E261011",
-        //       "activityDate": 1604338846000,
-        //       "startTime": 0,
-        //       "endTime": 0,
-        //       "code": 1,
-        //       "restTime": 0,
-        //       "availableTime": 1218000,
-        //       "workTime": 0,
-        //       "driveTime": 0,
-        //       "serviceTime": 1218000
-        //     },
-        //     {
-        //       "driverId": "UK DB08176162022802",
-        //       "driverName": "Helloupdated Helloupdated",
-        //       "vin": "RERAE75PC0E261011",
-        //       "activityDate": 1604338846000,
-        //       "startTime": 0,
-        //       "endTime": 0,
-        //       "code": 3,
-        //       "restTime": 0,
-        //       "availableTime": 0,
-        //       "workTime": 0,
-        //       "driveTime": 1218000,
-        //       "serviceTime": 1218000
-        //     },
-        //     {
-        //       "driverId": "D2",
-        //       "driverName": "Ayrton Senna",
-        //       "vin": "RERAE75PC0E261011",
-        //       "activityDate": 1604338846000,
-        //       "startTime": 0,
-        //       "endTime": 0,
-        //       "code": 1,
-        //       "restTime": 0,
-        //       "availableTime": 1218000,
-        //       "workTime": 0,
-        //       "driveTime": 0,
-        //       "serviceTime": 1218000
-        //     }
-        //   ],
-        //   "code": 200,
-        //   "message": "Trip fetched successfully for requested Filters"
-        // }
+       
 
         if(this.allDriversSelected){
           this.onSearchData = tripData;
           this.setGeneralDriverValue();
 
-          this.initData = this.reportMapService.getDriverTimeDataBasedOnPref(tripData.driverActivities, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-          this.setTableInfo();
-          this.updateDataSource(this.initData);
+          let convertedInitData = this.reportMapService.getDriverTimeDataBasedOnPref(tripData.driverActivities, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+          this.updateDataSource(convertedInitData);
           this.setDataForAll();
         }
         else{
@@ -796,7 +622,6 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         this.hideloader();
         this.onSearchData = [];
         this.tableInfoObj = {};
-       // this.updateDataSource(this.tripData);
       });
     }
   }
@@ -837,7 +662,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.driverTimeForm.get('vehicle').setValue('');
       this.driverTimeForm.get('driver').setValue('');
     }
-    this.driverTimeForm.get('vehicle').setValue(0);
+    //this.driverTimeForm.get('vehicle').setValue(0);
 
 
     // this.searchFilterpersistData["vehicleGroupDropDownValue"] = 0;
@@ -8566,8 +8391,8 @@ let finalGroupDataList = [];
   }
 
   setGeneralDriverValue(){
-    this.fromDisplayDate = Util.convertUtcToDateFormat(this.startDateValue,'DD/MM/YYYY HH:MM:SS');
-    this.toDisplayDate = Util.convertUtcToDateFormat(this.endDateValue,'DD/MM/YYYY HH:MM:SS');
+    this.fromDisplayDate = this.formStartDate(this.startDateValue);
+    this.toDisplayDate = this.formStartDate(this.endDateValue);
     this.selectedVehicleGroup = this.vehicleGroupListData.filter(item => item.vehicleGroupId == parseInt(this.driverTimeForm.controls.vehicleGroup.value))[0]["vehicleGroupName"];
     this.selectedVehicle = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.driverTimeForm.controls.vehicle.value))[0]["vehicleName"];
     this.onSearchData.driverActivities.forEach(element => {
@@ -8582,10 +8407,6 @@ let finalGroupDataList = [];
         restTime: Util.getHhMmTime(this.totalRestTime),
         availableTime: Util.getHhMmTime(this.totalAvailableTime),
       }
-  }
-
-  setTableInfo(){
-   
   }
 
   updateDataSource(tableData: any) {
@@ -8711,7 +8532,22 @@ let finalGroupDataList = [];
     this.selectedDriverData = _row;
     let setId = (this.driverListData.filter(elem=>elem.driverID === _row.driverId)[0]['driverID']);
     this.driverTimeForm.get('driver').setValue(setId);
-    this.onSearch();
+    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
+    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    let qParam = {
+      "startDateTime": _startTime,
+      "endDateTime": _endTime,
+      "vin": this.selectedDriverData['vin'],
+      "driverId": this.selectedDriverData['driverId']
+    }
+    this.reportService.getSelectedDriverDetails(qParam).subscribe((_detailData:any)=>{
+        
+        this.driverSelected = true;
+        this.driverDetails = _detailData.driverActivities;
+        this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+        this.setGeneralDriverDetailValue();
+        this.setSingleDriverData();
+    })
     // this.driverDetails = 
     //   [
     //           {
@@ -8763,7 +8599,6 @@ let finalGroupDataList = [];
             // this.setGeneralDriverDetailValue();
             // this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(updateData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
 
-            this.driverSelected = true;
   }
 
   backToMainPage(){
@@ -8781,8 +8616,8 @@ let finalGroupDataList = [];
     this.totalAvailableTime= 0;
     this.totalServiceTime = 0;
 
-    this.fromDisplayDate = Util.convertUtcToDateFormat(this.startDateValue,'DD/MM/YYYY HH:MM:SS');
-    this.toDisplayDate = Util.convertUtcToDateFormat(this.endDateValue,'DD/MM/YYYY HH:MM:SS');
+    this.fromDisplayDate = this.formStartDate(this.startDateValue);
+    this.toDisplayDate = this.formStartDate(this.endDateValue);
     this.driverDetails.forEach(element => {
     this.totalDriveTime += element.driveTime,
     this.totalWorkTime += element.workTime,

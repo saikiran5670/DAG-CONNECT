@@ -9,6 +9,7 @@ namespace net.atos.daf.ct2.reports.entity
         public long StartDateTime { get; set; }
         public long EndDateTime { get; set; }
         public List<string> VINs { get; set; }
+        public string LanguageCode { get; set; } = "EN-GB";
 
     }
 }

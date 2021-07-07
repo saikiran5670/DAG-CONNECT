@@ -9,6 +9,6 @@ namespace net.atos.daf.ct2.reports.entity
         public int Id { get; set; }
         public string Discription { get; set; }
         public string Fuel_Type { get; set; }
-        public decimal Coeffficient { get; set; }
+        public double Coeffficient { get; set; }
     }
 }

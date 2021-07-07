@@ -341,6 +341,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   onGeneralSettingsUpdate(){
+
     let objData: any = {
       id: (this.accountInfo[0]["preferenceId"] > 0) ? this.accountInfo[0]["preferenceId"] : 0,
       refId: this.accountId,
@@ -353,7 +354,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : this.vehicleDisplayDropdownData[0].id,
       landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : this.landingPageDisplayDropdownData[0].id,
       iconId: this.uploadLogo != '' ? this.accountPreferenceData.iconId : 0,
-      iconByte: this.isDefaultBrandLogo ?  "" : this.uploadLogo,
+      iconByte: this.isDefaultBrandLogo ?  "" : this.uploadLogo == "" ? "" : this.uploadLogo["changingThisBreaksApplicationSecurity"].split(",")[1],
       createdBy: this.accountId
       //driverId: ""
     }
@@ -599,7 +600,7 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   _handleReaderLoaded(readerEvt: any) {
     var binaryString = readerEvt.target.result;
-    this.uploadLogo = btoa(binaryString);
+    this.uploadLogo = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + btoa(binaryString));
    }
 
    deleteBrandLogo(){

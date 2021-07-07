@@ -124,7 +124,50 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 var parameterFleetOverview = new DynamicParameters();
                 parameterFleetOverview.Add("@vins", fleetOverviewFilter.VINIds);
-                string queryFleetOverview = @"select 
+                //filter trip data by n days
+                //parameterFleetOverview.Add("@days", string.Concat("'", fleetOverviewFilter.Days.ToString(), "d", "'"));
+                parameterFleetOverview.Add("@days", fleetOverviewFilter.Days, System.Data.DbType.Int32);
+                string queryFleetOverview = @"With CTE_Trips_By_Vin as(
+                    select 
+                    lcts.id,
+                    lcts.trip_id,
+                    lcts.vin,
+                    lcts.start_time_stamp,
+                    lcts.end_time_stamp,
+                    lcts.driver1_id,
+                    lcts.trip_distance,
+                    lcts.driving_time,
+                    lcts.fuel_consumption,
+                    lcts.vehicle_driving_status_type,
+                    lcts.odometer_val,
+                    lcts.distance_until_next_service,
+                    lcts.latest_received_position_lattitude,
+                    lcts.latest_received_position_longitude,
+                    lcts.latest_received_position_heading,
+                    lcts.start_position_lattitude,
+                    lcts.start_position_longitude,
+                    lcts.start_position_heading,
+                    lcts.latest_processed_message_time_stamp,
+                    lcts.vehicle_health_status_type,
+                    lcts.latest_warning_class,
+                    lcts.latest_warning_number,
+                    lcts.latest_warning_type,
+                    lcts.latest_warning_timestamp,
+                    lcts.latest_warning_position_latitude,
+                    lcts.latest_warning_position_longitude,
+                    RANK() Over ( Partition By lcts.vin Order by  lcts.start_time_stamp desc ) Veh_trip_rank
+                    from livefleet.livefleet_current_trip_statistics lcts
+                    where lcts.vin = Any(@vins) 
+                    and (lcts.start_time_stamp > (extract(epoch from (now()::date - @days ))*1000) or lcts.end_time_stamp is null)
+                    )
+                    ,CTE_Unique_latest_trip as (
+                     select 
+                     *,
+                     ROW_NUMBER() OVER( PARTITION BY Vin ORDER BY Id desc) AS row_num 
+                     from CTE_Trips_By_Vin 
+                     where Veh_trip_rank =1 
+                    )
+                    select 
                     lcts.id as lcts_Id,
                     lcts.trip_id as lcts_TripId,
                     lcts.vin as lcts_Vin,
@@ -171,7 +214,7 @@ namespace net.atos.daf.ct2.reports.repository
                     coalesce(stageoadd.address,'') as stageoadd_StartGeolocationAddress,
                     wangeoadd.id as wangeoadd_LatestWarningGeolocationAddressId,
                     coalesce(wangeoadd.address,'') as wangeoadd_LatestWarningGeolocationAddress
-                    from livefleet.livefleet_current_trip_statistics lcts
+                    from CTE_Unique_latest_trip lcts
                     left join 
                     livefleet.livefleet_position_statistics lps
                     on lcts.trip_id = lps.trip_id and lcts.vin = lps.vin
@@ -188,7 +231,7 @@ namespace net.atos.daf.ct2.reports.repository
                     left join master.geolocationaddress wangeoadd
                     on TRUNC(CAST(lcts.latest_warning_position_latitude as numeric),4)= TRUNC(CAST(wangeoadd.latitude as numeric),4) 
                     and TRUNC(CAST(lcts.latest_warning_position_longitude as numeric),4) = TRUNC(CAST(wangeoadd.longitude as numeric),4)
-                            where lcts.vin = Any(@vins) ";
+                    where row_num=1 ";
                 if (fleetOverviewFilter.DriverId.Count > 0)
                 {
                     parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
@@ -198,6 +241,14 @@ namespace net.atos.daf.ct2.reports.repository
                 {
                     parameterFleetOverview.Add("@healthstatus", fleetOverviewFilter.HealthStatus);
                     queryFleetOverview += " and lcts.vehicle_health_status_type = Any(@healthstatus) ";
+                }
+                if (fleetOverviewFilter.AlertCategory.Count > 0)
+                {
+                    //need to be implement in upcomming sprint 
+                }
+                if (fleetOverviewFilter.AlertLevel.Count > 0)
+                {
+                    //need to be implement in upcomming sprint 
                 }
                 IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
                 return repositoryMapper.GetFleetOverviewDetails(alertResult);

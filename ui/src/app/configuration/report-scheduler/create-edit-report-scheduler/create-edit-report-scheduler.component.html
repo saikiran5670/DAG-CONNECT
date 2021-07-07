@@ -28,7 +28,7 @@
           </div>
          
           <div *ngIf="selectionTab == 'D'">
-            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm timepicker" fxLayoutGap="10px">
                 <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>
                         {{ translationData.lblEverydayStartTime || 'Everyday Start Time' }}
@@ -321,7 +321,7 @@
                   <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                       <mat-label>{{ translationData.lblReportType || 'Report Type' }}<span class='mandatoryColor'>*</span></mat-label>
                       <mat-form-field appearance="outline">
-                        <mat-select placeholder="{{ translationData.lblSelectReportType || 'Select Report Type' }}" (selectionChange)="onChangeReportType($event)" formControlName="reportType">
+                        <mat-select placeholder="{{ translationData.lblSelectReportType || 'Select Report Type' }}" (selectionChange)="onChangeReportType($event.value)" [disabled]="actionType=='edit'" formControlName="reportType">
                             <mat-option *ngFor="let rer of ReportTypeList" [value]="rer.id">
                                 {{rer.reportName}}
                             </mat-option>
@@ -378,7 +378,7 @@
                         <span *ngIf="actionType != 'view'">{{ translationData.lbl10EmailMax || '10 email max' }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline">
-                        <input placeholder="{{ translationData.lblEnterRecipientEmail || 'Enter Recipient Email' }}"  matInput (focusout)="validateRecipientEmails($event)" formControlName="recipientEmail">
+                        <input placeholder="{{ translationData.lblEnterRecipientEmail || 'Enter Recipient Email' }}"  matInput (focusout)="validateRecipientEmails($event.target.value)" formControlName="recipientEmail">
                     </mat-form-field>
                     <span style="color: grey;">Please enter (,) seperated email Ids</span>
                     <!-- <div class="ng-autocomplete">
@@ -426,7 +426,18 @@
                       {{ translationData.lblPleaseEnterMailSubject || 'Please Enter Mail Subject' }}
                     </mat-error>
                 </div>
-                <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"></div>
+                <div *ngIf="actionType == 'edit'" class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                  <mat-label style='display: flex; place-content: space-between;'>
+                    {{ translationData.lblReportStatus || 'Report Status' }}
+                  </mat-label>
+
+                  <button class='actionBtn' mat-flat-button (click)="onChangeReportSchedulerStatus()" fxLayoutAlign="left">
+                    <mat-slide-toggle color="primary" [checked]='status' >
+                    </mat-slide-toggle>&nbsp;
+                    <span>{{ status ? 'Active' : 'Suspended' }}</span>
+                  </button>
+
+                </div>
               </div>
 
               <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start" *ngIf="actionType != 'view'">

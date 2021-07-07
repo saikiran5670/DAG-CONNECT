@@ -29,8 +29,8 @@
                 <mat-label style='display: flex;'>
                     <span>{{ translationData.lblProfileSelection || 'Profile Selection' }}</span>
                 </mat-label>
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-select placeholder="{{ translationData.lblTestProfile || 'Test Profile' }}" (selectionChange)="profileSelectionDropDown($event.value)" >
+                <mat-form-field appearance="outline" class="full-width" formControlName="profileNameDropDownValue">
+                  <mat-select placeholder="{{ translationData.lblTestProfile || 'Test Profile' }}" (selectionChange)="profileSelectionDropDown($event.value)">
                     <mat-option *ngFor="let options of profileList" [value]="options.profileId">
                       {{options.profileName}}
                     </mat-option>
@@ -73,12 +73,13 @@
                         {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                     </mat-error>
             </div>
-            <div *ngIf="actionType != 'manage'" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label style='display: flex;'>
+            <div *ngIf="actionType != 'manage'" class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+                <mat-label style='display: flex;'> 
+                    <mat-checkbox (change)='onChangeOption($event)'></mat-checkbox>  
                     <span>{{ translationData.lblCreateBasedOnExistingProfile || 'Create based on existing profile' }}</span>
                 </mat-label>
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-select placeholder="{{ translationData.lblTestProfileSelection || 'Test Profile Selection' }}" (selectionChange)="profileSelectionDropDown($event.value)" >
+                <mat-form-field [disabled]="!isCreatedExistingProfile" appearance="outline" class="full-width">
+                  <mat-select  [disabled]="!isCreatedExistingProfile" placeholder="{{ translationData.lblTestProfileSelection || 'Test Profile Selection' }}" (selectionChange)="profileSelectionDropDown($event.value)" >
                     <mat-option *ngFor="let options of profileList" [value]="options.profileId">
                       {{options.profileName}}
                     </mat-option>
@@ -87,9 +88,10 @@
               </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-        <div  fxLayout="column" fxLayoutAlign="start">   
-            <span *ngIf="actionType != 'manage'">DAF Standard</span>
-            <span *ngIf="actionType == 'manage'">Last Update:</span>
+        <div  fxLayout="column" fxLayoutAlign="start"> 
+            <mat-checkbox *ngIf="actionType != 'manage'" [checked] = "isDAFStandard" (change)='onChange($event)'> DAF Standard </mat-checkbox>   
+            <span *ngIf="actionType == 'manage'">Last Update: {{ lastUpdated }}</span>
+            <span *ngIf="actionType == 'manage'">Updated By: {{ updatedBy }}</span>
         </div>
         <div fxLayout="column" fxLayoutAlign="end">
             <div fxLayout="row" class='areaWidth'>
@@ -106,6 +108,68 @@
         </div>
     </div>
     </mat-card>
-
+</form>
+</div>  
+<!-- KPIs -->
+<div class='bgtrans'>
+<form [formGroup]="ecoScoreProfileKPIForm">
+<mat-expansion-panel [(expanded)]="isEcoScore" class="full-width" fxLayoutGap="10px" (opened)="isEcoScore" (closed)="!isEcoScore">
+    
+        <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Eco-Score</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div fxLayout="row" fxLayoutAlign="space-between " class='margin-bottom-sm'>
+            <div fxLayout="column" fxLayoutAlign="left" class="areaWidth half-width"> 
+            <div class="custom-slider">
+            <ngx-slider *ngIf = "isKPI" [(value)]="value" [(highValue)]="maxvalue" [options]="options" (valueChange)="sliderEvent(value)" (highValueChange)="sliderEndEvent(maxvalue)"></ngx-slider>  
+        </div>  
+        </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
+            <div  fxLayout="column" fxLayoutAlign="left" class ="areaWidth min-width-5-per"> 
+                <mat-label style='display: flex;'>
+                    <span>Min</span>
+                </mat-label>
+                    <mat-form-field appearance="outline" class="half-width">
+                        <input maxlength="50" matInput
+                            formControlName="limitValue" (keyup)="changeMin($event.target.value)">
+                    </mat-form-field>
+            </div>
+            <div  fxLayout="column" fxLayoutAlign="right"  class ="areaWidth min-width-5-per"> 
+                <mat-label style='display: flex;'>
+                    <span>Target</span>
+                </mat-label>
+                    <mat-form-field appearance="outline" class="half-width">
+                        <input maxlength="50" matInput
+                            formControlName="targetValue" (keyup)="changeTarget($event.target.value)">
+                    </mat-form-field>
+            </div>
+            </div>
+        </div>
+            <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'fxLayoutGap="10px">
+                <div  fxLayout="column" fxLayoutAlign="left" class ="areaWidth half-width">
+                </div>
+                <div  fxLayout="column" fxLayoutAlign="left" class ="areaWidth min-width-5-per"> 
+                    <mat-label style='display: flex;'>
+                        <span>Lower Value</span>
+                    </mat-label>
+                        <mat-form-field appearance="outline" class="half-width">
+                            <input maxlength="50" matInput
+                                formControlName="lowerValue"  (keyup)="changeLower($event.target.value)">
+                        </mat-form-field>
+                </div>
+                <div  fxLayout="column" fxLayoutAlign="right" class ="areaWidth min-width-5-per"> 
+                    <mat-label style='display: flex;'>
+                        <span>Upper Value</span>
+                    </mat-label>
+                        <mat-form-field appearance="outline" class="half-width">
+                            <input maxlength="50" matInput
+                                formControlName="upperValue"  (keyup)="changeUpper($event.target.value)">
+                        </mat-form-field>
+                </div>
+            </div>
+            
+</mat-expansion-panel>
 </form>
 </div>
