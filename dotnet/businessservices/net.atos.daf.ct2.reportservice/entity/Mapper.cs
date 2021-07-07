@@ -226,42 +226,81 @@ namespace net.atos.daf.ct2.reportservice.entity
         private static List<EcoScoreReportCompareDrivers> FillRecursiveEcoScoreCompareReport(IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> flatObjects, int[] parentIds, IEnumerable<reports.entity.EcoScoreReportCompareDrivers> compareResult)
         {
             List<EcoScoreReportCompareDrivers> recursiveObjects = new List<EcoScoreReportCompareDrivers>();
-            if (parentIds != null)
+            try
             {
-                foreach (var item in flatObjects.Where(x => parentIds.Contains(x.DataAttributeId)))
+                if (parentIds != null)
                 {
-                    var preference = new EcoScoreReportCompareDrivers
+                    foreach (var item in flatObjects.Where(x => parentIds.Contains(x.DataAttributeId)))
                     {
-                        DataAttributeId = item.DataAttributeId,
-                        Name = item.Name ?? item.Name,
-                        Key = item.Key ?? item.Key,
-                        Target = item.TargetValue
-                    };
+                        var preference = new EcoScoreReportCompareDrivers
+                        {
+                            DataAttributeId = item.DataAttributeId,
+                            Name = item.Name ?? string.Empty,
+                            Key = item.Key ?? string.Empty,
+                            Target = item.TargetValue,
+                            RangeValueType = item.RangeValueType ?? string.Empty
+                        };
+                        if (!string.IsNullOrEmpty(item.DBColumnName))
+                            preference.Score.AddRange(GetEcoScoreCompareReportAttributeValues(item.DBColumnName, item.LimitType, item.LimitValue, item.TargetValue, compareResult));
+                        preference.SubCompareDrivers.AddRange(FillRecursiveEcoScoreCompareReport(flatObjects, item.SubDataAttributes, compareResult));
 
-                    preference.Score.AddRange(GetEcoScoreCompareReportAttributeValues(item.DBColumnName, compareResult));
-                    preference.SubCompareDrivers.AddRange(FillRecursiveEcoScoreCompareReport(flatObjects, item.SubDataAttributes, compareResult));
-
-                    recursiveObjects.Add(preference);
+                        recursiveObjects.Add(preference);
+                    }
                 }
+            }
+            catch (Exception)
+            {
+                throw new Exception("Error occurred while parsing the EcoScore compare drivers - FillRecursiveEcoScoreCompareReport().");
             }
             return recursiveObjects;
         }
 
-        private static List<EcoScoreReportAttribute> GetEcoScoreCompareReportAttributeValues(string attributeName, IEnumerable<reports.entity.EcoScoreReportCompareDrivers> compareResult)
+        private static List<EcoScoreReportAttribute> GetEcoScoreCompareReportAttributeValues(string attributeName, string limitType, double limitValue, double targetValue, IEnumerable<reports.entity.EcoScoreReportCompareDrivers> compareResult)
         {
             var lstAttributes = new List<EcoScoreReportAttribute>();
-            EcoScoreReportAttribute obj;
-            foreach (var item in compareResult)
+            try
             {
-                obj = new EcoScoreReportAttribute();
-                obj.DriverId = item.DriverId;
-                obj.Color = string.Empty;
-                obj.Value = Convert.ToDouble(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(x)));
-                lstAttributes.Add(obj);
+                EcoScoreReportAttribute obj;
+                foreach (var item in compareResult)
+                {
+                    obj = new EcoScoreReportAttribute();
+                    obj.DriverId = item.DriverId;
+                    obj.Value = Convert.ToDouble(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault());
+                    if (!string.IsNullOrEmpty(limitType))
+                        obj.Color = Convert.ToString(GetEcoScoreAttributeColor(limitType, limitValue, targetValue, obj.Value));
+                    lstAttributes.Add(obj);
+                }
             }
-
+            catch (Exception)
+            {
+                throw new Exception("Error occurred while parsing the EcoScore compare drivers - GetEcoScoreCompareReportAttributeValues().");
+            }
             return lstAttributes;
         }
 
+        private static RankingColor? GetEcoScoreAttributeColor(string limitType, double limitValue, double targetValue, double score)
+        {
+            if (Convert.ToChar(limitType) == ((char)LimitType.Min))
+            {
+                if (score <= limitValue)
+                    return RankingColor.Red;
+                else if (score >= targetValue)
+                    return RankingColor.Green;
+                else
+                    return RankingColor.Amber;
+            }
+            else if (Convert.ToChar(limitType) == ((char)LimitType.Max))
+            {
+                if (score <= targetValue)
+                    return RankingColor.Red;
+                else if (score >= limitValue)
+                    return RankingColor.Green;
+                else
+                    return RankingColor.Amber;
+            }
+            return null;
+        }
+
     }
+
 }

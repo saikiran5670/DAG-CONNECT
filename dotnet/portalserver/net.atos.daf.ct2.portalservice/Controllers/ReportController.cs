@@ -651,7 +651,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region  Eco Score Report - Compare Drivers
-        [HttpGet]
+        [HttpPost]
         [Route("ecoscore/comparedrivers")]
         public async Task<IActionResult> GetEcoScoreReportCompareDrivers([FromBody] EcoScoreReportCompareDriversRequest request)
         {
