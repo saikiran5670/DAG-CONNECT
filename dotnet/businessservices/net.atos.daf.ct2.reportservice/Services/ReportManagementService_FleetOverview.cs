@@ -112,13 +112,15 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 ReportComponent.entity.FleetOverviewFilter fleetOverviewFilter = new ReportComponent.entity.FleetOverviewFilter
                 {
-                    GroupId = request.GroupIds.ToList(),
-                    AlertCategory = request.AlertCategories.ToList(),
-                    AlertLevel = request.AlertLevels.ToList(),
-                    HealthStatus = request.HealthStatus.ToList(),
-                    OtherFilter = request.OtherFilters.ToList(),
-                    DriverId = request.DriverIds.ToList(),
-                    VINIds = vehicleDeatilsWithAccountVisibility.Where(x => request.GroupIds.ToList().Contains(x.VehicleGroupId.ToString())).Select(x => x.Vin).ToList(),
+                    GroupId = request.GroupIds.Contains("all") ? new List<string>() : request.GroupIds.ToList(),
+                    AlertCategory = request.AlertCategories.Contains("all") ? new List<string>() : request.AlertCategories.ToList(),
+                    AlertLevel = request.AlertLevels.Contains("all") ? new List<string>() : request.AlertLevels.ToList(),
+                    HealthStatus = request.HealthStatus.Contains("all") ? new List<string>() : request.HealthStatus.ToList(),
+                    OtherFilter = request.OtherFilters.Contains("all") ? new List<string>() : request.OtherFilters.ToList(),
+                    DriverId = request.DriverIds.Contains("all") ? new List<string>() : request.DriverIds.ToList(),
+                    VINIds = request.GroupIds.Contains("all") ?
+                    vehicleDeatilsWithAccountVisibility.Select(x => x.Vin).Distinct().ToList() :
+                    vehicleDeatilsWithAccountVisibility.Where(x => request.GroupIds.ToList().Contains(x.VehicleGroupId.ToString())).Select(x => x.Vin).Distinct().ToList(),
                     Days = request.Days
                 };
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);

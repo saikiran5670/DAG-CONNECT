@@ -20,6 +20,14 @@ namespace net.atos.daf.ct2.reports.ENUM
         Servicenow = 'V',
         Stopnow = 'T'
     }
+    public enum DrivingStatus
+    {
+        Nevermoved = 'N',
+        Driving = 'D',
+        Idle = 'I',
+        Unknown = 'U',
+        Stopped = 'S'
+    }
     public enum OtherState
     {
         Nevermoved = 'N'
