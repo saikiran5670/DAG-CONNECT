@@ -482,8 +482,10 @@ namespace net.atos.daf.ct2.reports.repository
                                  ecoscorealldriver as 
                                  (
                                  SELECT first_name || ' ' || last_name AS driverName,driver1_id as driverid, SUM(trip_distance)AS totaldriverdistance,
-                                 (((CAST(SUM(dpa_braking_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_braking_count)AS DOUBLE PRECISION)) +
-                                 (CAST(SUM(dpa_anticipation_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION)))/2)/10 as ecoscoreranking
+                                 CASE WHEN CAST(SUM(dpa_Braking_count) AS DOUBLE PRECISION)<> 0 and CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION) <> 0  THEN 
+    							 (((CAST(SUM(dpa_Braking_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_Braking_count)AS DOUBLE PRECISION)) +
+      							 (CAST(SUM(dpa_anticipation_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION)))/2)/10 
+    							 else null END  as ecoscoreranking
                                  FROM ecoscore eco
                                  GROUP BY first_name, last_name, driver1_id
                                  ORDER BY ecoscoreranking DESC
