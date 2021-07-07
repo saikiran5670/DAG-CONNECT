@@ -17,7 +17,7 @@ export class ReportsPreferencesComponent implements OnInit {
   editTripFlag: boolean = false;
   editFleetUtilisationFlag: boolean = false;
   reportListData: any = [];
-  showDriverTimePerferences : boolean = false;
+  showDriverTimePerferences: boolean = false;
   editDriverTimePerferencesFlag:boolean = false;
 
   constructor( private reportService: ReportService ) { }
@@ -49,6 +49,7 @@ export class ReportsPreferencesComponent implements OnInit {
 
   editTripReportPreferences(){
     this.editTripFlag = true;
+    this.showTripReport = false;
   }
 
   successMsgBlink(msg: any){
@@ -61,6 +62,7 @@ export class ReportsPreferencesComponent implements OnInit {
 
   editFleetUtilisationPreferences(){
     this.editFleetUtilisationFlag = true;
+    this.showFleetUtilisationReport = false;
   }
 
   updateEditFleetUtilFlag(retObj: any){
@@ -87,6 +89,7 @@ export class ReportsPreferencesComponent implements OnInit {
 
   editDriverTimePerferences(){
     this.editDriverTimePerferencesFlag = true;
+    this.showDriverTimePerferences = false;
   }
 
   updateEditDriverTimeFlag(retObj: any){
