@@ -178,6 +178,8 @@ message CategoryWisePOI{
   double Width = 7;
   double Distance = 8;
   int32 POIId = 9;
+  int32 SubCategoryId = 10;
+  string SubCategoryName = 11;
 }
 
 message CategoryWisePOIRequest{
