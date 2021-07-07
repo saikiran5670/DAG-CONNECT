@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 queryAlert += "where date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date/1000) AT TIME ZONE 'UTC')) = date_trunc('hour', NOW() AT TIME ZONE 'UTC')";
 
                 IEnumerable<ReportSchedulerEmailResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerEmailResult>(queryAlert);
-                return reportSchedulerResult.AsList();
+                return reportSchedulerResult;
             }
             catch (Exception)
             {

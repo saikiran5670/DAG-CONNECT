@@ -810,8 +810,9 @@ message GetEcoScoreReportCompareDriversRequest {
   string Name = 2;
   string Key = 3;
   double Target = 4;
-  repeated EcoScoreReportAttribute Score = 5;
-  repeated EcoScoreReportCompareDrivers SubCompareDrivers = 6;
+  string RangeValueType = 5; 
+  repeated EcoScoreReportAttribute Score = 6;
+  repeated EcoScoreReportCompareDrivers SubCompareDrivers = 7;
   }
   
  message GetEcoScoreReportCompareDriversResponse {

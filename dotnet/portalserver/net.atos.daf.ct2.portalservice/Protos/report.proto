@@ -805,13 +805,14 @@ message GetEcoScoreReportCompareDriversRequest {
   string Color = 3;
   }
 
- message EcoScoreReportCompareDrivers {
+message EcoScoreReportCompareDrivers {
   int32 DataAttributeId = 1;
   string Name = 2;
   string Key = 3;
   double Target = 4;
-  repeated EcoScoreReportAttribute Score = 5;
-  repeated EcoScoreReportCompareDrivers SubCompareDrivers = 6;
+  string RangeValueType = 5; 
+  repeated EcoScoreReportAttribute Score = 6;
+  repeated EcoScoreReportCompareDrivers SubCompareDrivers = 7;
   }
   
  message GetEcoScoreReportCompareDriversResponse {

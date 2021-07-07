@@ -234,13 +234,13 @@ namespace net.atos.daf.ct2.reports
                 {
                     //< Min = Red
                     if (driver.EcoScoreRanking <= objEcoScoreKPI.MinValue)
-                        driver.EcoScoreRankingColor = RankingColor.RED.ToString();
+                        driver.EcoScoreRankingColor = RankingColor.Red.ToString();
                     //> Target = Green
                     else if (driver.EcoScoreRanking >= objEcoScoreKPI.TargetValue)
-                        driver.EcoScoreRankingColor = RankingColor.GREEN.ToString();
+                        driver.EcoScoreRankingColor = RankingColor.Green.ToString();
                     //Between Min and Target = Amber
                     else
-                        driver.EcoScoreRankingColor = RankingColor.AMBER.ToString();
+                        driver.EcoScoreRankingColor = RankingColor.Amber.ToString();
 
                     lstByAllDrivers.Add(driver);
                 }

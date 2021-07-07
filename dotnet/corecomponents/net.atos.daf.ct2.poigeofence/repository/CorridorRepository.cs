@@ -725,7 +725,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                            ,l.latitude as StartLat
 	                            ,l.longitude as StartLong
 	                            ,l.distance as Distance
-	                            ,l.distance as Width
+	                            ,l.width as Width
                                 ,l.state as State
                                 ,l.type as CorridorType
 	                            ,l.created_at as CreatedAt
