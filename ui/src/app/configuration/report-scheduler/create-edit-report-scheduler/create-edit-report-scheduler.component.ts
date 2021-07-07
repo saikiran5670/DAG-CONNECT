@@ -227,7 +227,8 @@ export class CreateEditReportSchedulerComponent implements OnInit {
     this.reportSchedulerForm.get('reportDispatchTime').setValue(this.selectedRowData[0].reportDispatchTime)
 
     this.reportSchedulerForm.get('reportType').setValue(this.selectedRowData[0].reportId);
-    this.onChangeReportType(this.selectedRowData[0].reportId);
+    //this.onChangeReportType(this.selectedRowData[0].reportId);
+    this.showDriverList= this.selectedRowData[0].isDriver;
     this.reportSchedulerForm.get('vehicleGroup').setValue(this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? 0 : (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupId));
     this.reportSchedulerForm.get('vehicle').setValue(this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? 0 : (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? 0 : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleId));
     this.reportSchedulerForm.get('language').setValue((this.selectedRowData[0].code).trim());
