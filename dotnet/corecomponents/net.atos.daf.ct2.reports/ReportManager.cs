@@ -430,7 +430,7 @@ namespace net.atos.daf.ct2.reports
         {
             vehicleHealthStatusRequest.WarningType = !string.IsNullOrEmpty(vehicleHealthStatusRequest.TripId) ? "A" : string.Empty;
 
-            vehicleHealthStatusRequest.Days = !string.IsNullOrEmpty(vehicleHealthStatusRequest.TripId) ? 1 : 90;
+           // vehicleHealthStatusRequest.Days = !string.IsNullOrEmpty(vehicleHealthStatusRequest.TripId) ? 1 : 90;
             var data = await _reportRepository.GetVehicleHealthStatus(vehicleHealthStatusRequest);
             return data;
         }
