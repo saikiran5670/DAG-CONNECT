@@ -1001,16 +1001,47 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        [HttpPost]
+        [Route("fleetfuel/getdetails/driver/trip")]
+        public async Task<IActionResult> GetFleetFuelTripByDriver([FromBody] Entity.Report.ReportFleetFuelFilter request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DATEMISMATCH_MSG); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                FleetFuelFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetFuelFilterRequest>(filters);
+                _logger.Info("GetFleetFuelDetailsByDriver method in Report (for Fleet Fuel consumption details by driver) API called.");
+                var data = await _reportServiceClient.GetFleetFuelTripDetailsByDriverAsync(objFleetFilter);
+                if (data?.FleetFuelDetails?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_FLEET_FUEL_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_FLEET_FUEL_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
 
         #region Vehicle Health Summary
         [HttpGet]
-        [Route("getvehiclesummary")]
+        [Route("getvehiclehealthstatus")]
         public async Task<IActionResult> GetVehicleHealthReport([FromQuery] Entity.Report.VehicleHealthStatusRequest request)
         {
             try
             {
-                if (request.FromDate > request.ToDate) { return BadRequest(ReportConstants.VALIDATION_MSG_FROMDATE); }
+                //if (request.FromDate > request.ToDate) { return BadRequest(ReportConstants.VALIDATION_MSG_FROMDATE); }
 
                 string filters = JsonConvert.SerializeObject(request);
                 net.atos.daf.ct2.reportservice.VehicleHealthReportRequest objVehicleHealthStatusRequest = JsonConvert.DeserializeObject<VehicleHealthReportRequest>(filters);

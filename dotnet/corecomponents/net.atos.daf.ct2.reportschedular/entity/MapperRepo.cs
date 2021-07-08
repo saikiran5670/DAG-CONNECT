@@ -66,6 +66,15 @@ namespace net.atos.daf.ct2.reportscheduler.entity
                         reportScheduler.ScheduledReportDriverRef.Add(scheduledReportDriver);
                     }
                 }
+                if (reportSchedulerItem.Schrep_id > 0 && reportSchedulerItem.Repsch_id == reportSchedulerItem.Schrep_schedule_report_id)
+                {
+                    if (!scheduledReportLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Schrep_id), out _))
+                    {
+                        var scheduledReport = ToScheduledReportModel(reportSchedulerItem);
+                        scheduledReportLookup.Add(Convert.ToInt32(reportSchedulerItem.Schrep_id), scheduledReport);
+                        reportScheduler.ScheduledReport.Add(scheduledReport);
+                    }
+                }
             }
             foreach (var keyValuePair in reportSchedulerLookup)
             {
@@ -147,6 +156,18 @@ namespace net.atos.daf.ct2.reportscheduler.entity
             schedulereportsr.CreatedAt = request.Receipt_created_at;
             schedulereportsr.ModifiedAt = request.Receipt_modified_at;
             return schedulereportsr;
+        }
+        public ScheduledReport ToScheduledReportModel(ReportSchedulerResult request)
+        {
+            ScheduledReport scheduledReport = new ScheduledReport();
+            scheduledReport.Id = request.Schrep_id;
+            scheduledReport.ScheduleReportId = request.Schrep_schedule_report_id;
+            scheduledReport.DownloadedAt = request.Schrep_downloaded_at;
+            scheduledReport.ValidTill = request.Schrep_valid_till;
+            scheduledReport.CreatedAt = request.Schrep_created_at;
+            scheduledReport.StartDate = request.Schrep_start_date;
+            scheduledReport.EndDate = request.Schrep_end_date;
+            return scheduledReport;
         }
     }
 }

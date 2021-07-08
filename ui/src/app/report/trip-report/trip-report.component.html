@@ -155,11 +155,11 @@
                 <div *ngFor="let userPOI of userPOIList; let i = index" class="full-width" fxLayoutGap="10px">
                   <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                     <mat-checkbox (click)='$event.stopPropagation()'
-                    (change)='$event ? selectedPOI.toggle(userPOI) : null; changeUserPOISelection($event, userPOI)' [checked]='selectedPOI.isSelected(userPOI)'>{{ userPOI.categoryName }} ({{ userPOI.poiList.length }})</mat-checkbox>
+                    (change)='$event ? selectedPOI.toggle(userPOI) : null; changeUserPOISelection($event, userPOI, i)' [checked]='selectedPOI.isSelected(userPOI)'>{{ userPOI.categoryName }} ({{ userPOI.poiList.length }})</mat-checkbox>
                   </div>
                   <div *ngFor="let subCatPOI of userPOI.subCategoryPOIList; let j = index" fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-left-10-per" fxLayoutGap="10px">
-                      <mat-checkbox (change)='changeSubCategory($event, subCatPOI)'>{{ subCatPOI.subCategoryName }} ({{ subCatPOI.poiList.length }})</mat-checkbox>
+                      <mat-checkbox [checked]="subCatPOI.checked" (change)='changeSubCategory($event, subCatPOI)'>{{ subCatPOI.subCategoryName }} ({{ subCatPOI.poiList.length }})</mat-checkbox>
                     </div>
                   </div>
                 </div>

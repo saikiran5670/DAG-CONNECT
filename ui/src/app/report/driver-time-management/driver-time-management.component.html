@@ -24,13 +24,13 @@
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select [disabled]="vehicleGroupListData.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
+                  <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
                     <mat-option *ngFor="let rer of vehicleGroupListData" [value]="rer.vehicleGroupId">
                         {{ rer.vehicleGroupName }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field> 
-                <mat-error *ngIf="driverTimeForm.get('vehicleGroup').hasError('required') && vehicleGroupListData.length > 0">
+                <mat-error *ngIf="driverTimeForm.get('vehicleGroup').hasError('required') && driverDD.length > 0">
                   {{translationData.lblPleaseSelectvehicleGroup || 'Please Select Vehicle Group' }}
                 </mat-error>
               </div>
@@ -83,13 +83,13 @@
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select [disabled]="vehicleListData.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
-                  <mat-option *ngFor="let rer of vehicleListData" [value]="rer.vehicleId">
+                  <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
+                  <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
                         {{ rer.vehicleName }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-                <mat-error *ngIf="driverTimeForm.get('vehicle').hasError('required')">
+                <mat-error *ngIf="driverTimeForm.get('vehicle').hasError('required') && (driverDD.length > 0)">
                   {{translationData.lblPleaseSelectVehicle || 'Please Select Vehicle' }}
                 </mat-error>
               </div>
@@ -98,17 +98,14 @@
             <div class="areaWidth min-width-30-per" fxLayout="column">
                 <mat-label>{{ translationData.lblDriver || 'Driver' }} <span class='mandatoryColor'>*</span></mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select [disabled]="driverListData.length == 0" (selectionChange)="onDriverChange($event)" placeholder="{{ translationData.lblSelectDriver || 'Select Driver' }}" formControlName="driver">
-                    <mat-option *ngFor="let rer of driverListData" [value]="rer.driverID">
+                  <mat-select [disabled]="driverDD.length == 0" (selectionChange)="onDriverChange($event)" placeholder="{{ translationData.lblSelectDriver || 'Select Driver' }}" formControlName="driver">
+                    <mat-option *ngFor="let rer of driverDD" [value]="rer.driverID">
                         {{ rer.firstName ? rer.firstName : rer.driverID  }} {{ rer.lastName}}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-                <mat-error *ngIf="driverTimeForm.get('driver').hasError('required') && this.driverListData.length > 0">
+                <mat-error *ngIf="driverTimeForm.get('driver').hasError('required') && (driverDD.length > 0)">
                   {{translationData.lblPleaseSelectDriver || 'Please Select Driver' }}
-                </mat-error>
-                <mat-error *ngIf="this.driverListData.length === 0">
-                  {{translationData.lblNoDriverAvailable || 'No Driver Available' }}
                 </mat-error>
             </div>
             </div>
