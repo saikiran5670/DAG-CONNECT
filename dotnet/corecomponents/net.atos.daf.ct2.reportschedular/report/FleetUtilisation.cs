@@ -161,7 +161,7 @@ namespace net.atos.daf.ct2.account.report
                               , FleetUtilisationPdfDetails.Sum(s => s.NumberOfTrips)
                               , FleetUtilisationPdfDetails.Sum(s => s.AverageDistancePerDay)
                               , distanceUnit
-                              , await _unitConversionManager.GetTimeSpan(TotalIdleDuration, TimeUnit.Seconds, UnitToConvert),
+                              , await _unitConversionManager.GetTimeSpan(TotalIdleDuration, TimeUnit.Seconds, UnitToConvert)
                               , timeSpanUnit
                               , distanceUnit
                               , timeSpanUnit
