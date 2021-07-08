@@ -1041,16 +1041,46 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                //if (request.FromDate > request.ToDate) { return BadRequest(ReportConstants.VALIDATION_MSG_FROMDATE); }
 
                 string filters = JsonConvert.SerializeObject(request);
                 net.atos.daf.ct2.reportservice.VehicleHealthReportRequest objVehicleHealthStatusRequest = JsonConvert.DeserializeObject<VehicleHealthReportRequest>(filters);
                 _logger.Info("GetVehicleHealthReport method in Report (for Vehicle Current and History Summary) API called.");
                 var data = await _reportServiceClient.GetVehicleHealthReportAsync(objVehicleHealthStatusRequest);
+
                 if (data != null)
                 {
+                    var vehicleHealthStatus = _mapper.ToVehicleHealthStatus(data);
+
+                    foreach (var hs in vehicleHealthStatus)
+                    {
+                        if (hs.LatestGeolocationAddressId == 0 && hs.LatestReceivedPositionLattitude != 0 && hs.LatestReceivedPositionLongitude != 0)
+                        {
+                            GetMapRequest getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(hs.LatestReceivedPositionLattitude, hs.LatestReceivedPositionLongitude);
+                            hs.LatestGeolocationAddressId = getMapRequestLatest.Id;
+                            hs.LatestGeolocationAddress = getMapRequestLatest.Address;
+                        }
+                        if (hs.LatestWarningGeolocationAddressId == 0 && hs.LatestWarningPositionLatitude != 0 && hs.LatestWarningPositionLongitude != 0)
+                        {
+                            GetMapRequest getMapRequestWarning = _hereMapAddressProvider.GetAddressObject(hs.LatestWarningPositionLatitude, hs.LatestWarningPositionLongitude);
+                            hs.LatestWarningGeolocationAddressId = getMapRequestWarning.Id;
+                            hs.LatestWarningGeolocationAddress = getMapRequestWarning.Address;
+                        }
+                        if (hs.StartGeolocationAddressId == 0 && hs.StartPositionLattitude != 0 && hs.StartPositionLongitude != 0)
+                        {
+                            GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(hs.StartPositionLattitude, hs.StartPositionLongitude);
+                            hs.StartGeolocationAddressId = getMapRequestStart.Id;
+                            hs.StartGeolocationAddress = getMapRequestStart.Address;
+                        }
+                        if (hs.WarningLat != 0 && hs.WarningLng != 0)
+                        {
+                            GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(hs.WarningLat, hs.WarningLng);
+                            hs.StartGeolocationAddressId = getMapRequestStart.Id;
+                            hs.WarningAddress = getMapRequestStart.Address;
+                        }
+                    }
+
                     data.Message = ReportConstants.SUCCESS_MSG;
-                    return Ok(data);
+                    return Ok(vehicleHealthStatus);
                 }
                 else
                 {
