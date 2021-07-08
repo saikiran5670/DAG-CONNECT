@@ -44,7 +44,7 @@ public class Trip implements Serializable {
 	private Double vTachographSpeed;
 	private Double tripCalAvgGrossWtComb;
 	private Double tripCalPtoDuration;
-	private Double triCalHarshBrakeDuration;
+	private Double tripCalHarshBrakeDuration;
 	private Double tripCalHeavyThrottleDuration;
 	private Double tripCalCrsCntrlDistBelow50;
 	private Double tripCalCrsCntrlDistAbv50;

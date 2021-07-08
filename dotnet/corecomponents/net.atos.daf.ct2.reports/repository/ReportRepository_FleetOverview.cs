@@ -123,14 +123,57 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
                 var parameterFleetOverview = new DynamicParameters();
-                parameterFleetOverview.Add("@name", fleetOverviewFilter.GroupId);
-                string queryFleetOverview = @"select 
+                parameterFleetOverview.Add("@vins", fleetOverviewFilter.VINIds);
+                //filter trip data by n days
+                //parameterFleetOverview.Add("@days", string.Concat("'", fleetOverviewFilter.Days.ToString(), "d", "'"));
+                parameterFleetOverview.Add("@days", fleetOverviewFilter.Days, System.Data.DbType.Int32);
+                string queryFleetOverview = @"With CTE_Trips_By_Vin as(
+                    select 
+                    lcts.id,
+                    lcts.trip_id,
+                    lcts.vin,
+                    lcts.start_time_stamp,
+                    lcts.end_time_stamp,
+                    lcts.driver1_id,
+                    lcts.trip_distance,
+                    lcts.driving_time,
+                    lcts.fuel_consumption,
+                    lcts.vehicle_driving_status_type,
+                    lcts.odometer_val,
+                    lcts.distance_until_next_service,
+                    lcts.latest_received_position_lattitude,
+                    lcts.latest_received_position_longitude,
+                    lcts.latest_received_position_heading,
+                    lcts.start_position_lattitude,
+                    lcts.start_position_longitude,
+                    lcts.start_position_heading,
+                    lcts.latest_processed_message_time_stamp,
+                    lcts.vehicle_health_status_type,
+                    lcts.latest_warning_class,
+                    lcts.latest_warning_number,
+                    lcts.latest_warning_type,
+                    lcts.latest_warning_timestamp,
+                    lcts.latest_warning_position_latitude,
+                    lcts.latest_warning_position_longitude,
+                    RANK() Over ( Partition By lcts.vin Order by  lcts.start_time_stamp desc ) Veh_trip_rank
+                    from livefleet.livefleet_current_trip_statistics lcts
+                    where lcts.vin = Any(@vins) 
+                    and (lcts.start_time_stamp > (extract(epoch from (now()::date - @days ))*1000) or lcts.end_time_stamp is null)
+                    )
+                    ,CTE_Unique_latest_trip as (
+                     select 
+                     *,
+                     ROW_NUMBER() OVER( PARTITION BY Vin ORDER BY Id desc) AS row_num 
+                     from CTE_Trips_By_Vin 
+                     where Veh_trip_rank =1 
+                    )
+                    select 
                     lcts.id as lcts_Id,
                     lcts.trip_id as lcts_TripId,
                     lcts.vin as lcts_Vin,
                     lcts.start_time_stamp as lcts_StartTimeStamp,
                     lcts.end_time_stamp as lcts_EndTimeStamp,
-                    lcts.driver1_id as lcts_Driver1Id,
+                    coalesce(lcts.driver1_id,'') as lcts_Driver1Id,
                     lcts.trip_distance as lcts_TripDistance,
                     lcts.driving_time as lcts_DrivingTime,
                     lcts.fuel_consumption as lcts_FuelConsumption,
@@ -147,31 +190,31 @@ namespace net.atos.daf.ct2.reports.repository
                     lcts.vehicle_health_status_type as lcts_VehicleHealthStatusType,
                     lcts.latest_warning_class as lcts_LatestWarningClass,
                     lcts.latest_warning_number as lcts_LatestWarningNumber,
-                    lcts.latest_warning_type as lcts_LatestWarningType,
+                    coalesce(lcts.latest_warning_type,'') as lcts_LatestWarningType,
                     lcts.latest_warning_timestamp as lcts_LatestWarningTimestamp,
                     lcts.latest_warning_position_latitude as lcts_LatestWarningPositionLatitude,
                     lcts.latest_warning_position_longitude as lcts_LatestWarningPositionLongitude,
-                    veh.created_at as veh_Vid,
-                    veh.modified_at as veh_RegistrationNo,
-                    dri.first_name as dri_FirstName,
-                    dri.last_name as dri_LastName,
+                    coalesce(veh.vid,'') as veh_Vid,
+                    coalesce(veh.registration_no,'') as veh_RegistrationNo,
+                    coalesce(dri.first_name,'') as dri_FirstName,
+                    coalesce(dri.last_name,'') as dri_LastName,
                     lps.id as lps_Id,
-                    lps.trip_id as lps_TripId,
-                    lps.vin as lps_Vin,
+                    coalesce(lps.trip_id,'') as lps_TripId,
+                    coalesce(lps.vin,'') as lps_Vin,
                     lps.gps_altitude as lps_GpsAltitude,
                     lps.gps_heading as lps_GpsHeading,
                     lps.gps_latitude as lps_GpsLatitude,
                     lps.gps_longitude as lps_GpsLongitude,
                     lps.co2_emission as lps_Co2Emission,
                     lps.fuel_consumption as lps_FuelConsumption,
-                    lps.last_odometer_val as lps_LastOdometerVal
+                    lps.last_odometer_val as lps_LastOdometerVal,
                     latgeoadd.id as latgeoadd_LatestGeolocationAddressId,
-                    latgeoadd.address as latgeoadd_LatestGeolocationAddress,
+                    coalesce(latgeoadd.address,'') as latgeoadd_LatestGeolocationAddress,
                     stageoadd.id as stageoadd_StartGeolocationAddressId,
-                    stageoadd.address as stageoadd_StartGeolocationAddress,
+                    coalesce(stageoadd.address,'') as stageoadd_StartGeolocationAddress,
                     wangeoadd.id as wangeoadd_LatestWarningGeolocationAddressId,
-                    wangeoadd.address as wangeoadd_LatestWarningGeolocationAddress,
-                    from livefleet.livefleet_current_trip_statistics lcts
+                    coalesce(wangeoadd.address,'') as wangeoadd_LatestWarningGeolocationAddress
+                    from CTE_Unique_latest_trip lcts
                     left join 
                     livefleet.livefleet_position_statistics lps
                     on lcts.trip_id = lps.trip_id and lcts.vin = lps.vin
@@ -183,12 +226,31 @@ namespace net.atos.daf.ct2.reports.repository
                     on TRUNC(CAST(lcts.latest_received_position_lattitude as numeric),4)= TRUNC(CAST(latgeoadd.latitude as numeric),4) 
                     and TRUNC(CAST(lcts.latest_received_position_longitude as numeric),4) = TRUNC(CAST(latgeoadd.longitude as numeric),4)
                     left join master.geolocationaddress stageoadd
-                    on TRUNC(CAST(lcts.latest_received_position_lattitude as numeric),4)= TRUNC(CAST(stageoadd.latitude as numeric),4) 
-                    and TRUNC(CAST(lcts.latest_received_position_longitude as numeric),4) = TRUNC(CAST(stageoadd.longitude as numeric),4)
+                    on TRUNC(CAST(lcts.start_position_lattitude as numeric),4)= TRUNC(CAST(stageoadd.latitude as numeric),4) 
+                    and TRUNC(CAST(lcts.start_position_longitude as numeric),4) = TRUNC(CAST(stageoadd.longitude as numeric),4)
                     left join master.geolocationaddress wangeoadd
-                    on TRUNC(CAST(lcts.latest_received_position_lattitude as numeric),4)= TRUNC(CAST(wangeoadd.latitude as numeric),4) 
-                    and TRUNC(CAST(lcts.latest_received_position_longitude as numeric),4) = TRUNC(CAST(wangeoadd.longitude as numeric),4) ";
-                IEnumerable<FleetOverviewResult> alertResult = await _dataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
+                    on TRUNC(CAST(lcts.latest_warning_position_latitude as numeric),4)= TRUNC(CAST(wangeoadd.latitude as numeric),4) 
+                    and TRUNC(CAST(lcts.latest_warning_position_longitude as numeric),4) = TRUNC(CAST(wangeoadd.longitude as numeric),4)
+                    where row_num=1 ";
+                if (fleetOverviewFilter.DriverId.Count > 0)
+                {
+                    parameterFleetOverview.Add("@driverids", fleetOverviewFilter.DriverId);
+                    queryFleetOverview += " and lcts.driver1_id = Any(@driverids) ";
+                }
+                if (fleetOverviewFilter.HealthStatus.Count > 0)
+                {
+                    parameterFleetOverview.Add("@healthstatus", fleetOverviewFilter.HealthStatus);
+                    queryFleetOverview += " and lcts.vehicle_health_status_type = Any(@healthstatus) ";
+                }
+                if (fleetOverviewFilter.AlertCategory.Count > 0)
+                {
+                    //need to be implement in upcomming sprint 
+                }
+                if (fleetOverviewFilter.AlertLevel.Count > 0)
+                {
+                    //need to be implement in upcomming sprint 
+                }
+                IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
                 return repositoryMapper.GetFleetOverviewDetails(alertResult);
             }
             catch (Exception)

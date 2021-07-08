@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.visibility
                                     VehicleGroupId = item.VehicleGroupId,
                                     VehicleId = item.VehicleId,
                                     FeatureName = feature.Name,
-                                    FeatureKey = feature.FeatureEnum,
+                                    FeatureKey = feature.Name.ToLower().Contains("alert.") == true ? feature.FeatureEnum : feature.Key,
                                     Subscribe = true
                                 });
                             }
@@ -67,7 +67,7 @@ namespace net.atos.daf.ct2.visibility
                                         VehicleGroupId = item.VehicleGroupId,
                                         VehicleId = item.VehicleId,
                                         FeatureName = feature.Name,
-                                        FeatureKey = feature.FeatureEnum,
+                                        FeatureKey = feature.Name.ToLower().Contains("alert.") == true ? feature.FeatureEnum : feature.Key,
                                         Subscribe = true
                                     });
                                 }

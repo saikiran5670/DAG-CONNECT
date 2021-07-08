@@ -472,6 +472,8 @@ ngOnDestroy(){
       this.hideloader();
       this.wholeTripData.vinTripList = [];
       this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
+      this.filterDateData();
+      this.loadUserPOI();
     });
   }
 
@@ -486,18 +488,29 @@ ngOnDestroy(){
   makeUserCategoryPOIList(poiData: any){
     let categoryArr: any = [];
     let _arr: any = poiData.map(item => item.categoryId).filter((value, index, self) => self.indexOf(value) === index);
-    if(_arr.length > 0){
-      _arr.forEach(element => {
-        let _data = poiData.filter(i => i.categoryId == element);
-        if(_data.length > 0){
-          categoryArr.push({
-            categoryId: _data[0].categoryId,
-            categoryName: _data[0].categoryName,
-            poiList: _data
+    _arr.forEach(element => {
+      let _data = poiData.filter(i => i.categoryId == element);
+      if (_data.length > 0) {
+        let subCatUniq = _data.map(i => i.subCategoryId).filter((value, index, self) => self.indexOf(value) === index);
+        let _subCatArr = [];
+        if(subCatUniq.length > 0){
+          subCatUniq.forEach(elem => {
+            let _subData = _data.filter(i => i.subCategoryId == elem && i.subCategoryId != 0);
+            if (_subData.length > 0) { 
+            _subCatArr.push({ poiList: _subData, subCategoryName: _subData[0].subCategoryName, subCategoryId: _subData[0].subCategoryId }); 
+            }
           });
         }
-      });
-    }
+        categoryArr.push({
+          categoryId: _data[0].categoryId,
+          categoryName: _data[0].categoryName,
+          poiList: _data,
+          subCategoryPOIList: _subCatArr
+        });
+      } 
+    });
+    console.log("categoryArr:: ", categoryArr)
+
     return categoryArr;
   }
 
@@ -1096,6 +1109,10 @@ ngOnDestroy(){
         }
       });
     }
+  }
+
+  changeSubCategory(event: any, subCatPOI: any){
+    console.log(event, subCatPOI)
   }
 
 }

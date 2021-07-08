@@ -8,7 +8,7 @@
       <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
       </div>
   </div>
-  <div *ngIf='!createViewEditStatus'>
+  <div *ngIf='!createEditStatus && !viewStatus'>
       <mat-card class='mat-elevation-z'>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -75,10 +75,6 @@
             <ng-container matColumnDef="scheduledReportVehicleRef">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group/Vehicle' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row" matTooltip="{{ row.vehicleGroupAndVehicleList }}">
-                  <!-- <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
-                  (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
-                  {{ row.vehicleGroupName }}</span>
-                </span> -->
                   <span *ngIf="row.scheduledReportVehicleRef.length ==1 && row.scheduledReportVehicleRef[0].vehicleGroupType == 'G'">
                   <span [ngClass]="row.scheduledReportVehicleRef[0].vehicleGroupName != '' ? 'row-hover' : ''"
                   (click)="row.scheduledReportVehicleRef[0].vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
@@ -100,9 +96,6 @@
             </ng-container>
             <ng-container matColumnDef="scheduledReportRecipient">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRecipient || 'Recipient' }}</mat-header-cell>
-              <!-- <mat-cell *matCellDef="let row">         
-                {{ row.recipient }}            
-              </mat-cell> -->
               <mat-cell *matCellDef="let row" matTooltip="{{ row.recipientList }}">
                 <span *ngIf="row.scheduledReportRecipient.length != 1" class="text-truncate">{{ row.scheduledReportRecipient.length > 0 ? row.recipientList : '&nbsp; &nbsp; -' }}</span>
                 <span *ngIf="row.scheduledReportRecipient.length == 1">{{ row.recipientList }} </span>
@@ -110,7 +103,6 @@
             </ng-container>
             <ng-container matColumnDef="scheduledReportDriverRef">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriver || 'Driver' }}</mat-header-cell>
-              <!-- <mat-cell *matCellDef="let row">{{ row.driver }} </mat-cell> -->
               <mat-cell *matCellDef="let row" matTooltip="{{ row.driverList }}"><span class="text-truncate">{{ row.scheduledReportDriverRef.length > 0 ? row.driverList : '&nbsp; &nbsp; -' }}</span></mat-cell>
             </ng-container>
             <ng-container matColumnDef="lastScheduleRunDate">
@@ -158,8 +150,12 @@
         <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
       </mat-card>
   </div>
-  <div *ngIf='createViewEditStatus'>
-      <app-create-edit-view-report-scheduler [reportSchedulerParameterData]="reportSchedulerParameterData" [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"
-        (backToPage)='onBackToPage($event)'></app-create-edit-view-report-scheduler>
+  <div *ngIf='createEditStatus'>
+      <app-create-edit-report-scheduler [reportSchedulerParameterData]="reportSchedulerParameterData" [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"
+        (backToPage)='onBackToPage($event)'></app-create-edit-report-scheduler>
   </div>
+  <div *ngIf='viewStatus'>
+    <app-view-report-scheduler [translationData]='translationData' [selectedRowData]="rowsData"
+      (backToPage)='onBackToPage($event)'></app-view-report-scheduler>
+</div>
 </div>

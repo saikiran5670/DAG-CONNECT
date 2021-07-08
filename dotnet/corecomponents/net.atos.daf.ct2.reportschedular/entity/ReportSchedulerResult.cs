@@ -56,11 +56,11 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public string Functionenum { get; set; }
         public int Schrep_id { get; set; }
         public int Schrep_schedule_report_id { get; set; }
-        public string Schrep_downloaded_at { get; set; }
-        public string Schrep_valid_till { get; set; }
-        public string Schrep_created_at { get; set; }
-        public string Schrep_start_date { get; set; }
-        public string Schrep_end_date { get; set; }
+        public long Schrep_downloaded_at { get; set; }
+        public long Schrep_valid_till { get; set; }
+        public long Schrep_created_at { get; set; }
+        public long Schrep_start_date { get; set; }
+        public long Schrep_end_date { get; set; }
     }
 
 }

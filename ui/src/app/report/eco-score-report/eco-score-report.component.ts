@@ -65,7 +65,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy';
   prefUnitFormat: any = 'dunit_Metric';
   accountPrefObj: any;
-  displayedColumns = ['select', 'ecoScoreRanking', 'detailsdrivername', 'detailsdriverid', 'ecoScore'];
+  displayedColumns = ['select', 'ranking', 'driverName', 'driverId', 'ecoScoreRanking'];
   detaildisplayedColumns = ['specificdetailstarttime', 'specificdetaildrivetime', 'specificdetailworktime', 'specificdetailservicetime', 'specificdetailresttime', 'specificdetailavailabletime'];
   fromDisplayDate: any;
   toDisplayDate : any;
@@ -86,13 +86,23 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   minTripValue: any;
   minDriverCheck: any;
   minDriverValue: any;
-  profileList: any=[];
+  // profileList: any=[
+  //   {
+  //     profileName: 'Basic default',
+  //     profileId: '0'
+  //   },
+  //   {
+  //     profileName: 'Advanced default',
+  //     profileId: '1'
+  //   }
+  // ];
+  profileList: any =[];
   showField: any = {
     select: true,
+    ranking: true,
+    driverId: true,
+    driverName: true,
     ecoScoreRanking: true,
-    detailsdriverid:true,
-    detailsdrivername:true,
-    ecoScore: true,
     // detailsendtime:true,
     // detailsstarttime:true,
     // detailsworktime:true,
@@ -112,7 +122,11 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   finalDriverList : any = [];
   finalVehicleList : any =[];
   selectedEcoScore = new SelectionModel(true, []);
-  
+  selectedDriversEcoScore = [];
+  selectedDriverOption: any;
+  selectedDriverId: String;
+  selectedDriverName: String;
+  compareEcoScore: boolean = false;
   prefMapData: any = [
     {
       key: 'da_report_alldriver_general_driverscount',
@@ -269,9 +283,11 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       name: "",
       value: "",
       filter: "",
-      menuId: 14 
+      menuId: 15 
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+      console.log(data);
+      console.log(JSON.stringify(data));
       this.processTranslation(data);
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
@@ -516,20 +532,24 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     let searchDataParam = {
       "startDateTime":_startTime,
       "endDateTime":_endTime,
+      // "viNs": [
+      //   "M4A14528","M4A1114","M4A1117","XLR0998HGFFT76657","XLRASH4300G1472w0"
+      //   ],
       "viNs": _vehicelIds,
-      "driverIds":_driverIds
-      // "minTripDistance":0,
-      // "minDriverTotalDistance": 0,
-      // "targetProfileId": 0,
-      // "reportId": 0
+      //"driverIds":_driverIds
+      "minTripDistance":0,
+      "minDriverTotalDistance": 0,
+      "targetProfileId": 3,
+      "reportId": 10
     }
     if(_vehicelIds.length > 0){
       this.showLoadingIndicator = true;
-      this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
+      this.reportService.getEcoScoreDetails(searchDataParam).subscribe((_tripData: any) => {
+      // this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
         this.hideloader();
-        //let tripData = _tripData; 
+        let tripData = _tripData; 
         
-        let tripData = {
+        let tripData1 = {
           "driverActivities": [
             {
               "driverId": "NL B000384974000000",
@@ -545,7 +565,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "driveTime": 1218000,
               "serviceTime": 1218000,
               "ranking": 1,
-              "ecoScore":9.75
+              "ecoScoreRanking":9.75,
+              "ecoScoreRankingColor": "GREEN"
             },
             {
               "driverId": "D2",
@@ -561,7 +582,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "driveTime": 0,
               "serviceTime": 1218000,
               "ranking": 3,
-              "ecoScore":9.25
+              "ecoScoreRanking":9.25,
+              "ecoScoreRankingColor": "GREEN"
             },
             {
               "driverId": "UK DB08176162022802",
@@ -577,7 +599,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "driveTime": 1218000,
               "serviceTime": 1218000,
               "ranking": 2,
-              "ecoScore":9.5
+              "ecoScoreRanking":9.5,
+              "ecoScoreRankingColor": "GREEN"
             },
             {
               "driverId": "D2",
@@ -593,7 +616,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "driveTime": 0,
               "serviceTime": 1218000,
               "ranking": 4,
-              "ecoScore":9
+              "ecoScoreRanking":9,
+              "ecoScoreRankingColor": "GREEN"
             },
             {
               "driverId": "UK DB08176162022802",
@@ -609,7 +633,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "driveTime": 1218000,
               "serviceTime": 1218000,
               "ranking": 7,
-              "ecoScore":7.25
+              "ecoScoreRanking":7.25,
+              "ecoScoreRankingColor": "GREEN"
             },
             {
               "driverId": "D2",
@@ -625,7 +650,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "driveTime": 0,
               "serviceTime": 1218000,
               "ranking": 5,
-              "ecoScore":8.25
+              "ecoScoreRanking":8.25,
+              "ecoScoreRankingColor": "GREEN"
             },
             {
               "driverId": "UK DB08176162022802",
@@ -641,7 +667,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "driveTime": 1218000,
               "serviceTime": 1218000,
               "ranking": 6,
-              "ecoScore":8.15
+              "ecoScoreRanking":8.15,
+              "ecoScoreRankingColor": "GREEN"
             },
             {
               "driverId": "D2",
@@ -657,7 +684,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "driveTime": 0,
               "serviceTime": 1218000,
               "ranking": 8,
-              "ecoScore":7.25
+              "ecoScoreRanking":7.25,
+              "ecoScoreRankingColor": "GREEN"
             },
             {
               "driverId": "UK DB08176162022802",
@@ -673,7 +701,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "driveTime": 1218000,
               "serviceTime": 1218000,
               "ranking": 9,
-              "ecoScore":6.75
+              "ecoScoreRanking":6.75,
+              "ecoScoreRankingColor": "ORANGE"
             },
             {
               "driverId": "D2",
@@ -689,7 +718,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "driveTime": 0,
               "serviceTime": 1218000,
               "ranking": 15,
-              "ecoScore":5.25
+              "ecoScoreRanking":5.25,
+              "ecoScoreRankingColor": "ORANGE"
             },
             {
               "driverId": "UK DB08176162022802",
@@ -705,7 +735,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "driveTime": 1218000,
               "serviceTime": 1218000,
               "ranking": 16,
-              "ecoScore":5.25
+              "ecoScoreRanking":5.25,
+              "ecoScoreRankingColor": "ORANGE"
             },
             {
               "driverId": "D2",
@@ -721,7 +752,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
               "driveTime": 0,
               "serviceTime": 1218000,
               "ranking": 17,
-              "ecoScore":4.75
+              "ecoScoreRanking":4.75,
+              "ecoScoreRankingColor": "RED"
             }
           ],
           "code": 200,
@@ -733,9 +765,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
           this.onSearchData = tripData;
           this.setGeneralDriverValue();
 
-          this.initData = this.reportMapService.getDriverTimeDataBasedOnPref(tripData.driverActivities, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+         // this.initData = this.reportMapService.getDriverTimeDataBasedOnPref(tripData.driverActivities, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
           this.setTableInfo();
-          this.updateDataSource(this.initData);
+          this.updateDataSource(tripData.driverRanking);
           this.setDataForAll();
         }
         else{
@@ -752,6 +784,10 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
        // this.updateDataSource(this.tripData);
       });
     }
+
+    this.reportService.getEcoScoreProfiles().subscribe((profiles: any) => {
+      this.profileList = profiles.profiles;
+    });
   }
 
   setDataForAll(){    
@@ -895,18 +931,26 @@ let finalGroupDataList = [];
     this.toDisplayDate = Util.convertUtcToDateFormat(this.endDateValue,'DD/MM/YYYY HH:MM:SS');
     this.selectedVehicleGroup = this.vehicleGroupListData.filter(item => item.vehicleGroupId == parseInt(this.ecoScoreForm.controls.vehicleGroup.value))[0]["vehicleGroupName"];
     this.selectedVehicle = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.ecoScoreForm.controls.vehicle.value))[0]["vehicleName"];
-    this.onSearchData.driverActivities.forEach(element => {
-    this.totalDriveTime += element.driveTime,
-    this.totalWorkTime += element.workTime,
-    this.totalRestTime += element.restTime,
-    this.totalAvailableTime += element.availableTime
-    });
-      this.tableInfoObj= {
-        driveTime: Util.getHhMmTime(this.totalDriveTime),
-        workTime: Util.getHhMmTime(this.totalWorkTime),
-        restTime: Util.getHhMmTime(this.totalRestTime),
-        availableTime: Util.getHhMmTime(this.totalAvailableTime),
-      }
+    this.selectedDriverId = this.driverListData.filter(item => item.driverID == parseInt(this.ecoScoreForm.controls.driver.value))[0]["firstName"];
+    this.selectedDriverName = this.driverListData.filter(item => item.driverID == parseInt(this.ecoScoreForm.controls.driver.value))[0]["firstName"];
+    this.selectedDriverOption='';
+    this.selectedDriverOption += (this.ecoScoreForm.controls.minTripCheck.value === true) ? 'Include ' : 'Exclude ';
+    this.selectedDriverOption += 'Short Trips ';
+    this.selectedDriverOption += (this.ecoScoreForm.controls.minDriverCheck.value === true) ? 'Include ' : 'Exclude ';
+    this.selectedDriverOption += 'Minimum Driver Total Distance';
+
+    // this.onSearchData.driverActivities.forEach(element => {
+    // this.totalDriveTime += element.driveTime,
+    // this.totalWorkTime += element.workTime,
+    // this.totalRestTime += element.restTime,
+    // this.totalAvailableTime += element.availableTime
+    // });
+    //   this.tableInfoObj= {
+    //     driveTime: Util.getHhMmTime(this.totalDriveTime),
+    //     workTime: Util.getHhMmTime(this.totalWorkTime),
+    //     restTime: Util.getHhMmTime(this.totalRestTime),
+    //     availableTime: Util.getHhMmTime(this.totalAvailableTime),
+    //   }
   }
   setTableInfo(){
   }
@@ -917,8 +961,28 @@ let finalGroupDataList = [];
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+          console.log(JSON.stringify(a)+' '+JSON.stringify(b));
+          return this.compare(a[sort.active], b[sort.active], isAsc);
+        });
+       }
+      this.dataSource.filterPredicate = function(data, filter: any){
+        return data.driverId.toLowerCase().includes(filter) ||
+               data.driverName.toLowerCase().includes(filter) ||
+               data.ecoScoreRanking.toString().toLowerCase().includes(filter) ||
+               data.ranking.toString().toLowerCase().includes(filter)
+      }
     });
   }
+
+  compare(a: any, b: any, isAsc: boolean) {
+    console.log(a+' '+b);
+    if(isNaN(a) && !(a instanceof Number)) a = a.toString().toLowerCase();
+    if(isNaN(b) && !(b instanceof Number)) b = b.toString().toLowerCase();
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+    }
 
   formStartDate(date: any){
     let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
@@ -978,7 +1042,7 @@ let finalGroupDataList = [];
       didDrawPage: function(data) {     
           // Header
           doc.setFontSize(14);
-          var fileTitle = "Driver Details";
+          var fileTitle = "Eco Score Report";
           var img = "/assets/logo.png";
           doc.addImage(img, 'JPEG',10,10,0,0);
  
@@ -992,19 +1056,20 @@ let finalGroupDataList = [];
       }
   });
 
-    let pdfColumns = [['Driver Name', 'Driver Id', 'Start Time', 'End Time', 'Drive Time', 'Work Time', 'Service Time', 'Rest Time', 'Available Time']]
+    let pdfColumns = [['Ranking', 'Driver Name', 'Driver Id', 'Eco-Score']]
   let prepare = []
     this.initData.forEach(e=>{
       var tempObj =[];
+      tempObj.push(e.ranking);
       tempObj.push(e.driverName);
       tempObj.push(e.driverId);
-      tempObj.push(e.startTime);
-      tempObj.push(e.endTime);
-      tempObj.push(e.driveTime);
-      tempObj.push(e.workTime);
-      tempObj.push(e.serviceTime);
-      tempObj.push(e.restTime);
-      tempObj.push(e.availableTime);
+      tempObj.push(e.ecoScoreRanking);
+      // tempObj.push(e.endTime);
+      // tempObj.push(e.driveTime);
+      // tempObj.push(e.workTime);
+      // tempObj.push(e.serviceTime);
+      // tempObj.push(e.restTime);
+      // tempObj.push(e.availableTime);
 
       prepare.push(tempObj);
     });
@@ -1030,6 +1095,7 @@ let finalGroupDataList = [];
   }
 
   backToMainPage(){
+    this.compareEcoScore = false;
     this.driverSelected = false;
     this.updateDataSource(this.initData);
     this.ecoScoreForm.get('driver').setValue(0);
@@ -1288,11 +1354,49 @@ let finalGroupDataList = [];
   }
 
   onCompare(event: any){
+    this.compareEcoScore = true;
     const numSelected = this.selectedEcoScore.selected.length;
+
     if(numSelected > 4){
       return;
+    } else {
+      let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
+      let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+      let _vehicelIds = [];
+      let _driverIds =[];
+      var _minTripVal =0;
+      let _minDriverDist=0;
+
+      _driverIds = this.selectedEcoScore.selected.map(a => a.driverId);
+      _vehicelIds = this.selectedEcoScore.selected.map(a => a.vin);
+      if(this.ecoScoreForm.get('minTripCheck').value){
+        _minTripVal = Number(this.ecoScoreForm.get('minTripValue'));
+      }
+      if(this.ecoScoreForm.get('minDriverCheck').value){
+        _minDriverDist = Number(this.ecoScoreForm.get('minDriverValue'));
+      }
+        let searchDataParam = {
+          "startDateTime":_startTime,
+          "endDateTime":_endTime,
+         // "viNs": _vehicelIds,
+         "viNs": [
+          "M4A14528","M4A1114","M4A1117"
+          ],
+          //"driverIds":_driverIds,
+          "driverIds": ["NL B000171984000002", "P 0000000542878012","NL B000384974000000"],
+          "minTripDistance":_minTripVal,
+          "minDriverTotalDistance": _minDriverDist,
+          "targetProfileId": 2,
+          "reportId": 10
+        }
+        if(_vehicelIds.length > 0){
+          this.showLoadingIndicator = true;
+          this.reportService.getEcoScoreDriverCompare(searchDataParam).subscribe((_drivers: any) => {
+            console.log(_drivers);
+      });
     }
   }
+}
 
   masterToggleForEcoScore(){
     this.isAllSelectedForEcoScore()
@@ -1313,22 +1417,33 @@ let finalGroupDataList = [];
   }
 
   setStyle(row: any){
-    if(row.ecoScore < 5)
-      return {'width': + ((row.ecoScore / 10) * 100) +'%', 'height': '18px', 'background-color': '#f44336'};
-    else if(row.ecoScore > 7.5)
-      return {'width': + ((row.ecoScore / 10) * 100) +'%', 'height': '18px', 'background-color': '#33cc33'};
-    else
-      return {'width': + ((row.ecoScore / 10) * 100) +'%', 'height': '18px', 'background-color': '#ff9900'};
+    // if(row.ecoScore < 5)
+    //   return {'width': + ((row.ecoScore / 10) * 100) +'%', 'height': '18px', 'background-color': '#f44336'};
+    // else if(row.ecoScore > 7.5)
+    //   return {'width': + ((row.ecoScore / 10) * 100) +'%', 'height': '18px', 'background-color': '#33cc33'};
+    // else
+    //   return {'width': + ((row.ecoScore / 10) * 100) +'%', 'height': '18px', 'background-color': '#ff9900'};
+      return {'width': + ((row.ecoScoreRanking / 10) * 100) +'%', 'height': '18px', 'background-color': row.ecoScoreRankingColor};
   }
-  selectedDriversEcoScore = [];
-  rowSelected(row: any){
-    console.log(row);
-    const numSelected = this.selectedEcoScore.selected.length;
-    if(numSelected <= 4)
-      this.selectedDriversEcoScore.push(row);
+
+  rowSelected(event: any, row: any){
+    if(event.checked){
+      this.selectedEcoScore.select(row);
+      const numSelected = this.selectedEcoScore.selected.length;
+      if(numSelected <= 4)
+        this.selectedDriversEcoScore.push(row);
+    } else {
+      this.selectedEcoScore.deselect(row);
+      const index: number = this.selectedDriversEcoScore.indexOf(row);
+      if(index !== -1)
+        this.selectedDriversEcoScore.splice(index, 1);
+    }
   }
+
   deselectDriver(driver: any){
-    console.log(driver);
-    //this.selectedDriversEcoScore.
+    const index: number = this.selectedDriversEcoScore.indexOf(driver);
+    if(index !== -1)
+      this.selectedDriversEcoScore.splice(index, 1);
+    this.selectedEcoScore.deselect(driver);
   }
 }

@@ -4,11 +4,13 @@ using System.Text;
 using System.Threading.Tasks;
 using DinkToPdf;
 using DinkToPdf.Contracts;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.account.report;
 using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reportscheduler.entity;
+using net.atos.daf.ct2.reportscheduler.helper;
 using net.atos.daf.ct2.reportscheduler.repository;
 using net.atos.daf.ct2.template;
 using net.atos.daf.ct2.unitconversion;
@@ -37,7 +39,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
                             IConverter generatePdf, IReportManager reportManager,
                              IReportSchedulerRepository reportSchedularRepository,
                              IVisibilityManager visibilityManager, ITemplateManager templateManager,
-                             IUnitConversionManager unitConversionManager)
+                             IUnitConversionManager unitConversionManager, IConfiguration configuration)
         {
             _generatePdf = generatePdf;
             _reportManager = reportManager;
@@ -45,6 +47,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
             _visibilityManager = visibilityManager;
             _templateManager = templateManager;
             _unitConversionManager = unitConversionManager;
+            ReportSingleton.GetInstance().SetDAFSupportEmailId(configuration["ReportCreationScheduler:DAFSupportEmailId"] ?? string.Empty);
             _logger = logger;
         }
 
@@ -75,20 +78,20 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 ColorMode = ColorMode.Color,
                 Orientation = Orientation.Portrait,
                 PaperSize = PaperKind.A4,
-                Margins = new MarginSettings { Top = 10 }
-                //DocumentTitle = "PDF Report"//,
+                Margins = new MarginSettings { Top = 10 },
                 //Out = $@"C:\Users\harneet.r (58879009)\Documents\POC\Employee_Report{ReportSchedulerData.Id}.pdf"
             };
-            string htmlText = await Report.GenerateTemplate(await GetLogoImage());
+            //string htmlText = await Report.GenerateTemplate(await GetLogoImage());
 
-            _logger.LogInformation($"Rpt Id: {ReportSchedulerData.Id}: {htmlText}");
+            //_logger.LogInformation($"Rpt Id: {ReportSchedulerData.Id}: {htmlText}");
 
             var objectSettings = new ObjectSettings
             {
                 PagesCount = true,
-                HtmlContent = htmlText,//WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css") },
+                HtmlContent = await Report.GenerateTemplate(await GetLogoImage()),
+                //WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css") },
                 HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
-                FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = ReportSchedulerData.ReportName, Spacing = 0 }
+                FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Left = $"Support: {ReportSingleton.GetInstance().GetDAFSupportEmailId()}", Spacing = 0 }
             };
 
             var pdf = new HtmlToPdfDocument()

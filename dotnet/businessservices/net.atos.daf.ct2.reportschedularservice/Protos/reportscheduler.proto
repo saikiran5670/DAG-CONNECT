@@ -60,6 +60,7 @@ message ReportTypeRequest
     string ReportName =  2;
     string Key = 3;
     string IsDriver =  4;
+    bool IsVehicle =5;
 }
 message DriverDetailRequest
 {

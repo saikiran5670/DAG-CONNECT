@@ -122,8 +122,14 @@ namespace net.atos.daf.ct2.reports.entity
     }
     public enum RankingColor
     {
-        RED,
-        GREEN,
-        AMBER
+        Red,
+        Green,
+        Amber
+    }
+    public enum LimitType
+    {
+        Min = 'N',
+        Max = 'X',
+        None = 'O'
     }
 }
