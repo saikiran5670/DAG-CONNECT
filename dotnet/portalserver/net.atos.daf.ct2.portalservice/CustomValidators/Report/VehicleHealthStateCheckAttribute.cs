@@ -14,12 +14,12 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Report
             var lstGroupId = (List<string>)value;
             foreach (string item in lstGroupId)
             {
-                switch (item.ToLower())
+                switch (item.ToUpper())
                 {
                     case "N":
                     case "V":
                     case "T":
-                    case "all":
+                    case "ALL":
                         valid = true;
                         break;
                     default:

@@ -17,9 +17,9 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Report
             {
                 switch (item.ToUpper())
                 {
-                    case "A":
-                    case "C":
-                    case "W":
+                    case "L":
+                    case "F":
+                    case "R":
                     case "ALL":
                         valid = true;
                         break;
