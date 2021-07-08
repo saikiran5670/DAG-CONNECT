@@ -65,12 +65,16 @@ export class DriverTimeDetailComponent implements OnInit {
   constructor(private reportMapService:ReportMapService) { }
 
   ngOnInit(): void {
-console.log(this.driverDetails)
+  //console.log(this.driverDetails)
     //this.setGeneralDriverValue();
-    this.setTableInfo();
     this.updateDataSource(this.detailConvertedData);
     this.setGraphData();
 
+  }
+
+  ngOnChanges(){
+    this.updateDataSource(this.detailConvertedData);
+    this.setGraphData();
   }
 
   setGraphData(){
@@ -166,9 +170,7 @@ console.log(this.driverDetails)
   selectedDriverId = '';
 
   tableInfoObj = {};
-  setTableInfo(){
-   
-  }
+ 
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
@@ -180,11 +182,11 @@ console.log(this.driverDetails)
   }
 
   public chartClicked({ event, active }: { event: MouseEvent, active: {}[] }): void {
-    console.log(event, active);
+    //console.log(event, active);
   }
 
   public chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
-    console.log(event, active);
+    //console.log(event, active);
   }
   
   applyFilter(filterValue: string) {

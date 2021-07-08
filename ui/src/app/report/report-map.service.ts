@@ -1032,33 +1032,37 @@ export class ReportMapService {
   }
 
   getDriverTimeDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
-    gridData.forEach(element => {
-      element.driverName = element.driverName;
-      element.driverId = element.driverId;
-      element.startTime = this.getStartTime(element.startTime, dateFormat, timeFormat, timeZone);
-      element.endTime = this.getEndTime(element.endTime, dateFormat, timeFormat, timeZone);
-      element.driveTime = this.getHhMmTime(element.driveTime);
-      element.workTime = this.getHhMmTime(element.workTime);
-      element.serviceTime = this.getHhMmTime(element.serviceTime);
-      element.restTime = this.getHhMmTime(element.restTime);
-      element.availableTime = this.getHhMmTime(element.availableTime);
-    });
+    //gridData.forEach(element => {
+      gridData.driverName = gridData.driverName;
+      gridData.driverId = gridData.driverId;
+      gridData.startTime = this.getStartTime(gridData.startTime, dateFormat, timeFormat, timeZone);
+      gridData.endTime = this.getEndTime(gridData.endTime, dateFormat, timeFormat, timeZone);
+      gridData.driveTime = this.getHhMmTime(gridData.driveTime);
+      gridData.workTime = this.getHhMmTime(gridData.workTime);
+      gridData.serviceTime = this.getHhMmTime(gridData.serviceTime);
+      gridData.restTime = this.getHhMmTime(gridData.restTime);
+      gridData.availableTime = this.getHhMmTime(gridData.availableTime);
+   // });
     return gridData;
   }
 
   
   getDriverDetailsTimeDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
+    let _gridData = [];
     gridData.forEach(element => {
-      element.driverName = element.driverName;
-      element.driverId = element.driverId;
-      element.activityDate= this.getStartTime(element.activityDate, dateFormat, timeFormat, timeZone,false);
-      element.driveTime = this.getHhMmTime(element.driveTime);
-      element.workTime = this.getHhMmTime(element.workTime);
-      element.serviceTime = this.getHhMmTime(element.serviceTime);
-      element.restTime = this.getHhMmTime(element.restTime);
-      element.availableTime = this.getHhMmTime(element.availableTime);
+      _gridData.push({
+        driverName : element.driverName,
+      driverId : element.driverId,
+      activityDate : this.getStartTime(element.activityDate, dateFormat, timeFormat, timeZone,false),
+      driveTime : this.getHhMmTime(element.driveTime),
+      workTime : this.getHhMmTime(element.workTime),
+      serviceTime : this.getHhMmTime(element.serviceTime),
+      restTime : this.getHhMmTime(element.restTime),
+      availableTime : this.getHhMmTime(element.availableTime),
+      })
+      
     });
-    return gridData;
+    return _gridData;
   }
   getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean){
     let sTime: any = 0;
