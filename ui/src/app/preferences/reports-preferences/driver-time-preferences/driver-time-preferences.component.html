@@ -5,9 +5,13 @@
         <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForAllDetailsColumns() : null'
             [checked]='selectionForAllDriver.hasValue() && isAllSelectedForAllDetailsColumns()'
             [indeterminate]='selectionForAllDriver.hasValue() && !isAllSelectedForAllDetailsColumns()'
-            [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
+            [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'>
+            <span class='headerFont'>{{
                 translationData.lblAllDetails || 'All Details' }} ({{
                 translationData.lblTablecolumnviewsettings || 'Table column view settings' }})</span>
+            <!-- <span class='headerFont'>{{
+                allDetailsData ? allDetailsData.translatedName : 'All Details' }} ({{
+                    translationData.lblTablecolumnviewsettings || 'Table column view settings' }})</span> -->
         </mat-checkbox>
     </div>
 </div>
@@ -97,10 +101,15 @@
 <div fxLayout="row" class='areaWidth full-width padding-10 tripReportPref margin-top-20' fxLayoutAlign="left center"
     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-       <span class='headerFont'>{{
-                translationData.lblAllDetails || 'Chart' }}
-        </span>
-        
+        <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForChartsColumns() : null'
+            [checked]='selectionForChart.hasValue() && isAllSelectedForAllChartsColumns()'
+            [indeterminate]='selectionForChart.hasValue() && !isAllSelectedForAllChartsColumns()'
+            [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'>
+            <span class='headerFont'>{{
+                translationData.lblChart|| 'Chart' }}</span>
+            <!-- <span class='headerFont'>{{
+                allChartsData > 0 ? allChartsData.translatedName : 'Chart' }}</span> -->
+        </mat-checkbox>
     </div>
 </div>
 <div fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
@@ -124,8 +133,11 @@
         <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForSpecificColumns() : null'
             [checked]='selectionForDriver.hasValue() && isAllSelectedForAllGeneralColumns()'
             [indeterminate]='selectionForDriver.hasValue() && !isAllSelectedForAllGeneralColumns()'
-            [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
+            [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'>
+            <span class='headerFont'>{{
                 translationData.lblByDriver|| 'By Driver' }}</span>
+            <!-- <span class='headerFont'>{{
+                allSpecificData ? allSpecificData.translatedName : 'By Driver' }}</span> -->
         </mat-checkbox>
     </div>
 </div>
@@ -141,7 +153,7 @@
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForDriver.toggle(specificDriverData[1]) : null; checkboxClicked($event, specificDriverData[0])'
+                (change)='$event ? selectionForDriver.toggle(specificDriverData[1]) : null; checkboxClicked($event, specificDriverData[1])'
                 [checked]="selectionForDriver.isSelected(specificDriverData[1])"
                 [aria-label]='checkboxLabelForColumns(specificDriverData[1])' class='custom-checkbox'><span>{{
                     specificDriverData.length > 0 ? specificDriverData[1].translatedName : 'Drive Time' }}</span>
@@ -151,7 +163,7 @@
     <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForDriver.toggle(specificDriverData[2]) : null; checkboxClicked($event, specificDriverData[0])'
+                (change)='$event ? selectionForDriver.toggle(specificDriverData[2]) : null; checkboxClicked($event, specificDriverData[2])'
                 [checked]="selectionForDriver.isSelected(specificDriverData[2])"
                 [aria-label]='checkboxLabelForColumns(specificDriverData[2])' class='custom-checkbox'><span>{{
                     specificDriverData.length > 0 ? specificDriverData[2].translatedName : 'Work Time' }}</span>
@@ -159,7 +171,7 @@
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForDriver.toggle(specificDriverData[3]) : null; checkboxClicked($event, specificDriverData[0])'
+                (change)='$event ? selectionForDriver.toggle(specificDriverData[3]) : null; checkboxClicked($event, specificDriverData[3])'
                 [checked]="selectionForDriver.isSelected(specificDriverData[3])"
                 [aria-label]='checkboxLabelForColumns(specificDriverData[3])' class='custom-checkbox'><span>{{
                     specificDriverData.length > 0 ? specificDriverData[3].translatedName : 'Available Time' }}</span>
@@ -169,7 +181,7 @@
     <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForDriver.toggle(specificDriverData[4]) : null; checkboxClicked($event, specificDriverData[0])'
+                (change)='$event ? selectionForDriver.toggle(specificDriverData[4]) : null; checkboxClicked($event, specificDriverData[4])'
                 [checked]="selectionForDriver.isSelected(specificDriverData[4])"
                 [aria-label]='checkboxLabelForColumns(specificDriverData[4])' class='custom-checkbox'><span>{{
                     specificDriverData.length > 0 ? specificDriverData[4].translatedName : 'Rest Time' }}</span>
@@ -177,7 +189,7 @@
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForDriver.toggle(specificDriverData[5]) : null; checkboxClicked($event, specificDriverData[0])'
+                (change)='$event ? selectionForDriver.toggle(specificDriverData[5]) : null; checkboxClicked($event, specificDriverData[5])'
                 [checked]="selectionForDriver.isSelected(specificDriverData[5])"
                 [aria-label]='checkboxLabelForColumns(specificDriverData[5])' class='custom-checkbox'><span>{{
                     specificDriverData.length > 0 ? specificDriverData[5].translatedName : 'Service Time' }}</span>
@@ -197,6 +209,6 @@
         translationData.lblCancel || 'Cancel' }}</button>
     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
         translationData.lblReset || 'Reset' }}</button>
-    <button class='no-margin' mat-raised-button
+    <button [disabled]='selectionForAllDriver.selected.length == 0 || selectionForChart.selected.length == 0 || selectionForDriver.selected.length == 0' class='no-margin' mat-raised-button
         color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm || 'Confirm') }}</button>
 </div>

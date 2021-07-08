@@ -18,7 +18,8 @@ namespace net.atos.daf.ct2.email.Entity
         public Guid? TokenSecret { get; set; }
         public int RemainingDaysToExpire { get; set; }
         public List<string> ReportTokens { get; set; }
-        public int MailRetryCount { get; set; } = 0;
+        public int MailRetryCount { get; set; } = 1;
         public string LanguageCode { get; set; }
+        public bool IsBcc { get; set; }
     }
 }

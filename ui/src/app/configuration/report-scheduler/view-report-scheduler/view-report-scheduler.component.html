@@ -8,7 +8,7 @@
         <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
     </div>
 </div>
-<div>
+<div class='margin-bottom-sm'>
   <mat-card class='mat-elevation-z'>
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
@@ -99,4 +99,61 @@
 
        </mat-card-content>
   </mat-card>
+</div>
+
+<div>
+    <mat-card class='mat-elevation-z'>
+        <mat-card-content>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblScheduledReportList || 'Scheduled Report List' }}
+                        <!-- ({{ dataSource.filteredData.length }}) -->
+                    </span>
+                </div>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+                <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                  <mat-form-field appearance="outline">
+                      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                      <span matPrefix><mat-icon>search</mat-icon></span>
+                  </mat-form-field>
+                </div>
+            </div>
+    <div *ngIf='scheduledReportList.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+        <div *ngIf='scheduledReportList.length > 0'>
+          <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort >
+            <ng-container matColumnDef="reportName">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblReportType || 'Report Type' }}</mat-header-cell>
+               <mat-cell *matCellDef="let row">
+                  <span>{{row.reportName}}</span>               
+                </mat-cell>  
+            </ng-container>
+            <ng-container matColumnDef="startDate">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFrom || 'From' }}</mat-header-cell>
+               <mat-cell *matCellDef="let row">
+                  <span>{{row.startDate}}</span>               
+                </mat-cell>  
+            </ng-container>
+            <ng-container matColumnDef="endDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTo || 'To' }}</mat-header-cell>
+                 <mat-cell *matCellDef="let row">
+                    <span>{{row.endDate}}</span>               
+                  </mat-cell>  
+              </ng-container>
+            <ng-container matColumnDef="action">
+              <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
+              <mat-cell *matCellDef="let row" class="action">
+                <button class='actionBtn' mat-flat-button (click)="onDownloadReport(row)" matTooltip="{{ translationData.lblDownload || 'Download' }}">
+                  <mat-icon>File Download</mat-icon>
+                </button>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;">
+            </mat-row>
+          </mat-table>
+          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
+        </div> 
+        </mat-card-content>
+      </mat-card>
 </div>

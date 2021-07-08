@@ -31,48 +31,77 @@ rpc GetFleetFuelDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetai
 rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetEcoScoreReportCompareDrivers (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
 rpc GetFleetOverviewDetails(FleetOverviewDetailsRequest) returns (FleetOverviewDetailsResponse);
-rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthStatusResponse);
+rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthStatusListResponse);
 rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
+rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 }
 
 message VehicleHealthReportRequest{
- string VIN = 1;
- int64 FromDate = 2;
- int64 ToDate = 3;
- string WarningType = 4;
+string VIN = 1;
+string TripId=2;
+int32 Days = 3;
+string WarningType = 4;
+string LngCode =5;
 }
 
-message VehicleSummary {
-    string VIN =1;
-    string VehicleName=2;
-    string VehicleRegNo = 3;
-    string DrivingStatus = 4;
-    int32 Alert = 5;
-    string Address = 6;
-    int64 FromDate = 7;
-    int64 ToDate = 8;
-    string WarningType = 9;
-    double LastLatitude = 10;
-    double LastLongitude = 11;
+message  VehicleHealthStatusResponse{
+string VehicleRegNo =1;
+string VehicleName =2;
+int32 Lcts_Id =3;
+string Lcts_TripId =4;
+string Lcts_Vin =5;
+int64 Lcts_TripStartTime =6;
+int64 Lcts_TripEndTime =7;
+string Lcts_Driver1Id =8;
+int32 Lcts_TripDistance =9;
+int32 Lcts_DrivingTime =10;
+int32 Lcts_FuelConsumption =11;
+string Lcts_VehicleDrivingStatus_type =12;
+int64 Lcts_OdometerVal =13;
+int64 Lcts_DistanceUntilNextService =14;
+double Lcts_LatestReceivedPositionLattitude =15;
+double Lcts_LatestReceivedPositionLongitude =16;
+double Lcts_LatestReceivedPositionHeading =17;
+int32 Lcts_LatestGeolocationAddressId =18;
+double Lcts_StartPositionLattitude =19;
+double Lcts_StartPositionLongitude =20;
+double Lcts_StartPositionHeading =21;
+int32 Lcts_StartGeolocationAddressId =22;
+int64 Lcts_LatestProcessedMessageTimestamp =23;
+string Lcts_VehicleHealthStatusType =24;
+int32 Lcts_LatestWrningClass =25;
+int32 Lcts_LatestWarningNumber =26;
+string Lcts_LatestWarningType =27;
+int64 Lcts_LatestWarningTimestamp =28;
+double Lcts_LatestWarningPositionLatitude =29;
+double Lcts_LatestWarningPositionLongitude =30;
+int32 Lcts_LatestWarningGeolocationAddressId =31;
+string Lcts_Address =32;
+int32 WarningId =33;
+string DriverName =34;
+string WarningTripId =35;
+string WarningVin =36;
+int64 WarningTimetamp =37;
+int32 WarningClass =38;
+int32 WarningNumber =39;
+double WarningLat =40;
+double WarningLng =41;
+double WarningHeading =42;
+string WarningVehicleHealthStatusType =43;
+string WarningVehicleDrivingStatusType =44;
+string WarningDrivingId =45;
+string WarningType =46;
+int64 WarningDistanceUntilNectService =47;
+int64 WarningOdometerVal =48;
+int64 WarningLatestProcessedMessageTimestamp =49;
+string WarningName = 50;//from dtcwarning table
+string WarningAdvice =51;
 }
 
-message  VehicleHealthWarning{
-    string WarningName =1;
-    string ActivatedTime=2;
-    string DeactivatedTime = 3;
-    string DriverName = 4;
-    string Advice = 5;
-    string VehicleName = 6;
-    double Latitude = 10;
-    double Longitude = 11;
-}
-
-message VehicleHealthStatusResponse{
-repeated VehicleSummary Summary = 1;
-repeated VehicleHealthWarning CurrentWarning= 2;
-repeated VehicleHealthWarning HistoryWarning= 3;
-Responsecode Code = 4;
-string Message = 5; 
+message VehicleHealthStatusListResponse{
+repeated VehicleHealthStatusResponse healthStatus =1;
+Responsecode Code = 2;
+string Message = 3;
 }
 
 enum Responsecode{
@@ -147,6 +176,7 @@ message GetReportUserPreferenceResponse {
     ReportUserPreference UserPreference = 1;
     Responsecode Code = 2;
     string Message = 3;
+    int32 TargetProfileId=4;
 }
 
 message ReportUserPreference{

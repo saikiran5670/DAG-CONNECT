@@ -13,26 +13,13 @@ namespace net.atos.daf.ct2.reports.test
         [Timeout(TestTimeout.Infinite)]
         public async Task GetVehicleHealthStatus_Test()
         {
-            var vehicleHealthStatusRequest = new VehicleHealthStatusRequest() { VIN = "XLRAS47MS0E808080" };
+            var vehicleHealthStatusRequest = new VehicleHealthStatusRequest()
+            {
+                VIN = "XLR0998HGFFT76657",
+                //TripId = "52a0f631-4077-42f9-b999-cb21c6309c71",
+                Days = 90
+            };
             var result = await _reportRepository.GetVehicleHealthStatus(vehicleHealthStatusRequest);
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        [Timeout(TestTimeout.Infinite)]
-        public async Task GetCurrentWarnning_Test()
-        {
-            var vehicleHealthStatusRequest = new VehicleHealthStatusRequest() { VIN = "XLRAS47MS0E808080" };
-            var result = await _reportRepository.GetCurrentWarnning("XLRAS47MS0E808080");
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        [Timeout(TestTimeout.Infinite)]
-        public async Task GetHistoryWarnning_Test()
-        {
-            var vehicleHealthStatusRequest = new VehicleHealthStatusRequest() { VIN = "XLRAS47MS0E808080" };
-            var result = await _reportRepository.GetHistoryWarning(vehicleHealthStatusRequest);
             Assert.IsNotNull(result);
         }
 

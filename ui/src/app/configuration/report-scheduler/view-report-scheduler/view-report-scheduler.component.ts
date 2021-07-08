@@ -1,5 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { OrganizationService } from 'src/app/services/organization.service';
+import { ReportSchedulerService } from 'src/app/services/report.scheduler.service';
 import { TranslationService } from 'src/app/services/translation.service';
 import { Util } from 'src/app/shared/util';
 
@@ -30,11 +34,17 @@ export class ViewReportSchedulerComponent implements OnInit {
   localStLanguage: any;
   accountOrganizationId: any;
   languageCodeList: any;
+  displayedColumns= ['reportName', 'startDate', 'endDate', 'action'];
+  scheduledReportList: any= [];
+  dataSource: any; 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
   breadcumMsg: string= ""
 
   constructor(private translationService: TranslationService,
-              private organizationService: OrganizationService) { }
+              private organizationService: OrganizationService,
+              private reportSchedulerService: ReportSchedulerService) { }
 
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -45,6 +55,8 @@ export class ViewReportSchedulerComponent implements OnInit {
     this.weekdays= [{id : 0, value : 'Sunday'},{id : 1, value : 'Monday'},{id : 2, value : 'Tuesday'},{id : 3, value : 'Wednesday'},{id : 4, value : 'Thursday'},{id : 5, value : 'Friday'},{id : 6, value : 'Saturday'}];
     this.months= [{id : 0, value : 'January'},{id : 1, value : 'February'},{id : 2, value : 'March'},{id : 3, value : 'April'},{id : 4, value : 'May'},{id : 5, value : 'June'},
                   {id : 6, value : 'July'},{id : 7, value : 'August'},{id : 8, value : 'September'},{id : 9, value : 'October'},{id : 10, value : 'November'},{id : 11, value : 'December'}]
+
+    this.breadcumMsg= this.getBreadcum();
 
     this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
       if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
@@ -68,8 +80,44 @@ export class ViewReportSchedulerComponent implements OnInit {
     this.vehicleGroupName= this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? "ALL" : (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.selectedRowData[0].scheduledReportVehicleRef[0].vehicleGroupName)
     this.vehicleName= this.selectedRowData[0].vehicleGroupAndVehicleList != "" ? "ALL" : (this.selectedRowData[0].scheduledReportVehicleRef.length == 0 ? "ALL" : this.selectedRowData[0].scheduledReportVehicleRef[0].vin)
 
-    this.getBreadcum();
+    this.scheduledReportList= this.selectedRowData[0].scheduledReport;
+    this.scheduledReportList.forEach(element => {
+      element.reportName=this.selectedRowData[0].reportName;
+      element.startDate= Util.convertUtcToDateFormat(element.startDate, this.prefDateFormat+"  hh:mm:ss")
+    });
+
+  //  this.onDownloadReport({reportName : "Trip Report", id : 121, startDate : "07/07/2021 12:0:0"});
     
+  }
+
+  updateDatasource(data){
+    this.scheduledReportList = data;
+   
+    this.dataSource = new MatTableDataSource(this.scheduledReportList);
+    // this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+    //   return (
+    //     data.reportName.toString().toLowerCase().includes(filter) ||
+    //     data.recipientList.toString().toLowerCase().includes(filter) ||
+    //     data.driverList.toString().toLowerCase().includes(filter) ||
+    //     data.status.toString().toLowerCase().includes(filter) 
+    //   );
+    // };
+    setTimeout(()=>{
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    });
+  }
+
+  applyFilter(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+    this.dataSource.filter = filterValue;
+  }
+
+  pageSizeUpdated(_event){
+    setTimeout(() => {
+      document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
+    }, 100);
   }
 
   proceedStep(prefData: any, preference: any){
@@ -169,6 +217,25 @@ export class ViewReportSchedulerComponent implements OnInit {
       }
     }
     
+  }
+
+  onDownloadReport(row){
+    this.reportSchedulerService.downloadReport(row.id).subscribe(response => {
+      let arrayBuffer= response[0].description;
+      var base64File = btoa(
+        new Uint8Array(arrayBuffer)
+          .reduce((data, byte) => data + String.fromCharCode(byte), '')
+      );
+      const linkSource = 'data:application/pdf;base64,' + base64File;
+      const downloadLink = document.createElement("a");
+      const fileName = row.reportName+"_"+row.startDate+".pdf";
+
+      downloadLink.href = linkSource;
+      downloadLink.download = fileName;
+      downloadLink.click();
+    }, (error) => {
+      //this.downloadPDFErrorCode= error.status;
+    });
   }
 
 }
