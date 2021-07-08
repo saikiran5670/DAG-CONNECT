@@ -497,7 +497,12 @@ ngOnDestroy(){
           subCatUniq.forEach(elem => {
             let _subData = _data.filter(i => i.subCategoryId == elem && i.subCategoryId != 0);
             if (_subData.length > 0) { 
-            _subCatArr.push({ poiList: _subData, subCategoryName: _subData[0].subCategoryName, subCategoryId: _subData[0].subCategoryId }); 
+            _subCatArr.push({ 
+              poiList: _subData, 
+              subCategoryName: _subData[0].subCategoryName, 
+              subCategoryId: _subData[0].subCategoryId,
+              checked: false
+            }); 
             }
           });
         }
@@ -1045,7 +1050,16 @@ ngOnDestroy(){
     this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
   }
 
-  changeUserPOISelection(event: any, poiData: any){
+  changeUserPOISelection(event: any, poiData: any, index: any){
+    if (event.checked){
+      this.userPOIList[index].subCategoryPOIList.forEach(element => {
+        element.checked = true;
+      });
+    }else{
+      this.userPOIList[index].subCategoryPOIList.forEach(element => {
+        element.checked = false;
+      });
+    }
     this.displayPOIList = [];
     this.selectedPOI.selected.forEach(item => {
       if(item.poiList && item.poiList.length > 0){
@@ -1112,7 +1126,7 @@ ngOnDestroy(){
   }
 
   changeSubCategory(event: any, subCatPOI: any){
-    console.log(event, subCatPOI)
+    console.log(event, subCatPOI);
   }
 
 }

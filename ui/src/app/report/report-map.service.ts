@@ -299,21 +299,21 @@ export class ReportMapService {
       this.showCategoryPOI(_displayPOIList, _ui); //-- show category POi
     }
     if(_selectedRoutes && _selectedRoutes.length > 0){
-      for(var i in _selectedRoutes){
-        this.startAddressPositionLat = _selectedRoutes[i].startPositionLattitude;
-        this.startAddressPositionLong = _selectedRoutes[i].startPositionLongitude;
-        this.endAddressPositionLat= _selectedRoutes[i].endPositionLattitude;
-        this.endAddressPositionLong= _selectedRoutes[i].endPositionLongitude;
+      _selectedRoutes.forEach(elem => {
+        this.startAddressPositionLat = elem.startPositionLattitude;
+        this.startAddressPositionLong = elem.startPositionLongitude;
+        this.endAddressPositionLat= elem.endPositionLattitude;
+        this.endAddressPositionLong= elem.endPositionLongitude;
         this.corridorWidth = 1000; //- hard coded
         this.corridorWidthKm = this.corridorWidth/1000;
         let houseMarker = this.createHomeMarker();
         let markerSize = { w: 26, h: 32 };
         const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-        this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong},{icon:icon});
+        this.startMarker = new H.map.Marker({ lat:this.startAddressPositionLat, lng:this.startAddressPositionLong },{ icon:icon });
         let endMarker = this.createEndMarker();
         const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-        this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:iconEnd});
-        this.group.addObjects([this.startMarker,this.endMarker]);
+        this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
+        this.group.addObjects([this.startMarker, this.endMarker]);
         var startBubble;
         this.startMarker.addEventListener('pointerenter', function (evt) {
           // event target is the marker itself, group is a parent event target
@@ -322,13 +322,13 @@ export class ReportMapService {
             // read custom data
             content:`<table style='width: 350px;'>
               <tr>
-                <td style='width: 100px;'>Start Location:</td> <td><b>${_selectedRoutes[i].startPosition}</b></td>
+                <td style='width: 100px;'>Start Location:</td> <td><b>${elem.startPosition}</b></td>
               </tr>
               <tr>
-                <td style='width: 100px;'>Start Date:</td> <td><b>${_selectedRoutes[i].convertedStartTime}</b></td>
+                <td style='width: 100px;'>Start Date:</td> <td><b>${elem.convertedStartTime}</b></td>
               </tr>
               <tr>
-                <td style='width: 100px;'>Total Alerts:</td> <td><b>${_selectedRoutes[i].alert}</b></td>
+                <td style='width: 100px;'>Total Alerts:</td> <td><b>${elem.alert}</b></td>
               </tr>
             </table>`
           });
@@ -347,13 +347,13 @@ export class ReportMapService {
             // read custom data
             content:`<table style='width: 350px;'>
               <tr>
-                <td style='width: 100px;'>End Location:</td> <td><b>${_selectedRoutes[i].endPosition}</b></td>
+                <td style='width: 100px;'>End Location:</td> <td><b>${elem.endPosition}</b></td>
               </tr>
               <tr>
-                <td style='width: 100px;'>End Date:</td> <td><b>${_selectedRoutes[i].convertedEndTime}</b></td>
+                <td style='width: 100px;'>End Date:</td> <td><b>${elem.convertedEndTime}</b></td>
               </tr>
               <tr>
-                <td style='width: 100px;'>Total Alerts:</td> <td><b>${_selectedRoutes[i].alert}</b></td>
+                <td style='width: 100px;'>Total Alerts:</td> <td><b>${elem.alert}</b></td>
               </tr>
             </table>`
           });
@@ -365,8 +365,8 @@ export class ReportMapService {
         }, false);
 
         //this.calculateAtoB(trackType);
-        if(_selectedRoutes[i].liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
-          let liveFleetPoints: any = _selectedRoutes[i].liveFleetPosition;
+        if(elem.liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
+          let liveFleetPoints: any = elem.liveFleetPosition;
           liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
           if(_displayRouteView == 'C'){ // classic route
             let blueColorCode: any = '#436ddc';
@@ -380,7 +380,7 @@ export class ReportMapService {
         }
         this.hereMap.addObject(this.group);
         this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
-      }
+      });
       this.makeCluster(_selectedRoutes, _ui);
     }else{
       if(_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)){
