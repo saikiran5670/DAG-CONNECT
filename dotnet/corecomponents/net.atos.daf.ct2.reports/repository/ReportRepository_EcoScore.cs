@@ -114,7 +114,7 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
                 string query = @"select id as ProfileId, organization_id as OrganizationID, name as ProfileName, description as ProfileDescription,
-                                 case when default_es_version_type is null then 'TRUE' ELSE 'FALSE' end as IsDeleteAllowed
+                                 default_es_version_type as Type
                                  from master.ecoscoreprofile
                                  where state='A' and (organization_id is null or organization_id = @organization_id)
                                  order by default_es_version_type asc, organization_id desc, name";
@@ -149,8 +149,12 @@ namespace net.atos.daf.ct2.reports.repository
             objProfile.Id = profile.profileid;
             objProfile.Name = profile.profilename;
             objProfile.Description = profile.profiledescription;
-            objProfile.IsDeleteAllowed = Convert.ToBoolean(profile.isdeleteallowed);
             objProfile.OrganizationId = profile.organizationid;
+            if (profile.type is null)
+                objProfile.Type = ProfileType.None;
+            else
+                objProfile.Type = (ProfileType)Convert.ToChar(profile.type);
+
             return objProfile;
         }
 

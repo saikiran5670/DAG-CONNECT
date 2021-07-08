@@ -45,34 +45,34 @@ namespace net.atos.daf.ct2.reports.repository
                          v.registration_no as VehicleRegNo
                         ,v.name as VehicleName
                         ,cts.id as Lcts_Id
-                        ,cts.trip_id as Lcts_TripId
-                        ,cts.vin as Lcts_Vin
-                        ,cts.start_time_stamp as Lcts_TripStartTime
-                        ,cts.end_time_stamp as Lcts_TripEndTime
-                        ,cts.driver1_id as Lcts_Driver1Id
-                        ,cts.trip_distance as Lcts_TripDistance
-                        ,cts.driving_time as Lcts_DrivingTime
-                        ,cts.fuel_consumption as Lcts_FuelConsumption
-                        , cts.vehicle_driving_status_type as Lcts_VehicleDrivingStatus_type
-                        ,cts.odometer_val as Lcts_OdometerVal
-                        ,cts.distance_until_next_service as Lcts_DistanceUntilNextService
-                        ,cts.latest_received_position_lattitude as Lcts_LatestReceivedPositionLattitude
-                        ,cts.latest_received_position_longitude as Lcts_LatestReceivedPositionLongitude
-                        ,cts.latest_received_position_heading as Lcts_LatestReceivedPositionHeading
-                        ,cts.latest_geolocation_address_id as Lcts_LatestGeolocationAddressId
-                        ,cts.start_position_lattitude as Lcts_StartPositionLattitude
-                        ,cts.start_position_longitude as Lcts_StartPositionLongitude
-                        ,cts.start_position_heading as Lcts_StartPositionHeading
-                        ,cts.start_geolocation_address_id as Lcts_StartGeolocationAddressId
-                        ,cts.latest_processed_message_time_stamp as Lcts_LatestProcessedMessageTimestamp
-                        ,cts.vehicle_health_status_type as Lcts_VehicleHealthStatusType
-                        ,cts.latest_warning_class as Lcts_LatestWarningClass
-                        ,cts.latest_warning_number as Lcts_LatestWarningNumber
-                        ,cts.latest_warning_type as Lcts_LatestWarningType
-                        ,cts.latest_warning_timestamp as Lcts_LatestWarningTimestamp
-                        ,cts.latest_warning_position_latitude as Lcts_LatestWarningPositionLatitude
-                        ,cts.latest_warning_position_longitude as Lcts_LatestWarningPositionLongitude
-                        ,cts.latest_warning_geolocation_address_id as Lcts_LatestWarningGeolocationAddressId
+                        ,cts.trip_id as LctsTripId
+                        ,cts.vin as LctsVin
+                        ,cts.start_time_stamp as LctsTripStartTime
+                        ,cts.end_time_stamp as LctsTripEndTime
+                        ,cts.driver1_id as LctsDriver1Id
+                        ,cts.trip_distance as LctsTripDistance
+                        ,cts.driving_time as LctsDrivingTime
+                        ,cts.fuel_consumption as LctsFuelConsumption
+                        , cts.vehicle_driving_status_type as LctsVehicleDrivingStatustype
+                        ,cts.odometer_val as LctsOdometerVal
+                        ,cts.distance_until_next_service as LctsDistanceUntilNextService
+                        ,cts.latest_received_position_lattitude as LctsLatestReceivedPositionLattitude
+                        ,cts.latest_received_position_longitude as LctsLatestReceivedPositionLongitude
+                        ,cts.latest_received_position_heading as LctsLatestReceivedPositionHeading
+                        ,cts.latest_geolocation_address_id as LctsLatestGeolocationAddressId
+                        ,cts.start_position_lattitude as LctsStartPositionLattitude
+                        ,cts.start_position_longitude as LctsStartPositionLongitude
+                        ,cts.start_position_heading as LctsStartPositionHeading
+                        ,cts.start_geolocation_address_id as LctsStartGeolocationAddressId
+                        ,cts.latest_processed_message_time_stamp as LctsLatestProcessedMessageTimestamp
+                        ,cts.vehicle_health_status_type as LctsVehicleHealthStatusType
+                        ,cts.latest_warning_class as LctsLatestWarningClass
+                        ,cts.latest_warning_number as LctsLatestWarningNumber
+                        ,cts.latest_warning_type as LctsLatestWarningType
+                        ,cts.latest_warning_timestamp as LctsLatestWarningTimestamp
+                        ,cts.latest_warning_position_latitude as LctsLatestWarningPositionLatitude
+                        ,cts.latest_warning_position_longitude as LctsLatestWarningPositionLongitude
+                        ,cts.latest_warning_geolocation_address_id as LctsLatestWarningGeolocationAddressId
                         , latgeoadd.Address as Lcts_Address
                                        FROM livefleet.livefleet_current_trip_statistics cts
                                        inner join master.vehicle V on cts.vin = v.vin
@@ -114,10 +114,10 @@ namespace net.atos.daf.ct2.reports.repository
                         , lws.odometer_val as WarningOdometerVal
                         ,lws.lastest_processed_message_time_stamp as WarningLatestProcessedMessageTimestamp
                            FROM  HealthSummary hs  inner join livefleet.livefleet_warning_statistics lws
-                           on hs.Lcts_Vin= lws.vin
+                           on hs.LctsVin= lws.vin
                           inner join master.driver dri on lws.driver1_id=dri.driver_id 
                           where lws.vin =@vin  and ((@tripId <> '' and lws.trip_id=@tripId) OR (@tripId=''))  
-                          and (hs.Lcts_TripStartTime > (extract(epoch from (now()::date - @days ))*1000) or hs.Lcts_TripEndTime is null)";
+                          and (hs.LctsTripStartTime > (extract(epoch from (now()::date - @days ))*1000) or hs.LctsTripEndTime is null)";
             //   )
 
             //  select distinct * from WarningData
@@ -129,7 +129,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                 query += " and lws.warning_type = @warningtype ";
             }
-            else if (string.IsNullOrEmpty(vehicleHealthStatusRequest.WarningType) || vehicleHealthStatusRequest.WarningType == "All")
+            else if (string.IsNullOrEmpty(vehicleHealthStatusRequest.WarningType))
             {
 
                 query += " and lws.warning_type in ('A','D') ";
