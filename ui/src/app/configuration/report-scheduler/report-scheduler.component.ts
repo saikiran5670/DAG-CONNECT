@@ -139,6 +139,8 @@ export class ReportSchedulerComponent implements OnInit {
    loadScheduledReports(){    
      this.showLoadingIndicator = true;
      this.reportSchedulerService.getReportSchedulerData(this.accountId, this.accountOrganizationId).subscribe((data) => {
+       this.reportTypeSelection= 0;
+       this.statusSelection= 0;
        this.schedulerData =this.makeLists(data["reportSchedulerRequest"]);  
        this.updateDatasource(this.schedulerData);  
 
