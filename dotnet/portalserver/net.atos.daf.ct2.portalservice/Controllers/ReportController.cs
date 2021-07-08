@@ -1036,12 +1036,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Vehicle Health Summary
         [HttpGet]
-        [Route("getvehiclesummary")]
+        [Route("getvehiclehealthstatus")]
         public async Task<IActionResult> GetVehicleHealthReport([FromQuery] Entity.Report.VehicleHealthStatusRequest request)
         {
             try
             {
-                if (request.FromDate > request.ToDate) { return BadRequest(ReportConstants.VALIDATION_MSG_FROMDATE); }
+                //if (request.FromDate > request.ToDate) { return BadRequest(ReportConstants.VALIDATION_MSG_FROMDATE); }
 
                 string filters = JsonConvert.SerializeObject(request);
                 net.atos.daf.ct2.reportservice.VehicleHealthReportRequest objVehicleHealthStatusRequest = JsonConvert.DeserializeObject<VehicleHealthReportRequest>(filters);

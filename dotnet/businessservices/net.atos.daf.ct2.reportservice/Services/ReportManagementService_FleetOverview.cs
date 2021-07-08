@@ -160,17 +160,23 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
-                _logger.Info("Get GetVehicleHealthReport Called");
+                _logger.Info("Get GetVehicleHealthStatusReport Called");
                 reports.entity.VehicleHealthStatusRequest objVehicleHealthStatusRequest = new reports.entity.VehicleHealthStatusRequest
                 {
-                    VIN = request.VIN
+                    VIN = request.VIN,
+                    Days = !string.IsNullOrEmpty(request.TripId) ? 1 : 90,
+                    LngCode = request.LngCode ?? string.Empty,
+                    WarningType = request.WarningType ?? string.Empty,
+                    TripId = request.TripId ?? string.Empty
                 };
                 reports.entity.VehicleHealthResult objVehicleHealthStatus = new ReportComponent.entity.VehicleHealthResult();
                 var result = await _reportManager.GetVehicleHealthStatus(objVehicleHealthStatusRequest);
                 VehicleHealthStatusListResponse response = new VehicleHealthStatusListResponse();
                 if (result != null)
                 {
-                    // string res = JsonConvert.SerializeObject(result.CurrentWarning);
+                    string res = JsonConvert.SerializeObject(result);
+                    response.HealthStatus.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleHealthStatusResponse>>(res,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
                     response.Code = Responsecode.Success;
                     response.Message = Responsecode.Success.ToString();
                 }
