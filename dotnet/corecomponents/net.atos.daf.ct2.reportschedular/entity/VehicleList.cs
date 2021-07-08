@@ -14,9 +14,6 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 
         public int Id { get; set; }
 
-    }
-    public class VehicleListByGroup : VehicleList
-    {
         public int VehicleGroupId { get; set; }
 
         public string VehicleGroupName { get; set; }

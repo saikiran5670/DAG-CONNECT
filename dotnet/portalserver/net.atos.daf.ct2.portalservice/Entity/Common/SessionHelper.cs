@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using log4net;
 using Microsoft.AspNetCore.Http;
+using net.atos.daf.ct2.portalservice.Entity.Common;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
@@ -39,6 +40,10 @@ namespace net.atos.daf.ct2.portalservice.Common
                     {
                         headerObj.ContextOrgId = session.GetInt32(SessionConstants.ContextOrgKey).Value;
                     }
+                    //if (session.Keys.Any(x => x.Equals(SessionConstants.FeaturesKey)))
+                    //{
+                    //    headerObj.UserFeatures = session.GetObject<string[]>(SessionConstants.FeaturesKey);
+                    //}
 
                     _logger.Info(headerObj.ToString() + $"\nSession Id - { session.Id }");
                 }

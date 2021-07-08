@@ -15,7 +15,8 @@
         PasswordExpiryNotification = 4,
         ScheduledReportEmail = 5,
         //Below EventTypes are for Report Creation
-        TripReport = 6
+        TripReport = 6,
+        FleetUtilisation = 7
         //End
     }
 }
