@@ -73,11 +73,12 @@
                         {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                     </mat-error>
             </div>
-            <div *ngIf="actionType != 'manage'" class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf="actionType != 'manage'" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label style='display: flex;'> 
-                    <mat-checkbox (change)='onChangeOption($event)'></mat-checkbox>  
                     <span>{{ translationData.lblCreateBasedOnExistingProfile || 'Create based on existing profile' }}</span>
                 </mat-label>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+                <mat-checkbox (change)='onChangeOption($event)'></mat-checkbox>  
                 <mat-form-field [disabled]="!isCreatedExistingProfile" appearance="outline" class="full-width">
                   <mat-select  [disabled]="!isCreatedExistingProfile" placeholder="{{ translationData.lblTestProfileSelection || 'Test Profile Selection' }}" (selectionChange)="profileSelectionDropDown($event.value)" >
                     <mat-option *ngFor="let options of profileList" [value]="options.profileId">
@@ -85,6 +86,7 @@
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
+                </div>
               </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">

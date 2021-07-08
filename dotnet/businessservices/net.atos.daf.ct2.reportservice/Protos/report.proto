@@ -409,6 +409,7 @@ message CreateEcoScoreProfileKPI {
   double TargetValue = 3;
   double LowerValue = 4;
   double UpperValue = 5;
+  string LimitType =6;
 }
 
 message CreateEcoScoreProfileResponse {

@@ -79,13 +79,10 @@ export class BreakingScoreComponent implements OnInit {
     let emitObj = {
       "kpiId": this.selectedElementData.ecoScoreKPIId,
       "limitType": this.selectedElementData.limitType ? this.selectedElementData.limitType : "N",
-      "limitValue":this.ecoScoreProfileKPIForm.controls.limitValue.value,
-      "targetValue":this.ecoScoreProfileKPIForm.controls.targetValue.value,
-      // "limitValue":this.ecoScoreProfileKPIForm.controls.lowerValue.value ,
-      // "targetValue":  this.ecoScoreProfileKPIForm.controls.upperValue.value,
-      
-      "lowerValue": this.ecoScoreProfileKPIForm.controls.lowerValue.value,
-      "upperValue": this.ecoScoreProfileKPIForm.controls.upperValue.value
+      "limitValue":this.ecoScoreProfileKPIForm.controls.limitValue.value ? this.ecoScoreProfileKPIForm.controls.limitValue.value : 0,
+      "targetValue":this.ecoScoreProfileKPIForm.controls.targetValue.value ? this.ecoScoreProfileKPIForm.controls.targetValue.value : 0,
+      "lowerValue": this.ecoScoreProfileKPIForm.controls.lowerValue.value ? this.ecoScoreProfileKPIForm.controls.lowerValue.value : 0,
+      "upperValue": this.ecoScoreProfileKPIForm.controls.upperValue.value ? this.ecoScoreProfileKPIForm.controls.upperValue.value : 0
     }
     this.createKPIEmit.emit(emitObj);
   }
