@@ -83,15 +83,18 @@ export class ViewReportSchedulerComponent implements OnInit {
     this.scheduledReportList= this.selectedRowData[0].scheduledReport;
     this.scheduledReportList.forEach(element => {
       element.reportName=this.selectedRowData[0].reportName;
-      element.startDate= Util.convertUtcToDateFormat(element.startDate, this.prefDateFormat+"  hh:mm:ss")
+      element.startDate= Util.convertUtcToDateFormat(element.startDate, this.prefDateFormat+"  hh:mm:ss");
+      element.endDate= Util.convertUtcToDateFormat(element.endDate, this.prefDateFormat+"  hh:mm:ss")
     });
 
-  //  this.onDownloadReport({reportName : "Trip Report", id : 121, startDate : "07/07/2021 12:0:0"});
+    this.updateDatasource();
+
+    // this.onDownloadReport({reportName : "Trip Report", scheduleReportId : 121, startDate : "07/07/2021 12:0:0"});
     
   }
 
-  updateDatasource(data){
-    this.scheduledReportList = data;
+  updateDatasource(){
+    // this.scheduledReportList = data;
    
     this.dataSource = new MatTableDataSource(this.scheduledReportList);
     // this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
@@ -182,8 +185,12 @@ export class ViewReportSchedulerComponent implements OnInit {
 
         // let end= Util.convertUtcToDateNoFormat(this.selectedRowData[0].endDate, this.prefTimeZone);
         // this.endDate= end.getHours()+":"+end.getMinutes()+":"+end.getSeconds();
-        this.startDate= "00:00:00";
-        this.endDate= "23:59:59";
+        this.startDate= new Date(this.selectedRowData[0].startDate);
+        this.startDate= this.startDate.getHours()+":"+this.startDate.getMinutes()+":"+this.startDate.getSeconds();
+        this.endDate= new Date(this.selectedRowData[0].endDate);
+        this.endDate= this.endDate.getHours()+":"+this.endDate.getMinutes()+":"+this.endDate.getSeconds();
+        // this.startDate= "00:00:00";
+        // this.endDate= "23:59:59";
         break;
       }
       case 'W' : {
@@ -220,8 +227,8 @@ export class ViewReportSchedulerComponent implements OnInit {
   }
 
   onDownloadReport(row){
-    this.reportSchedulerService.downloadReport(row.id).subscribe(response => {
-      let arrayBuffer= response[0].description;
+    this.reportSchedulerService.downloadReport(row.scheduleReportId).subscribe(response => {
+      let arrayBuffer= response["report"];
       var base64File = btoa(
         new Uint8Array(arrayBuffer)
           .reduce((data, byte) => data + String.fromCharCode(byte), '')

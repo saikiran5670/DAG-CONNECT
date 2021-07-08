@@ -319,6 +319,56 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
+        public async Task<List<FleetFuel_VehicleGraph>> GetFleetFuelDetailsForDriverGraphs(FleetFuelFilter fleetFuelFilters)
+        {
+            try
+            {
+                var parameterOfFilters = new DynamicParameters();
+                parameterOfFilters.Add("@FromDate", fleetFuelFilters.StartDateTime);
+                parameterOfFilters.Add("@ToDate", fleetFuelFilters.EndDateTime);
+                parameterOfFilters.Add("@Vins", fleetFuelFilters.VINs);
+
+                string query = @"WITH cte_workingdays AS(
+                        select
+                        date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
+                        count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
+						Count(distinct v.vin) as vehiclecount,
+						Count(distinct trip_id) as tripcount,
+                        sum(etl_gps_distance) as totaldistance,
+                        sum(idle_duration) as totalidleduration,
+						sum(fuel_consumption) as fuelconsumption,
+						sum(co2_emission) as co2emission						
+                        FROM tripdetail.trip_statistics CT
+						Join master.vehicle v
+						on CT.vin = v.vin
+                        where (start_time_stamp >= @FromDate 
+							   and end_time_stamp<= @ToDate) 
+						and CT.vin=ANY(@vins)
+                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))                     
+                        )
+                        select
+                        '' as VIN,
+                        startdate,
+						extract(epoch from startdate) * 1000 as Date,
+                       	totalworkingdays,
+						vehiclecount,
+                        tripcount as NumberofTrips,
+                        CAST((totaldistance / totalworkingdays) as float) as Distance,
+                        CAST((totalidleduration / totalworkingdays) as float) as IdleDuration ,
+                        CAST((fuelconsumption / totalworkingdays) as float) as FuelConsumtion ,
+                        CAST((co2emission / totalworkingdays) as float) as Co2Emission 
+                        --CAST((totalaverageweightperprip / totalworkingdays) as float) as Averageweight
+                        from cte_workingdays";
+                List<FleetFuel_VehicleGraph> lstFleetDetails = (List<FleetFuel_VehicleGraph>)await _dataMartdataAccess.QueryAsync<FleetFuel_VehicleGraph>(query, parameterOfFilters);
+                return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuel_VehicleGraph>();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters)
         {
             try
@@ -381,6 +431,8 @@ namespace net.atos.daf.ct2.reports.repository
                 string queryFleetUtilization = @"SELECT 
                                                 TS.vin
                                                 ,VH.name AS Name
+                                                ,DR.driver_id AS DriverID
+												,DR.first_name || ' ' ||DR.last_name as DriverName
                                                 ,VH.registration_no AS RegistrationNo
                                                 ,count(TS.trip_id) as numberoftrips
                                                 ,SUM(TS.etl_gps_trip_time) as etl_gps_trip_time
@@ -406,9 +458,10 @@ namespace net.atos.daf.ct2.reports.repository
                                                 ,round(sum (TS.dpa_score),2) As DPAScore                                                                                          
                                                 FROM 
                                                 tripdetail.trip_statistics TS
-                                                left join master.vehicle VH on TS.vin=VH.vin       
+                                                left join master.vehicle VH on TS.vin=VH.vin
+                                                left join master.driver DR on TS.driver1_id=DR.driver_id
                                                 where TS.vin =ANY(@Vins) and (start_time_stamp >= @FromDate and end_time_stamp <= @ToDate)
-                                                GROUP by TS.VIN,date_trunc('day', to_timestamp(TS.start_time_stamp/1000)),VH.name ,VH.registration_no";
+                                                GROUP by TS.VIN,date_trunc('day', to_timestamp(TS.start_time_stamp/1000)),VH.name ,VH.registration_no,DR.driver_id,DR.first_name,DR.last_name";
 
 
 

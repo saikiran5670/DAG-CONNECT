@@ -66,6 +66,7 @@ export class ExistingTripsComponent implements OnInit {
   existingTripData: any = [];
   dataColValue: any = [];
   createEditStatus = false;
+  corridorDistance :any = 0;
   accountOrganizationId: any = 0;
   corridorCreatedMsg: any = '';
   covertedDateValue: any = [];
@@ -215,6 +216,11 @@ export class ExistingTripsComponent implements OnInit {
       startTime: ['', []],
       endTime: ['', []]
       // userGroupDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('label')
+      ]
     });
     let translationObj = {
       id: 0,
@@ -858,6 +864,7 @@ export class ExistingTripsComponent implements OnInit {
         "distance": items.distance,
         "nodePoints": [...this.internalNodePoints],
       }
+      this.corridorDistance= this.corridorDistance + items.distance;
       this.selectedTrips.push(createExistingTripObj)
     })
 
@@ -878,7 +885,7 @@ export class ExistingTripsComponent implements OnInit {
       "zipcode": "",
       "startLatitude": this.startAddressLatitudePoints[0],
       "startLongitude": this.startAddressLongitudePoints[0],
-      "distance": 0,
+      "distance": this.corridorDistance,
       "state": "",
       "existingTrips": [...this.selectedTrips]
     }

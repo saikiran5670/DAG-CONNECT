@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DinkToPdf;
@@ -24,10 +26,11 @@ namespace net.atos.daf.ct2.reportscheduler.report
         private readonly ILogger<ReportCreator> _logger;
         private readonly IConverter _generatePdf;
         private readonly IReportManager _reportManager;
-        private readonly IReportSchedulerRepository _reportSchedularRepository;
+        private readonly IReportSchedulerRepository _reportSchedulerRepository;
         private readonly IVisibilityManager _visibilityManager;
         private readonly ITemplateManager _templateManager;
         private readonly IUnitConversionManager _unitConversionManager;
+        private readonly IUnitManager _unitManager;
 
         public string ReportName { get; private set; }
         public string ReportKey { get; private set; }
@@ -39,14 +42,15 @@ namespace net.atos.daf.ct2.reportscheduler.report
                             IConverter generatePdf, IReportManager reportManager,
                              IReportSchedulerRepository reportSchedularRepository,
                              IVisibilityManager visibilityManager, ITemplateManager templateManager,
-                             IUnitConversionManager unitConversionManager, IConfiguration configuration)
+                             IUnitConversionManager unitConversionManager, IUnitManager unitManager, IConfiguration configuration)
         {
             _generatePdf = generatePdf;
             _reportManager = reportManager;
-            _reportSchedularRepository = reportSchedularRepository;
+            _reportSchedulerRepository = reportSchedularRepository;
             _visibilityManager = visibilityManager;
             _templateManager = templateManager;
             _unitConversionManager = unitConversionManager;
+            _unitManager = unitManager;
             ReportSingleton.GetInstance().SetDAFSupportEmailId(configuration["ReportCreationScheduler:DAFSupportEmailId"] ?? string.Empty);
             _logger = logger;
         }
@@ -63,16 +67,37 @@ namespace net.atos.daf.ct2.reportscheduler.report
         private IReport InitializeReport(string reportKey) =>
         reportKey switch
         {
-            ReportNameConstants.REPORT_TRIP => new TripReport(_reportManager, _reportSchedularRepository, _visibilityManager,
+            ReportNameConstants.REPORT_TRIP => new TripReport(_reportManager, _reportSchedulerRepository, _visibilityManager,
                                                               _templateManager, _unitConversionManager, EmailEventType.TripReport, EmailContentType.Html),
-            ReportNameConstants.REPORT_TRIP_TRACING => null,
+            ReportNameConstants.REPORT_TRIP_TRACING => new FleetUtilisation(_reportManager, _reportSchedulerRepository, _visibilityManager,
+                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetUtilisation, EmailContentType.Html),
             _ => throw new ArgumentException(message: "invalid Report Key value", paramName: nameof(reportKey)),
         };
 
         public async Task<bool> GenerateReport()
         {
             if (!IsAllParameterSet) throw new Exception("Report Creation all Parameters are not set.");
-            await Report.SetParameters(ReportSchedulerData);
+
+            Report.SetParameters(ReportSchedulerData, await GetVehicleDetails());
+            var pdf = await GetHtmlToPdfDocument();
+            //var pdf123 = _generatePdf.Convert(pdf);
+            return await _reportSchedulerRepository
+                            .InsertReportPDF(new ScheduledReport
+                            {
+                                Report = _generatePdf.Convert(pdf),
+                                ScheduleReportId = ReportSchedulerData.Id,
+                                StartDate = ReportSchedulerData.StartDate,
+                                EndDate = ReportSchedulerData.EndDate,
+                                Token = Guid.NewGuid(),
+                                FileName = $"{ReportSchedulerData.ReportName}_{ReportSchedulerData.Id}_{DateTime.Now.ToString("ddMMyyyyHHmmss")}",
+                                CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now),
+                                ValidTill = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMonths(3)),
+                                IsMailSend = false
+                            }) > 0;
+        }
+
+        private async Task<HtmlToPdfDocument> GetHtmlToPdfDocument()
+        {
             var globalSettings = new GlobalSettings
             {
                 ColorMode = ColorMode.Color,
@@ -99,25 +124,51 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 GlobalSettings = globalSettings,
                 Objects = { objectSettings }
             };
-            //var pdf123 = _generatePdf.Convert(pdf);
-            return await _reportSchedularRepository
-                            .InsertReportPDF(new ScheduledReport
-                            {
-                                Report = _generatePdf.Convert(pdf),
-                                ScheduleReportId = ReportSchedulerData.Id,
-                                StartDate = ReportSchedulerData.StartDate,
-                                EndDate = ReportSchedulerData.EndDate,
-                                Token = Guid.NewGuid(),
-                                FileName = $"{ReportSchedulerData.ReportName}_{ReportSchedulerData.Id}_{DateTime.Now.ToString("ddMMyyyyHHmmss")}",
-                                CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now),
-                                ValidTill = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMonths(3)),
-                                IsMailSend = false
-                            }) > 0;
+            return pdf;
+        }
+
+        private async Task<IEnumerable<VehicleList>> GetVehicleDetails()
+        {
+            List<VehicleList> vehicleList = new List<VehicleList>();
+            if (ReportKey == ReportNameConstants.REPORT_TRIP)
+            {
+                vehicleList.Add(await _reportSchedulerRepository.GetVehicleListForSingle(ReportSchedulerData.Id));
+            }
+            else
+            {
+                vehicleList.AddRange(await _reportSchedulerRepository.GetVehicleList(ReportSchedulerData.Id));
+            }
+
+            if (vehicleList == null || vehicleList.Count == 0)
+            {
+                throw new Exception(TripReportConstants.NO_VEHICLE_MSG);
+            }
+            var vinData = string.Join(',', vehicleList.Select(s => s.VIN).ToArray());
+            var vehicleAssociationList = await _visibilityManager.GetVehicleByAccountVisibility(ReportSchedulerData.CreatedBy, ReportSchedulerData.OrganizationId);
+            if (vehicleAssociationList == null || vehicleAssociationList.Count() == 0)
+            {
+                throw new Exception(TripReportConstants.NO_ASSOCIATION_MSG);
+            }
+            var removeVehicleList = new List<int>();
+            foreach (var item in vehicleList)
+            {
+                if (!vehicleAssociationList.Any(w => w.VehicleId == item.Id))
+                {
+                    removeVehicleList.Add(item.Id);
+                }
+            }
+            vehicleList.RemoveAll(p => removeVehicleList.Contains(p.Id));
+            if (vehicleList.Count == 0)
+            {
+                throw new Exception(string.Format(TripReportConstants.NO_VEHICLE_ASSOCIATION_MSG, vinData));
+            }
+
+            return vehicleList;
         }
 
         private async Task<byte[]> GetLogoImage()
         {
-            var reportLogo = await _reportSchedularRepository.GetReportLogo(ReportSchedulerData.CreatedBy);
+            var reportLogo = await _reportSchedulerRepository.GetReportLogo(ReportSchedulerData.CreatedBy);
             return reportLogo?.Image;
         }
     }

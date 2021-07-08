@@ -32,6 +32,10 @@ namespace net.atos.daf.ct2.reports.entity
         public int IdlingConsumption { get; set; }
         public string IdlingConsumptionValue { get; set; } = string.Empty;
         public double DPAScore { get; set; }
+
+        public string DriverID { get; set; }
+        public string DriverName { get; set; }
+
         //public string DPAAnticipationScore { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
         //public string DPABrakingScore { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
         //public string IdlingPTOScore { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
