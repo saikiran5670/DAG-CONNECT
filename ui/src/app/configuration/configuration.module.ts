@@ -39,6 +39,7 @@ import { VehicleDetailsComponent } from './vehicle-management/vehicle-details/ve
 import { EcoScoreProfileManagementComponent } from './eco-score-profile-management/eco-score-profile-management.component';
 import { CreateEditReportSchedulerComponent } from './report-scheduler/create-edit-report-scheduler/create-edit-report-scheduler.component';
 import { ViewReportSchedulerComponent } from './report-scheduler/view-report-scheduler/view-report-scheduler.component';
+import { BreakingScoreComponent } from './eco-score-profile-management/breaking-score/breaking-score.component';
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import { ViewReportSchedulerComponent } from './report-scheduler/view-report-sch
     VehicleDetailsComponent,
     EcoScoreProfileManagementComponent,
     ViewReportSchedulerComponent,
+    BreakingScoreComponent,
   ],
   imports: [
     CommonModule,

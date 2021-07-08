@@ -3,59 +3,58 @@ import { TranslationService } from '../../services/translation.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../shared/custom.validators';
 import { ReportService } from 'src/app/services/report.service';
-import { Options } from '@angular-slider/ngx-slider'; 
 
 @Component({
   selector: 'app-eco-score-profile-management',
   templateUrl: './eco-score-profile-management.component.html',
   styleUrls: ['./eco-score-profile-management.component.less']
 })
+
 export class EcoScoreProfileManagementComponent implements OnInit {
   localStLanguage: any;
   breadcumMsg: any = '';   
   actionType: any = "manage";
   ecoScoreProfileForm: FormGroup;
-  ecoScoreProfileKPIForm: FormGroup;
   translationData: any = {};
   profileList: any = [];
   kpiData: any = [];
+  brakingScoreKpiData: any = [];
+  harshBrakingScoreKpiData: any = [];
+  harshBrakeDurationKpiData: any = [];
+  brakeKpiData: any = [];
+  brakeDurationKpiData: any = [];
+  anticipationKpiData: any = [];
+  otherWtKpiData:any = [];
+  otherDistanceKpiData:any = [];
+  fuelConsumption:any = [];
+  cruiseControlUsage:any = [];
+  cruiseControlUsage30_50:any = [];
+  cruiseControlUsage50_75:any = [];
+  cruiseControlUsageGreaterThan75:any = [];
+  PTOUsage:any = [];
+  PTODuration:any = [];
+  averageDrivingSpeed:any = [];
+  averageSpeed:any = [];
+  heavyThrottling:any = [];
+  heavyThrottleDuration:any = [];
+  idling:any = [];
+  idleDuration:any = [];
+  changedKPIData: any = [];
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   selectedElementData: any;
   selectedProfile: any = "";
   isDAFStandard: boolean = false;
   isCreatedExistingProfile: boolean = false;
-  isEcoScore: boolean = true;
+  isCreate: boolean = false;
+  isEcoScore: boolean = false;
+  isFuelConsumption: boolean = false;
+  isOther: boolean = false;
+  isAnticipation: boolean = false;
+  isBrakingScore: boolean = false;
   sectionTitle: any = ''
-  minVal: any = 0;
-  maxVal: any = 0;
   isKPI: any = false;
   lastUpdated: any;
   updatedBy: any;
-
-// Slider implementation
-
-  title = 'ngx-slider';  
-  value: number = this.kpiData.limitValue;  
-  maxvalue: number = this.kpiData.targetValue;
-  options: Options = {  
-        floor: this.kpiData.lowerValue,  
-        ceil: this.kpiData.upperValue,
-        step: 10,  
-        showTicks: true,
-      //   getPointerColor: (value: number): string => {
-      //     if (value <= 3) {
-      //         return 'yellow';
-      //     }
-      //     if (value <= 6) {
-      //         return 'orange';
-      //     }
-      //     if (value <= 9) {
-      //         return 'red';
-      //     }
-      //     return '#2AE02A';
-      // } 
-  };  
-  sliderValue: any = 0;
 
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportService: ReportService) { }
 
@@ -86,12 +85,6 @@ export class EcoScoreProfileManagementComponent implements OnInit {
         CustomValidators.specialCharValidationForNameWithoutRequired('profileDescription')
       ]
     });
-    this.ecoScoreProfileKPIForm = this._formBuilder.group({
-      lowerValue: [''],
-      upperValue: [''],
-      limitValue: [''],
-      targetValue: ['']
-    });
     this.loadProfileData();
   }
 
@@ -110,54 +103,46 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     let details = []
     this.reportService.getEcoScoreProfileKPIs(id).subscribe((data: any) => {
       details = data["profile"];
-      this.sliderData(details);
+      this.SliderData(details);
+      
     })
   }
 
-  sliderData(data: any){
+  SliderData(data: any){
   this.lastUpdated = data[0].lastUpdate;
   this.updatedBy = data[0].updatedBy;
   this.kpiData = data[0].profileSection[0].profileKPIDetails[0];
-  this.value = this.kpiData.limitValue;
-  this.maxvalue =  this.kpiData.targetValue;
-  this.options.floor = this.kpiData.lowerValue;
-  this.options.ceil = this.kpiData.upperValue;
-  this.options.step = this.kpiData.upperValue/4 ,  
-  this.options.showTicks = true  
+
+  this.fuelConsumption = data[0].profileSection[1].profileKPIDetails[0];
+  this.cruiseControlUsage = data[0].profileSection[1].profileKPIDetails[1];
+  this.cruiseControlUsage30_50 = data[0].profileSection[1].profileKPIDetails[2];
+  this.cruiseControlUsage50_75 = data[0].profileSection[1].profileKPIDetails[3];
+  this.cruiseControlUsageGreaterThan75 = data[0].profileSection[1].profileKPIDetails[4];
+  this.PTOUsage = data[0].profileSection[1].profileKPIDetails[5];
+  this.PTODuration = data[0].profileSection[1].profileKPIDetails[6];
+  this.averageDrivingSpeed = data[0].profileSection[1].profileKPIDetails[7];
+  this.averageSpeed = data[0].profileSection[1].profileKPIDetails[8];
+  this.heavyThrottling = data[0].profileSection[1].profileKPIDetails[9];
+  this.heavyThrottleDuration = data[0].profileSection[1].profileKPIDetails[10];
+  this.idling = data[0].profileSection[1].profileKPIDetails[11];
+  this.idleDuration = data[0].profileSection[1].profileKPIDetails[12];
+  
+  this.brakingScoreKpiData = data[0].profileSection[2].profileKPIDetails[0];
+  this.harshBrakingScoreKpiData = data[0].profileSection[2].profileKPIDetails[1];
+  this.harshBrakeDurationKpiData = data[0].profileSection[2].profileKPIDetails[2];
+  this.brakeKpiData = data[0].profileSection[2].profileKPIDetails[3];
+  this.brakeDurationKpiData = data[0].profileSection[2].profileKPIDetails[4];
+
+  this.anticipationKpiData = data[0].profileSection[3].profileKPIDetails[0];
+
+  this.otherWtKpiData = data[0].profileSection[4].profileKPIDetails[0];
+  this.otherDistanceKpiData = data[0].profileSection[4].profileKPIDetails[1];
+  
 
   this.isKPI = true;
   this.setDefaultValue()
   }
 
-  sliderEvent(value: any){
-   this.ecoScoreProfileKPIForm.get("limitValue").setValue(value);
-  }
-
-  sliderEndEvent(endValue: any){
-  this.ecoScoreProfileKPIForm.get("targetValue").setValue(endValue);
-  }
-
-  changeMin(changedVal: any){
-   this.value = changedVal;
-  }
-
-  changeTarget(changedVal: any){
-  this.maxvalue = changedVal;
-  }
-
-  changeLower(changedVal: any){
-    // this.options.floor = changedVal;
-    const newOptions: Options = Object.assign({}, this.options);
-    newOptions.floor = changedVal;
-    this.options = newOptions;
-  }
-
-  changeUpper(changedVal: any){
-    const newOptions: Options = Object.assign({}, this.options);
-    newOptions.ceil = changedVal;
-    this.options = newOptions;
-  }
-  
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
@@ -169,12 +154,6 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   setDefaultValue(){
     this.ecoScoreProfileForm.get("profileDescription").setValue(this.selectedElementData[0].profileDescription);
     this.ecoScoreProfileForm.get("profileName").setValue(this.selectedElementData[0].profileName);
-    this.ecoScoreProfileKPIForm.get("lowerValue").setValue(this.options.floor);
-    this.ecoScoreProfileKPIForm.get("upperValue").setValue(this.options.ceil);
-    this.ecoScoreProfileKPIForm.get("limitValue").setValue(this.value);
-    this.ecoScoreProfileKPIForm.get("targetValue").setValue(this.maxvalue);
-    this.ecoScoreProfileForm.get("profileNameDropDownValue").setValue(this.selectedElementData[0].profileName);
-    // this.ecoScoreProfileForm.get("type").setValue(this.selectedElementData.type);   
   }
 
   createNewProfile(){
@@ -183,27 +162,44 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   }
 
   onCreate(){
+    this.isCreate = true;
+    if(this.actionType == 'create'){
      let profileParams = {
       // "profileId": 0,
       "name": this.ecoScoreProfileForm.controls.profileName.value,
       "description": this.ecoScoreProfileForm.controls.profileDescription.value,
       "isDAFStandard": this.isDAFStandard,
-      "profileKPIs": [
-        {
-          "kpiId": 0,
-          "limitType": "Eco-Score",
-          "limitValue": 8,
-          "targetValue": 0,
-          "lowerValue": 0,
-          "upperValue": 10
-        }
-      ]
+      "profileKPIs": this.changedKPIData
+      // [
+      //   {
+      //     "kpiId": 0,
+      //     "limitType": "Eco-Score",
+      //     "limitValue": 8,
+      //     "targetValue": 0,
+      //     "lowerValue": 0,
+      //     "upperValue": 10
+      //   }
+      // ]
      }
+
+     console.log(profileParams);
      if(this.actionType == "create"){
        this.reportService.createEcoScoreProfile(profileParams).subscribe(()=>{
         this.loadProfileData();
        });
      }
+    } else {
+
+      let manageParams = {
+      "profileId": this.selectedProfile,
+      "name": this.ecoScoreProfileForm.controls.profileName.value,
+      "description": this.ecoScoreProfileForm.controls.profileDescription.value,
+      "profileKPIs": this.changedKPIData
+      }
+      this.reportService.updateEcoScoreProfile(manageParams).subscribe(()=>{
+        this.loadProfileData();
+      });
+    }
   }
 
   onReset(){
@@ -211,10 +207,6 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.ecoScoreProfileForm.get("profileDescription").setValue('');
     this.ecoScoreProfileForm.get("profileName").setValue('');
     // this.ecoScoreProfileForm.get("profileNameDropDownValue").setValue('');
-    this.ecoScoreProfileKPIForm.get("lowerValue").setValue('');
-    this.ecoScoreProfileKPIForm.get("upperValue").setValue('');
-    this.ecoScoreProfileKPIForm.get("limitValue").setValue('');
-    this.ecoScoreProfileKPIForm.get("targetValue").setValue('');
   } else {
     this.ecoScoreProfileForm.get("profileDescription").setValue(this.selectedElementData[0].profileDescription);
     this.ecoScoreProfileForm.get("profileName").setValue(this.selectedElementData[0].profileName);
@@ -246,5 +238,10 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.loadProfileKpis(this.selectedProfile);
     this.isDAFStandard = false;
     this.isCreatedExistingProfile = false;
+ }
+
+ createKPIEmit(item: any){
+   this.changedKPIData.push(item);
+  //  console.log(this.changedKPIData);
  }
 }
