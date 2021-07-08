@@ -153,7 +153,7 @@ namespace net.atos.daf.ct2.reports.repository
             if (profile.type is null)
                 objProfile.Type = ProfileType.None;
             else
-                objProfile.Type = (ProfileType)(char)profile.type;
+                objProfile.Type = (ProfileType)Convert.ToChar(profile.type);
 
             return objProfile;
         }

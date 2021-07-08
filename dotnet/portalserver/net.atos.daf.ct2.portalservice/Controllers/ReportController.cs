@@ -452,14 +452,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 var organizationId = !isGlobal ? GetContextOrgId() : 0;
 
-                //char allowed_type = '\0';
-                //if (_userDetails.UserFeatures.Any(x => x.Contains("Report.ECOScoreReport")))
-                //    allowed_type = 'D';
-                //if (_userDetails.UserFeatures.Any(x => x.Contains("Report.ECOScoreReport.Advance")))
-                //    allowed_type = 'A';
+                char allowed_type = 'N';
+                if (_userDetails.UserFeatures.Any(x => x.Contains("Report.ECOScoreReport")))
+                    allowed_type = 'D';
+                if (_userDetails.UserFeatures.Any(x => x.Contains("Report.ECOScoreReport.Advance")))
+                    allowed_type = 'A';
 
                 Metadata headers = new Metadata();
-                //headers.Add("allowed_type", Convert.ToString(allowed_type));
+                headers.Add("allowed_type", Convert.ToString(allowed_type));
 
                 var response = await _reportServiceClient.GetEcoScoreProfilesAsync(new GetEcoScoreProfileRequest { OrgId = organizationId }, headers);
                 if (response?.Profiles?.Count > 0)
