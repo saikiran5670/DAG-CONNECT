@@ -18,7 +18,8 @@ namespace net.atos.daf.ct2.unitconversion.ENUM
 
     public enum TimeUnit
     {
-        Seconds = 0
+        Seconds = 0,
+        MiliSeconds = 1
     }
 
     public enum SpeedUnit

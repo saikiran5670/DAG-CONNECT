@@ -11,8 +11,10 @@ import { ReportService } from 'src/app/services/report.service';
 })
 
 export class EcoScoreProfileManagementComponent implements OnInit {
+  titleVisible : boolean = false;
   localStLanguage: any;
-  breadcumMsg: any = '';   
+  breadcumMsg: any = '';
+  profileCreatedMsg: any ='';   
   actionType: any = "manage";
   ecoScoreProfileForm: FormGroup;
   translationData: any = {};
@@ -170,22 +172,13 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       "description": this.ecoScoreProfileForm.controls.profileDescription.value,
       "isDAFStandard": this.isDAFStandard,
       "profileKPIs": this.changedKPIData
-      // [
-      //   {
-      //     "kpiId": 0,
-      //     "limitType": "Eco-Score",
-      //     "limitValue": 8,
-      //     "targetValue": 0,
-      //     "lowerValue": 0,
-      //     "upperValue": 10
-      //   }
-      // ]
      }
 
      console.log(profileParams);
      if(this.actionType == "create"){
        this.reportService.createEcoScoreProfile(profileParams).subscribe(()=>{
         this.loadProfileData();
+        this.getUserCreatedMessage();
        });
      }
     } else {
@@ -198,7 +191,24 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       }
       this.reportService.updateEcoScoreProfile(manageParams).subscribe(()=>{
         this.loadProfileData();
+        this.successMsgBlink(this.getUserCreatedMessage());
       });
+    }
+    this.actionType = 'manage';
+    
+  }
+
+  getUserCreatedMessage() {
+    if (this.actionType == 'create') {
+      if (this.translationData.lblUserAccountCreatedSuccessfully)
+        return this.translationData.lblUserAccountCreatedSuccessfully;
+      else
+        return ("New Profile Created Successfully");
+    } else {
+      if (this.translationData.lblUserAccountUpdatedSuccessfully)
+        return this.translationData.lblUserAccountUpdatedSuccessfully;
+      else
+        return ("New Details Updated Successfully");
     }
   }
 
@@ -212,6 +222,14 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.ecoScoreProfileForm.get("profileName").setValue(this.selectedElementData[0].profileName);
     this.kpiData;
   }
+  }
+
+  successMsgBlink(msg: any){
+    this.titleVisible = true;
+    this.profileCreatedMsg = msg;
+    setTimeout(() => {  
+      this.titleVisible = false;
+    }, 5000);
   }
 
   onDelete(){
@@ -241,7 +259,20 @@ export class EcoScoreProfileManagementComponent implements OnInit {
  }
 
  createKPIEmit(item: any){
-   this.changedKPIData.push(item);
-  //  console.log(this.changedKPIData);
+   let changeData = this.changedKPIData.filter(i => i.kpiId == item.kpiId);
+   if(changeData.length != 0){
+     this.changedKPIData.forEach(element => {
+       if(element.kpiId == item.kpiId){
+        element.limitValue= item.limitValue ,
+        element.targetValue= item.targetValue ,
+        element.lowerValue = item.lowerValue,
+       element.upperValue = item.upperValue 
+       }
+     });
+    } 
+    else {
+      this.changedKPIData.push(item);
  }
+   console.log(this.changedKPIData);
+}
 }

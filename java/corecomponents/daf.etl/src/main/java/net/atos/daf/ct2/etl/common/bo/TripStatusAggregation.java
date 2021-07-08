@@ -41,9 +41,9 @@ public class TripStatusAggregation implements Serializable {
 	private Double tripCalPtoDuration;
 	private Double tripCalHarshBrakeDuration;
 	private Double tripCalHeavyThrottleDuration;
-	private Double tripCalCrsCntrlDistBelow50;
-	private Double tripCalCrsCntrlDistAbv50;
-	private Double tripCalCrsCntrlDistAbv75;
+	private Integer tripCalCrsCntrlDist25To50;
+	private Integer tripCalCrsCntrlDist50To75;
+	private Integer tripCalCrsCntrlDistAbv75;
 	private Double tripCalAvgTrafficClsfn;
 	private Double tripCalCCFuelConsumption;
 	private Integer vCruiseControlFuelConsumed;
@@ -71,5 +71,8 @@ public class TripStatusAggregation implements Serializable {
 	private Integer vBrakeDuration; 
 	private Integer vTripIdlePTODuration;
 	private Integer vTripIdleWithoutPTODuration;
-	
+	private Integer vPTODuration;
+	private Integer vMaxThrottlePaddleDuration;
+	private Integer vTripAccelerationTime;
+		
 }
