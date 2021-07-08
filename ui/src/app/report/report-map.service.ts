@@ -1053,7 +1053,7 @@ export class ReportMapService {
       _gridData.push({
         driverName : element.driverName,
       driverId : element.driverId,
-      activityDate : this.getStartTime(element.activityDate, dateFormat, timeFormat, timeZone,false),
+      startTime : this.getStartTime(element.activityDate, dateFormat, timeFormat, timeZone,false),
       driveTime : this.getHhMmTime(element.driveTime),
       workTime : this.getHhMmTime(element.workTime),
       serviceTime : this.getHhMmTime(element.serviceTime),

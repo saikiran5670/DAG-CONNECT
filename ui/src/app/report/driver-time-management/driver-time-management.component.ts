@@ -68,7 +68,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
   displayedColumns = ['driverName', 'driverId', 'startTime', 'endTime', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
-  detaildisplayedColumns = ['specificdetailstarttime', 'specificdetaildrivetime', 'specificdetailworktime', 'specificdetailservicetime', 'specificdetailresttime', 'specificdetailavailabletime'];
+  detaildisplayedColumns = ['startTime', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
   
   fromDisplayDate: any;
   toDisplayDate : any;
@@ -98,17 +98,22 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     serviceTime:true,
     restTime:true,
     driveTime:true,
-    specificdetailsendtime:true,
-    specificdetailstarttime:true,
-    specificdetailworktime:true,
-    specificdetailavailabletime:true,
-    specificdetailservicetime:true,
-    specificdetailresttime:true,
-    specificdetaildrivetime:true,
+    
+
+  };
+
+  showDetailsField:any={
+    endTime:true,
+    startTime:true,
+    workTime:true,
+    availableTime:true,
+    serviceTime:true,
+    restTime:true,
+    driveTime:true,
     specificdetailchart : true,
 
 
-  };
+  }
   
   finalDriverList : any = [];
   finalVehicleList : any =[];
@@ -203,31 +208,31 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     },
     {
       key: 'da_report_specificdriver_details_endtime',
-      value: 'specificdetailsendtime'
+      value: 'endTime'
     },
     {
       key: 'da_report_specificdriver_details_starttime',
-      value: 'specificdetailstarttime'
+      value: 'startTime'
     },
     {
       key: 'da_report_specificdriver_details_worktime',
-      value: 'specificdetailworktime'
+      value: 'workTime'
     },
     {
       key: 'da_report_specificdriver_details_availabletime',
-      value: 'specificdetailavailabletime'
+      value: 'availableTime'
     },
     {
       key: 'da_report_specificdriver_details_servicetime',
-      value: 'specificdetailservicetime'
+      value: 'serviceTime'
     },
     {
       key: 'da_report_specificdriver_details_resttime',
-      value: 'specificdetailresttime'
+      value: 'restTime'
     },
     {
       key: 'da_report_specificdriver_details_drivetime',
-      value: 'specificdetaildrivetime'
+      value: 'driveTime'
     },
     {
       key: 'da_report_specificdriver_details_charts',
@@ -387,7 +392,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           if (index > -1) {
               let _detailvalue = search[0]['value'];
               this.detaildisplayedColumns.splice(detailIndex, 1);
-              this.showField[_detailvalue] = false;
+              this.showDetailsField[_detailvalue] = false;
           }
         }
 
@@ -570,6 +575,50 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
         this.hideloader();
         let tripData = _tripData;
+        _tripData["driverActivities"]= [
+          {
+            "driverId": "NL B000384974000000",
+            "driverName": "Hero Honda",
+            "vin": "XLR0998HGFFT76657",
+            "activityDate": 1624272277000,
+            "startTime": 1624273297000,
+            "endTime": 1624273297000,
+            "code": 3,
+            "restTime": 995000,
+            "availableTime": 0,
+            "workTime": -940935000,
+            "driveTime": 2665000,
+            "serviceTime": -938270000
+          },
+          {
+            "driverId": "PH B110000123456021",
+            "driverName": "Namita1 Patil",
+            "vin": "XLR0998HGFFT76657",
+            "activityDate": 1623330688000,
+            "startTime": 1623333767000,
+            "endTime": 1623333767000,
+            "code": 0,
+            "restTime": 1033000,
+            "availableTime": 646000,
+            "workTime": 0,
+            "driveTime": 0,
+            "serviceTime": 646000
+          },
+          {
+            "driverId": "PH B110000123456021",
+            "driverName": "Namita1 Patil",
+            "vin": "XLR0998HGFFT76657",
+            "activityDate": 1623330688000,
+            "startTime": 1623333767000,
+            "endTime": 1623333767000,
+            "code": 0,
+            "restTime": 1033000,
+            "availableTime": 646000,
+            "workTime": 0,
+            "driveTime": 0,
+            "serviceTime": 646000
+          }
+        ]
         if(this.allDriversSelected){
           this.onSearchData = tripData;
 
