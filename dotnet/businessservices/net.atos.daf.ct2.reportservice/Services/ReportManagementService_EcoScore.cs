@@ -117,10 +117,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                     response.Code = Responsecode.Success;
                     response.Message = entity.ReportConstants.GET_ECOSCORE_PROFILE_SUCCESS_MSG;
 
-                    //string allowed_type = context.RequestHeaders.Get("allowed_type").Value;
+                    ProfileType profileType = (ProfileType)Convert.ToChar(context.RequestHeaders.Get("allowed_type").Value);
 
-                    //if (Enum.TryParse(allowed_type, out ProfileType profileType))
-                    //    result = result.Except(result.Where(x => x.Type != profileType)).ToList();
+                    if (profileType != ProfileType.None)
+                        result = result.Except(result.Where(x => x.Type != profileType)).ToList();
 
                     response.Profiles.AddRange(MapEcoScoreProfileResponse(result));
                 }

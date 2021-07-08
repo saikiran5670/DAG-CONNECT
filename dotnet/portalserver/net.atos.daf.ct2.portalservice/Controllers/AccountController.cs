@@ -632,16 +632,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var response = await _accountClient.GetMenuFeaturesAsync(menuFeatureRequest);
 
                 //Set logged in user allowed features in the session
-                //if (response?.MenuFeatures?.Features != null && response?.MenuFeatures?.Features.Count > 0)
-                //{
-                //    _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
-                //        response.MenuFeatures.Features.Select(x => x.Name).ToArray());
-                //}
-                //else
-                //{
-                //    _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
-                //        new string[] { });
-                //}
+                if (response?.MenuFeatures?.Features != null && response?.MenuFeatures?.Features.Count > 0)
+                {
+                    _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
+                        response.MenuFeatures.Features.Select(x => x.Name).ToArray());
+                }
+                else
+                {
+                    _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
+                        new string[] { });
+                }
 
                 if (response.Code == AccountBusinessService.Responcecode.Success)
                     return Ok(response.MenuFeatures);
@@ -1868,16 +1868,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     });
 
                     //Set logged in user allowed features in the session
-                    //if (response?.MenuFeatures?.Features != null && response?.MenuFeatures?.Features.Count > 0)
-                    //{
-                    //    _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
-                    //        response.MenuFeatures.Features.Select(x => x.Name).ToArray());
-                    //}
-                    //else
-                    //{
-                    //    _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
-                    //        new string[] { });
-                    //}
+                    if (response?.MenuFeatures?.Features != null && response?.MenuFeatures?.Features.Count > 0)
+                    {
+                        _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
+                            response.MenuFeatures.Features.Select(x => x.Name).ToArray());
+                    }
+                    else
+                    {
+                        _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
+                            new string[] { });
+                    }
 
                     if (response.Code == AccountBusinessService.Responcecode.Success)
                     {
