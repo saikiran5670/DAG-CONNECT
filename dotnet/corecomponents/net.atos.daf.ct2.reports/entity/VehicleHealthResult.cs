@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace net.atos.daf.ct2.reports.entity
+﻿namespace net.atos.daf.ct2.reports.entity
 {
-    public class VehicleSummary
+    public class VehicleHealthResult
     {
         public string VehicleRegNo { get; set; }
         public string VehicleName { get; set; }
@@ -36,9 +34,8 @@ namespace net.atos.daf.ct2.reports.entity
         public double Lcts_LatestWarningPositionLongitude { get; set; }
         public int Lcts_LatestWarningGeolocationAddressId { get; set; }
         public string Lcts_Address { get; set; }
-    }
-    public class VehicleHealthWarning
-    {
+
+        //warningdata
         public int WarningId { get; set; }
         public string DriverName { get; set; }
 
@@ -70,11 +67,4 @@ namespace net.atos.daf.ct2.reports.entity
         public string WarningName { get; set; } //from dtcwarning table
         public string WarningAdvice { get; set; }
     }
-    public class VehicleHealthStatus
-    {
-        public List<VehicleHealthWarning> VehhicleWarnings { get; set; }
-        public VehicleSummary VehicleSummary { get; set; }
-    }
-
-
 }

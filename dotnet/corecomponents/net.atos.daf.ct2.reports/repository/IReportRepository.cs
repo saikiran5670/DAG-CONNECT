@@ -48,6 +48,7 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<FleetFuelDetails>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters);
         Task<List<FleetFuel_VehicleGraph>> GetFleetFuelDetailsForVehicleGraphs(FleetFuelFilter fleetFuelFilters);
         Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
+        Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByDriver(FleetFuelFilter fleetFuelFilters);
         #endregion
         Task<List<FilterProperty>> GetAlertLevelList();
         Task<List<FilterProperty>> GetHealthStatusList();
@@ -59,6 +60,6 @@ namespace net.atos.daf.ct2.reports.repository
         Task<bool> GetChartInfo(EcoScoreDataServiceRequest request);
         Task<List<DriverFilter>> GetDriverList(List<string> vins);
 
-        Task<VehicleHealthStatus> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest);
+        Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest);
     }
 }
