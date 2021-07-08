@@ -37,6 +37,9 @@ namespace net.atos.daf.ct2.account.report
         public string RegistrationNo { get; private set; }
         public long FromDate { get; private set; }
         public long ToDate { get; private set; }
+        public IEnumerable<VehicleList> VehicleLists { get; private set; }
+        public string VehicleGroups { get; private set; }
+        public string VehicleNames { get; private set; }
         public IEnumerable<string> VINs { get; private set; }
         public string TimeFormatName { get; private set; }
         public UnitToConvert UnitToConvert { get; private set; }
@@ -44,7 +47,8 @@ namespace net.atos.daf.ct2.account.report
         public ReportCreationScheduler ReportSchedulerData { get; private set; }
         public IReportManager ReportManager { get; }
         public string DateTimeFormat { get; private set; }
-
+        internal List<FleetUtilizationPdfDetails> FleetUtilisationPdfDetails { get; private set; }
+        public long TotalIdleDuration { get; private set; }
 
         public FleetUtilisation(IReportManager reportManager,
                           IReportSchedulerRepository reportSchedularRepository,
@@ -65,6 +69,7 @@ namespace net.atos.daf.ct2.account.report
         {
             FromDate = reportSchedulerData.StartDate;
             ToDate = reportSchedulerData.EndDate;
+            VehicleLists = vehicleLists;
             VINs = vehicleLists.Select(s => s.VIN);
             //VIN = vehicleList.VIN;
             //VehicleName = vehicleList.VehicleName;
@@ -97,6 +102,7 @@ namespace net.atos.daf.ct2.account.report
         {
             var result = await ReportManager.GetFleetUtilizationDetails(new FleetUtilizationFilter { StartDateTime = FromDate, EndDateTime = ToDate, VIN = VINs.ToList() });
             var fleetUtilisationPdfDetails = new List<FleetUtilizationPdfDetails>();
+            TotalIdleDuration = result.Sum(s => s.IdleDuration);
             foreach (var item in result)
             {
                 fleetUtilisationPdfDetails.Add(
@@ -107,10 +113,10 @@ namespace net.atos.daf.ct2.account.report
                         RegistrationNumber = item.RegistrationNumber,
                         Distance = (int)await _unitConversionManager.GetDistance(item.Distance, DistanceUnit.Meter, UnitToConvert),
                         NumberOfTrips = item.NumberOfTrips,
-                        TripTime = await _unitConversionManager.GetTimeSpan(item.TripTime, TimeUnit.Seconds, UnitToConvert),
+                        TripTime = await _unitConversionManager.GetTimeSpan(item.TripTime, TimeUnit.MiliSeconds, UnitToConvert),
                         DrivingTime = await _unitConversionManager.GetTimeSpan(item.DrivingTime, TimeUnit.Seconds, UnitToConvert),
                         IdleDuration = await _unitConversionManager.GetTimeSpan(item.IdleDuration, TimeUnit.Seconds, UnitToConvert),
-                        StopTime = await _unitConversionManager.GetTimeSpan(item.StopTime, TimeUnit.Seconds, UnitToConvert),
+                        StopTime = await _unitConversionManager.GetTimeSpan(item.StopTime, TimeUnit.MiliSeconds, UnitToConvert),
                         AverageDistancePerDay = (int)await _unitConversionManager.GetDistance(item.AverageDistancePerDay, DistanceUnit.Meter, UnitToConvert),
                         AverageSpeed = (int)await _unitConversionManager.GetSpeed(item.AverageSpeed, SpeedUnit.MeterPerMilliSec, UnitToConvert),
                         AverageWeightPerTrip = (int)await _unitConversionManager.GetWeight(item.AverageWeightPerTrip, WeightUnit.KiloGram, UnitToConvert),
@@ -118,6 +124,7 @@ namespace net.atos.daf.ct2.account.report
 
                     });
             }
+            FleetUtilisationPdfDetails = fleetUtilisationPdfDetails;
             var html = ReportHelper
                         .ToDataTableAndGenerateHTML<FleetUtilizationPdfDetails>
                             (fleetUtilisationPdfDetails);
@@ -132,21 +139,41 @@ namespace net.atos.daf.ct2.account.report
             var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
 
             StringBuilder html = new StringBuilder();
-            //ReportTemplateContants.REPORT_TEMPLATE
-            html.AppendFormat(ReportTemplateSingleto.
-                                    GetInstance()
-                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
-                                                    _contentType, ReportSchedulerData.Code)
+            //ReportTemplateSingleto.
+            //                        GetInstance()
+            //                        .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
+            //                                        _contentType, ReportSchedulerData.Code)
+            var timeSpanUnit = _unitManager.GetTimeSpanUnit(UnitToConvert);
+            var distanceUnit = _unitManager.GetDistanceUnit(UnitToConvert);
+
+            html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE
             //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
                               , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
                               , ImageSingleton.GetInstance().GetLogo()
                               , fromDate.ToString(DateTimeFormat)
-                              , "All", VIN
+                              , string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).ToArray())
+                              , string.Join(',', VehicleLists.Select(s => s.VehicleName).ToArray())
                               , toDate.ToString(DateTimeFormat)
-                              , VehicleName, RegistrationNo
+                              , FleetUtilisationPdfDetails.Count()
+                              , FleetUtilisationPdfDetails.Sum(s => s.Distance)
+                              , distanceUnit
+                              , FleetUtilisationPdfDetails.Sum(s => s.NumberOfTrips)
+                              , FleetUtilisationPdfDetails.Sum(s => s.AverageDistancePerDay)
+                              , distanceUnit
+                              , await _unitConversionManager.GetTimeSpan(TotalIdleDuration, TimeUnit.Seconds, UnitToConvert),
+                              , timeSpanUnit
+                              , distanceUnit
+                              , timeSpanUnit
+                              , timeSpanUnit
+                              , timeSpanUnit
+                              , timeSpanUnit
+                              , distanceUnit
+                              , _unitManager.GetSpeedUnit(UnitToConvert)
+                              , _unitManager.GetWeightUnit(UnitToConvert)
+                              , distanceUnit
                               , await GenerateTable()
-                );
+                ); ;
             //return html.Replace("{{", "{").Replace("}}", "}").ToString();
             return html.ToString();
         }
