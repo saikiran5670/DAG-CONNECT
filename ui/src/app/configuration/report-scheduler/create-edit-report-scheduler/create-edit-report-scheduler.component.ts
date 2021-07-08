@@ -117,7 +117,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
                   {id : 6, value : 'July'},{id : 7, value : 'August'},{id : 8, value : 'September'},{id : 9, value : 'October'},{id : 10, value : 'November'},{id : 11, value : 'December'}]
     this.quarters= [{id : 0, value : 'Quarter1 (Jan-Mar)'}, {id : 1, value : 'Quarter2 (Apr-Jun)'},
                     {id : 2, value : 'Quarter3 (Jul-Sept)'},{id : 3, value : 'Quarter4 (Oct-Dec)'}]                  
-    for(let i = 1; i < 24; i++){
+    for(let i = 0; i < 24; i++){
       this.dispatchHours.push(i);
     }
 
