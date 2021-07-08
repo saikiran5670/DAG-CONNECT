@@ -31,8 +31,9 @@ rpc GetFleetFuelDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetai
 rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetEcoScoreReportCompareDrivers (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
 rpc GetFleetOverviewDetails(FleetOverviewDetailsRequest) returns (FleetOverviewDetailsResponse);
-rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthStatusResponse);
+rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthStatusListResponse);
 rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
+rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 }
 
 message VehicleHealthReportRequest{
@@ -42,33 +43,8 @@ int32 Days = 3;
 string WarningType = 4;
 string LngCode =5;
 }
-/*
-message VehicleSummary {
-    string VIN =1;
-    string VehicleName=2;
-    string VehicleRegNo = 3;
-    string DrivingStatus = 4;
-    int32 Alert = 5;
-    string Address = 6;
-    int64 FromDate = 7;
-    int64 ToDate = 8;
-    string WarningType = 9;
-    double LastLatitude = 10;
-    double LastLongitude = 11;
-}
 
-message  VehicleHealthWarning{
-    string WarningName =1;
-    string ActivatedTime=2;
-    string DeactivatedTime = 3;
-    string DriverName = 4;
-    string Advice = 5;
-    string VehicleName = 6;
-    double Latitude = 10;
-    double Longitude = 11;
-}
-*/
-message VehicleHealthStatusResponse{
+message  VehicleHealthStatusResponse{
 string VehicleRegNo =1;
 string VehicleName =2;
 int32 Lcts_Id =3;
@@ -120,8 +96,12 @@ int64 WarningOdometerVal =48;
 int64 WarningLatestProcessedMessageTimestamp =49;
 string WarningName = 50;//from dtcwarning table
 string WarningAdvice =51;
-Responsecode Code = 52;
-string Message = 53;
+}
+
+message VehicleHealthStatusListResponse{
+repeated VehicleHealthStatusResponse healthStatus =1;
+Responsecode Code = 2;
+string Message = 3;
 }
 
 enum Responsecode{
