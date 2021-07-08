@@ -428,6 +428,7 @@ namespace net.atos.daf.ct2.reports
         #region VehicleHealthStatus
         public async Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest)
         {
+            vehicleHealthStatusRequest.WarningType = !string.IsNullOrEmpty(vehicleHealthStatusRequest.TripId) ? "A" : string.Empty;
             var data = await _reportRepository.GetVehicleHealthStatus(vehicleHealthStatusRequest);
             return data;
         }

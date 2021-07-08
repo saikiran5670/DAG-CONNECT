@@ -32,13 +32,14 @@ namespace net.atos.daf.ct2.reports.repository
 
 
 
-        public async Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusReques)
+        public async Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest)
         {
 
             var parameter = new DynamicParameters();
-            parameter.Add("@vin", vehicleHealthStatusReques.VIN);
-            parameter.Add("@tripId", vehicleHealthStatusReques.TripId);
-            parameter.Add("@days", vehicleHealthStatusReques.Days, System.Data.DbType.Int32);
+            parameter.Add("@vin", vehicleHealthStatusRequest.VIN);
+            parameter.Add("@tripId", vehicleHealthStatusRequest.TripId);
+            parameter.Add("@days", vehicleHealthStatusRequest.Days, System.Data.DbType.Int32);
+
 
             var query = @"With HealthSummary AS ( select
                          v.registration_no as VehicleRegNo
@@ -116,17 +117,28 @@ namespace net.atos.daf.ct2.reports.repository
                            on hs.Lcts_Vin= lws.vin
                           inner join master.driver dri on lws.driver1_id=dri.driver_id 
                           where lws.vin =@vin  and ((@tripId <> '' and lws.trip_id=@tripId) OR (@tripId=''))  
-                          and (hs.Lcts_TripStartTime > (extract(epoch from (now()::date - @days ))*1000) or hs.Lcts_TripEndTime is null)
-                        )
+                          and (hs.Lcts_TripStartTime > (extract(epoch from (now()::date - @days ))*1000) or hs.Lcts_TripEndTime is null)";
+            //   )
 
-                         select distinct * from WarningData";
+            //  select distinct * from WarningData
 
 
+            if (!string.IsNullOrEmpty(vehicleHealthStatusRequest.WarningType))
+            {
+                parameter.Add("@warningtype", Convert.ToChar(vehicleHealthStatusRequest.WarningType));
 
+                query += " and lws.warning_type = @warningtype ";
+            }
+            else if (string.IsNullOrEmpty(vehicleHealthStatusRequest.WarningType) || vehicleHealthStatusRequest.WarningType == "All")
+            {
+
+                query += " and lws.warning_type = Any('A','D') ";
+            }
+            query += ")select distinct *from WarningData";
             var healthStatusList = (List<VehicleHealthResult>)await _dataMartdataAccess.QueryAsync<VehicleHealthResult>(query, parameter);
             if (healthStatusList.Count > 0)
             {
-                await GetWarningDetails(healthStatusList, vehicleHealthStatusReques.LngCode);
+                await GetWarningDetails(healthStatusList, vehicleHealthStatusRequest.LngCode);
                 return healthStatusList;
             }
             else
