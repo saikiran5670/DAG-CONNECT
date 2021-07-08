@@ -164,9 +164,9 @@ namespace net.atos.daf.ct2.reportservice.Services
                 reports.entity.VehicleHealthStatusRequest objVehicleHealthStatusRequest = new reports.entity.VehicleHealthStatusRequest
                 {
                     VIN = request.VIN,
-                    Days = !string.IsNullOrEmpty(request.TripId) ? 1 : 90,
+                    Days = 90,
                     LngCode = request.LngCode ?? string.Empty,
-                    WarningType = request.WarningType ?? string.Empty,
+                    //WarningType = request.WarningType ?? string.Empty,
                     TripId = request.TripId ?? string.Empty
                 };
                 reports.entity.VehicleHealthResult objVehicleHealthStatus = new ReportComponent.entity.VehicleHealthResult();

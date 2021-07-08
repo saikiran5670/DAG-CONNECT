@@ -216,6 +216,11 @@ export class ExistingTripsComponent implements OnInit {
       startTime: ['', []],
       endTime: ['', []]
       // userGroupDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('label')
+      ]
     });
     let translationObj = {
       id: 0,

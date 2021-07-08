@@ -176,7 +176,7 @@
                 <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <div>{{ translationData.lblDriversCount || 'Drivers Count' }}: </div>
-                    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{driverListData.length }}</div>
+                    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{totalDriverCount}}</div>
                   </span>
                 </div>
                 <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
@@ -282,7 +282,7 @@
                 <ng-container *ngIf='showField.availableTime' matColumnDef="availableTime">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAvailableTime || 'Available Time' }} (hh:mm)
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row">{{ row.detailsavailabletime != '' ? row.detailsavailabletime : '-' }}</mat-cell>
+                  <mat-cell *matCellDef="let row">{{ row.availableTime != '' ? row.availableTime : '-' }}</mat-cell>
                 </ng-container>
                
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
