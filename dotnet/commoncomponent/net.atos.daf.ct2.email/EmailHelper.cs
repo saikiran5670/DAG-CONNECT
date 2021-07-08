@@ -34,18 +34,25 @@ namespace net.atos.daf.ct2.email
             if (messageRequest.Configuration.IsReplyAllowed)
                 msg.SetReplyTo(new EmailAddress(messageRequest.Configuration.ReplyToAddress, messageRequest.Configuration.ReplyToAddress));
 
-            SetSendToList(msg, messageRequest.ToAddressList);
+            SetSendToList(msg, messageRequest.ToAddressList, messageRequest.IsBcc);
             SetContent(msg, messageRequest.Content, messageRequest.ContentMimeType);
         }
 
-        private static void SetSendToList(SendGridMessage msg, Dictionary<string, string> toAddressList)
+        private static void SetSendToList(SendGridMessage msg, Dictionary<string, string> toAddressList, bool isBcc)
         {
             var recipients = new List<EmailAddress>();
             foreach (var keyValuePair in toAddressList)
             {
                 recipients.Add(new EmailAddress(keyValuePair.Key, keyValuePair.Value));
             }
-            msg.AddTos(recipients);
+            if (isBcc)
+            {
+                msg.AddBccs(recipients);
+            }
+            else
+            {
+                msg.AddTos(recipients);
+            }
         }
 
         private static void SetContent(SendGridMessage msg, string content, string mimeType)

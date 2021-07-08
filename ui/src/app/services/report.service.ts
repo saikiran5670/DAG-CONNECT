@@ -133,6 +133,7 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
+
   getEcoScoreDetails(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -231,6 +232,18 @@ export class ReportService {
     return this.httpClient
       .post<any[]>(
         `${this.reportServiceUrl}/fleetfuel/getdetails/vehiclegraph`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getFleetFuelDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/fleetutilization/getdetails`, data, headers
       )
       .pipe(catchError(this.handleError));
   }

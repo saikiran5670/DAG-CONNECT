@@ -420,6 +420,60 @@ namespace net.atos.daf.ct2.reports.repository
                 throw;
             }
         }
+        public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByDriver(FleetFuelFilter fleetFuelFilters)
+        {
+            try
+            {
+                var parameterOfFilters = new DynamicParameters();
+                parameterOfFilters.Add("@FromDate", fleetFuelFilters.StartDateTime);
+                parameterOfFilters.Add("@ToDate", fleetFuelFilters.EndDateTime);
+                parameterOfFilters.Add("@Vins", fleetFuelFilters.VINs);
+                string queryFleetUtilization = @"SELECT 
+                                                TS.vin
+                                                ,VH.name AS Name
+                                                ,DR.driver_id AS DriverID
+												,DR.first_name || ' ' ||DR.last_name as DriverName
+                                                ,VH.registration_no AS RegistrationNo
+                                                ,count(TS.trip_id) as numberoftrips
+                                                ,SUM(TS.etl_gps_trip_time) as etl_gps_trip_time
+                                                ,sum(TS.end_time_stamp) 
+                                                ,round(sum(TS.etl_gps_distance),2) as etl_gps_distance
+                                                ,round(sum(TS.veh_message_driving_time),2) as veh_message_driving_time
+                                                ,round(SUM(TS.idle_duration),2) as idle_duration
+                                                ,round(sum(TS.veh_message_distance),2) as veh_message_distance
+                                                ,round(sum(TS.average_speed),2) as average_speed
+                                                ,round(sum(TS.average_weight),2) as average_weight
+                                                ,Max(TS.max_speed) as maxspeed
+                                                ,round(sum(TS.fuel_consumption),2) as FuelConsumption
+                                                ,round(sum(TS.co2_emission),2) As Co2Emission
+                                                ,round(sum(TS.harsh_brake_duration),2) As HarshBreakDuration
+                                                ,round(sum(TS.heavy_throttle_duration),2) As HeavyThrottleDuration
+                                                ,round(sum(TS.cruise_control_distance_30_50),2)As CruiseControlDistance30_50
+                                                ,round(sum(TS.cruise_control_distance_50_75),2) As CruiseControlDistance50_75
+                                                ,round(sum(TS.cruise_control_distance_more_than_75),2) As CruiseControlDistanceMoreThan_75
+                                                ,round(max(TS.average_traffic_classification),2) As AverageTrafficClassification
+                                                ,round(sum (TS.cc_fuel_consumption),2) As CcFuelConsumption
+                                                ,round(sum (TS.fuel_consumption_cc_non_active),2) As CcFuelConsumptionCCNonActive
+                                                ,round(sum (TS.idling_consumption),2) As IdlingConsumption
+                                                ,round(sum (TS.dpa_score),2) As DPAScore                                                                                          
+                                                FROM 
+                                                tripdetail.trip_statistics TS
+                                                left join master.vehicle VH on TS.vin=VH.vin
+                                                left join master.driver DR on TS.driver1_id=DR.driver_id
+                                                where TS.vin =ANY(@Vins) and (start_time_stamp >= @FromDate and end_time_stamp <= @ToDate)
+                                                GROUP by TS.VIN,date_trunc('day', to_timestamp(TS.start_time_stamp/1000)),VH.name ,VH.registration_no,DR.driver_id,DR.first_name,DR.last_name";
+
+
+
+                List<FleetFuelDetails> lstFleetDetails = (List<FleetFuelDetails>)await _dataMartdataAccess.QueryAsync<FleetFuelDetails>(queryFleetUtilization, parameterOfFilters);
+                return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
+
+            }
+            catch (System.Exception ex)
+            {
+                throw;
+            }
+        }
 
     }
 }

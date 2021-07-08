@@ -155,9 +155,19 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   applyFilter(filterValue: string) {
+    this.updatedDataSource(this.initData);
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
+    this.updatedDataSource(this.dataSource.filteredData);
+  }
+  
+  updatedDataSource(tableData: any){
+    this.dataSource = new MatTableDataSource(tableData);
+      setTimeout(()=>{
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      });
   }
 
   createNewFeature(){ 

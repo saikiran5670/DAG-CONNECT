@@ -97,7 +97,7 @@ export class AppComponent {
     shop: 'Shop',
     information: 'Information',
     legalnotices: 'Legal Notices',
-    termsAndconditionhistory: 'Terms And Conditions History',
+    termsAndconditionhistory: 'Terms And Condition History',
     dtctranslation: 'DTC Translation'
   }
 
@@ -219,7 +219,7 @@ export class AppComponent {
       icon: "notes",
       externalLink: false,
       pageTitles: {
-        termsAndconditionhistory: 'Terms And Conditions History'
+        termsAndconditionhistory: 'Terms And Condition History'
       }
     }
   }
@@ -575,7 +575,7 @@ export class AppComponent {
       lblShop: 'Shop',
       lblInformation: 'Information',
       lblLegalNotices: 'Legal Notices',
-      lblTermsAndConditionHistory: 'Terms And Conditions History',
+      lblTermsAndConditionHistory: 'Terms And Condition History',
       lblDTCTranslation: "DTC Translation"
     }
   }
@@ -791,6 +791,7 @@ export class AppComponent {
     let rolename = this.roleDropdown.filter(item => parseInt(item.id) === parseInt(value));
     this.userRole = rolename[0].name;
     this.filterOrgBasedRoles(localStorage.getItem("accountOrganizationId"), true);
+    this.router.navigate(['/dashboard']);
   }
 
   filterOrgBasedRoles(orgId: any, defaultType: boolean) {

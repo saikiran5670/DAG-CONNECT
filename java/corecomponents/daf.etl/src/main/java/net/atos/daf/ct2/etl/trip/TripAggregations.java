@@ -121,6 +121,7 @@ public class TripAggregations implements Serializable{
 	{
 		tableEnv.createTemporaryView("tripAggrData", tripAggrData);
 		Table tripStatisticData =tableEnv.sqlQuery(ETLQueries.TRIP_QRY);
+		
 		return tableEnv.toRetractStream(tripStatisticData, Trip.class).map(rec -> rec.f1);
 	}
 	

@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
 {
     public interface IReport
     {
-        Task SetParameters(ReportCreationScheduler reportSchedulerData);
+        void SetParameters(ReportCreationScheduler reportSchedulerData, IEnumerable<VehicleList> vehicleLists);
 
         Task<string> GenerateSummary();
 

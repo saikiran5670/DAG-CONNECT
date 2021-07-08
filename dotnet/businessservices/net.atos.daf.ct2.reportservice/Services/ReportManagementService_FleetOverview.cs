@@ -112,13 +112,13 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 ReportComponent.entity.FleetOverviewFilter fleetOverviewFilter = new ReportComponent.entity.FleetOverviewFilter
                 {
-                    GroupId = request.GroupIds.Contains("all") ? new List<string>() : request.GroupIds.ToList(),
-                    AlertCategory = request.AlertCategories.Contains("all") ? new List<string>() : request.AlertCategories.ToList(),
-                    AlertLevel = request.AlertLevels.Contains("all") ? new List<string>() : request.AlertLevels.ToList(),
-                    HealthStatus = request.HealthStatus.Contains("all") ? new List<string>() : request.HealthStatus.ToList(),
-                    OtherFilter = request.OtherFilters.Contains("all") ? new List<string>() : request.OtherFilters.ToList(),
-                    DriverId = request.DriverIds.Contains("all") ? new List<string>() : request.DriverIds.ToList(),
-                    VINIds = request.GroupIds.Contains("all") ?
+                    GroupId = request.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : request.GroupIds.ToList(),
+                    AlertCategory = request.AlertCategories.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : request.AlertCategories.ToList(),
+                    AlertLevel = request.AlertLevels.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : request.AlertLevels.ToList(),
+                    HealthStatus = request.HealthStatus.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : request.HealthStatus.ToList(),
+                    OtherFilter = request.OtherFilters.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : request.OtherFilters.ToList(),
+                    DriverId = request.DriverIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : request.DriverIds.ToList(),
+                    VINIds = request.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ?
                     vehicleDeatilsWithAccountVisibility.Select(x => x.Vin).Distinct().ToList() :
                     vehicleDeatilsWithAccountVisibility.Where(x => request.GroupIds.ToList().Contains(x.VehicleGroupId.ToString())).Select(x => x.Vin).Distinct().ToList(),
                     Days = request.Days
@@ -148,6 +148,54 @@ namespace net.atos.daf.ct2.reportservice.Services
                 });
             }
         }
-        #endregion 
+        #endregion
+
+        /// <summary>
+        /// Vehicle Current and History Health Summary 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns>List of vehicle health details Summary current and History</returns>
+        public override async Task<VehicleHealthStatusListResponse> GetVehicleHealthReport(VehicleHealthReportRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.Info("Get GetVehicleHealthStatusReport Called");
+                reports.entity.VehicleHealthStatusRequest objVehicleHealthStatusRequest = new reports.entity.VehicleHealthStatusRequest
+                {
+                    VIN = request.VIN,
+                    Days = 90,
+                    LngCode = request.LngCode ?? string.Empty,
+                    //WarningType = request.WarningType ?? string.Empty,
+                    TripId = request.TripId ?? string.Empty
+                };
+                reports.entity.VehicleHealthResult objVehicleHealthStatus = new ReportComponent.entity.VehicleHealthResult();
+                var result = await _reportManager.GetVehicleHealthStatus(objVehicleHealthStatusRequest);
+                VehicleHealthStatusListResponse response = new VehicleHealthStatusListResponse();
+                if (result != null)
+                {
+                    string res = JsonConvert.SerializeObject(result);
+                    response.HealthStatus.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleHealthStatusResponse>>(res,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+                    response.Code = Responsecode.Success;
+                    response.Message = Responsecode.Success.ToString();
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = "No Result Found";
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new VehicleHealthStatusListResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = $"GetVehicleHealthReport get failed due to - {ex.Message}"
+                });
+            }
+        }
     }
 }

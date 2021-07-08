@@ -4,36 +4,38 @@
     {
         public string VehicleRegNo { get; set; }
         public string VehicleName { get; set; }
-        public int Lcts_Id { get; set; }
-        public string Lcts_TripId { get; set; }
-        public string Lcts_Vin { get; set; }
-        public long? Lcts_TripStartTime { get; set; }
-        public long? Lcts_TripEndTime { get; set; }
-        public string Lcts_Driver1Id { get; set; }
-        public int Lcts_TripDistance { get; set; }
-        public int Lcts_DrivingTime { get; set; }
-        public int Lcts_FuelConsumption { get; set; }
-        public string Lcts_VehicleDrivingStatus_type { get; set; }
-        public long Lcts_OdometerVal { get; set; }
-        public long Lcts_DistanceUntilNextService { get; set; }
-        public double Lcts_LatestReceivedPositionLattitude { get; set; }
-        public double Lcts_LatestReceivedPositionLongitude { get; set; }
-        public double Lcts_LatestReceivedPositionHeading { get; set; }
-        public int Lcts_LatestGeolocationAddressId { get; set; }
-        public double Lcts_StartPositionLattitude { get; set; }
-        public double Lcts_StartPositionLongitude { get; set; }
-        public double Lcts_StartPositionHeading { get; set; }
-        public int Lcts_StartGeolocationAddressId { get; set; }
-        public long? Lcts_LatestProcessedMessageTimestamp { get; set; }
-        public string Lcts_VehicleHealthStatusType { get; set; }
-        public int Lcts_LatestWrningClass { get; set; }
-        public int Lcts_LatestWarningNumber { get; set; }
-        public string Lcts_LatestWarningType { get; set; }
-        public long? Lcts_LatestWarningTimestamp { get; set; }
-        public double Lcts_LatestWarningPositionLatitude { get; set; }
-        public double Lcts_LatestWarningPositionLongitude { get; set; }
-        public int Lcts_LatestWarningGeolocationAddressId { get; set; }
-        public string Lcts_Address { get; set; }
+        public int LctsId { get; set; }
+        public string LctsTripId { get; set; }
+        public string LctsVin { get; set; }
+        public long? LctsTripStartTime { get; set; }
+        public long? LctsTripEndTime { get; set; }
+        public string LctsDriver1Id { get; set; }
+        public int LctsTripDistance { get; set; }
+        public int LctsDrivingTime { get; set; }
+        public int LctsFuelConsumption { get; set; }
+        public string LctsVehicleDrivingStatustype { get; set; }
+        public long LctsOdometerVal { get; set; }
+        public long LctsDistanceUntilNextService { get; set; }
+        public double LctsLatestReceivedPositionLattitude { get; set; }
+        public double LctsLatestReceivedPositionLongitude { get; set; }
+        public double LctsLatestReceivedPositionHeading { get; set; }
+        public int LctsLatestGeolocationAddressId { get; set; }
+        public double LctsStartPositionLattitude { get; set; }
+        public double LctsStartPositionLongitude { get; set; }
+        public double LctsStartPositionHeading { get; set; }
+        public int LctsStartGeolocationAddressId { get; set; }
+        public long? LctsLatestProcessedMessageTimestamp { get; set; }
+        public string LctsVehicleHealthStatusType { get; set; }
+        public int LctsLatestWrningClass { get; set; }
+        public int LctsLatestWarningNumber { get; set; }
+        public string LctsLatestWarningType { get; set; }
+        public long? LctsLatestWarningTimestamp { get; set; }
+        public double LctsLatestWarningPositionLatitude { get; set; }
+        public double LctsLatestWarningPositionLongitude { get; set; }
+        public int LctsLatestWarningGeolocationAddressId { get; set; }
+        public string LctsAddress { get; set; }
+
+        //warningdata
         public int WarningId { get; set; }
         public string DriverName { get; set; }
 

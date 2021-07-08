@@ -75,4 +75,7 @@ public class TripStatusData implements Serializable {
 	private Integer numberOfIndexMessage;
 	private Integer vTripIdlePTODuration;
 	private Integer vTripIdleWithoutPTODuration;
+	private Integer tripCalCrsCntrlDist25To50;
+	private Integer tripCalCrsCntrlDist50To75;
+	private Integer tripCalCrsCntrlDistAbv75;
 }
