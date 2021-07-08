@@ -365,6 +365,12 @@ namespace net.atos.daf.ct2.reports
             List<FleetFuelDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByVehicle(fleetFuelFilters);
             return lstFleetFuelTripDetails;
         }
+
+        public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByDriver(FleetFuelFilter fleetFuelFilters)
+        {
+            List<FleetFuelDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByDriver(fleetFuelFilters);
+            return lstFleetFuelTripDetails;
+        }
         /// <summary>
         /// To apply formula and mapped values according to language code
         /// </summary>

@@ -33,6 +33,7 @@ rpc GetEcoScoreReportCompareDrivers (GetEcoScoreReportCompareDriversRequest) ret
 rpc GetFleetOverviewDetails(FleetOverviewDetailsRequest) returns (FleetOverviewDetailsResponse);
 rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthStatusResponse);
 rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
+rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 }
 
 message VehicleHealthReportRequest{
