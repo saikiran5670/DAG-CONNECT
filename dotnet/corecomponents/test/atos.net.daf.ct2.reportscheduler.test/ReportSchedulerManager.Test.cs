@@ -133,10 +133,10 @@ namespace atos.net.daf.ct2.reportscheduler.test
         [TestMethod]
         public async Task UnT_Helpr_GetNextFrequencyTime()
         {
-            //long currentdate = UTCHandling.GetUTCFromDateTime(DateTime.Now); 
+            long currentdate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
             bool isresult;
             ReportEmailFrequency objReportEmailFrequency = new ReportEmailFrequency();
-            objReportEmailFrequency.ReportNextScheduleRunDate = 1624184687000;
+            objReportEmailFrequency.ReportNextScheduleRunDate = 1625574329670;
             objReportEmailFrequency.FrequencyType = TimeFrequenyType.Daily;
             _helper.GetNextFrequencyTime(objReportEmailFrequency);
             isresult = true;

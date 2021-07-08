@@ -34,6 +34,8 @@
         public double Lcts_LatestWarningPositionLongitude { get; set; }
         public int Lcts_LatestWarningGeolocationAddressId { get; set; }
         public string Lcts_Address { get; set; }
+
+        //warningdata
         public int WarningId { get; set; }
         public string DriverName { get; set; }
 

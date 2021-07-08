@@ -12,7 +12,7 @@ using net.atos.daf.ct2.notification.entity;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.ENUM;
 using net.atos.daf.ct2.reportscheduler.repository;
-
+using System.Linq;
 namespace net.atos.daf.ct2.reportscheduler
 {
     public class ReportEmailSchedulerManager : IReportEmailSchedulerManager
@@ -32,27 +32,62 @@ namespace net.atos.daf.ct2.reportscheduler
             var reportsSent = new List<ReportEmailDetail>();
             var emailDetails = await _reportSchedulerRepository.GetReportEmailDetails();
 
-            foreach (var emailItem in emailDetails)
+            var reportEmailResults = from p in emailDetails
+                                     group p by new { p.ReportCreatedBy, p.LanguageCode } into g
+                                     select new { CreatedBy = g.Key, ReportSchedulerEmailResult = g.ToList() };
+            if (reportEmailResults.Any())
             {
-                var mailNotifictaion = new MailNotificationRequest()
+
+                foreach (var item in reportEmailResults)
                 {
-                    MessageRequest = new MessageRequest()
+                    MailNotificationRequest mailNotification = new MailNotificationRequest();
+                    mailNotification.MessageRequest = new MessageRequest();
+                    List<string> reportTokens = new List<string>();
+                    Dictionary<string, string> toAddressList = new Dictionary<string, string>();
+                    var mailSent = new ReportEmailDetail();
+
+                    foreach (var emailItem in item.ReportSchedulerEmailResult)
                     {
-                        AccountInfo = new AccountInfo() { EmailId = emailItem.EmailId, Organization_Id = emailItem.OrganizationId },
-                        LanguageCode = emailItem.LanguageCode.Trim(),
-                        ReportTokens = new List<string>() { emailItem.ReportToken.ToString() },
-                        ToAddressList = new Dictionary<string, string>() { { emailItem.EmailId, null } }
-                    },
-                    ContentType = EmailContentType.Html,
-                    EventType = EmailEventType.ScheduledReportEmail
-                };
-                var isSuccess = await _emailNotificationManager.TriggerSendEmail(mailNotifictaion);
-                var mailSent = new ReportEmailDetail() { EmailId = emailItem.EmailId, IsMailSent = emailItem.IsMailSent, ReportId = emailItem.ReportSchedulerId };
-                reportsSent.Add(mailSent);
-                await AddAuditLog(isSuccess, mailSent.EmailId);
-                if (isSuccess)
-                {
-                    var nextUpdatedDate = UpdateNextTimeDate(emailItem);
+                        //var mailNotifictaion = new MailNotificationRequest()
+                        //{
+                        //    MessageRequest = new MessageRequest()
+                        //    {
+                        //        AccountInfo = new AccountInfo() { EmailId = emailItem.EmailId, Organization_Id = emailItem.OrganizationId },
+                        //        LanguageCode = emailItem.LanguageCode.Trim(),
+                        //        ReportTokens = new List<string>() { emailItem.ReportToken.ToString() },
+                        //        ToAddressList = new Dictionary<string, string>() { { emailItem.EmailId, null } }
+                        //    },
+                        //    ContentType = EmailContentType.Html,
+                        //    EventType = EmailEventType.ScheduledReportEmail
+                        //};
+                        reportTokens.Add(emailItem.ReportToken.ToString());
+                        if (!toAddressList.ContainsKey(emailItem.EmailId))
+                        {
+                            toAddressList.Add(emailItem.EmailId, null);
+                        }
+
+                        mailNotification.MessageRequest = new MessageRequest()
+                        {
+                            AccountInfo = new AccountInfo() { EmailId = emailItem.EmailId, Organization_Id = emailItem.OrganizationId },
+                            LanguageCode = emailItem.LanguageCode.Trim(),
+                            ReportTokens = reportTokens,
+                            ToAddressList = toAddressList,
+                            IsBcc = true
+                        };
+                        mailSent.EmailId = emailItem.EmailId;
+                        mailSent.IsMailSent = emailItem.IsMailSent;
+                        mailSent.ReportId = emailItem.ReportSchedulerId;
+                    }
+                    mailNotification.ContentType = EmailContentType.Html;
+                    mailNotification.EventType = EmailEventType.ScheduledReportEmail;
+                    var isSuccess = await _emailNotificationManager.TriggerSendEmail(mailNotification);
+
+                    reportsSent.Add(mailSent);
+                    await AddAuditLog(isSuccess, mailSent.EmailId);
+                    if (isSuccess)
+                    {
+                        var nextUpdatedDate = UpdateNextTimeDate(item.ReportSchedulerEmailResult);
+                    }
                 }
             }
             return reportsSent;
@@ -77,31 +112,35 @@ namespace net.atos.daf.ct2.reportscheduler
             });
         }
 
-        private async Task<int> UpdateNextTimeDate(ReportSchedulerEmailResult emailItem)
+        private async Task<int> UpdateNextTimeDate(List<ReportSchedulerEmailResult> emailItemList)
         {
             try
             {
-                var reportEmailFrequency = new ReportEmailFrequency()
+                int timeupdated = 0;
+                foreach (var emailItem in emailItemList)
                 {
-                    ReportId = emailItem.ReportSchedulerId,
-                    EndDate = emailItem.EndDate,
-                    FrequencyType = (TimeFrequenyType)Enum.Parse(typeof(TimeFrequenyType), GetEnumValue(emailItem.FrequencyType)),
-                    ReportNextScheduleRunDate = emailItem.NextScheduleRunDate,
-                    ReportPrevioudScheduleRunDate = emailItem.LastScheduleRunDate,
-                    StartDate = emailItem.StartDate,
-                    ReportScheduleRunDate = emailItem.NextScheduleRunDate
-                };
+                    var reportEmailFrequency = new ReportEmailFrequency()
+                    {
+                        ReportId = emailItem.ReportSchedulerId,
+                        EndDate = emailItem.EndDate,
+                        FrequencyType = (TimeFrequenyType)Enum.Parse(typeof(TimeFrequenyType), GetEnumValue(emailItem.FrequencyType)),
+                        ReportNextScheduleRunDate = emailItem.NextScheduleRunDate,
+                        ReportPrevioudScheduleRunDate = emailItem.LastScheduleRunDate,
+                        StartDate = emailItem.StartDate,
+                        ReportScheduleRunDate = emailItem.NextScheduleRunDate
+                    };
 
-                if (emailItem.FrequencyType == ((char)TimeFrequenyType.Daily).ToString() || emailItem.FrequencyType == ((char)TimeFrequenyType.Weekly).ToString() || emailItem.FrequencyType == ((char)TimeFrequenyType.BiWeekly).ToString())
-                {
-                    var timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByDate(reportEmailFrequency);
-                    return timeupdated;
+                    if (emailItem.FrequencyType == ((char)TimeFrequenyType.Daily).ToString() || emailItem.FrequencyType == ((char)TimeFrequenyType.Weekly).ToString() || emailItem.FrequencyType == ((char)TimeFrequenyType.BiWeekly).ToString())
+                    {
+                        timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByDate(reportEmailFrequency);
+
+                    }
+                    else
+                    {
+                        timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByCalenderTime(reportEmailFrequency);
+                    }
                 }
-                else
-                {
-                    var timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByCalenderTime(reportEmailFrequency);
-                    return timeupdated;
-                }
+                return timeupdated;
             }
             catch (Exception)
             {
