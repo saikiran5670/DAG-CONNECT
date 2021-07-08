@@ -48,7 +48,7 @@ date_trunc('day', NOW() AT TIME ZONE 'UTC') and rs.status = 'A' and r.id = rs.re
             }
         }
 
-        public Task<IEnumerable<VehicleListByGroup>> GetVehicleList(int reprotSchedulerId)
+        public Task<IEnumerable<VehicleList>> GetVehicleList(int reprotSchedulerId)
         {
             try
             {
@@ -70,7 +70,7 @@ date_trunc('day', NOW() AT TIME ZONE 'UTC') and rs.status = 'A' and r.id = rs.re
                             select distinct v.id as Id ,v.vin as VIN ,v.name as VehicleName,v.license_plate_number as RegistrationNo,vl.VehicleGroupId as VehicleGroupId, vl.VehicleGroupName as VehicleGroupName
                             from cte_VehicaleList vl
                                  inner join master.vehicle v on v.id = vl.VehicleId";
-                return _dataAccess.QueryAsync<VehicleListByGroup>(query, parameter);
+                return _dataAccess.QueryAsync<VehicleList>(query, parameter);
             }
             catch (Exception)
             {
