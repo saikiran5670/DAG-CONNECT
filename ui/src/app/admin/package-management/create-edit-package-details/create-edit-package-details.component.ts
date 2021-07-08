@@ -54,7 +54,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   getBreadcum(type: any){
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblPackageManagement ? this.translationData.lblPackageManagement : "Package Management"} / ${(type == 'view') ? (this.translationData.lblViewPackage ? this.translationData.lblViewPackage : 'View Package Details') : (type == 'edit') ? (this.translationData.lblViewPackage ? this.translationData.lblViewPackage : 'Edit Package Details') : (this.translationData.lblPackageDetails ? this.translationData.lblPackageDetails : 'Add New Package')}`;
   }
-
+  
   ngOnInit() {
     this.packageFormGroup = this._formBuilder.group({
       code: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc ]],
@@ -70,7 +70,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         CustomValidators.specialCharValidationForNameWithoutRequired('description')
       ]
     });
-    this.breadcumMsg = this.getBreadcum(this.actionType);
+     this.breadcumMsg = this.getBreadcum(this.actionType);
     if(this.actionType == 'view' || this.actionType == 'edit' ){
       this.setDefaultValue();
     }
@@ -89,7 +89,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
           }
         });
         this.dataSource = selectedFeatureList;
-        this.updateDataSource(selectedFeatureList);
+        this.updatedTableData(selectedFeatureList);
         this.featureDisplayedColumns = ['name'] ;
       } else if (this.actionType == "edit" || this.actionType == "create") {
         setTimeout(()=>{
@@ -109,6 +109,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       }
       this.featuresData 
   }, (error) => { });
+   this.updatedTableData(this.dataSource); 
 }
 
 compare(a: Number | String, b: Number | String, isAsc: boolean) {
@@ -116,13 +117,14 @@ compare(a: Number | String, b: Number | String, isAsc: boolean) {
   if(!(b instanceof Number)) b = b.toUpperCase();
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
-
   applyFilter(filterValue: string) {
+    this.updatedTableData(this.initData);
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
+    this.updatedTableData(this.dataSource.filteredData);
   }
-
+  
   selectTableRows() {
     this.dataSource.data.forEach((row: any) => {
       let search = this.selectedElementData.featureIds.includes(row.id);
@@ -137,7 +139,7 @@ compare(a: Number | String, b: Number | String, isAsc: boolean) {
     this.editPackageFlag = true;
     this.featureDisplayedColumns = ['name','select'] ;
     this.selectTableRows();
-    this.updateDataSource(this.initData);
+    this.updatedTableData(this.initData);
     this.featuresSelected = this.selectedElementData.featureIds;
     this.dataSource.data.forEach(row => {
       if(this.featuresSelected){
@@ -155,7 +157,7 @@ compare(a: Number | String, b: Number | String, isAsc: boolean) {
     this.breadcumMsg = this.getBreadcum(this.actionType);
   }
 
-  updateDataSource(tableData: any){
+  updatedTableData(tableData: any){
     this.dataSource = new MatTableDataSource(tableData);
       setTimeout(()=>{
         this.dataSource.paginator = this.paginator;
