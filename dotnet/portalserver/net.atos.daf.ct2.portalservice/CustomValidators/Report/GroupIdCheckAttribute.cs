@@ -14,7 +14,8 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Report
             var lstGroupId = (List<string>)value;
             foreach (var item in lstGroupId)
             {
-                valid = (!string.IsNullOrEmpty(item) && item.Contains("all")) || ((!string.IsNullOrEmpty(item) && !item.Contains("all") && int.TryParse(item, out int groupid)) ? true : false);
+
+                valid = (!string.IsNullOrEmpty(item) && item.ToLower().Contains("all")) || ((!string.IsNullOrEmpty(item) && !item.ToLower().Contains("all") && int.TryParse(item, out int groupid)) ? true : false);
                 if (!valid)
                 {
                     //Invalidate payload if any of item is in invalid format.

@@ -23,6 +23,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         [MinLength(1, ErrorMessage = "At least one driver id is required.")]
         public List<string> DriverId { get; set; }
         [Required(ErrorMessage = "Days is mandatory.")]
+        [DaysRangeCheck(ErrorMessage = "Days is invalid.")]
         public int Days { get; set; }
     }
 }
