@@ -16,10 +16,10 @@ namespace net.atos.daf.ct2.reports.test
             var vehicleHealthStatusRequest = new VehicleHealthStatusRequest()
             {
                 VIN = "XLR0998HGFFT76657",
-                //TripId = "52a0f631-4077-42f9-b999-cb21c6309c71",
+                TripId = "52a0f631-4077-42f9-b999-cb21c6309c71",
                 Days = 90
             };
-            var result = await _reportRepository.GetVehicleHealthStatus(vehicleHealthStatusRequest);
+            var result = await _reportManager.GetVehicleHealthStatus(vehicleHealthStatusRequest);
             Assert.IsNotNull(result);
         }
 

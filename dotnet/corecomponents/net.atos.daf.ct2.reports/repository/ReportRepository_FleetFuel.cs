@@ -381,6 +381,8 @@ namespace net.atos.daf.ct2.reports.repository
                 string queryFleetUtilization = @"SELECT 
                                                 TS.vin
                                                 ,VH.name AS Name
+                                                ,DR.driver_id AS DriverID
+												,DR.first_name || ' ' ||DR.last_name as DriverName
                                                 ,VH.registration_no AS RegistrationNo
                                                 ,count(TS.trip_id) as numberoftrips
                                                 ,SUM(TS.etl_gps_trip_time) as etl_gps_trip_time
@@ -406,9 +408,10 @@ namespace net.atos.daf.ct2.reports.repository
                                                 ,round(sum (TS.dpa_score),2) As DPAScore                                                                                          
                                                 FROM 
                                                 tripdetail.trip_statistics TS
-                                                left join master.vehicle VH on TS.vin=VH.vin       
+                                                left join master.vehicle VH on TS.vin=VH.vin
+                                                left join master.driver DR on TS.driver1_id=DR.driver_id
                                                 where TS.vin =ANY(@Vins) and (start_time_stamp >= @FromDate and end_time_stamp <= @ToDate)
-                                                GROUP by TS.VIN,date_trunc('day', to_timestamp(TS.start_time_stamp/1000)),VH.name ,VH.registration_no";
+                                                GROUP by TS.VIN,date_trunc('day', to_timestamp(TS.start_time_stamp/1000)),VH.name ,VH.registration_no,DR.driver_id,DR.first_name,DR.last_name";
 
 
 
