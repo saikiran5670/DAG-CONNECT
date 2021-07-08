@@ -22,6 +22,7 @@ import { Util } from '../../shared/util';
 import { Router, NavigationExtras } from '@angular/router';
 import { OrganizationService } from '../../services/organization.service';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
+import { element } from 'protractor';
 
 declare var H: any;
 
@@ -497,19 +498,29 @@ ngOnDestroy(){
           subCatUniq.forEach(elem => {
             let _subData = _data.filter(i => i.subCategoryId == elem && i.subCategoryId != 0);
             if (_subData.length > 0) { 
-            _subCatArr.push({ poiList: _subData, subCategoryName: _subData[0].subCategoryName, subCategoryId: _subData[0].subCategoryId }); 
+            _subCatArr.push({ 
+              poiList: _subData, 
+              subCategoryName: _subData[0].subCategoryName, 
+              subCategoryId: _subData[0].subCategoryId,
+              checked: false
+            }); 
             }
           });
         }
+
+        _data.forEach(data => {
+          data.checked = false;
+        });
+
         categoryArr.push({
           categoryId: _data[0].categoryId,
           categoryName: _data[0].categoryName,
           poiList: _data,
-          subCategoryPOIList: _subCatArr
+          subCategoryPOIList: _subCatArr,
+          open: false
         });
       } 
     });
-    console.log("categoryArr:: ", categoryArr)
 
     return categoryArr;
   }
@@ -1045,7 +1056,22 @@ ngOnDestroy(){
     this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
   }
 
-  changeUserPOISelection(event: any, poiData: any){
+  changeUserPOISelection(event: any, poiData: any, index: any){
+    if (event.checked){ // checked
+      this.userPOIList[index].subCategoryPOIList.forEach(element => {
+        element.checked = true;
+      });
+      this.userPOIList[index].poiList.forEach(_elem => {
+        _elem.checked = true;
+      });
+    }else{ // unchecked
+      this.userPOIList[index].subCategoryPOIList.forEach(element => {
+        element.checked = false;
+      });
+      this.userPOIList[index].poiList.forEach(_elem => {
+        _elem.checked = false;
+      });
+    }
     this.displayPOIList = [];
     this.selectedPOI.selected.forEach(item => {
       if(item.poiList && item.poiList.length > 0){
@@ -1111,8 +1137,39 @@ ngOnDestroy(){
     }
   }
 
-  changeSubCategory(event: any, subCatPOI: any){
-    console.log(event, subCatPOI)
+  changeSubCategory(event: any, subCatPOI: any, _index: any){
+    this.userPOIList[_index].subCategoryPOIList.forEach(element => {
+      if(element.subCategoryId == subCatPOI.subCategoryId){
+        element.checked = event.checked ? true : false;
+      }
+    });
+    this.displayPOIList = [];
+    if(this.selectedPOI.selected.length > 0){
+      this.selectedPOI.selected.forEach(item => {
+        if(item.poiList && item.poiList.length > 0){
+          item.poiList.forEach(element => {
+            if(element.subCategoryId == subCatPOI.subCategoryId){ // element match
+              if(event.checked){ // event checked
+                element.checked = true;
+                this.displayPOIList.push(element);
+              }else{ // event unchecked
+                element.checked = false;
+              }
+            }else{
+              if(element.checked){ // element checked
+                this.displayPOIList.push(element);
+              }
+            }
+          });
+        }
+      });
+      let _ui = this.reportMapService.getUI();
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    }
+  }
+
+  openClosedUserPOI(index: any){
+    this.userPOIList[index].open = !this.userPOIList[index].open;
   }
 
 }

@@ -791,6 +791,7 @@ export class AppComponent {
     let rolename = this.roleDropdown.filter(item => parseInt(item.id) === parseInt(value));
     this.userRole = rolename[0].name;
     this.filterOrgBasedRoles(localStorage.getItem("accountOrganizationId"), true);
+    this.router.navigate(['/dashboard']);
   }
 
   filterOrgBasedRoles(orgId: any, defaultType: boolean) {

@@ -20,12 +20,13 @@ using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.account.report
 {
-    public class TripReport : IReport
+    public class FleetUtilisation : IReport
     {
         private readonly IReportSchedulerRepository _reportSchedularRepository;
         private readonly IVisibilityManager _visibilityManager;
         private readonly ITemplateManager _templateManager;
         private readonly IUnitConversionManager _unitConversionManager;
+        private readonly IUnitManager _unitManager;
         private readonly EmailEventType _evenType;
         private readonly EmailContentType _contentType;
 
@@ -36,6 +37,7 @@ namespace net.atos.daf.ct2.account.report
         public string RegistrationNo { get; private set; }
         public long FromDate { get; private set; }
         public long ToDate { get; private set; }
+        public IEnumerable<string> VINs { get; private set; }
         public string TimeFormatName { get; private set; }
         public UnitToConvert UnitToConvert { get; private set; }
         public bool IsAllParameterSet { get; private set; } = false;
@@ -44,16 +46,17 @@ namespace net.atos.daf.ct2.account.report
         public string DateTimeFormat { get; private set; }
 
 
-        public TripReport(IReportManager reportManager,
+        public FleetUtilisation(IReportManager reportManager,
                           IReportSchedulerRepository reportSchedularRepository,
                           IVisibilityManager visibilityManager, ITemplateManager templateManager,
-                          IUnitConversionManager unitConversionManager, EmailEventType evenType, EmailContentType contentType)
+                          IUnitConversionManager unitConversionManager, IUnitManager unitManager, EmailEventType evenType, EmailContentType contentType)
         {
             ReportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
             _visibilityManager = visibilityManager;
             _templateManager = templateManager;
             _unitConversionManager = unitConversionManager;
+            _unitManager = unitManager;
             _evenType = evenType;
             _contentType = contentType;
         }
@@ -62,10 +65,10 @@ namespace net.atos.daf.ct2.account.report
         {
             FromDate = reportSchedulerData.StartDate;
             ToDate = reportSchedulerData.EndDate;
-            var vehicleList = vehicleLists.FirstOrDefault();
-            VIN = vehicleList.VIN;
-            VehicleName = vehicleList.VehicleName;
-            RegistrationNo = vehicleList.RegistrationNo;
+            VINs = vehicleLists.Select(s => s.VIN);
+            //VIN = vehicleList.VIN;
+            //VehicleName = vehicleList.VehicleName;
+            //RegistrationNo = vehicleList.RegistrationNo;
             ReportSchedulerData = reportSchedulerData;
             TimeZoneName = reportSchedulerData.TimeZoneId > 0 ? TimeZoneSingleton.GetInstance(_reportSchedularRepository).GetTimeZoneName(reportSchedulerData.TimeZoneId) : TimeConstants.UTC;
             DateFormatName = reportSchedulerData.DateFormatId > 0 ? DateFormatSingleton.GetInstance(_reportSchedularRepository).GetDateFormatName(reportSchedulerData.DateFormatId) : FormatConstants.DATE_FORMAT;
@@ -92,35 +95,32 @@ namespace net.atos.daf.ct2.account.report
 
         public async Task<string> GenerateTable()
         {
-            var result = await ReportManager.GetFilteredTripDetails(new TripFilterRequest { StartDateTime = FromDate, EndDateTime = ToDate, VIN = VIN }, false);
-            //string res = JsonConvert.SerializeObject(result);
-            //var tripReportDetails = JsonConvert.DeserializeObject<List<TripReportDetails>>(res);
-            var tripReportPdfDetails = new List<TripReportPdfDetails>();
-            foreach (var tripData in result)
+            var result = await ReportManager.GetFleetUtilizationDetails(new FleetUtilizationFilter { StartDateTime = FromDate, EndDateTime = ToDate, VIN = VINs.ToList() });
+            var fleetUtilisationPdfDetails = new List<FleetUtilizationPdfDetails>();
+            foreach (var item in result)
             {
-                tripReportPdfDetails.Add(
-                    new TripReportPdfDetails
+                fleetUtilisationPdfDetails.Add(
+                    new FleetUtilizationPdfDetails
                     {
-                        StartDate = TimeZoneHelper.GetDateTimeFromUTC(tripData.StartTimeStamp, TimeZoneName, DateTimeFormat),
-                        EndDate = TimeZoneHelper.GetDateTimeFromUTC(tripData.EndTimeStamp, TimeZoneName, DateTimeFormat),
-                        //VIN = tripData.VIN,
-                        Distance = (int)await _unitConversionManager.GetDistance(tripData.Distance, DistanceUnit.Meter, UnitToConvert),
-                        IdleDuration = await _unitConversionManager.GetTimeSpan(tripData.IdleDuration, TimeUnit.Seconds, UnitToConvert),
-                        AverageSpeed = (int)await _unitConversionManager.GetSpeed(tripData.AverageSpeed, SpeedUnit.MeterPerMilliSec, UnitToConvert),
-                        AverageWeight = (int)await _unitConversionManager.GetWeight(tripData.AverageWeight, WeightUnit.KiloGram, UnitToConvert),
-                        Odometer = (int)await _unitConversionManager.GetDistance(tripData.Odometer, DistanceUnit.Meter, UnitToConvert),
-                        StartPosition = tripData.StartPosition,
-                        EndPosition = tripData.EndPosition,
-                        //FuelConsumed = tripData.FuelConsumed,
-                        DrivingTime = await _unitConversionManager.GetTimeSpan(tripData.DrivingTime, TimeUnit.Seconds, UnitToConvert),
-                        Alerts = tripData.Alert,
-                        Events = tripData.Events,
-                        FuelConsumed100km = await _unitConversionManager.GetVolumePerDistance(tripData.FuelConsumed100km, VolumePerDistanceUnit.MilliLiterPerMeter, UnitToConvert),
+                        VehicleName = item.VehicleName,
+                        VIN = item.VIN,
+                        RegistrationNumber = item.RegistrationNumber,
+                        Distance = (int)await _unitConversionManager.GetDistance(item.Distance, DistanceUnit.Meter, UnitToConvert),
+                        NumberOfTrips = item.NumberOfTrips,
+                        TripTime = await _unitConversionManager.GetTimeSpan(item.TripTime, TimeUnit.Seconds, UnitToConvert),
+                        DrivingTime = await _unitConversionManager.GetTimeSpan(item.DrivingTime, TimeUnit.Seconds, UnitToConvert),
+                        IdleDuration = await _unitConversionManager.GetTimeSpan(item.IdleDuration, TimeUnit.Seconds, UnitToConvert),
+                        StopTime = await _unitConversionManager.GetTimeSpan(item.StopTime, TimeUnit.Seconds, UnitToConvert),
+                        AverageDistancePerDay = (int)await _unitConversionManager.GetDistance(item.AverageDistancePerDay, DistanceUnit.Meter, UnitToConvert),
+                        AverageSpeed = (int)await _unitConversionManager.GetSpeed(item.AverageSpeed, SpeedUnit.MeterPerMilliSec, UnitToConvert),
+                        AverageWeightPerTrip = (int)await _unitConversionManager.GetWeight(item.AverageWeightPerTrip, WeightUnit.KiloGram, UnitToConvert),
+                        Odometer = (int)await _unitConversionManager.GetDistance(item.Odometer, DistanceUnit.Meter, UnitToConvert)
+
                     });
             }
             var html = ReportHelper
-                        .ToDataTableAndGenerateHTML<TripReportPdfDetails>
-                            (tripReportPdfDetails);
+                        .ToDataTableAndGenerateHTML<FleetUtilizationPdfDetails>
+                            (fleetUtilisationPdfDetails);
             //, await _reportSchedularRepository.GetColumnName(ReportSchedulerData.ReportId, ReportSchedulerData.Code)
             return await Task.FromResult<string>(html);
         }

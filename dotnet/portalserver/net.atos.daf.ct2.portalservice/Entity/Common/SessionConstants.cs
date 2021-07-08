@@ -7,5 +7,6 @@
         public static string RoleKey = "role_id";
         public static string OrgKey = "org_id";
         public static string ContextOrgKey = "context_org_id";
+        public static string FeaturesKey = "user_features";
     }
 }

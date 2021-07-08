@@ -116,6 +116,12 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     response.Code = Responsecode.Success;
                     response.Message = entity.ReportConstants.GET_ECOSCORE_PROFILE_SUCCESS_MSG;
+
+                    ProfileType profileType = (ProfileType)Convert.ToChar(context.RequestHeaders.Get("allowed_type").Value);
+
+                    if (profileType != ProfileType.None)
+                        result = result.Except(result.Where(x => x.Type != profileType)).ToList();
+
                     response.Profiles.AddRange(MapEcoScoreProfileResponse(result));
                 }
                 else
@@ -151,7 +157,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     ProfileId = profile.Id,
                     ProfileName = profile.Name ?? string.Empty,
                     ProfileDescription = profile.Description ?? string.Empty,
-                    IsDeleteAllowed = profile.IsDeleteAllowed,
+                    IsDeleteAllowed = profile.Type == ProfileType.None,
                     OrganizationId = Convert.ToInt32(profile.OrganizationId),
                 });
             }

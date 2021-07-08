@@ -57,6 +57,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   onLoadData: any = [];
   tableInfoObj: any = {};
   tableDetailsInfoObj: any = {};
+  totalDriverCount : number = 0;
 
   tripTraceArray: any = [];
   startTimeDisplay: any = '00:00:00';
@@ -67,7 +68,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
   displayedColumns = ['driverName', 'driverId', 'startTime', 'endTime', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
-  detaildisplayedColumns = ['specificdetailstarttime', 'specificdetaildrivetime', 'specificdetailworktime', 'specificdetailservicetime', 'specificdetailresttime', 'specificdetailavailabletime'];
+  detaildisplayedColumns = ['startTime', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
   
   fromDisplayDate: any;
   toDisplayDate : any;
@@ -97,17 +98,22 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     serviceTime:true,
     restTime:true,
     driveTime:true,
-    specificdetailsendtime:true,
-    specificdetailstarttime:true,
-    specificdetailworktime:true,
-    specificdetailavailabletime:true,
-    specificdetailservicetime:true,
-    specificdetailresttime:true,
-    specificdetaildrivetime:true,
+    
+
+  };
+
+  showDetailsField:any={
+    endTime:true,
+    startTime:true,
+    workTime:true,
+    availableTime:true,
+    serviceTime:true,
+    restTime:true,
+    driveTime:true,
     specificdetailchart : true,
 
 
-  };
+  }
   
   finalDriverList : any = [];
   finalVehicleList : any =[];
@@ -202,31 +208,31 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     },
     {
       key: 'da_report_specificdriver_details_endtime',
-      value: 'specificdetailsendtime'
+      value: 'endTime'
     },
     {
       key: 'da_report_specificdriver_details_starttime',
-      value: 'specificdetailstarttime'
+      value: 'startTime'
     },
     {
       key: 'da_report_specificdriver_details_worktime',
-      value: 'specificdetailworktime'
+      value: 'workTime'
     },
     {
       key: 'da_report_specificdriver_details_availabletime',
-      value: 'specificdetailavailabletime'
+      value: 'availableTime'
     },
     {
       key: 'da_report_specificdriver_details_servicetime',
-      value: 'specificdetailservicetime'
+      value: 'serviceTime'
     },
     {
       key: 'da_report_specificdriver_details_resttime',
-      value: 'specificdetailresttime'
+      value: 'restTime'
     },
     {
       key: 'da_report_specificdriver_details_drivetime',
-      value: 'specificdetaildrivetime'
+      value: 'driveTime'
     },
     {
       key: 'da_report_specificdriver_details_charts',
@@ -386,7 +392,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           if (index > -1) {
               let _detailvalue = search[0]['value'];
               this.detaildisplayedColumns.splice(detailIndex, 1);
-              this.showField[_detailvalue] = false;
+              this.showDetailsField[_detailvalue] = false;
           }
         }
 
@@ -402,7 +408,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(){
-    console.log("component destroy...");
+   // console.log("component destroy...");
     this.searchFilterpersistData["vehicleGroupDropDownValue"] = this.driverTimeForm.controls.vehicleGroup.value;
     this.searchFilterpersistData["vehicleDropDownValue"] = this.driverTimeForm.controls.vehicle.value;
     this.searchFilterpersistData["driverDropDownValue"] = this.driverTimeForm.controls.driver.value;
@@ -526,7 +532,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   allDriversSelected = true;
-
+  allDriverData : any;
   onSearch(){
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
@@ -569,25 +575,71 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
         this.hideloader();
         let tripData = _tripData;
-       
-
+        _tripData["driverActivities"]= [
+          {
+            "driverId": "NL B000384974000000",
+            "driverName": "Hero Honda",
+            "vin": "XLR0998HGFFT76657",
+            "activityDate": 1624272277000,
+            "startTime": 1624273297000,
+            "endTime": 1624273297000,
+            "code": 3,
+            "restTime": 995000,
+            "availableTime": 0,
+            "workTime": -940935000,
+            "driveTime": 2665000,
+            "serviceTime": -938270000
+          },
+          {
+            "driverId": "PH B110000123456021",
+            "driverName": "Namita1 Patil",
+            "vin": "XLR0998HGFFT76657",
+            "activityDate": 1623330688000,
+            "startTime": 1623333767000,
+            "endTime": 1623333767000,
+            "code": 0,
+            "restTime": 1033000,
+            "availableTime": 646000,
+            "workTime": 0,
+            "driveTime": 0,
+            "serviceTime": 646000
+          },
+          {
+            "driverId": "PH B110000123456021",
+            "driverName": "Namita1 Patil",
+            "vin": "XLR0998HGFFT76657",
+            "activityDate": 1623330688000,
+            "startTime": 1623333767000,
+            "endTime": 1623333767000,
+            "code": 0,
+            "restTime": 1033000,
+            "availableTime": 646000,
+            "workTime": 0,
+            "driveTime": 0,
+            "serviceTime": 646000
+          }
+        ]
         if(this.allDriversSelected){
           this.onSearchData = tripData;
 
+          
           this.setGeneralDriverValue();
 
-          let convertedInitData = this.reportMapService.getDriverTimeDataBasedOnPref(tripData.driverActivities, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-          let updatedDriverData = this.makeDetailDriverList(convertedInitData);
-          console.log(updatedDriverData)
-          this.updateDataSource(convertedInitData);
-          this.setDataForAll();
+          let updatedDriverData = this.makeDetailDriverList(tripData.driverActivities);
+          this.totalDriverCount = updatedDriverData.length;
+          this.allDriverData = [];
+          this.allDriverData = updatedDriverData;
+          let tableData = updatedDriverData.map(item =>item.cummulativeDriverList)
+          this.updateDataSource(tableData);
         }
         else{
-         
-          this.driverDetails = tripData.driverActivities;
+          this.driverDetails = [];
+          this.driverDetails = [...tripData.driverActivities];
+          let updatedDriverData = this.makeDetailDriverList(tripData.driverActivities);
+          this.totalDriverCount = updatedDriverData.length;
+          this.detailConvertedData = [];
           this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-          this.setGeneralDriverDetailValue();
-          this.setSingleDriverData();
+          this.setGeneralDriverDetailValue(updatedDriverData[0]["cummulativeDriverList"]);
         }
        
 
@@ -602,36 +654,57 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 
   makeDetailDriverList(driverData: any){
     let _driverArr: any = [];
+    let _cummulativeDriverList : any;
     let _arr: any = driverData.map(item => item.driverId).filter((value, index, self) => self.indexOf(value) === index);
     if(_arr.length > 0){
       _arr.forEach(element => {
         let _data = driverData.filter(i => i.driverId == element);
         if(_data.length > 0){
-          _driverArr.push({
+          let startTime = _data[0]['startTime'];
+          let endTime = _data[_data.length-1]['endTime'];
+          let restTime = 0;
+          let serviceTime = 0;
+          let availableTime = 0;
+          let workTime = 0;
+          let driveTime = 0;
+
+          _data.forEach(element => {
+            
+             restTime  +=  element.restTime;
+             serviceTime  +=  element.serviceTime;
+             availableTime  +=  element.availableTime;
+             workTime  +=  element.workTime;
+             driveTime  +=  element.driveTime;
+
+            
+              
+          });
+
+          _cummulativeDriverList = {
             driverId: _data[0].driverId,
             driverName: _data[0].driverName,
-            startTime: _data[0].startTime,
-            endTime: _data[0].endTime,
-            restTime: _data[0].restTime,
-            serviceTime: _data[0].serviceTime,
-            availableTime: _data[0].availableTime,
-            workTime: _data[0].workTime,
-            driveTime: _data[0].driveTime,
+            startTime: startTime,
+            endTime: endTime,
+            restTime: restTime,
+            serviceTime: serviceTime,
+            availableTime: availableTime,
+            workTime: workTime,
+            driveTime: driveTime,
+          }
+          let _updateCummulative = this.reportMapService.getDriverTimeDataBasedOnPref(_cummulativeDriverList, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+       
+          _driverArr.push({
+              
+            cummulativeDriverList:_updateCummulative,
             driverDetailList: _data
           });
         }
       });
+        
     }
     return _driverArr;
   }
-  setDataForAll(){
-    
-  }
-
-  setSingleDriverData(){
-
-  }
-
+ 
   onReset(){
     this.internalSelection = false;
     this.setDefaultStartEndTime();
@@ -729,7 +802,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.vehicleDD = [];
     this.vehicleGroupListData=[];
 
-    console.log(driverList.length)
+    //console.log(driverList.length)
     let distinctDriver;
     if( driverList && driverList.length > 0){
       distinctDriver = driverList.filter((value, index, self) => self.indexOf(value) === index);
@@ -746,8 +819,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           }
         });
       }
-      console.log(filteredDriverList)
-      console.log(finalDriverList)
+      //console.log(filteredDriverList)
+      //console.log(finalDriverList)
 
       if(vinList.length > 0){
         distinctVin = vinList.filter((value, index, self) => self.indexOf(value) === index);
@@ -766,8 +839,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         }
       }
 
-      console.log(filteredVehicleList);
-      console.log(finalVehicleList);
+      //console.log(filteredVehicleList);
+      //console.log(finalVehicleList);
       this.driverListData = filteredDriverList;
       this.vehicleListData = filteredVehicleList;
       this.vehicleGroupListData = finalVehicleList;
@@ -939,22 +1012,18 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.selectedDriverData = _row;
     let setId = (this.driverListData.filter(elem=>elem.driverID === _row.driverId)[0]['driverID']);
     this.driverTimeForm.get('driver').setValue(setId);
-    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
-    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
-    let qParam = {
-      "startDateTime": _startTime,
-      "endDateTime": _endTime,
-      "vin": this.selectedDriverData['vin'],
-      "driverId": this.selectedDriverData['driverId']
-    }
-    this.reportService.getSelectedDriverDetails(qParam).subscribe((_detailData:any)=>{
-        
-        this.driverSelected = true;
-        this.driverDetails = _detailData.driverActivities;
-        this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-        this.setGeneralDriverDetailValue();
-        this.setSingleDriverData();
-    })
+    this.driverDetails = [];
+    this.allDriverData.forEach(element => {
+      if(element.cummulativeDriverList.driverId === _row.driverId){
+        //console.log(element.driverDetailList)
+        this.driverDetails = [...element.driverDetailList];
+        this.setGeneralDriverDetailValue(element.cummulativeDriverList);
+     }
+    });
+ //   this.driverDetails = this.allDriverData.map(item=>item.driverDetailList).filter(i=>i.driverID === _row.driverId)
+ 
+    this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+    this.driverSelected = true;
     // this.driverDetails = 
     //   [
     //           {
@@ -1016,34 +1085,22 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 
   }
 
-  setGeneralDriverDetailValue(){
-    this.totalDriveTime = 0;
-    this.totalWorkTime = 0;
-    this.totalRestTime = 0;
-    this.totalAvailableTime= 0;
-    this.totalServiceTime = 0;
-
+  setGeneralDriverDetailValue(_totalValue){
     this.fromDisplayDate = this.formStartDate(this.startDateValue);
     this.toDisplayDate = this.formStartDate(this.endDateValue);
-    this.driverDetails.forEach(element => {
-    this.totalDriveTime += element.driveTime,
-    this.totalWorkTime += element.workTime,
-    this.totalRestTime += element.restTime,
-    this.totalAvailableTime += element.availableTime,
-    this.totalServiceTime += element.serviceTime
-    });
+   
       this.tableDetailsInfoObj= {
         fromDisplayDate : this.fromDisplayDate,
         toDisplayDate : this.toDisplayDate,
         fromDisplayOnlyDate :  this.fromDisplayDate.split(" ")[0],
         toDisplayOnlyDate : this.toDisplayDate.split(" ")[0],
-        selectedDriverName: this.driverDetails[0]['driverName'],
-        selectedDriverId : this.driverDetails[0]['driverId'],
-        driveTime: Util.getHhMmTime(this.totalDriveTime),
-        workTime: Util.getHhMmTime(this.totalWorkTime),
-        restTime: Util.getHhMmTime(this.totalRestTime),
-        availableTime: Util.getHhMmTime(this.totalAvailableTime),
-        serviceTime: Util.getHhMmTime(this.totalServiceTime)
+        selectedDriverName: _totalValue['driverName'],
+        selectedDriverId : _totalValue['driverId'],
+        driveTime: _totalValue.driveTime,
+        workTime: _totalValue.workTime,
+        restTime: _totalValue.restTime,
+        availableTime: _totalValue.availableTime,
+        serviceTime: _totalValue.serviceTime,
 
       }
   }
