@@ -53,7 +53,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                     LimitValue = kpi.LimitValue,
                     TargetValue = kpi.TargetValue,
                     LowerValue = kpi.LowerValue,
-                    UpperValue = kpi.UpperValue
+                    UpperValue = kpi.UpperValue,
+                    LimitType = Convert.ToString(kpi.LimitType)
                 });
             }
             return grpcRequest;
