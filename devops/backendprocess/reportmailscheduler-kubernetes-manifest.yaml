@@ -1,0 +1,57 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: reportmailscheduler
+  labels:
+    app.kubernetes.io/name: reportmailscheduler
+    app.kubernetes.io/type: reportmailscheduler
+spec:
+  schedule: "#{ReportMailSchedulerCronJobFirstRunMin}# #{ReportMailSchedulerCronJobFirstRun}# * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          automountServiceAccountToken: false
+          securityContext:
+            runAsUser: 10001
+            runAsGroup: 3000
+            fsGroup: 10001
+            runAsNonRoot: true
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - reportmailscheduler
+                  - key: app.kubernetes.io/type
+                    operator: In
+                    values:
+                    - reportmailscheduler
+                topologyKey: "kubernetes.io/hostname"
+          containers:
+          - name: reportmailscheduler
+            image: #{acrurl}#/reportmailscheduler
+            imagePullPolicy: "Always"
+            volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                - all
+            resources:
+              limits:
+                cpu: 100m
+                memory: 256Mi
+              requests:
+                cpu: 50m
+                memory: 128Mi
+          volumes:
+          - name: tmp
+            emptyDir: {}
+          restartPolicy: OnFailure
