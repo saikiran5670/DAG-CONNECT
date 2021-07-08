@@ -514,7 +514,6 @@ ngOnDestroy(){
         });
       } 
     });
-    console.log("categoryArr:: ", categoryArr)
 
     return categoryArr;
   }

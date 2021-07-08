@@ -171,7 +171,10 @@ export class ReportMapService {
               <td style='width: 100px;'>Category:</td> <td><b>${element.categoryName}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Address:</td> <td><b>${element.poiAddress}</b></td>
+              <td style='width: 100px;'>Sub-Category:</td> <td><b>${element.subCategoryName != '' ? element.subCategoryName : '-'}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>Address:</td> <td><b>${element.poiAddress != '' ? element.poiAddress : '-'}</b></td>
             </tr>
           </table>`
           });
