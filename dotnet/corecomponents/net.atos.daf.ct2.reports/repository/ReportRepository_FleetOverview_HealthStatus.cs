@@ -132,7 +132,7 @@ namespace net.atos.daf.ct2.reports.repository
             else if (string.IsNullOrEmpty(vehicleHealthStatusRequest.WarningType) || vehicleHealthStatusRequest.WarningType == "All")
             {
 
-                query += " and lws.warning_type = Any('A','D') ";
+                query += " and lws.warning_type in ('A','D') ";
             }
             query += ")select distinct *from WarningData";
             var healthStatusList = (List<VehicleHealthResult>)await _dataMartdataAccess.QueryAsync<VehicleHealthResult>(query, parameter);
