@@ -786,6 +786,8 @@ message FleetFuelDetails {
     google.protobuf.StringValue CO2Emmision = 32;
     string AverageTrafficClassificationValue = 33;
     string IdlingConsumptionValue = 34;
+    google.protobuf.StringValue DriverID = 35;
+    google.protobuf.StringValue DriverName = 36;
 }
 message FleetFuelTripDetails {
     string VehicleName = 1;
