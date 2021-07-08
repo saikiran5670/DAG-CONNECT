@@ -1099,6 +1099,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                $"{ nameof(GetVehicleHealthReport) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(request),
+                 _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
             }
