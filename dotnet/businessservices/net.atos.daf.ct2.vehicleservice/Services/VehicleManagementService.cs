@@ -38,12 +38,12 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 
         }
 
-        public override async Task<VehiclesBySubscriptionDetailsResponse> GetVehicleBySubscriptionId(subscriptionIdRequest request, ServerCallContext context)
+        public override async Task<VehiclesBySubscriptionDetailsResponse> GetVehicleBySubscriptionId(SubscriptionIdRequest request, ServerCallContext context)
         {
             try
             {
                 VehiclesBySubscriptionDetailsResponse objVehiclesBySubscriptionDetailsResponse = new VehiclesBySubscriptionDetailsResponse();
-                var data = await _vehicleManager.GetVehicleBySubscriptionId(request.SubscriptionId);
+                var data = await _vehicleManager.GetVehicleBySubscriptionId(request.SubscriptionId, request.State);
                 _logger.Info("GetVehicleBySubscriptionId method in vehicle service called.");
                 foreach (var item in data)
                 {
