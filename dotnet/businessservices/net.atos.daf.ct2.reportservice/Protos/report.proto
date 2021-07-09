@@ -277,6 +277,8 @@ message TripDetails {
     double StartPositionLongitude=20;
     double EndPositionLattitude=21;
     double EndPositionLongitude=22;
+    string RegistrationNo =23;
+    string VehicleName=24;
 }
 message LiveFleetPosition {
     double GpsAltitude=1;
