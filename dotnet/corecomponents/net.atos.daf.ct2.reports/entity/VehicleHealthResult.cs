@@ -19,11 +19,11 @@
         public double LctsLatestReceivedPositionLattitude { get; set; }
         public double LctsLatestReceivedPositionLongitude { get; set; }
         public double LctsLatestReceivedPositionHeading { get; set; }
-        public int LctsLatestGeolocationAddressId { get; set; }
+        //   public int LctsLatestGeolocationAddressId { get; set; }
         public double LctsStartPositionLattitude { get; set; }
         public double LctsStartPositionLongitude { get; set; }
         public double LctsStartPositionHeading { get; set; }
-        public int LctsStartGeolocationAddressId { get; set; }
+        // public int LctsStartGeolocationAddressId { get; set; }
         public long? LctsLatestProcessedMessageTimestamp { get; set; }
         public string LctsVehicleHealthStatusType { get; set; }
         public int LctsLatestWrningClass { get; set; }
@@ -32,8 +32,13 @@
         public long? LctsLatestWarningTimestamp { get; set; }
         public double LctsLatestWarningPositionLatitude { get; set; }
         public double LctsLatestWarningPositionLongitude { get; set; }
-        public int LctsLatestWarningGeolocationAddressId { get; set; }
-        public string LctsAddress { get; set; }
+        // public int LctsLatestWarningGeolocationAddressId { get; set; }
+        public int Latgeoadd_LatestGeolocationAddressId { get; set; }
+        public string Latgeoadd_LatestGeolocationAddress { get; set; }
+        public int Stageoadd_StartGeolocationAddressId { get; set; }
+        public string Stageoadd_StartGeolocationAddress { get; set; }
+        public int Wangeoadd_LatestWarningGeolocationAddressId { get; set; }
+        public string Wangeoadd_LatestWarningGeolocationAddress { get; set; }
 
         //warningdata
         public int WarningId { get; set; }

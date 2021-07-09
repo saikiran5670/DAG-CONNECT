@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testservice-auto-grpc
+spec:
+  selector:
+    matchLabels:
+      run: testservice-auto-grpc
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: testservice-auto-grpc
+    spec:
+      containers:
+      - name: testservice-auto-grpc
+        image: dafdev017756.azurecr.io/testservice-auto
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: testservice-auto
+spec:
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    run: testservice-auto-grpc

@@ -26,7 +26,7 @@ service VehicleService {
   rpc Terminate (VehicleTerminateRequest) returns (VehicleGroupDeleteResponce);
   rpc SetOptInStatus (VehicleOptInRequest) returns (VehicleGroupDeleteResponce);
   rpc GetVehicle (VehicleIdRequest) returns (VehicleDetailsResponce);
-  rpc GetVehicleBySubscriptionId (subscriptionIdRequest) returns (VehiclesBySubscriptionDetailsResponse);
+  rpc GetVehicleBySubscriptionId (SubscriptionIdRequest) returns (VehiclesBySubscriptionDetailsResponse);
   rpc GetVehicleGroupWithVehCount (VehicleGroupLandingRequest) returns (VehicleGroupLandingResponse);
 
   rpc GetDynamicAllVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
@@ -50,8 +50,9 @@ message VehiclesBySubscriptionDetails{
  int32 id = 5;
 }
 
-message subscriptionIdRequest{
- int32 subscriptionId = 1;
+message SubscriptionIdRequest{
+ int32 SubscriptionId = 1;
+ string State = 2;
 }
 
 enum VehicleStatusType{
@@ -377,6 +378,7 @@ message VehicleConnectResponse {
   repeated VehicleConnection VehicleConnectedList = 3;
   repeated VehicleConnection VehicleConnectionfailedList = 4;
 }
+
 message VehicleCountFilterRequest 
 {
     int32 VehicleGroupId =1;

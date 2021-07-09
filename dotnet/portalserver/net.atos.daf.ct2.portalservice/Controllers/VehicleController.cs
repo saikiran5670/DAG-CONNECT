@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using log4net;
@@ -949,19 +950,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("getvehiclebysubscriptionid/{subscriptionId}")]
-        public async Task<IActionResult> GetVehicleBySubscriptionId([FromRoute] int subscriptionId)
+        [Route("getvehiclebysubscriptionid")]
+        public async Task<IActionResult> GetVehicleBySubscriptionId([FromQuery] int subscriptionId, string state)
         {
             try
             {
                 _logger.Info("GetVehicleBySubscriptionId method in vehicle API called.");
-                if (subscriptionId <= 0)
+
+                if (subscriptionId <= 0 ||
+                    string.IsNullOrEmpty(state) ||
+                    (!string.IsNullOrEmpty(state) && state.Length != 1) ||
+                    (!string.IsNullOrEmpty(state) && !new string[] { "A", "I" }.Contains(state)))
                 {
                     return StatusCode(400, string.Empty);
                 }
-                VehicleBusinessService.subscriptionIdRequest Vid = new VehicleBusinessService.subscriptionIdRequest();
-                Vid.SubscriptionId = subscriptionId;
-                var response = await _vehicleClient.GetVehicleBySubscriptionIdAsync(Vid);
+
+                VehicleBusinessService.SubscriptionIdRequest vid = new VehicleBusinessService.SubscriptionIdRequest();
+                vid.SubscriptionId = subscriptionId;
+                vid.State = state;
+                var response = await _vehicleClient.GetVehicleBySubscriptionIdAsync(vid);
 
                 if (response != null)
                 {

@@ -7,6 +7,7 @@ namespace net.atos.daf.ct2.reports.entity
     public class FleetFuelDetails
     {
         public string VehicleName { get; set; }
+        public string Tripid { get; set; }
         public string VIN { get; set; }
         public string VehicleRegistrationNo { get; set; }
         public long Distance { get; set; }
@@ -36,6 +37,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string DriverID { get; set; }
         public string DriverName { get; set; }
 
+        public List<LiveFleetPosition> LiveFleetPosition { get; set; }
         //public string DPAAnticipationScore { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
         //public string DPABrakingScore { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
         //public string IdlingPTOScore { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
