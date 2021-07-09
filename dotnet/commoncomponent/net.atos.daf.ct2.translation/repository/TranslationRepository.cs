@@ -182,7 +182,24 @@ namespace net.atos.daf.ct2.translation.repository
                     {
                         if (dropdownName == "timezone")
                         {
-                            langagugeQuery = @"select tc.id,t.name,t.code,'(' || tc.ut_coff_set || ') ' || t.value as value,t.type from master." + dropdownName + " tc inner join translation.translation t on tc.key = t.name";
+                            langagugeQuery = @"(select tc.id,t.name,t.code,
+                                                '(' || tc.ut_coff_set || ') ' || t.value as 
+                                                value,t.type from master.timezone tc inner join translation.translation
+                                                t on tc.key = t.name Where t.code=  'EN-GB'
+                                                and tc.ut_coff_set like '% -%'
+                                                order by tc.ut_coff_set desc, t.name)
+                                                union All
+                                                (select tc.id,t.name,t.code,
+                                                '(' || tc.ut_coff_set || ') ' || t.value as 
+                                                value,t.type from master.timezone tc inner join translation.translation
+                                                t on tc.key = t.name Where t.code=  'EN-GB'
+                                                and tc.ut_coff_set like '% +%'
+                                                order by tc.ut_coff_set asc, t.name asc)";
+                            var parameters = new DynamicParameters();
+                            parameters.Add("@code", langagugeCode);
+                            IEnumerable<Translations> translationstimezone = await _dataAccess.QueryAsync<Translations>(langagugeQuery, parameters);
+
+                            return translationstimezone;
                         }
                         else
                         {
@@ -223,22 +240,40 @@ namespace net.atos.daf.ct2.translation.repository
                     {
                         if (dropdownName == "timezone")
                         {
-                            langagugeQuery = @"SELECT  tc.id,
-                                        t.name,
-                                        t.code,
-                                       '(' || tc.ut_coff_set || ') ' || t.value as value,
-                                        t.type from master." + dropdownName + @" tc LEFT join translation.translation t
-                                        on tc.key = t.name 
-                                        where  
-                                        (t.code= @code)
-                                        union
-                                        SELECT  tc.id,t.name,t.code,'(' || tc.ut_coff_set || ') ' || t.value as value,t.type
-                                        from master." + dropdownName + @" tc 
-                                        LEFT join translation.translation t
-                                        on tc.key = t.name 
-                                        where   (t.code= 'EN-GB')
-                                        and t.name not in (SELECT name
-                                        FROM translation.translation where code= @code ) order by name";
+                            langagugeQuery = @"with descutc as (SELECT  tc.id,
+                                            t.name,
+                                            t.code,
+                                            '(' || tc.ut_coff_set || ') ' || t.value as value,
+                                            t.type from master.timezone tc LEFT join translation.translation t
+                                            on tc.key = t.name 
+                                            where  
+                                            (t.code= @code) and tc.ut_coff_set like '% -%'
+                                            union
+                                            SELECT  tc.id,t.name,t.code,'(' || tc.ut_coff_set || ') ' || t.value as value,t.type
+                                            from master.timezone tc 
+                                            LEFT join translation.translation t
+                                            on tc.key = t.name 
+                                            where   (t.code= 'EN-GB') and tc.ut_coff_set like '% -%'
+                                            and t.name not in (SELECT name
+                                            FROM translation.translation where code= @code ) order by value desc, name asc),
+                                            ascutc as (SELECT  tc.id,
+                                            t.name,
+                                            t.code,
+                                            '(' || tc.ut_coff_set || ') ' || t.value as value,
+                                            t.type from master.timezone tc LEFT join translation.translation t
+                                            on tc.key = t.name 
+                                            where  
+                                            (t.code= @code) and tc.ut_coff_set like '% +%'
+                                            union
+                                            SELECT  tc.id,t.name,t.code,'(' || tc.ut_coff_set || ') ' || t.value as value,t.type
+                                            from master.timezone tc 
+                                            LEFT join translation.translation t
+                                            on tc.key = t.name 
+                                            where   (t.code= 'EN-GB') and tc.ut_coff_set like '% +%'
+                                            and t.name not in (SELECT name
+                                            FROM translation.translation where code= @code) order by value asc,
+		                                               name asc)
+                                            (select * from descutc) union all (select * from ascutc)";
                         }
                         else
                         {
