@@ -989,7 +989,7 @@ export class ReportMapService {
     let _a = this.disableGroup.getObjects();
     if(_a && _a.length > 0){
       _a.forEach(element => {
-        if((chkBxId+1) == element.data.id){
+        if((chkBxId) == element.data.id){
           element.setStyle({
               lineWidth: 4, 
               strokeColor: _checked ? 'transparent' : 'grey'
