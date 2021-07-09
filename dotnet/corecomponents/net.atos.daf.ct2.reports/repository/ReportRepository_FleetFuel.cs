@@ -384,7 +384,7 @@ namespace net.atos.daf.ct2.reports.repository
 				Select
 					VIN				  
 				  , trip_id  as tripid
-				  , count(trip_id) as numberoftrip 
+				  , count(trip_id) as numberoftrips 
 				  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
 				  , SUM(etl_gps_distance)                                                  as etl_gps_distance
 				  , SUM(veh_message_distance)                                              as veh_message_distance
@@ -476,7 +476,7 @@ namespace net.atos.daf.ct2.reports.repository
                 }
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
                 throw;
             }
