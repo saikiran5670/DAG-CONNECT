@@ -25,5 +25,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         [Required(ErrorMessage = "Days is mandatory.")]
         [DaysRangeCheck(ErrorMessage = "Days is invalid.")]
         public int Days { get; set; }
+        [Required(ErrorMessage = "Langauguage code is required.")]
+        public string LanguageCode { get; set; }
     }
 }

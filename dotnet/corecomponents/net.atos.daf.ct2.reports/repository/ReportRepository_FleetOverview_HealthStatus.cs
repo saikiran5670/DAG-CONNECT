@@ -201,9 +201,9 @@ namespace net.atos.daf.ct2.reports.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@warningClass", warningClass);
                 parameter.Add("@warningNumber", warningNumber);
-                parameter.Add("@code", lngCode);
+                parameter.Add("@code", lngCode.ToLower());
                 string query = @" SELECT id, code, type, veh_type, class as WarningClass, number as WarningNumber, description as WarningName, advice as WarningAdvice from master.dtcwarning
-                                    where class= Any(@warningClass) and number = Any(@warningNumber) and((@code != '' and code = 'EN-GB') or(@code = '' and code = ''))";
+                                    where class= Any(@warningClass) and number = Any(@warningNumber) and((@code != '' and Lower(code) = @code) or(@code = '' and code = ''))";
                 warningList = await _dataAccess.QueryFirstOrDefaultAsync<List<WarningDetails>>(query, parameter);
             }
             catch (Exception)
