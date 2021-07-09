@@ -386,7 +386,7 @@
 
                 <span>{{ translationData.lblTo || 'To' }}: </span>
 
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.toDate }}</span>
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
 
               </span>
 
@@ -411,7 +411,7 @@
 
                 <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
 
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehName
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName
                   }}</span>
 
               </span>
@@ -430,7 +430,7 @@
 
             <span>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
 
-            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{summaryObj.noOfTrips}}</span>
+            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('noOfTrips')}}</span>
 
           </div>
 
@@ -438,7 +438,7 @@
 
             <span>{{ translationData.lblDistance || 'Distance' }}</span>
 
-            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{summaryObj.distance}}</span>
+            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('distance')}}{{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || ' km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || ' mile') : (translationData.lblmile || ' mile')  }}</span>
 
           </div>
 
@@ -446,7 +446,7 @@
 
             <span>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
 
-            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{summaryObj.fuelconsumed}}</span>
+            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}} I</span>
 
           </div>
 
@@ -454,7 +454,7 @@
 
             <span>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
 
-            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{summaryObj.idleDuration}}</span>
+            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('idleDuration')}} hh:mm</span>
 
           </div>
 
@@ -463,7 +463,7 @@
             <span>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
 
             <span
-              style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{summaryObj.fuelConsumption}}</span>
+              style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelConsumption')}}{{  (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' ltr/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || 'gallon/100mile') : (translationData.lblgallonmile || ' gallon/100mile')  }}</span>
 
           </div>
 
@@ -471,7 +471,7 @@
 
             <span>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</span>
 
-            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{summaryObj.co2emission}}</span>
+            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('co2emission')}} t</span>
 
           </div>
 

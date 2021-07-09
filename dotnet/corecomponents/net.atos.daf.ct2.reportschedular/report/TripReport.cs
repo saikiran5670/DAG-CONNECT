@@ -128,8 +128,8 @@ namespace net.atos.daf.ct2.account.report
         public async Task<string> GenerateTemplate(byte[] logoBytes)
         {
             if (!IsAllParameterSet) throw new Exception(TripReportConstants.ALL_PARAM_MSG);
-            var fromDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(FromDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
-            var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
+            var fromDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(FromDate, TimeZoneName, $"{DateFormatName} {TimeFormatName}"));
+            var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TimeZoneName, $"{DateFormatName} {TimeFormatName}"));
 
             StringBuilder html = new StringBuilder();
             //ReportTemplateContants.REPORT_TEMPLATE

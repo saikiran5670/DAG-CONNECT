@@ -59,7 +59,8 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   isKPI: any = false;
   lastUpdated: any;
   updatedBy: any;
-  defaultProfile: any;
+  defaultProfile: any
+  
 
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportService: ReportService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,) { }
 
@@ -82,7 +83,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.ecoScoreProfileForm = this._formBuilder.group({
       profileName: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc ]],
       profileDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
-      profileNameDropDownValue: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
+      defaultName: ['']
     },
     {
       validator: [
@@ -101,6 +102,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       if(this.actionType == 'manage'){
         this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile);  
         this.loadProfileKpis(this.selectedProfile);
+        this.setDefaultValue()
       }
     });
   }
@@ -160,6 +162,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   setDefaultValue(){
     this.ecoScoreProfileForm.get("profileDescription").setValue(this.selectedElementData[0].profileDescription);
     this.ecoScoreProfileForm.get("profileName").setValue(this.selectedElementData[0].profileName);
+    this.ecoScoreProfileForm.get("defaultName").setValue(this.selectedElementData[0].profileName);
   }
 
   createNewProfile(){
@@ -319,6 +322,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   
   toBack(){
     this.actionType = 'manage';
+    this.loadProfileData();
   }
 
   onChange(event){

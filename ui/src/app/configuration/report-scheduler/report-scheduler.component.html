@@ -120,7 +120,7 @@
             <ng-container matColumnDef="status">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
               <mat-cell *matCellDef="let row">
-              <button class='actionBtn' mat-flat-button (click)="onChangeReportSchedulerStatus(row)" matTooltip="{{ row.status == 'A' ? (translationData.lblClicktodeactivate || 'Click to Suspended') : translationData.lblClicktoactivate || 'Click to Activate' }}">
+              <button class='actionBtn' mat-flat-button (click)="onChangeReportSchedulerStatus(row)" matTooltip="{{ row.status == 'A' ? (translationData.lblClicktodeactivate || 'Click to Deactivate') : translationData.lblClicktoactivate || 'Click to Activate' }}">
                 <mat-slide-toggle color="primary" [checked]='row.status == "A" ? true : false' >
               </mat-slide-toggle>&nbsp;
               <span>{{ row.status == "A" ? (translationData.lblActive || 'Active') : translationData.lblSuspended || 'Suspended' }}</span>

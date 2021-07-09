@@ -12,7 +12,7 @@ export class BreakingScoreComponent implements OnInit {
   ecoScoreProfileKPIForm: FormGroup;
   @Input() actionType: any;
   @Input() selectedElementData: any;
-  @Input() isCreate: false;
+  @Input() kpiId: any;
   // @Input() createStatus: boolean;
   // @Input() viewFlag: boolean;
   @Output() createKPIEmit = new EventEmitter<object>();

@@ -86,7 +86,7 @@ tr {{ page-break-inside: avoid }}
 			<th>Average Weight Per Trip ({21})</th>
 			<th>Odometer ({22})</th>
 		</thead>
-		{27}
+		{1}
 	</table>
   </body>
 </html>";
