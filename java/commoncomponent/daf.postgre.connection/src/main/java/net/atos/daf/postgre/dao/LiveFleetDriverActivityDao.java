@@ -186,7 +186,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 			System.out.println("Vin for Driver Activity--->"+ row.getVin());
 		stmt_insert_driver_activity.setString(5, row.getVin()); // 5-vin
 		} else {
-			stmt_insert_driver_activity.setString(5, "");
+			stmt_insert_driver_activity.setString(5, row.getVid());
 		}
 		
 		
