@@ -35,6 +35,7 @@ public class MessageProcessing<U, T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(MessageProcessing.class);
 
+	
 	/* kafka topic data consuming as stream */
 	public void consumeBoschMessage(DataStream<KafkaRecord<U>> messageDataStream, String messageType, String key,
 			String sinkTopicName, Properties properties, Class<T> tClass) {
