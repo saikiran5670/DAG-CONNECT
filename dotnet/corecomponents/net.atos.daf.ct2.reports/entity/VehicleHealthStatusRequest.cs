@@ -20,5 +20,15 @@
         public string WarningAdvice { get; set; }
 
     }
+    public class DriverDetails
+    {
+
+        public int DriverId { get; set; }
+        public string DriverOptIn { get; set; }
+        public string DriverName { get; set; }
+        public string DriverStatus { get; set; }
+
+
+    }
 
 }
