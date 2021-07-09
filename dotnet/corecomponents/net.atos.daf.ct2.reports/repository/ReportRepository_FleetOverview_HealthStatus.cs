@@ -50,12 +50,12 @@ namespace net.atos.daf.ct2.reports.repository
                         ,cts.latest_warning_timestamp as LctsLatestWarningTimestamp
                         ,cts.latest_warning_position_latitude as LctsLatestWarningPositionLatitude
                         ,cts.latest_warning_position_longitude as LctsLatestWarningPositionLongitude,                      
-                        latgeoadd.id as latgeoadd_LatestGeolocationAddressId,
-                        coalesce(latgeoadd.address,'') as latgeoadd_LatestGeolocationAddress,
-                        stageoadd.id as stageoadd_StartGeolocationAddressId,
-                        coalesce(stageoadd.address,'') as stageoadd_StartGeolocationAddress,
-                        wangeoadd.id as wangeoadd_LatestWarningGeolocationAddressId,
-                        coalesce(wangeoadd.address,'') as wangeoadd_LatestWarningGeolocationAddress
+                        latgeoadd.id as latgeoaddLatestGeolocationAddressId,
+                        coalesce(latgeoadd.address,'') as latgeoaddLatestGeolocationAddress,
+                        stageoadd.id as stageoaddStartGeolocationAddressId,
+                        coalesce(stageoadd.address,'') as stageoaddStartGeolocationAddress,
+                        wangeoadd.id as wangeoaddLatestWarningGeolocationAddressId,
+                        coalesce(wangeoadd.address,'') as wangeoaddLatestWarningGeolocationAddress
 
                                        FROM livefleet.livefleet_current_trip_statistics cts
                                        inner join master.vehicle V on cts.vin = v.vin
