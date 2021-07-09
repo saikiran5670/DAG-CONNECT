@@ -590,7 +590,7 @@ namespace net.atos.daf.ct2.group
             {
                 var parameter = new DynamicParameters();
                 List<Group> groupList = new List<Group>();
-                var query = @"select id,object_type,group_type,argument,function_enum,organization_id,ref_id,name,description,created_at from master.group where 1=1 and function_enum <>'M' ";
+                var query = @"select id,object_type,group_type,argument,function_enum,organization_id,ref_id,name,description,created_at from master.group where 1=1 and COALESCE(function_enum,'') <> 'M' ";
 
                 if (groupFilter != null)
                 {

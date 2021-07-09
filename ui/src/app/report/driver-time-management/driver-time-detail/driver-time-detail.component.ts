@@ -78,12 +78,12 @@ export class DriverTimeDetailComponent implements OnInit {
   }
 
   setGraphData(){
-    let dateArray = this.detailConvertedData.map(data=>data.activityDate);
+    let dateArray = this.detailConvertedData.map(data=>data.startTime);
     let driveTimeArray = this.detailConvertedData.map(data=>data.driveTime);
     let workTimeArray = this.detailConvertedData.map(data=>data.workTime);
     let restTimeArray = this.detailConvertedData.map(data=>data.restTime);
     let availableTimeArray = this.detailConvertedData.map(data=>data.availableTime);
-
+//console.log(workTimeArray)
     this.barChartData = [
       { data: [6.0,6.0,6.0], label: 'Work', stack: 'a',backgroundColor: '#e85c2a', hoverBackgroundColor: '#e85c2a',barThickness: 10},
       { data: [6.0,6.0,6.0], label: 'Drive', stack: 'a',backgroundColor: '#29539b',hoverBackgroundColor: '#29539b',barThickness: 10},
@@ -156,7 +156,9 @@ export class DriverTimeDetailComponent implements OnInit {
                 }
             }
         }
-    }
+     },
+     
+    
     };
 
     

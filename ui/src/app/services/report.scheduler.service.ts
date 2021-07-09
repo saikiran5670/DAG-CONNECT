@@ -105,6 +105,18 @@ export class ReportSchedulerService {
           )
       .pipe(catchError(this.handleError));
   }
+
+  downloadReportFromEmail(token: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any>(
+        `${this.reportSchedulerServiceURL}/download?Token=${token}`
+          )
+      .pipe(catchError(this.handleError));
+  }
   
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);
