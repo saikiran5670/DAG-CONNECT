@@ -371,12 +371,12 @@
             </ng-container>          
 
               <ng-container matColumnDef="vehicleName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'VehicleName' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.vehicleName != '' ? row.vehicleName : '-' }}</mat-cell>
             </ng-container>         
                <ng-container matColumnDef="registrationNo">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRegistrationNo || 'RegistrationNo' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRegistrationNo || 'Registration No' }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.registrationNo != '' ? row.registrationNo : '-' }}</mat-cell>
             </ng-container>
