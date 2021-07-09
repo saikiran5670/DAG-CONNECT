@@ -1,13 +1,13 @@
 trigger:
-- none
-#  branches:
-#    include:
-#    - development
-#    - release
+#- none
+  branches:
+    include:
+    - development
+    - release
 #    - testing
-#  paths:
-#    include:
-#    - dotnet/businessservices/net.atos.daf.ct2.accountservice
+  paths:
+    include:
+    - dotnet/businessservices/net.atos.daf.ct2.accountservice
 
 variables:
  - name: imageName
