@@ -51,7 +51,9 @@ selectedStartTime: any = '00:00';
 selectedEndTime: any = '23:59'; 
 tripForm: FormGroup;
 mapFilterForm: FormGroup;
-displayedColumns = ['All', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
+// displayedColumns = ['All','vin', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
+// displayedColumns = ['All','vin','odometer','vehicleName','registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
+displayedColumns = ['All','vin','odometer','vehicleName','registrationNo','startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
 translationData: any;
 showMap: boolean = false;
 showBack: boolean = false;
@@ -702,6 +704,7 @@ ngOnDestroy(){
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
+    // console.log("----UpdateDataSource---initData", this.initData )
     this.showMap = false;
     this.selectedTrip.clear();
     if(this.initData.length > 0){
@@ -752,11 +755,18 @@ ngOnDestroy(){
       }
   });
 
-    let pdfColumns = [['Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
+    let pdfColumns = [['VIN','Vehicle Name','Registration Number.','Odometer','Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
+    // let pdfColumns = [['Odometer','Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
 
   let prepare = []
     this.initData.forEach(e=>{
+      // console.log("---actual data--pdf columns", this.initData)
       var tempObj =[];
+      
+      tempObj.push(e.vin); ////need to confirm from backend for key
+      tempObj.push(e.vehicleName); ////need to confirm from backend for key
+      tempObj.push(e.registrationNo); //need to confirm from backend for key
+      tempObj.push(e.odometer);
       tempObj.push(e.convertedStartTime);
       tempObj.push(e.convertedEndTime);
       tempObj.push(e.convertedDistance);
