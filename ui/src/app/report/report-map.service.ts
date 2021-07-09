@@ -1152,6 +1152,7 @@ export class ReportMapService {
       element.convertedAverageDistance = this.getDistance(element.averageDistancePerDay, unitFormat);
       element.convertedDistance = this.getDistance(element.distance, unitFormat);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
+      element.convertedFuelConsumed100Km = this.getFuelConsumed(element.fuelConsumption, unitFormat);
       // element.cruiseControlDistance3050 = this.getcruiseControlDistance3050(element.cruiseControlDistance3050, unitFormat);
 
     });

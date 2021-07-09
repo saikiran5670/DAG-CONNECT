@@ -50,6 +50,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   FuelData: any;
   selectedTrip = new SelectionModel(true, []);
   dataSource: any = new MatTableDataSource([]);
+  dataSource2: any = new MatTableDataSource([]);
   showMap: boolean = false;
   showMapPanel: boolean = false;
   tableExpandPanel: boolean = true;
@@ -208,16 +209,30 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       ranking: 1,
       vehicleName: 'Name List 0001',
       vin :'XLRTEMP4100G041999',
-      plateNo: '12 HH 71',
-      consumption: 25
+      vehicleRegistrationNo: '12 HH 71',
+      fuelConsumption: 0.4
     },
     {
-      ranking: 2,
+      ranking: 1,
       vehicleName: 'Name List 0002',
-      vin :'XLRTEMP4100G041991',
-      plateNo: '12 HH 72',
-      consumption: 35
-    }
+      vin :'XLRTEMP4100G041999',
+      vehicleRegistrationNo: '12 HH 71',
+      fuelConsumption: 0.1
+    },
+    {
+      ranking: 1,
+      vehicleName: 'Name List 0003',
+      vin :'XLRTEMP4100G041999',
+      vehicleRegistrationNo: '12 HH 71',
+      fuelConsumption: 0.5
+    },
+    {
+      ranking: 1,
+      vehicleName: 'Name List 0004',
+      vin :'XLRTEMP4100G041999',
+      vehicleRegistrationNo: '12 HH 71',
+      fuelConsumption: 0.6
+    },
 
   ]
   
@@ -271,11 +286,11 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
 
   }
-  loadfleetFuelDetails(){
+  loadfleetFuelDetails(_vinData: any){
     let getFleetFuelObj = {
       "startDateTime": 1521843915459,
       "endDateTime": 1721843915459,
-      "viNs": ["XLR0998HGFFT76657"],
+      "viNs": _vinData,
       "LanguageCode": "EN-GB"
     }
     this.reportService.getFleetFuelDetails(getFleetFuelObj).subscribe((data:any) => {
@@ -284,12 +299,25 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
     this.updateDataSource(this.FuelData);
+
+    if(this.prefUnitFormat == 'dunit_Metric')
+    {
+    let rankingSortedData = this.FuelData.sort((a,b) => (a.fuelConsumption > b.fuelConsumption) ? 1 : ((b.fuelConsumption > a.fuelConsumption) ? -1 : 0))
+    this.updateRankingDataSource(rankingSortedData);
+  }
+    if(this.prefUnitFormat == 'dunit_Imperial')
+    {
+    let rankingSortedData = this.FuelData.sort((a,b) => (a.fuelConsumption > b.fuelConsumption) ? -1 : ((b.fuelConsumption > a.fuelConsumption) ? 1 : 0))
+    this.updateRankingDataSource(rankingSortedData);  
+  }
+
     })
   }
 
   loadsummaryDetails(){
     
   }
+
   getFleetPreferences(){
     this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       
@@ -356,7 +384,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         "endDateTime":_endTime,
         "viNs":  _vinData,
       }
-      this.loadfleetFuelDetails();
+      this.loadfleetFuelDetails(_vinData);
        this.setTableInfo();
       //  this.updateDataSource(this.FuelData);
       this.hideloader();
@@ -393,6 +421,17 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+    });
+  }
+
+  updateRankingDataSource(tableData: any) {
+    this.initData = tableData;
+    this.showMap = false;
+    this.selectedTrip.clear();
+    this.dataSource2 = new MatTableDataSource(tableData);
+    setTimeout(() => {
+      this.dataSource2.paginator = this.paginator;
+      this.dataSource2.sort = this.sort;
     });
   }
 
