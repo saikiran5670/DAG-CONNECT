@@ -324,8 +324,8 @@ getUnique(arr, comp) {
       title: this.translationData.lblReportScheduler || "Report Scheduler",
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",   
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.status == 'A') ? this.translationData.lblDeactivate || " Suspend" : this.translationData.lblActivate || " Activate",
-      status: rowData.status == 'A' ? 'Suspend' : 'Activate' ,
+      confirmText: (rowData.status == 'A') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
+      status: rowData.status == 'A' ? 'Deactivate' : 'Activate' ,
       name: rowData.reportName
     };
     const dialogConfig = new MatDialogConfig();
@@ -340,6 +340,8 @@ getUnique(arr, comp) {
           "status": rowData.status
         }
         this.reportSchedulerService.enableDisableScheduledReport(obj).subscribe((data) => {
+          let successMsg = "Status updated successfully."
+          this.successMsgBlink(successMsg);
           this.loadScheduledReports();
         }, error => {
           this.loadScheduledReports();

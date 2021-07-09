@@ -29,8 +29,8 @@
                 <mat-label style='display: flex;'>
                     <span>{{ translationData.lblProfileSelection || 'Profile Selection' }}</span>
                 </mat-label>
-                <mat-form-field appearance="outline" class="full-width" formControlName="profileNameDropDownValue">
-                  <mat-select placeholder="{{ translationData.lblTestProfile || 'Test Profile' }}" (selectionChange)="profileSelectionDropDown($event.value)">
+                <mat-form-field appearance="outline" class="full-width" formControlName="defaultName">
+                  <mat-select placeholder="{{ translationData.lblTestProfile || 'Test Profile' }}" formControlName="defaultName" (selectionChange)="profileSelectionDropDown($event.value)">
                     <mat-option *ngFor="let options of profileList" [value]="options.profileId">
                       {{options.profileName}}
                     </mat-option>
@@ -97,7 +97,7 @@
         </div>
         <div fxLayout="column" fxLayoutAlign="end">
             <div fxLayout="row" class='areaWidth'>
-                <button class='margin-right-10' mat-raised-button color="warn" *ngIf="actionType == 'manage'"
+                <button class='margin-right-10' mat-raised-button color="warn" *ngIf="actionType == 'manage'" [disabled]="!selectedElementData[0].isDeleteAllowed"
                 (click)='onDelete()'>{{ (translationData.lblDelete || 'Delete') }}</button>
                 <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" 
                     (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
@@ -119,7 +119,7 @@
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ kpiData.kpiName }}</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
-            <app-breaking-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='kpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+            <app-breaking-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='kpiData' [kpiId] = 1 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
     </mat-expansion-panel> 
 </div>
 <div class='bgtrans'>
@@ -131,33 +131,31 @@
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ fuelConsumption.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='fuelConsumption' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='fuelConsumption' [kpiId] = 2 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsage.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='cruiseControlUsage' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='cruiseControlUsage' [kpiId] = 3 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsage30_50.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='cruiseControlUsage30_50' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ brakeKpiData.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='brakeKpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='cruiseControlUsage30_50' [kpiId] = 4 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsage50_75.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='cruiseControlUsage50_75'  [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='cruiseControlUsage50_75'  [kpiId] = 5 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsageGreaterThan75.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='cruiseControlUsageGreaterThan75' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='cruiseControlUsageGreaterThan75' [kpiId] = 6 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ PTOUsage.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='PTOUsage' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='PTOUsage' [kpiId] = 7 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ PTODuration.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='PTODuration' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='PTODuration' [kpiId] = 8 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ averageDrivingSpeed.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='averageDrivingSpeed' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='averageDrivingSpeed' [kpiId] = 9 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ averageSpeed.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='averageSpeed'  [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='averageSpeed'  [kpiId] = 10 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ heavyThrottling.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='heavyThrottling' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='heavyThrottling' [kpiId] = 11 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ heavyThrottleDuration.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='heavyThrottleDuration' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='heavyThrottleDuration' [kpiId] = 12 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ idling.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='idling' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='idling' [kpiId] = 13 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ idleDuration.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='idleDuration' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='idleDuration' [kpiId] = 14 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
             </div>
     </mat-expansion-panel> 
 </div>
@@ -170,15 +168,15 @@
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ brakingScoreKpiData.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='brakingScoreKpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='brakingScoreKpiData' [kpiId] = 15 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ harshBrakingScoreKpiData.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='harshBrakingScoreKpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='harshBrakingScoreKpiData' [kpiId] = 16 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ harshBrakeDurationKpiData.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='harshBrakeDurationKpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='harshBrakeDurationKpiData' [kpiId] = 17 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ brakeKpiData.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='brakeKpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='brakeKpiData' [kpiId] = 18 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ brakeDurationKpiData.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='brakeDurationKpiData'  [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='brakeDurationKpiData'  [kpiId] = 19 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
             </div>
     </mat-expansion-panel> 
 </div>
@@ -189,7 +187,7 @@
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ anticipationKpiData.kpiName }}</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
-        <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='anticipationKpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+        <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='anticipationKpiData' [kpiId] = 20 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
     </mat-expansion-panel> 
 </div>
 <div class='bgtrans'>
@@ -201,9 +199,9 @@
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ otherWtKpiData.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='otherWtKpiData'[isCreate] = 'isCreate'(createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='otherWtKpiData'[kpiId] = 21 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ otherDistanceKpiData.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='otherDistanceKpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='otherDistanceKpiData' [kpiId] = 22 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
             </div>
     </mat-expansion-panel> 
 </div>

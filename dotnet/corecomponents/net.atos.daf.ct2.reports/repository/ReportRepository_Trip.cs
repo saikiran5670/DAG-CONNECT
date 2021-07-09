@@ -46,9 +46,9 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 List<TripDetails> lstTripEntityResponce = new List<TripDetails>();
                 string query = string.Empty;
-                query = @"SELECT id
+                query = @"SELECT TS.id
 	                        ,trip_id AS tripId
-	                        ,vin AS VIN
+	                        ,TS.vin AS VIN
 	                        ,start_time_stamp AS StartTimeStamp
 	                        ,end_time_stamp AS EndTimeStamp
 	                        ,veh_message_distance AS Distance
@@ -67,8 +67,11 @@ namespace net.atos.daf.ct2.reports.repository
 	                        ,no_of_alerts AS Alerts
 	                        ,no_of_events AS Events
 	                        ,(fuel_consumption / 100) AS FuelConsumed100km
-                        FROM tripdetail.trip_statistics
-                        WHERE vin = @vin
+							,VH.registration_no AS RegistrationNo
+							,VH.name AS VehicleName
+                        FROM tripdetail.trip_statistics TS
+						left join master.vehicle VH on TS.vin=VH.vin
+                        WHERE TS.vin = @vin
 	                        AND (
 		                        start_time_stamp >= @StartDateTime
 		                        AND end_time_stamp <= @EndDateTime
@@ -102,7 +105,7 @@ namespace net.atos.daf.ct2.reports.repository
                 lstTripEntityResponce = data;
                 return lstTripEntityResponce;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
