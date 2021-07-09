@@ -155,7 +155,7 @@
                 <div *ngFor="let userPOI of userPOIList; let i = index" class="full-width" fxLayoutGap="10px">
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                     <mat-checkbox (click)='$event.stopPropagation()'
-                    (change)='$event ? selectedPOI.toggle(userPOI) : null; changeUserPOISelection($event, userPOI, i)' [checked]='selectedPOI.isSelected(userPOI)'>{{ userPOI.categoryName }} ({{ userPOI.poiList.length }})</mat-checkbox>
+                    (change)='$event ? selectedPOI.toggle(userPOI) : null; changeUserPOISelection($event, userPOI, i)' [checked]='userPOI.parentChecked'>{{ userPOI.categoryName }} ({{ userPOI.poiList.length }})</mat-checkbox>
                     <mat-icon style='cursor: pointer;' *ngIf='userPOI.subCategoryPOIList.length > 0' (click)='openClosedUserPOI(i)'>
                       {{ userPOI.open ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
                     </mat-icon>
