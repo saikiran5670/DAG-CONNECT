@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
+using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reportservice.entity;
 using Newtonsoft.Json;
 using ReportComponent = net.atos.daf.ct2.reports;
@@ -121,13 +122,28 @@ namespace net.atos.daf.ct2.reportservice.Services
                     VINIds = request.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ?
                     vehicleDeatilsWithAccountVisibility.Select(x => x.Vin).Distinct().ToList() :
                     vehicleDeatilsWithAccountVisibility.Where(x => request.GroupIds.ToList().Contains(x.VehicleGroupId.ToString())).Select(x => x.Vin).Distinct().ToList(),
-                    Days = request.Days
+                    Days = request.Days,
                 };
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);
                 if (result?.Count > 0)
                 {
+                    List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.LatestWarningClass > 0).Select(x => x.LatestWarningClass).Distinct().ToList(), result.Where(p => p.LatestWarningNumber > 0).Select(x => x.LatestWarningNumber).Distinct().ToList(), request.LanguageCode);
+                    foreach (var fleetOverviewDetails in result)
+                    {
+                        foreach (WarningDetails warning in warningDetails)
+                        {
+                            if (fleetOverviewDetails.LatestWarningClass == warning.WarningClass && fleetOverviewDetails.LatestWarningNumber == warning.WarningNumber)
+                            {
+                                fleetOverviewDetails.LatestWarningName = warning.WarningName;
+                            }
+                        }
+                    }
                     string res = JsonConvert.SerializeObject(result);
-                    response.FleetOverviewDetailList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetOverviewDetails>>(res));
+                    response.FleetOverviewDetailList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetOverviewDetails>>(res, new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                        ReferenceLoopHandling = ReferenceLoopHandling.Serialize
+                    }));
                     response.Code = Responsecode.Success;
                     response.Message = Responsecode.Success.ToString();
                 }
@@ -138,6 +154,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 }
                 return await Task.FromResult(response);
             }
+
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
