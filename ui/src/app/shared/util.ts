@@ -9,18 +9,36 @@ export class Util {
         return _utc._d.getTime();
     }
 
-    public static getUTCDate(prefTimezone){
-        let date: any = moment.utc().tz(prefTimezone);
+    public static getUTCDate(prefTimezone: any){
+        let _t = prefTimezone.split(')');
+        let _timezone: any;
+        if(_t.length > 0){
+            _timezone = _t[1].trim();
+        }
+        let date: any = moment.utc().tz(_timezone ? _timezone : prefTimezone);
+        //let date: any = moment.utc().tz(prefTimezone);
         return date._d;
     }
 
     public static convertUtcToDate(_utc: any, timeZone: any){
-        let _date: any = moment.utc(_utc).tz(timeZone).format('YYYY/MM/DD hh:mm:ss');
+        let _t = timeZone.split(')');
+        let _timezone: any;
+        if(_t.length > 0){
+            _timezone = _t[1].trim();
+        }
+        let _date: any = moment.utc(_utc).tz(_timezone ? _timezone : timeZone).format('YYYY/MM/DD hh:mm:ss');
+        //let _date: any = moment.utc(_utc).tz(timeZone).format('YYYY/MM/DD hh:mm:ss');
         return (_date);
     }
 
     public static convertUtcToDateNoFormat(_utc: any, timeZone: any){
-        let _date: any = moment.utc(_utc).tz(timeZone);
+        let _t = timeZone.split(')');
+        let _timezone: any;
+        if(_t.length > 0){
+            _timezone = _t[1].trim();
+        }
+        let _date: any = moment.utc(_utc).tz(_timezone ? _timezone : timeZone);
+        //let _date: any = moment.utc(_utc).tz(timeZone);
         return (_date._d);
     }
 

@@ -447,18 +447,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
                 if (data.Code == ResponseCode.Success)
                 {
-                    if (data.Id > 0)
-                    {
-                        var pdfStreamResult = new MemoryStream();
-                        pdfStreamResult.Write(data.Report.ToByteArray(), 0, data.Report.Length);
-                        pdfStreamResult.Position = 0;
-                        string filename = data.FileName + ".pdf";
-                        return File(pdfStreamResult, "application/pdf", filename);
-                    }
-                    else
-                    {
-                        return StatusCode((int)data.Code, data.Message);
-                    }
+                    return Ok(data);
+                    //if (data.Id > 0)
+                    //{
+                    //    var pdfStreamResult = new MemoryStream();
+                    //    pdfStreamResult.Write(data.Report.ToByteArray(), 0, data.Report.Length);
+                    //    pdfStreamResult.Position = 0;
+                    //    string filename = data.FileName + ".pdf";
+                    //    return File(pdfStreamResult, "application/pdf", filename);
+                    //}
+                    //else
+                    //{
+                    //    return StatusCode((int)data.Code, data.Message);
+                    //}
                 }
                 if (data.Code == ResponseCode.InternalServerError)
                     return StatusCode((int)data.Code, String.Format(ReportSchedulerConstants.REPORTSCHEDULER_PARAMETER_NOT_FOUND_MSG, data.Message));
