@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from 'src/app/services/account.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-set-password',
@@ -20,11 +21,12 @@ export class SetPasswordComponent implements OnInit {
   token: string= '';
   isChangePwdSuccess: boolean = false;
   isResetPwdInvalidate: boolean= false;
+  cookiesFlag: boolean = true;
   errorMsg: string= '';
   errorCode: number= 0;
   isLinkActive: boolean= true;
 
-  constructor(public router: Router, private route: ActivatedRoute, public fb: FormBuilder, private accountService: AccountService) {
+  constructor(private cookieService: CookieService,public router: Router, private route: ActivatedRoute, public fb: FormBuilder, private accountService: AccountService) {
     this.setPasswordForm = this.fb.group({
       'newPassword': [null, Validators.compose([Validators.required, Validators.minLength(10), Validators.maxLength(256)])],
       'confirmPassword': [null, Validators.compose([Validators.required])],
@@ -34,6 +36,7 @@ export class SetPasswordComponent implements OnInit {
       ]
     });
 
+    this.cookiesFlag = this.cookieService.get('cookiePolicy') ? false : true;
     this.minCharacterTxt =  ("'$' characters min").replace('$', '10');
   }
 

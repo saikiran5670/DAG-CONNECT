@@ -1080,7 +1080,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Vehicle Health Summary
         [HttpGet]
-        [Route("getvehiclehealthstatus")]
+        [Route("fleetoverview/getvehiclehealthstatus")]
         public async Task<IActionResult> GetVehicleHealthReport([FromQuery] Entity.Report.VehicleHealthStatusRequest request)
         {
             try
