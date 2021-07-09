@@ -476,7 +476,7 @@ namespace net.atos.daf.ct2.reports.repository
                 }
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
             }
-            catch (System.Exception ex)
+            catch (System.Exception)
             {
                 throw;
             }
@@ -495,6 +495,7 @@ namespace net.atos.daf.ct2.reports.repository
 			(
 				Select
 					VIN
+                  ,trip_id                                                                 as tripid
 				  , driver1_id                                                             as DriverId
 				  , count(trip_id)                                                         as numberoftrips
 				  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
@@ -520,15 +521,19 @@ namespace net.atos.daf.ct2.reports.repository
 				  , SUM(dpa_score)                                                         as dpa_score
 				From
 					tripdetail.trip_statistics
-				where driver1_id =@DriverId and VIN =@Vin
+				where (start_time_stamp >= @FromDate 
+							   and end_time_stamp<= @ToDate) and VIN =@Vin and driver1_id =@DriverId
+
 				GROUP BY
 					driver1_id 
 				  , VIN
+                   ,trip_id
 			)
 		  , cte_combine as
 			(
 				SELECT
 					vh.name            as VehicleName
+                   ,tripid
 				  , fd.vin             as VIN
 				  , vh.registration_no as VehicleRegistrationNo
 				  , fd.DriverId
@@ -571,6 +576,26 @@ namespace net.atos.daf.ct2.reports.repository
 		dr.driver_id = cmb.driverId";
 
                 List<FleetFuelDetails> lstFleetDetails = (List<FleetFuelDetails>)await _dataMartdataAccess.QueryAsync<FleetFuelDetails>(queryFleetUtilization, parameterOfFilters);
+                if (lstFleetDetails?.Count > 0)
+                {
+
+                    // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
+                    string[] tripIds = lstFleetDetails.Select(item => item.Tripid).ToArray();
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
+                    if (lstLiveFleetPosition.Count > 0)
+                        foreach (FleetFuelDetails trip in lstFleetDetails)
+                        {
+                            trip.LiveFleetPosition = lstLiveFleetPosition.Where(fleet => fleet.TripId == trip.Tripid).ToList();
+                        }
+
+                    /** Old way To pull respective trip fleet position
+                    foreach (var item in data)
+                    {
+                        await GetLiveFleetPosition(item);
+                    }
+                    */
+                }
+
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
             }
             catch (System.Exception ex)
