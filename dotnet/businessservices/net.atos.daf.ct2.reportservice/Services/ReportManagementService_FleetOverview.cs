@@ -210,8 +210,6 @@ namespace net.atos.daf.ct2.reportservice.Services
                             healthStatus.WarningAdvice = warningDetail.WarningAdvice ?? string.Empty;
 
                         }
-                       ;
-
                         //opt-in and no driver card- Unknown - Implemented by UI 
                         // Opt-out and no driver card- Unknown-Implemented by UI 
                         //opt-in with driver card- Driver Id
