@@ -43,7 +43,7 @@ tr {{ page-break-inside: avoid }}
 </head>
   <body>
 		<img style='margin:20px 50px' align='left' width='180px' height='80px'  src='{0}'>
-		<img style='margin:20px 50px' align='right' width='180px' height='80px' src='{1}'><br/><br/><br/><br/>
+		<img style='margin:20px 50px' align='right' width='180px' height='80px' src='{23}'><br/><br/><br/><br/>
 	
     <h2 style='margin:50px 50px'>[lblTripReportDetails]</h2>
 	<div class='detailsDiv'>
@@ -86,7 +86,7 @@ tr {{ page-break-inside: avoid }}
 			<th>Average Weight Per Trip ({21})</th>
 			<th>Odometer ({22})</th>
 		</thead>
-		{23}
+		{27}
 	</table>
   </body>
 </html>";
