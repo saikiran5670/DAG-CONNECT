@@ -33,12 +33,12 @@
         public double LctsLatestWarningPositionLatitude { get; set; }
         public double LctsLatestWarningPositionLongitude { get; set; }
         // public int LctsLatestWarningGeolocationAddressId { get; set; }
-        public int Latgeoadd_LatestGeolocationAddressId { get; set; }
-        public string Latgeoadd_LatestGeolocationAddress { get; set; }
-        public int Stageoadd_StartGeolocationAddressId { get; set; }
-        public string Stageoadd_StartGeolocationAddress { get; set; }
-        public int Wangeoadd_LatestWarningGeolocationAddressId { get; set; }
-        public string Wangeoadd_LatestWarningGeolocationAddress { get; set; }
+        public int LatgeoaddLatestGeolocationAddressId { get; set; }
+        public string LatgeoaddLatestGeolocationAddress { get; set; }
+        public int StageoaddStartGeolocationAddressId { get; set; }
+        public string StageoaddStartGeolocationAddress { get; set; }
+        public int WangeoaddLatestWarningGeolocationAddressId { get; set; }
+        public string WangeoaddLatestWarningGeolocationAddress { get; set; }
 
         //warningdata
         public int WarningId { get; set; }
