@@ -153,8 +153,8 @@ namespace net.atos.daf.ct2.account.report
                               , await GenerateTable()
                               , fromDate.ToString(DateTimeFormat)
                               , VehicleLists.Any(s => !string.IsNullOrEmpty(s.VehicleGroupName)) ? string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).ToArray()) : "All"
-                              , string.Join(',', VehicleLists.Select(s => s.VehicleName).ToArray())
                               , toDate.ToString(DateTimeFormat)
+                              , string.Join(',', VehicleLists.Select(s => s.VehicleName).ToArray())
                               , FleetUtilisationPdfDetails.Count()
                               , FleetUtilisationPdfDetails.Sum(s => s.Distance)
                               , distanceUnit
