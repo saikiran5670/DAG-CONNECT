@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
         {
             ReportNameConstants.REPORT_TRIP => new TripReport(_reportManager, _reportSchedulerRepository, _visibilityManager,
                                                               _templateManager, _unitConversionManager, EmailEventType.TripReport, EmailContentType.Html),
-            ReportNameConstants.REPORT_TRIP_TRACING => new FleetUtilisation(_reportManager, _reportSchedulerRepository, _visibilityManager,
+            ReportNameConstants.REPORT_FLEET_UTILISATION => new FleetUtilisation(_reportManager, _reportSchedulerRepository, _visibilityManager,
                                                               _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetUtilisation, EmailContentType.Html),
             _ => throw new ArgumentException(message: "invalid Report Key value", paramName: nameof(reportKey)),
         };
@@ -104,7 +104,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 Orientation = Orientation.Portrait,
                 PaperSize = PaperKind.A4,
                 Margins = new MarginSettings { Top = 10 },
-                //Out = $@"C:\Users\harneet.r (58879009)\Documents\POC\Employee_Report{ReportSchedulerData.Id}.pdf"
+                Out = $@"C:\POC\fleetutilisation_Report{ReportSchedulerData.Id}.pdf"
             };
             //string htmlText = await Report.GenerateTemplate(await GetLogoImage());
 
