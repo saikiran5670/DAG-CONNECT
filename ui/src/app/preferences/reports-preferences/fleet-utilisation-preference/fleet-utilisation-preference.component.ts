@@ -176,7 +176,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   preparePrefData(prefData: any){
     prefData.forEach(element => {
       let _data: any;
-      if(element.key.includes('da_report_general')){
+      if(element.key.includes('da_report_general_')){
          _data = element;
         if(this.translationData[element.key]){
           _data.translatedName = this.translationData[element.key];  
@@ -184,7 +184,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
           _data.translatedName = this.getName(element.name, 15);   
         }
         this.summaryColumnData.push(_data);
-      }else if(element.key.includes('da_report_charts')){
+      }else if(element.key.includes('da_report_charts_')){
         _data = element;
         if(this.translationData[element.key]){
           _data.translatedName = this.translationData[element.key];  
@@ -211,7 +211,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
           }
         }
         this.chartsColumnData[index] = _data;
-      }else if(element.key.includes('da_report_calendarview')){
+      }else if(element.key.includes('da_report_calendarview_')){
         _data = element;
         if(this.translationData[element.key]){
           _data.translatedName = this.translationData[element.key];  
@@ -223,7 +223,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
         }else{
           this.calenderColumnData.push(_data);
         }
-      }else if(element.key.includes('da_report_details')){
+      }else if(element.key.includes('da_report_details_')){
         _data = element;
         if(this.translationData[element.key]){
           _data.translatedName = this.translationData[element.key];  
