@@ -227,7 +227,7 @@
 
       </div>
 
-      <mat-table matTableExporter [dataSource]="rankingData" matSort #exporter="matTableExporter">
+      <mat-table matTableExporter [dataSource]="dataSource2" matSort #exporter="matTableExporter" let i = "index">
 
         <ng-container matColumnDef="ranking">
 
@@ -235,9 +235,9 @@
 
           </mat-header-cell>
 
-          <mat-cell *matCellDef="let row">
+          <mat-cell *matCellDef="let i =index">
 
-            <span>{{row.ranking}}</span>
+            <span>{{i + 1}}</span>
 
           </mat-cell>
 
@@ -279,7 +279,7 @@
 
           <mat-cell *matCellDef="let row">
 
-            <span>{{row.plateNo}}</span>
+            <span>{{row.vehicleRegistrationNo}}</span>
 
           </mat-cell>
 
@@ -294,9 +294,9 @@
           <mat-cell *matCellDef="let row">
 
             <mat-progress-bar class="example-margin" [color]="color" [mode]="mode" [bufferValue]="bufferValue"
-              value={{row.consumption}}></mat-progress-bar>
+              value={{row.convertedFuelConsumed100Km}}></mat-progress-bar>
 
-            <div style="position: absolute; padding: 10px; color: white;"> {{row.consumption}} </div>
+            <div style="position: absolute; padding: 10px; color: white;"> {{row.convertedFuelConsumed100Km}} </div>
 
           </mat-cell>
 
