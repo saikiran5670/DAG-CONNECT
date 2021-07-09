@@ -33,19 +33,21 @@ namespace net.atos.daf.ct2.reports.entity
         public int IdlingConsumption { get; set; }
         public string IdlingConsumptionValue { get; set; } = string.Empty;
         public double DPAScore { get; set; }
-
-        public string DriverID { get; set; }
-        public string DriverName { get; set; }
-
         public List<LiveFleetPosition> LiveFleetPosition { get; set; }
-        //public string DPAAnticipationScore { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
-        //public string DPABrakingScore { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
-        //public string IdlingPTOScore { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
-        //public string IdlingPTO { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
-        //public string IdlingWithoutPTO { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
-        //public string IdlingWithoutPTOpercent { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
-        //public string FootBrake { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
-        //public string CO2Emmision { get => DPAAnticipationScore = string.Empty; set => DPAAnticipationScore = string.Empty; }
+        //public string DPAAnticipationScore { get; set; } = string.Empty;
+        //public string DPABrakingScore{ get; set; } = string.Empty;
+        //public string IdlingPTOScore { get; set; } = string.Empty;
+        //public string IdlingPTO { get; set; } = string.Empty;
+        //public string IdlingWithoutPTO { get; set; } = string.Empty;
+        //public string IdlingWithoutPTOpercent { get; set; } = string.Empty;
+        //public string FootBrake { get; set; } = string.Empty;
+        //public string CO2Emmision { get; set; } = string.Empty;
 
+    }
+
+    public class FleetFuelDetailsByDriver : FleetFuelDetails
+    {
+        public string DriverID { get; set; }
+        public string DriverName { get; set; } = string.Empty;
     }
 }

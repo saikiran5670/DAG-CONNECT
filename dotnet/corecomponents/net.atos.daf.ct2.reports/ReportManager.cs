@@ -341,6 +341,13 @@ namespace net.atos.daf.ct2.reports
             List<WarningDetails> lstWarningDetails = await _reportRepository.GetWarningDetails(warningClass, warningNumber, lngCode);
             return lstWarningDetails;
         }
+        public async Task<List<DriverDetails>> GetDriverDetails(List<int> driverIds)
+        {
+            List<DriverDetails> lstDriverDetails = await _reportRepository.GetDriverDetails(driverIds);
+            return lstDriverDetails;
+        }
+
+
         #endregion
 
         #region Feet Fuel Report
@@ -352,11 +359,11 @@ namespace net.atos.daf.ct2.reports
             return lstFleetFuelDetailsUpdated;
         }
 
-        public async Task<List<FleetFuelDetails>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters)
+        public async Task<List<FleetFuelDetailsByDriver>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters)
         {
-            List<FleetFuelDetails> lstFleetFuelDetails = await _reportRepository.GetFleetFuelDetailsByDriver(fleetFuelFilters);
-            List<FleetFuelDetails> lstFleetFuelDetailsUpdated = await PrepareDetails(lstFleetFuelDetails, fleetFuelFilters.LanguageCode);
-            return lstFleetFuelDetailsUpdated;
+            List<FleetFuelDetailsByDriver> lstFleetFuelDetails = await _reportRepository.GetFleetFuelDetailsByDriver(fleetFuelFilters);
+            // List<FleetFuelDetailsByDriver> lstFleetFuelDetailsUpdated = await PrepareDetails(lstFleetFuelDetails, fleetFuelFilters.LanguageCode);
+            return lstFleetFuelDetails;
         }
 
         public async Task<List<FleetFuel_VehicleGraph>> GetFleetFuelDetailsForVehicleGraphs(FleetFuelFilter fleetFuelFilters)

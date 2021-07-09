@@ -42,6 +42,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string StartGeolocationAddress { get; set; }
         public int LatestWarningGeolocationAddressId { get; set; }
         public string LatestWarningGeolocationAddress { get; set; }
+        public string LatestWarningName { get; set; }
         public List<LiveFleetPosition> LiveFleetPositions { get; set; }
     }
 }

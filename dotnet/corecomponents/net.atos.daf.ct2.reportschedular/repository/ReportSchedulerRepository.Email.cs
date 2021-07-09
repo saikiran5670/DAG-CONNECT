@@ -28,13 +28,16 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                             repsch.end_date as EndDate,                                            
                                             repsch.created_by as ReportCreatedBy, 
                                             receipt.email as EmailId, 
-                                            schrep.token as ReportToken                                           
+                                            schrep.token as ReportToken,
+                                            coalesce((select t.value from translation.translation as t where t.name =report.key and t.code=repsch.code), (select t.value from translation.translation as t where t.name =report.key and t.code='EN-GB')) as Key                                           
 	                                        FROM master.reportscheduler as repsch	                                 
 	                                        Inner JOIN master.scheduledreportrecipient as receipt
 	                                        ON repsch.id=receipt.schedule_report_id AND repsch.status='A' AND receipt.state='A'	                                  
-	                                        inner JOIN master.scheduledreport as schrep
-	                                       ON repsch.id=schrep.schedule_report_id AND repsch.start_date=schrep.start_date AND repsch.end_date=schrep.end_date AND repsch.status='A' ";
-                queryAlert += "where date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date/1000) AT TIME ZONE 'UTC')) = date_trunc('hour', NOW() AT TIME ZONE 'UTC')";
+	                                        Inner JOIN master.scheduledreport as schrep
+	                                        ON repsch.id=schrep.schedule_report_id AND repsch.start_date=schrep.start_date AND repsch.end_date=schrep.end_date AND repsch.status='A'
+                                            Inner JOIN master.report as report
+										    ON report.id=repsch.report_id";
+                queryAlert += " where date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date/1000) AT TIME ZONE 'UTC')) = date_trunc('hour', NOW() AT TIME ZONE 'UTC')";
 
                 IEnumerable<ReportSchedulerEmailResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerEmailResult>(queryAlert);
                 return reportSchedulerResult;
@@ -101,6 +104,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 throw;
             }
         }
+
 
     }
 }
