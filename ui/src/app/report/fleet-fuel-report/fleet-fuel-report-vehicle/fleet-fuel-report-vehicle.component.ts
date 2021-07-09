@@ -33,13 +33,13 @@ import { MatTableDataSource } from '@angular/material/table';
 })
 export class FleetFuelReportVehicleComponent implements OnInit {
   @Input() translationData: any;
-  displayedColumns = ['vehicleName', 'vin', 'plateNo', 'distance', 'averageDistance', 'averageSpeed',
-  'maxSpeed', 'noOfTrips', 'avgGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'CO2Emisson', 
-  'isIdleDuration','PTODuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistanceBelow50',
-  'cruiseControlDistanceBelow75','cruiseControlDistanceAbove75', 'avgTrafficClassification',
-  'CCFuelConsumption','CCFuelConsumptionNon','IdlingConsumption','DPAScore','DPAAnticipation',
-  'DPABraking','idlingWithPTO','idlingWithoutPTOWheelbase','idlingWithoutPTOVIdleDuration','footBrake',
-  'CO2EmmisionFuelEfficiency','idlingConsumptionWithPTO'];
+  displayedColumns = ['vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
+  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
+  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
+  'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
+  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
+  'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
+  'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
   rankingColumns = ['ranking','vehicleName','vin','plateNo','consumption'];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
@@ -47,6 +47,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   searchExpandPanel: boolean = true;
   initData: any = [];
+  FuelData: any;
   selectedTrip = new SelectionModel(true, []);
   dataSource: any = new MatTableDataSource([]);
   showMap: boolean = false;
@@ -54,6 +55,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   tableExpandPanel: boolean = true;
   rankingExpandPanel: boolean = false;
   isSummaryOpen: boolean = false;
+  summaryColumnData: any = [];
   isChartsOpen: boolean = false;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
@@ -273,13 +275,15 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     let getFleetFuelObj = {
       "startDateTime": 1521843915459,
       "endDateTime": 1721843915459,
-      "viNs": [    "M4A1117","XLR0998HGFFT76657"],
+      "viNs": ["XLR0998HGFFT76657"],
       "LanguageCode": "EN-GB"
     }
     this.reportService.getFleetFuelDetails(getFleetFuelObj).subscribe((data:any) => {
     console.log("---getting data from getFleetFuelDetailsAPI---",data)
-    this.displayData = data.fleetDetails;
-    this.setTableInfo();
+    this.displayData = data["fleetFuelDetails"];
+    this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+    // this.setTableInfo();
+    this.updateDataSource(this.FuelData);
     })
   }
 
@@ -352,27 +356,21 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         "endDateTime":_endTime,
         "viNs":  _vinData,
       }
-      this.reportService.getFleetFuelDetails(searchDataParam).subscribe((_fleetfuelData: any) => {
-        console.log(_fleetfuelData);
-      });
-      this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
-
-       this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+      this.loadfleetFuelDetails();
        this.setTableInfo();
-       this.loadfleetFuelDetails();
-       this.updateDataSource(this.tripData);
+      //  this.updateDataSource(this.FuelData);
       this.hideloader();
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
       this.tripData.forEach(element => {
-       });
+
       
        }, (error)=>{
           //console.log(error);
          this.hideloader();
          this.tripData = [];
           this.tableInfoObj = {};
-         this.updateDataSource(this.tripData);
+         this.updateDataSource(this.FuelData);
        });
     };
     let searchDataParam=
@@ -1045,7 +1043,7 @@ setVehicleGroupAndVehiclePreSelection() {
     filterValue = filterValue.trim(); 
     filterValue = filterValue.toLowerCase(); 
     // this.dataSource.filter = filterValue;
-    this.displayData.filter = filterValue;
+    this.dataSource.filter = filterValue;
   }
 
   applyFilterRanking(filterValue: string) {

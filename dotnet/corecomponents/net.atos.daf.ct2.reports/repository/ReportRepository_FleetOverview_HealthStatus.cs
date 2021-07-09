@@ -11,22 +11,7 @@ namespace net.atos.daf.ct2.reports.repository
 {
     public partial class ReportRepository : IReportRepository
     {
-        // public async Task<VehicleHealthStatus> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest)
-        // {
-        //var parameter = new DynamicParameters();
-        //var vehicleHealthStatus = new VehicleHealthStatus();
-        //vehicleHealthStatus.VehicleSummary = await GetVehicleHealthSummary(vehicleHealthStatusRequest.VIN);
-        //if (vehicleHealthStatusRequest.FromDate == null && vehicleHealthStatusRequest.ToDate == null)
-        //{
-        //    vehicleHealthStatus.CurrentWarning = await GetCurrentWarnning(vehicleHealthStatusRequest.VIN);
-        //    GetPreviousQuarterTime(vehicleHealthStatusRequest);
-        //}
-        //vehicleHealthStatus.VehicleSummary.FromDate = vehicleHealthStatusRequest?.FromDate;
-        //vehicleHealthStatus.VehicleSummary.ToDate = vehicleHealthStatusRequest?.ToDate;
-        //vehicleHealthStatus.VehicleSummary.WarningType = vehicleHealthStatusRequest.WarningType ?? "All";
-        //vehicleHealthStatus.HistoryWarning = await GetHistoryWarning(vehicleHealthStatusRequest);
-        //return vehicleHealthStatus;
-        //  }
+
         public async Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest)
         {
 
@@ -65,12 +50,12 @@ namespace net.atos.daf.ct2.reports.repository
                         ,cts.latest_warning_timestamp as LctsLatestWarningTimestamp
                         ,cts.latest_warning_position_latitude as LctsLatestWarningPositionLatitude
                         ,cts.latest_warning_position_longitude as LctsLatestWarningPositionLongitude,                      
-                        latgeoadd.id as latgeoadd_LatestGeolocationAddressId,
-                        coalesce(latgeoadd.address,'') as latgeoadd_LatestGeolocationAddress,
-                        stageoadd.id as stageoadd_StartGeolocationAddressId,
-                        coalesce(stageoadd.address,'') as stageoadd_StartGeolocationAddress,
-                        wangeoadd.id as wangeoadd_LatestWarningGeolocationAddressId,
-                        coalesce(wangeoadd.address,'') as wangeoadd_LatestWarningGeolocationAddress
+                        latgeoadd.id as latgeoaddLatestGeolocationAddressId,
+                        coalesce(latgeoadd.address,'') as latgeoaddLatestGeolocationAddress,
+                        stageoadd.id as stageoaddStartGeolocationAddressId,
+                        coalesce(stageoadd.address,'') as stageoaddStartGeolocationAddress,
+                        wangeoadd.id as wangeoaddLatestWarningGeolocationAddressId,
+                        coalesce(wangeoadd.address,'') as wangeoaddLatestWarningGeolocationAddress
 
                                        FROM livefleet.livefleet_current_trip_statistics cts
                                        inner join master.vehicle V on cts.vin = v.vin
@@ -143,7 +128,6 @@ namespace net.atos.daf.ct2.reports.repository
             var healthStatusList = (List<VehicleHealthResult>)await _dataMartdataAccess.QueryAsync<VehicleHealthResult>(query, parameter);
             if (healthStatusList.Count > 0)
             {
-                await GetWarningDetails(healthStatusList, vehicleHealthStatusRequest.LngCode);
                 return healthStatusList;
             }
             else
@@ -153,35 +137,7 @@ namespace net.atos.daf.ct2.reports.repository
 
 
         }
-        public async Task<List<VehicleHealthResult>> GetWarningDetails(List<VehicleHealthResult> warningList, string lngCode)
-        {
-            try
-            {
-                foreach (var vehicleHealthWarning in warningList)
-                {
-                    var parameter = new DynamicParameters();
-                    parameter.Add("@warningClass", vehicleHealthWarning.WarningClass);
-                    parameter.Add("@warningNumber", vehicleHealthWarning.WarningNumber);
-                    parameter.Add("@code", lngCode);
-                    string query = @" SELECT id, code, type, veh_type, class as WarningClass, number as WarningNumber, description as WarningName, advice as WarningAdvice from master.dtcwarning
-                                      where class=@warningClass and number =@warningNumber and((@code != '' and code = 'EN-GB') or(@code = '' and code = ''))";
-                    var result = await _dataAccess.QueryFirstOrDefaultAsync<WarningDetails>(query, parameter);
-                    if (result != null)
-                    {
-                        vehicleHealthWarning.WarningName = result.WarningName ?? string.Empty;
-                        vehicleHealthWarning.WarningAdvice = result.WarningAdvice ?? string.Empty;
-                    }
 
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-            return warningList;
-        }
         private async Task<string> GetVehicleRunningStatus(string vehicleStatus)
         {
             //TODO add preference condition

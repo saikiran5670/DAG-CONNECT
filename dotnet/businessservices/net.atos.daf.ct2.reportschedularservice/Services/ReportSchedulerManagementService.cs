@@ -404,7 +404,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                         ReportPDFResponse response = new ReportPDFResponse()
                         {
                             Message = ReportSchedulerConstant.REPORT_SCHEDULER_VALID_EMAIL_LINK,
-                            Code = ResponseCode.Success
+                            Code = ResponseCode.Failed
                         };
                         return await Task.FromResult(response);
                     }

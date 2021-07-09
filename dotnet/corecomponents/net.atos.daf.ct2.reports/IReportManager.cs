@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.reports
         Task<List<EcoScoreCompareReportAtttributes>> GetEcoScoreCompareReportAttributes(int reportId, int targetProfileId);
         Task<List<AlertCategory>> GetAlertCategoryList();
         Task<List<FleetFuelDetails>> GetFleetFuelDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
-        Task<List<FleetFuelDetails>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters);
+        Task<List<FleetFuelDetailsByDriver>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters);
         Task<List<FilterProperty>> GetAlertLevelList();
         Task<List<FilterProperty>> GetHealthStatusList();
         Task<List<FilterProperty>> GetOtherFilter();

@@ -206,6 +206,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                             if (healthStatus.WarningClass == warning.WarningClass && healthStatus.WarningNumber == warning.WarningNumber)
                             {
                                 healthStatus.WarningName = warning.WarningName;
+                                healthStatus.WarningAdvice = warning.WarningAdvice;
                             }
                         }
                     }

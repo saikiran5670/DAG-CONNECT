@@ -51,7 +51,9 @@ selectedStartTime: any = '00:00';
 selectedEndTime: any = '23:59'; 
 tripForm: FormGroup;
 mapFilterForm: FormGroup;
-displayedColumns = ['All', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
+// displayedColumns = ['All','vin', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
+// displayedColumns = ['All','vin','odometer','vehicleName','registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
+displayedColumns = ['All','vin','odometer','vehicleName','registrationNo','startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
 translationData: any;
 showMap: boolean = false;
 showBack: boolean = false;
@@ -517,7 +519,8 @@ ngOnDestroy(){
           categoryName: _data[0].categoryName,
           poiList: _data,
           subCategoryPOIList: _subCatArr,
-          open: false
+          open: false,
+          parentChecked: false
         });
       } 
     });
@@ -701,6 +704,7 @@ ngOnDestroy(){
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
+    // console.log("----UpdateDataSource---initData", this.initData )
     this.showMap = false;
     this.selectedTrip.clear();
     if(this.initData.length > 0){
@@ -751,11 +755,18 @@ ngOnDestroy(){
       }
   });
 
-    let pdfColumns = [['Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
+    let pdfColumns = [['VIN','Vehicle Name','Registration Number.','Odometer','Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
+    // let pdfColumns = [['Odometer','Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
 
   let prepare = []
     this.initData.forEach(e=>{
+      // console.log("---actual data--pdf columns", this.initData)
       var tempObj =[];
+      
+      tempObj.push(e.vin); ////need to confirm from backend for key
+      tempObj.push(e.vehicleName); ////need to confirm from backend for key
+      tempObj.push(e.registrationNo); //need to confirm from backend for key
+      tempObj.push(e.odometer);
       tempObj.push(e.convertedStartTime);
       tempObj.push(e.convertedEndTime);
       tempObj.push(e.convertedDistance);
@@ -1064,6 +1075,15 @@ ngOnDestroy(){
       this.userPOIList[index].poiList.forEach(_elem => {
         _elem.checked = true;
       });
+      this.userPOIList[index].parentChecked = true;
+      if(this.selectedPOI.selected.length > 0){
+        let _s: any = this.selectedPOI.selected.filter(i => i.categoryId == this.userPOIList[index].categoryId);
+        if(_s.length > 0){
+
+        }
+      }else{
+
+      }
     }else{ // unchecked
       this.userPOIList[index].subCategoryPOIList.forEach(element => {
         element.checked = false;
@@ -1071,6 +1091,7 @@ ngOnDestroy(){
       this.userPOIList[index].poiList.forEach(_elem => {
         _elem.checked = false;
       });
+      this.userPOIList[index].parentChecked = false;
     }
     this.displayPOIList = [];
     this.selectedPOI.selected.forEach(item => {
@@ -1138,13 +1159,50 @@ ngOnDestroy(){
   }
 
   changeSubCategory(event: any, subCatPOI: any, _index: any){
+    let _uncheckedCount: any = 0;
     this.userPOIList[_index].subCategoryPOIList.forEach(element => {
       if(element.subCategoryId == subCatPOI.subCategoryId){
         element.checked = event.checked ? true : false;
       }
+      
+      if(!element.checked){ // unchecked count
+        _uncheckedCount += element.poiList.length;
+      }
     });
+
+    if(this.userPOIList[_index].poiList.length == _uncheckedCount){
+      this.userPOIList[_index].parentChecked = false; // parent POI - unchecked
+      let _s: any = this.selectedPOI.selected;
+      if(_s.length > 0){
+        this.selectedPOI.clear(); // clear parent category data
+        _s.forEach(element => {
+          if(element.categoryId != this.userPOIList[_index].categoryId){ // exclude parent category data
+            this.selectedPOI.select(element);
+          }
+        });
+      }
+    }else{
+      this.userPOIList[_index].parentChecked = true; // parent POI - checked
+      let _check: any = this.selectedPOI.selected.filter(k => k.categoryId == this.userPOIList[_index].categoryId); // already present
+      if(_check.length == 0){ // not present, add it
+        let _s: any = this.selectedPOI.selected;
+        if(_s.length > 0){ // other element present
+          this.selectedPOI.clear(); // clear all
+          _s.forEach(element => {
+            this.selectedPOI.select(element);  
+          });
+        }
+        this.userPOIList[_index].poiList.forEach(_el => {
+          if(_el.subCategoryId == 0){
+            _el.checked = true;
+          }
+        });
+        this.selectedPOI.select(this.userPOIList[_index]); // add parent element
+      }
+    }
+
     this.displayPOIList = [];
-    if(this.selectedPOI.selected.length > 0){
+    //if(this.selectedPOI.selected.length > 0){
       this.selectedPOI.selected.forEach(item => {
         if(item.poiList && item.poiList.length > 0){
           item.poiList.forEach(element => {
@@ -1165,7 +1223,7 @@ ngOnDestroy(){
       });
       let _ui = this.reportMapService.getUI();
       this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
-    }
+    //}
   }
 
   openClosedUserPOI(index: any){

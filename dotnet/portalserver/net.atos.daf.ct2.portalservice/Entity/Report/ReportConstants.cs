@@ -73,7 +73,7 @@
         public const string GET_FLEET_FUEL_VALIDATION_ENDDATE_MSG = "Invalid end date.";
         public const string GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG = "Invalid VIN details.";
         public const string GET_FLEET_FUEL_VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
-        public const string GET_FLEET_FUEL_SUCCESS_MSG = "Fleet Fueld details fetched successfully";
+        public const string GET_FLEET_FUEL_SUCCESS_MSG = "Fleet Fuel details fetched successfully";
         public const string GET_FLEET_FUEL_FAILURE_MSG = "No Result Found";
         public const string GET_FLEET_FUEL_VALIDATION_DRIVERID_MSG = "Invalid Driver ID";
 

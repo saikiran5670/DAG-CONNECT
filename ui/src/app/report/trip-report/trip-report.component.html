@@ -155,7 +155,7 @@
                 <div *ngFor="let userPOI of userPOIList; let i = index" class="full-width" fxLayoutGap="10px">
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                     <mat-checkbox (click)='$event.stopPropagation()'
-                    (change)='$event ? selectedPOI.toggle(userPOI) : null; changeUserPOISelection($event, userPOI, i)' [checked]='selectedPOI.isSelected(userPOI)'>{{ userPOI.categoryName }} ({{ userPOI.poiList.length }})</mat-checkbox>
+                    (change)='$event ? selectedPOI.toggle(userPOI) : null; changeUserPOISelection($event, userPOI, i)' [checked]='userPOI.parentChecked'>{{ userPOI.categoryName }} ({{ userPOI.poiList.length }})</mat-checkbox>
                     <mat-icon style='cursor: pointer;' *ngIf='userPOI.subCategoryPOIList.length > 0' (click)='openClosedUserPOI(i)'>
                       {{ userPOI.open ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
                     </mat-icon>
@@ -356,6 +356,33 @@
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.events != '' ? row.events : '-' }}</mat-cell>
             </ng-container>
+
+
+
+            <ng-container matColumnDef="vin">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{  row.vin != '' ? row.vin : '-' }}</mat-cell>
+            </ng-container>           
+            <ng-container matColumnDef="odometer">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ row.odometer != '' ? row.odometer : '-' }}</mat-cell>
+            </ng-container>          
+
+              <ng-container matColumnDef="vehicleName">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'VehicleName' }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ row.vehicleName != '' ? row.vehicleName : '-' }}</mat-cell>
+            </ng-container>         
+               <ng-container matColumnDef="registrationNo">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRegistrationNo || 'RegistrationNo' }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ row.registrationNo != '' ? row.registrationNo : '-' }}</mat-cell>
+            </ng-container>
+
+
+            
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;">
             </mat-row>
