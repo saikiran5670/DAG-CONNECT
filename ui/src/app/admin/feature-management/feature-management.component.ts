@@ -91,6 +91,7 @@ export class FeatureManagementComponent implements OnInit {
       filterTypeData.forEach(element => {
         element["isExclusive"] = element.dataAttribute.isExclusive
       });
+      filterTypeData = this.getNewTagData(filterTypeData);
       this.updatedTableData(filterTypeData);
     }, (error) => {
       console.log("error:: ", error);
