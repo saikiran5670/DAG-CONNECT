@@ -1088,6 +1088,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 string filters = JsonConvert.SerializeObject(request);
                 net.atos.daf.ct2.reportservice.VehicleHealthReportRequest objVehicleHealthStatusRequest = JsonConvert.DeserializeObject<VehicleHealthReportRequest>(filters);
+                objVehicleHealthStatusRequest.AccountId = _userDetails.AccountId;
+                objVehicleHealthStatusRequest.OrganizationId = GetContextOrgId();
                 _logger.Info("GetVehicleHealthReport method in Report (for Vehicle Current and History Summary) API called.");
                 var data = await _reportServiceClient.GetVehicleHealthReportAsync(objVehicleHealthStatusRequest);
 

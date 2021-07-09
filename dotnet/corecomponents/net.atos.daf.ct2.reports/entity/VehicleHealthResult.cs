@@ -69,7 +69,7 @@
         public long WarningOdometerVal { get; set; }
         public long? WarningLatestProcessedMessageTimestamp { get; set; }
 
-        public string WarningName { get; set; } //from dtcwarning table
-        public string WarningAdvice { get; set; }
+        public string WarningName { get; set; } = string.Empty;//from dtcwarning table
+        public string WarningAdvice { get; set; } = string.Empty;
     }
 }

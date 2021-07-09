@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
+using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reportservice.entity;
 using Newtonsoft.Json;
 using ReportComponent = net.atos.daf.ct2.reports;
@@ -121,13 +122,23 @@ namespace net.atos.daf.ct2.reportservice.Services
                     VINIds = request.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ?
                     vehicleDeatilsWithAccountVisibility.Select(x => x.Vin).Distinct().ToList() :
                     vehicleDeatilsWithAccountVisibility.Where(x => request.GroupIds.ToList().Contains(x.VehicleGroupId.ToString())).Select(x => x.Vin).Distinct().ToList(),
-                    Days = request.Days
+                    Days = request.Days,
                 };
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);
                 if (result?.Count > 0)
                 {
-                    string res = JsonConvert.SerializeObject(result);
-                    response.FleetOverviewDetailList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetOverviewDetails>>(res));
+                    List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.LatestWarningClass > 0).Select(x => x.LatestWarningClass).Distinct().ToList(), result.Where(p => p.LatestWarningNumber > 0).Select(x => x.LatestWarningNumber).Distinct().ToList(), request.LanguageCode);
+                    foreach (var fleetOverviewDetails in result)
+                    {
+                        foreach (WarningDetails warning in warningDetails)
+                        {
+                            if (fleetOverviewDetails.LatestWarningClass == warning.WarningClass && fleetOverviewDetails.LatestWarningNumber == warning.WarningNumber)
+                            {
+                                fleetOverviewDetails.LatestWarningName = warning.WarningName;
+                            }
+                        }
+                        response.FleetOverviewDetailList.Add(_mapper.ToFleetOverviewDetailsResponse(fleetOverviewDetails));
+                    }
                     response.Code = Responsecode.Success;
                     response.Message = Responsecode.Success.ToString();
                 }
@@ -138,6 +149,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 }
                 return await Task.FromResult(response);
             }
+
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
@@ -161,19 +173,42 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 _logger.Info("Get GetVehicleHealthStatusReport Called");
+                VehicleHealthStatusListResponse response = new VehicleHealthStatusListResponse();
+                var vehicleDeatilsWithAccountVisibility =
+                              await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+
+                if (vehicleDeatilsWithAccountVisibility.Count() == 0)
+                {
+                    response.Message = string.Format(ReportConstants.GET_VIN_VISIBILITY_FAILURE_MSG, request.AccountId, request.OrganizationId);
+                    response.Code = Responsecode.Failed;
+                    return response;
+                }
+
+
                 reports.entity.VehicleHealthStatusRequest objVehicleHealthStatusRequest = new reports.entity.VehicleHealthStatusRequest
                 {
                     VIN = request.VIN,
                     Days = 90,
                     LngCode = request.LngCode ?? string.Empty,
-                    //WarningType = request.WarningType ?? string.Empty,
                     TripId = request.TripId ?? string.Empty
                 };
                 reports.entity.VehicleHealthResult objVehicleHealthStatus = new ReportComponent.entity.VehicleHealthResult();
                 var result = await _reportManager.GetVehicleHealthStatus(objVehicleHealthStatusRequest);
-                VehicleHealthStatusListResponse response = new VehicleHealthStatusListResponse();
-                if (result != null)
+
+                if (result?.Count > 0)
                 {
+                    List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.WarningClass > 0).Select(x => x.WarningClass).Distinct().ToList(),
+                        result.Where(p => p.WarningNumber > 0).Select(x => x.WarningNumber).Distinct().ToList(), request.LngCode);
+                    foreach (var healthStatus in result)
+                    {
+                        foreach (WarningDetails warning in warningDetails)
+                        {
+                            if (healthStatus.WarningClass == warning.WarningClass && healthStatus.WarningNumber == warning.WarningNumber)
+                            {
+                                healthStatus.WarningName = warning.WarningName;
+                            }
+                        }
+                    }
                     string res = JsonConvert.SerializeObject(result);
                     response.HealthStatus.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleHealthStatusResponse>>(res,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));

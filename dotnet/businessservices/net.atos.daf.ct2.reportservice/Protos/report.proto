@@ -43,6 +43,8 @@ message VehicleHealthReportRequest{
  string TripId=2; 
  string WarningType = 4;
  string LngCode =5;
+  int32 AccountId = 6;
+    int32 OrganizationId = 7;
 }
 
 message  VehicleHealthStatusResponse{
@@ -653,6 +655,7 @@ message FleetOverviewDetailsRequest {
     int32 AccountId = 8;
     int32 OrganizationId = 9;
     int32 RoleId = 10;
+    string LanguageCode = 11;
 }
 
 message FleetOverviewDetails
@@ -693,7 +696,8 @@ message FleetOverviewDetails
 	string StartGeolocationAddress=34;
 	int32 LatestWarningGeolocationAddressId=35;
 	string LatestWarningGeolocationAddress=36;
-	repeated LiveFleetPosition LiveFleetPosition=37;
+	string LatestWarningName=37;
+    repeated LiveFleetPosition LiveFleetPosition=38;
 }
 
 message FleetOverviewDetailsResponse {
