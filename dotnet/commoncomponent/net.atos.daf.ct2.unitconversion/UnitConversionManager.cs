@@ -130,10 +130,10 @@ namespace net.atos.daf.ct2.unitconversion
                     switch (convertTo)
                     {
                         case UnitToConvert.Imperial:
-                            result = value * 2.205;
+                            result = value / 907;
                             break;
                         case UnitToConvert.Metric:
-                            result = value;
+                            result = value / 1000;
                             break;
                     }
                     break;
@@ -155,6 +155,19 @@ namespace net.atos.daf.ct2.unitconversion
                         case UnitToConvert.Imperial:
                         case UnitToConvert.Metric:
                             TimeSpan t = TimeSpan.FromSeconds(value);
+
+                            result = string.Format("{0:D2}:{1:D2}",
+                                            t.Hours,
+                                            t.Minutes);
+                            break;
+                    }
+                    break;
+                case TimeUnit.MiliSeconds:
+                    switch (convertTo)
+                    {
+                        case UnitToConvert.Imperial:
+                        case UnitToConvert.Metric:
+                            TimeSpan t = TimeSpan.FromMilliseconds(value);
 
                             result = string.Format("{0:D2}:{1:D2}",
                                             t.Hours,

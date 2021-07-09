@@ -79,35 +79,32 @@ export class BreakingScoreComponent implements OnInit {
     let emitObj = {
       "kpiId": this.selectedElementData.ecoScoreKPIId,
       "limitType": this.selectedElementData.limitType ? this.selectedElementData.limitType : "N",
-      "limitValue": this.ecoScoreProfileKPIForm.controls.limitValue.value > this.ecoScoreProfileKPIForm.controls.lowerValue.value || this.ecoScoreProfileKPIForm.controls.limitValue.value < this.ecoScoreProfileKPIForm.controls.upperValue.value   ? this.ecoScoreProfileKPIForm.controls.limitValue.value : this.ecoScoreProfileKPIForm.controls.lowerValue.value  ,
-      "targetValue": this.ecoScoreProfileKPIForm.controls.targetValue.value > this.ecoScoreProfileKPIForm.controls.upperValue.value || this.ecoScoreProfileKPIForm.controls.targetValue.value < this.ecoScoreProfileKPIForm.controls.lowerValue.value? this.ecoScoreProfileKPIForm.controls.targetValue.value : this.ecoScoreProfileKPIForm.controls.upperValue.value,
-      // "limitValue":this.ecoScoreProfileKPIForm.controls.lowerValue.value ,
-      // "targetValue":  this.ecoScoreProfileKPIForm.controls.upperValue.value,
-      
-      "lowerValue": this.ecoScoreProfileKPIForm.controls.lowerValue.value,
-      "upperValue": this.ecoScoreProfileKPIForm.controls.upperValue.value
+      "limitValue":this.ecoScoreProfileKPIForm.controls.limitValue.value ? this.ecoScoreProfileKPIForm.controls.limitValue.value : 0,
+      "targetValue":this.ecoScoreProfileKPIForm.controls.targetValue.value ? this.ecoScoreProfileKPIForm.controls.targetValue.value : 0,
+      "lowerValue": this.ecoScoreProfileKPIForm.controls.lowerValue.value ? this.ecoScoreProfileKPIForm.controls.lowerValue.value : 0,
+      "upperValue": this.ecoScoreProfileKPIForm.controls.upperValue.value ? this.ecoScoreProfileKPIForm.controls.upperValue.value : 0
     }
     this.createKPIEmit.emit(emitObj);
   }
 
   sliderEvent(value: any){
     this.ecoScoreProfileKPIForm.get("limitValue").setValue(value);
-    // this.sendData();
+    this.sendData();
    }
  
    sliderEndEvent(endValue: any){
    this.ecoScoreProfileKPIForm.get("targetValue").setValue(endValue);
-  //  this.sendData();
+  this.sendData();
    }
  
    changeMin(changedVal: any){
     this.value = changedVal;
-    // this.sendData();
+    this.sendData();
    }
  
    changeTarget(changedVal: any){
    this.maxvalue = changedVal;
-  //  this.sendData();
+  this.sendData();
    }
  
    changeLower(changedVal: any){
@@ -115,14 +112,14 @@ export class BreakingScoreComponent implements OnInit {
      const newOptions: Options = Object.assign({}, this.options);
      newOptions.floor = changedVal;
      this.options = newOptions;
-    //  this.sendData();
+    this.sendData();
    }
  
    changeUpper(changedVal: any){
      const newOptions: Options = Object.assign({}, this.options);
      newOptions.ceil = changedVal;
      this.options = newOptions;
-    //  this.sendData();
+    this.sendData();
    }
 
 }

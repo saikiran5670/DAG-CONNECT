@@ -23,6 +23,7 @@ rpc GetReportSearchParameter (IdRequestForDriverActivity) returns (ReportSearchP
 rpc GetFleetUtilizationDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationDetailsResponse);
 rpc GetFleetCalenderDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationCalenderResponse);
 rpc GetFleetFuelDetailsForVehicleGraphs(FleetFuelFilterRequest) returns (FleetFuelGraphsResponse);
+rpc GetFleetFuelDetailsForDriverGraphs(FleetFuelFilterRequest) returns (FleetFuelGraphsResponse);
 rpc GetEcoScoreReportByAllDrivers (GetEcoScoreReportByAllDriversRequest) returns (GetEcoScoreReportByAllDriversResponse);
 rpc GetReportUserPreference (GetReportUserPreferenceRequest) returns (GetReportUserPreferenceResponse);
 rpc CreateReportUserPreference (ReportUserPreferenceCreateRequest) returns (ReportUserPreferenceCreateResponse);
@@ -408,6 +409,7 @@ message CreateEcoScoreProfileKPI {
   double TargetValue = 3;
   double LowerValue = 4;
   double UpperValue = 5;
+  string LimitType =6;
 }
 
 message CreateEcoScoreProfileResponse {
