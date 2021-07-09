@@ -88,7 +88,8 @@ namespace net.atos.daf.ct2.reportservice.Services
                     LimitValue = profileKPI.LimitValue,
                     TargetValue = profileKPI.TargetValue,
                     LowerValue = profileKPI.LowerValue,
-                    UpperValue = profileKPI.UpperValue
+                    UpperValue = profileKPI.UpperValue,
+                    LimitType = Convert.ToString(profileKPI.LimitType)
                 });
             }
             dto.ProfileKPIs = profileKPIs;

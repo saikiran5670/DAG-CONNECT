@@ -75,6 +75,8 @@
         public const string GET_FLEET_FUEL_VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
         public const string GET_FLEET_FUEL_SUCCESS_MSG = "Fleet Fueld details fetched successfully";
         public const string GET_FLEET_FUEL_FAILURE_MSG = "No Result Found";
+        public const string GET_FLEET_FUEL_VALIDATION_DRIVERID_MSG = "Invalid Driver ID";
+
         #endregion
 
         #region Vehicle Health Summary
