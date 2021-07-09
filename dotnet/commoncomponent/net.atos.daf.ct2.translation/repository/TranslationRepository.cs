@@ -177,23 +177,23 @@ namespace net.atos.daf.ct2.translation.repository
                 if (string.IsNullOrEmpty(langagugeCode) || langagugeCode == "EN-GB")
                 {
                     if (dropdownName == "language")
-                        langagugeQuery = @"select tc.id,t.name,t.code,t.value,t.type from translation.language tc inner join translation.translation t on tc.key = t.name order by t.name";
+                        langagugeQuery = @"select tc.id,t.name,t.code,t.value,t.type from translation.language tc inner join translation.translation t on tc.key = t.name";
                     else
                     {
                         if (dropdownName == "timezone")
                         {
-                            langagugeQuery = @"select tc.id,t.name,t.code,'(' || tc.ut_coff_set || ') ' || t.value as value,t.type from master." + dropdownName + " tc inner join translation.translation t on tc.key = t.name order by t.name";
+                            langagugeQuery = @"select tc.id,t.name,t.code,'(' || tc.ut_coff_set || ') ' || t.value as value,t.type from master." + dropdownName + " tc inner join translation.translation t on tc.key = t.name";
                         }
                         else
                         {
-                            langagugeQuery = @"select tc.id,t.name,t.code,t.value,t.type from master." + dropdownName + " tc inner join translation.translation t on tc.key = t.name order by t.name";
+                            langagugeQuery = @"select tc.id,t.name,t.code,t.value,t.type from master." + dropdownName + " tc inner join translation.translation t on tc.key = t.name";
                         }
 
                     }
 
                     var parameter = new DynamicParameters();
                     parameter.Add("@code", langagugeCode);
-                    langagugeQuery = langagugeQuery + " Where t.code=  'EN-GB'";
+                    langagugeQuery = langagugeQuery + " Where t.code=  'EN-GB' order by t.name";
                     IEnumerable<Translations> translations = await _dataAccess.QueryAsync<Translations>(langagugeQuery, parameter);
 
                     return translations;
@@ -232,7 +232,7 @@ namespace net.atos.daf.ct2.translation.repository
                                         where  
                                         (t.code= @code)
                                         union
-                                        SELECT  tc.id,t.name,t.code,t.value,t.type
+                                        SELECT  tc.id,t.name,t.code,'(' || tc.ut_coff_set || ') ' || t.value as value,t.type
                                         from master." + dropdownName + @" tc 
                                         LEFT join translation.translation t
                                         on tc.key = t.name 
