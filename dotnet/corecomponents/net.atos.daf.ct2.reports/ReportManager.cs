@@ -366,7 +366,7 @@ namespace net.atos.daf.ct2.reports
             return lstFleetFuelTripDetails;
         }
 
-        public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByDriver(FleetFuelFilter fleetFuelFilters)
+        public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriver fleetFuelFilters)
         {
             List<FleetFuelDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByDriver(fleetFuelFilters);
             return lstFleetFuelTripDetails;

@@ -33,7 +33,7 @@ rpc GetEcoScoreReportCompareDrivers (GetEcoScoreReportCompareDriversRequest) ret
 rpc GetFleetOverviewDetails(FleetOverviewDetailsRequest) returns (FleetOverviewDetailsResponse);
 rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthStatusListResponse);
 rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
-rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
+rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriverRequest) returns (FleetFuelDetailsResponse);
 
 }
 
@@ -705,7 +705,12 @@ message FleetFuelFilterRequest {
     repeated string VINs = 3;
     string LanguageCode = 4;
 }
-
+message FleetFuelFilterDriverRequest {
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    string VIN = 3;
+    string DriverId = 4;
+}
 message FleetFuelDetailsResponse {
     repeated FleetFuelDetails FleetFuelDetails = 1;   
     Responsecode code = 2;

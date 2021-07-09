@@ -171,18 +171,19 @@ namespace net.atos.daf.ct2.reportservice.Services
                 });
             }
         }
-        public override async Task<FleetFuelDetailsResponse> GetFleetFuelTripDetailsByDriver(FleetFuelFilterRequest request, ServerCallContext context)
+        public override async Task<FleetFuelDetailsResponse> GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriverRequest request, ServerCallContext context)
         {
             try
             {
                 _logger.Info("Get GetFleetFuelDetailsByVehicle report per Vehicle");
-                ReportComponent.entity.FleetFuelFilter objFleetFilter = new ReportComponent.entity.FleetFuelFilter
+                ReportComponent.entity.FleetFuelFilterDriver objFleetFilter = new ReportComponent.entity.FleetFuelFilterDriver
                 {
-                    VINs = request.VINs.ToList<string>(),
+                    VIN = request.VIN,
                     StartDateTime = request.StartDateTime,
-                    EndDateTime = request.EndDateTime
+                    EndDateTime = request.EndDateTime,
+                    DriverId=request.DriverId
                 };
-                var result = await _reportManager.GetFleetFuelTripDetailsByVehicle(objFleetFilter);
+                var result = await _reportManager.GetFleetFuelTripDetailsByDriver(objFleetFilter);
                 FleetFuelDetailsResponse response = new FleetFuelDetailsResponse();
                 if (result?.Count > 0)
                 {
