@@ -232,7 +232,7 @@ namespace net.atos.daf.ct2.translation.repository
                                         where  
                                         (t.code= @code)
                                         union
-                                        SELECT  tc.id,t.name,t.code,t.value,t.type
+                                        SELECT  tc.id,t.name,t.code,'(' || tc.ut_coff_set || ') ' || t.value as value,t.type
                                         from master." + dropdownName + @" tc 
                                         LEFT join translation.translation t
                                         on tc.key = t.name 
