@@ -142,32 +142,32 @@
             matSort #exporter="matTableExporter">
            
            
-            <ng-container *ngIf="showField.specificdetailstarttime" matColumnDef="specificdetailstarttime">
+            <ng-container *ngIf="showField.startTime" matColumnDef="startTime">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDate || 'Date' }} <span style="font-weight: normal;"></span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.activityDate != '' ? row.activityDate : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.startTime != '' ? row.startTime : '-' }}</mat-cell>
             </ng-container>
-            <ng-container *ngIf="showField.specificdetaildrivetime" matColumnDef="specificdetaildrivetime">
+            <ng-container *ngIf="showField.driveTime" matColumnDef="driveTime">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriveTime || 'Drive Time' }} (hh:mm)
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.driveTime != '' ? row.driveTime : '-' }}</mat-cell>
             </ng-container>
-            <ng-container *ngIf="showField.specificdetailworktime" matColumnDef="specificdetailworktime">
+            <ng-container *ngIf="showField.workTime" matColumnDef="workTime">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWorkTime || 'Work Time' }} (hh:mm)
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.workTime != '' ? row.workTime : '-' }}</mat-cell>
             </ng-container>
-            <ng-container *ngIf="showField.specificdetailservicetime" matColumnDef="specificdetailservicetime">
+            <ng-container *ngIf="showField.serviceTime" matColumnDef="serviceTime">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblServiceTime || 'Service Time' }} (hh:mm)
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.serviceTime != '' ? row.serviceTime : '-' }}</mat-cell>
             </ng-container>
-            <ng-container *ngIf="showField.specificdetailresttime" matColumnDef="specificdetailresttime">
+            <ng-container *ngIf="showField.restTime" matColumnDef="restTime">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRestTime || 'Rest Time' }} (hh:mm)
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.restTime != '' ? row.restTime : '-' }}</mat-cell>
             </ng-container>
-            <ng-container *ngIf="showField.specificdetailavailabletime" matColumnDef="specificdetailavailabletime">
+            <ng-container *ngIf="showField.availableTime" matColumnDef="availableTime">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAvailableTime || 'Available Time' }} (hh:mm)
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.availableTime != '' ? row.availableTime : '-' }}</mat-cell>

@@ -23,6 +23,7 @@ rpc GetReportSearchParameter (IdRequestForDriverActivity) returns (ReportSearchP
 rpc GetFleetUtilizationDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationDetailsResponse);
 rpc GetFleetCalenderDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationCalenderResponse);
 rpc GetFleetFuelDetailsForVehicleGraphs(FleetFuelFilterRequest) returns (FleetFuelGraphsResponse);
+rpc GetFleetFuelDetailsForDriverGraphs(FleetFuelFilterRequest) returns (FleetFuelGraphsResponse);
 rpc GetEcoScoreReportByAllDrivers (GetEcoScoreReportByAllDriversRequest) returns (GetEcoScoreReportByAllDriversResponse);
 rpc GetReportUserPreference (GetReportUserPreferenceRequest) returns (GetReportUserPreferenceResponse);
 rpc CreateReportUserPreference (ReportUserPreferenceCreateRequest) returns (ReportUserPreferenceCreateResponse);
@@ -33,7 +34,7 @@ rpc GetEcoScoreReportCompareDrivers (GetEcoScoreReportCompareDriversRequest) ret
 rpc GetFleetOverviewDetails(FleetOverviewDetailsRequest) returns (FleetOverviewDetailsResponse);
 rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthStatusListResponse);
 rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
-rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
+rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriverRequest) returns (FleetFuelDetailsResponse);
 
 }
 
@@ -408,6 +409,7 @@ message CreateEcoScoreProfileKPI {
   double TargetValue = 3;
   double LowerValue = 4;
   double UpperValue = 5;
+  string LimitType =6;
 }
 
 message CreateEcoScoreProfileResponse {
@@ -705,7 +707,12 @@ message FleetFuelFilterRequest {
     repeated string VINs = 3;
     string LanguageCode = 4;
 }
-
+message FleetFuelFilterDriverRequest {
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    string VIN = 3;
+    string DriverId = 4;
+}
 message FleetFuelDetailsResponse {
     repeated FleetFuelDetails FleetFuelDetails = 1;   
     Responsecode code = 2;

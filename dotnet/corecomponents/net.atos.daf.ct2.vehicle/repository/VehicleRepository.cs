@@ -2173,7 +2173,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                       WHERE id IN
                       (
 	                      SELECT arship.vehicle_group_id FROM master.account acc
-	                      INNER JOIN master.groupref gref ON acc.id=gref.ref_id AND acc.state='A'
+	                      LEFT OUTER JOIN master.groupref gref ON acc.id=gref.ref_id AND acc.state='A'
 	                      INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=acc.id OR grp.group_type='D') AND grp.object_type='A'
 	                      INNER JOIN master.accessrelationship arship ON arship.account_group_id=grp.id 
 	                      WHERE acc.id=@account_id AND grp.organization_id=@organization_id

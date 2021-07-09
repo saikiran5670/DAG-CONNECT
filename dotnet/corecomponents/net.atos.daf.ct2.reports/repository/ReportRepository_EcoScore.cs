@@ -44,9 +44,9 @@ namespace net.atos.daf.ct2.reports.repository
                 foreach (var profileKPI in dto.ProfileKPIs)
                 {
                     query = @"INSERT INTO master.ecoscoreprofilekpi
-                        (ecoscore_profile_id,ecoscore_kpi_id,limit_val,target_val, lower_val, upper_val, created_at, created_by)
+                        (ecoscore_profile_id,ecoscore_kpi_id,limit_val,target_val, lower_val, upper_val, created_at, created_by,limit_type)
                         VALUES
-                        (@profile_id, @ecoscore_kpi_id, @limit_val, @target_val, @lower_val, @upper_val, @created_at, @created_by) RETURNING id";
+                        (@profile_id, @ecoscore_kpi_id, @limit_val, @target_val, @lower_val, @upper_val, @created_at, @created_by, @limit_type) RETURNING id";
 
                     parameters = new DynamicParameters();
                     parameters.Add("@profile_id", id);
@@ -59,6 +59,7 @@ namespace net.atos.daf.ct2.reports.repository
                     parameters.Add("@created_by", Convert.ToInt32(dto.ActionedBy));
                     parameters.Add("@modified_at", now);
                     parameters.Add("@modified_by", Convert.ToInt32(dto.ActionedBy));
+                    parameters.Add("@limit_type", profileKPI.LimitType);
 
                     await _dataAccess.ExecuteScalarAsync<int>(query, parameters);
                 }
@@ -153,7 +154,7 @@ namespace net.atos.daf.ct2.reports.repository
             if (profile.type is null)
                 objProfile.Type = ProfileType.None;
             else
-                objProfile.Type = (ProfileType)(char)profile.type;
+                objProfile.Type = (ProfileType)Convert.ToChar(profile.type);
 
             return objProfile;
         }

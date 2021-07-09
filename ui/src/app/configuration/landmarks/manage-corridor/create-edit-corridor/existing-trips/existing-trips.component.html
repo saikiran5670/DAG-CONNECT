@@ -394,7 +394,7 @@
           </span>
           <span *ngIf="actionType !== 'view'">
             <!-- <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="(!existingTripForm.valid || !strPresentStart || !strPresentEnd)"> -->
-            <button mat-button color="primary" (click)="createCorridorClicked()">
+            <button [disabled]="!existingTripForm.valid" mat-button color="primary" (click)="createCorridorClicked()">
               <span>Create</span>
             </button>
           </span>

@@ -73,11 +73,12 @@
                         {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                     </mat-error>
             </div>
-            <div *ngIf="actionType != 'manage'" class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf="actionType != 'manage'" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label style='display: flex;'> 
-                    <mat-checkbox (change)='onChangeOption($event)'></mat-checkbox>  
                     <span>{{ translationData.lblCreateBasedOnExistingProfile || 'Create based on existing profile' }}</span>
                 </mat-label>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+                <mat-checkbox (change)='onChangeOption($event)'></mat-checkbox>  
                 <mat-form-field [disabled]="!isCreatedExistingProfile" appearance="outline" class="full-width">
                   <mat-select  [disabled]="!isCreatedExistingProfile" placeholder="{{ translationData.lblTestProfileSelection || 'Test Profile Selection' }}" (selectionChange)="profileSelectionDropDown($event.value)" >
                     <mat-option *ngFor="let options of profileList" [value]="options.profileId">
@@ -85,6 +86,7 @@
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
+                </div>
               </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
@@ -110,66 +112,98 @@
     </mat-card>
 </form>
 </div>  
-<!-- KPIs -->
 <div class='bgtrans'>
-<form [formGroup]="ecoScoreProfileKPIForm">
-<mat-expansion-panel [(expanded)]="isEcoScore" class="full-width" fxLayoutGap="10px" (opened)="isEcoScore" (closed)="!isEcoScore">
-    
+    <mat-expansion-panel [(expanded)]="isEcoScore" class="full-width" fxLayoutGap="10px" (opened)="isEcoScore" (closed)="!isEcoScore">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Eco-Score</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ kpiData.kpiName }}</span>
             </mat-panel-title>
-          </mat-expansion-panel-header>
-          <div fxLayout="row" fxLayoutAlign="space-between " class='margin-bottom-sm'>
-            <div fxLayout="column" fxLayoutAlign="left" class="areaWidth half-width"> 
-            <div class="custom-slider">
-            <ngx-slider *ngIf = "isKPI" [(value)]="value" [(highValue)]="maxvalue" [options]="options" (valueChange)="sliderEvent(value)" (highValueChange)="sliderEndEvent(maxvalue)"></ngx-slider>  
-        </div>  
-        </div>
-          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
-            <div  fxLayout="column" fxLayoutAlign="left" class ="areaWidth min-width-5-per"> 
-                <mat-label style='display: flex;'>
-                    <span>Min</span>
-                </mat-label>
-                    <mat-form-field appearance="outline" class="half-width">
-                        <input maxlength="50" matInput
-                            formControlName="limitValue" (keyup)="changeMin($event.target.value)">
-                    </mat-form-field>
+        </mat-expansion-panel-header>
+            <app-breaking-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='kpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+    </mat-expansion-panel> 
+</div>
+<div class='bgtrans'>
+    <mat-expansion-panel [(expanded)]="isFuelConsumption" class="full-width" fxLayoutGap="10px" (opened)="isFuelConsumption" (closed)="!isFuelConsumption">
+        <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Fuel Consumption</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+            <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ fuelConsumption.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='fuelConsumption' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsage.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='cruiseControlUsage' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsage30_50.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='cruiseControlUsage30_50' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ brakeKpiData.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='brakeKpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsage50_75.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='cruiseControlUsage50_75'  [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsageGreaterThan75.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='cruiseControlUsageGreaterThan75' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ PTOUsage.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='PTOUsage' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ PTODuration.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='PTODuration' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ averageDrivingSpeed.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='averageDrivingSpeed' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ averageSpeed.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='averageSpeed'  [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ heavyThrottling.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='heavyThrottling' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ heavyThrottleDuration.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='heavyThrottleDuration' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ idling.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='idling' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ idleDuration.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='idleDuration' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
             </div>
-            <div  fxLayout="column" fxLayoutAlign="right"  class ="areaWidth min-width-5-per"> 
-                <mat-label style='display: flex;'>
-                    <span>Target</span>
-                </mat-label>
-                    <mat-form-field appearance="outline" class="half-width">
-                        <input maxlength="50" matInput
-                            formControlName="targetValue" (keyup)="changeTarget($event.target.value)">
-                    </mat-form-field>
+    </mat-expansion-panel> 
+</div>
+<div class='bgtrans'>
+    <mat-expansion-panel [(expanded)]="isBrakingScore" class="full-width" fxLayoutGap="10px" (opened)="isBrakingScore" (closed)="!isBrakingScore">
+        <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Braking Score</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+            <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ brakingScoreKpiData.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='brakingScoreKpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ harshBrakingScoreKpiData.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='harshBrakingScoreKpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ harshBrakeDurationKpiData.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='harshBrakeDurationKpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ brakeKpiData.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='brakeKpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ brakeDurationKpiData.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='brakeDurationKpiData'  [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
             </div>
+    </mat-expansion-panel> 
+</div>
+<div class='bgtrans'>
+    <mat-expansion-panel [(expanded)]="isAnticipation" class="full-width" fxLayoutGap="10px" (opened)="isAnticipation" (closed)="!isAnticipation">
+        <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ anticipationKpiData.kpiName }}</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='anticipationKpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+    </mat-expansion-panel> 
+</div>
+<div class='bgtrans'>
+    <mat-expansion-panel [(expanded)]="isOther" class="full-width" fxLayoutGap="10px" (opened)="isOther" (closed)="!isOther">
+        <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Other Fuel Consumption Indicators</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+            <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ otherWtKpiData.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='otherWtKpiData'[isCreate] = 'isCreate'(createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ otherDistanceKpiData.kpiName }}</span>
+                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='otherDistanceKpiData' [isCreate] = 'isCreate' (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
             </div>
-        </div>
-            <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'fxLayoutGap="10px">
-                <div  fxLayout="column" fxLayoutAlign="left" class ="areaWidth half-width">
-                </div>
-                <div  fxLayout="column" fxLayoutAlign="left" class ="areaWidth min-width-5-per"> 
-                    <mat-label style='display: flex;'>
-                        <span>Lower Value</span>
-                    </mat-label>
-                        <mat-form-field appearance="outline" class="half-width">
-                            <input maxlength="50" matInput
-                                formControlName="lowerValue"  (keyup)="changeLower($event.target.value)">
-                        </mat-form-field>
-                </div>
-                <div  fxLayout="column" fxLayoutAlign="right" class ="areaWidth min-width-5-per"> 
-                    <mat-label style='display: flex;'>
-                        <span>Upper Value</span>
-                    </mat-label>
-                        <mat-form-field appearance="outline" class="half-width">
-                            <input maxlength="50" matInput
-                                formControlName="upperValue"  (keyup)="changeUpper($event.target.value)">
-                        </mat-form-field>
-                </div>
-            </div>
-            
-</mat-expansion-panel>
-</form>
+    </mat-expansion-panel> 
 </div>

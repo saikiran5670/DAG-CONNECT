@@ -5,7 +5,7 @@ using net.atos.daf.ct2.reportservice;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Report
 {
-    public class Mapper
+    public partial class Mapper
     {
         internal reportservice.UserPreferenceCreateRequest MapCreateUserPrefences(UserPreferenceCreateRequest objUserPreferenceCreateRequest)
         {
@@ -53,7 +53,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                     LimitValue = kpi.LimitValue,
                     TargetValue = kpi.TargetValue,
                     LowerValue = kpi.LowerValue,
-                    UpperValue = kpi.UpperValue
+                    UpperValue = kpi.UpperValue,
+                    LimitType = Convert.ToString(kpi.LimitType)
                 });
             }
             return grpcRequest;
