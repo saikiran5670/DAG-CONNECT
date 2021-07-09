@@ -143,16 +143,16 @@ namespace net.atos.daf.ct2.account.report
             //                        GetInstance()
             //                        .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
             //                                        _contentType, ReportSchedulerData.Code)
-            var timeSpanUnit = _unitManager.GetTimeSpanUnit(UnitToConvert);
-            var distanceUnit = _unitManager.GetDistanceUnit(UnitToConvert);
-
+            var timeSpanUnit = await _unitManager.GetTimeSpanUnit(UnitToConvert);
+            var distanceUnit = await _unitManager.GetDistanceUnit(UnitToConvert);
+            
             html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE
             //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
                               , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
-                              , ImageSingleton.GetInstance().GetLogo()
+                              , await GenerateTable()
                               , fromDate.ToString(DateTimeFormat)
-                              , string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).ToArray())
+                              , VehicleLists.Any(s => !string.IsNullOrEmpty(s.VehicleGroupName)) ? string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).ToArray()) : "All"
                               , string.Join(',', VehicleLists.Select(s => s.VehicleName).ToArray())
                               , toDate.ToString(DateTimeFormat)
                               , FleetUtilisationPdfDetails.Count()
@@ -169,10 +169,10 @@ namespace net.atos.daf.ct2.account.report
                               , timeSpanUnit
                               , timeSpanUnit
                               , distanceUnit
-                              , _unitManager.GetSpeedUnit(UnitToConvert)
-                              , _unitManager.GetWeightUnit(UnitToConvert)
+                              , await _unitManager.GetSpeedUnit(UnitToConvert)
+                              , await _unitManager.GetWeightUnit(UnitToConvert)
                               , distanceUnit
-                              , await GenerateTable()
+                              , ImageSingleton.GetInstance().GetLogo()
                 ); ;
             //return html.Replace("{{", "{").Replace("}}", "}").ToString();
             return html.ToString();

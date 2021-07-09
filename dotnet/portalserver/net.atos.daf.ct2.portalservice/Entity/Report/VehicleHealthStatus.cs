@@ -140,7 +140,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public int LatestWarningGeolocationAddressId { get; set; }
         public string LatestWarningGeolocationAddress { get; set; }
 
-        public string Address { get; set; }
+
 
         public int WarningId { get; set; }
         public string DriverName { get; set; }
