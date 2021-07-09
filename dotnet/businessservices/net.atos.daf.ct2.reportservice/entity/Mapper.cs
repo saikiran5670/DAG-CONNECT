@@ -307,6 +307,72 @@ namespace net.atos.daf.ct2.reportservice.entity
             }
             return null;
         }
+        public FleetOverviewDetails ToFleetOverviewDetailsResponse(net.atos.daf.ct2.reports.entity.FleetOverviewDetails fleetOverviewEntity)
+        {
+            FleetOverviewDetails response = new FleetOverviewDetails
+            {
+                Id = fleetOverviewEntity.Id,
+                TripId = fleetOverviewEntity.TripId,
+                Vin = fleetOverviewEntity.Vin,
+                StartTimeStamp = fleetOverviewEntity.StartTimeStamp,
+                EndTimeStamp = fleetOverviewEntity.EndTimeStamp,
+                Driver1Id = fleetOverviewEntity.Driver1Id,
+                TripDistance = fleetOverviewEntity.TripDistance,
+                DrivingTime = fleetOverviewEntity.DrivingTime,
+                FuelConsumption = fleetOverviewEntity.FuelConsumption,
+                VehicleDrivingStatusType = fleetOverviewEntity.VehicleDrivingStatusType,
+                OdometerVal = fleetOverviewEntity.OdometerVal,
+                DistanceUntilNextService = fleetOverviewEntity.DistanceUntilNextService,
+                LatestReceivedPositionLattitude = fleetOverviewEntity.LatestReceivedPositionLattitude,
+                LatestReceivedPositionLongitude = fleetOverviewEntity.LatestReceivedPositionLongitude,
+                LatestReceivedPositionHeading = fleetOverviewEntity.LatestReceivedPositionHeading,
+                StartPositionLattitude = fleetOverviewEntity.StartPositionLattitude,
+                StartPositionLongitude = fleetOverviewEntity.StartPositionLongitude,
+                StartPositionHeading = fleetOverviewEntity.StartPositionHeading,
+                LatestProcessedMessageTimeStamp = fleetOverviewEntity.LatestProcessedMessageTimeStamp,
+                VehicleHealthStatusType = fleetOverviewEntity.VehicleHealthStatusType,
+                LatestWarningClass = fleetOverviewEntity.LatestWarningClass,
+                LatestWarningNumber = fleetOverviewEntity.LatestWarningNumber,
+                LatestWarningType = fleetOverviewEntity.LatestWarningType,
+                LatestWarningTimestamp = fleetOverviewEntity.LatestWarningTimestamp,
+                LatestWarningPositionLatitude = fleetOverviewEntity.LatestWarningPositionLatitude,
+                LatestWarningPositionLongitude = fleetOverviewEntity.LatestWarningPositionLongitude,
+                Vid = fleetOverviewEntity.Vid,
+                RegistrationNo = fleetOverviewEntity.RegistrationNo,
+                DriverFirstName = fleetOverviewEntity.DriverFirstName,
+                DriverLastName = fleetOverviewEntity.DriverLastName,
+                LatestGeolocationAddressId = fleetOverviewEntity.LatestGeolocationAddressId,
+                LatestGeolocationAddress = fleetOverviewEntity.LatestGeolocationAddress,
+                StartGeolocationAddressId = fleetOverviewEntity.StartGeolocationAddressId,
+                StartGeolocationAddress = fleetOverviewEntity.StartGeolocationAddress,
+                LatestWarningGeolocationAddressId = fleetOverviewEntity.LatestWarningGeolocationAddressId,
+                LatestWarningGeolocationAddress = fleetOverviewEntity.LatestWarningGeolocationAddress,
+                LatestWarningName = fleetOverviewEntity.LatestWarningName,
+            };
+            if (fleetOverviewEntity.LiveFleetPositions.Count > 0)
+            {
+                foreach (var item in fleetOverviewEntity.LiveFleetPositions)
+                {
+                    response.LiveFleetPosition.Add(ToLiveFleetPositionResponse(item));
+                }
+            }
+            return response;
+        }
+        public LiveFleetPosition ToLiveFleetPositionResponse(net.atos.daf.ct2.reports.entity.LiveFleetPosition fleetOverviewEntity)
+        {
+            LiveFleetPosition liveFleetPosition = new LiveFleetPosition
+            {
+                Id = fleetOverviewEntity.Id,
+                //TripId = fleetOverviewEntity.TripId,
+                GpsAltitude = fleetOverviewEntity.GpsAltitude,
+                GpsHeading = fleetOverviewEntity.GpsHeading,
+                GpsLatitude = fleetOverviewEntity.GpsLatitude,
+                GpsLongitude = fleetOverviewEntity.GpsLongitude,
+                Co2Emission = fleetOverviewEntity.Co2emission,
+                Fuelconsumtion = fleetOverviewEntity.Fuelconsumtion,
+            };
+            return liveFleetPosition;
+        }
 
     }
 

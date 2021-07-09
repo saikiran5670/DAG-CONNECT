@@ -2,6 +2,7 @@ import { Injectable,Component, ElementRef, EventEmitter, Input, OnInit, Output, 
 import { HereService } from '../services/here.service';
 import { Util } from '../shared/util';
 import { ConfigService } from '@ngx-config/core';
+import { elementEventFullName } from '@angular/compiler/src/view_compiler/view_compiler';
 
 declare var H: any;
 
@@ -989,7 +990,7 @@ export class ReportMapService {
     let _a = this.disableGroup.getObjects();
     if(_a && _a.length > 0){
       _a.forEach(element => {
-        if((chkBxId+1) == element.data.id){
+        if((chkBxId) == element.data.id){
           element.setStyle({
               lineWidth: 4, 
               strokeColor: _checked ? 'transparent' : 'grey'
@@ -1141,6 +1142,18 @@ export class ReportMapService {
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
       element.convertedTripTime = this.getHhMmTime(element.tripTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
+    });
+    return gridData;
+  }
+
+  getConvertedFleetFuelDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
+    gridData.forEach(element => {
+      element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
+      element.convertedAverageDistance = this.getDistance(element.averageDistancePerDay, unitFormat);
+      element.convertedDistance = this.getDistance(element.distance, unitFormat);
+      element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
+      // element.cruiseControlDistance3050 = this.getcruiseControlDistance3050(element.cruiseControlDistance3050, unitFormat);
+
     });
     return gridData;
   }

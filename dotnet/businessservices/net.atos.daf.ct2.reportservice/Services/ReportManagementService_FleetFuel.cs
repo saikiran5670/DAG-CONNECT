@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.reportservice.Services
         /// <param name="request">Fleet Fuel report filter object</param>
         /// <param name="context"> GRPC context</param>
         /// <returns>Result will be list of Trips with average consumption group by vehicle</returns>
-        public override async Task<FleetFuelDetailsResponse> GetFleetFuelDetailsByDriver(FleetFuelFilterRequest request, ServerCallContext context)
+        public override async Task<FleetFuelDetailsByDriverResponse> GetFleetFuelDetailsByDriver(FleetFuelFilterRequest request, ServerCallContext context)
         {
             try
             {
@@ -74,12 +74,12 @@ namespace net.atos.daf.ct2.reportservice.Services
                     StartDateTime = request.StartDateTime,
                     EndDateTime = request.EndDateTime
                 };
-                var result = await _reportManager.GetFleetFuelDetailsByDriver(objFleetFilter);
-                FleetFuelDetailsResponse response = new FleetFuelDetailsResponse();
+                List<ReportComponent.entity.FleetFuelDetailsByDriver> result = await _reportManager.GetFleetFuelDetailsByDriver(objFleetFilter);
+                FleetFuelDetailsByDriverResponse response = new FleetFuelDetailsByDriverResponse();
                 if (result?.Count > 0)
                 {
                     string serialResult = JsonConvert.SerializeObject(result);
-                    response.FleetFuelDetails.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetFuelDetails>>(serialResult));
+                    response.FleetFuelDetails.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetFuelDetailsByDriver>>(serialResult));
                     response.Code = Responsecode.Success;
                     response.Message = Responsecode.Success.ToString();
                 }
@@ -93,7 +93,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return await Task.FromResult(new FleetFuelDetailsResponse
+                return await Task.FromResult(new FleetFuelDetailsByDriverResponse
                 {
                     Code = Responsecode.Failed,
                     Message = "GetFleetFuelDetailsByDriver get failed due to - " + ex.Message

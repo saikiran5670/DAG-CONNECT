@@ -1080,7 +1080,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Vehicle Health Summary
         [HttpGet]
-        [Route("getvehiclehealthstatus")]
+        [Route("fleetoverview/getvehiclehealthstatus")]
         public async Task<IActionResult> GetVehicleHealthReport([FromQuery] Entity.Report.VehicleHealthStatusRequest request)
         {
             try
@@ -1088,6 +1088,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 string filters = JsonConvert.SerializeObject(request);
                 net.atos.daf.ct2.reportservice.VehicleHealthReportRequest objVehicleHealthStatusRequest = JsonConvert.DeserializeObject<VehicleHealthReportRequest>(filters);
+                objVehicleHealthStatusRequest.AccountId = _userDetails.AccountId;
+                objVehicleHealthStatusRequest.OrganizationId = GetContextOrgId();
                 _logger.Info("GetVehicleHealthReport method in Report (for Vehicle Current and History Summary) API called.");
                 var data = await _reportServiceClient.GetVehicleHealthReportAsync(objVehicleHealthStatusRequest);
 

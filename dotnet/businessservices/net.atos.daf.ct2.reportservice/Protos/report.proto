@@ -29,7 +29,7 @@ rpc GetReportUserPreference (GetReportUserPreferenceRequest) returns (GetReportU
 rpc CreateReportUserPreference (ReportUserPreferenceCreateRequest) returns (ReportUserPreferenceCreateResponse);
 rpc GetFleetOverviewFilter (FleetOverviewFilterIdRequest) returns (FleetOverviewFilterResponse);
 rpc GetFleetFuelDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
-rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
+rpc GetFleetFuelDetailsByDriver(FleetFuelFilterRequest) returns (FleetFuelDetailsByDriverResponse);
 rpc GetEcoScoreReportCompareDrivers (GetEcoScoreReportCompareDriversRequest) returns (GetEcoScoreReportCompareDriversResponse);
 rpc GetFleetOverviewDetails(FleetOverviewDetailsRequest) returns (FleetOverviewDetailsResponse);
 rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthStatusListResponse);
@@ -43,6 +43,8 @@ message VehicleHealthReportRequest{
  string TripId=2; 
  string WarningType = 4;
  string LngCode =5;
+  int32 AccountId = 6;
+    int32 OrganizationId = 7;
 }
 
 message  VehicleHealthStatusResponse{
@@ -63,40 +65,44 @@ int64 LctsDistanceUntilNextService =14;
 double LctsLatestReceivedPositionLattitude =15;
 double LctsLatestReceivedPositionLongitude =16;
 double LctsLatestReceivedPositionHeading =17;
-int32 LctsLatestGeolocationAddressId =18;
-double LctsStartPositionLattitude =19;
-double LctsStartPositionLongitude =20;
-double LctsStartPositionHeading =21;
-int32 LctsStartGeolocationAddressId =22;
-int64 LctsLatestProcessedMessageTimestamp =23;
-string LctsVehicleHealthStatusType =24;
-int32 LctsLatestWrningClass =25;
-int32 LctsLatestWarningNumber =26;
-string LctsLatestWarningType =27;
-int64 LctsLatestWarningTimestamp =28;
-double LctsLatestWarningPositionLatitude =29;
-double LctsLatestWarningPositionLongitude =30;
-int32 LctsLatestWarningGeolocationAddressId =31;
-string LctsAddress =32;
-int32 WarningId =33;
-string DriverName =34;
-string WarningTripId =35;
-string WarningVin =36;
-int64 WarningTimetamp =37;
-int32 WarningClass =38;
-int32 WarningNumber =39;
-double WarningLat =40;
-double WarningLng =41;
-double WarningHeading =42;
-string WarningVehicleHealthStatusType =43;
-string WarningVehicleDrivingStatusType =44;
-string WarningDrivingId =45;
-string WarningType =46;
-int64 WarningDistanceUntilNectService =47;
-int64 WarningOdometerVal =48;
-int64 WarningLatestProcessedMessageTimestamp =49;
-string WarningName = 50;//from dtcwarning table
-string WarningAdvice =51;
+double LctsStartPositionLattitude =18;
+double LctsStartPositionLongitude =19;
+double LctsStartPositionHeading =20;
+int64 LctsLatestProcessedMessageTimestamp =21;
+string LctsVehicleHealthStatusType =22;
+int32 LctsLatestWrningClass =23;
+int32 LctsLatestWarningNumber =24;
+string LctsLatestWarningType =25;
+int64 LctsLatestWarningTimestamp =26;
+double LctsLatestWarningPositionLatitude =27;
+double LctsLatestWarningPositionLongitude =28;
+int32 LatgeoaddLatestGeolocationAddressId =29;
+string LatgeoaddLatestGeolocationAddress =30;
+int32 StageoaddStartGeolocationAddressId =31;
+ string StageoaddStartGeolocationAddress =32;
+ int32 WangeoaddLatestWarningGeolocationAddressId=33;
+ string WangeoaddLatestWarningGeolocationAddress =34;
+int32 WarningId =35;
+string DriverName =36;
+string WarningTripId =37;
+string WarningVin =38;
+int64 WarningTimetamp =39;
+int32 WarningClass =40;
+int32 WarningNumber =41;
+double WarningLat =42;
+double WarningLng =43;
+double WarningHeading =44;
+string WarningVehicleHealthStatusType =45;
+string WarningVehicleDrivingStatusType =46;
+string WarningDrivingId =47;
+string WarningType =48;
+int64 WarningDistanceUntilNectService =49;
+int64 WarningOdometerVal =50;
+int64 WarningLatestProcessedMessageTimestamp =51;
+string WarningName = 52;//from dtcwarning table
+string WarningAdvice =53;
+ 
+         
 }
 
 message VehicleHealthStatusListResponse{
@@ -649,6 +655,7 @@ message FleetOverviewDetailsRequest {
     int32 AccountId = 8;
     int32 OrganizationId = 9;
     int32 RoleId = 10;
+    string LanguageCode = 11;
 }
 
 message FleetOverviewDetails
@@ -689,7 +696,8 @@ message FleetOverviewDetails
 	string StartGeolocationAddress=34;
 	int32 LatestWarningGeolocationAddressId=35;
 	string LatestWarningGeolocationAddress=36;
-	repeated LiveFleetPosition LiveFleetPosition=37;
+	string LatestWarningName=37;
+    repeated LiveFleetPosition LiveFleetPosition=38;
 }
 
 message FleetOverviewDetailsResponse {
@@ -718,7 +726,11 @@ message FleetFuelDetailsResponse {
     Responsecode code = 2;
     string message = 3;
 }
-
+message FleetFuelDetailsByDriverResponse {
+    repeated FleetFuelDetailsByDriver FleetFuelDetails = 1;   
+    Responsecode code = 2;
+    string message = 3;
+}
 message FleetFuelGraphsResponse {
     repeated FleetFuelGraphs FleetfuelGraph = 1;   
     Responsecode code = 2;
@@ -745,21 +757,21 @@ message FleetFuelDetails {
     double AverageSpeed = 6;
     int32 MaxSpeed = 7;
     int32 NumberOfTrips = 8;
-   double AverageGrossWeightComb = 9;
+    double AverageGrossWeightComb = 9;
     double FuelConsumed = 10;
     double FuelConsumption = 11;
-   double CO2Emission = 12;
+    double CO2Emission = 12;
     double IdleDuration = 13;
-   double PTODuration = 14;
-   double HarshBrakeDuration = 15;
-   double HeavyThrottleDuration = 16;
-   double CruiseControlDistance30_50 = 17;
-   double CruiseControlDistance50_75 = 18;
-   double CruiseControlDistance75 = 19;
-   double AverageTrafficClassification = 20;
-   double CCFuelConsumption = 21;
-   double FuelconsumptionCCnonactive = 22;
-   int32 IdlingConsumption = 23;
+    double PTODuration = 14;
+    double HarshBrakeDuration = 15;
+    double HeavyThrottleDuration = 16;
+    double CruiseControlDistance30_50 = 17;
+    double CruiseControlDistance50_75 = 18;
+    double CruiseControlDistance75 = 19;
+    double AverageTrafficClassification = 20;
+    double CCFuelConsumption = 21;
+    double FuelconsumptionCCnonactive = 22;
+    int32 IdlingConsumption = 23;
     double DPAScore = 24;
     google.protobuf.StringValue DPAAnticipationScore = 25;
     google.protobuf.StringValue DPABrakingScore = 26;
@@ -769,8 +781,47 @@ message FleetFuelDetails {
     google.protobuf.StringValue IdlingWithoutPTOpercent = 30;
     google.protobuf.StringValue FootBrake = 31;
     google.protobuf.StringValue CO2Emmision = 32;
-    string AverageTrafficClassificationValue = 33;
-    string IdlingConsumptionValue = 34;
+    google.protobuf.StringValue AverageTrafficClassificationValue = 33;
+    google.protobuf.StringValue IdlingConsumptionValue = 34;
+    google.protobuf.StringValue DriverID = 35;
+    google.protobuf.StringValue DriverName = 36;
+    repeated LiveFleetPosition LiveFleetPosition=37;
+}
+message FleetFuelDetailsByDriver {
+    google.protobuf.StringValue VehicleName = 1;
+    google.protobuf.StringValue VIN = 2;
+    google.protobuf.StringValue VehicleRegistrationNo = 3;
+    int64 Distance = 4;
+    int64 AverageDistancePerDay = 5;
+    double AverageSpeed = 6;
+    int32 MaxSpeed = 7;
+    int32 NumberOfTrips = 8;
+    double AverageGrossWeightComb = 9;
+    double FuelConsumed = 10;
+    double FuelConsumption = 11;
+    double CO2Emission = 12;
+    double IdleDuration = 13;
+    double PTODuration = 14;
+    double HarshBrakeDuration = 15;
+    double HeavyThrottleDuration = 16;
+    double CruiseControlDistance30_50 = 17;
+    double CruiseControlDistance50_75 = 18;
+    double CruiseControlDistance75 = 19;
+    double AverageTrafficClassification = 20;
+    double CCFuelConsumption = 21;
+    double FuelconsumptionCCnonactive = 22;
+    int32 IdlingConsumption = 23;
+    double DPAScore = 24;
+    google.protobuf.StringValue DPAAnticipationScore = 25;
+    google.protobuf.StringValue DPABrakingScore = 26;
+    google.protobuf.StringValue IdlingPTOScore = 27;
+    google.protobuf.StringValue IdlingPTO = 28;
+    google.protobuf.StringValue IdlingWithoutPTO = 29;
+    google.protobuf.StringValue IdlingWithoutPTOpercent = 30;
+    google.protobuf.StringValue FootBrake = 31;
+    google.protobuf.StringValue CO2Emmision = 32;
+    google.protobuf.StringValue AverageTrafficClassificationValue = 33;
+    google.protobuf.StringValue IdlingConsumptionValue = 34;
     google.protobuf.StringValue DriverID = 35;
     google.protobuf.StringValue DriverName = 36;
     repeated LiveFleetPosition LiveFleetPosition=37;
