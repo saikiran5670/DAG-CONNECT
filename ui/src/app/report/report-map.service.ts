@@ -968,12 +968,19 @@ export class ReportMapService {
       let _a: any = [];
       _arr.forEach(i=> {
         let b: any = _selectedRoutes.filter(j => i.startPositionLattitude == j.startPositionLattitude && i.startPositionLongitude == j.startPositionLongitude)
-        _a.push(b)
+        _a.push(b);
       }); 
       if(_a.length > 0){
+        let _check: any = false;
         _a.forEach(element => {
-          this.setMarkerCluster(element, _ui); // cluster route marker    
+          if(element.length > 1){
+            _check = true;
+            this.setMarkerCluster(element, _ui); // cluster route marker    
+          }
         });
+        if(!_check){
+          // TODO: cluster all element
+        }
       }
     }
   }
@@ -982,7 +989,7 @@ export class ReportMapService {
     let _a = this.disableGroup.getObjects();
     if(_a && _a.length > 0){
       _a.forEach(element => {
-        if((chkBxId+1) == element.data.id){
+        if((chkBxId) == element.data.id){
           element.setStyle({
               lineWidth: 4, 
               strokeColor: _checked ? 'transparent' : 'grey'

@@ -1045,17 +1045,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         [HttpPost]
         [Route("fleetfuel/getdetails/driver/trip")]
-        public async Task<IActionResult> GetFleetFuelTripByDriver([FromBody] Entity.Report.ReportFleetFuelFilter request)
+        public async Task<IActionResult> GetFleetFuelTripByDriver([FromBody] Entity.Report.ReportFleetFuelDriverFilter request)
         {
             try
             {
                 if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_STARTDATE_MSG); }
                 if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_ENDDATE_MSG); }
-                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG); }
+                if (request.VIN.Length <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG); }
+                if (request.DriverId.Length <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DRIVERID_MSG); }
+
                 if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DATEMISMATCH_MSG); }
 
                 string filters = JsonConvert.SerializeObject(request);
-                FleetFuelFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetFuelFilterRequest>(filters);
+                FleetFuelFilterDriverRequest objFleetFilter = JsonConvert.DeserializeObject<FleetFuelFilterDriverRequest>(filters);
                 _logger.Info("GetFleetFuelDetailsByDriver method in Report (for Fleet Fuel consumption details by driver) API called.");
                 var data = await _reportServiceClient.GetFleetFuelTripDetailsByDriverAsync(objFleetFilter);
                 if (data?.FleetFuelDetails?.Count > 0)

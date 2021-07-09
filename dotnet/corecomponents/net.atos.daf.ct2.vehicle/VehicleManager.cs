@@ -20,9 +20,9 @@ namespace net.atos.daf.ct2.vehicle
             this._vehicleRepository = vehicleRepository;
         }
 
-        public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId)
+        public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId, string state)
         {
-            return await _vehicleRepository.GetVehicleBySubscriptionId(subscriptionId);
+            return await _vehicleRepository.GetVehicleBySubscriptionId(subscriptionId, state);
         }
         public async Task<Vehicle> Create(Vehicle vehicle)
         {
