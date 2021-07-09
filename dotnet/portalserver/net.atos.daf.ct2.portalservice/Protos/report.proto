@@ -43,6 +43,8 @@ message VehicleHealthReportRequest{
  string TripId=2; 
  string WarningType = 4;
  string LngCode =5;
+ int32 AccountId = 6;
+ int32 OrganizationId = 7;
 }
 
 message  VehicleHealthStatusResponse{

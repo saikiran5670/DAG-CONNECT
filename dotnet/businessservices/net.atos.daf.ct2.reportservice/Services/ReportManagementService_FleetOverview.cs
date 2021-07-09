@@ -178,19 +178,42 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 _logger.Info("Get GetVehicleHealthStatusReport Called");
+                VehicleHealthStatusListResponse response = new VehicleHealthStatusListResponse();
+                var vehicleDeatilsWithAccountVisibility =
+                              await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+
+                if (vehicleDeatilsWithAccountVisibility.Count() == 0)
+                {
+                    response.Message = string.Format(ReportConstants.GET_VIN_VISIBILITY_FAILURE_MSG, request.AccountId, request.OrganizationId);
+                    response.Code = Responsecode.Failed;
+                    return response;
+                }
+
+
                 reports.entity.VehicleHealthStatusRequest objVehicleHealthStatusRequest = new reports.entity.VehicleHealthStatusRequest
                 {
                     VIN = request.VIN,
                     Days = 90,
                     LngCode = request.LngCode ?? string.Empty,
-                    //WarningType = request.WarningType ?? string.Empty,
                     TripId = request.TripId ?? string.Empty
                 };
                 reports.entity.VehicleHealthResult objVehicleHealthStatus = new ReportComponent.entity.VehicleHealthResult();
                 var result = await _reportManager.GetVehicleHealthStatus(objVehicleHealthStatusRequest);
-                VehicleHealthStatusListResponse response = new VehicleHealthStatusListResponse();
-                if (result != null)
+
+                if (result?.Count > 0)
                 {
+                    List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.WarningClass > 0).Select(x => x.WarningClass).Distinct().ToList(),
+                        result.Where(p => p.WarningNumber > 0).Select(x => x.WarningNumber).Distinct().ToList(), request.LngCode);
+                    foreach (var healthStatus in result)
+                    {
+                        foreach (WarningDetails warning in warningDetails)
+                        {
+                            if (healthStatus.WarningClass == warning.WarningClass && healthStatus.WarningNumber == warning.WarningNumber)
+                            {
+                                healthStatus.WarningName = warning.WarningName;
+                            }
+                        }
+                    }
                     string res = JsonConvert.SerializeObject(result);
                     response.HealthStatus.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleHealthStatusResponse>>(res,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
