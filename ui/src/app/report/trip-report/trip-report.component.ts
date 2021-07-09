@@ -107,63 +107,63 @@ internalSelection: boolean = false;
 herePOIArr: any = [];
 prefMapData: any = [
   {
-    key: 'da_report_details_averagespeed',
+    key: 'da_report_tripreportdetails_averagespeed',
     value: 'averageSpeed'
   },
   {
-    key: 'da_report_details_drivingtime',
+    key: 'da_report_tripreportdetails_drivingtime',
     value: 'drivingTime'
   },
   {
-    key: 'da_report_details_alerts',
+    key: 'da_report_tripreportdetails_alerts',
     value: 'alert'
   },
   {
-    key: 'da_report_details_averageweight',
+    key: 'da_report_tripreportdetails_averageweight',
     value: 'averageWeight'
   },
   {
-    key: 'da_report_details_events',
+    key: 'da_report_tripreportdetails_events',
     value: 'events'
   },
   {
-    key: 'da_report_details_distance',
+    key: 'da_report_tripreportdetails_distance',
     value: 'distance'
   },
   {
-    key: 'da_report_details_enddate',
+    key: 'da_report_tripreportdetails_enddate',
     value: 'endTimeStamp'
   },
   {
-    key: 'da_report_details_endposition',
+    key: 'da_report_tripreportdetails_endposition',
     value: 'endPosition'
   },
   {
-    key: 'da_report_details_fuelconsumed',
+    key: 'da_report_tripreportdetails_fuelconsumed',
     value: 'fuelConsumed100Km'
   },
   {
-    key: 'da_report_details_idleduration',
+    key: 'da_report_tripreportdetails_idleduration',
     value: 'idleDuration'
   },
-  // {
-  //   key: 'da_report_details_odometer',
-  //   value: 'odometer'
-  // },
-  // {
-  //   key: 'da_report_details_registrationnumber',
-  //   value: 'registrationnumber'
-  // },
   {
-    key: 'da_report_details_startdate',
+    key: 'da_report_tripreportdetails_odometer',
+    value: 'odometer'
+  },
+  {
+    key: 'da_report_tripreportdetails_platenumber',
+    value: 'registrationnumber'
+  },
+  {
+    key: 'da_report_tripreportdetails_startdate',
     value: 'startTimeStamp'
   },
-  // {
-  //   key: 'da_report_details_vin',
-  //   value: 'vin'
-  // },
   {
-    key: 'da_report_details_startposition',
+    key: 'da_report_tripreportdetails_vin',
+    value: 'vin'
+  },
+  {
+    key: 'da_report_tripreportdetails_startposition',
     value: 'startPosition'
   }
 ];
@@ -319,17 +319,33 @@ ngOnDestroy(){
   getReportPreferences(){
     this.reportService.getUserPreferenceReport(this.tripReportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
+      this.resetTripPrefData();
+      this.getTranslatedColumnName(this.reportPrefData);
       this.setDisplayColumnBaseOnPref();
       this.loadWholeTripData();
     }, (error) => {
       this.reportPrefData = [];
+      this.resetTripPrefData();
       this.setDisplayColumnBaseOnPref();
       this.loadWholeTripData();
     });
   }
 
+  resetTripPrefData(){
+    this.tripPrefData = [];
+  }
+
+  tripPrefData: any = [];
+  getTranslatedColumnName(prefData: any){
+    prefData.forEach(element => {
+      if(element.key.includes('da_report_tripreportdetails_')){
+        this.tripPrefData.push(element);
+      }
+    });
+  }
+
   setDisplayColumnBaseOnPref(){
-    let filterPref = this.reportPrefData.filter(i => i.state == 'I');
+    let filterPref = this.tripPrefData.filter(i => i.state == 'I');
     if(filterPref.length > 0){
       filterPref.forEach(element => {
         let search = this.prefMapData.filter(i => i.key == element.key);
@@ -340,11 +356,11 @@ ngOnDestroy(){
           }
         }
 
-        if(element.key == 'da_report_details_vehiclename'){
+        if(element.key == 'da_report_tripreportdetails_vehiclename'){
           this.showField.vehicleName = false;
-        }else if(element.key == 'da_report_details_vin'){
+        }else if(element.key == 'da_report_tripreportdetails_vin'){
           this.showField.vin = false;
-        }else if(element.key == 'da_report_details_registrationnumber'){
+        }else if(element.key == 'da_report_tripreportdetails_platenumber'){
           this.showField.regNo = false;
         }
       });
