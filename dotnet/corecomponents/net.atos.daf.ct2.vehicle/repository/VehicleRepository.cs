@@ -35,7 +35,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         #region Vehicle component methods
 
-        public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId)
+        public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId, string state)
         {
             _log.Info("GetVehicleBySubscriptionId Vehicle method called in repository");
             try
@@ -43,10 +43,11 @@ namespace net.atos.daf.ct2.vehicle.repository
                 List<VehiclesBySubscriptionId> objVehiclesBySubscriptionId = new List<VehiclesBySubscriptionId>();
                 var parameter = new DynamicParameters();
                 parameter.Add("@subscription_id", subscriptionId);
+                parameter.Add("@state", Convert.ToChar(state));
                 var query = @"select veh.id, sub.subscription_id as orderId, veh.name, veh.vin, veh.license_plate_number
                               from master.Subscription sub 
                               join master.vehicle veh on sub.vehicle_id = veh.id
-                              where subscription_id = @subscription_id";
+                              where subscription_id = @subscription_id and state = @state";
                 var data = await _dataAccess.QueryAsync<VehiclesBySubscriptionId>(query, parameter);
                 return objVehiclesBySubscriptionId = data.Cast<VehiclesBySubscriptionId>().ToList();
             }
