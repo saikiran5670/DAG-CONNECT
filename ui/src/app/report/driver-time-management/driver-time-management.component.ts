@@ -575,50 +575,50 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
         this.hideloader();
         let tripData = _tripData;
-        _tripData["driverActivities"]= [
-          {
-            "driverId": "NL B000384974000000",
-            "driverName": "Hero Honda",
-            "vin": "XLR0998HGFFT76657",
-            "activityDate": 1624272277000,
-            "startTime": 1624273297000,
-            "endTime": 1624273297000,
-            "code": 3,
-            "restTime": 995000,
-            "availableTime": 0,
-            "workTime": -940935000,
-            "driveTime": 2665000,
-            "serviceTime": -938270000
-          },
-          {
-            "driverId": "PH B110000123456021",
-            "driverName": "Namita1 Patil",
-            "vin": "XLR0998HGFFT76657",
-            "activityDate": 1623330688000,
-            "startTime": 1623333767000,
-            "endTime": 1623333767000,
-            "code": 0,
-            "restTime": 1033000,
-            "availableTime": 646000,
-            "workTime": 0,
-            "driveTime": 0,
-            "serviceTime": 646000
-          },
-          {
-            "driverId": "PH B110000123456021",
-            "driverName": "Namita1 Patil",
-            "vin": "XLR0998HGFFT76657",
-            "activityDate": 1623330688000,
-            "startTime": 1623333767000,
-            "endTime": 1623333767000,
-            "code": 0,
-            "restTime": 1033000,
-            "availableTime": 646000,
-            "workTime": 0,
-            "driveTime": 0,
-            "serviceTime": 646000
-          }
-        ]
+        // _tripData["driverActivities"]= [
+        //   {
+        //     "driverId": "NL B000384974000000",
+        //     "driverName": "Hero Honda",
+        //     "vin": "XLR0998HGFFT76657",
+        //     "activityDate": 1624272277000,
+        //     "startTime": 1624273297000,
+        //     "endTime": 1624273297000,
+        //     "code": 3,
+        //     "restTime": 995000,
+        //     "availableTime": 0,
+        //     "workTime": -940935000,
+        //     "driveTime": 2665000,
+        //     "serviceTime": -938270000
+        //   },
+        //   {
+        //     "driverId": "PH B110000123456021",
+        //     "driverName": "Namita1 Patil",
+        //     "vin": "XLR0998HGFFT76657",
+        //     "activityDate": 1623330688000,
+        //     "startTime": 1623333767000,
+        //     "endTime": 1623333767000,
+        //     "code": 0,
+        //     "restTime": 1033000,
+        //     "availableTime": 646000,
+        //     "workTime": 0,
+        //     "driveTime": 0,
+        //     "serviceTime": 646000
+        //   },
+        //   {
+        //     "driverId": "PH B110000123456021",
+        //     "driverName": "Namita1 Patil",
+        //     "vin": "XLR0998HGFFT76657",
+        //     "activityDate": 1623330688000,
+        //     "startTime": 1623333767000,
+        //     "endTime": 1623333767000,
+        //     "code": 0,
+        //     "restTime": 1033000,
+        //     "availableTime": 646000,
+        //     "workTime": 0,
+        //     "driveTime": 0,
+        //     "serviceTime": 646000
+        //   }
+        // ]
         if(this.allDriversSelected){
           this.onSearchData = tripData;
 
