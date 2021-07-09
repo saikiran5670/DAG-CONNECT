@@ -137,13 +137,8 @@ namespace net.atos.daf.ct2.reportservice.Services
                                 fleetOverviewDetails.LatestWarningName = warning.WarningName;
                             }
                         }
+                        response.FleetOverviewDetailList.Add(_mapper.ToFleetOverviewDetailsResponse(fleetOverviewDetails));
                     }
-                    string res = JsonConvert.SerializeObject(result);
-                    response.FleetOverviewDetailList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetOverviewDetails>>(res, new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore,
-                        ReferenceLoopHandling = ReferenceLoopHandling.Serialize
-                    }));
                     response.Code = Responsecode.Success;
                     response.Message = Responsecode.Success.ToString();
                 }
