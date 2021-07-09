@@ -215,7 +215,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     VIN = request.VIN,
                     StartDateTime = request.StartDateTime,
                     EndDateTime = request.EndDateTime,
-                    DriverId=request.DriverId
+                    DriverId = request.DriverId
                 };
                 var result = await _reportManager.GetFleetFuelTripDetailsByDriver(objFleetFilter);
                 FleetFuelDetailsResponse response = new FleetFuelDetailsResponse();
