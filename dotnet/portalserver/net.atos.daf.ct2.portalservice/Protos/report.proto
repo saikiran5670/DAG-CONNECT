@@ -43,8 +43,8 @@ message VehicleHealthReportRequest{
  string TripId=2; 
  string WarningType = 4;
  string LngCode =5;
- int32 AccountId = 6;
- int32 OrganizationId = 7;
+  int32 AccountId = 6;
+    int32 OrganizationId = 7;
 }
 
 message  VehicleHealthStatusResponse{
@@ -277,6 +277,8 @@ message TripDetails {
     double StartPositionLongitude=20;
     double EndPositionLattitude=21;
     double EndPositionLongitude=22;
+    string RegistrationNo =23;
+    string VehicleName=24;
 }
 message LiveFleetPosition {
     double GpsAltitude=1;
@@ -695,7 +697,7 @@ message FleetOverviewDetails
 	int32 StartGeolocationAddressId=33;
 	string StartGeolocationAddress=34;
 	int32 LatestWarningGeolocationAddressId=35;
-    string LatestWarningGeolocationAddress=36;
+	string LatestWarningGeolocationAddress=36;
 	string LatestWarningName=37;
     repeated LiveFleetPosition LiveFleetPosition=38;
 }
@@ -858,8 +860,8 @@ message FleetFuelTripDetails {
     double EndPositionLattitude=29;
     double EndPositionLongitude=30;
     repeated LiveFleetPosition LiveFleetPosition=31;
-    }
 
+}
 message FleetFuelTripDetailsResponse {
     repeated FleetFuelTripDetails FleetFuelTripDetails = 1;   
     Responsecode code = 2;

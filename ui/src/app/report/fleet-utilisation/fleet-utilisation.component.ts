@@ -296,7 +296,10 @@ lineChartOptions = {
       position: 'left',
       type: 'linear',
       ticks: {
-        beginAtZero:true
+        steps: 10,
+        stepSize: 1,
+        // max:10,
+        beginAtZero: true,
       },
       scaleLabel: {
         display: true,

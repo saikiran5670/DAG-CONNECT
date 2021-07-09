@@ -362,21 +362,21 @@
             <ng-container matColumnDef="vin">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{  row.vin != '' ? row.vin : '-' }}</mat-cell>
+              <mat-cell class="text-truncate" matTooltip='{{ row.vin }}' *matCellDef="let row">{{  row.vin != '' ? row.vin : '-' }}</mat-cell>
             </ng-container>           
             <ng-container matColumnDef="odometer">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.odometer != '' ? row.odometer : '-' }}</mat-cell>
+              <mat-cell class="text-truncate" matTooltip='{{ row.odometer }}' *matCellDef="let row">{{ row.odometer != '' ? row.odometer : '-' }}</mat-cell>
             </ng-container>          
 
               <ng-container matColumnDef="vehicleName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'VehicleName' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.vehicleName != '' ? row.vehicleName : '-' }}</mat-cell>
             </ng-container>         
                <ng-container matColumnDef="registrationNo">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRegistrationNo || 'RegistrationNo' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRegistrationNo || 'Registration No' }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.registrationNo != '' ? row.registrationNo : '-' }}</mat-cell>
             </ng-container>
