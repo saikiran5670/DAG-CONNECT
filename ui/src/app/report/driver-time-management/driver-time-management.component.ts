@@ -811,7 +811,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         distinctDriver.forEach(element => {
           vinList= this.onLoadData.driverList.filter(i => i.driverID === element).map(data=>data.vin);
           let _item = this.onLoadData.driverList.filter(i => i.driverID === element)
-          if(_item.length > 0){
+          let _namePresent =  this.checkIfNamePresent(_item);
+          if(_item.length > 0 && _namePresent){
             filteredDriverList.push(_item[0]); //-- unique VIN data added 
             _item.forEach(element => {
               finalDriverList.push(element)
@@ -889,6 +890,12 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       }
   }
 
+  checkIfNamePresent(_item){
+    if(_item[0].firstName != "" || _item[0].lastName != ""){
+      return true;
+    }
+    return false;
+  }
   updateDataSource(tableData: any) {
     this.initData = tableData;
     this.dataSource = new MatTableDataSource(tableData);

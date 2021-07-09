@@ -14,6 +14,7 @@ namespace net.atos.daf.ct2.reports.entity
         public List<string> OtherFilter { get; set; }
         public List<string> DriverId { get; set; }
         public int Days { get; set; }
+        public string LanguageCode { get; set; }
     }
 
 }

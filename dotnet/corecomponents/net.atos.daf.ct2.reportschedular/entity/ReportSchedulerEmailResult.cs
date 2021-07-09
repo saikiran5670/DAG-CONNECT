@@ -20,6 +20,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public string EmailId { get; set; }
         public string LanguageCode { get; set; }
         public bool IsMailSent { get; set; }
+        public string Key { get; set; }
 
     }
 }
