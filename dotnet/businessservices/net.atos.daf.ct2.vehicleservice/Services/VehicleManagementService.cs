@@ -871,6 +871,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         {
                             ObjGroupRef.FunctionEnum = "V";
                         }
+                        else if (Group.FunctionEnum.OEM.ToString() == item.FunctionEnum.ToString())
+                        {
+                            ObjGroupRef.FunctionEnum = "M";
+                        }
                         else
                         {
                             ObjGroupRef.FunctionEnum = "A";

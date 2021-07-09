@@ -53,12 +53,10 @@ namespace net.atos.daf.ct2.reports.repository
                         ,cts.distance_until_next_service as LctsDistanceUntilNextService
                         ,cts.latest_received_position_lattitude as LctsLatestReceivedPositionLattitude
                         ,cts.latest_received_position_longitude as LctsLatestReceivedPositionLongitude
-                        ,cts.latest_received_position_heading as LctsLatestReceivedPositionHeading
-                        ,cts.latest_geolocation_address_id as LctsLatestGeolocationAddressId
+                        ,cts.latest_received_position_heading as LctsLatestReceivedPositionHeading                      
                         ,cts.start_position_lattitude as LctsStartPositionLattitude
                         ,cts.start_position_longitude as LctsStartPositionLongitude
-                        ,cts.start_position_heading as LctsStartPositionHeading
-                        ,cts.start_geolocation_address_id as LctsStartGeolocationAddressId
+                        ,cts.start_position_heading as LctsStartPositionHeading 
                         ,cts.latest_processed_message_time_stamp as LctsLatestProcessedMessageTimestamp
                         ,cts.vehicle_health_status_type as LctsVehicleHealthStatusType
                         ,cts.latest_warning_class as LctsLatestWarningClass
@@ -66,14 +64,26 @@ namespace net.atos.daf.ct2.reports.repository
                         ,cts.latest_warning_type as LctsLatestWarningType
                         ,cts.latest_warning_timestamp as LctsLatestWarningTimestamp
                         ,cts.latest_warning_position_latitude as LctsLatestWarningPositionLatitude
-                        ,cts.latest_warning_position_longitude as LctsLatestWarningPositionLongitude
-                        ,cts.latest_warning_geolocation_address_id as LctsLatestWarningGeolocationAddressId
-                        , latgeoadd.Address as Lcts_Address
+                        ,cts.latest_warning_position_longitude as LctsLatestWarningPositionLongitude,                      
+                        latgeoadd.id as latgeoadd_LatestGeolocationAddressId,
+                        coalesce(latgeoadd.address,'') as latgeoadd_LatestGeolocationAddress,
+                        stageoadd.id as stageoadd_StartGeolocationAddressId,
+                        coalesce(stageoadd.address,'') as stageoadd_StartGeolocationAddress,
+                        wangeoadd.id as wangeoadd_LatestWarningGeolocationAddressId,
+                        coalesce(wangeoadd.address,'') as wangeoadd_LatestWarningGeolocationAddress
+
                                        FROM livefleet.livefleet_current_trip_statistics cts
                                        inner join master.vehicle V on cts.vin = v.vin
                                        left join master.geolocationaddress latgeoadd
                                        on TRUNC(CAST(cts.latest_received_position_lattitude as numeric),4)= TRUNC(CAST(latgeoadd.latitude as numeric),4) 
-                                       and TRUNC(CAST(cts.latest_received_position_longitude as numeric),4) = TRUNC(CAST(latgeoadd.longitude as numeric),4)
+                                       and TRUNC(CAST(cts.latest_received_position_longitude as numeric),4) = TRUNC(CAST(latgeoadd.longitude as numeric),4) 
+                                        left join master.geolocationaddress stageoadd
+                                        on TRUNC(CAST(cts.start_position_lattitude as numeric),4)= TRUNC(CAST(stageoadd.latitude as numeric),4) 
+                                        and TRUNC(CAST(cts.start_position_longitude as numeric),4) = TRUNC(CAST(stageoadd.longitude as numeric),4)
+                                        left join master.geolocationaddress wangeoadd
+                                        on TRUNC(CAST(cts.latest_warning_position_latitude as numeric),4)= TRUNC(CAST(wangeoadd.latitude as numeric),4) 
+                                        and TRUNC(CAST(cts.latest_warning_position_longitude as numeric),4) = TRUNC(CAST(wangeoadd.longitude as numeric),4)
+
                                        where v.vin =@vin and ((@tripId <> '' and cts.trip_id=@tripId) OR (@tripId='')) 
                         )  ,
 
