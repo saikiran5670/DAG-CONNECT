@@ -37,9 +37,9 @@ public class EcoScore implements Serializable {
 	
 	private Double tripCalHeavyThrottleDuration;
 	private Double tripCalCrsCntrlUsage;
-	private Double tripCalCrsCntrlUsage30To50;
-	private Double tripCalCrsCntrlUsage50To75;
-	private Double tripCalCrsCntrlUsageAbv75;
+	private Integer tripCalCrsCntrlDist25To50;
+	private Integer tripCalCrsCntrlDist50To75;
+	private Integer tripCalCrsCntrlDistAbv75;
 	private Double tachoVGrossWtCmbSum; 
 	private Integer vHarshBrakeDuration;
 	private Integer vBrakeDuration;

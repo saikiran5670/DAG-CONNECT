@@ -1,5 +1,5 @@
 <!-- all details tab -->
-<div fxLayout="row" class='areaWidth full-width padding-10 tripReportPref' fxLayoutAlign="left center"
+<div *ngIf='allDriverTableData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 tripReportPref' fxLayoutAlign="left center"
     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForAllDetailsColumns() : null'
@@ -15,7 +15,7 @@
         </mat-checkbox>
     </div>
 </div>
-<div fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+<div *ngIf='allDriverTableData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
     <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
@@ -98,7 +98,7 @@
 </div>
 
 <!--zoom tab-->
-<div fxLayout="row" class='areaWidth full-width padding-10 tripReportPref margin-top-20' fxLayoutAlign="left center"
+<div *ngIf='chartData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 tripReportPref margin-top-20' fxLayoutAlign="left center"
     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForChartsColumns() : null'
@@ -112,7 +112,7 @@
         </mat-checkbox>
     </div>
 </div>
-<div fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+<div *ngIf='chartData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
     <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
@@ -127,7 +127,7 @@
 </div>
 
 <!-- Driver Tab-->
-<div fxLayout="row" class='areaWidth full-width padding-10 tripReportPref margin-top-20' fxLayoutAlign="left center"
+<div *ngIf='specificDriverData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 tripReportPref margin-top-20' fxLayoutAlign="left center"
     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForSpecificColumns() : null'
@@ -141,7 +141,7 @@
         </mat-checkbox>
     </div>
 </div>
-<div fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+<div *ngIf='specificDriverData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
     <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
@@ -204,7 +204,7 @@
 </div> -->
 
 <!-- buttons -->
-<div fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end" *ngIf="editFlag">
+<div *ngIf='(allDriverTableData.length > 0 || chartData.length > 0 || specificDriverData.length > 0) && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
     <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
         translationData.lblCancel || 'Cancel' }}</button>
     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{

@@ -452,14 +452,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 var organizationId = !isGlobal ? GetContextOrgId() : 0;
 
-                //char allowed_type = '\0';
-                //if (_userDetails.UserFeatures.Any(x => x.Contains("Report.ECOScoreReport")))
-                //    allowed_type = 'D';
-                //if (_userDetails.UserFeatures.Any(x => x.Contains("Report.ECOScoreReport.Advance")))
-                //    allowed_type = 'A';
+                char allowed_type = 'N';
+                if (_userDetails.UserFeatures.Any(x => x.Contains("Report.ECOScoreReport")))
+                    allowed_type = 'D';
+                if (_userDetails.UserFeatures.Any(x => x.Contains("Report.ECOScoreReport.Advance")))
+                    allowed_type = 'A';
 
                 Metadata headers = new Metadata();
-                //headers.Add("allowed_type", Convert.ToString(allowed_type));
+                headers.Add("allowed_type", Convert.ToString(allowed_type));
 
                 var response = await _reportServiceClient.GetEcoScoreProfilesAsync(new GetEcoScoreProfileRequest { OrgId = organizationId }, headers);
                 if (response?.Profiles?.Count > 0)
@@ -981,6 +981,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
+        [Route("fleetfuel/getdetails/drivergraph")]
+        public async Task<IActionResult> GetFleetFuelDetailsForDriverGraphs([FromBody] Entity.Report.ReportFleetFuelFilter request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DATEMISMATCH_MSG); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                FleetFuelFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetFuelFilterRequest>(filters);
+                _logger.Info("GetFleetFuelDetailsByDriver method in Report (for Fleet Fuel consumption details by Driver) API called.");
+                var data = await _reportServiceClient.GetFleetFuelDetailsForDriverGraphsAsync(objFleetFilter);
+                if (data?.FleetfuelGraph?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_FLEET_FUEL_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_FLEET_FUEL_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPost]
         [Route("fleetfuel/getdetails/trip")]
         public async Task<IActionResult> GetFleetFuelTripByVehicle([FromBody] Entity.Report.ReportFleetFuelFilter request)
         {
@@ -1013,17 +1045,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         [HttpPost]
         [Route("fleetfuel/getdetails/driver/trip")]
-        public async Task<IActionResult> GetFleetFuelTripByDriver([FromBody] Entity.Report.ReportFleetFuelFilter request)
+        public async Task<IActionResult> GetFleetFuelTripByDriver([FromBody] Entity.Report.ReportFleetFuelDriverFilter request)
         {
             try
             {
                 if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_STARTDATE_MSG); }
                 if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_ENDDATE_MSG); }
-                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG); }
+                if (request.VIN.Length <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG); }
+                if (request.DriverId.Length <= 0) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DRIVERID_MSG); }
+
                 if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_FLEET_FUEL_VALIDATION_DATEMISMATCH_MSG); }
 
                 string filters = JsonConvert.SerializeObject(request);
-                FleetFuelFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetFuelFilterRequest>(filters);
+                FleetFuelFilterDriverRequest objFleetFilter = JsonConvert.DeserializeObject<FleetFuelFilterDriverRequest>(filters);
                 _logger.Info("GetFleetFuelDetailsByDriver method in Report (for Fleet Fuel consumption details by driver) API called.");
                 var data = await _reportServiceClient.GetFleetFuelTripDetailsByDriverAsync(objFleetFilter);
                 if (data?.FleetFuelDetails?.Count > 0)
@@ -1099,6 +1133,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                $"{ nameof(GetVehicleHealthReport) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(request),
+                 _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
             }

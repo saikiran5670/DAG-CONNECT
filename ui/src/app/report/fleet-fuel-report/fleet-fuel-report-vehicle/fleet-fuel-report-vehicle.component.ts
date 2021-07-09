@@ -1,5 +1,7 @@
 import { Inject } from '@angular/core';
 import { Input } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { Component, OnInit } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
@@ -18,8 +20,9 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import { ViewChild } from '@angular/core';
-
+import { SelectionModel } from '@angular/cdk/collections';
 import { Router, NavigationExtras } from '@angular/router';
+import { MatTableDataSource } from '@angular/material/table';
 
 
 
@@ -40,7 +43,14 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   rankingColumns = ['ranking','vehicleName','vin','plateNo','consumption'];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
   searchExpandPanel: boolean = true;
+  initData: any = [];
+  selectedTrip = new SelectionModel(true, []);
+  dataSource: any = new MatTableDataSource([]);
+  showMap: boolean = false;
+  showMapPanel: boolean = false;
   tableExpandPanel: boolean = true;
   rankingExpandPanel: boolean = false;
   isSummaryOpen: boolean = false;
@@ -74,7 +84,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   ConsumptionChartType: any;
   DurationChartType: any;
   showLoadingIndicator: boolean = false;
-  tableInfoObj: any;
+  tableInfoObj: any ;
   summaryObj: any;
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
@@ -190,79 +200,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   fuelConsumptionChart: any =[];
   idleDuration: any =[];
   fromTripPageBack: boolean = false;
-  displayData : any =[
-    {
-      vehicleName: 'Name List 001',
-      vin : 'XLRTEM4100G041999',
-      plateNo : '12 HH 70',
-      dist : 20.10,
-      averageDistance:35.2,
-      averageSpeed :50.6,
-      maxSpeed:85.5,
-      noOfTrips:12,
-      avgGrossWeightComb:'25.6',
-      fuelConsumed:'25',
-      fuelConsumption:'30',
-      CO2Emisson:'89',
-      isIdleDuration:'2',
-      PTODuration:'3',
-      harshBrakeDuration:'7',
-      heavyThrottleDuration:'87',
-      cruiseControlDistanceBelow50:'32',
-      cruiseControlDistanceBelow75:'60',
-      cruiseControlDistanceAbove75:'80',
-      avgTrafficClassification:'0.3',
-      CCFuelConsumption:'88',
-      CCFuelConsumptionNon:'100',
-      IdlingConsumption:'250',
-      DPAScore:'1.3',
-      DPAAnticipation:'56',
-      DPABraking:'87',
-      idlingWithPTO:'0.5',
-      idlingWithoutPTOWheelbase:'0.7',
-      idlingWithoutPTOVIdleDuration:'2.8',
-      footBrake:'7.5',
-      CO2EmmisionFuelEfficiency:'9.0',
-      idlingConsumptionWithPTO:'5.5'
-
-    },
-    {
-      vehicleName: 'Name List 002',
-      vin : 'XLRTEM4100G041999',
-      plateNo : '12 HH 70',
-      dist : 20.10,
-      averageDistance:35.2,
-      averageSpeed :50.6,
-      maxSpeed:85.5,
-      noOfTrips:12,
-      avgGrossWeightComb:'25.6',
-      fuelConsumed:'25',
-      fuelConsumption:'30',
-      CO2Emisson:'89',
-      isIdleDuration:'2',
-      PTODuration:'3',
-      harshBrakeDuration:'7',
-      heavyThrottleDuration:'87',
-      cruiseControlDistanceBelow50:'32',
-      cruiseControlDistanceBelow75:'60',
-      cruiseControlDistanceAbove75:'80',
-      avgTrafficClassification:'0.3',
-      CCFuelConsumption:'88',
-      CCFuelConsumptionNon:'100',
-      IdlingConsumption:'250',
-      DPAScore:'1.3',
-      DPAAnticipation:'56',
-      DPABraking:'87',
-      idlingWithPTO:'0.5',
-      idlingWithoutPTOWheelbase:'0.7',
-      idlingWithoutPTOVIdleDuration:'2.8',
-      footBrake:'7.5',
-      CO2EmmisionFuelEfficiency:'9.0',
-      idlingConsumptionWithPTO:'5.5'
-
-    },
-    
-  ]
+  displayData : any = [];
   rankingData : any =[
     {
       ranking: 1,
@@ -331,7 +269,23 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
 
   }
+  loadfleetFuelDetails(){
+    let getFleetFuelObj = {
+      "startDateTime": 1521843915459,
+      "endDateTime": 1721843915459,
+      "viNs": [    "M4A1117","XLR0998HGFFT76657"],
+      "LanguageCode": "EN-GB"
+    }
+    this.reportService.getFleetFuelDetails(getFleetFuelObj).subscribe((data:any) => {
+    console.log("---getting data from getFleetFuelDetailsAPI---",data)
+    this.displayData = data.fleetDetails;
+    this.setTableInfo();
+    })
+  }
 
+  loadsummaryDetails(){
+    
+  }
   getFleetPreferences(){
     this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       
@@ -398,43 +352,134 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         "endDateTime":_endTime,
         "viNs":  _vinData,
       }
+      this.reportService.getFleetFuelDetails(searchDataParam).subscribe((_fleetfuelData: any) => {
+        console.log(_fleetfuelData);
+      });
       this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
 
        this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-      // this.setTableInfo();
-      // this.updateDataSource(this.tripData);
+       this.setTableInfo();
+       this.loadfleetFuelDetails();
+       this.updateDataSource(this.tripData);
       this.hideloader();
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
-      // this.tripData.forEach(element => {
-      //   if(element.distance > this.mileagebasedThreshold){
-      //     this.greaterMileageCount = this.greaterMileageCount + 1;
-      //   }
-      //   if(element.drivingTime > this.timebasedThreshold){
-      //     this.greaterTimeCount = this.greaterTimeCount + 1;
-      //   }
-      // });
-      // let percentage1 = (this.greaterMileageCount/this.tripData.length)*100 ;
-      // this.doughnutChartData = [percentage1, 100- percentage1];
-      // this.mileagePieChartData = [percentage1,  100- percentage1]
-      // let percentage2 = (this.greaterTimeCount/this.tripData.length)* 100;
-      // this.doughnutChartDataForTime = [percentage2, 100- percentage2];
-      // this.timePieChartData = [percentage2, 100- percentage2];
+      this.tripData.forEach(element => {
+       });
       
-      // }, (error)=>{
-      //    //console.log(error);
-      //   this.hideloader();
-      //   this.tripData = [];
-      //    this.tableInfoObj = {};
-      //   this.updateDataSource(this.tripData);
-      // });
-    });
+       }, (error)=>{
+          //console.log(error);
+         this.hideloader();
+         this.tripData = [];
+          this.tableInfoObj = {};
+         this.updateDataSource(this.tripData);
+       });
+    };
+    let searchDataParam=
+    {
+      "startDateTime": _startTime,
+      "endDateTime": _endTime,
+      "viNs": _vinData,
+      "LanguageCode": "EN-GB"
+    }
     this.reportService.getGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
     });
   }
+  
+  updateDataSource(tableData: any) {
+    this.initData = tableData;
+    this.showMap = false;
+    this.selectedTrip.clear();
+    this.dataSource = new MatTableDataSource(tableData);
+    setTimeout(() => {
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    });
   }
+
  
+  setTableInfo(){
+    let vehName: any = '';
+    let vehGrpName: any = '';
+    let vin: any = '';
+    let plateNo: any = '';
+    // this.vehicleGroupListData.forEach(element => {
+    //   if(element.vehicleId == parseInt(this.tripForm.controls.vehicle.value)){
+    //     vehName = element.vehicleName;
+    //     vin = element.vin;
+    //     plateNo = element.registrationNo;
+    //   }
+    //   if(parseInt(this.tripForm.controls.vehicleGroup.value) != 0){
+    //     if(element.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value)){
+    //       vehGrpName = element.vehicleGroupName;
+    //     }
+    //   }
+    // });
+
+    let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value));
+    if(vehGrpCount.length > 0){
+      vehGrpName = vehGrpCount[0].vehicleGroupName;
+    }
+    let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+    if(vehCount.length > 0){
+      vehName = vehCount[0].vehicleName;
+      vin = vehCount[0].vin;
+      plateNo = vehCount[0].registrationNo;
+    }
+
+    // if(parseInt(this.tripForm.controls.vehicleGroup.value) == 0){
+    //   vehGrpName = this.translationData.lblAll || 'All';
+    // }
+
+    this.tableInfoObj = {
+      fromDate: this.formStartDate(this.startDateValue),
+      endDate: this.formStartDate(this.endDateValue),
+      vehGroupName: vehGrpName,
+      vehicleName: vehName,
+      vin: vin,
+      regNo: plateNo
+    }    
+  }
+
+  formStartDate(date: any){
+    let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
+    let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
+    let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
+    let _d = (date.getDate() < 10) ? ('0'+date.getDate()): date.getDate();
+    let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
+    let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
+    let _date: any;
+    let _time: any;
+    if(this.prefTimeFormat == 12){
+      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours()-12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
+    }else{
+      _time = `${h}:${m}:${s}`;
+    }
+    switch(this.prefDateFormat){
+      case 'ddateformat_dd/mm/yyyy': {
+        _date = `${_d}/${_m}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        _date = `${_d}-${_m}-${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        _date = `${_m}-${_d}-${_y} ${_time}`;
+        break;
+      }
+      default:{
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+      }
+    }
+    return _date;
+  }
+
   setChartData(graphData: any){
     graphData.forEach(e => {
       var date = new Date(e.date);

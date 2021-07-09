@@ -133,18 +133,18 @@ public class EcoScoreDao implements Serializable {
 		else
 			statement.setDouble(16, 0);
 
-		if (rec.getTripCalCrsCntrlUsage30To50() != null)
-			statement.setDouble(17, rec.getTripCalCrsCntrlUsage30To50());
+		if (rec.getTripCalCrsCntrlDist25To50() != null)
+			statement.setDouble(17, rec.getTripCalCrsCntrlDist25To50());
 		else
 			statement.setDouble(17, 0);
 
-		if (rec.getTripCalCrsCntrlUsage50To75() != null)
-			statement.setDouble(18, rec.getTripCalCrsCntrlUsage50To75());
+		if (rec.getTripCalCrsCntrlDist50To75() != null)
+			statement.setDouble(18, rec.getTripCalCrsCntrlDist50To75());
 		else
 			statement.setDouble(18, 0);
 		
-		if (rec.getTripCalCrsCntrlUsageAbv75() != null)
-			statement.setDouble(19, rec.getTripCalCrsCntrlUsageAbv75());
+		if (rec.getTripCalCrsCntrlDistAbv75() != null)
+			statement.setDouble(19, rec.getTripCalCrsCntrlDistAbv75());
 		else
 			statement.setDouble(19, 0);
 		
@@ -246,18 +246,18 @@ public class EcoScoreDao implements Serializable {
 		else
 			statement.setDouble(40, 0);
 
-		if (rec.getTripCalCrsCntrlUsage30To50() != null)
-			statement.setDouble(41, rec.getTripCalCrsCntrlUsage30To50());
+		if (rec.getTripCalCrsCntrlDist25To50() != null)
+			statement.setDouble(41, rec.getTripCalCrsCntrlDist25To50());
 		else
 			statement.setDouble(41, 0);
 
-		if (rec.getTripCalCrsCntrlUsage50To75() != null)
-			statement.setDouble(42, rec.getTripCalCrsCntrlUsage50To75());
+		if (rec.getTripCalCrsCntrlDist50To75() != null)
+			statement.setDouble(42, rec.getTripCalCrsCntrlDist50To75());
 		else
 			statement.setDouble(42, 0);
 		
-		if (rec.getTripCalCrsCntrlUsageAbv75() != null)
-			statement.setDouble(43, rec.getTripCalCrsCntrlUsageAbv75());
+		if (rec.getTripCalCrsCntrlDistAbv75() != null)
+			statement.setDouble(43, rec.getTripCalCrsCntrlDistAbv75());
 		else
 			statement.setDouble(43, 0);
 		

@@ -27,11 +27,6 @@ namespace net.atos.daf.ct2.reports.repository
         //vehicleHealthStatus.HistoryWarning = await GetHistoryWarning(vehicleHealthStatusRequest);
         //return vehicleHealthStatus;
         //  }
-
-
-
-
-
         public async Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest)
         {
 
@@ -158,10 +153,6 @@ namespace net.atos.daf.ct2.reports.repository
 
 
         }
-
-
-
-
         public async Task<List<VehicleHealthResult>> GetWarningDetails(List<VehicleHealthResult> warningList, string lngCode)
         {
             try
@@ -188,11 +179,6 @@ namespace net.atos.daf.ct2.reports.repository
             }
             return warningList;
         }
-
-
-
-
-
         private async Task<string> GetVehicleRunningStatus(string vehicleStatus)
         {
             //TODO add preference condition
@@ -204,7 +190,24 @@ namespace net.atos.daf.ct2.reports.repository
                         Where te.type= 'D' and te.enum=@vehicleStatus";
             return await _dataAccess.QueryFirstOrDefaultAsync<string>(query, parameter);
         }
-
-
+        public async Task<List<WarningDetails>> GetWarningDetails(List<int> warningClass, List<int> warningNumber, string lngCode)
+        {
+            List<WarningDetails> warningList;
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@warningClass", warningClass);
+                parameter.Add("@warningNumber", warningNumber);
+                parameter.Add("@code", lngCode);
+                string query = @" SELECT id, code, type, veh_type, class as WarningClass, number as WarningNumber, description as WarningName, advice as WarningAdvice from master.dtcwarning
+                                    where class= Any(@warningClass) and number = Any(@warningNumber) and((@code != '' and code = 'EN-GB') or(@code = '' and code = ''))";
+                warningList = await _dataAccess.QueryFirstOrDefaultAsync<List<WarningDetails>>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return warningList;
+        }
     }
 }
