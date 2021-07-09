@@ -336,6 +336,11 @@ namespace net.atos.daf.ct2.reports
             List<DriverFilter> lstDriver = await _reportRepository.GetDriverList(vins);
             return lstDriver;
         }
+        public async Task<List<WarningDetails>> GetWarningDetails(List<int> warningClass, List<int> warningNumber, string lngCode)
+        {
+            List<WarningDetails> lstWarningDetails = await _reportRepository.GetWarningDetails(warningClass, warningNumber, lngCode);
+            return lstWarningDetails;
+        }
         #endregion
 
         #region Feet Fuel Report
