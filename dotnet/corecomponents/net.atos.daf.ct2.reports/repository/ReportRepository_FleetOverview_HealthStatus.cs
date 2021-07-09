@@ -166,8 +166,11 @@ namespace net.atos.daf.ct2.reports.repository
                     string query = @" SELECT id, code, type, veh_type, class as WarningClass, number as WarningNumber, description as WarningName, advice as WarningAdvice from master.dtcwarning
                                       where class=@warningClass and number =@warningNumber and((@code != '' and code = 'EN-GB') or(@code = '' and code = ''))";
                     var result = await _dataAccess.QueryFirstOrDefaultAsync<WarningDetails>(query, parameter);
-                    vehicleHealthWarning.WarningName = result.WarningName;
-                    vehicleHealthWarning.WarningAdvice = result.WarningAdvice;
+                    if (result != null)
+                    {
+                        vehicleHealthWarning.WarningName = result.WarningName ?? string.Empty;
+                        vehicleHealthWarning.WarningAdvice = result.WarningAdvice ?? string.Empty;
+                    }
 
                 }
 
