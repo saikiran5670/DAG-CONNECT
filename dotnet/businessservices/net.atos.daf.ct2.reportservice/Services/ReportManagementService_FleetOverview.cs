@@ -203,18 +203,23 @@ namespace net.atos.daf.ct2.reportservice.Services
                                                                                               .Select(x => x.WarningDrivingId).Distinct().ToList(), request.OrganizationId).Result;
                     foreach (var healthStatus in result)
                     {
-                        var warningDetail = warningDetails.FirstOrDefault(w => w.WarningClass == healthStatus.WarningClass && w.WarningNumber == healthStatus.WarningNumber);
-                        healthStatus.WarningName = warningDetail.WarningName ?? string.Empty;
-                        healthStatus.WarningAdvice = warningDetail.WarningAdvice ?? string.Empty;
+                        if (warningDetails != null && warningDetails.Count > 0)
+                        {
+                            var warningDetail = warningDetails.FirstOrDefault(w => w.WarningClass == healthStatus.WarningClass && w.WarningNumber == healthStatus.WarningNumber);
+                            healthStatus.WarningName = warningDetail.WarningName ?? string.Empty;
+                            healthStatus.WarningAdvice = warningDetail.WarningAdvice ?? string.Empty;
+
+                        }
+                       ;
 
                         //opt-in and no driver card- Unknown - Implemented by UI 
                         // Opt-out and no driver card- Unknown-Implemented by UI 
                         //opt-in with driver card- Driver Id
                         //opt-out with driver card- *
-                        var driverName = driverDetails.FirstOrDefault(d => d.DriverId == healthStatus.WarningDrivingId).DriverName;
-                        if (driverName != null)
+
+                        if (driverDetails != null && driverDetails.Count > 0)
                         {
-                            healthStatus.DriverName = driverName;
+                            healthStatus.DriverName = driverDetails.FirstOrDefault(d => d.DriverId == healthStatus.WarningDrivingId).DriverName; ;
                         }
                     }
                     string res = JsonConvert.SerializeObject(result);
