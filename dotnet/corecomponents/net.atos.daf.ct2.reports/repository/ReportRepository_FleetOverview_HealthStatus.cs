@@ -195,7 +195,7 @@ namespace net.atos.daf.ct2.reports.repository
         }
         public async Task<List<WarningDetails>> GetWarningDetails(List<int> warningClass, List<int> warningNumber, string lngCode)
         {
-            List<WarningDetails> warningList;
+            IEnumerable<WarningDetails> warningList;
             try
             {
                 var parameter = new DynamicParameters();
@@ -204,13 +204,13 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@code", lngCode.ToLower());
                 string query = @" SELECT id, code, type, veh_type, class as WarningClass, number as WarningNumber, description as WarningName, advice as WarningAdvice from master.dtcwarning
                                     where class= Any(@warningClass) and number = Any(@warningNumber) and((@code != '' and Lower(code) = @code) or(@code = '' and code = ''))";
-                warningList = await _dataAccess.QueryFirstOrDefaultAsync<List<WarningDetails>>(query, parameter);
+                warningList = await _dataAccess.QueryAsync<WarningDetails>(query, parameter);
             }
             catch (Exception)
             {
                 throw;
             }
-            return warningList;
+            return warningList.ToList();
         }
     }
 }
