@@ -212,5 +212,22 @@ namespace net.atos.daf.ct2.reports.repository
             }
             return warningList.ToList();
         }
+        public async Task<List<DriverDetails>> GetDriverDetails(List<int> driverIds)
+        {
+            IEnumerable<DriverDetails> driverList;
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@driverIds", driverIds);
+                string query = @" SELECT driver_id_ext as DriverId, first_name|| ' ' || last_name as DriverName, status as DriverStatus, opt_in as DriveOpiIn, from master.dtcwarning
+                                    where driver_id_ext = Any(@driverIds) ";
+                driverList = await _dataAccess.QueryAsync<DriverDetails>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return driverList.ToList();
+        }
     }
 }
