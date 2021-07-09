@@ -773,6 +773,7 @@ message FleetFuelDetails {
     string IdlingConsumptionValue = 34;
     google.protobuf.StringValue DriverID = 35;
     google.protobuf.StringValue DriverName = 36;
+    repeated LiveFleetPosition LiveFleetPosition=37;
 }
 message FleetFuelTripDetails {
     string VehicleName = 1;
