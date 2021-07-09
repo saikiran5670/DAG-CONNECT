@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
@@ -377,12 +378,13 @@ namespace net.atos.daf.ct2.reports.repository
                 parameterOfFilters.Add("@FromDate", fleetFuelFilters.StartDateTime);
                 parameterOfFilters.Add("@ToDate", fleetFuelFilters.EndDateTime);
                 parameterOfFilters.Add("@Vins", fleetFuelFilters.VINs);
-               
+
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
 			(
 				Select
 					VIN				  
-				  , count(trip_id)                                                         as numberoftrips
+				  , trip_id  as tripid
+				  , count(trip_id) as numberoftrips 
 				  , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
 				  , SUM(etl_gps_distance)                                                  as etl_gps_distance
 				  , SUM(veh_message_distance)                                              as veh_message_distance
@@ -406,14 +408,16 @@ namespace net.atos.daf.ct2.reports.repository
 				  , SUM(dpa_score)                                                         as dpa_score
 				From
 					tripdetail.trip_statistics
-				where VIN =ANY(@Vins)
+				where (start_time_stamp >= @FromDate 
+							   and end_time_stamp<= @ToDate) and  VIN =ANY(@Vins)
 				GROUP BY					
-				  VIN, date_trunc('day', to_timestamp(start_time_stamp/1000))        
+				  VIN, trip_id        
 			)
 		  , cte_combine as
 			(
 				SELECT
 					vh.name            as VehicleName
+				  , tripid
 				  , fd.vin             as VIN
 				  , vh.registration_no as VehicleRegistrationNo
 				  , round ( fd.etl_gps_distance,2)                       as Distance
@@ -450,8 +454,27 @@ namespace net.atos.daf.ct2.reports.repository
 			cte_combine cmb";
 
                 List<FleetFuelDetails> lstFleetDetails = (List<FleetFuelDetails>)await _dataMartdataAccess.QueryAsync<FleetFuelDetails>(queryFleetUtilization, parameterOfFilters);
-                return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
 
+                if (lstFleetDetails?.Count > 0)
+                {
+
+                    // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
+                    string[] tripIds = lstFleetDetails.Select(item => item.Tripid).ToArray();
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(tripIds);
+                    if (lstLiveFleetPosition.Count > 0)
+                        foreach (FleetFuelDetails trip in lstFleetDetails)
+                        {
+                            trip.LiveFleetPosition = lstLiveFleetPosition.Where(fleet => fleet.TripId == trip.Tripid).ToList();
+                        }
+
+                    /** Old way To pull respective trip fleet position
+                    foreach (var item in data)
+                    {
+                        await GetLiveFleetPosition(item);
+                    }
+                    */
+                }
+                return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
             }
             catch (System.Exception ex)
             {
