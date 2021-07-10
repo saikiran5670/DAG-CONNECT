@@ -821,7 +821,7 @@ let finalGroupDataList = [];
   }
 
   exportAsExcelFile(){
-    this.matTableExporter.exportTable('xlsx', {fileName:'Driver_Time_Report', sheet: 'sheet_name'});
+    this.matTableExporter.exportTable('xlsx', {fileName:'Eco-Score_Report', sheet: 'sheet_name'});
   }
 
   exportAsPDFFile(){   
@@ -856,13 +856,6 @@ let finalGroupDataList = [];
       tempObj.push(e.driverName);
       tempObj.push(e.driverId);
       tempObj.push(e.ecoScoreRanking);
-      // tempObj.push(e.endTime);
-      // tempObj.push(e.driveTime);
-      // tempObj.push(e.workTime);
-      // tempObj.push(e.serviceTime);
-      // tempObj.push(e.restTime);
-      // tempObj.push(e.availableTime);
-
       prepare.push(tempObj);
     });
     (doc as any).autoTable({
@@ -872,7 +865,7 @@ let finalGroupDataList = [];
       didDrawCell: data => {}
     })
     // below line for Download PDF document  
-    doc.save('DriverTimeReport.pdf');
+    doc.save('EcoScoreReport.pdf');
   }
 
   pageSizeUpdated(_evt){
