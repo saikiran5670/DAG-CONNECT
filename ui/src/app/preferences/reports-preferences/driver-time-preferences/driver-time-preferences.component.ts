@@ -89,7 +89,7 @@ export class DriverTimePreferencesComponent implements OnInit {
   preparePrefData(prefData: any){
     prefData.forEach(element => {
       let _data: any;
-      if(element.key.includes('da_report_alldetails')){
+      if(element.key.includes('da_report_alldetails_')){
          _data = element;
         if(this.translationData[element.key]){
           _data.translatedName = this.translationData[element.key];  
@@ -97,7 +97,7 @@ export class DriverTimePreferencesComponent implements OnInit {
           _data.translatedName = this.getName(element.name, 25);   
         }
         this.allDriverTableData.push(_data);
-      }else if(element.key.includes('da_report_chart')){
+      }else if(element.key.includes('da_report_chart_')){
         _data = element;
         if(this.translationData[element.key]){
           _data.translatedName = this.translationData[element.key];  
@@ -105,7 +105,7 @@ export class DriverTimePreferencesComponent implements OnInit {
           _data.translatedName = this.getName(element.name, 30);   
         }
         this.chartData.push(_data);
-      }else if(element.key.includes('da_report_bydriver')){
+      }else if(element.key.includes('da_report_bydriver_')){
         _data = element;
         if(this.translationData[element.key]){
           _data.translatedName = this.translationData[element.key];  

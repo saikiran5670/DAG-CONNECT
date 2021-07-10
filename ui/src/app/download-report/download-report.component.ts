@@ -14,10 +14,23 @@ export class DownloadReportComponent implements OnInit {
 
   ngOnInit(): void {
     this.token=  this.route.snapshot.paramMap.get('token');
-    this.reportSchedulerService.downloadReportFromEmail(this.token).subscribe(data => {
+    this.reportSchedulerService.downloadReportFromEmail(this.token).subscribe(response => {
       this.errorMessage= '';
+      
+      let arrayBuffer= response["report"];
+      var base64File = btoa(
+        new Uint8Array(arrayBuffer)
+          .reduce((data, byte) => data + String.fromCharCode(byte), '')
+      );
+      const linkSource = 'data:application/pdf;base64,' + base64File;
+      const downloadLink = document.createElement("a");
+      const fileName = response["fileName"]+".pdf";
+
+      downloadLink.href = linkSource;
+      downloadLink.download = fileName;
+      downloadLink.click();
     }, (error)=> {
-      this.errorMessage= error;
+      this.errorMessage= error.error;
     })
   }
 

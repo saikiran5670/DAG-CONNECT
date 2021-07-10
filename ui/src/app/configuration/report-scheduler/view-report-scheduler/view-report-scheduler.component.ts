@@ -89,7 +89,7 @@ export class ViewReportSchedulerComponent implements OnInit {
 
     this.updateDatasource();
 
-    // this.onDownloadReport({reportName : "Trip Report", scheduleReportId : 121, startDate : "07/07/2021 12:0:0"});
+    //  this.onDownloadReport({reportName : "Trip Report", id : 128, startDate : "07/07/2021 12:0:0"});
     
   }
 
@@ -227,7 +227,7 @@ export class ViewReportSchedulerComponent implements OnInit {
   }
 
   onDownloadReport(row){
-    this.reportSchedulerService.downloadReport(row.scheduleReportId).subscribe(response => {
+    this.reportSchedulerService.downloadReport(row.id).subscribe(response => {
       let arrayBuffer= response["report"];
       var base64File = btoa(
         new Uint8Array(arrayBuffer)
@@ -235,7 +235,7 @@ export class ViewReportSchedulerComponent implements OnInit {
       );
       const linkSource = 'data:application/pdf;base64,' + base64File;
       const downloadLink = document.createElement("a");
-      const fileName = row.reportName+"_"+row.startDate+".pdf";
+      const fileName = response["fileName"]+".pdf";
 
       downloadLink.href = linkSource;
       downloadLink.download = fileName;

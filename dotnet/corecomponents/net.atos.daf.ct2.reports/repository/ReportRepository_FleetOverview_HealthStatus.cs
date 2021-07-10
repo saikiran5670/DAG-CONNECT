@@ -168,15 +168,17 @@ namespace net.atos.daf.ct2.reports.repository
             }
             return warningList.ToList();
         }
-        public async Task<List<DriverDetails>> GetDriverDetails(List<int> driverIds)
+        public async Task<List<DriverDetails>> GetDriverDetails(List<string> driverIds, int organizationId)
         {
             IEnumerable<DriverDetails> driverList;
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@driverIds", driverIds);
-                string query = @" SELECT driver_id_ext as DriverId, first_name|| ' ' || last_name as DriverName, status as DriverStatus, opt_in as DriveOpiIn, from master.dtcwarning
-                                    where driver_id_ext = Any(@driverIds) ";
+                parameter.Add("@organizationId", organizationId);
+                string query = @"select driver_id_ext as DriverId,case when opt_in ='I' or opt_in='H' 
+	                              then first_name|| ' ' || last_name else '*' end as DriverName,opt_in as DriverStatus  from master.driver              
+                                  where driver_id_ext = Any(@driverIds) and organization_id = @organizationId and state ='A' ";
                 driverList = await _dataAccess.QueryAsync<DriverDetails>(query, parameter);
             }
             catch (Exception)

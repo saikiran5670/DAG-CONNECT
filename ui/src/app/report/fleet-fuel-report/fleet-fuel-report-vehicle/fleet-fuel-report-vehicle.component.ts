@@ -473,9 +473,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       fromDate: this.formStartDate(this.startDateValue),
       endDate: this.formStartDate(this.endDateValue),
       vehGroupName: vehGrpName,
-      vehicleName: vehName,
-      vin: vin,
-      regNo: plateNo
+      vehicleName: vehName
     }    
   }
 
@@ -665,21 +663,21 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       this.prefUnitFormat = prefData.unit[0].name;
     }
 
-    this.tableInfoObj = {
-      fromDate:'05/24/2021 00:00:00',
-      toDate:'05/24/2021 23:59:59',
-      vehGroupName: 'All',
-      vehName: 'All'
-    }
+    // this.tableInfoObj = {
+    //   fromDate:'05/24/2021 00:00:00',
+    //   toDate:'05/24/2021 23:59:59',
+    //   vehGroupName: 'All',
+    //   vehName: 'All'
+    // }
 
-    this.summaryObj={
-      noOfTrips:15,
-      distance: '144.1km',
-      fuelconsumed:'33.5 I',
-      idleDuration:'01:47 hh:mm',
-      fuelConsumption:'23.3 Ltrs/100km',
-      co2emission:'0.097t'
-    }
+    // this.summaryObj={
+    //   noOfTrips:15,
+    //   distance: '144.1km',
+    //   fuelconsumed:'33.5 I',
+    //   idleDuration:'01:47 hh:mm',
+    //   fuelConsumption:'23.3 Ltrs/100km',
+    //   co2emission:'0.097t'
+    // }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
@@ -1089,7 +1087,7 @@ setVehicleGroupAndVehiclePreSelection() {
     filterValue = filterValue.trim(); 
     filterValue = filterValue.toLowerCase(); 
     // this.dataSource.filter = filterValue;
-    this.rankingData.filter = filterValue;
+    this.dataSource2.filter = filterValue;
   }
 
   exportAsExcelFile(){
@@ -1218,6 +1216,50 @@ setVehicleGroupAndVehiclePreSelection() {
       }
     };
     this.router.navigate(['report/tripreport'], navigationExtras);
+  }
+
+  sumOfColumns(columnName : any){
+    let sum: any = 0;
+    switch(columnName){
+      case 'noOfTrips': { 
+        let s = this.displayData.forEach(element => {
+         sum += parseInt(element.numberOfTrips);
+
+        });
+        break;
+      }case 'distance': { 
+        let s = this.displayData.forEach(element => {
+        sum += parseFloat(element.convertedDistance);
+        });
+        break;
+      }
+    case 'fuelconsumed': { 
+      let s = this.displayData.forEach(element => {
+      sum += parseFloat(element.fuelConsumed);
+      });
+      break;
+    }
+    case 'idleDuration': { 
+      let s = this.displayData.forEach(element => {
+      sum += parseFloat(element.idleDuration);
+      });
+      sum = this.reportMapService.getHhMmTime(sum);
+      break;
+    }
+    case 'fuelConsumption': { 
+      let s = this.displayData.forEach(element => {
+      sum += parseFloat(element.convertedFuelConsumed100Km);
+      });
+      break;
+    }
+    case 'co2emission': { 
+      let s = this.displayData.forEach(element => {
+      sum += parseFloat(element.cO2Emission);
+      });
+      break;
+    }
+    }
+    return sum; 
   }
 
 }

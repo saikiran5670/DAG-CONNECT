@@ -23,7 +23,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 	/** SQL statement for insert. */
 	private static final String LIVEFLEET_DRIVER_INSERT = "INSERT INTO livefleet.livefleet_trip_driver_activity  (trip_id    , trip_start_time_stamp , trip_end_time_stamp   , activity_date,  vin   , driver_id     , code  , start_time    , end_time      , duration      , created_at_m2m        , created_at_kafka      , created_at_dm , modified_at   , last_processed_message_time_stamp ,is_driver1, logical_code    ) VALUES ( ?, ?, ?, ?   , ?,?, ?, ?, ?, ?       , ?     , ?     , ?     , ? ,?    ,?, ?)";
 	private static final String LIVEFLEET_DRIVER_READ = "SELECT * FROM livefleet.livefleet_trip_driver_activity WHERE trip_start_time_stamp !=0 AND trip_id = ?";
-	private static final String DRIVER_ACTIVITY_READ = "select code,start_time from livefleet.livefleet_trip_driver_activity  where driver_id = ? order by id DESC limit 1";
+	private static final String DRIVER_ACTIVITY_READ = "select code, start_time, duration from livefleet.livefleet_trip_driver_activity  where driver_id = ? order by id DESC limit 1";
 	private static final String DRIVER_ACTIVITY_UPDATE = "UPDATE livefleet.livefleet_trip_driver_activity  SET end_time = ?, duration = ?, modified_at = extract(epoch from now()) * 1000, logical_code = ? WHERE driver_id IN ( SELECT driver_id FROM livefleet.livefleet_trip_driver_activity WHERE driver_id = ? ORDER BY id DESC LIMIT 1 ) AND id IN ( SELECT id FROM livefleet.livefleet_trip_driver_activity WHERE driver_id = ? ORDER BY id DESC LIMIT 1 )";
 
 	public boolean insert(Index row, Long trip_Start_time) throws TechnicalException, SQLException {
@@ -186,7 +186,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 			System.out.println("Vin for Driver Activity--->"+ row.getVin());
 		stmt_insert_driver_activity.setString(5, row.getVin()); // 5-vin
 		} else {
-			stmt_insert_driver_activity.setString(5, "");
+			stmt_insert_driver_activity.setString(5, row.getVid());
 		}
 		
 		

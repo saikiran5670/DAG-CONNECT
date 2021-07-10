@@ -1,5 +1,5 @@
 <!-- trip report tab -->
-<div *ngIf='initData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 tripReportPref' fxLayoutAlign="left center"
+<div *ngIf='tripPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 tripReportPref' fxLayoutAlign="left center"
     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForColumns() : null'
@@ -11,138 +11,138 @@
         </mat-checkbox>
     </div>
 </div>
-<div *ngIf='initData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+<div *ngIf='tripPrefData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
     <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[0]) : null; checkboxClicked($event, initData[0])'
-                [checked]="selectionForTripColumns.isSelected(initData[0])"
-                [aria-label]='checkboxLabelForColumns(initData[0])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[0].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[0]) : null; checkboxClicked($event, tripPrefData[0])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[0])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[0])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[0].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[1]) : null; checkboxClicked($event, initData[1])'
-                [checked]="selectionForTripColumns.isSelected(initData[1])"
-                [aria-label]='checkboxLabelForColumns(initData[1])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[1].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[1]) : null; checkboxClicked($event, tripPrefData[1])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[1])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[1])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[1].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[2]) : null; checkboxClicked($event, initData[2])'
-                [checked]="selectionForTripColumns.isSelected(initData[2])"
-                [aria-label]='checkboxLabelForColumns(initData[2])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[2].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[2]) : null; checkboxClicked($event, tripPrefData[2])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[2])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[2])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[2].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[3]) : null; checkboxClicked($event, initData[3])'
-                [checked]="selectionForTripColumns.isSelected(initData[3])"
-                [aria-label]='checkboxLabelForColumns(initData[3])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[3].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[3]) : null; checkboxClicked($event, tripPrefData[3])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[3])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[3])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[3].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[4]) : null; checkboxClicked($event, initData[4])'
-                [checked]="selectionForTripColumns.isSelected(initData[4])"
-                [aria-label]='checkboxLabelForColumns(initData[4])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[4].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[4]) : null; checkboxClicked($event, tripPrefData[4])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[4])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[4])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[4].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[5]) : null; checkboxClicked($event, initData[5])'
-                [checked]="selectionForTripColumns.isSelected(initData[5])"
-                [aria-label]='checkboxLabelForColumns(initData[5])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[5].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[5]) : null; checkboxClicked($event, tripPrefData[5])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[5])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[5])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[5].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
     </div>
     <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[6]) : null; checkboxClicked($event, initData[6])'
-                [checked]="selectionForTripColumns.isSelected(initData[6])"
-                [aria-label]='checkboxLabelForColumns(initData[6])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[6].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[6]) : null; checkboxClicked($event, tripPrefData[6])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[6])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[6])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[6].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[7]) : null; checkboxClicked($event, initData[7])'
-                [checked]="selectionForTripColumns.isSelected(initData[7])"
-                [aria-label]='checkboxLabelForColumns(initData[7])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[7].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[7]) : null; checkboxClicked($event, tripPrefData[7])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[7])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[7])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[7].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[8]) : null; checkboxClicked($event, initData[8])'
-                [checked]="selectionForTripColumns.isSelected(initData[8])"
-                [aria-label]='checkboxLabelForColumns(initData[8])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[8].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[8]) : null; checkboxClicked($event, tripPrefData[8])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[8])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[8])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[8].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[9]) : null; checkboxClicked($event, initData[9])'
-                [checked]="selectionForTripColumns.isSelected(initData[9])"
-                [aria-label]='checkboxLabelForColumns(initData[9])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[9].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[9]) : null; checkboxClicked($event, tripPrefData[9])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[9])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[9])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[9].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[10]) : null; checkboxClicked($event, initData[10])'
-                [checked]="selectionForTripColumns.isSelected(initData[10])"
-                [aria-label]='checkboxLabelForColumns(initData[10])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[10].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[10]) : null; checkboxClicked($event, tripPrefData[10])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[10])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[10])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[10].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[11]) : null; checkboxClicked($event, initData[11])'
-                [checked]="selectionForTripColumns.isSelected(initData[11])"
-                [aria-label]='checkboxLabelForColumns(initData[11])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[11].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[11]) : null; checkboxClicked($event, tripPrefData[11])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[11])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[11])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[11].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
     </div>
     <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[12]) : null; checkboxClicked($event, initData[12])'
-                [checked]="selectionForTripColumns.isSelected(initData[12])"
-                [aria-label]='checkboxLabelForColumns(initData[12])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[12].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[12]) : null; checkboxClicked($event, tripPrefData[12])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[12])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[12])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[12].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[13]) : null; checkboxClicked($event, initData[13])'
-                [checked]="selectionForTripColumns.isSelected(initData[13])"
-                [aria-label]='checkboxLabelForColumns(initData[13])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[13].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[13]) : null; checkboxClicked($event, tripPrefData[13])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[13])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[13])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[13].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[14]) : null; checkboxClicked($event, initData[14])'
-                [checked]="selectionForTripColumns.isSelected(initData[14])"
-                [aria-label]='checkboxLabelForColumns(initData[14])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[14].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[14]) : null; checkboxClicked($event, tripPrefData[14])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[14])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[14])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[14].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                (change)='$event ? selectionForTripColumns.toggle(initData[15]) : null; checkboxClicked($event, initData[15])'
-                [checked]="selectionForTripColumns.isSelected(initData[15])"
-                [aria-label]='checkboxLabelForColumns(initData[15])' class='custom-checkbox'><span>{{
-                    initData.length > 0 ? initData[15].translatedName : '' }}</span>
+                (change)='$event ? selectionForTripColumns.toggle(tripPrefData[15]) : null; checkboxClicked($event, tripPrefData[15])'
+                [checked]="selectionForTripColumns.isSelected(tripPrefData[15])"
+                [aria-label]='checkboxLabelForColumns(tripPrefData[15])' class='custom-checkbox'><span>{{
+                    tripPrefData.length > 0 ? tripPrefData[15].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding' style='height: 44px;' fxLayoutAlign="left"></div>
@@ -152,13 +152,13 @@
 </div>
 
 <!-- error msg -->
-<div *ngIf='initData.length > 0 && editFlag && reqField' fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start">
+<div *ngIf='tripPrefData.length > 0 && editFlag && reqField' fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start">
     <span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN,
         Registration Number' }}</span>
 </div>
 
 <!-- buttons -->
-<div *ngIf='initData.length > 0 && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
+<div *ngIf='tripPrefData.length > 0 && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
     <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
         translationData.lblCancel || 'Cancel' }}</button>
     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
