@@ -199,15 +199,25 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.WarningClass > 0).Select(x => x.WarningClass).Distinct().ToList(),
                         result.Where(p => p.WarningNumber > 0).Select(x => x.WarningNumber).Distinct().ToList(), request.LngCode);
+                    List<DriverDetails> driverDetails = _reportManager.GetDriverDetails(result.Where(p => !string.IsNullOrEmpty(p.WarningDrivingId))
+                                                                                              .Select(x => x.WarningDrivingId).Distinct().ToList(), request.OrganizationId).Result;
                     foreach (var healthStatus in result)
                     {
-                        foreach (WarningDetails warning in warningDetails)
+                        if (warningDetails != null && warningDetails.Count > 0)
                         {
-                            if (healthStatus.WarningClass == warning.WarningClass && healthStatus.WarningNumber == warning.WarningNumber)
-                            {
-                                healthStatus.WarningName = warning.WarningName;
-                                healthStatus.WarningAdvice = warning.WarningAdvice;
-                            }
+                            var warningDetail = warningDetails.FirstOrDefault(w => w.WarningClass == healthStatus.WarningClass && w.WarningNumber == healthStatus.WarningNumber);
+                            healthStatus.WarningName = warningDetail.WarningName ?? string.Empty;
+                            healthStatus.WarningAdvice = warningDetail.WarningAdvice ?? string.Empty;
+
+                        }
+                        //opt-in and no driver card- Unknown - Implemented by UI 
+                        // Opt-out and no driver card- Unknown-Implemented by UI 
+                        //opt-in with driver card- Driver Id
+                        //opt-out with driver card- *
+
+                        if (driverDetails != null && driverDetails.Count > 0)
+                        {
+                            healthStatus.DriverName = driverDetails.FirstOrDefault(d => d.DriverId == healthStatus.WarningDrivingId).DriverName; ;
                         }
                     }
                     string res = JsonConvert.SerializeObject(result);
@@ -233,5 +243,22 @@ namespace net.atos.daf.ct2.reportservice.Services
                 });
             }
         }
+
+
+
+        private void GetDriverStatus(VehicleHealthResult result, List<DriverDetails> driverDetails)
+        {
+            //opt-in and no driver card- Unknown - Implemented by UI 
+            // Opt-out and no driver card- Unknown-Implemented by UI 
+            //opt-in with driver card- Driver Id
+            //opt-out with driver card- *
+            var driverName = driverDetails.FirstOrDefault(d => d.DriverId == result.WarningDrivingId).DriverName;
+            if (driverName != null)
+            {
+                result.DriverName = driverName;
+            }
+
+        }
+
     }
 }

@@ -341,9 +341,9 @@ namespace net.atos.daf.ct2.reports
             List<WarningDetails> lstWarningDetails = await _reportRepository.GetWarningDetails(warningClass, warningNumber, lngCode);
             return lstWarningDetails;
         }
-        public async Task<List<DriverDetails>> GetDriverDetails(List<int> driverIds)
+        public async Task<List<DriverDetails>> GetDriverDetails(List<string> driverIds, int organizationId)
         {
-            List<DriverDetails> lstDriverDetails = await _reportRepository.GetDriverDetails(driverIds);
+            List<DriverDetails> lstDriverDetails = await _reportRepository.GetDriverDetails(driverIds, organizationId);
             return lstDriverDetails;
         }
 

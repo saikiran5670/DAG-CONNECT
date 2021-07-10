@@ -52,6 +52,6 @@ namespace net.atos.daf.ct2.reports
 
         Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest);
         Task<List<WarningDetails>> GetWarningDetails(List<int> warningClass, List<int> warningNumber, string lngCode);
-        Task<List<DriverDetails>> GetDriverDetails(List<int> driverIds);
+        Task<List<DriverDetails>> GetDriverDetails(List<string> driverIds, int organizationId);
     }
 }

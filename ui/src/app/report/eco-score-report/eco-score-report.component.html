@@ -275,7 +275,7 @@
             <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <span>{{ translationData.lblVehicleGroup|| 'Target Profile' }} </span>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="profileList.length == 0" (selectionChange)="onProfileChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Profile' }}" formControlName="profile">
+                <mat-select [disabled]="profileList.length == 0" [(value)]="targetProfileSelected" (selectionChange)="onProfileChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Profile' }}" formControlName="profile">
                 <mat-option *ngFor="let pro of profileList" [value]="pro.profileId">
                       {{ pro.profileName }}
                   </mat-option>
@@ -289,7 +289,7 @@
                 {{driver.driverName}}
                 <mat-icon>close</mat-icon>
               </button>
-              <button [disabled]="false" class='no-margin min-width-35-per' mat-raised-button color="primary"
+              <button [disabled]="!compareButton" class='no-margin min-width-35-per' mat-raised-button color="primary"
                 (click)='onCompare($event)'>{{ translationData.lblSearch || 'Compare' }}</button>
             </div>
           </div>
@@ -378,7 +378,7 @@
     <!-- <app-eco-score-driver-compare [translationData]='translationData' [driverDetails]='tableDetailsInfoObj' [detailConvertedData]='detailConvertedData'
       [displayedColumns]='detaildisplayedColumns'  [showField]='showField' (backToMainPage)="backToMainPage()" [driverSelected]='driverSelected'>
     </app-eco-score-driver-compare> -->
-    <app-eco-score-driver-compare (backToMainPage)='backToMainPage()'></app-eco-score-driver-compare>
+    <app-eco-score-driver-compare (backToMainPage)='backToMainPage()' [compareEcoScore]="compareDriverEcoScoreSearchParam"></app-eco-score-driver-compare>
   </div>
   </form>
 </div>
