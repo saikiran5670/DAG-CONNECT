@@ -614,15 +614,24 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   resetEcoScoreFormControlValue(){
     if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== ""){
-      this.ecoScoreForm.get('vehicle').setValue(this.searchFilterpersistData.vehicleDropDownValue);
-      this.ecoScoreForm.get('vehicleGroup').setValue(this.searchFilterpersistData.vehicleGroupDropDownValue);
-      this.ecoScoreForm.get('driver').setValue(this.searchFilterpersistData.vehicleGroupDropDownValue);
+      if(this.searchFilterpersistData.vehicleDropDownValue !== '')
+        this.ecoScoreForm.get('vehicle').setValue(this.searchFilterpersistData.vehicleDropDownValue);
+      else
+        this.ecoScoreForm.get('vehicle').setValue(0);
+      if(this.searchFilterpersistData.vehicleGroupDropDownValue !== '')
+        this.ecoScoreForm.get('vehicleGroup').setValue(this.searchFilterpersistData.vehicleGroupDropDownValue);
+      else
+        this.ecoScoreForm.get('vehicleGroup').setValue(0);
+      if(this.searchFilterpersistData.vehicleGroupDropDownValue !== '')
+        this.ecoScoreForm.get('driver').setValue(this.searchFilterpersistData.vehicleGroupDropDownValue);
+      else
+        this.ecoScoreForm.get('driver').setValue(0);
     }else{
       this.ecoScoreForm.get('vehicleGroup').setValue(0);
-      this.ecoScoreForm.get('vehicle').setValue('');
-      this.ecoScoreForm.get('driver').setValue('');
+      this.ecoScoreForm.get('vehicle').setValue(0);
+      this.ecoScoreForm.get('driver').setValue(0);
     }
-    this.ecoScoreForm.get('vehicle').setValue('');
+   // this.ecoScoreForm.get('vehicle').setValue(0);
     this.ecoScoreForm.get('minDriverCheck').setValue(false);
     this.ecoScoreForm.get('minTripCheck').setValue(false);
     this.ecoScoreForm.get('minDriverValue').setValue('');
@@ -684,7 +693,7 @@ let finalGroupDataList = [];
         });
         this.vehicleGroupListData = finalGroupDataList;
       }
-      this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+        this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
       this.finalVehicleList = [];
       this.finalVehicleList = this.onLoadData.vehicleDetailsWithAccountVisibiltyList;
       this.vehicleListData =[];
