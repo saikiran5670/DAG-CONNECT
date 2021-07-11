@@ -86,6 +86,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   minTripValue: any;
   minDriverCheck: any;
   minDriverValue: any;
+  minTripInputCheck: boolean = false;
+  minDriverInputCheck: boolean = false;
   compareDriverEcoScore: any;
   compareDriverEcoScoreSearchParam: any;
   profileList: any =[];
@@ -251,9 +253,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       startTime: ['', []],
       endTime: ['', []],
       minTripCheck: [false, []],
-      minTripValue: ['', []],
+      minTripValue: [{value:'', disabled: true}],
       minDriverCheck: [false, []],
-      minDriverValue: ['', []],
+      minDriverValue: [{value:'', disabled: true}],
       profile: ['', []]
     });
     let translationObj = {
@@ -524,8 +526,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
             //   ],
             "viNs": _vehicelIds,
             //"driverIds":_driverIds
-            "minTripDistance":0,
-            "minDriverTotalDistance": 0,
+            "minTripDistance": _minTripVal,
+            "minDriverTotalDistance": _minDriverDist,
             "targetProfileId": this.targetProfileId,
             "reportId": 10
           }
@@ -784,8 +786,11 @@ let finalGroupDataList = [];
 
   compare(a: any, b: any, isAsc: boolean) {
     //console.log(a+' '+b);
-    if(isNaN(a) && !(a instanceof Number)) a = a.toString().toLowerCase();
-    if(isNaN(b) && !(b instanceof Number)) b = b.toString().toLowerCase();
+    if(a === undefined || a === null || b === undefined || b === null)
+      return 1;
+    if(a !== undefined && a !== null && isNaN(a) && !(a instanceof Number)) a = a.toString().toLowerCase();
+    if(a !== undefined && a !== null && isNaN(a) && isNaN(b) && !(b instanceof Number)) b = b.toString().toLowerCase();
+    
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
 
@@ -1273,5 +1278,26 @@ let finalGroupDataList = [];
       this.compareButton = true;
     else
       this.compareButton = false;
+  }
+
+  validateMinTripVal(){
+    if(this.minTripCheck)
+      this.ecoScoreForm.controls['minTripValue'].enable();
+    else
+      this.ecoScoreForm.controls['minTripValue'].disable();
+    if(this.minTripCheck && (this.ecoScoreForm.controls.minTripValue.value === null || this.ecoScoreForm.controls.minTripValue.value === '' || this.ecoScoreForm.controls.minTripValue.value < 0 || this.ecoScoreForm.controls.minTripValue.value > 100))
+      this.minTripInputCheck = true;
+    else
+      this.minTripInputCheck = false;
+  }
+  validateMinDistVal(){
+    if(this.minDriverCheck)
+      this.ecoScoreForm.controls['minDriverValue'].enable();
+    else
+      this.ecoScoreForm.controls['minDriverValue'].disable();
+    if(this.minDriverCheck && (this.ecoScoreForm.controls.minDriverValue.value === null || this.ecoScoreForm.controls.minDriverValue.value === '' || this.ecoScoreForm.controls.minDriverValue.value < 0 || this.ecoScoreForm.controls.minDriverValue.value > 100))
+      this.minDriverInputCheck = true;
+    else
+      this.minDriverInputCheck = false;
   }
 }
