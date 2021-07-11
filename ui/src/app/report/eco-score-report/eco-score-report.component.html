@@ -102,33 +102,33 @@
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
                    <div fxLayout="row" fxLayoutGap="2px">
-                    <mat-checkbox (click)='$event.stopPropagation()' [(ngModel)]='minTripCheck' formControlName="minTripCheck"></mat-checkbox><mat-label>{{ translationData.lblFrom || 'Minimum Trip Distance' }} 
+                    <mat-checkbox (change)="validateMinTripVal()" [(ngModel)]='minTripCheck' formControlName="minTripCheck"></mat-checkbox><mat-label>{{ translationData.lblFrom || 'Minimum Trip Distance' }} 
                       <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') :
                          (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile') }})</span>
                       <span class='mandatoryColor'>*</span></mat-label>
                   </div>
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                   <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                    <input matInput class='inputBox' placeholder="00" max="100" formControlName="minTripValue"/>
+                    <input matInput class='inputBox' (input)="validateMinTripVal()" placeholder="00" type="number" formControlName="minTripValue"/>
                   </div>
                   </div>
-                  <mat-error *ngIf="minTripCheck">
-                    {{translationData.lblPleaseSelectDriver || 'Please input Minimum Driver Total Distance' }}
+                  <mat-error *ngIf="minTripInputCheck">
+                    {{translationData.lblPleaseSelectDriver || 'Please input Minimum Driver Total Distance between 0 and 100' }}
                     </mat-error>
                 </div>
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
                   <div fxLayout="row" fxLayoutGap="2px">
-                    <mat-checkbox (click)='$event.stopPropagation()' [(ngModel)]='minDriverCheck' formControlName="minDriverCheck"></mat-checkbox><mat-label>{{ translationData.lblTo || 'Minimum Driver Total Distance' }} 
+                    <mat-checkbox (change)="validateMinDistVal()" [(ngModel)]='minDriverCheck' formControlName="minDriverCheck"></mat-checkbox><mat-label>{{ translationData.lblTo || 'Minimum Driver Total Distance' }} 
                       <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') :
                         (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile') }})</span>
                       <span class='mandatoryColor'>*</span></mat-label>
                   </div>
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                   <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                    <input matInput class='inputBox' placeholder="00" max="100" formControlName="minDriverValue"/>
+                    <input matInput class='inputBox' (input)="validateMinDistVal()" placeholder="00" type="number" formControlName="minDriverValue"/>
                   </div>
                   </div>
-                  <mat-error *ngIf="minDriverCheck">
+                  <mat-error *ngIf="minDriverInputCheck">
                     {{translationData.lblPleaseSelectDriver || 'Please input Minimum Driver Total Distance' }}
                     </mat-error>
                 </div>
