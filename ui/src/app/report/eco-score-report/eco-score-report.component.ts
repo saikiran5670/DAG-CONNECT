@@ -538,32 +538,32 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
             // "driverName": "Hero Honda",
             // "ecoScoreRanking": 4.171307300509338,
             // "ecoScoreRankingColor": "Red",
-            // "ranking": 1},
-            // {"driverId": "NL B000384974000000",
-            // "driverName": "Hero Honda",
-            // "ecoScoreRanking": 4.171307300509338,
-            // "ecoScoreRankingColor": "Red",
+            // "ranking": 4},
+            // {"driverId": "NL N110000225456008",
+            // "driverName": "Johan PT",
+            // "ecoScoreRanking": 7.5,
+            // "ecoScoreRankingColor": "Green",
             // "ranking": 2},
-            // {"driverId": "NL B000384974000000",
-            // "driverName": "Hero Honda",
-            // "ecoScoreRanking": 4.171307300509338,
+            // {"driverId": " NL N110000323456008",
+            // "driverName": "Johan PU",
+            // "ecoScoreRanking": 5.5,
             // "ecoScoreRankingColor": "Red",
             // "ranking": 3},
-            // {"driverId": "NL B000384974000000",
-            // "driverName": "Hero Honda",
-            // "ecoScoreRanking": 4.171307300509338,
-            // "ecoScoreRankingColor": "Red",
-            // "ranking": 4},
-            // {"driverId": "NL B000384974000000",
-            // "driverName": "Hero Honda",
-            // "ecoScoreRanking": 4.171307300509338,
-            // "ecoScoreRankingColor": "Red",
+            // {"driverId": "P 0000000542878012",
+            // "driverName": "Driver4 DriverL4",
+            // "ecoScoreRanking": 3.6,
+            // "ecoScoreRankingColor": "Orange",
             // "ranking": 5},
+            // {"driverId": "NL N110000233456008",
+            // "driverName": "Johan PV",
+            // "ecoScoreRanking": 3.1,
+            // "ecoScoreRankingColor": "Orange",
+            // "ranking": 6},
             // {"driverId": "NL B000384974000000",
-            // "driverName": "Hero Honda",
-            // "ecoScoreRanking": 4.171307300509338,
-            // "ecoScoreRankingColor": "Red",
-            // "ranking": 7}]};
+            // "driverName": "Hero Honda2",
+            // "ecoScoreRanking": 7.7,
+            // "ecoScoreRankingColor": "Green",
+            // "ranking": 1}]};
         if(this.allDriversSelected){
           this.onSearchData = tripData;
           this.setGeneralDriverValue();
@@ -764,11 +764,15 @@ let finalGroupDataList = [];
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
-         // console.log(JSON.stringify(a)+' '+JSON.stringify(b));
-          return this.compare(a[sort.active], b[sort.active], isAsc);
+          console.log(JSON.stringify(a)+' '+JSON.stringify(b));
+          if(a !== undefined && a !== null && b !== undefined && b !== null)
+            return this.compare(a[sort.active], b[sort.active], isAsc);
+          else
+            return 1;
         });
        }
       this.dataSource.filterPredicate = function(data, filter: any){
+        console.log(data);
         return data.driverId.toLowerCase().includes(filter) ||
                data.driverName.toLowerCase().includes(filter) ||
                data.ecoScoreRanking.toString().toLowerCase().includes(filter) ||
@@ -1200,6 +1204,7 @@ let finalGroupDataList = [];
         //   "targetProfileId": 2,
         //   "reportId": 10
         // }
+        //searchDataParam = {"startDateTime":1617993000674,"endDateTime":1625855399674,"viNs":["XLR0998HGFFT74597","XLR0998HGFFT74599","XLR0998HGFFT74601","XLR0998HGFFT75550","XLR0998HGFFT74606","XLR0998HGFFT74598","XLR0998HGFFT74592","XLR0998HGFFT74607","XLRTEH4300G328155","XLR0998HGFFT76666","XLR0998HGFFT74603","XLR0998HGFFT74604","XLR0998HGFFT74602","XLRASH4300G1472w0","XLR0998HGFFT74600","XLR0998HGFFT74605"],"driverIds":["NL B000171984000002","NL N110000225456008","NL N110000323456008"],"minTripDistance":0,"minDriverTotalDistance":0,"targetProfileId":2,"reportId":10};
         if(_vehicelIds.length > 0){
           this.showLoadingIndicator = true;
           this.reportService.getEcoScoreDriverCompare(searchDataParam).subscribe((_drivers: any) => {            
