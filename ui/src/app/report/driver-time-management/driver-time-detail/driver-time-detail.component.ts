@@ -11,9 +11,9 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { ReportMapService } from '../../report-map.service';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { ChartOptions, ChartType, ChartDataSets ,ChartColor} from 'chart.js';
+import { ChartOptions, ChartType, ChartDataSets ,ChartColor,Chart} from 'chart.js';
 import { color } from 'html2canvas/dist/types/css/types/color';
-
+import * as crosshair from 'chartjs-plugin-crosshair';
 
 @Component({
   selector: 'app-driver-time-detail',
@@ -62,6 +62,11 @@ export class DriverTimeDetailComponent implements OnInit {
   // ];
   barChartLabels: string[] = [];
 
+  canvas: any;
+  ctx: any;
+  chartPlugins = [crosshair];
+  zoomMsg : boolean = true;
+
   constructor(private reportMapService:ReportMapService) { }
 
   ngOnInit(): void {
@@ -71,6 +76,97 @@ export class DriverTimeDetailComponent implements OnInit {
     this.setGraphData();
 
   }
+
+  // ngAfterViewInit() {
+  //   this.canvas = document.getElementById('chartCanvas');
+  //   this.ctx = this.canvas.getContext('2d');
+  //   let dateArray = this.detailConvertedData.map(data=>data.startTime);
+
+  //   let graphchart: Chart = new Chart(this.ctx,  {
+  //     "type": "horizontalBar",
+  //     "data": {
+  //         "labels": [10,11,12],
+  //         "datasets": 
+  //           [
+  //             { data: [6.0,6.0,6.0], label: 'Work', stack: 'a',backgroundColor: '#e85c2a', hoverBackgroundColor: '#e85c2a',barThickness: 10},
+  //             { data: [6.0,6.0,6.0], label: 'Drive', stack: 'a',backgroundColor: '#29539b',hoverBackgroundColor: '#29539b',barThickness: 10},
+  //             { data: [6.0,6.0,6.0], label: 'Rest', stack: 'a', backgroundColor: '#8ac543',hoverBackgroundColor: '#8ac543',barThickness: 10},
+  //             { data: [6.0,6.0,6.0], label: 'Available', stack: 'a' ,backgroundColor: '#dddee2',hoverBackgroundColor: '#dddee2',barThickness: 10},
+  //           ]
+        
+  //     },
+  //     options: {
+  //       // ... other options ...
+  //       tooltips: {
+  //         intersect: false
+  //       },
+  //       scales: {
+  //         xAxes: [
+  //           {
+  //             stacked: true,
+              
+  //             gridLines: {
+  //               display: true,
+  //               drawBorder:true,
+  //               drawOnChartArea:false,
+  //               color:'#00000'
+  //             },
+  //            ticks: {
+  //             beginAtZero: true,
+  //             min:0,
+  //             max: 24
+  //           },
+  //           },
+  //         ],
+  //         yAxes: [
+  //           {
+  //             //stacked: true,
+  //             gridLines: {
+  //               display: true,
+  //               drawBorder:true,
+  //               drawOnChartArea:false,
+  //               color:'#00000'
+  
+  //             },
+  //             ticks: {
+  //               beginAtZero: true,
+  //               //    max: 0
+  //             },
+  //           },
+  //         ],
+  //       },
+  //       plugins: {
+  //         crosshair: {
+  //           line: {
+  //             color: '#F66',  // crosshair line color
+  //             width: 1        // crosshair line width
+  //           },
+  //           sync: {
+  //             enabled: true,            // enable trace line syncing with other charts
+  //             group: 1,                 // chart group
+  //             suppressTooltips: false   // suppress tooltips when showing a synced tracer
+  //           },
+  //           zoom: {
+  //             enabled: true,                                      // enable zooming
+  //             zoomboxBackgroundColor: 'rgba(66,133,244,0.2)',     // background color of zoom box 
+  //             zoomboxBorderColor: '#48F',                         // border color of zoom box
+  //             zoomButtonText: 'Reset Zoom',                       // reset zoom button text
+  //             zoomButtonClass: 'reset-zoom',                      // reset zoom button class
+  //           },
+  //           callbacks: {
+  //             beforeZoom: function(start, end) {                  // called before zoom, return false to prevent zoom
+  //               return true;
+  //             },
+  //             afterZoom: function(start, end) {                   // called after zoom
+  //             }
+  //           }
+  //         }
+  //       },
+        
+  //     },
+      
+  //   });
+  // }
 
   ngOnChanges(){
     this.updateDataSource(this.detailConvertedData);
@@ -134,28 +230,72 @@ export class DriverTimeDetailComponent implements OnInit {
         ],
       },
       plugins: {
-        zoom: {
+          crosshair: {
+            line: {
+              color: '#F66',  // crosshair line color
+              width: 1        // crosshair line width
+            },
+            sync: {
+              enabled: true,            // enable trace line syncing with other charts
+              group: 1,                 // chart group
+              suppressTooltips: false   // suppress tooltips when showing a synced tracer
+            },
             pan: {
-                enabled: true,
-                mode: 'x',
-                rangeMin: {
-                  x: 0,
-                },
-                rangeMax: {
-                  x: 24,
-                },   
+                      enabled: true,
+                      mode: 'x'
             },
             zoom: {
-                enabled: true,
-                mode: 'x',
-                rangeMin: {
-                  x: 1,
-                },
-                rangeMax: {
-                  x: 24,
-                }
+              enabled: true,                                      // enable zooming
+              zoomboxBackgroundColor: 'rgba(66,133,244,0.2)',     // background color of zoom box 
+              zoomboxBorderColor: '#48F',                         // border color of zoom box
+              zoomButtonText: 'Reset Zoom',                       // reset zoom button text
+              zoomButtonClass: 'reset-zoom',                      // reset zoom button class
+            },
+            callbacks: {
+              beforeZoom: (start, end) =>{ 
+                this.zoomMsg = true;                 // called before zoom, return false to prevent zoom
+                return true;
+              },
+              afterZoom: (start, end)=>{       
+                this.zoomMsg = false;            // called after zoom
+              }
+             
             }
-        }
+          },
+          zoom: {
+                pan: {
+                    enabled: true,
+                    mode: 'x',
+                    rangeMin: {
+                      x: 0,
+                    },
+                    rangeMax: {
+                      x: 24,
+                    },   
+                },
+          }
+        // zoom: {
+        //     pan: {
+        //         enabled: true,
+        //         mode: 'x',
+        //         rangeMin: {
+        //           x: 0,
+        //         },
+        //         rangeMax: {
+        //           x: 24,
+        //         },   
+        //     },
+        //     zoom: {
+        //         enabled: true,
+        //         mode: 'x',
+        //         rangeMin: {
+        //           x: 1,
+        //         },
+        //         rangeMax: {
+        //           x: 24,
+        //         }
+        //     }
+        // }
      },
      
     
@@ -173,6 +313,11 @@ export class DriverTimeDetailComponent implements OnInit {
 
   tableInfoObj = {};
  
+
+  onZoomReset(){
+    console.log('reset')
+  }
+
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
