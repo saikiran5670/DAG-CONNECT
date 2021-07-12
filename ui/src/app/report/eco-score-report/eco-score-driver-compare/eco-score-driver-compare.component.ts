@@ -66,19 +66,6 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     console.log(JSON.stringify(this.compareEcoScore));
 
     this.mockDataset();
-    // this.reportService.getEcoScoreDriverCompare(this.compareEcoScore).subscribe((_drivers: any) => {
-    //   this.driverDetails = _drivers.drivers;
-    //   this.defineGrid();
-    //   this.defineGridGen();
-
-    //   let res = (JSON.stringify(_drivers)).replace(/dataAttributeId/g, "id");
-    //   let fin = JSON.parse(res);
-    //   this.datasetHierarchical = fin.compareDrivers.subCompareDrivers[1].subCompareDrivers;
-    //   this.datasetGen = fin.compareDrivers.subCompareDrivers[0].subCompareDrivers;  
-    // });
-
-    // mock a dataset
-    //this.datasetHierarchical = this.mockDataset();
   }
 
   translationUpdate(){
@@ -353,18 +340,24 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   }
 
   treeFormatter: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-    var foundValue = this.translationData.filter(obj=>obj.key === value);
-    value = foundValue[0].value;
-    const gridOptions = grid.getOptions() as GridOption;
-    const treeLevelPropName = gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName || '__treeLevel';
     if (value === null || value === undefined || dataContext === undefined) {
       return '';
     }
+    var foundValue = this.translationData.filter(obj=>obj.key === value);
+    if(foundValue === undefined || foundValue === null || foundValue.length === 0)
+      return '';
+    value = foundValue[0].value;
+    const gridOptions = grid.getOptions() as GridOption;
+    const treeLevelPropName = gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName || '__treeLevel';
+    // if (value === null || value === undefined || dataContext === undefined) {
+    //   return '';
+    // }
     const dataView = grid.getData();
     const data = dataView.getItems();
     const identifierPropName = dataView.getIdPropertyName() || 'id';
     const idx = dataView.getIdxById(dataContext[identifierPropName]);
-
+    if (value === null || value === undefined)
+      return '';
     value = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const spacer = `<span style="display:inline-block; width:${(15 * dataContext[treeLevelPropName])}px;"></span>`;
 
