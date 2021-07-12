@@ -173,7 +173,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             ScheduledReportDriverRefRequest schedulereportdr = new ScheduledReportDriverRefRequest();
             schedulereportdr.ScheduleReportId = request.ScheduleReportId;
             schedulereportdr.DriverId = request.DriverId;
-
+            schedulereportdr.DriverName = string.IsNullOrEmpty(request.DriverName) ? string.Empty : request.DriverName;
             schedulereportdr.State = string.IsNullOrEmpty(request.State) ? string.Empty : request.State;
             schedulereportdr.CreatedAt = request.CreatedAt;
             schedulereportdr.CreatedBy = request.CreatedBy;
