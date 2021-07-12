@@ -4,6 +4,7 @@
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.audit\net.atos.daf.ct2.audit.csproj" />
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.utilities\net.atos.daf.ct2.utilities.csproj" />
+    <ProjectReference Include="..\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
   </ItemGroup>
 
   <ItemGroup>
