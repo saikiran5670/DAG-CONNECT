@@ -115,7 +115,7 @@
     </mat-card>
 </form>
 </div>  
-<div class='padding-0-30'>
+<div class='padding-0-30 margin-bottom-xlg'>
     <mat-expansion-panel [(expanded)]="isEcoScore" class="full-width" fxLayoutGap="10px" (opened)="isEcoScore" (closed)="!isEcoScore">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
@@ -125,7 +125,7 @@
             <app-breaking-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='kpiData' [kpiId] = 1 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
     </mat-expansion-panel> 
 </div>
-<div class='margin-top-20 padding-0-30'>
+<div class='margin-bottom-xlg padding-0-30'>
     <mat-expansion-panel [(expanded)]="isFuelConsumption" class="full-width" fxLayoutGap="10px" (opened)="isFuelConsumption" (closed)="!isFuelConsumption">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
@@ -162,7 +162,7 @@
             </div>
     </mat-expansion-panel> 
 </div>
-<div class='margin-top-20 padding-0-30'>
+<div class='margin-bottom-xlg padding-0-30'>
     <mat-expansion-panel [(expanded)]="isBrakingScore" class="full-width" fxLayoutGap="10px" (opened)="isBrakingScore" (closed)="!isBrakingScore">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
@@ -183,7 +183,7 @@
             </div>
     </mat-expansion-panel> 
 </div>
-<div class='margin-top-20 padding-0-30'>
+<div class='margin-bottom-xlg padding-0-30'>
     <mat-expansion-panel [(expanded)]="isAnticipation" class="full-width" fxLayoutGap="10px" (opened)="isAnticipation" (closed)="!isAnticipation">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
@@ -193,7 +193,7 @@
         <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='anticipationKpiData' [kpiId] = 20 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
     </mat-expansion-panel> 
 </div>
-<div class='margin-top-20 padding-0-30'>
+<div class='margin-bottom-xlg padding-0-30'>
     <mat-expansion-panel [(expanded)]="isOther" class="full-width" fxLayoutGap="10px" (opened)="isOther" (closed)="!isOther">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
