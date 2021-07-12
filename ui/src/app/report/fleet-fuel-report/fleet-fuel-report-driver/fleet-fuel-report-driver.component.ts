@@ -1228,12 +1228,14 @@ setVehicleGroupAndVehiclePreSelection() {
         let s = this.displayData.forEach(element => {
         sum += parseFloat(element.convertedDistance);
         });
+        sum= sum.toFixed(2)*1;
         break;
       }
     case 'fuelconsumed': { 
       let s = this.displayData.forEach(element => {
       sum += parseFloat(element.fuelConsumed);
       });
+      sum= sum.toFixed(2)*1;
       break;
     }
     case 'idleDuration': { 
@@ -1247,12 +1249,14 @@ setVehicleGroupAndVehiclePreSelection() {
       let s = this.displayData.forEach(element => {
       sum += parseFloat(element.convertedFuelConsumed100Km);
       });
+      sum= sum.toFixed(2)*1;
       break;
     }
     case 'co2emission': { 
       let s = this.displayData.forEach(element => {
       sum += parseFloat(element.cO2Emission);
       });
+      sum= sum.toFixed(2)*1;
       break;
     }
     }
