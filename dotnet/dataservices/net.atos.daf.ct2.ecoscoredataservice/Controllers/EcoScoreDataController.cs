@@ -33,11 +33,11 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
 
         [HttpGet]
         [Route("kpiinfo")]
-        public async Task<IActionResult> GetKPIInfo([FromBody] EcoScoreRequest request)
+        public async Task<IActionResult> GetKPIInfo([FromQuery] int minDistance, [FromBody] EcoScoreRequest request)
         {
             try
             {
-                await _auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "Eco-Score Data Service", nameof(GetKPIInfo), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get KPI info method Eco-Score data service", 0, 0, JsonConvert.SerializeObject(request), 0, 0);
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Eco-Score Data Service", nameof(GetKPIInfo), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get KPI info method Eco-Score data service", 0, 0, JsonConvert.SerializeObject(request), 0, 0);
 
                 if (!ModelState.IsValid)
                 {
@@ -47,23 +47,23 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
 
                 var response = _reportManager.GetKPIInfo(MapRequest(request));
 
-                return Ok();
+                return Ok(response);
             }
             catch (Exception ex)
             {
                 _logger.Error("Error occurred while processing KPI Info data.", ex);
-                await _auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "Eco-Score Data Service", nameof(GetKPIInfo), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get KPI info method Eco-Score data service", 0, 0, ex.Message, 0, 0);
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Eco-Score Data Service", nameof(GetKPIInfo), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get KPI info method Eco-Score data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
         }
 
         [HttpGet]
         [Route("chartinfo")]
-        public async Task<IActionResult> GetChartInfo(EcoScoreRequest request)
+        public async Task<IActionResult> GetChartInfo([FromQuery] int minDistance, [FromBody] EcoScoreRequest request)
         {
             try
             {
-                await _auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "Eco-Score Data Service", nameof(GetChartInfo), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get Chart info method Eco-Score data service", 0, 0, JsonConvert.SerializeObject(request), 0, 0);
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Eco-Score Data Service", nameof(GetChartInfo), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get Chart info method Eco-Score data service", 0, 0, JsonConvert.SerializeObject(request), 0, 0);
 
                 if (!ModelState.IsValid)
                 {
@@ -73,12 +73,12 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
 
                 var response = _reportManager.GetChartInfo(MapRequest(request));
 
-                return Ok();
+                return Ok(response);
             }
             catch (Exception ex)
             {
                 _logger.Error("Error occurred while processing Chart Info data.", ex);
-                await _auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "Eco-Score Data Service", nameof(GetChartInfo), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get Chart info method Eco-Score data service", 0, 0, ex.Message, 0, 0);
+                await _auditTrail.AddLogs(DateTime.UtcNow, DateTime.UtcNow, 0, "Eco-Score Data Service", nameof(GetChartInfo), AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get Chart info method Eco-Score data service", 0, 0, ex.Message, 0, 0);
                 return StatusCode(500, string.Empty);
             }
         }
