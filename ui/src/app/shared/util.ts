@@ -47,6 +47,11 @@ export class Util {
         return (_date);
     }
 
+    public static utcToDateConversion(utc: any){
+        let _date: any = moment.utc(utc);
+        return (_date._d);
+    }
+
     
     public static getHhMmTime(totalSeconds: any){
     let data: any = "00:00";
