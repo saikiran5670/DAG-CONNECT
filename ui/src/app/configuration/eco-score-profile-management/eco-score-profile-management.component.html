@@ -37,10 +37,13 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label style='display: flex;'>
-                    <span>{{ translationData.lblProfileName || 'Profile Name' }}</span><span class='mandatoryColor'>*</span>
-                    <span>{{ translationData.lbl120CharMax || '50 characters max' }}</span>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <mat-label style='display: flex; place-content: space-between;'>
+                    <span>
+                        <span>{{ translationData.lblProfileName || 'Profile Name' }}</span>
+                        <span class='mandatoryColor'>*</span>
+                    </span> 
+                    <span>{{ translationData.lbl50CharMax || '50 characters max' }}</span>
                 </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                         <input maxlength="50" placeholder="{{ translationData.lblTestProfileName || 'Test Profile Name' }}" matInput
@@ -57,7 +60,7 @@
                         {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                     </mat-error>
                 </div>
-            <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-45-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label style='display: flex; place-content: space-between;'>
                     <span>{{ translationData.lblProfileDescription || 'Profile Description' }}</span>
                     <span>{{ translationData.lbl120CharMax || '120 characters max' }}</span>
