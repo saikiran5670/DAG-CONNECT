@@ -17,7 +17,7 @@ CREATE TABLE if not exists livefleet.livefleet_trip_fuel_deviation
 TABLESPACE pg_default;
 
 ALTER TABLE  livefleet.livefleet_trip_fuel_deviation 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -62,7 +62,7 @@ CREATE TABLE if not exists livefleet.livefleet_warning_statistics
 TABLESPACE pg_default;
 
 ALTER TABLE  livefleet.livefleet_warning_statistics 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -117,7 +117,7 @@ CREATE TABLE if not exists livefleet.livefleet_current_trip_statistics
 TABLESPACE pg_default;
 
 ALTER TABLE  livefleet.livefleet_current_trip_statistics 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -184,7 +184,7 @@ CREATE TABLE if not exists tripdetail.vehiclealertref
 TABLESPACE pg_default;
 
 ALTER TABLE  tripdetail.vehiclealertref
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
