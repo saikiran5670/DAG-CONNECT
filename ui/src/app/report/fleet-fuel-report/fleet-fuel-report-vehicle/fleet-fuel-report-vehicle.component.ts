@@ -154,6 +154,58 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       }]
     }
   };
+  lineChartOptions2 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'values(meter)'    
+        }
+      }]
+    }
+  };
+  lineChartOptions3 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'values(ltr)'    
+        }
+      }]
+    }
+  };
   lineChartColors: Color[] = [
     {
       borderColor: '#7BC5EC',
@@ -1234,19 +1286,20 @@ setVehicleGroupAndVehiclePreSelection() {
       case 'noOfTrips': { 
         let s = this.displayData.forEach(element => {
          sum += parseInt(element.numberOfTrips);
-
         });
         break;
       }case 'distance': { 
         let s = this.displayData.forEach(element => {
         sum += parseFloat(element.convertedDistance);
         });
+        sum= sum.toFixed(2)*1;
         break;
       }
     case 'fuelconsumed': { 
       let s = this.displayData.forEach(element => {
       sum += parseFloat(element.fuelConsumed);
       });
+      sum= sum.toFixed(2)*1;
       break;
     }
     case 'idleDuration': { 
@@ -1260,12 +1313,14 @@ setVehicleGroupAndVehiclePreSelection() {
       let s = this.displayData.forEach(element => {
       sum += parseFloat(element.convertedFuelConsumed100Km);
       });
+      sum= sum.toFixed(2)*1;
       break;
     }
     case 'co2emission': { 
       let s = this.displayData.forEach(element => {
       sum += parseFloat(element.cO2Emission);
       });
+      sum= sum.toFixed(2)*1;
       break;
     }
     }
