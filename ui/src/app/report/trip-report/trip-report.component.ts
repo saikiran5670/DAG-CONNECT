@@ -1092,14 +1092,14 @@ ngOnDestroy(){
         _elem.checked = true;
       });
       this.userPOIList[index].parentChecked = true;
-      if(this.selectedPOI.selected.length > 0){
-        let _s: any = this.selectedPOI.selected.filter(i => i.categoryId == this.userPOIList[index].categoryId);
-        if(_s.length > 0){
+      // if(this.selectedPOI.selected.length > 0){
+      //   let _s: any = this.selectedPOI.selected.filter(i => i.categoryId == this.userPOIList[index].categoryId);
+      //   if(_s.length > 0){
 
-        }
-      }else{
+      //   }
+      // }else{
 
-      }
+      // }
     }else{ // unchecked
       this.userPOIList[index].subCategoryPOIList.forEach(element => {
         element.checked = false;
@@ -1113,7 +1113,9 @@ ngOnDestroy(){
     this.selectedPOI.selected.forEach(item => {
       if(item.poiList && item.poiList.length > 0){
         item.poiList.forEach(element => {
-          this.displayPOIList.push(element);
+          if(element.checked){ // only checked
+            this.displayPOIList.push(element);
+          }
         });
       }
     });

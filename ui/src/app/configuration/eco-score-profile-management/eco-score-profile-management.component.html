@@ -37,10 +37,13 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label style='display: flex;'>
-                    <span>{{ translationData.lblProfileName || 'Profile Name' }}</span><span class='mandatoryColor'>*</span>
-                    <span>{{ translationData.lbl120CharMax || '50 characters max' }}</span>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <mat-label style='display: flex; place-content: space-between;'>
+                    <span>
+                        <span>{{ translationData.lblProfileName || 'Profile Name' }}</span>
+                        <span class='mandatoryColor'>*</span>
+                    </span> 
+                    <span>{{ translationData.lbl50CharMax || '50 characters max' }}</span>
                 </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                         <input maxlength="50" placeholder="{{ translationData.lblTestProfileName || 'Test Profile Name' }}" matInput
@@ -57,7 +60,7 @@
                         {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                     </mat-error>
                 </div>
-            <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-45-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label style='display: flex; place-content: space-between;'>
                     <span>{{ translationData.lblProfileDescription || 'Profile Description' }}</span>
                     <span>{{ translationData.lbl120CharMax || '120 characters max' }}</span>
@@ -97,7 +100,7 @@
         </div>
         <div fxLayout="column" fxLayoutAlign="end">
             <div fxLayout="row" class='areaWidth'>
-                <button class='margin-right-10' mat-raised-button color="warn" *ngIf="actionType == 'manage'" [disabled]="!selectedElementData[0].isDeleteAllowed"
+                <button class='margin-right-10 min-width-100-px' mat-raised-button color="warn" *ngIf="actionType == 'manage'" [disabled]="!selectedElementData[0].isDeleteAllowed"
                 (click)='onDelete()'>{{ (translationData.lblDelete || 'Delete') }}</button>
                 <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" 
                     (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
@@ -112,7 +115,7 @@
     </mat-card>
 </form>
 </div>  
-<div class='bgtrans'>
+<div class='padding-0-30 margin-bottom-xlg'>
     <mat-expansion-panel [(expanded)]="isEcoScore" class="full-width" fxLayoutGap="10px" (opened)="isEcoScore" (closed)="!isEcoScore">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
@@ -122,7 +125,7 @@
             <app-breaking-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='kpiData' [kpiId] = 1 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
     </mat-expansion-panel> 
 </div>
-<div class='bgtrans'>
+<div class='margin-bottom-xlg padding-0-30'>
     <mat-expansion-panel [(expanded)]="isFuelConsumption" class="full-width" fxLayoutGap="10px" (opened)="isFuelConsumption" (closed)="!isFuelConsumption">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
@@ -159,7 +162,7 @@
             </div>
     </mat-expansion-panel> 
 </div>
-<div class='bgtrans'>
+<div class='margin-bottom-xlg padding-0-30'>
     <mat-expansion-panel [(expanded)]="isBrakingScore" class="full-width" fxLayoutGap="10px" (opened)="isBrakingScore" (closed)="!isBrakingScore">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
@@ -180,7 +183,7 @@
             </div>
     </mat-expansion-panel> 
 </div>
-<div class='bgtrans'>
+<div class='margin-bottom-xlg padding-0-30'>
     <mat-expansion-panel [(expanded)]="isAnticipation" class="full-width" fxLayoutGap="10px" (opened)="isAnticipation" (closed)="!isAnticipation">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
@@ -190,7 +193,7 @@
         <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='anticipationKpiData' [kpiId] = 20 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
     </mat-expansion-panel> 
 </div>
-<div class='bgtrans'>
+<div class='margin-bottom-xlg padding-0-30'>
     <mat-expansion-panel [(expanded)]="isOther" class="full-width" fxLayoutGap="10px" (opened)="isOther" (closed)="!isOther">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>

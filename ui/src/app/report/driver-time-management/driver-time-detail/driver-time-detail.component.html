@@ -93,7 +93,7 @@
       </mat-expansion-panel-header>
       <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
         <div class="areaWidth min-width-60-per" fxLayout="row" fxLayoutAlign="left" style="font-weight: bold;"><mat-label> {{ translationData.lblFrom || 'From'}} {{driverDetails.fromDisplayOnlyDate}} {{translationData.lblTo || 'To'}} {{driverDetails.toDisplayOnlyDate}}</mat-label></div>
-        <div class="areaWidth min-width-40-per" fxLayout="row" fxLayoutAlign="flex-end"><mat-label>Drag to zoom in</mat-label></div>     
+        <div *ngIf='zoomMsg' class="areaWidth min-width-40-per" fxLayout="row" fxLayoutAlign="flex-end"><mat-label>Drag to zoom in</mat-label></div>     
       </div>
       <div [ngClass]="{'reportTable': displayedColumns.length > 7}">
         <div style='padding: 20px; margin-bottom: 10px;'>
@@ -103,7 +103,7 @@
                 <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
                   [legend]="barChartLegend" [chartType]="barChartType" 
                   (chartHover)="chartHovered($event)"
-                  (chartClick)="chartClicked($event)"></canvas>
+                  (chartClick)="chartClicked($event)" (resetZoom)='onZoomReset()'></canvas>
                   <!-- <canvas id="chartCanvas" width="600" height="160" style="display: block; height: 160px; width: 600px;"></canvas>
                   <div style="opacity:0;" class="chartTooltip center">
                   </div> -->

@@ -71,6 +71,9 @@ export class CreateEditViewCategoryComponent implements OnInit {
       this.setDefaultValues();
       this.makeIcon(this.selectedRowData.icon);
     }
+    if(this.actionType == 'edit') {
+      this.categoryForm.get('type').disable();
+    }
   }
 
   makeIcon(icon: any){

@@ -110,6 +110,11 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       quarterlyEndDate: new FormControl({value: '', disabled: true}),
       quarterlyStartTime: new FormControl({value: '', disabled: true}),
       quarterlyEndTime: new FormControl({value: '', disabled: true}),
+    },{
+      validator : [
+        CustomValidators.specialCharValidationForMail('mailSubject'),
+        CustomValidators.specialCharValidationForMail('mailDescription')
+      ]
     });
 
     this.weekdays= [{id : 0, value : 'Sunday'},{id : 1, value : 'Monday'},{id : 2, value : 'Tuesday'},{id : 3, value : 'Wednesday'},{id : 4, value : 'Thursday'},{id : 5, value : 'Friday'},{id : 6, value : 'Saturday'}];
