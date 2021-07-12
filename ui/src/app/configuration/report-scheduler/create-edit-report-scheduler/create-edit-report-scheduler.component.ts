@@ -306,6 +306,8 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       case 'W': {
         if(this.actionType == 'edit'){
           this.reportSchedulerForm.get('weeklyStartDay').setValue(startDate.getDay());
+          endDate= new Date(startDate);
+          endDate.setDate(endDate.getDate() + 6);
           this.reportSchedulerForm.get('weeklyEndDay').setValue(endDate.getDay());
         }
         else{

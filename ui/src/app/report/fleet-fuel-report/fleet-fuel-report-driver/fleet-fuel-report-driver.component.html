@@ -172,7 +172,7 @@
   </form>
   
   <!-- </div> -->
-
+<div *ngIf='!showDetailedReport'>
   <!-- Summary Section -->
   
   <div id="charts">
@@ -1174,3 +1174,6 @@
       </mat-expansion-panel>
   
     </mat-card>
+  </div>
+</div>
+<app-fleetfueldetails *ngIf='showDetailedReport'></app-fleetfueldetails>
