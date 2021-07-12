@@ -139,6 +139,22 @@ export class CustomValidators {
     };
   }
 
+  static specialCharValidationForMail(name) {
+    
+    return (formGroup: FormGroup) => {
+      let NAME;
+      
+        NAME = formGroup.controls[name];
+      var regex = /[`~!@#\$%&*:;"']/;
+
+      if (!NAME.value) {
+        NAME.setErrors({ required: true });
+      } else if (regex.test(NAME.value)) {
+        NAME.setErrors({ specialCharsNotAllowed: true });
+      }
+    };
+  }
+
   static numberValidationForName(name) {
     return (formGroup: FormGroup) => {
       const NAME = formGroup.controls[name];
