@@ -52,7 +52,7 @@
               </mat-label>
                 <div *ngIf="actionType != 'view'">
                   <mat-form-field appearance="outline" class="full-width">
-                    <mat-select formControlName="type" (selectionChange)="onCategoryTypeChange($event)" [disabled]="actionType == 'edit'">
+                    <mat-select formControlName="type" (selectionChange)="onCategoryTypeChange($event)">
                         <mat-option *ngFor="let type of types" [value]="type">
                             {{type}}
                         </mat-option>
