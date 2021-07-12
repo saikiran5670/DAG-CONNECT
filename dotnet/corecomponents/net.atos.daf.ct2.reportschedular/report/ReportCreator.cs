@@ -104,7 +104,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 Orientation = Orientation.Portrait,
                 PaperSize = PaperKind.A4,
                 Margins = new MarginSettings { Top = 10 },
-                Out = $@"C:\POC\fleetutilisation_Report{ReportSchedulerData.Id}.pdf"
+                //Out = $@"C:\POC\{ ReportSchedulerData.ReportName }_{ ReportSchedulerData.Id }_{ DateTime.Now.ToString("ddMMyyyyHHmmss") }.pdf"
             };
             //string htmlText = await Report.GenerateTemplate(await GetLogoImage());
 

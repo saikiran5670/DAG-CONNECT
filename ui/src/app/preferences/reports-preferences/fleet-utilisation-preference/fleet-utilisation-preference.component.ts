@@ -96,36 +96,38 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   }
 
   translationUpdate(){
-    this.translationData.da_report_details_stoptime = 'Stop Time';
-    this.translationData.da_report_details_vin = 'VIN';
-    this.translationData.da_report_calendarview_drivingtime = 'Driving Time';
-    this.translationData.da_report_details_vehiclename = 'Vehicle Name';
-    this.translationData.da_report_details_averagedistanceperday = 'Average distance per day';
-    this.translationData.da_report_general_averagedistanceperday = 'Average distance per day';
-    this.translationData.da_report_details_numberoftrips = 'Number of Trips';
-    this.translationData.da_report_calendarview_totaltrips = 'Total trips';
-    this.translationData.da_report_charts_mileagebasedutilization = 'Mileage Based Utilisation';
-    this.translationData.da_report_general_idleduration = 'Idle Duration';
-    this.translationData.da_report_general_totaldistance = 'Total Distance';
-    this.translationData.da_report_calendarview_idleduration = 'Idle Duration';
-    this.translationData.da_report_details_registrationnumber = 'Registration Number';
-    this.translationData.da_report_details_odometer = 'Odometer';
-    this.translationData.da_report_details_averagespeed = 'Average Speed';
-    this.translationData.da_report_charts_distanceperday = 'Distance Per Day';
-    this.translationData.da_report_details_drivingtime = 'Driving Time';
-    this.translationData.da_report_calendarview_timebasedutilization = 'Time Based Utilisation';
-    this.translationData.da_report_general_numberofvehicles = 'Number of Vehicles';
-    this.translationData.da_report_details_averageweightpertrip = 'Average weight per trip';
-    this.translationData.da_report_charts_numberofvehiclesperday = 'Active Vehicles Per Day';
-    this.translationData.da_report_charts_timebasedutilization = 'Time Based Utilisation';
-    this.translationData.da_report_calendarview_mileagebasedutilization = 'Mileage Based Utilisation';
-    this.translationData.da_report_details_triptime = 'Trip Time';
-    this.translationData.da_report_calendarview_activevehicles = 'Active Vehicles';
-    this.translationData.da_report_details_idleduration = 'Idle Duration';
-    this.translationData.da_report_calendarview_distance = 'Distance';
-    this.translationData.da_report_details_distance = 'Distance';
-    this.translationData.da_report_calendarview_averageweight = 'Average Weight';
-    this.translationData.da_report_general_numberoftrips = 'Number of Trips';
+    this.translationData = {
+      da_report_details_stoptime: 'Stop Time',
+      da_report_details_vin: 'VIN',
+      da_report_calendarview_drivingtime: 'Driving Time',
+      da_report_details_vehiclename: 'Vehicle Name',
+      da_report_details_averagedistanceperday: 'Average distance per day',
+      da_report_general_averagedistanceperday: 'Average distance per day',
+      da_report_details_numberoftrips: 'Number of Trips',
+      da_report_calendarview_totaltrips: 'Total trips',
+      da_report_charts_mileagebasedutilization: 'Mileage Based Utilisation',
+      da_report_general_idleduration: 'Idle Duration',
+      da_report_general_totaldistance: 'Total Distance',
+      da_report_calendarview_idleduration: 'Idle Duration',
+      da_report_details_registrationnumber: 'Registration Number',
+      da_report_details_odometer: 'Odometer',
+      da_report_details_averagespeed: 'Average Speed',
+      da_report_charts_distanceperday: 'Distance Per Day',
+      da_report_details_drivingtime: 'Driving Time',
+      da_report_calendarview_timebasedutilization: 'Time Based Utilisation',
+      da_report_general_numberofvehicles: 'Number of Vehicles',
+      da_report_details_averageweightpertrip: 'Average weight per trip',
+      da_report_charts_numberofvehiclesperday: 'Active Vehicles Per Day',
+      da_report_charts_timebasedutilization: 'Time Based Utilisation',
+      da_report_calendarview_mileagebasedutilization: 'Mileage Based Utilisation',
+      da_report_details_triptime: 'Trip Time',
+      da_report_calendarview_activevehicles: 'Active Vehicles',
+      da_report_details_idleduration: 'Idle Duration',
+      da_report_calendarview_distance: 'Distance',
+      da_report_details_distance: 'Distance',
+      da_report_calendarview_averageweight: 'Average Weight',
+      da_report_general_numberoftrips: 'Number of Trips'
+    }
   }
 
   loadFleetUtilisationPreferences(){

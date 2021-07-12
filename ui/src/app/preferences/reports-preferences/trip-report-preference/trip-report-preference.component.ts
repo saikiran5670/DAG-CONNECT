@@ -19,6 +19,7 @@ export class TripReportPreferenceComponent implements OnInit {
   roleID: any;
   reportId: any;
   initData: any = [];
+  tripPrefData: any = [];
   selectionForTripColumns = new SelectionModel(true, []);
   reqField: boolean = false;
 
@@ -40,54 +41,66 @@ export class TripReportPreferenceComponent implements OnInit {
   }
 
   translationUpdate(){
-    this.translationData.da_report_details_averageweight = 'Average Weight';
-    this.translationData.da_report_details_vin = 'VIN';
-    this.translationData.da_report_details_vehiclename = 'Vehicle Name';
-    this.translationData.da_report_details_alerts = 'Alerts';
-    this.translationData.da_report_details_registrationnumber = 'Reg. Plate Number';
-    this.translationData.da_report_details_events = 'Events';
-    this.translationData.da_report_details_odometer = 'Odometer';
-    this.translationData.da_report_details_averagespeed = 'Average Speed';
-    this.translationData.da_report_details_drivingtime = 'Driving Time';
-    this.translationData.da_report_details_fuelconsumed = 'Fuel consumed';
-    this.translationData.da_report_details_startposition = 'Start Position';
-    this.translationData.da_report_details_idleduration = 'Idle Duration';
-    this.translationData.da_report_details_startdate = 'Start Date';
-    this.translationData.da_report_details_distance = 'Distance';
-    this.translationData.da_report_details_enddate = 'End Date';
-    this.translationData.da_report_details_endposition = 'End Position';
+    this.translationData = {
+      da_report_tripreportdetails_averageweight: 'Average Weight',
+      da_report_tripreportdetails_vin: 'VIN',
+      da_report_tripreportdetails_vehiclename: 'Vehicle Name',
+      da_report_tripreportdetails_alerts: 'Alerts',
+      da_report_tripreportdetails_platenumber: 'Reg. Plate Number',
+      da_report_tripreportdetails_events: 'Events',
+      da_report_tripreportdetails_odometer: 'Odometer',
+      da_report_tripreportdetails_averagespeed: 'Average Speed',
+      da_report_tripreportdetails_drivingtime: 'Driving Time',
+      da_report_tripreportdetails_fuelconsumed: 'Fuel consumed',
+      da_report_tripreportdetails_startposition: 'Start Position',
+      da_report_tripreportdetails_idleduration: 'Idle Duration',
+      da_report_tripreportdetails_startdate: 'Start Date',
+      da_report_tripreportdetails_distance: 'Distance',
+      da_report_tripreportdetails_enddate: 'End Date',
+      da_report_tripreportdetails_endposition: 'End Position'
+    }
   }
 
   loadTripReportPreferences(){
     this.reportService.getUserPreferenceReport(this.reportId, this.accountId, this.accountOrganizationId).subscribe((prefData : any) => {
       this.initData = prefData['userPreferences'];
-      this.initData = this.getTranslatedColumnName(this.initData);
-      this.setColumnCheckbox();
+      this.resetColumnData();
+      this.getTranslatedColumnName(this.initData);
       this.validateRequiredField();
     }, (error)=>{
       this.initData = [];
+      this.tripPrefData = [];
     });
+  }
+
+  resetColumnData(){
+    this.tripPrefData = [];
   }
 
   getTranslatedColumnName(prefData: any){
     prefData.forEach(element => {
-      if(this.translationData[element.key]){
-        element.translatedName = this.translationData[element.key];  
-      }else{
-        element.translatedName = this.getName(element.name);   
+      let _data: any;
+      if(element.key.includes('da_report_tripreportdetails_')){
+         _data = element;
+        if(this.translationData[element.key]){
+          _data.translatedName = this.translationData[element.key];  
+        }else{
+          _data.translatedName = this.getName(element.name, 25);   
+        }
+        this.tripPrefData.push(_data);
       }
     });
-    return prefData;
+    this.setColumnCheckbox();
   }
 
-  getName(name: any) {
-    let updatedName = name.slice(15);
+  getName(name: any, _count: any) {
+    let updatedName = name.slice(_count);
     return updatedName;
   }
 
   setColumnCheckbox(){
     this.selectionForTripColumns.clear();
-    this.initData.forEach(element => {
+    this.tripPrefData.forEach(element => {
       if(element.state == 'A'){
         this.selectionForTripColumns.select(element);
       }
@@ -97,7 +110,7 @@ export class TripReportPreferenceComponent implements OnInit {
   validateRequiredField(){
     let _flag = true;
     if(this.selectionForTripColumns.selected.length > 0){
-      let _search = this.selectionForTripColumns.selected.filter(i => (i.key == 'da_report_details_vehiclename' || i.key == 'da_report_details_vin' || i.key == 'da_report_details_registrationnumber'));
+      let _search = this.selectionForTripColumns.selected.filter(i => (i.key == 'da_report_tripreportdetails_vehiclename' || i.key == 'da_report_tripreportdetails_vin' || i.key == 'da_report_tripreportdetails_platenumber'));
       if(_search.length){
         _flag = false;
       }
@@ -107,7 +120,7 @@ export class TripReportPreferenceComponent implements OnInit {
 
   isAllSelectedForColumns(){
     const numSelected = this.selectionForTripColumns.selected.length;
-    const numRows = this.initData.length;
+    const numRows = this.tripPrefData.length;
     return numSelected === numRows;
   }
 
@@ -116,7 +129,7 @@ export class TripReportPreferenceComponent implements OnInit {
       this.selectionForTripColumns.clear();
       this.validateRequiredField();
     }else{
-      this.initData.forEach(row => { this.selectionForTripColumns.select(row) });
+      this.tripPrefData.forEach(row => { this.selectionForTripColumns.select(row) });
       this.validateRequiredField();
     }
   }
@@ -145,7 +158,7 @@ export class TripReportPreferenceComponent implements OnInit {
 
   onConfirm(){
     let _dataArr: any = [];
-    this.initData.forEach(element => {
+    this.tripPrefData.forEach(element => {
       let search = this.selectionForTripColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
       if(search.length > 0){
         _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
@@ -162,7 +175,7 @@ export class TripReportPreferenceComponent implements OnInit {
       modifiedAt: 0,
       atributesShowNoShow: _dataArr
     }
-    this.reportService.createReportUserPreference(objData).subscribe((tripPrefData: any) => {
+    this.reportService.createReportUserPreference(objData).subscribe((_tripPrefData: any) => {
       this.loadTripReportPreferences();
       this.setTripReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
       if((this.router.url).includes("tripreport")){

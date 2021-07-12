@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.corridorservice;
+using net.atos.daf.ct2.mapservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Corridor;
 using Newtonsoft.Json;
@@ -25,13 +26,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly AuditHelper _auditHelper;
         private readonly CorridorMapper _corridorMapper;
         private readonly Alert.AlertService.AlertServiceClient _alertServiceClient;
-        public LandmarkCorridorController(CorridorService.CorridorServiceClient corridorServiceClient, AuditHelper auditHelper, Alert.AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
+        private readonly HereMapAddressProvider _hereMapAddressProvider;
+        private readonly poiservice.POIService.POIServiceClient _poiServiceClient;
+        private readonly MapService.MapServiceClient _mapServiceClient;
+        public LandmarkCorridorController(CorridorService.CorridorServiceClient corridorServiceClient, AuditHelper auditHelper,
+            Alert.AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper
+            , MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient) : base(httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _corridorServiceClient = corridorServiceClient;
             _auditHelper = auditHelper;
             _corridorMapper = new CorridorMapper();
             _alertServiceClient = alertServiceClient;
+            _poiServiceClient = poiServiceClient;
+            _mapServiceClient = mapServiceClient;
+            _hereMapAddressProvider = new HereMapAddressProvider(_mapServiceClient, _poiServiceClient);
         }
 
         [HttpGet]
@@ -57,6 +66,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         if (data.CorridorEditViewList != null && data.CorridorEditViewList.Count > 0)
                         {
+                            for (int i = 0; i < data.CorridorGridViewList.Count; i++)
+                            {
+                                if (data.CorridorEditViewList[i].EndPoint == "" && data.CorridorEditViewList[i].EndLat > 0 && data.CorridorEditViewList[i].EndLong > 0)
+                                {
+                                    GetMapRequest getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(data.CorridorEditViewList[i].EndLat, data.CorridorEditViewList[i].EndLong);
+                                    data.CorridorEditViewList[i].EndPoint = getMapRequestLatest.Address;
+                                }
+                                if (data.CorridorEditViewList[i].StartPoint == "" && data.CorridorEditViewList[i].StartLat > 0 && data.CorridorEditViewList[i].StartLong > 0)
+                                {
+                                    GetMapRequest getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(data.CorridorEditViewList[i].StartLat, data.CorridorEditViewList[i].StartLong);
+                                    data.CorridorEditViewList[i].StartPoint = getMapRequestLatest.Address;
+                                }
+                            }
                             return Ok(data.CorridorEditViewList);
                         }
                         else
@@ -68,6 +90,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         if (data.CorridorGridViewList != null && data.CorridorGridViewList.Count > 0)
                         {
+                            for (int i = 0; i < data.CorridorGridViewList.Count; i++)
+                            {
+                                if (data.CorridorGridViewList[i].EndPoint == "" && data.CorridorGridViewList[i].EndLat > 0 && data.CorridorGridViewList[i].EndLong > 0)
+                                {
+                                    GetMapRequest getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(data.CorridorGridViewList[i].EndLat, data.CorridorGridViewList[i].EndLong);
+                                    data.CorridorGridViewList[i].EndPoint = getMapRequestLatest.Address;
+                                }
+                                if (data.CorridorGridViewList[i].StartPoint == "" && data.CorridorGridViewList[i].StartLat > 0 && data.CorridorGridViewList[i].StartLong > 0)
+                                {
+                                    GetMapRequest getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(data.CorridorGridViewList[i].StartLat, data.CorridorGridViewList[i].StartLong);
+                                    data.CorridorGridViewList[i].StartPoint = getMapRequestLatest.Address;
+                                }
+                            }
                             return Ok(data.CorridorGridViewList);
                         }
                         else
