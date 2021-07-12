@@ -248,6 +248,31 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
+  getDriverTripDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/fleetfuel/getdetails/driver/trip`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getVehicleTripDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/fleetfuel/getdetails/vehicle/trip`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+
   getFleetFuelDetails(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {

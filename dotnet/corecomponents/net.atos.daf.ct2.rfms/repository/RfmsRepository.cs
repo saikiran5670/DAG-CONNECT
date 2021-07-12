@@ -1,9 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.rfms.entity;
-using net.atos.daf.ct2.rfms.responce;
 using net.atos.daf.ct2.rfms.response;
 
 namespace net.atos.daf.ct2.rfms.repository
@@ -21,39 +21,37 @@ namespace net.atos.daf.ct2.rfms.repository
             _dataMartDataAccess = dataMartAccess;
             _dataAccess = dataAccess;
         }
-        public async Task<RfmsVehicles> GetVehicles(RfmsVehicleRequest rfmsVehicleRequest)
+        public async Task<RfmsVehicles> GetVehicles(string lastVin, bool moreData)
         {
+            //This whole query needs to be corrected once db design is ready
             try
             {
-                var queryStatement = @"select id,vin
-                                   ,customer_vehicle_name
-                                   ,brand 
-                                   ,type 
-                                   ,model 
-                                   ,production_date 
-                                   ,possible_fuel_type 
-                                   ,emission_level
-                                   ,tell_tale_code 
-                                   ,authorized_paths
-                                   from master.vehicle 
-                                   where 1=1";
+                var queryStatement = @"select v.id,v.vin
+                                   ,v.name as customer_vehicle_name
+                                   ,v.tcu_brand as brand 
+                                   ,v.type 
+                                   ,vp.manufacture_date as production_date 
+                                   ,v.fuel_type as possible_fuel_type 
+                                   from master.vehicle v 
+                                    inner join master.vehicleproperties vp	 on
+                                    vp.id = v.vehicle_property_id
+                                    where 1=1";
                 var parameter = new DynamicParameters();
 
-
-                if (rfmsVehicleRequest.Id != null)
+                if (moreData && lastVin != null) // LastVin is mendatory when rfmsVehicleRequest is true and it is required for pagination
                 {
-                    parameter.Add("@id", "%" + rfmsVehicleRequest.Id + "%");
-                    queryStatement = queryStatement + " and id LIKE @id";
+                    parameter.Add("@vin", "%" + lastVin + "%");
+                    queryStatement = queryStatement + " and v.vin LIKE @vin";
 
                 }
-                if (rfmsVehicleRequest.MoreDataAvailable && rfmsVehicleRequest.LastVin != null) // LastVin is mendatory when rfmsVehicleRequest is true and it is required for pagination
+                RfmsVehicles rfmsVehicles = new RfmsVehicles();
+                List<Vehicle> vehicles = new List<Vehicle>();
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
+                foreach (dynamic record in result)
                 {
-                    parameter.Add("@vin", "%" + rfmsVehicleRequest.LastVin + "%");
-                    queryStatement = queryStatement + " and vin LIKE @id";
-
+                    vehicles.Add(Map(record));
                 }
-                var rfmsVehicles = new RfmsVehicles();
-                dynamic result = await _dataMartDataAccess.QueryAsync<dynamic>(queryStatement, parameter);
+                rfmsVehicles.Vehicles = vehicles;
                 return rfmsVehicles;
 
             }
@@ -140,6 +138,14 @@ namespace net.atos.daf.ct2.rfms.repository
             }
 
 
+        }
+
+        private Vehicle Map(dynamic record)
+        {
+            Vehicle vehicle = new Vehicle();
+            vehicle.Vin = record.vin;
+            vehicle.CustomerVehicleName = record.customer_vehicle_name;
+            return vehicle;
         }
 
     }
