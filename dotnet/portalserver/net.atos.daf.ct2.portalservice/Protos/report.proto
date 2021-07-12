@@ -915,3 +915,40 @@ message GetEcoScoreReportCompareDriversRequest {
   EcoScoreReportCompareDrivers CompareDrivers = 4;
   }
 /// END: Eco Score Report Compare Drivers
+
+/// START: Fuel Deviation Report
+message FuelDivationDetails {
+    int32 Id =1;
+    string TripId=2;
+    string VIN=3;
+    int64 StartTimeStamp=4;
+    int64 EndTimeStamp=5; 
+    int32 Distance=6; 
+    int32 IdleDuration=7;
+    
+    int32 AverageSpeed=8;
+    int32 AverageWeight=9;
+    int64 Odometer=10;
+    string StartPosition =11;
+    string EndPosition=12;
+    double FuelConsumed=13;
+    int32 DrivingTime =14;
+    int32 Alert =15;
+    int32 Events=16;
+    double FuelConsumed100km=17;   
+    string FuelEventType=18;
+    double StartPositionLattitude=19;
+    double StartPositionLongitude=20;
+    double EndPositionLattitude=21;
+    double EndPositionLongitude=22;
+    string RegistrationNo =23;
+    string VehicleName=24;
+
+    string VehicleActivityType = 25;
+    int64 EventTime=26;
+    double FuelDiffernce = 27;
+    double Latitude = 28;
+    double Longitude = 29;
+    double Heading = 30;
+}
+/// END: Fuel Deviation Report

@@ -503,11 +503,11 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.allDriversSelected = false
       _driverIds = this.driverListData.filter(item => item.driverID == (this.ecoScoreForm.controls.driver.value)).map(data=>data.driverID);
     }
-    if(this.ecoScoreForm.get('minTripCheck')){
-      _minTripVal = Number(this.ecoScoreForm.get('minTripValue'));
+    if(this.ecoScoreForm.get('minTripCheck').value){
+      _minTripVal = Number(this.ecoScoreForm.get('minTripValue').value);
     }
-    if(this.ecoScoreForm.get('minDriverCheck')){
-      _minDriverDist = Number(this.ecoScoreForm.get('minDriverValue'));
+    if(this.ecoScoreForm.get('minDriverCheck').value){
+      _minDriverDist = Number(this.ecoScoreForm.get('minDriverValue').value);
     }
  
     if(_vehicelIds.length > 0){
@@ -1183,10 +1183,10 @@ let finalGroupDataList = [];
         }       
       }
       if(this.ecoScoreForm.get('minTripCheck').value){
-        _minTripVal = Number(this.ecoScoreForm.get('minTripValue'));
+        _minTripVal = Number(this.ecoScoreForm.get('minTripValue').value);
       }
       if(this.ecoScoreForm.get('minDriverCheck').value){
-        _minDriverDist = Number(this.ecoScoreForm.get('minDriverValue'));
+        _minDriverDist = Number(this.ecoScoreForm.get('minDriverValue').value);
       }
 
         let searchDataParam = {
