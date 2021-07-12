@@ -235,6 +235,25 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       ]}
   };
 
+  barChartOptions3= {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Values (ltr)'    
+        }}
+      ]}
+  };
 
   barChartData1: ChartDataSets[] = [{ data: [], label: '' },];
   barChartData2: ChartDataSets[] = [{ data: [], label: '' },];
