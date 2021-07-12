@@ -503,10 +503,10 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.allDriversSelected = false
       _driverIds = this.driverListData.filter(item => item.driverID == (this.ecoScoreForm.controls.driver.value)).map(data=>data.driverID);
     }
-    if(this.ecoScoreForm.get('minTripCheck')){
+    if(this.ecoScoreForm.get('minTripCheck').value == true){
       _minTripVal = Number(this.ecoScoreForm.get('minTripValue'));
     }
-    if(this.ecoScoreForm.get('minDriverCheck')){
+    if(this.ecoScoreForm.get('minDriverCheck').value == true){
       _minDriverDist = Number(this.ecoScoreForm.get('minDriverValue'));
     }
  
