@@ -724,6 +724,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.allDriversSelected = true;
     this.initData=[];
     this.updateDataSource(this.initData);
+    this.driverSelected = false;
     //this.advanceFilterOpen = false;
    // this.selectedPOI.clear();
   }
