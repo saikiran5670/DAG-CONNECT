@@ -149,10 +149,10 @@
 
 <!-- </div> -->
 
-
+<!-- if all selected -->
+<div *ngIf='!showDetailedReport'>
 
 <!-- Ranking section -->
-
 <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
   <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
     <mat-expansion-panel-header class="full-width">
@@ -826,3 +826,7 @@
       <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
     </mat-expansion-panel>
   </mat-card>
+</div>
+</div>
+
+<app-fleetfueldetails *ngIf='showDetailedReport'></app-fleetfueldetails>

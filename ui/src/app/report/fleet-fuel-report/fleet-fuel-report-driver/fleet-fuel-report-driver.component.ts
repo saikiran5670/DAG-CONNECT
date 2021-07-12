@@ -235,6 +235,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
     },
 
   ]
+  showDetailedReport : boolean = false;
   
   constructor(private _formBuilder: FormBuilder, 
               private translationService: TranslationService,
@@ -400,6 +401,13 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
     });
+    if(_vinData.length === 1){
+      this.showDetailedReport = true;
+    }
+    else{
+      this.showDetailedReport = false;
+
+    }
   }
   
   updateDataSource(tableData: any) {
