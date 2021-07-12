@@ -8,6 +8,7 @@ using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.reportscheduler;
 using net.atos.daf.ct2.reportscheduler.entity;
+using net.atos.daf.ct2.reportscheduler.ENUM;
 using net.atos.daf.ct2.reportschedulerservice.Entity;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.visibility;
@@ -33,7 +34,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
         {
             try
             {
-                ReportParameter reportparameter = await _reportSchedulerManager.GetReportParameter(request.AccountId, request.OrganizationId);
+                ReportParameter reportparameter = await _reportSchedulerManager.GetReportParameter(request.AccountId, request.OrganizationId, request.ContextOrgId, request.RoleId);
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
                                                  .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
@@ -245,7 +246,8 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                 net.atos.daf.ct2.reportscheduler.entity.ReportStatusUpdateDeleteModel objRepoModel = new net.atos.daf.ct2.reportscheduler.entity.ReportStatusUpdateDeleteModel();
                 objRepoModel.ReportId = request.ReportId;
                 objRepoModel.OrganizationId = request.OrganizationId;
-                objRepoModel.Status = request.Status;
+                char reportStatus = request.Status == ((char)ReportSchedulerState.Active).ToString() ? (char)ReportSchedulerState.Suspend : (char)ReportSchedulerState.Active;
+                objRepoModel.Status = reportStatus.ToString();
                 int reportId = await _reportSchedulerManager.ManipulateReportSchedular(objRepoModel);
                 ReportStatusUpdateDeleteResponse response = new ReportStatusUpdateDeleteResponse();
                 if (reportId > 0)
@@ -402,7 +404,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                         ReportPDFResponse response = new ReportPDFResponse()
                         {
                             Message = ReportSchedulerConstant.REPORT_SCHEDULER_VALID_EMAIL_LINK,
-                            Code = ResponseCode.Success
+                            Code = ResponseCode.Failed
                         };
                         return await Task.FromResult(response);
                     }

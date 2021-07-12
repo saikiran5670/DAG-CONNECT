@@ -16,13 +16,13 @@ namespace net.atos.daf.ct2.applications
 {
     internal class ReportEmailSchedulerWorker : BackgroundService
     {
-        private readonly ILogger<PasswordExpiryWorker> _logger;
+        private readonly ILogger<ReportEmailSchedulerWorker> _logger;
         private readonly IAuditTraillib _auditlog;
         private readonly IReportEmailSchedulerManager _reportEmailSchedulerManager;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly IConfiguration _configuration;
 
-        public ReportEmailSchedulerWorker(ILogger<PasswordExpiryWorker> logger,
+        public ReportEmailSchedulerWorker(ILogger<ReportEmailSchedulerWorker> logger,
                         IConfiguration configuration,
                         IAuditTraillib auditlog,
                         IReportEmailSchedulerManager reportEmailSchedulerManager,

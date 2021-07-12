@@ -19,6 +19,11 @@ import 'chartjs-plugin-zoom';
 import { FleetFuelReportComponent } from './fleet-fuel-report/fleet-fuel-report.component';
 import { FleetFuelReportVehicleComponent } from './fleet-fuel-report/fleet-fuel-report-vehicle/fleet-fuel-report-vehicle.component';
 import { FleetFuelReportDriverComponent } from './fleet-fuel-report/fleet-fuel-report-driver/fleet-fuel-report-driver.component';
+import { Ng2CompleterModule } from 'ng2-completer';
+import { EcoScoreReportComponent } from './eco-score-report/eco-score-report.component';
+import { EcoScoreDriverCompareComponent } from './eco-score-report/eco-score-driver-compare/eco-score-driver-compare.component';
+import { AngularSlickgridModule } from 'angular-slickgrid';
+import { FleetfueldetailsComponent } from './fleet-fuel-report/fleetfueldetails/fleetfueldetails.component';
 
 // import interactionPlugin from '@fullcalendar/interaction';
 
@@ -36,7 +41,7 @@ export const MY_DATE_FORMAT = {
 }
 
 @NgModule({
-  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent],
+  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent, EcoScoreReportComponent, EcoScoreDriverCompareComponent, FleetfueldetailsComponent],
   imports: [
     CommonModule,
     ReportRoutingModule,
@@ -46,7 +51,17 @@ export const MY_DATE_FORMAT = {
     ChartsModule,
     NgxMaterialTimepickerModule,
     MatTableExporterModule,
-    FullCalendarModule
+    FullCalendarModule,
+    Ng2CompleterModule,
+    AngularSlickgridModule.forRoot({
+      // add any Global Grid Options/Config you might want
+      // to avoid passing the same options over and over in each grids of your App
+      enableAutoResize: true,
+      autoResize: {
+        containerId: 'demo-container',
+        sidePadding: 10
+      }
+    })
   ],
   providers: [
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMAT },

@@ -12,7 +12,7 @@ using net.atos.daf.ct2.notification.entity;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.ENUM;
 using net.atos.daf.ct2.reportscheduler.repository;
-
+using System.Linq;
 namespace net.atos.daf.ct2.reportscheduler
 {
     public class ReportEmailSchedulerManager : IReportEmailSchedulerManager
@@ -31,24 +31,53 @@ namespace net.atos.daf.ct2.reportscheduler
         {
             var reportsSent = new List<ReportEmailDetail>();
             var emailDetails = await _reportSchedulerRepository.GetReportEmailDetails();
-            foreach (var emailItem in emailDetails)
+
+            var reportEmailResults = from p in emailDetails
+                                     group p by new { p.ReportCreatedBy, p.LanguageCode } into g
+                                     select new { CreatedBy = g.Key, ReportSchedulerEmailResult = g.ToList() };
+            if (reportEmailResults.Any())
             {
-                var mailNotifictaion = new MailNotificationRequest()
+
+                foreach (var item in reportEmailResults)
                 {
-                    MessageRequest = new MessageRequest()
+                    MailNotificationRequest mailNotification = new MailNotificationRequest();
+                    mailNotification.MessageRequest = new MessageRequest();
+                    Dictionary<string, string> reportTokens = new Dictionary<string, string>();
+                    Dictionary<string, string> toAddressList = new Dictionary<string, string>();
+                    var mailSent = new ReportEmailDetail();
+
+                    foreach (var emailItem in item.ReportSchedulerEmailResult)
                     {
-                        AccountInfo = new AccountInfo() { EmailId = emailItem.EmailId, Organization_Id = emailItem.OrganizationId }
-                    },
-                    ContentType = EmailContentType.Html,
-                    EventType = EmailEventType.SendReport
-                };
-                var isSuccess = await _emailNotificationManager.TriggerSendEmail(mailNotifictaion);
-                var mailSent = new ReportEmailDetail() { EmailId = emailItem.EmailId, IsMailSent = emailItem.IsMailSent, ReportId = emailItem.ReportSchedulerId };
-                reportsSent.Add(mailSent);
-                await AddAuditLog(isSuccess, mailSent.EmailId);
-                if (isSuccess)
-                {
-                    var nextUpdatedDate = UpdateNextTimeDate(emailItem);
+                        reportTokens.Add(emailItem.ReportToken.ToString(), emailItem.Key.Trim());
+                        if (!toAddressList.ContainsKey(emailItem.EmailId))
+                        {
+                            toAddressList.Add(emailItem.EmailId, null);
+                        }
+
+                        mailNotification.MessageRequest = new MessageRequest()
+                        {
+                            AccountInfo = new AccountInfo() { EmailId = emailItem.EmailId, Organization_Id = emailItem.OrganizationId },
+                            LanguageCode = emailItem.LanguageCode.Trim(),
+                            ReportTokens = reportTokens,
+                            ToAddressList = toAddressList,
+                            Subject = emailItem.MailSubject,
+                            Description = emailItem.MailDescription,
+                            IsBcc = true
+                        };
+                        mailSent.EmailId = emailItem.EmailId;
+                        mailSent.IsMailSent = emailItem.IsMailSent;
+                        mailSent.ReportId = emailItem.ReportSchedulerId;
+                    }
+                    mailNotification.ContentType = EmailContentType.Html;
+                    mailNotification.EventType = EmailEventType.ScheduledReportEmail;
+                    var isSuccess = await _emailNotificationManager.TriggerSendEmail(mailNotification);
+
+                    reportsSent.Add(mailSent);
+                    await AddAuditLog(isSuccess, mailSent.EmailId);
+                    if (isSuccess)
+                    {
+                        var nextUpdatedDate = await UpdateNextTimeDate(item.ReportSchedulerEmailResult);
+                    }
                 }
             }
             return reportsSent;
@@ -73,24 +102,60 @@ namespace net.atos.daf.ct2.reportscheduler
             });
         }
 
-        private async Task<int> UpdateNextTimeDate(ReportSchedulerEmailResult emailItem)
+        private async Task<int> UpdateNextTimeDate(List<ReportSchedulerEmailResult> emailItemList)
         {
 
-            var reportEmailFrequency = new ReportEmailFrequency()
+            int timeupdated = 0;
+            foreach (var emailItem in emailItemList)
             {
-                ReportId = emailItem.ReportSchedulerId,
-                EndDate = emailItem.EndDate,
-                FrequencyType = (TimeFrequenyType)Enum.Parse(typeof(TimeFrequenyType), emailItem.FrequencyType),
-                ReportNextScheduleRunDate = emailItem.NextScheduleRunDate,
-                ReportPrevioudScheduleRunDate = emailItem.LastScheduleRunDate,
-                StartDate = emailItem.StartDate,
-                ReportScheduleRunDate = emailItem.NextScheduleRunDate
+                var reportEmailFrequency = new ReportEmailFrequency()
+                {
+                    ReportId = emailItem.ReportSchedulerId,
+                    EndDate = emailItem.EndDate,
+                    FrequencyType = (TimeFrequenyType)Enum.Parse(typeof(TimeFrequenyType), GetEnumValue(emailItem.FrequencyType)),
+                    ReportNextScheduleRunDate = emailItem.NextScheduleRunDate,
+                    ReportPrevioudScheduleRunDate = emailItem.LastScheduleRunDate,
+                    StartDate = emailItem.StartDate,
+                    ReportScheduleRunDate = emailItem.NextScheduleRunDate
+                };
 
-            };
-            var timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByDate(reportEmailFrequency);
+                if (emailItem.FrequencyType == ((char)TimeFrequenyType.Daily).ToString() || emailItem.FrequencyType == ((char)TimeFrequenyType.Weekly).ToString() || emailItem.FrequencyType == ((char)TimeFrequenyType.BiWeekly).ToString())
+                {
+                    timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByDate(reportEmailFrequency);
+
+                }
+                else
+                {
+                    timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByCalenderTime(reportEmailFrequency);
+                }
+            }
             return timeupdated;
+
         }
 
+        private string GetEnumValue(string frequencyType)
+        {
+            string enumtype = string.Empty;
+            switch (frequencyType)
+            {
+                case "D":
+                    enumtype = TimeFrequenyType.Daily.ToString();
+                    break;
+                case "W":
+                    enumtype = TimeFrequenyType.Weekly.ToString();
+                    break;
+                case "B":
+                    enumtype = TimeFrequenyType.BiWeekly.ToString();
+                    break;
+                case "M":
+                    enumtype = TimeFrequenyType.Monthly.ToString();
+                    break;
+                case "Q":
+                    enumtype = TimeFrequenyType.Quartly.ToString();
+                    break;
+            }
+            return enumtype;
+        }
 
     }
 }

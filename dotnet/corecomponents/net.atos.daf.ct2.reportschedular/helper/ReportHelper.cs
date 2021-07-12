@@ -8,6 +8,38 @@ using net.atos.daf.ct2.reportscheduler.entity;
 
 namespace net.atos.daf.ct2.reportscheduler.helper
 {
+    public class ReportSingleton
+    {
+        private static ReportSingleton _instance;
+        private string _dafSupportEmailId;
+        private static readonly Object _root = new object();
+        private ReportSingleton()
+        {
+        }
+
+        public static ReportSingleton GetInstance()
+        {
+            lock (_root)
+            {
+                if (_instance == null)
+                {
+                    _instance = new ReportSingleton();
+                }
+            }
+            return _instance;
+        }
+
+        public void SetDAFSupportEmailId(string dafSupportEmailId)
+        {
+            _dafSupportEmailId = dafSupportEmailId;
+        }
+
+        public string GetDAFSupportEmailId()
+        {
+            return _dafSupportEmailId;
+        }
+
+    }
     public static class ReportHelper
     {
         public static string ToDataTableAndGenerateHTML<T>(List<T> items, IEnumerable<ReportColumnName> reporyColumns)
@@ -38,6 +70,33 @@ namespace net.atos.daf.ct2.reportscheduler.helper
             return GenerateHTMLString(dataTable);
         }
 
+        public static string ToDataTableAndGenerateHTML<T>(List<T> items)
+        {
+            DataTable dataTable = new DataTable(typeof(T).Name);
+
+            //Get all the properties
+            PropertyInfo[] props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (PropertyInfo prop in props)
+            {
+                //Defining type of data column gives proper data table 
+                var type = (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>) ? Nullable.GetUnderlyingType(prop.PropertyType) : prop.PropertyType);
+                //Setting column names as Property names
+                dataTable.Columns.Add(prop.Name, type);
+            }
+
+            foreach (T item in items)
+            {
+                var values = new object[props.Length];
+                for (int i = 0; i < props.Length; i++)
+                {
+                    //inserting property values to datatable rows
+                    values[i] = props[i].GetValue(item, null);
+                }
+                dataTable.Rows.Add(values);
+            }
+            //put a breakpoint here and check datatable
+            return GenerateHTMLString(dataTable);
+        }
         private static string GetColumnName(string displayNamKey, IEnumerable<ReportColumnName> reporyColumns, PropertyInfo prop)
         {
             return reporyColumns.Where(w => w.Key == displayNamKey).FirstOrDefault()?.Value ?? prop.Name;
@@ -49,15 +108,15 @@ namespace net.atos.daf.ct2.reportscheduler.helper
             {
                 StringBuilder sb = new StringBuilder();
                 //Table start.
-                sb.Append("<table align='center'>");
+                //sb.Append("<table>");
 
-                //Adding HeaderRow.
-                sb.Append("<tr>");
-                foreach (DataColumn column in reportData.Columns)
-                {
-                    sb.Append("<th>" + column.ColumnName + "</th>");
-                }
-                sb.Append("</tr>");
+                ////Adding HeaderRow.
+                //sb.Append("<thead>");
+                //foreach (DataColumn column in reportData.Columns)
+                //{
+                //    sb.Append("<th>" + column.ColumnName + "</th>");
+                //}
+                //sb.Append("</thead>");
 
                 //Adding DataRow.
                 foreach (DataRow row in reportData.Rows)
@@ -71,7 +130,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
                 }
 
                 //Table end.
-                sb.Append("</table>");
+                //sb.Append("</table>");
                 //ltTable.Text = sb.ToString();
                 return sb.ToString();
             }

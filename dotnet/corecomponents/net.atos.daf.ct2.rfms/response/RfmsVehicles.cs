@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace net.atos.daf.ct2.rfms.responce
+namespace net.atos.daf.ct2.rfms.response
 {
 
     public class ProductionDate
@@ -31,13 +31,9 @@ namespace net.atos.daf.ct2.rfms.responce
         public List<string> AuthorizedPaths { get; set; }
     }
 
-    public class VehicleResponse
-    {
-        public List<Vehicle> Vehicles { get; set; }
-    }
     public class RfmsVehicles
     {
-        public VehicleResponse VehicleResponse { get; set; }
+        public List<Vehicle> Vehicles { get; set; }
 
         public bool MoreDataAvailable { get; set; }
 

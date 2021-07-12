@@ -44,7 +44,7 @@
               <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span>
               </mat-label>
               <mat-form-field class="full-width" appearance="outline">
-                <mat-select (selectionChange)="vehicleGroupSelection($event)"
+                <mat-select [disabled]="vehicleGroupIdsSet.length == 0" (selectionChange)="vehicleGroupSelection($event)"
                   placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"
                   formControlName="vehicleGroup" required>
                   <mat-option *ngFor="let vehicleGroupData of vehicleGroupIdsSet" [value]="vehicleGroupData">
@@ -394,7 +394,7 @@
           </span>
           <span *ngIf="actionType !== 'view'">
             <!-- <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="(!existingTripForm.valid || !strPresentStart || !strPresentEnd)"> -->
-            <button mat-button color="primary" (click)="createCorridorClicked()">
+            <button [disabled]="!existingTripForm.valid" mat-button color="primary" (click)="createCorridorClicked()">
               <span>Create</span>
             </button>
           </span>

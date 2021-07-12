@@ -8,7 +8,7 @@
       <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
       </div>
   </div>
-  <div *ngIf='!createViewEditStatus'>
+  <div *ngIf='!createEditStatus && !viewStatus'>
       <mat-card class='mat-elevation-z'>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -29,7 +29,7 @@
                 <mat-select [(ngModel)]="reportTypeSelection" (selectionChange)="onReportTypeChange($event)" placeholder="{{ translationData.lblSelectReportType || 'Select Report Type' }}">
                 <mat-option value="0">--All--</mat-option>
                 <mat-option *ngFor="let rer of ReportTypeList" [value]="rer.id">
-                    {{ rer.name }}
+                    {{ rer.reportName }}
                 </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -65,47 +65,44 @@
         <div *ngIf='initData.length > 0'>
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort >
              <ng-container matColumnDef="reportName">      
-              <mat-header-cell *matHeaderCellDef> {{ translationData.lblReportType || 'Report Type'}}</mat-header-cell>     
-              <mat-cell *matCellDef="let row" style="word-break: 'break-word'">
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="min-width-10-per"> {{ translationData.lblReportType || 'Report Type'}}</mat-header-cell>     
+              <mat-cell *matCellDef="let row" class="min-width-10-per" style="word-break: 'break-word'">
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>               
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.reportName}}</span> 
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="vehicleGroupName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group/Vehicle' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                  <!-- <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
-                  (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
-                  {{ row.vehicleGroupName }}</span>
-                </span> -->
-                  <span *ngIf="row.vehicleGroupName!=''">
-                  <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
-                  (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
-                  {{ row.vehicleGroupName }}</span>
+            <ng-container matColumnDef="scheduledReportVehicleRef">
+                <mat-header-cell *matHeaderCellDef mat-sort-header class="min-width-12-per">{{ translationData.lblVehicleGroup || 'Vehicle Group/Vehicle' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row" class="min-width-12-per" matTooltip="{{ row.vehicleGroupAndVehicleList }}">
+                  <span *ngIf="row.scheduledReportVehicleRef.length ==1 && row.scheduledReportVehicleRef[0].vehicleGroupType == 'G'">
+                  <span [ngClass]="row.scheduledReportVehicleRef[0].vehicleGroupName != '' ? 'row-hover' : ''"
+                  (click)="row.scheduledReportVehicleRef[0].vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
+                  {{ row.scheduledReportVehicleRef[0].vehicleGroupName }}</span>
                   </span>              
-                  <span *ngIf="row.vehicleName!=''">{{ row.vehicleName }}</span>
+                  <span *ngIf="row.scheduledReportVehicleRef.length ==1 && row.scheduledReportVehicleRef[0].vehicleGroupType == 'S'">{{ row.scheduledReportVehicleRef[0].vehicleName }}</span>
+                  <span *ngIf="row.scheduledReportVehicleRef.length != 1" class="text-truncate">{{ row.scheduledReportVehicleRef.length > 0 ? row.vehicleGroupAndVehicleList : '&nbsp; &nbsp; -' }}</span>
                 </mat-cell>
              </ng-container> 
-             <ng-container matColumnDef="frequency">
+             <ng-container matColumnDef="frequencyType">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFrequency || 'Frequency' }}</mat-header-cell>
               <mat-cell *matCellDef="let row">
-                {{ row.frequency }}
+                <span *ngIf="row.frequencyType=='D'">Daily</span>
+                <span *ngIf="row.frequencyType=='W'">Weekly</span>
+                <span *ngIf="row.frequencyType=='B'">Biweekly</span>
+                <span *ngIf="row.frequencyType=='M'">Monthly</span>
+                <span *ngIf="row.frequencyType=='Q'">Quarterly</span>
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="scheduledReportRecipient">
+            <ng-container matColumnDef="recipientList">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRecipient || 'Recipient' }}</mat-header-cell>
-              <!-- <mat-cell *matCellDef="let row">         
-                {{ row.recipient }}            
-              </mat-cell> -->
               <mat-cell *matCellDef="let row" matTooltip="{{ row.recipientList }}">
                 <span *ngIf="row.scheduledReportRecipient.length != 1" class="text-truncate">{{ row.scheduledReportRecipient.length > 0 ? row.recipientList : '&nbsp; &nbsp; -' }}</span>
                 <span *ngIf="row.scheduledReportRecipient.length == 1">{{ row.recipientList }} </span>
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="scheduledReportDriverRef">
+            <ng-container matColumnDef="driverList">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriver || 'Driver' }}</mat-header-cell>
-              <!-- <mat-cell *matCellDef="let row">{{ row.driver }} </mat-cell> -->
               <mat-cell *matCellDef="let row" matTooltip="{{ row.driverList }}"><span class="text-truncate">{{ row.scheduledReportDriverRef.length > 0 ? row.driverList : '&nbsp; &nbsp; -' }}</span></mat-cell>
             </ng-container>
             <ng-container matColumnDef="lastScheduleRunDate">
@@ -123,7 +120,7 @@
             <ng-container matColumnDef="status">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
               <mat-cell *matCellDef="let row">
-              <button class='actionBtn' mat-flat-button (click)="onChangeReportSchedulerStatus(row)" matTooltip="{{ row.status == 'A' ? (translationData.lblClicktodeactivate || 'Click to Suspended') : translationData.lblClicktoactivate || 'Click to Activate' }}">
+              <button class='actionBtn' mat-flat-button (click)="onChangeReportSchedulerStatus(row)" matTooltip="{{ row.status == 'A' ? (translationData.lblClicktodeactivate || 'Click to Deactivate') : translationData.lblClicktoactivate || 'Click to Activate' }}">
                 <mat-slide-toggle color="primary" [checked]='row.status == "A" ? true : false' >
               </mat-slide-toggle>&nbsp;
               <span>{{ row.status == "A" ? (translationData.lblActive || 'Active') : translationData.lblSuspended || 'Suspended' }}</span>
@@ -153,8 +150,12 @@
         <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
       </mat-card>
   </div>
-  <div *ngIf='createViewEditStatus'>
-      <app-create-edit-view-report-scheduler [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"
-        (backToPage)='onBackToPage($event)'></app-create-edit-view-report-scheduler>
+  <div *ngIf='createEditStatus'>
+      <app-create-edit-report-scheduler [reportSchedulerParameterData]="reportSchedulerParameterData" [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"
+        (backToPage)='onBackToPage($event)'></app-create-edit-report-scheduler>
   </div>
+  <div *ngIf='viewStatus'>
+    <app-view-report-scheduler [translationData]='translationData' [selectedRowData]="rowsData"
+      (backToPage)='onBackToPage($event)'></app-view-report-scheduler>
+</div>
 </div>

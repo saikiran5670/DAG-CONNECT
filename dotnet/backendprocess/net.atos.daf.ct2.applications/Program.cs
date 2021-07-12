@@ -13,8 +13,10 @@ using net.atos.daf.ct2.reports.repository;
 using net.atos.daf.ct2.reportscheduler;
 using net.atos.daf.ct2.reportscheduler.report;
 using net.atos.daf.ct2.reportscheduler.repository;
+using net.atos.daf.ct2.template;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.unitconversion;
 using net.atos.daf.ct2.visibility;
 using net.atos.daf.ct2.visibility.repository;
 using Identity = net.atos.daf.ct2.identity;
@@ -62,9 +64,9 @@ namespace net.atos.daf.ct2.applications
                             services.AddTransient<IReportRepository, ReportRepository>();
                             services.AddTransient<IVisibilityManager, VisibilityManager>();
                             services.AddTransient<IVisibilityRepository, VisibilityRepository>();
-                            //services.AddControllersWithViews();
-                            //services.AddRazorPages();
-                            //services.AddControllers();
+                            services.AddTransient<ITemplateManager, TemplateManager>();
+                            services.AddTransient<IUnitConversionManager, UnitConversionManager>();
+                            services.AddTransient<IUnitManager, UnitManager>();
                             services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
                             services.AddHostedService<ReportCreationSchedulerWorker>();
                         }
@@ -83,6 +85,7 @@ namespace net.atos.daf.ct2.applications
                             services.AddSingleton<IReportEmailSchedulerManager, ReportEmailSchedulerManager>();
                             services.AddTransient<IEmailNotificationManager, EmailNotificationManager>();
                             services.AddTransient<IEmailRepository, EmailRepository>();
+                            services.AddHostedService<ReportEmailSchedulerWorker>();
 
                         }
                     }

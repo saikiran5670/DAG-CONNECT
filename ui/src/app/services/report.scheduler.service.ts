@@ -39,6 +39,16 @@ export class ReportSchedulerService {
       .pipe(catchError(this.handleError));
   }
 
+  getReportSchedulerParameter(accountId: any, orgId: any){
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.reportSchedulerServiceURL}/getreportschedulerparameter?accountId=${accountId}&orgnizationid=${orgId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
   enableDisableScheduledReport(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -59,6 +69,52 @@ export class ReportSchedulerService {
     };
     return this.httpClient
       .delete<void>(`${this.reportSchedulerServiceURL}/delete?ReportId=${id}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  createReportScheduler(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportSchedulerServiceURL}/create`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  updateReportScheduler(data: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+   return this.httpClient
+      .put<any>(`${this.reportSchedulerServiceURL}/update`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  downloadReport(id: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any>(
+        `${this.reportSchedulerServiceURL}/getpdf?ReportId=${id}`
+          )
+      .pipe(catchError(this.handleError));
+  }
+
+  downloadReportFromEmail(token: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any>(
+        `${this.reportSchedulerServiceURL}/download?Token=${token}`
+          )
       .pipe(catchError(this.handleError));
   }
   

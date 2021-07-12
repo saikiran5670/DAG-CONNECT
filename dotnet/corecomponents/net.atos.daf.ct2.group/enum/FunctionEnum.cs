@@ -7,6 +7,7 @@ namespace net.atos.daf.ct2.group
         All = 'A',
         OwnedVehicles = 'O',
         VisibleVehicles = 'V',
+        OEM = 'M',
     }
 
 }

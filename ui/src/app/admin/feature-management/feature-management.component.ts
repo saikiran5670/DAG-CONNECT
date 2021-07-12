@@ -91,6 +91,7 @@ export class FeatureManagementComponent implements OnInit {
       filterTypeData.forEach(element => {
         element["isExclusive"] = element.dataAttribute.isExclusive
       });
+      filterTypeData = this.getNewTagData(filterTypeData);
       this.updatedTableData(filterTypeData);
     }, (error) => {
       console.log("error:: ", error);
@@ -155,9 +156,19 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   applyFilter(filterValue: string) {
+    this.updatedDataSource(this.initData);
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
+    this.updatedDataSource(this.dataSource.filteredData);
+  }
+  
+  updatedDataSource(tableData: any){
+    this.dataSource = new MatTableDataSource(tableData);
+      setTimeout(()=>{
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      });
   }
 
   createNewFeature(){ 
@@ -302,7 +313,18 @@ export class FeatureManagementComponent implements OnInit {
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+          return this.compare(a[sort.active], b[sort.active], isAsc);
+        });
+       }
     });
   }
+      compare(a: Number | String, b: Number | String, isAsc: boolean) {
+      if(!(a instanceof Number)) a = a.toString().toUpperCase();
+      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+      return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+      }
 
 }

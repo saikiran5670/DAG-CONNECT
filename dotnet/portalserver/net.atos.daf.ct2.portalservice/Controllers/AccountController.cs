@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.portalservice.Account;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Account;
+using net.atos.daf.ct2.portalservice.Entity.Common;
 using net.atos.daf.ct2.utilities;
 using Newtonsoft.Json;
 using AccountBusinessService = net.atos.daf.ct2.accountservice;
@@ -474,10 +475,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "ResetPasswordInitiate  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                                            JsonConvert.SerializeObject(request), _userDetails);
-                    return Ok(response.Message);
+                    return Ok();
                 }
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
-                    return NotFound(response.Message);
+                    return Ok();
                 else
                     return StatusCode(500, "Password reset process failed to initiate or Error while sending email.");
             }
@@ -629,6 +630,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 };
 
                 var response = await _accountClient.GetMenuFeaturesAsync(menuFeatureRequest);
+
+                //Set logged in user allowed features in the session
+                if (response?.MenuFeatures?.Features != null && response?.MenuFeatures?.Features.Count > 0)
+                {
+                    _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
+                        response.MenuFeatures.Features.Select(x => x.Name).ToArray());
+                }
+                else
+                {
+                    _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
+                        new string[] { });
+                }
 
                 if (response.Code == AccountBusinessService.Responcecode.Success)
                     return Ok(response.MenuFeatures);
@@ -1854,10 +1867,26 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         ContextOrgId = request.ContextOrgId
                     });
 
+                    //Set logged in user allowed features in the session
+                    if (response?.MenuFeatures?.Features != null && response?.MenuFeatures?.Features.Count > 0)
+                    {
+                        _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
+                            response.MenuFeatures.Features.Select(x => x.Name).ToArray());
+                    }
+                    else
+                    {
+                        _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
+                            new string[] { });
+                    }
+
                     if (response.Code == AccountBusinessService.Responcecode.Success)
+                    {
                         return Ok(response.MenuFeatures);
+                    }
                     else if (response.Code == AccountBusinessService.Responcecode.NotFound)
+                    {
                         return Ok(new AccountBusinessService.MenuFeatureList());
+                    }
                     else
                         return StatusCode(500, "Error occurred while fetching menu items and features for the context.");
                 }
@@ -1888,5 +1917,4 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #endregion
     }
-
 }

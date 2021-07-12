@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.organization.test
            .Build();
             //Get connection string
             // var connectionString = _config.GetConnectionString("Dev");
-            string connectionString = "Server=10.193.124.168;Database=dafconnectmasterdatabase;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master;Password=9RQkJM2hwfe!;Ssl Mode=Require; Trust Server Certificate=True;";
+            string connectionString = "Server=dafct-lan1-d-euwe-cdp-pgsql-master.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master;Password=9RQkJM2hwfe!;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _auditLogRepository = new AuditLogRepository(_dataAccess);
             _auditlog = new AuditTraillib(_auditLogRepository);

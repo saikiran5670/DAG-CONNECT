@@ -9,6 +9,7 @@ using net.atos.daf.ct2.reportscheduler;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.ENUM;
 using net.atos.daf.ct2.reportscheduler.repository;
+using net.atos.daf.ct2.utilities;
 
 namespace atos.net.daf.ct2.reportscheduler.test
 {
@@ -17,7 +18,6 @@ namespace atos.net.daf.ct2.reportscheduler.test
     {
         private readonly IConfiguration _config;
         private readonly IDataAccess _dataAccess;
-        private readonly IDataMartDataAccess _dataMartdataAccess;
         private readonly ReportSchedulerRepository _reportSchedulerRepository;
         private readonly IReportSchedulerManager _reportSchedulerManager;
         private readonly IEmailNotificationManager _emailNotificationManager;
@@ -28,10 +28,8 @@ namespace atos.net.daf.ct2.reportscheduler.test
             _config = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json")
                                                        .Build();
             var connectionString = _config.GetConnectionString("DevAzure");
-
-            _dataMartdataAccess = new PgSQLDataMartDataAccess(_config.GetConnectionString("DataMartConnectionString"));
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _reportSchedulerRepository = new ReportSchedulerRepository(_dataAccess, _dataMartdataAccess);
+            _reportSchedulerRepository = new ReportSchedulerRepository(_dataAccess);
             _reportSchedulerManager = new ReportSchedulerManager(_reportSchedulerRepository);
             _helper = new Helper();
         }
@@ -52,7 +50,9 @@ namespace atos.net.daf.ct2.reportscheduler.test
         {
             int accountId = 393;
             int orgnisationId = 1;
-            var result = await _reportSchedulerManager.GetReportParameter(accountId, orgnisationId);
+            int contextorgId = 36;
+            int roleId = 33;
+            var result = await _reportSchedulerManager.GetReportParameter(accountId, orgnisationId, contextorgId, roleId);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
         }
@@ -133,10 +133,14 @@ namespace atos.net.daf.ct2.reportscheduler.test
         [TestMethod]
         public async Task UnT_Helpr_GetNextFrequencyTime()
         {
-            //  long date = 1624184687000;
-            //TimeFrequenyType timeFrequeny = TimeFrequenyType.Daily;
-            // var result = _helper.GetNextFrequencyTime(date, timeFrequeny);
-            //  Assert.IsNotNull(result);
+            long currentdate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            bool isresult;
+            ReportEmailFrequency objReportEmailFrequency = new ReportEmailFrequency();
+            objReportEmailFrequency.ReportNextScheduleRunDate = 1625574329670;
+            objReportEmailFrequency.FrequencyType = TimeFrequenyType.Daily;
+            _helper.GetNextFrequencyTime(objReportEmailFrequency);
+            isresult = true;
+            Assert.IsTrue(isresult);
         }
 
         [TestCategory("Unit-Test-Case")]

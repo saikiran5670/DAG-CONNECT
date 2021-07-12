@@ -160,7 +160,32 @@ export class CreateEditUserGroupComponent implements OnInit {
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+       }
     });
+  }
+
+  compare(a: any, b: any, isAsc: boolean, columnName:any) {
+    if(a instanceof String) {
+      a = a.toUpperCase();
+    } 
+    if(b instanceof String) {
+      b = b.toUpperCase();
+    }if(columnName == "roles" && (Array.isArray(a) || Array.isArray(b))) { //Condition added for Role columns
+      a= Object.keys(a).length > 0 ? a[0].name : "";
+      b= Object.keys(b).length > 0 ? b[0].name : "";
+      a = a.toUpperCase();
+      b = b.toUpperCase();
+      // a.roles.forEach(rolesValue => {
+      //   a = rolesValue.name
+      // });
+    }
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
   selectTableRows(){

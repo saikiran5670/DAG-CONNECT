@@ -4,6 +4,13 @@ using System.Text;
 
 namespace net.atos.daf.ct2.reports.entity
 {
+    public enum ProfileType
+    {
+        Default = 'D',
+        Advanced = 'A',
+        None = 'N'
+    }
+
     public class EcoScoreProfileDto
     {
         public int Id { get; set; }
@@ -13,7 +20,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string ActionedBy { get; set; }
         public DateTime LastUpdate { get; set; }
         public List<EcoScoreProfileKPI> ProfileKPIs { get; set; }
-        public bool IsDeleteAllowed { get; set; }
+        public ProfileType Type { get; set; }
     }
 
     public class EcoScoreProfileKPI
@@ -63,10 +70,73 @@ namespace net.atos.daf.ct2.reports.entity
         public double TargetValue { get; set; }
     }
 
+    public class EcoScoreReportCompareDriversRequest
+    {
+        public int ReportId { get; set; }
+        public long StartDateTime { get; set; }
+        public long EndDateTime { get; set; }
+        public List<string> VINs { get; set; }
+        public List<string> DriverIds { get; set; }
+        public double MinTripDistance { get; set; }
+        public double MinDriverTotalDistance { get; set; }
+        public int OrgId { get; set; }
+        public int AccountId { get; set; }
+        public int TargetProfileId { get; set; }
+    }
+
+    public class EcoScoreCompareReportAtttributes
+    {
+        public int DataAttributeId { get; set; }
+        public string Name { get; set; }
+        public string Key { get; set; }
+        public int[] SubDataAttributes { get; set; }
+        public string DBColumnName { get; set; }
+        public string LimitType { get; set; }
+        public double LimitValue { get; set; }
+        public double TargetValue { get; set; }
+        public string RangeValueType { get; set; }
+    }
+
+    public class EcoScoreReportCompareDrivers
+    {
+        public string DriverName { get; set; }
+        public string DriverId { get; set; }
+        public double AverageGrossweight { get; set; }
+        public double Distance { get; set; }
+        public double NumberOfTrips { get; set; }
+        public double NumberOfVehicles { get; set; }
+        public double AverageDistancePerDay { get; set; }
+        public double EcoScore { get; set; }
+        public double FuelConsumption { get; set; }
+        public double CruiseControlUsage { get; set; }
+        public double CruiseControlUsage30 { get; set; }
+        public double CruiseControlUsage50 { get; set; }
+        public double CruiseControlUsage75 { get; set; }
+        public double PTOUsage { get; set; }
+        public double PTODuration { get; set; }
+        public double AverageDrivingSpeed { get; set; }
+        public double AverageSpeed { get; set; }
+        public double HeavyThrottling { get; set; }
+        public double HeavyThrottleDuration { get; set; }
+        public double Idling { get; set; }
+        public double IdleDuration { get; set; }
+        public double BrakingScore { get; set; }
+        public double HarshBraking { get; set; }
+        public double HarshBrakeDuration { get; set; }
+        public double BrakeDuration { get; set; }
+        public double Braking { get; set; }
+        public double AnticipationScore { get; set; }
+    }
     public enum RankingColor
     {
-        RED,
-        GREEN,
-        AMBER
+        Red,
+        Green,
+        Amber
+    }
+    public enum LimitType
+    {
+        Min = 'N',
+        Max = 'X',
+        None = 'O'
     }
 }

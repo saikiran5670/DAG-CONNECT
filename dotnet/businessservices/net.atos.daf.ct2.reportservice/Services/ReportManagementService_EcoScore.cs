@@ -88,7 +88,8 @@ namespace net.atos.daf.ct2.reportservice.Services
                     LimitValue = profileKPI.LimitValue,
                     TargetValue = profileKPI.TargetValue,
                     LowerValue = profileKPI.LowerValue,
-                    UpperValue = profileKPI.UpperValue
+                    UpperValue = profileKPI.UpperValue,
+                    LimitType = Convert.ToString(profileKPI.LimitType)
                 });
             }
             dto.ProfileKPIs = profileKPIs;
@@ -116,6 +117,12 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     response.Code = Responsecode.Success;
                     response.Message = entity.ReportConstants.GET_ECOSCORE_PROFILE_SUCCESS_MSG;
+
+                    ProfileType profileType = (ProfileType)Convert.ToChar(context.RequestHeaders.Get("allowed_type").Value);
+
+                    if (profileType != ProfileType.None)
+                        result = result.Except(result.Where(x => x.Type != profileType)).ToList();
+
                     response.Profiles.AddRange(MapEcoScoreProfileResponse(result));
                 }
                 else
@@ -151,7 +158,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     ProfileId = profile.Id,
                     ProfileName = profile.Name ?? string.Empty,
                     ProfileDescription = profile.Description ?? string.Empty,
-                    IsDeleteAllowed = profile.IsDeleteAllowed,
+                    IsDeleteAllowed = profile.Type == ProfileType.None,
                     OrganizationId = Convert.ToInt32(profile.OrganizationId),
                 });
             }
@@ -373,11 +380,11 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
-                var result = await _reportManager.GetEcoScoreReportByAllDrivers(MapEcoScoreReportByAllDriversRequest(request));
+                var result = await _reportManager.GetEcoScoreReportByAllDrivers(_mapper.MapEcoScoreReportByAllDriversRequest(request));
                 var response = new GetEcoScoreReportByAllDriversResponse();
                 if (result?.Count > 0)
                 {
-                    response.DriverRanking.AddRange(MapEcoScoreReportByAllDriversResponse(result));
+                    response.DriverRanking.AddRange(_mapper.MapEcoScoreReportByAllDriversResponse(result));
                     response.Code = Responsecode.Success;
                     response.Message = ReportConstants.GET_REPORT_DETAILS_SUCCESS_MSG;
                 }
@@ -399,49 +406,54 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
         }
 
-        /// <summary>
-        /// Mapper to covert GRPC request object
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        private EcoScoreReportByAllDriversRequest MapEcoScoreReportByAllDriversRequest(GetEcoScoreReportByAllDriversRequest request)
-        {
-            var objRequest = new EcoScoreReportByAllDriversRequest
-            {
-                StartDateTime = request.StartDateTime,
-                EndDateTime = request.EndDateTime,
-                VINs = request.VINs.ToList<string>(),
-                MinTripDistance = request.MinTripDistance,
-                MinDriverTotalDistance = request.MinDriverTotalDistance,
-                OrgId = request.OrgId,
-                AccountId = request.AccountId,
-                TargetProfileId = request.TargetProfileId,
-                ReportId = request.ReportId
-            };
-            return objRequest;
-        }
+        #endregion
+
+        #region Eco Score Report Compare Drivers
 
         /// <summary>
-        /// Mapper to covert object to  GRPC response
+        /// Get Eco Score Report Compare Drivers
         /// </summary>
-        /// <param name="response"></param>
+        /// <param name="request"> Search Parameter object</param>
+        /// <param name="context"> GRPC context</param>
         /// <returns></returns>
-        private IEnumerable<EcoScoreReportDriversRanking> MapEcoScoreReportByAllDriversResponse(List<EcoScoreReportByAllDrivers> response)
+        public override async Task<GetEcoScoreReportCompareDriversResponse> GetEcoScoreReportCompareDrivers(GetEcoScoreReportCompareDriversRequest request, ServerCallContext context)
         {
-            var lstDriverRanking = new List<EcoScoreReportDriversRanking>();
-            foreach (var item in response)
+            try
             {
-                var ranking = new EcoScoreReportDriversRanking
+                var resultDataMart = await _reportManager.GetEcoScoreReportCompareDrivers(_mapper.MapEcoScoreReportCompareDriversRequest(request));
+                var reportAttributes = await _reportManager.GetEcoScoreCompareReportAttributes(request.ReportId, request.TargetProfileId);
+                var response = new GetEcoScoreReportCompareDriversResponse();
+                if (resultDataMart?.Count > 0)
                 {
-                    Ranking = item.Ranking,
-                    DriverName = item.DriverName ?? string.Empty,
-                    DriverId = item.DriverId ?? string.Empty,
-                    EcoScoreRanking = item.EcoScoreRanking,
-                    EcoScoreRankingColor = item.EcoScoreRankingColor ?? string.Empty
-                };
-                lstDriverRanking.Add(ranking);
+                    response.Drivers.AddRange(_mapper.MapEcoScoreReportDrivers(resultDataMart));
+                    try
+                    {
+                        response.CompareDrivers = _mapper.MapEcoScoreReportCompareDriversResponse(resultDataMart, reportAttributes);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(null, ex);
+                        throw new Exception("Error occurred while parsing the EcoScore compare drivers.");
+                    }
+                    response.Code = Responsecode.Success;
+                    response.Message = ReportConstants.GET_REPORT_DETAILS_SUCCESS_MSG;
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_NOTFOUND_MSG;
+                }
+                return await Task.FromResult(response);
             }
-            return lstDriverRanking;
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GetEcoScoreReportCompareDriversResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetEcoScoreReportCompareDrivers get failed due to - " + ex.Message
+                });
+            }
         }
 
         #endregion
@@ -498,7 +510,6 @@ namespace net.atos.daf.ct2.reportservice.Services
                 IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
                 var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
                 var roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
-                var res = JsonConvert.SerializeObject(roleBasedUserPreferences);
                 if (userPreferencesExists)
                 {
                     var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
@@ -513,15 +524,14 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 try
                 {
-                    response.UserPreference = _mapper.MapReportUserPreferences(userPreferences);
+                    response = _mapper.MapReportUserPreferences(userPreferences);
                 }
                 catch (Exception ex)
                 {
                     _logger.Error(null, ex);
-                    throw new Exception("Error occurred while parsing the report user preferences.");
+                    throw new Exception("Error occurred while parsing the report user preferences or data is missing.");
                 }
 
-                response.Code = Responsecode.Success;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)

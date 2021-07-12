@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
       'password': [null, Validators.compose([Validators.required])]
     });
     this.forgotPasswordForm = this.fb.group({
-      'emailId': [null, Validators.compose([Validators.required, Validators.email])]
+      'emailId': [null, Validators.compose([Validators.required, Validators.maxLength(120), Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$")])]
     });
 
     this.cookiesFlag = this.cookieService.get('cookiePolicy') ? false : true;

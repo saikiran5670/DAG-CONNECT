@@ -8,7 +8,6 @@ namespace net.atos.daf.ct2.reports.entity
         public int AccountId { get; set; }
         public int ReportId { get; set; }
         public int OrganizationId { get; set; }
-        public int ContextOrgId { get; set; }
         public List<UserPreferenceAttribute> Attributes { get; set; }
     }
     public class UserPreferenceAttribute

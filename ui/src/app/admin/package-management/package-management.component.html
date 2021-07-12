@@ -82,7 +82,7 @@
   </ng-container>
   <ng-container matColumnDef="state">
       <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
-      <mat-cell *matCellDef="let row">{{ row.state == true ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Expired' }}</mat-cell>
+      <mat-cell *matCellDef="let row">{{ row.state == "Active" ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}</mat-cell>
     <!--<mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
     <mat-cell *matCellDef="let row">
       <button class='actionBtn' mat-flat-button (click)="changePackageStatus(row)" matTooltip="{{ row.state == 'Active' ? (translationData.lblClicktodeactivate || 'Click to Deactivate') : translationData.lblClicktoactivate || 'Click to Activate' }}">
@@ -98,8 +98,8 @@
       <button class='actionBtn' mat-flat-button (click)="editViewPackage(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
         <mat-icon>visibility</mat-icon>
       </button>
-      <button *ngIf="!adminAccessType.adminReadOnlyAccess" [disabled]="row.status == 'Inactive'"  class='actionBtn' mat-flat-button (click)="editViewPackage(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
-        <mat-icon [disabled]="row.status == 'Inactive'">create</mat-icon>
+      <button *ngIf="!adminAccessType.adminReadOnlyAccess" [disabled]="row.state == 'Inactive'"  class='actionBtn' mat-flat-button (click)="editViewPackage(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+        <mat-icon [disabled]="row.state == 'Inactive'">create</mat-icon>
       </button>
       <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deletePackage(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
         <mat-icon class="deleteIcon">delete_outline</mat-icon>

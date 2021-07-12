@@ -20,7 +20,7 @@ public class EcoScore implements Serializable {
 	private Long startDateTime;
 	private Long endDateTime;
 	private String driverId;
-	private String driver2Id;
+	//private String driver2Id;
 	private Long tripCalDist;
 	private Integer vTripDPABrakingCount;
 	private Integer vTripDPAAnticipationCount;
@@ -36,8 +36,13 @@ public class EcoScore implements Serializable {
 	private Double tripCalAvgGrossWtComb;*/
 	
 	private Double tripCalHeavyThrottleDuration;
-	private Long vStopFuel;
-	private Long vStartFuel;
+	private Double tripCalCrsCntrlUsage;
+	private Integer tripCalCrsCntrlDist25To50;
+	private Integer tripCalCrsCntrlDist50To75;
+	private Integer tripCalCrsCntrlDistAbv75;
+	private Double tachoVGrossWtCmbSum; 
+	private Integer vHarshBrakeDuration;
+	private Integer vBrakeDuration;
 	
 	private Long tripProcessingTS;
 	private Long etlProcessingTS;

@@ -35,7 +35,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         #region Vehicle component methods
 
-        public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId)
+        public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId, string state)
         {
             _log.Info("GetVehicleBySubscriptionId Vehicle method called in repository");
             try
@@ -43,10 +43,11 @@ namespace net.atos.daf.ct2.vehicle.repository
                 List<VehiclesBySubscriptionId> objVehiclesBySubscriptionId = new List<VehiclesBySubscriptionId>();
                 var parameter = new DynamicParameters();
                 parameter.Add("@subscription_id", subscriptionId);
+                parameter.Add("@state", Convert.ToChar(state));
                 var query = @"select veh.id, sub.subscription_id as orderId, veh.name, veh.vin, veh.license_plate_number
                               from master.Subscription sub 
                               join master.vehicle veh on sub.vehicle_id = veh.id
-                              where subscription_id = @subscription_id";
+                              where subscription_id = @subscription_id and state = @state";
                 var data = await _dataAccess.QueryAsync<VehiclesBySubscriptionId>(query, parameter);
                 return objVehiclesBySubscriptionId = data.Cast<VehiclesBySubscriptionId>().ToList();
             }
@@ -539,11 +540,12 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
 
             vehicle.ID = await IsVINExists(vehicle.VIN);
-            await VehicleOptInOptOutHistory(vehicle.ID);
-            char VehOptIn = await _dataAccess.QuerySingleAsync<char>("select coalesce((select vehicle_default_opt_in FROM master.organization where id=@id), 'U')", new { id = vehicle.Organization_Id });
-            vehicle.Status = (VehicleCalculatedStatus)await GetCalculatedVehicleStatus(VehOptIn, false);
+            //Found unnecessary so commented here
+            //await VehicleOptInOptOutHistory(vehicle.ID);
+            char vehOptIn = await _dataAccess.QuerySingleAsync<char>("select coalesce((select vehicle_default_opt_in FROM master.organization where id=@id), 'U')", new { id = vehicle.Organization_Id });
+            vehicle.Status = (VehicleCalculatedStatus)await GetCalculatedVehicleStatus(vehOptIn, false);
 
-            var QueryStatement = @" UPDATE master.vehicle
+            var queryStatement = @" UPDATE master.vehicle
                                     SET 
                                      organization_id=@organization_id                                        
                                     ,opt_in=@opt_in
@@ -566,15 +568,14 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
             parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
             parameter.Add("@is_ota", vehicle.Is_Ota);
-            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
 
             return vehicle;
         }
 
-        public async Task<int> IsVINExists(string VIN)
+        public async Task<int> IsVINExists(string vin)
         {
-            int VehicleId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = VIN });
-            return VehicleId;
+            return await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = vin });
         }
 
         public async Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId)
@@ -2172,7 +2173,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                       WHERE id IN
                       (
 	                      SELECT arship.vehicle_group_id FROM master.account acc
-	                      INNER JOIN master.groupref gref ON acc.id=gref.ref_id AND acc.state='A'
+	                      LEFT OUTER JOIN master.groupref gref ON acc.id=gref.ref_id AND acc.state='A'
 	                      INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=acc.id OR grp.group_type='D') AND grp.object_type='A'
 	                      INNER JOIN master.accessrelationship arship ON arship.account_group_id=grp.id 
 	                      WHERE acc.id=@account_id AND grp.organization_id=@organization_id

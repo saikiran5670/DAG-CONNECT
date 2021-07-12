@@ -30,7 +30,6 @@ namespace net.atos.daf.ct2.email
         {
             msg.SetSubject(messageRequest.Subject);
             msg.SetFrom(new EmailAddress(messageRequest.Configuration.FromAddress, messageRequest.Configuration.FromName));
-
             if (messageRequest.Configuration.IsReplyAllowed)
                 msg.SetReplyTo(new EmailAddress(messageRequest.Configuration.ReplyToAddress, messageRequest.Configuration.ReplyToAddress));
 
@@ -85,12 +84,14 @@ namespace net.atos.daf.ct2.email
                     case EmailEventType.PasswordExpiryNotification:
                         emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AccountInfo.FullName, baseUrl.AbsoluteUri, messageRequest.ToAddressList.First().Key, DateTime.Now.AddDays(messageRequest.RemainingDaysToExpire).ToString("dd-MMM-yyyy"));
                         break;
-                    case EmailEventType.SendReport:
+                    case EmailEventType.ScheduledReportEmail:
                         emailContent = GetReportEmailContent(emailTemplateContent, baseUrl, messageRequest);
+                        emailTemplate.Description = emailContent;
+                        emailContent = GetEmailContent(emailTemplate);
                         break;
                 }
 
-                if (emailTemplate.TemplateLabels.Count() > 0)
+                if (emailTemplate.TemplateLabels.Count() > 0 && emailTemplate.EventType != EmailEventType.ScheduledReportEmail)
                 {
                     var translationLabel = emailTemplate.TemplateLabels.Where(x => x.LabelKey.EndsWith("_Subject")).FirstOrDefault();
                     messageRequest.Subject = translationLabel == null ? " " : translationLabel.TranslatedValue;
@@ -98,7 +99,23 @@ namespace net.atos.daf.ct2.email
 
                 messageRequest.Content = emailContent;
                 messageRequest.ContentMimeType = emailTemplate.ContentType == (char)EmailContentType.Html ? MimeType.Html : MimeType.Text;
-                return await SendEmail(messageRequest); //wrap this function usder while loop with retry condition
+                //This code for tempory base only
+                if (emailTemplate.EventType == EmailEventType.ScheduledReportEmail)
+                {
+                    bool isEmailSend = false;
+                    var emailList = messageRequest.ToAddressList;
+                    foreach (var item in emailList)
+                    {
+                        messageRequest.ToAddressList = new Dictionary<string, string>();
+                        messageRequest.ToAddressList.Add(item.Key, item.Value);
+                        isEmailSend = await SendEmail(messageRequest);
+                    }
+                    return isEmailSend;
+                }
+                else
+                {
+                    return await SendEmail(messageRequest); //wrap this function usder while loop with retry condition
+                }
             }
             catch (Exception)
             {
@@ -107,14 +124,25 @@ namespace net.atos.daf.ct2.email
         }
         public static string GetReportEmailContent(string emailTemplate, Uri baseUrl, MessageRequest messageRequest)
         {
-            var downloadUrl = "reportscheduler/download?Token={0}";
-            var replacedContent = emailTemplate;
+            System.Text.StringBuilder builder = new System.Text.StringBuilder();
+            var downloadUrl = $"#/downloadreport/{0}";
+            //Uri baseUrl = new Uri(messageRequest.ReportSchedulerConfiguration.APIBaseUrl);
+            string btnLabel = "\"button\"";
+            string lblBlank = "\"_blank\"";
+            string lblPlaceholder = "\"{0}\"";
+            string lblDescription = messageRequest.Description + "<br/>";
+            var urldown = @"<a class=" + btnLabel + " href=" + lblPlaceholder + " target=" + lblBlank + ">[lblDownloadReportButton]</a>";
+            string urlplace = string.Empty;
             foreach (var token in messageRequest.ReportTokens)
             {
-                var downloadReportUrl = new Uri(baseUrl, string.Format(downloadUrl, token));
+                //Uri downloadReportUrl = new Uri(baseUrl, string.Format(downloadUrl, token.Key));
+                Uri downloadReportUrl = new Uri(baseUrl, $"#/downloadreport/{token.Key}");
+                urldown += "<br/>";
+                urlplace += token.Value + "<br/>";
+                urlplace += string.Format(urldown, downloadReportUrl);
             }
-
-            return replacedContent;
+            builder.AppendFormat(emailTemplate, messageRequest.AccountInfo.FullName, lblDescription, urlplace);
+            return builder.ToString();
         }
 
         public static string GetEmailContent(EmailTemplate emailTemplate)

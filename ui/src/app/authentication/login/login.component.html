@@ -98,8 +98,11 @@
                                             <mat-error *ngIf="forgotPasswordForm.get('emailId').hasError('required')">
                                               Email id is required
                                             </mat-error>
-                                            <mat-error *ngIf="forgotPasswordForm.get('emailId').hasError('email')">
+                                            <mat-error *ngIf="forgotPasswordForm.get('emailId').hasError('pattern')">
                                                 Please enter valid email id
+                                            </mat-error>
+                                            <mat-error *ngIf="forgotPasswordForm.get('emailId').hasError('maxlength')">
+                                                Your email cannot exceed 120 characters.
                                             </mat-error>
                                         </mat-form-field>
                                     </div>

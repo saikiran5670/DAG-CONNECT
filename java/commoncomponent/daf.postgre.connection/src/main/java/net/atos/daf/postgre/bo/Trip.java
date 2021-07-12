@@ -44,11 +44,11 @@ public class Trip implements Serializable {
 	private Double vTachographSpeed;
 	private Double tripCalAvgGrossWtComb;
 	private Double tripCalPtoDuration;
-	private Double triCalHarshBrakeDuration;
+	private Double tripCalHarshBrakeDuration;
 	private Double tripCalHeavyThrottleDuration;
-	private Double tripCalCrsCntrlDistBelow50;
-	private Double tripCalCrsCntrlDistAbv50;
-	private Double tripCalCrsCntrlDistAbv75;
+	private Integer tripCalCrsCntrlDist25To50;
+	private Integer tripCalCrsCntrlDist50To75;
+	private Integer tripCalCrsCntrlDistAbv75;
 	private Double tripCalAvgTrafficClsfn;
 	private Double tripCalCCFuelConsumption;
 	private Integer vCruiseControlFuelConsumed;
@@ -65,4 +65,17 @@ public class Trip implements Serializable {
 	private Long kafkaProcessingTS;
 	private Double vGrossWtSum; 
 	private Long numberOfIndexMessage;
+	
+	private Integer vTripDPABrakingCount;
+	private Integer vTripDPAAnticipationCount;
+	private Integer vSumTripDPABrakingScore;
+	private Integer vSumTripDPAAnticipationScore;
+	
+	private Integer vHarshBrakeDuration;
+	private Integer vBrakeDuration; 
+	private Integer vTripIdlePTODuration;
+	private Integer vTripIdleWithoutPTODuration;
+	private Integer vPTODuration;
+	private Integer vMaxThrottlePaddleDuration;
+	private Integer vTripAccelerationTime;
 }

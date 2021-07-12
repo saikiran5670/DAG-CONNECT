@@ -13,6 +13,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             objreporttype.ReportName = string.IsNullOrEmpty(reportType.ReportName) ? string.Empty : reportType.ReportName;
             objreporttype.Key = string.IsNullOrEmpty(reportType.Key) ? string.Empty : reportType.Key;
             objreporttype.IsDriver = reportType.IsDriver;
+            objreporttype.IsVehicle = reportType.Key == ReportNameConstants.REPORT_TRIP ? true : false;
             return objreporttype;
         }
 
@@ -123,6 +124,13 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
 
                 }
             }
+            if (request.ScheduledReport.Count > 0)
+            {
+                foreach (var item in request.ScheduledReport)
+                {
+                    reportscheduler.ScheduledReport.Add(MapScheduledReportEntity(item));
+                }
+            }
             return reportscheduler;
         }
         public ScheduledReportRecipient ToScheduledReportRecipientEntity(ScheduledReportRecipientRequest request)
@@ -205,6 +213,18 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             schedulereportvr.VehicleGroupType = string.IsNullOrEmpty(request.VehicleGroupType) ? string.Empty : request.VehicleGroupType;
             schedulereportvr.FunctionEnum = string.IsNullOrEmpty(request.FunctionEnum) ? string.Empty : request.FunctionEnum;
             return schedulereportvr;
+        }
+        public ScheduledReportRequest MapScheduledReportEntity(ScheduledReport request)
+        {
+            ScheduledReportRequest scheduleReport = new ScheduledReportRequest();
+            scheduleReport.Id = request.Id;
+            scheduleReport.ScheduleReportId = request.ScheduleReportId;
+            scheduleReport.DownloadedAt = request.DownloadedAt;
+            scheduleReport.ValidTill = request.ValidTill;
+            scheduleReport.CreatedAt = request.CreatedAt;
+            scheduleReport.StartDate = request.StartDate;
+            scheduleReport.EndDate = request.EndDate;
+            return scheduleReport;
         }
         internal ReportPDFResponse MapPDFRepoModel(PDFReportScreenModel request)
         {

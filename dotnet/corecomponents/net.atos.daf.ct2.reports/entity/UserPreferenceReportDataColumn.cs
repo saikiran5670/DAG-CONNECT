@@ -18,7 +18,6 @@
     {
         public int DataAttributeId { get; set; }
         public string Name { get; set; }
-        public string DataAttributeType { get; set; }
         public string Key { get; set; }
         public string State { get; set; }
         public string ChartType { get; set; }
@@ -27,6 +26,7 @@
         public long ThresholdValue { get; set; }
         public int[] SubDataAttributes { get; set; }
         private char AttributeType { get; set; }
+        public int? TargetProfileId { get; set; }
         public ReportAttributeType ReportAttributeType
         {
             get
@@ -41,5 +41,12 @@
         Simple = 'S',
         Complex = 'C',
         Derived = 'D'
+    }
+
+    public enum ReportAttribute
+    {
+        EcoScore,
+        FuelConsumption,
+        CruiseCcontrol
     }
 }

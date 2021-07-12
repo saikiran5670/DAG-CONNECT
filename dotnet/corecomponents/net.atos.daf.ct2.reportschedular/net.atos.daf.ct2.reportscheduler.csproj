@@ -6,12 +6,14 @@
 
   <ItemGroup>
     <PackageReference Include="DinkToPdf" Version="1.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.audit\net.atos.daf.ct2.audit.csproj" />
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.notification\net.atos.daf.ct2.notification.csproj" />
-    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.translation\net.atos.daf.ct2.translation.csproj" />
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.template\net.atos.daf.ct2.template.csproj" />
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.unitconversion\net.atos.daf.ct2.unitconversion.csproj" />
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.visibility\net.atos.daf.ct2.visibility.csproj" />
     <ProjectReference Include="..\net.atos.daf.ct2.reports\net.atos.daf.ct2.reports.csproj" />
   </ItemGroup>

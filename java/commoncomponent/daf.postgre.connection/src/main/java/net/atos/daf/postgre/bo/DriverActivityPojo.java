@@ -33,6 +33,8 @@ public class DriverActivityPojo implements Serializable{
 	private  Long lastProcessedMessageTimestamp;
 	private Boolean isDriver1;
 	
+	private String logicalCode;
+	
 	
 	
 

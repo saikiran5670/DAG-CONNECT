@@ -45,8 +45,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (orgnizationid == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
                 orgnizationid = GetContextOrgId();
-                int roleid = AssignOrgContextByRoleId(0);
-                ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid, RoleId = roleid });
+                int contextorgid = GetContextOrgId();
+                int roleid = _userDetails.RoleId;
+                ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = GetUserSelectedOrgId(), RoleId = roleid, ContextOrgId = contextorgid });
 
                 if (response == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
@@ -446,17 +447,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
                 if (data.Code == ResponseCode.Success)
                 {
-                    if (data.Id > 0)
-                    {
-                        var pdfStreamResult = new MemoryStream();
-                        pdfStreamResult.Write(data.Report.ToByteArray(), 0, data.Report.Length);
-                        pdfStreamResult.Position = 0;
-                        return File(pdfStreamResult, "application/pdf", data.FileName);
-                    }
-                    else
-                    {
-                        return StatusCode((int)data.Code, data.Message);
-                    }
+                    return Ok(data);
+                    //if (data.Id > 0)
+                    //{
+                    //    var pdfStreamResult = new MemoryStream();
+                    //    pdfStreamResult.Write(data.Report.ToByteArray(), 0, data.Report.Length);
+                    //    pdfStreamResult.Position = 0;
+                    //    string filename = data.FileName + ".pdf";
+                    //    return File(pdfStreamResult, "application/pdf", filename);
+                    //}
+                    //else
+                    //{
+                    //    return StatusCode((int)data.Code, data.Message);
+                    //}
                 }
                 if (data.Code == ResponseCode.InternalServerError)
                     return StatusCode((int)data.Code, String.Format(ReportSchedulerConstants.REPORTSCHEDULER_PARAMETER_NOT_FOUND_MSG, data.Message));

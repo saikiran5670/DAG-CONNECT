@@ -13,12 +13,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
     public partial class ReportSchedulerRepository : IReportSchedulerRepository
     {
         private readonly IDataAccess _dataAccess;
-        private readonly IDataMartDataAccess _dataMartdataAccess;
+
         private readonly Helper _helper;
-        public ReportSchedulerRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
+        public ReportSchedulerRepository(IDataAccess dataAccess)
         {
             _dataAccess = dataAccess;
-            _dataMartdataAccess = dataMartdataAccess;
             _helper = new Helper();
         }
 
@@ -32,7 +31,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             try
             {
                 var parameterType = new DynamicParameters();
-                var queryStatement = @"SELECT distinct r.id as Id,r.name as ReportName, r.key as Key, r.support_driver_sch_rep as IsDriver
+                var queryStatement = @"SELECT distinct r.id as Id,r.name as ReportName, trim(r.key) as Key, r.support_driver_sch_rep as IsDriver
 					                      FROM master.report r						                     
 						                     INNER JOIN master.Feature f ON f.id = r.feature_id AND f.state = 'A' 
 						                     INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_id = f.id
@@ -46,6 +45,48 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 
                 parameterType.Add("@organization_id", organizationid);
                 parameterType.Add("@account_id", accountid);
+
+                IEnumerable<ReportType> reporttype = await _dataAccess.QueryAsync<ReportType>(queryStatement, parameterType);
+                return reporttype;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<IEnumerable<ReportType>> GetReportType(int accountId, int organizationId, int contextorgId, int roleId)
+        {
+            try
+            {
+                var parameterType = new DynamicParameters();
+                var queryStatement = @"SELECT distinct rpt.id as Id,rpt.name as ReportName, trim(rpt.key) as Key, rpt.support_driver_sch_rep as IsDriver
+                                        from 
+                                        (
+	                                                            --Account Route
+	                                                            SELECT f.id
+	                                                            FROM master.Account acc
+	                                                            INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.organization_id = @organization_id AND ar.role_id = @role_id AND acc.state = 'A'
+	                                                            INNER JOIN master.Role r ON ar.role_id = r.id AND r.state = 'A'
+	                                                            INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
+ 	                                                            INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                                                            INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' 
+			                                            INNER JOIN master.Report rpt ON rpt.feature_id = f.id
+	                                                            INTERSECT
+	                                                            --Subscription Route
+	                                                            SELECT f.id
+	                                                            FROM master.Subscription s
+	                                                            INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @context_org_id 	AND s.state = 'A' AND pkg.state = 'A'
+	                                                            INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
+ 	                                                            INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                                                            INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D'
+			                                            INNER JOIN master.Report rpt ON  rpt.feature_id = f.id
+                                        ) fsets
+                                        INNER JOIN master.Report rpt ON rpt.feature_id = fsets.id ; ";
+
+                parameterType.Add("@organization_id", organizationId);
+                parameterType.Add("@account_id", accountId);
+                parameterType.Add("@context_org_id", contextorgId);
+                parameterType.Add("@role_id", roleId);
 
                 IEnumerable<ReportType> reporttype = await _dataAccess.QueryAsync<ReportType>(queryStatement, parameterType);
                 return reporttype;
@@ -148,7 +189,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
                 parameterReportSchedular.Add("@status", report.Status);
                 parameterReportSchedular.Add("@type", report.Type);
-                parameterReportSchedular.Add("@start_date", report.OrganizationId);
+                parameterReportSchedular.Add("@start_date", report.StartDate);
                 parameterReportSchedular.Add("@end_date", report.EndDate);
                 parameterReportSchedular.Add("@code", report.Code);
                 parameterReportSchedular.Add("@last_schedule_run_date", report.LastScheduleRunDate);
@@ -406,7 +447,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
                 parameterReportSchedular.Add("@status", report.Status);
                 parameterReportSchedular.Add("@type", report.Type);
-                parameterReportSchedular.Add("@start_date", report.OrganizationId);
+                parameterReportSchedular.Add("@start_date", report.StartDate);
                 parameterReportSchedular.Add("@end_date", report.EndDate);
                 parameterReportSchedular.Add("@code", report.Code);
                 parameterReportSchedular.Add("@last_schedule_run_date", report.LastScheduleRunDate);
@@ -552,11 +593,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                                    LEFT JOIN master.scheduledreportdriverref as driveref
 	                                    ON repsch.id=driveref.report_schedule_id AND driveref.state='A'
 	                                    LEFT JOIN master.scheduledreportrecipient as receipt
-	                                    ON repsch.id=receipt.schedule_report_id AND repsch.status='A' AND receipt.state='A'
+	                                    ON repsch.id=receipt.schedule_report_id AND repsch.status <>'D' AND receipt.state='A'
 	                                    LEFT JOIN master.scheduledreportvehicleref as vehref
-	                                    ON repsch.id=vehref.report_schedule_id AND repsch.status='A' AND vehref.state='A'
+	                                    ON repsch.id=vehref.report_schedule_id AND repsch.status <>'D' AND vehref.state='A'
 	                                    LEFT JOIN master.scheduledreport as schrep
-	                                    ON repsch.id=schrep.schedule_report_id AND repsch.status='A'
+	                                    ON repsch.id=schrep.schedule_report_id AND repsch.status <>'D' AND schrep.valid_till > @currentDate
                                         LEFT JOIN master.group grp 
 					                    on vehref.vehicle_group_id=grp.id
 					                    LEFT JOIN master.groupref vgrpref
@@ -569,9 +610,10 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 										on driveref.driver_id = dr.id and dr.state='A'
 										INNER JOIN master.report rep
 										on rep.id=repsch.report_id ";
-
+                long currentdate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                 queryAlert = queryAlert + " where repsch.organization_id = @organization_id and repsch.status<>'D'";
                 parameterAlert.Add("@organization_id", organizationid);
+                parameterAlert.Add("@currentDate", currentdate);
                 IEnumerable<ReportSchedulerResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerResult>(queryAlert, parameterAlert);
                 return repositoryMapper.GetReportSchedulerList(reportSchedulerResult);
             }

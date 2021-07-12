@@ -177,15 +177,40 @@ namespace net.atos.daf.ct2.translation.repository
                 if (string.IsNullOrEmpty(langagugeCode) || langagugeCode == "EN-GB")
                 {
                     if (dropdownName == "language")
-                        langagugeQuery = @"select tc.id,t.name,t.code,t.value,t.type from translation.language tc inner join translation.translation t on tc.key = t.name ";
+                        langagugeQuery = @"select tc.id,t.name,t.code,t.value,t.type from translation.language tc inner join translation.translation t on tc.key = t.name";
                     else
                     {
-                        langagugeQuery = @"select tc.id,t.name,t.code,t.value,t.type from master." + dropdownName + " tc inner join translation.translation t on tc.key = t.name ";
+                        if (dropdownName == "timezone")
+                        {
+                            langagugeQuery = @"(select tc.id,t.name,t.code,
+                                                '(' || tc.ut_coff_set || ') ' || t.value as 
+                                                value,t.type from master.timezone tc inner join translation.translation
+                                                t on tc.key = t.name Where t.code=  'EN-GB'
+                                                and tc.ut_coff_set like '% -%'
+                                                order by tc.ut_coff_set desc, t.name)
+                                                union All
+                                                (select tc.id,t.name,t.code,
+                                                '(' || tc.ut_coff_set || ') ' || t.value as 
+                                                value,t.type from master.timezone tc inner join translation.translation
+                                                t on tc.key = t.name Where t.code=  'EN-GB'
+                                                and tc.ut_coff_set like '% +%'
+                                                order by tc.ut_coff_set asc, t.name asc)";
+                            var parameters = new DynamicParameters();
+                            parameters.Add("@code", langagugeCode);
+                            IEnumerable<Translations> translationstimezone = await _dataAccess.QueryAsync<Translations>(langagugeQuery, parameters);
+
+                            return translationstimezone;
+                        }
+                        else
+                        {
+                            langagugeQuery = @"select tc.id,t.name,t.code,t.value,t.type from master." + dropdownName + " tc inner join translation.translation t on tc.key = t.name";
+                        }
+
                     }
 
                     var parameter = new DynamicParameters();
                     parameter.Add("@code", langagugeCode);
-                    langagugeQuery = langagugeQuery + " Where t.code=  'EN-GB'";
+                    langagugeQuery = langagugeQuery + " Where t.code=  'EN-GB' order by t.name";
                     IEnumerable<Translations> translations = await _dataAccess.QueryAsync<Translations>(langagugeQuery, parameter);
 
                     return translations;
@@ -210,10 +235,49 @@ namespace net.atos.daf.ct2.translation.repository
                                         on tc.key = t.name 
                                         where   (t.code= 'EN-GB')
                                         and t.name not in (SELECT name
-                                        FROM translation.translation where code= @code ) ";
+                                        FROM translation.translation where code= @code ) order by name";
                     else
                     {
-                        langagugeQuery = @"SELECT  tc.id,
+                        if (dropdownName == "timezone")
+                        {
+                            langagugeQuery = @"with descutc as (SELECT  tc.id,
+                                            t.name,
+                                            t.code,
+                                            '(' || tc.ut_coff_set || ') ' || t.value as value,
+                                            t.type from master.timezone tc LEFT join translation.translation t
+                                            on tc.key = t.name 
+                                            where  
+                                            (t.code= @code) and tc.ut_coff_set like '% -%'
+                                            union
+                                            SELECT  tc.id,t.name,t.code,'(' || tc.ut_coff_set || ') ' || t.value as value,t.type
+                                            from master.timezone tc 
+                                            LEFT join translation.translation t
+                                            on tc.key = t.name 
+                                            where   (t.code= 'EN-GB') and tc.ut_coff_set like '% -%'
+                                            and t.name not in (SELECT name
+                                            FROM translation.translation where code= @code ) order by value desc, name asc),
+                                            ascutc as (SELECT  tc.id,
+                                            t.name,
+                                            t.code,
+                                            '(' || tc.ut_coff_set || ') ' || t.value as value,
+                                            t.type from master.timezone tc LEFT join translation.translation t
+                                            on tc.key = t.name 
+                                            where  
+                                            (t.code= @code) and tc.ut_coff_set like '% +%'
+                                            union
+                                            SELECT  tc.id,t.name,t.code,'(' || tc.ut_coff_set || ') ' || t.value as value,t.type
+                                            from master.timezone tc 
+                                            LEFT join translation.translation t
+                                            on tc.key = t.name 
+                                            where   (t.code= 'EN-GB') and tc.ut_coff_set like '% +%'
+                                            and t.name not in (SELECT name
+                                            FROM translation.translation where code= @code) order by value asc,
+		                                               name asc)
+                                            (select * from descutc) union all (select * from ascutc)";
+                        }
+                        else
+                        {
+                            langagugeQuery = @"SELECT  tc.id,
                                         t.name,
                                         t.code,
                                         t.value,
@@ -228,7 +292,9 @@ namespace net.atos.daf.ct2.translation.repository
                                         on tc.key = t.name 
                                         where   (t.code= 'EN-GB')
                                         and t.name not in (SELECT name
-                                        FROM translation.translation where code= @code ) ";
+                                        FROM translation.translation where code= @code )  order by name";
+                        }
+
                     }
 
                     var parameter = new DynamicParameters();
@@ -241,7 +307,7 @@ namespace net.atos.daf.ct2.translation.repository
 
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return Enumerable.Empty<Translations>();
             }

@@ -34,6 +34,7 @@ message ReportParameterRequest
     int32 AccountId = 1;
     int32 OrganizationId = 2;
     int32 RoleId=3;
+    int32 ContextOrgId=4;
 }
 message ReportParameterResponse
 {
@@ -59,6 +60,7 @@ message ReportTypeRequest
     string ReportName =  2;
     string Key = 3;
     string IsDriver =  4;
+    bool IsVehicle =5;
 }
 message DriverDetailRequest
 {

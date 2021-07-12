@@ -53,6 +53,8 @@ export class SubscriptionManagementComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
   organizationList: any = [];
+  organisationData : any; 
+  accountDetails : any =[];
   TypeList: any = [
     {
       name: 'Organization',
@@ -162,6 +164,9 @@ export class SubscriptionManagementComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
+    this.accountDetails = JSON.parse(localStorage.getItem('accountInfo'));
+    this.organisationData = this.accountDetails["organization"];    
+  
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -199,7 +204,7 @@ export class SubscriptionManagementComponent implements OnInit {
     }
     this.subscriptionService.getOrganizations(inputData).subscribe((data: any) => {
       if(data){
-        this.organizationList = data["organizationList"];
+        this.organizationList = data["organizationList"];        
       }
     });
   }
@@ -246,7 +251,7 @@ export class SubscriptionManagementComponent implements OnInit {
     const colsList = ['name','vin','licensePlateNumber'];
     const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
     const tableTitle =`${rowData.subscriptionId} - ${this.translationData.lblVehicles || 'Vehicles'}`;
-    this.subscriptionService.getVehicleBySubscriptionId(rowData.subscriptionId).subscribe((vehList: any) => {
+    this.subscriptionService.getVehicleBySubscriptionId(rowData).subscribe((vehList: any) => {
       this.vehicleData = vehList["vehicles"]
       this.callToCommonTable(this.vehicleData, colsList, colsName, tableTitle);
     });

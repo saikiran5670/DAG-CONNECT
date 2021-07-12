@@ -8,9 +8,9 @@ namespace net.atos.daf.ct2.reportscheduler.entity
     {
         public const string ALL_PARAM_MSG = "Trip Report all Parameters are not set.";
         public const string NO_ASSOCIATION_MSG = "Cannot process, as no association vehicle are available.";
-        public const string NO_VEHICLE_MSG = "Cannot process, as no vehicle are available in scheduler.";
-        public const string UTC = "UTC";
+        public const string NO_VEHICLE_MSG = "Cannot process, as no vehicle are available.";
         public const string NO_VEHICLE_ASSOCIATION_MSG = "Cannot process, as vehicle {0} is not association with the account.";
+        public const string NO_VEHICLE_ASSOCIATION_MSG2 = "Cannot process, as vehicle is not association with the account.";
     }
 
 }

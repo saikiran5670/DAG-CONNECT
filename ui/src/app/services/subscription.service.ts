@@ -68,7 +68,7 @@ export class SubscriptionService {
     
     const options =  { params: new HttpParams(data), headers: headers };
     return this.httpClient
-      .get<any[]>(`${this.vehicleServiceUrl}/getvehiclebysubscriptionid/${data}`,options)
+      .get<any[]>(`${this.vehicleServiceUrl}/getvehiclebysubscriptionid?subscriptionid=${data.subscriptionId}&state=${data.state}`,options)
       .pipe(catchError(this.handleError));
   }
 
