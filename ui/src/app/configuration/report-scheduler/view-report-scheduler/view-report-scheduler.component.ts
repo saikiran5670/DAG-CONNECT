@@ -180,15 +180,15 @@ export class ViewReportSchedulerComponent implements OnInit {
   timeRangeSelection(timeRange){
     switch(timeRange){
       case 'D' : {
-        // this.startDate= new Date(this.selectedRowData[0].startDate);
-        // let _h= this.startDate.getHours();
-        // let _m= this.startDate.getMinutes();
-        // let _s= this.startDate.getSeconds();
-        // this.startDate= (_h > 10 ? _h : "0"+_h) + ":" + (_m > 10 ? _m : "0"+_m) + ":" + (_s > 10 ? _s : "0"+_s);
-        // this.endDate= new Date(this.selectedRowData[0].endDate);
-        // this.endDate= this.endDate.getHours()+":"+this.endDate.getMinutes()+":"+this.endDate.getSeconds();
-        this.startDate= "00:00:00";
-        this.endDate= "23:59:59";
+        this.startDate= Util.utcToDateConversion(this.selectedRowData[0].startDate);
+        let _h= this.startDate.getHours();
+        let _m= this.startDate.getMinutes();
+        let _s= this.startDate.getSeconds();
+        this.startDate= (_h > 10 ? _h : "0"+_h) + ":" + (_m > 10 ? _m : "0"+_m) + ":" + (_s > 10 ? _s : "0"+_s);
+        this.endDate= Util.utcToDateConversion(this.selectedRowData[0].endDate);
+        this.endDate= this.endDate.getHours()+":"+this.endDate.getMinutes()+":"+this.endDate.getSeconds();
+        // this.startDate= "00:00:00";
+        // this.endDate= "23:59:59";
         break;
       }
       case 'W' : {

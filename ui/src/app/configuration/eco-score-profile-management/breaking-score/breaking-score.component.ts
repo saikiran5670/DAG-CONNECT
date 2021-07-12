@@ -77,8 +77,8 @@ export class BreakingScoreComponent implements OnInit {
   sendData(){
 
     let emitObj = {
-      "kpiId": this.selectedElementData.ecoScoreKPIId,
-      "limitType": this.selectedElementData.limitType ? this.selectedElementData.limitType : "N",
+      "kpiId": this.kpiId,
+      "limitType": "N",
       "limitValue":this.ecoScoreProfileKPIForm.controls.limitValue.value ? this.ecoScoreProfileKPIForm.controls.limitValue.value : 0,
       "targetValue":this.ecoScoreProfileKPIForm.controls.targetValue.value ? this.ecoScoreProfileKPIForm.controls.targetValue.value : 0,
       "lowerValue": this.ecoScoreProfileKPIForm.controls.lowerValue.value ? this.ecoScoreProfileKPIForm.controls.lowerValue.value : 0,

@@ -317,6 +317,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         break;
       }
       case 'B': {
+          endDate= Util.utcToDateConversion(this.selectedRowData[0].endDate);
        
           this.biweeklyEndDateValue = this.setStartEndDateTime(endDate, this.selectedEndTime, 'end');
           this.reportSchedulerForm.get('biweeklyEndDay').setValue(this.weekdays.filter(item => item.id == (this.biweeklyEndDateValue.getDay()))[0].value);
