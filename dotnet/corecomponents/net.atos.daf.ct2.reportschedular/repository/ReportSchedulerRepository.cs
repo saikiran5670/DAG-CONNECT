@@ -102,11 +102,14 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             {
                 var parameterType = new DynamicParameters();
                 var queryStatement = @"SELECT distinct 
-                                        acc.email as Email from master.account acc
-										INNER JOIN master.accountrole accrole
-										ON acc.id = accrole.account_id
-                                        Where accrole.organization_id= @organization_id
-                                        AND state='A' AND email is not null;";
+                                        acc.email as Email from master.account acc										
+										INNER JOIN master.accountorg accrorg
+										ON acc.id = accrorg.account_id
+										INNER JOIN master.organization org
+										ON accrorg.organization_id = org.id
+                                        Where org.id= @organization_id
+                                        AND acc.state='A' AND email is not null
+										AND acc.type <>'S' AND org.state='A';";
                 parameterType.Add("@organization_id", organizationid);
                 IEnumerable<ReceiptEmails> reporttype = await _dataAccess.QueryAsync<ReceiptEmails>(queryStatement, null);
                 return reporttype;
