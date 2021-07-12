@@ -829,4 +829,4 @@
 </div>
 </div>
 
-<app-fleetfueldetails *ngIf='showDetailedReport'></app-fleetfueldetails>
+<app-fleetfueldetails *ngIf='showDetailedReport && FuelData' [translationData]='translationData' [detailsObject]='detailSummaryObj'></app-fleetfueldetails>

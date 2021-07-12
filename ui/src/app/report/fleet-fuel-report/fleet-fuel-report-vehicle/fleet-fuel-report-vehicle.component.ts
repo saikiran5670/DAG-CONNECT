@@ -90,7 +90,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   DurationChartType: any;
   showLoadingIndicator: boolean = false;
   tableInfoObj: any ;
-  summaryObj: any;
+  detailSummaryObj: any;
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
   bufferValue = 75;
@@ -373,6 +373,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
     this.updateDataSource(this.FuelData);
+    this.setTableInfo();
 
     if(this.prefUnitFormat == 'dunit_Metric')
     {
@@ -459,7 +460,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         "viNs":  _vinData,
       }
       this.loadfleetFuelDetails(_vinData);
-       this.setTableInfo();
       //  this.updateDataSource(this.FuelData);
       this.hideloader();
       this.isChartsOpen = true;
@@ -564,6 +564,18 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       vehGroupName: vehGrpName,
       vehicleName: vehName
     }    
+    this.detailSummaryObj={
+      fromDate: this.formStartDate(this.startDateValue),
+      endDate: this.formStartDate(this.endDateValue),
+      vehGroupName: vehGrpName,
+      vehicleName: vehName,
+      noOfTrips: this.FuelData[0].numberOfTrips,
+      distance:  this.FuelData[0].convertedDistance,
+      fuelconsumed:  this.FuelData.convertedFuelConsumed100Km,
+      idleDuration: this.FuelData[0].convertedIdleDuration,
+      fuelConsumption: this.FuelData[0].fuelConsumption,
+      co2emission: this.FuelData[0].cO2Emission,
+    }  
   }
 
   formStartDate(date: any){
