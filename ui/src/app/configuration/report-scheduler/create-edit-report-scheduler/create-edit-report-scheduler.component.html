@@ -425,6 +425,9 @@
                     <mat-error *ngIf="reportSchedulerForm.get('mailSubject').hasError('required') && reportSchedulerForm.get('mailSubject').touched">
                       {{ translationData.lblPleaseEnterMailSubject || 'Please Enter Mail Subject' }}
                     </mat-error>
+                    <mat-error *ngIf="reportSchedulerForm.get('mailSubject').hasError('specialCharsNotAllowed')">
+                      {{ translationData.lblSpecialCharactersNotAllowed || 'Special Characters Not Allowed' }}
+                    </mat-error>
                 </div>
                 <div *ngIf="actionType == 'edit'" class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                   <mat-label style='display: flex; place-content: space-between;'>
@@ -452,6 +455,9 @@
                     </mat-form-field>
                     <mat-error *ngIf="reportSchedulerForm.get('mailDescription').hasError('required') && reportSchedulerForm.get('mailDescription').touched">
                       {{ translationData.lblPleaseEnterMailDescription || 'Please Enter Mail Description' }}
+                    </mat-error>
+                    <mat-error *ngIf="reportSchedulerForm.get('mailDescription').hasError('specialCharsNotAllowed')">
+                      {{ translationData.lblSpecialCharactersNotAllowed || 'Special Characters Not Allowed' }}
                     </mat-error>
                 </div>
               </div>

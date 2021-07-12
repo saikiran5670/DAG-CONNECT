@@ -1,6 +1,6 @@
 namespace net.atos.daf.ct2.rfmsdataservice.Entity
 {
-    public class RfmsVehicleRequest2
+    public class RfmsVehicleRequest
     {
 
         public string Id { get; set; }
