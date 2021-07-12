@@ -621,7 +621,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         // ]
         if(this.allDriversSelected){
           this.onSearchData = tripData;
-
+          this.driverSelected = false;
           
           this.setGeneralDriverValue();
 
@@ -633,6 +633,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           this.updateDataSource(tableData);
         }
         else{
+          this.driverSelected = true;
           this.driverDetails = [];
           this.driverDetails = [...tripData.driverActivities];
           let updatedDriverData = this.makeDetailDriverList(tripData.driverActivities);
@@ -648,6 +649,10 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         this.hideloader();
         this.onSearchData = [];
         this.tableInfoObj = {};
+        this.driverSelected = false;
+        this.allDriversSelected = true;
+        this.initData = [];
+        this.updateDataSource(this.initData);
       });
     }
   }
@@ -1086,10 +1091,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 
   backToMainPage(){
     this.driverSelected = false;
+    this.allDriversSelected = true;
     this.updateDataSource(this.initData);
     this.driverTimeForm.get('driver').setValue(0);
-
-
   }
 
   setGeneralDriverDetailValue(_totalValue){
