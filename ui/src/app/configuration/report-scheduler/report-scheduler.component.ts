@@ -19,7 +19,7 @@ import { Util } from 'src/app/shared/util';
 
 export class ReportSchedulerComponent implements OnInit {
 
-  displayedColumns: string[] = ['reportName','scheduledReportVehicleRef','frequencyType','scheduledReportRecipient','scheduledReportDriverRef','lastScheduleRunDate','nextScheduleRunDate','status','action'];
+  displayedColumns: string[] = ['reportName','scheduledReportVehicleRef','frequencyType','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate','status','action'];
   grpTitleVisible : boolean = false;
   errorMsgVisible: boolean = false;
   displayMessage: any;
@@ -184,13 +184,7 @@ export class ReportSchedulerComponent implements OnInit {
         vehicleGroupTxt += resp.vin + ', ';
       });
     }
-    // if(recipientTxt != ''){
-    //   recipientTxt = recipientTxt.slice(0, -2);
-    // }
-    // if(driverTxt != ''){
-    //   driverTxt = driverTxt.slice(0, -2);
-    // }
-
+  
     initdata[index].recipientList = recipientTxt.slice(0, -2); 
     initdata[index].driverList = driverTxt.slice(0, -2);
     initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt == "" ? vehicleGroupTxt : vehicleGroupTxt.slice(0, -2);
@@ -230,6 +224,15 @@ getUnique(arr, comp) {
     //     data.status.toString().toLowerCase().includes(filter) 
     //   );
     // };
+   
+    this.dataSource.sortingDataAccessor = (data: any, sortHeaderId: string): string => {
+      if (typeof data[sortHeaderId] === 'string') {
+        return data[sortHeaderId].toLocaleLowerCase();
+      }
+    
+      return data[sortHeaderId];
+    };
+
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
