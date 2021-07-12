@@ -193,7 +193,9 @@ export class ViewReportSchedulerComponent implements OnInit {
       }
       case 'W' : {
         this.startDate = this.weekdays.filter(item => item.id == (Util.convertUtcToDateNoFormat(this.selectedRowData[0].startDate, this.prefTimeZone).getDay()))[0].value;
-        this.endDate = this.weekdays.filter(item => item.id == (Util.convertUtcToDateNoFormat(this.selectedRowData[0].endDate, this.prefTimeZone).getDay()))[0].value;
+        this.endDate= new Date(Util.convertUtcToDateNoFormat(this.selectedRowData[0].startDate, this.prefTimeZone));
+          this.endDate.setDate(this.endDate.getDate() + 6);
+        this.endDate = this.weekdays.filter(item => item.id == (this.endDate).getDay())[0].value;
         break;
       }
       case 'B' : {
