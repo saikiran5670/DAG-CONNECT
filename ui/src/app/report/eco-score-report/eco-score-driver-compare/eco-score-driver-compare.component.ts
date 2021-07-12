@@ -102,13 +102,13 @@ export class EcoScoreDriverCompareComponent implements OnInit {
       { key:'rp_averagespeed' , value:'Average Speed' },
       { key:'rp_ptoduration' , value:'PTO Duration' },
       { key:'rp_ptousage' , value:'PTO Usage(%)' },
-      { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage 30-75km/h(%)' },
-      { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage>75km/h(%)' },
-      { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage 50-75km/h(%)' },
+      { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage 30-75 km/h(%)' },
+      { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage > 75 km/h(%)' },
+      { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage 50-75 km/h(%)' },
       { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage' },
-      { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage 50-75km/h(%)' },
-      { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage 30-75km/h(%)' },
-      { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage>75km/h(%)' },
+      { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage 50-75 km/h(%)' },
+      { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage 30-75 km/h(%)' },
+      { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage>75 km/h(%)' },
      ];
 
     // this.translationData.rp_general = 'General';

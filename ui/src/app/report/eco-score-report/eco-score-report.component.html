@@ -336,7 +336,7 @@
               <ng-container *ngIf='showField.ranking' matColumnDef="ranking">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Ranking' }}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row" class="driverClick">{{ row.ranking != '' ? row.ranking : '-' }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.ranking != '' ? row.ranking : '-' }}</mat-cell>
               </ng-container>
               <ng-container *ngIf='showField.driverName' matColumnDef="driverName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}
@@ -374,10 +374,10 @@
       [displayedColumns]='detaildisplayedColumns'  [showField]='showField' (backToMainPage)="backToMainPage()" [driverSelected]='driverSelected'
     ></app-driver-time-detail>
   </div> -->
+  <!-- <div *ngIf="ecoScoreDriver">
+    <app-eco-score-report-driver (backToMainPage)='backToMainPage()' [ecoScoreDriverDetails]="ecoScoreDriverDetails"></app-eco-score-report-driver>
+  </div> -->
   <div *ngIf="compareEcoScore">
-    <!-- <app-eco-score-driver-compare [translationData]='translationData' [driverDetails]='tableDetailsInfoObj' [detailConvertedData]='detailConvertedData'
-      [displayedColumns]='detaildisplayedColumns'  [showField]='showField' (backToMainPage)="backToMainPage()" [driverSelected]='driverSelected'>
-    </app-eco-score-driver-compare> -->
     <app-eco-score-driver-compare (backToMainPage)='backToMainPage()' [compareEcoScore]="compareDriverEcoScoreSearchParam"></app-eco-score-driver-compare>
   </div>
   </form>
