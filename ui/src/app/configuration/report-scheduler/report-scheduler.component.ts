@@ -188,7 +188,7 @@ export class ReportSchedulerComponent implements OnInit {
     initdata[index].recipientList = recipientTxt.slice(0, -2); 
     initdata[index].driverList = driverTxt.slice(0, -2);
     initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt == "" ? vehicleGroupTxt : vehicleGroupTxt.slice(0, -2);
-    initdata[index].lastScheduleRunDate = Util.convertUtcToDateFormat(element.lastScheduleRunDate, "MM/DD/YYYY");
+    initdata[index].lastScheduleRunDate = element.lastScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.lastScheduleRunDate, "MM/DD/YYYY");
     initdata[index].nextScheduleRunDate = Util.convertUtcToDateFormat(element.nextScheduleRunDate, "MM/DD/YYYY");
     initdata[index].isDriver = this.ReportTypeList.filter(item => item.id == initdata[index].reportId)[0].isDriver == 'Y' ? true : false;
   });
