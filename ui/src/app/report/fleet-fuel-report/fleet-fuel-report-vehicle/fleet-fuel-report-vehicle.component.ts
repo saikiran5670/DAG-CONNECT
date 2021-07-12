@@ -23,6 +23,8 @@ import { ViewChild } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Router, NavigationExtras } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
+import { QueryList } from '@angular/core';
+import { ViewChildren } from '@angular/core';
 
 
 
@@ -40,11 +42,11 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
   'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
   'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
-  rankingColumns = ['ranking','vehicleName','vin','plateNo','consumption'];
+  rankingColumns = ['ranking','vehicleName','vin','vehicleRegistrationNo','fuelConsumption'];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
+  @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
@@ -419,19 +421,27 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.selectedTrip.clear();
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator.toArray()[1];
+      this.dataSource.sort = this.sort.toArray()[1];
     });
   }
 
   updateRankingDataSource(tableData: any) {
+    let i =1;
     this.initData = tableData;
     this.showMap = false;
     this.selectedTrip.clear();
-    this.dataSource2 = new MatTableDataSource(tableData);
+    
+    this.initData.forEach(obj => { 
+      obj =  Object.defineProperty(obj, "ranking", {value : i++,
+      writable : true,enumerable : true, configurable : true
+    });
+  });
+
+    this.dataSource2 = new MatTableDataSource(this.initData);
     setTimeout(() => {
-      this.dataSource2.paginator = this.paginator;
-      this.dataSource2.sort = this.sort;
+      this.dataSource2.paginator = this.paginator.toArray()[0];
+      this.dataSource2.sort = this.sort.toArray()[0];
     });
   }
 

@@ -227,77 +227,47 @@
 
       </div>
 
-      <mat-table matTableExporter [dataSource]="dataSource2" matSort #exporter="matTableExporter" let i = "index">
-
+      <mat-table matTableExporter [dataSource]="dataSource2" matSort #exporter="matTableExporter">
         <ng-container matColumnDef="ranking">
-
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRanking || 'Ranking' }}
-
           </mat-header-cell>
-
-          <mat-cell *matCellDef="let i =index">
-
-            <span>{{i + 1}}</span>
-
+          <mat-cell *matCellDef="let row">
+            <span>{{row.ranking}}</span>
           </mat-cell>
-
         </ng-container>
 
         <ng-container matColumnDef="vehicleName">
-
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
-
           </mat-header-cell>
-
           <mat-cell *matCellDef="let row">
-
             <span>{{row.vehicleName}}</span>
-
           </mat-cell>
-
         </ng-container>
 
         <ng-container matColumnDef="vin">
-
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
 
           </mat-header-cell>
-
           <mat-cell *matCellDef="let row">
-
             <span>{{row.vin}}</span>
-
           </mat-cell>
-
         </ng-container>
 
-        <ng-container matColumnDef="plateNo">
-
+        <ng-container matColumnDef="vehicleRegistrationNo">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPlateNo || 'Plate No' }}
-
           </mat-header-cell>
-
           <mat-cell *matCellDef="let row">
-
             <span>{{row.vehicleRegistrationNo}}</span>
-
           </mat-cell>
-
         </ng-container>
 
-        <ng-container matColumnDef="consumption">
-
+        <ng-container matColumnDef="fuelConsumption">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblConsumption || 'Consumption' }}
-
           </mat-header-cell>
-
           <mat-cell *matCellDef="let row">
-
             <mat-progress-bar class="example-margin" [color]="color" [mode]="mode" [bufferValue]="bufferValue"
               value={{row.convertedFuelConsumed100Km}}></mat-progress-bar>
-
             <div style="position: absolute; padding: 10px; color: white;"> {{row.convertedFuelConsumed100Km}} </div>
-
           </mat-cell>
 
         </ng-container>
