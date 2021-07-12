@@ -139,39 +139,39 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       value: 'totalresttime'
     },
     {
-      key: 'da_report_alldriver_details_driverid',
+      key: 'da_report_alldetails_driverid',
       value: 'driverId'
     },
     {
-      key: 'da_report_alldriver_details_drivername',
+      key: 'da_report_alldetails_drivername',
       value: 'driverName'
     },
     {
-      key: 'da_report_alldriver_details_endtime',
+      key: 'da_report_alldetails_endtime',
       value: 'endTime'
     },
     {
-      key: 'da_report_alldriver_details_starttime',
+      key: 'da_report_alldetails_starttime',
       value: 'startTime'
     },
     {
-      key: 'da_report_alldriver_details_worktime',
+      key: 'da_report_alldetails_worktime',
       value: 'workTime'
     },
     {
-      key: 'da_report_alldriver_details_availabletime',
+      key: 'da_report_alldetails_availabletime',
       value: 'availableTime'
     },
     {
-      key: 'da_report_alldriver_details_servicetime',
+      key: 'da_report_alldetails_servicetime',
       value: 'serviceTime'
     },
     {
-      key: 'da_report_alldriver_details_resttime',
+      key: 'da_report_alldetails_resttime',
       value: 'restTime'
     },
     {
-      key: 'da_report_alldriver_details_drivetime',
+      key: 'da_report_alldetails_drivetime',
       value: 'driveTime'
     },
     {
@@ -211,31 +211,31 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       value: 'endTime'
     },
     {
-      key: 'da_report_specificdriver_details_starttime',
+      key: 'da_report_bydriver_date',
       value: 'startTime'
     },
     {
-      key: 'da_report_specificdriver_details_worktime',
+      key: 'da_report_bydriver_worktime',
       value: 'workTime'
     },
     {
-      key: 'da_report_specificdriver_details_availabletime',
+      key: 'da_report_bydriver_availabletime',
       value: 'availableTime'
     },
     {
-      key: 'da_report_specificdriver_details_servicetime',
+      key: 'da_report_bydriver_servicetime',
       value: 'serviceTime'
     },
     {
-      key: 'da_report_specificdriver_details_resttime',
+      key: 'da_report_bydriver_resttime',
       value: 'restTime'
     },
     {
-      key: 'da_report_specificdriver_details_drivetime',
+      key: 'da_report_bydriver_drivetime',
       value: 'driveTime'
     },
     {
-      key: 'da_report_specificdriver_details_charts',
+      key: 'da_report_chart_zoomchart',
       value: 'specificdetailchart'
     }
   ];
