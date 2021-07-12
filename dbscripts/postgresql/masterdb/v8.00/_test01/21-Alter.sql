@@ -10,7 +10,7 @@ CREATE TABLE if not exists master.whitelistipdetails
 TABLESPACE pg_default;
 
 ALTER TABLE  master.whitelistipdetails  
-    OWNER to pgadmin;
+    OWNER to pgdbdmadmin;
 	
 Do $$
 begin
@@ -39,7 +39,7 @@ CREATE TABLE if not exists  master.idlingconsumption
 TABLESPACE pg_default;
 
 ALTER TABLE master.idlingconsumption  
-    OWNER to pgadmin;
+    OWNER to pgdbdmadmin;
 
 Do $$
 
@@ -70,7 +70,7 @@ CREATE TABLE if not exists  master.averagetrafficclassification
 TABLESPACE pg_default;
 
 ALTER TABLE master.averagetrafficclassification  
-    OWNER to pgadmin;
+    OWNER to pgdbdmadmin;
 
 Do $$
 
@@ -148,7 +148,7 @@ CREATE TABLE if not exists  master.country
 TABLESPACE pg_default;
 
 ALTER TABLE master.country  
-    OWNER to pgadmin;
+    OWNER to pgdbdmadmin;
 
 Do $$
 
