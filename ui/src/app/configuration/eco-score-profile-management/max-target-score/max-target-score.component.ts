@@ -3,12 +3,12 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
-  selector: 'app-breaking-score',
-  templateUrl: './breaking-score.component.html',
-  styleUrls: ['./breaking-score.component.less']
+  selector: 'app-max-target-score',
+  templateUrl: './max-target-score.component.html',
+  styleUrls: ['./max-target-score.component.less']
 })
-export class BreakingScoreComponent implements OnInit {
 
+export class MaxTargetScoreComponent implements OnInit {
   ecoScoreProfileKPIForm: FormGroup;
   @Input() actionType: any;
   @Input() selectedElementData: any;
@@ -78,7 +78,7 @@ export class BreakingScoreComponent implements OnInit {
 
     let emitObj = {
       "kpiId": this.kpiId,
-      "limitType": "N",
+      "limitType": "X",
       "limitValue":this.ecoScoreProfileKPIForm.controls.limitValue.value ? this.ecoScoreProfileKPIForm.controls.limitValue.value : 0,
       "targetValue":this.ecoScoreProfileKPIForm.controls.targetValue.value ? this.ecoScoreProfileKPIForm.controls.targetValue.value : 0,
       "lowerValue": this.ecoScoreProfileKPIForm.controls.lowerValue.value ? this.ecoScoreProfileKPIForm.controls.lowerValue.value : 0,
@@ -88,24 +88,24 @@ export class BreakingScoreComponent implements OnInit {
   }
 
   sliderEvent(value: any){
-    this.ecoScoreProfileKPIForm.get("limitValue").setValue(value);
+    this.ecoScoreProfileKPIForm.get("targetValue").setValue(value);
     this.sendData();
-   }
+  }
  
-   sliderEndEvent(endValue: any){
-   this.ecoScoreProfileKPIForm.get("targetValue").setValue(endValue);
-  this.sendData();
-   }
+  sliderEndEvent(endValue: any){
+    this.ecoScoreProfileKPIForm.get("limitValue").setValue(endValue);
+    this.sendData();
+  }
  
-   changeMin(changedVal: any){
+  changeMax(changedVal: any){
+    this.maxvalue = changedVal;
+    this.sendData();
+  }
+ 
+  changeTarget(changedVal: any){
     this.value = changedVal;
     this.sendData();
-   }
- 
-   changeTarget(changedVal: any){
-   this.maxvalue = changedVal;
-  this.sendData();
-   }
+  }
  
    changeLower(changedVal: any){
      // this.options.floor = changedVal;
@@ -123,3 +123,4 @@ export class BreakingScoreComponent implements OnInit {
    }
 
 }
+
