@@ -12,20 +12,20 @@ namespace net.atos.daf.ct2.reports.entity
         public long StartTimeStamp { get; set; }
         public long EndTimeStamp { get; set; }
         public string Driver1Id { get; set; }
-        public string TripDistance { get; set; }
-        public string DrivingTime { get; set; }
+        public int TripDistance { get; set; }
+        public int DrivingTime { get; set; }
         public int FuelConsumption { get; set; }
-        public int VehicleDrivingStatusType { get; set; }
-        public int OdometerVal { get; set; }
+        public string VehicleDrivingStatusType { get; set; }
+        public long OdometerVal { get; set; }
         public long DistanceUntilNextService { get; set; }
-        public long LatestReceivedPositionLattitude { get; set; }
+        public double LatestReceivedPositionLattitude { get; set; }
         public double LatestReceivedPositionLongitude { get; set; }
         public double LatestReceivedPositionHeading { get; set; }
-        public int StartPositionLattitude { get; set; }
+        public double StartPositionLattitude { get; set; }
         public double StartPositionLongitude { get; set; }
         public double StartPositionHeading { get; set; }
-        public int LatestProcessedMessageTimeStamp { get; set; }
-        public long VehicleHealthStatusType { get; set; }
+        public long LatestProcessedMessageTimeStamp { get; set; }
+        public string VehicleHealthStatusType { get; set; }
         public int LatestWarningClass { get; set; }
         public int LatestWarningNumber { get; set; }
         public string LatestWarningType { get; set; }
@@ -42,6 +42,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string StartGeolocationAddress { get; set; }
         public int LatestWarningGeolocationAddressId { get; set; }
         public string LatestWarningGeolocationAddress { get; set; }
+        public string LatestWarningName { get; set; }
         public List<LiveFleetPosition> LiveFleetPositions { get; set; }
     }
 }

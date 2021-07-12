@@ -58,27 +58,11 @@ namespace net.atos.daf.ct2.account.report
             _contentType = contentType;
         }
 
-        public async Task SetParameters(ReportCreationScheduler reportSchedulerData)
+        public void SetParameters(ReportCreationScheduler reportSchedulerData, IEnumerable<VehicleList> vehicleLists)
         {
             FromDate = reportSchedulerData.StartDate;
             ToDate = reportSchedulerData.EndDate;
-            var vehicleAssociationList = await _visibilityManager.GetVehicleByAccountVisibility(reportSchedulerData.CreatedBy, reportSchedulerData.OrganizationId);
-            if (vehicleAssociationList.Count() == 0)
-            {
-                throw new Exception(TripReportConstants.NO_ASSOCIATION_MSG);
-            }
-
-            var vehicleList = await _reportSchedularRepository.GetVehicleListForSingle(reportSchedulerData.Id);
-            if (vehicleList == null)
-            {
-                throw new Exception(TripReportConstants.NO_VEHICLE_MSG);
-            }
-
-            if (vehicleList != null && vehicleAssociationList.Where(w => w.VehicleId == vehicleList.Id).Count() == 0)
-            {
-                throw new Exception(string.Format(TripReportConstants.NO_VEHICLE_ASSOCIATION_MSG, vehicleList.VIN));
-            }
-
+            var vehicleList = vehicleLists.FirstOrDefault();
             VIN = vehicleList.VIN;
             VehicleName = vehicleList.VehicleName;
             RegistrationNo = vehicleList.RegistrationNo;
@@ -109,10 +93,10 @@ namespace net.atos.daf.ct2.account.report
         public async Task<string> GenerateTable()
         {
             var result = await ReportManager.GetFilteredTripDetails(new TripFilterRequest { StartDateTime = FromDate, EndDateTime = ToDate, VIN = VIN }, false);
-            string res = JsonConvert.SerializeObject(result);
-            var tripReportDetails = JsonConvert.DeserializeObject<List<TripReportDetails>>(res);
+            //string res = JsonConvert.SerializeObject(result);
+            //var tripReportDetails = JsonConvert.DeserializeObject<List<TripReportDetails>>(res);
             var tripReportPdfDetails = new List<TripReportPdfDetails>();
-            foreach (var tripData in tripReportDetails)
+            foreach (var tripData in result)
             {
                 tripReportPdfDetails.Add(
                     new TripReportPdfDetails
@@ -144,8 +128,8 @@ namespace net.atos.daf.ct2.account.report
         public async Task<string> GenerateTemplate(byte[] logoBytes)
         {
             if (!IsAllParameterSet) throw new Exception(TripReportConstants.ALL_PARAM_MSG);
-            var fromDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(FromDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
-            var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
+            var fromDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(FromDate, TimeZoneName, $"{DateFormatName} {TimeFormatName}"));
+            var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TimeZoneName, $"{DateFormatName} {TimeFormatName}"));
 
             StringBuilder html = new StringBuilder();
             //ReportTemplateContants.REPORT_TEMPLATE

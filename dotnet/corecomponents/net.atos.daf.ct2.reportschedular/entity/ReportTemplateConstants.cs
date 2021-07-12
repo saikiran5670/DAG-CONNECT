@@ -43,47 +43,50 @@ tr {{ page-break-inside: avoid }}
 </head>
   <body>
 		<img style='margin:20px 50px' align='left' width='180px' height='80px'  src='{0}'>
-		<img style='margin:20px 50px' align='right' width='180px' height='80px' src='{1}'><br/><br/><br/><br/>
+		<img style='margin:20px 50px' align='right' width='180px' height='80px' src='{23}'><br/><br/><br/><br/>
 	
-    <h2 style='margin:50px 50px'>Trip Report Details</h2>
+    <h2 style='margin:50px 50px'>[lblTripReportDetails]</h2>
 	<div class='detailsDiv'>
 	  <table  style='width: 100%;'>
 		<tr>
-			<td style='width: 30%;'><p><strong>From : </strong>  {2}</P></td>
-			<td style='width: 30%;'><p><strong>Vehicle Group : </strong>  {3}</P></td>
-			<td style='width: 30%;'><p><strong>Vehicle VIN : </strong>  {4}</P></td>
+			<td style='width: 30%;'><p><strong>[lblFrom] : </strong>  {2}</P></td>
+			<td style='width: 30%;'><p><strong>[lblVehicleGroup] : </strong>  {3}</P></td>			
 		</tr>
 		<tr>
-			<td style='width: 30%;'><p><strong>To : </strong>  {5}</P></td>
-			<td style='width: 30%;'><p><strong>Vehicle Name : </strong>  {6}</P></td>
-			<td style='width: 30%;'><p><strong>Reg. Plate Number : </strong>  {7}</P></td>
+			<td style='width: 30%;'><p><strong>[lblTo] : </strong>  {4}</P></td>
+			<td style='width: 30%;'><p><strong>[lblVehicleName] : </strong>  {5}</P></td>			
+		</tr>
+	  </table>
+	</div><br/><br/>
+<div class='detailsDiv'>
+	  <table  style='width: 100%;'>
+		<tr>
+			<td style='width: 30%;'><p><strong>Number of Vehicles : </strong>  {6}</P></td>
+			<td style='width: 30%;'><p><strong>Total Distance : </strong>  {7}{8}</P></td>		
+			<td style='width: 30%;'><p><strong>Number of Trips : </strong>  {9} </P></td>
+			<td style='width: 30%;'><p><strong>Avg. Distance per day : </strong> {10} {11}</P></td>
+			<td style='width: 30%;'><p><strong>Idle Duration : </strong>  {12} {13}</P></td>			
 		</tr>
 	  </table>
 	</div><br/><br/>
 	
 	<table class='reportDetailsTable'>
 		<thead>
-			<th>Start Date</th>
-			<th>End Date</th>
-			<th>Distance</th>
-			<th>Idle Duration</th>
-			<th>Average Speed</th>
-			<th>Average Weight</th>
-            <th>Odometer</th>
-			<th>Start Position</th>
-			<th>End Position</th>
-			<th>Fuel Consumption</th>
-			<th>Driving Time</th>
-			<th>lAlerts</th>
-			<th>Events</th>
-<th>Start Date</th>
-			<th>End Date</th>
-<th>Start Date</th>
-			<th>End Date</th>
-<th>Start Date</th>
-			<th>End Date</th>
+			<th>Vehicle Name</th>
+			<th>VIN</th>
+			<th>Plate Number</th>
+			<th>Distance ({14})</th>
+			<th>Number Of Trips</th>
+			<th>Trip Time ({15})</th>
+			<th>Driving Time ({16})</th>
+			<th>Idle Duration ({17})</th>
+			<th>Stop Time ({18})</th>
+			<th>Average distance per day ({19})</th>
+			<th>Average Speed ({20})</th>
+			<th>Average Weight Per Trip ({21})</th>
+			<th>Odometer ({22})</th>
 		</thead>
-		{8}
+		{1}
 	</table>
   </body>
 </html>";

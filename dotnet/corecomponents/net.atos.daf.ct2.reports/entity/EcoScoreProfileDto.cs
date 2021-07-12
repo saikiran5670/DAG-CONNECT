@@ -4,6 +4,13 @@ using System.Text;
 
 namespace net.atos.daf.ct2.reports.entity
 {
+    public enum ProfileType
+    {
+        Default = 'D',
+        Advanced = 'A',
+        None = 'N'
+    }
+
     public class EcoScoreProfileDto
     {
         public int Id { get; set; }
@@ -13,7 +20,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string ActionedBy { get; set; }
         public DateTime LastUpdate { get; set; }
         public List<EcoScoreProfileKPI> ProfileKPIs { get; set; }
-        public bool IsDeleteAllowed { get; set; }
+        public ProfileType Type { get; set; }
     }
 
     public class EcoScoreProfileKPI
@@ -122,8 +129,14 @@ namespace net.atos.daf.ct2.reports.entity
     }
     public enum RankingColor
     {
-        RED,
-        GREEN,
-        AMBER
+        Red,
+        Green,
+        Amber
+    }
+    public enum LimitType
+    {
+        Min = 'N',
+        Max = 'X',
+        None = 'O'
     }
 }

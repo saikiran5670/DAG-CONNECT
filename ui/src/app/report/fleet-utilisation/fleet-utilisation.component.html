@@ -134,12 +134,6 @@
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehGroupName }}</span>
                   </span>
                 </div>
-                <div *ngIf='showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <span>
-                    <span>{{ translationData.lblVehicleVIN || 'Vehicle VIN' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vin }}</span>
-                  </span>
-                </div>
                 <div *ngIf='!showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblTo || 'To' }}: </span>
@@ -158,12 +152,6 @@
                   <span>
                     <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
-                  </span>
-                </div>
-                <div *ngIf='showField.regNo' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <span>
-                    <span>{{ translationData.lblRegPlateNumber || 'Reg. Plate Number' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.regNo }}</span>
                   </span>
                 </div>
               </div>
@@ -447,7 +435,7 @@
           <mat-row *matRowDef="let row; columns: displayedColumns;">
           </mat-row>
           </mat-table>
-          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
+          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100, 500]" (page)="pageSizeUpdated($event)"></mat-paginator>
           </div>
           <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
         </mat-expansion-panel>

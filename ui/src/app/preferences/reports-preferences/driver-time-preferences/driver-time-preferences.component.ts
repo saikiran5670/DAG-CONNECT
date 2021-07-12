@@ -46,22 +46,28 @@ export class DriverTimePreferencesComponent implements OnInit {
   }
 
   translationUpdate(){
-    this.translationData.da_report_details_averageweight = 'Average Weight';
-    this.translationData.da_report_details_vin = 'VIN';
-    this.translationData.da_report_details_vehiclename = 'Vehicle Name';
-    this.translationData.da_report_details_alerts = 'Alerts';
-    this.translationData.da_report_details_registrationnumber = 'Reg. Plate Number';
-    this.translationData.da_report_details_events = 'Events';
-    this.translationData.da_report_details_odometer = 'Odometer';
-    this.translationData.da_report_details_averagespeed = 'Average Speed';
-    this.translationData.da_report_details_drivingtime = 'Driving Time';
-    this.translationData.da_report_details_fuelconsumed = 'Fuel consumed';
-    this.translationData.da_report_details_startposition = 'Start Position';
-    this.translationData.da_report_details_idleduration = 'Idle Duration';
-    this.translationData.da_report_details_startdate = 'Start Date';
-    this.translationData.da_report_details_distance = 'Distance';
-    this.translationData.da_report_details_enddate = 'End Date';
-    this.translationData.da_report_details_endposition = 'End Position';
+    this.translationData = {
+      da_report: 'Report',
+      da_report_chart: 'Charts',
+      da_report_alldetails: 'All Details',
+      da_report_alldetails_drivername: 'Driver Name',
+      da_report_alldetails_driverid: 'Driver Id',
+      da_report_alldetails_starttime: 'Start Time',
+      da_report_alldetails_endtime: 'End Time',
+      da_report_alldetails_drivetime: 'Drive Time',
+      da_report_alldetails_worktime: 'Work Time',
+      da_report_alldetails_availabletime: 'Available Time',
+      da_report_alldetails_resttime: 'Rest Time',
+      da_report_alldetails_servicetime: 'Service Time',
+      da_report_chart_zoomchart: 'Zoom Chart',
+      da_report_bydriver: 'By Driver',
+      da_report_bydriver_date: 'Date',
+      da_report_bydriver_drivetime: 'Drive Time',
+      da_report_bydriver_worktime: 'Work Time',
+      da_report_bydriver_availabletime: 'Available Time',
+      da_report_bydriver_resttime: 'Rest Time',
+      da_report_bydriver_servicetime: 'Service Time'
+    }
   }
 
   loadDriveTimePreferences(){
@@ -69,10 +75,6 @@ export class DriverTimePreferencesComponent implements OnInit {
       this.initData = prefData['userPreferences'];
       this.resetColumnData();
       this.preparePrefData(this.initData);
-
-    //  this.initData = this.getTranslatedColumnName(this.initData);
-    //  this.setColumnCheckbox();
-    //  this.validateRequiredField();
     }, (error)=>{
       this.initData = [];
     });
@@ -87,7 +89,7 @@ export class DriverTimePreferencesComponent implements OnInit {
   preparePrefData(prefData: any){
     prefData.forEach(element => {
       let _data: any;
-      if(element.key.includes('da_report_alldriver_details')){
+      if(element.key.includes('da_report_alldetails_')){
          _data = element;
         if(this.translationData[element.key]){
           _data.translatedName = this.translationData[element.key];  
@@ -95,7 +97,7 @@ export class DriverTimePreferencesComponent implements OnInit {
           _data.translatedName = this.getName(element.name, 25);   
         }
         this.allDriverTableData.push(_data);
-      }else if(element.key.includes('da_report_specificdriver_details_charts')){
+      }else if(element.key.includes('da_report_chart_')){
         _data = element;
         if(this.translationData[element.key]){
           _data.translatedName = this.translationData[element.key];  
@@ -103,7 +105,7 @@ export class DriverTimePreferencesComponent implements OnInit {
           _data.translatedName = this.getName(element.name, 30);   
         }
         this.chartData.push(_data);
-      }else if(element.key.includes('da_report_specificdriver')){
+      }else if(element.key.includes('da_report_bydriver_')){
         _data = element;
         if(this.translationData[element.key]){
           _data.translatedName = this.translationData[element.key];  
@@ -113,9 +115,21 @@ export class DriverTimePreferencesComponent implements OnInit {
         this.specificDriverData.push(_data)
       }
     });
+    //this.snipData();
     this.setColumnCheckbox();
   }
 
+  allDetailsData: any = [];
+  allChartsData: any = [];
+  allSpecificData: any = [];
+  snipData(){
+    this.allDetailsData = this.allDriverTableData.length > 0 ? this.allDriverTableData[0] : [];
+    this.allDriverTableData = this.allDriverTableData.filter((i, index) => index != 0);
+    this.allChartsData = this.chartData.length > 0 ? this.chartData[0] : [];
+    this.chartData = this.chartData.filter((i, index) => index != 0);
+    this.allSpecificData = this.specificDriverData.length > 0 ? this.specificDriverData[0] : [];
+    this.specificDriverData = this.specificDriverData.filter((i, index) => index != 0);
+  }
 
   getName(name: any, index: any) {
     let updatedName = name.slice(index);
@@ -191,6 +205,22 @@ export class DriverTimePreferencesComponent implements OnInit {
     }
   }
 
+  masterToggleForChartsColumns(){
+    if(this.isAllSelectedForAllChartsColumns()){
+      this.selectionForChart.clear();
+      this.validateRequiredField();
+    }else{
+      this.chartData.forEach(row => { this.selectionForChart.select(row) });
+      this.validateRequiredField();
+    }
+  }
+
+  isAllSelectedForAllChartsColumns(){
+    const numSelected = this.selectionForChart.selected.length;
+    const numRows = this.chartData.length;
+    return numSelected === numRows;
+  }
+
   isAllSelectedForAllGeneralColumns(){
     const numSelected = this.selectionForDriver.selected.length;
     const numRows = this.specificDriverData.length;
@@ -231,6 +261,8 @@ export class DriverTimePreferencesComponent implements OnInit {
       }
     });
 
+    //_allDriverArr.push({ dataAttributeId: this.allDetailsData.dataAtrributeId, state: (this.selectionForAllDriver.selected.length == this.allDriverTableData.length) ? 'A' : 'I', type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+
     this.chartData.forEach(element => {
       let sSearch = this.selectionForChart.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
       if(sSearch.length > 0){
@@ -239,6 +271,9 @@ export class DriverTimePreferencesComponent implements OnInit {
         _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
     });
+
+    //_chartArr.push({ dataAttributeId: this.allChartsData.dataAtrributeId, state: (this.selectionForChart.selected.length == this.chartData.length) ? 'A' : 'I', type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+
     this.specificDriverData.forEach(element => {
       let sSearch = this.selectionForDriver.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
       if(sSearch.length > 0){
@@ -247,6 +282,8 @@ export class DriverTimePreferencesComponent implements OnInit {
         _specificDriverArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
     });
+
+    //_specificDriverArr.push({ dataAttributeId: this.allSpecificData.dataAtrributeId, state: (this.selectionForDriver.selected.length == this.specificDriverData.length) ? 'A' : 'I', type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
 
     let objData: any = {
       accountId: this.accountId,
@@ -259,6 +296,9 @@ export class DriverTimePreferencesComponent implements OnInit {
     this.reportService.createReportUserPreference(objData).subscribe((prefData: any) => {
       this.loadDriveTimePreferences();
       this.setDriverTimeFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+      if((this.router.url).includes("drivetimemanagement")){
+        this.reloadCurrentComponent();
+      }
     });
   }
 
@@ -272,6 +312,5 @@ export class DriverTimePreferencesComponent implements OnInit {
   reloadCurrentComponent(){
     window.location.reload(); //-- reload screen
   }
-
 
 }

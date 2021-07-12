@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.reports
         Task<List<EcoScoreCompareReportAtttributes>> GetEcoScoreCompareReportAttributes(int reportId, int targetProfileId);
         Task<List<AlertCategory>> GetAlertCategoryList();
         Task<List<FleetFuelDetails>> GetFleetFuelDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
-        Task<List<FleetFuelDetails>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters);
+        Task<List<FleetFuelDetailsByDriver>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters);
         Task<List<FilterProperty>> GetAlertLevelList();
         Task<List<FilterProperty>> GetHealthStatusList();
         Task<List<FilterProperty>> GetOtherFilter();
@@ -45,7 +45,13 @@ namespace net.atos.daf.ct2.reports
         Task<bool> GetChartInfo(EcoScoreDataServiceRequest request);
         Task<List<DriverFilter>> GetDriverList(List<string> vins);
         Task<List<FleetFuel_VehicleGraph>> GetFleetFuelDetailsForVehicleGraphs(FleetFuelFilter fleetFuelFilters);
+        Task<List<FleetFuel_VehicleGraph>> GetFleetFuelDetailsForDriverGraphs(FleetFuelFilter fleetFuelFilters);
 
-        Task<List<FleetFuelTripDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
+        Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
+        Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriver fleetFuelFilters);
+
+        Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest);
+        Task<List<WarningDetails>> GetWarningDetails(List<int> warningClass, List<int> warningNumber, string lngCode);
+        Task<List<DriverDetails>> GetDriverDetails(List<string> driverIds, int organizationId);
     }
 }

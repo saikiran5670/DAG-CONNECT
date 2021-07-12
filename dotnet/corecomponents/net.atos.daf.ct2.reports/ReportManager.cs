@@ -234,13 +234,13 @@ namespace net.atos.daf.ct2.reports
                 {
                     //< Min = Red
                     if (driver.EcoScoreRanking <= objEcoScoreKPI.MinValue)
-                        driver.EcoScoreRankingColor = RankingColor.RED.ToString();
+                        driver.EcoScoreRankingColor = RankingColor.Red.ToString();
                     //> Target = Green
                     else if (driver.EcoScoreRanking >= objEcoScoreKPI.TargetValue)
-                        driver.EcoScoreRankingColor = RankingColor.GREEN.ToString();
+                        driver.EcoScoreRankingColor = RankingColor.Green.ToString();
                     //Between Min and Target = Amber
                     else
-                        driver.EcoScoreRankingColor = RankingColor.AMBER.ToString();
+                        driver.EcoScoreRankingColor = RankingColor.Amber.ToString();
 
                     lstByAllDrivers.Add(driver);
                 }
@@ -336,6 +336,18 @@ namespace net.atos.daf.ct2.reports
             List<DriverFilter> lstDriver = await _reportRepository.GetDriverList(vins);
             return lstDriver;
         }
+        public async Task<List<WarningDetails>> GetWarningDetails(List<int> warningClass, List<int> warningNumber, string lngCode)
+        {
+            List<WarningDetails> lstWarningDetails = await _reportRepository.GetWarningDetails(warningClass, warningNumber, lngCode);
+            return lstWarningDetails;
+        }
+        public async Task<List<DriverDetails>> GetDriverDetails(List<string> driverIds, int organizationId)
+        {
+            List<DriverDetails> lstDriverDetails = await _reportRepository.GetDriverDetails(driverIds, organizationId);
+            return lstDriverDetails;
+        }
+
+
         #endregion
 
         #region Feet Fuel Report
@@ -343,13 +355,15 @@ namespace net.atos.daf.ct2.reports
         public async Task<List<FleetFuelDetails>> GetFleetFuelDetailsByVehicle(FleetFuelFilter fleetFuelFilters)
         {
             List<FleetFuelDetails> lstFleetFuelDetails = await _reportRepository.GetFleetFuelDetailsByVehicle(fleetFuelFilters);
-            return lstFleetFuelDetails;
+            List<FleetFuelDetails> lstFleetFuelDetailsUpdated = await PrepareDetails(lstFleetFuelDetails, fleetFuelFilters.LanguageCode);
+            return lstFleetFuelDetailsUpdated;
         }
 
-        public async Task<List<FleetFuelDetails>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters)
+        public async Task<List<FleetFuelDetailsByDriver>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters)
         {
-            List<FleetFuelDetails> lstFleetFuelDetails = await _reportRepository.GetFleetFuelDetailsByVehicle(fleetFuelFilters);
-            return lstFleetFuelDetails;
+            List<FleetFuelDetailsByDriver> lstFleetFuelDetails = await _reportRepository.GetFleetFuelDetailsByDriver(fleetFuelFilters);
+            List<FleetFuelDetailsByDriver> lstFleetFuelDetailsUpdated = await PrepareDetails(lstFleetFuelDetails, fleetFuelFilters.LanguageCode);
+            return lstFleetFuelDetailsUpdated;
         }
 
         public async Task<List<FleetFuel_VehicleGraph>> GetFleetFuelDetailsForVehicleGraphs(FleetFuelFilter fleetFuelFilters)
@@ -357,12 +371,106 @@ namespace net.atos.daf.ct2.reports
             List<FleetFuel_VehicleGraph> lstFleetFuelDetails = await _reportRepository.GetFleetFuelDetailsForVehicleGraphs(fleetFuelFilters);
             return lstFleetFuelDetails;
         }
-
-        public async Task<List<FleetFuelTripDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters)
+        public async Task<List<FleetFuel_VehicleGraph>> GetFleetFuelDetailsForDriverGraphs(FleetFuelFilter fleetFuelFilters)
         {
-            List<FleetFuelTripDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByVehicle(fleetFuelFilters);
+            List<FleetFuel_VehicleGraph> lstFleetFuelDetails = await _reportRepository.GetFleetFuelDetailsForDriverGraphs(fleetFuelFilters);
+            return lstFleetFuelDetails;
+        }
+
+        public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters)
+        {
+            List<FleetFuelDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByVehicle(fleetFuelFilters);
             return lstFleetFuelTripDetails;
-        }       
+        }
+
+        public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriver fleetFuelFilters)
+        {
+            List<FleetFuelDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByDriver(fleetFuelFilters);
+            return lstFleetFuelTripDetails;
+        }
+        /// <summary>
+        /// To apply formula and mapped values according to language code
+        /// </summary>
+        /// <param name="fleetFuelDetails">List of Fleet Fuel result without formula</param>
+        /// <param name="languageCode">requested language code </param>
+        /// <returns>list of details with formulated values</returns>
+        private async Task<List<FleetFuelDetails>> PrepareDetails(List<FleetFuelDetails> fleetFuelDetails, string languageCode)
+        {
+
+            List<CO2Coefficient> co2CoEfficientData = await _reportRepository.GetCO2CoEfficientData();
+            List<IdlingConsumption> idlingConsumption = await _reportRepository.GetIdlingConsumptionData(languageCode);
+            List<AverageTrafficClassification> averageTrafficClassification = await _reportRepository.GetAverageTrafficClassificationData(languageCode);
+
+            Parallel.ForEach(fleetFuelDetails, item =>
+            {
+                // Mapping expected value (as Modrate, Good, Very Good) from range
+                double idlConsumptionHighValue = idlingConsumption.Where(idl => idl.MaxValue <= 0).Select(item => item.MinValue).FirstOrDefault();
+                if (item.IdlingConsumption > idlConsumptionHighValue)
+                {
+                    string idlConsumptionValue = idlingConsumption.Where(idl => idl.MaxValue <= 0).Select(item => item.Value).FirstOrDefault();
+                    item.IdlingConsumptionValue = idlConsumptionValue;
+                }
+                else
+                {
+                    string idlConsumptionValue = idlingConsumption.Where(idl => idl.MaxValue <= item.IdlingConsumption && idl.MinValue >= item.IdlingConsumption).Select(item => item.Value).FirstOrDefault();
+                    item.IdlingConsumptionValue = idlConsumptionValue;
+                }
+
+                // Mapping expected trafic level (as Low, Mid, High) from range
+                double averageTrafficClassificationMaxValue = averageTrafficClassification.Where(idl => idl.MaxValue <= 0).Select(item => item.MinValue).FirstOrDefault();
+                if (item.AverageTrafficClassification > averageTrafficClassificationMaxValue)
+                {
+                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue <= 0).Select(item => item.Value).FirstOrDefault();
+                    item.AverageTrafficClassificationValue = averageTrafficClassificationValue;
+                }
+                else
+                {
+                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue <= item.AverageTrafficClassification && idl.MinValue >= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
+                    item.AverageTrafficClassificationValue = averageTrafficClassificationValue;
+                }
+            });
+            return fleetFuelDetails;
+
+        }
+
+        private async Task<List<FleetFuelDetailsByDriver>> PrepareDetails(List<FleetFuelDetailsByDriver> fleetFuelDetails, string languageCode)
+        {
+
+            List<CO2Coefficient> co2CoEfficientData = await _reportRepository.GetCO2CoEfficientData();
+            List<IdlingConsumption> idlingConsumption = await _reportRepository.GetIdlingConsumptionData(languageCode);
+            List<AverageTrafficClassification> averageTrafficClassification = await _reportRepository.GetAverageTrafficClassificationData(languageCode);
+
+            Parallel.ForEach(fleetFuelDetails, item =>
+            {
+                // Mapping expected value (as Modrate, Good, Very Good) from range
+                double idlConsumptionHighValue = idlingConsumption.Where(idl => idl.MaxValue <= 0).Select(item => item.MinValue).FirstOrDefault();
+                if (item.IdlingConsumption > idlConsumptionHighValue)
+                {
+                    string idlConsumptionValue = idlingConsumption.Where(idl => idl.MaxValue <= 0).Select(item => item.Value).FirstOrDefault();
+                    item.IdlingConsumptionValue = idlConsumptionValue;
+                }
+                else
+                {
+                    string idlConsumptionValue = idlingConsumption.Where(idl => idl.MaxValue <= item.IdlingConsumption && idl.MinValue >= item.IdlingConsumption).Select(item => item.Value).FirstOrDefault();
+                    item.IdlingConsumptionValue = idlConsumptionValue;
+                }
+
+                // Mapping expected trafic level (as Low, Mid, High) from range
+                double averageTrafficClassificationMaxValue = averageTrafficClassification.Where(idl => idl.MaxValue <= 0).Select(item => item.MinValue).FirstOrDefault();
+                if (item.AverageTrafficClassification > averageTrafficClassificationMaxValue)
+                {
+                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue <= 0).Select(item => item.Value).FirstOrDefault();
+                    item.AverageTrafficClassificationValue = averageTrafficClassificationValue;
+                }
+                else
+                {
+                    string averageTrafficClassificationValue = averageTrafficClassification.Where(idl => idl.MaxValue <= item.AverageTrafficClassification && idl.MinValue >= item.AverageTrafficClassification).Select(item => item.Value).FirstOrDefault();
+                    item.AverageTrafficClassificationValue = averageTrafficClassificationValue;
+                }
+            });
+            return fleetFuelDetails;
+
+        }
         #endregion
 
         #region Eco-Score Data service
@@ -371,6 +479,15 @@ namespace net.atos.daf.ct2.reports
 
         public Task<bool> GetChartInfo(EcoScoreDataServiceRequest request) => _reportRepository.GetChartInfo(request);
 
+        #endregion
+
+        #region VehicleHealthStatus
+        public async Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest)
+        {
+            vehicleHealthStatusRequest.WarningType = !string.IsNullOrEmpty(vehicleHealthStatusRequest.TripId) ? "A" : string.Empty;
+            var data = await _reportRepository.GetVehicleHealthStatus(vehicleHealthStatusRequest);
+            return data;
+        }
         #endregion
     }
 }

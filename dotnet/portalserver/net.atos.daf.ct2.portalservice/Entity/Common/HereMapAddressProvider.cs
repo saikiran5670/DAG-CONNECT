@@ -28,6 +28,13 @@ namespace net.atos.daf.ct2.portalservice.Common
 
 
         }
+        public GetMapRequest GetAddressObject(double lat, double lng)
+        {
+
+            var mapRequest = new GetMapRequest() { Latitude = lat, Longitude = lng };
+            var lookupAddress = _mapServiceClient.GetMapAddressAsync(mapRequest).GetAwaiter().GetResult();
+            return lookupAddress.LookupAddresses;
+        }
 
         public TripData UpdateTripAddress(TripData tripData)
         {

@@ -71,7 +71,7 @@ export class AppComponent {
     fueldeviationreport: 'Fuel Deviation Report',
     vehicleperformancereport: 'Vehicle Performance Report',
     drivetimemanagement: 'Drive Time Management',
-    ecoscorereport: 'Ecoscore Report',
+    ecoscorereport: 'Eco Score Report',
     ecoscoreprofilemanagement: 'EcoScore Profile Management',
     alerts: 'Alerts',
     landmarks: 'Landmarks',
@@ -97,7 +97,7 @@ export class AppComponent {
     shop: 'Shop',
     information: 'Information',
     legalnotices: 'Legal Notices',
-    termsAndconditionhistory: 'Terms & Conditions History',
+    termsAndconditionhistory: 'Terms And Condition History',
     dtctranslation: 'DTC Translation'
   }
 
@@ -134,7 +134,7 @@ export class AppComponent {
         fueldeviationreport: 'Fuel Deviation Report',
         vehicleperformancereport: 'Vehicle Performance Report',
         drivetimemanagement: 'Drive Time Management',
-        ecoscorereport: 'Ecoscore Report'
+        ecoscorereport: 'Eco Score Report'
       }
     },
     configuration: {
@@ -166,7 +166,7 @@ export class AppComponent {
         organisationrelationshipmanagement: 'Organisation Relationship Management',
         relationshipmanagement: 'Relationship Management',
         translationmanagement: 'Translation Management',
-        configurationmanagemnt: 'Configuration Managemnt',
+        configurationmanagemnt: 'Configuration Management',
         packagemanagement: 'Package Management',
         accessrelationshipmanagement: 'Access Relationship Management',
         subscriptionmanagement: 'Subscription Management',
@@ -219,7 +219,7 @@ export class AppComponent {
       icon: "notes",
       externalLink: false,
       pageTitles: {
-        termsAndconditionhistory: 'Terms & Conditions History'
+        termsAndconditionhistory: 'Terms And Condition History'
       }
     }
   }
@@ -301,7 +301,7 @@ export class AppComponent {
         this.subpage = val.url.split('/')[2];
 
         let userLoginStatus = localStorage.getItem("isUserLogin");
-        if (val.url == "/auth/login" || val.url.includes("/auth/createpassword/") || val.url.includes("/auth/resetpassword/") || val.url.includes("/auth/resetpasswordinvalidate/")) {
+        if (val.url == "/auth/login" || val.url.includes("/auth/createpassword/") || val.url.includes("/auth/resetpassword/") || val.url.includes("/auth/resetpasswordinvalidate/") || val.url.includes("/downloadreport/")) {
           this.isLogedIn = false;
         } else if (val.url == "/") {
           this.isLogedIn = false;
@@ -548,7 +548,7 @@ export class AppComponent {
       lblFuelDeviationReport: 'Fuel Deviation Report',
       lblvehiclePerformanceReport: 'Vehicle Performance Report',
       lblDriveTimeManagement: 'Drive Time Management',
-      lblEcoscoreReport: 'Ecoscore Report',
+      lblEcoscoreReport: 'Eco Score Report',
       lblConfiguration: "Configuration",
       lblAlerts: 'Alerts',
       lblLandmarks: 'Landmarks',
@@ -575,7 +575,7 @@ export class AppComponent {
       lblShop: 'Shop',
       lblInformation: 'Information',
       lblLegalNotices: 'Legal Notices',
-      lblTermsAndConditionHistory: 'Terms & Conditions History',
+      lblTermsAndConditionHistory: 'Terms And Condition History',
       lblDTCTranslation: "DTC Translation"
     }
   }
@@ -791,6 +791,7 @@ export class AppComponent {
     let rolename = this.roleDropdown.filter(item => parseInt(item.id) === parseInt(value));
     this.userRole = rolename[0].name;
     this.filterOrgBasedRoles(localStorage.getItem("accountOrganizationId"), true);
+    this.router.navigate(['/dashboard']);
   }
 
   filterOrgBasedRoles(orgId: any, defaultType: boolean) {

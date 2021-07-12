@@ -4,10 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -136,7 +133,7 @@ public class TripBackup implements Serializable {
 	private Double tripCalPtoDuration;
 	
 	@Column(name = "harsh_brake_duration")
-	private Double triCalHarshBrakeDuration;
+	private Double tripCalHarshBrakeDuration;
 	
 	@Column(name = "heavy_throttle_duration")
 	private Double tripCalHeavyThrottleDuration;

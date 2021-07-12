@@ -296,7 +296,10 @@ lineChartOptions = {
       position: 'left',
       type: 'linear',
       ticks: {
-        beginAtZero:true
+        steps: 10,
+        stepSize: 1,
+        // max:10,
+        beginAtZero: true,
       },
       scaleLabel: {
         display: true,
@@ -796,6 +799,8 @@ calendarOptions: CalendarOptions = {
     this.lineChartVehicleCount = [];
     this.chartsLabelsdefined = [];
     this.averageDistanceBarData = [];
+    //this.calendarValue=[]; 
+    //this.calendarOptions.events = this.calendarValue;
   }
 
   onReset(){
@@ -932,7 +937,8 @@ calendarOptions: CalendarOptions = {
       default: {
         this.calendarValue = [];
       }
-    }
+    
+    }    
     this.calendarValue.push(this.calendarOptions.events[0]); 
     this.calendarOptions.events = this.calendarValue;
     return this.calendarOptions.events;    

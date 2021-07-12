@@ -66,6 +66,7 @@ export class ExistingTripsComponent implements OnInit {
   existingTripData: any = [];
   dataColValue: any = [];
   createEditStatus = false;
+  corridorDistance :any = 0;
   accountOrganizationId: any = 0;
   corridorCreatedMsg: any = '';
   covertedDateValue: any = [];
@@ -195,6 +196,14 @@ export class ExistingTripsComponent implements OnInit {
       this.vehicleGroupIdsSet.push(item.vehicleGroupId);
       this.vehicleGroupIdsSet = [...new Set(this.vehicleGroupIdsSet)];
     });
+    if(this.vehicleGroupIdsSet.length > 0){
+      this.vehicleGroupIdsSet.unshift(this.translationData.lblAll || 'All' );
+    };    
+    this.vinList = [];    
+    this.vehicleGroupList.forEach(item => {      
+        this.vinList.push(item.vin)      
+    });    
+    
     this.showLoadingIndicator = true;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -215,6 +224,11 @@ export class ExistingTripsComponent implements OnInit {
       startTime: ['', []],
       endTime: ['', []]
       // userGroupDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('label')
+      ]
     });
     let translationObj = {
       id: 0,
@@ -229,11 +243,11 @@ export class ExistingTripsComponent implements OnInit {
       // this.processTranslation(data);
       this.setDefaultStartEndTime();
       this.setPrefFormatDate();
-      this.setDefaultTodayDate();
-
+      this.setDefaultTodayDate();    
     });
     // this.loadExistingTripData();
     this.setDefaultTodayDate();
+    this.existingTripForm.get('vehicleGroup').setValue('All');
   }
 
   public ngAfterViewInit() {
@@ -407,7 +421,7 @@ export class ExistingTripsComponent implements OnInit {
     // this.vinListSelectedValue = "5A39727"
     // _startTime = 1604336137000
     // _endTime = 1604337449000
-    this.poiService.getalltripdetails(_startTime, _endTime, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
+      this.poiService.getalltripdetails(_startTime, _endTime, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
       this.showLoadingIndicator = true;
       this.initData = existingTripDetails.tripData;
 
@@ -430,11 +444,11 @@ export class ExistingTripsComponent implements OnInit {
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.existingTripForm.get('vehicle').setValue('');
-    this.existingTripForm.get('vehicleGroup').setValue('');
+    this.existingTripForm.get('vehicleGroup').setValue('All');
     // this.existingTripForm.get('startTime').setValue(this.selectedStartTime);
     // this.existingTripForm.get('endTime').setValue(this.selectedEndTime);
     this.vinListSelectedValue = '';
-    this.vinList = [];
+    //this.vinList = [];
     this.initData = [];
     this.updatedTableData(this.initData);
    }
@@ -601,12 +615,17 @@ export class ExistingTripsComponent implements OnInit {
   vehicleGroupSelection(vehicleGroupValue: any) {
     this.vinList = [];
     // console.log("----vehicleGroupList---",this.vehicleGroupList)
+    if(vehicleGroupValue.value == "All"){   
+      this.vehicleGroupList.forEach(item => {      
+          this.vinList.push(item.vin)      
+      });        
+    }
     this.vehicleGroupList.forEach(item => {
       // this.vehicleGroupIdsSet.push(item.vehicleGroupId)
       if (item.vehicleGroupId == vehicleGroupValue.value) {
         this.vinList.push(item.vin)
       }
-    });
+    });      
   }
 
   // ------------- Map Functions ------------------------//
@@ -858,6 +877,7 @@ export class ExistingTripsComponent implements OnInit {
         "distance": items.distance,
         "nodePoints": [...this.internalNodePoints],
       }
+      this.corridorDistance= this.corridorDistance + items.distance;
       this.selectedTrips.push(createExistingTripObj)
     })
 
@@ -878,7 +898,7 @@ export class ExistingTripsComponent implements OnInit {
       "zipcode": "",
       "startLatitude": this.startAddressLatitudePoints[0],
       "startLongitude": this.startAddressLongitudePoints[0],
-      "distance": 0,
+      "distance": this.corridorDistance,
       "state": "",
       "existingTrips": [...this.selectedTrips]
     }

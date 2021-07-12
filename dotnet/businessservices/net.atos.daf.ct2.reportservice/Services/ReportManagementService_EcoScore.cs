@@ -88,7 +88,8 @@ namespace net.atos.daf.ct2.reportservice.Services
                     LimitValue = profileKPI.LimitValue,
                     TargetValue = profileKPI.TargetValue,
                     LowerValue = profileKPI.LowerValue,
-                    UpperValue = profileKPI.UpperValue
+                    UpperValue = profileKPI.UpperValue,
+                    LimitType = Convert.ToString(profileKPI.LimitType)
                 });
             }
             dto.ProfileKPIs = profileKPIs;
@@ -116,6 +117,12 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     response.Code = Responsecode.Success;
                     response.Message = entity.ReportConstants.GET_ECOSCORE_PROFILE_SUCCESS_MSG;
+
+                    ProfileType profileType = (ProfileType)Convert.ToChar(context.RequestHeaders.Get("allowed_type").Value);
+
+                    if (profileType != ProfileType.None)
+                        result = result.Except(result.Where(x => x.Type != profileType)).ToList();
+
                     response.Profiles.AddRange(MapEcoScoreProfileResponse(result));
                 }
                 else
@@ -151,7 +158,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     ProfileId = profile.Id,
                     ProfileName = profile.Name ?? string.Empty,
                     ProfileDescription = profile.Description ?? string.Empty,
-                    IsDeleteAllowed = profile.IsDeleteAllowed,
+                    IsDeleteAllowed = profile.Type == ProfileType.None,
                     OrganizationId = Convert.ToInt32(profile.OrganizationId),
                 });
             }
@@ -419,7 +426,15 @@ namespace net.atos.daf.ct2.reportservice.Services
                 if (resultDataMart?.Count > 0)
                 {
                     response.Drivers.AddRange(_mapper.MapEcoScoreReportDrivers(resultDataMart));
-                    response.CompareDrivers = _mapper.MapEcoScoreReportCompareDriversResponse(resultDataMart, reportAttributes);
+                    try
+                    {
+                        response.CompareDrivers = _mapper.MapEcoScoreReportCompareDriversResponse(resultDataMart, reportAttributes);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(null, ex);
+                        throw new Exception("Error occurred while parsing the EcoScore compare drivers.");
+                    }
                     response.Code = Responsecode.Success;
                     response.Message = ReportConstants.GET_REPORT_DETAILS_SUCCESS_MSG;
                 }
@@ -495,7 +510,6 @@ namespace net.atos.daf.ct2.reportservice.Services
                 IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
                 var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
                 var roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
-                var res = JsonConvert.SerializeObject(roleBasedUserPreferences);
                 if (userPreferencesExists)
                 {
                     var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
@@ -510,15 +524,14 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 try
                 {
-                    response.UserPreference = _mapper.MapReportUserPreferences(userPreferences);
+                    response = _mapper.MapReportUserPreferences(userPreferences);
                 }
                 catch (Exception ex)
                 {
                     _logger.Error(null, ex);
-                    throw new Exception("Error occurred while parsing the report user preferences.");
+                    throw new Exception("Error occurred while parsing the report user preferences or data is missing.");
                 }
 
-                response.Code = Responsecode.Success;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)

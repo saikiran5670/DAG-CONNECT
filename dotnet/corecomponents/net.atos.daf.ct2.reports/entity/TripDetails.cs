@@ -33,6 +33,8 @@ namespace net.atos.daf.ct2.reports.entity
         public double StartPositionLongitude { get; set; }
         public double EndPositionLattitude { get; set; }
         public double EndPositionLongitude { get; set; }
+        public string RegistrationNo { get; set; }
+        public string VehicleName { get; set; }
 
         public List<LiveFleetPosition> LiveFleetPosition { get; set; }
     }

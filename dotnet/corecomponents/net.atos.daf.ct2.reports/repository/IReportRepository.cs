@@ -42,22 +42,25 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<AlertCategory>> GetAlertCategoryList();
         #region FleetFuel
         Task<List<CO2Coefficient>> GetCO2CoEfficientData();
-        Task<List<IdlingConsumption>> GetIdlingConsumptionData();
-        Task<List<AverageTrafficClassification>> GetAverageTrafficClassificationData();
+        Task<List<IdlingConsumption>> GetIdlingConsumptionData(string languageCode);
+        Task<List<AverageTrafficClassification>> GetAverageTrafficClassificationData(string languageCode);
         Task<List<FleetFuelDetails>> GetFleetFuelDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
-        Task<List<FleetFuelDetails>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters);
+        Task<List<FleetFuelDetailsByDriver>> GetFleetFuelDetailsByDriver(FleetFuelFilter fleetFuelFilters);
         Task<List<FleetFuel_VehicleGraph>> GetFleetFuelDetailsForVehicleGraphs(FleetFuelFilter fleetFuelFilters);
-        Task<List<FleetFuelTripDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
+        Task<List<FleetFuel_VehicleGraph>> GetFleetFuelDetailsForDriverGraphs(FleetFuelFilter fleetFuelFilters);
+        Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters);
+        Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriver fleetFuelFilters);
         #endregion
         Task<List<FilterProperty>> GetAlertLevelList();
         Task<List<FilterProperty>> GetHealthStatusList();
         Task<List<FilterProperty>> GetOtherFilter();
-        #region FleetOverviewDetails
         Task<List<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter);
-        #endregion
         Task<bool> GetKPIInfo(EcoScoreDataServiceRequest request);
         Task<bool> GetChartInfo(EcoScoreDataServiceRequest request);
         Task<List<DriverFilter>> GetDriverList(List<string> vins);
 
+        Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest);
+        Task<List<WarningDetails>> GetWarningDetails(List<int> warningClass, List<int> warningNumber, string lngCode);
+        Task<List<DriverDetails>> GetDriverDetails(List<string> driverIds, int organizationId);
     }
 }

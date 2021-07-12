@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DinkToPdf;
 using DinkToPdf.Contracts;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.account.report;
 using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reportscheduler.entity;
+using net.atos.daf.ct2.reportscheduler.helper;
 using net.atos.daf.ct2.reportscheduler.repository;
 using net.atos.daf.ct2.template;
 using net.atos.daf.ct2.unitconversion;
@@ -22,10 +26,11 @@ namespace net.atos.daf.ct2.reportscheduler.report
         private readonly ILogger<ReportCreator> _logger;
         private readonly IConverter _generatePdf;
         private readonly IReportManager _reportManager;
-        private readonly IReportSchedulerRepository _reportSchedularRepository;
+        private readonly IReportSchedulerRepository _reportSchedulerRepository;
         private readonly IVisibilityManager _visibilityManager;
         private readonly ITemplateManager _templateManager;
         private readonly IUnitConversionManager _unitConversionManager;
+        private readonly IUnitManager _unitManager;
 
         public string ReportName { get; private set; }
         public string ReportKey { get; private set; }
@@ -37,14 +42,16 @@ namespace net.atos.daf.ct2.reportscheduler.report
                             IConverter generatePdf, IReportManager reportManager,
                              IReportSchedulerRepository reportSchedularRepository,
                              IVisibilityManager visibilityManager, ITemplateManager templateManager,
-                             IUnitConversionManager unitConversionManager)
+                             IUnitConversionManager unitConversionManager, IUnitManager unitManager, IConfiguration configuration)
         {
             _generatePdf = generatePdf;
             _reportManager = reportManager;
-            _reportSchedularRepository = reportSchedularRepository;
+            _reportSchedulerRepository = reportSchedularRepository;
             _visibilityManager = visibilityManager;
             _templateManager = templateManager;
             _unitConversionManager = unitConversionManager;
+            _unitManager = unitManager;
+            ReportSingleton.GetInstance().SetDAFSupportEmailId(configuration["ReportCreationScheduler:DAFSupportEmailId"] ?? string.Empty);
             _logger = logger;
         }
 
@@ -60,44 +67,21 @@ namespace net.atos.daf.ct2.reportscheduler.report
         private IReport InitializeReport(string reportKey) =>
         reportKey switch
         {
-            ReportNameConstants.REPORT_TRIP => new TripReport(_reportManager, _reportSchedularRepository, _visibilityManager,
+            ReportNameConstants.REPORT_TRIP => new TripReport(_reportManager, _reportSchedulerRepository, _visibilityManager,
                                                               _templateManager, _unitConversionManager, EmailEventType.TripReport, EmailContentType.Html),
-            ReportNameConstants.REPORT_TRIP_TRACING => null,
+            ReportNameConstants.REPORT_FLEET_UTILISATION => new FleetUtilisation(_reportManager, _reportSchedulerRepository, _visibilityManager,
+                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetUtilisation, EmailContentType.Html),
             _ => throw new ArgumentException(message: "invalid Report Key value", paramName: nameof(reportKey)),
         };
 
         public async Task<bool> GenerateReport()
         {
             if (!IsAllParameterSet) throw new Exception("Report Creation all Parameters are not set.");
-            await Report.SetParameters(ReportSchedulerData);
-            var globalSettings = new GlobalSettings
-            {
-                ColorMode = ColorMode.Color,
-                Orientation = Orientation.Portrait,
-                PaperSize = PaperKind.A4,
-                Margins = new MarginSettings { Top = 10 }
-                //DocumentTitle = "PDF Report"//,
-                //Out = $@"C:\Users\harneet.r (58879009)\Documents\POC\Employee_Report{ReportSchedulerData.Id}.pdf"
-            };
-            string htmlText = await Report.GenerateTemplate(await GetLogoImage());
 
-            _logger.LogInformation($"Rpt Id: {ReportSchedulerData.Id}: {htmlText}");
-
-            var objectSettings = new ObjectSettings
-            {
-                PagesCount = true,
-                HtmlContent = htmlText,//WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css") },
-                HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
-                FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = ReportSchedulerData.ReportName, Spacing = 0 }
-            };
-
-            var pdf = new HtmlToPdfDocument()
-            {
-                GlobalSettings = globalSettings,
-                Objects = { objectSettings }
-            };
+            Report.SetParameters(ReportSchedulerData, await GetVehicleDetails());
+            var pdf = await GetHtmlToPdfDocument();
             //var pdf123 = _generatePdf.Convert(pdf);
-            return await _reportSchedularRepository
+            return await _reportSchedulerRepository
                             .InsertReportPDF(new ScheduledReport
                             {
                                 Report = _generatePdf.Convert(pdf),
@@ -112,9 +96,79 @@ namespace net.atos.daf.ct2.reportscheduler.report
                             }) > 0;
         }
 
+        private async Task<HtmlToPdfDocument> GetHtmlToPdfDocument()
+        {
+            var globalSettings = new GlobalSettings
+            {
+                ColorMode = ColorMode.Color,
+                Orientation = Orientation.Portrait,
+                PaperSize = PaperKind.A4,
+                Margins = new MarginSettings { Top = 10 },
+                //Out = $@"C:\POC\{ ReportSchedulerData.ReportName }_{ ReportSchedulerData.Id }_{ DateTime.Now.ToString("ddMMyyyyHHmmss") }.pdf"
+            };
+            //string htmlText = await Report.GenerateTemplate(await GetLogoImage());
+
+            //_logger.LogInformation($"Rpt Id: {ReportSchedulerData.Id}: {htmlText}");
+
+            var objectSettings = new ObjectSettings
+            {
+                PagesCount = true,
+                HtmlContent = await Report.GenerateTemplate(await GetLogoImage()),
+                //WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css") },
+                HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
+                FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Left = $"Support: {ReportSingleton.GetInstance().GetDAFSupportEmailId()}", Spacing = 0 }
+            };
+
+            var pdf = new HtmlToPdfDocument()
+            {
+                GlobalSettings = globalSettings,
+                Objects = { objectSettings }
+            };
+            return pdf;
+        }
+
+        private async Task<IEnumerable<VehicleList>> GetVehicleDetails()
+        {
+            List<VehicleList> vehicleList = new List<VehicleList>();
+            if (ReportKey == ReportNameConstants.REPORT_TRIP)
+            {
+                vehicleList.Add(await _reportSchedulerRepository.GetVehicleListForSingle(ReportSchedulerData.Id));
+            }
+            else
+            {
+                vehicleList.AddRange(await _reportSchedulerRepository.GetVehicleList(ReportSchedulerData.Id));
+            }
+
+            if (vehicleList == null || vehicleList.Count == 0)
+            {
+                throw new Exception(TripReportConstants.NO_VEHICLE_MSG);
+            }
+            var vinData = string.Join(',', vehicleList.Select(s => s.VIN).ToArray());
+            var vehicleAssociationList = await _visibilityManager.GetVehicleByAccountVisibility(ReportSchedulerData.CreatedBy, ReportSchedulerData.OrganizationId);
+            if (vehicleAssociationList == null || vehicleAssociationList.Count() == 0)
+            {
+                throw new Exception(TripReportConstants.NO_ASSOCIATION_MSG);
+            }
+            var removeVehicleList = new List<int>();
+            foreach (var item in vehicleList)
+            {
+                if (!vehicleAssociationList.Any(w => w.VehicleId == item.Id))
+                {
+                    removeVehicleList.Add(item.Id);
+                }
+            }
+            vehicleList.RemoveAll(p => removeVehicleList.Contains(p.Id));
+            if (vehicleList.Count == 0)
+            {
+                throw new Exception(string.Format(TripReportConstants.NO_VEHICLE_ASSOCIATION_MSG, vinData));
+            }
+
+            return vehicleList;
+        }
+
         private async Task<byte[]> GetLogoImage()
         {
-            var reportLogo = await _reportSchedularRepository.GetReportLogo(ReportSchedulerData.CreatedBy);
+            var reportLogo = await _reportSchedulerRepository.GetReportLogo(ReportSchedulerData.CreatedBy);
             return reportLogo?.Image;
         }
     }

@@ -73,8 +73,16 @@
         public const string GET_FLEET_FUEL_VALIDATION_ENDDATE_MSG = "Invalid end date.";
         public const string GET_FLEET_FUEL_VALIDATION_VINREQUIRED_MSG = "Invalid VIN details.";
         public const string GET_FLEET_FUEL_VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
-        public const string GET_FLEET_FUEL_SUCCESS_MSG = "Fleet Fueld details fetched successfully";
+        public const string GET_FLEET_FUEL_SUCCESS_MSG = "Fleet Fuel details fetched successfully";
         public const string GET_FLEET_FUEL_FAILURE_MSG = "No Result Found";
+        public const string GET_FLEET_FUEL_VALIDATION_DRIVERID_MSG = "Invalid Driver ID";
+
+        #endregion
+
+        #region Vehicle Health Summary
+        public const string VALIDATION_MSG_FROMDATE = "From Date should be less than To Date.";
+        public const string FAILURE_MSG = "No Result Found.";
+        public const string SUCCESS_MSG = "Vehicle summary details fetched successfully.";
         #endregion
     }
 }

@@ -36,6 +36,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 
         Task<IEnumerable<ReportSchedulerEmailResult>> GetReportEmailDetails();
         Task<int> UpdateTimeRangeByDate(ReportEmailFrequency reportEmailFrequency);
+        Task<int> UpdateTimeRangeByCalenderTime(ReportEmailFrequency reportEmailFrequency);
 
     }
 }

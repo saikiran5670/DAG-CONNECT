@@ -5,6 +5,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.tuple.Tuple10;
 import org.apache.flink.api.java.tuple.Tuple9;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -70,7 +71,7 @@ public class TripStreamingJob {
 			
 			logger.info(" completed reading the streaming data !!!!!!!!!!!!!! ");
 
-			SingleOutputStreamOperator<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> indxData = tripAggregation
+			SingleOutputStreamOperator<Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>> indxData = tripAggregation
 					.getTripIndexData(statusDataStream, tableEnv, envParams);
 			
 			SingleOutputStreamOperator<TripStatusData> tripStsWithCo2Emission = tripAggregation.getTripStsWithCo2Emission(statusDataStream);
@@ -252,6 +253,35 @@ public class TripStreamingJob {
 
 				tripStsData.setVSumTripDPAAnticipationScore(
 						stsMsg.getDocument().getVSumTripDPAAnticipationScore());
+				
+				tripStsData.setVTripIdlePTODuration(
+						stsMsg.getDocument().getVTripIdlePTODuration());
+				tripStsData.setVTripIdleWithoutPTODuration(
+						stsMsg.getDocument().getVTripIdleWithoutPTODuration());
+				
+				if(stsMsg.getDocument().getVCruiseControlDistanceDistr() != null){
+					Integer[] distrArrayInt = stsMsg.getDocument().getVCruiseControlDistanceDistr().getDistrArrayInt();
+					if(distrArrayInt != null){
+						int cruiseDistrSz = distrArrayInt.length;
+						
+						if(cruiseDistrSz >1)
+							tripStsData.setTripCalCrsCntrlDist25To50(distrArrayInt[1]);
+						
+						if(cruiseDistrSz >2)
+							tripStsData.setTripCalCrsCntrlDist50To75(distrArrayInt[2]);
+						
+						if(cruiseDistrSz >3){
+							int totalCruiseAbv75 =0;
+							for(int i =3; i < cruiseDistrSz ; i++ )
+								totalCruiseAbv75 = totalCruiseAbv75 + distrArrayInt[i];
+							
+							tripStsData.setTripCalCrsCntrlDistAbv75(totalCruiseAbv75);
+						}
+						
+					}
+					//distrArrayInt[new Integer(1)];
+				}
+					
 			}
 			
 			logger.info("tripStsData.getTripCalVehTimeDiffInHr : "+tripStsData.getTripCalVehTimeDiffInHr());

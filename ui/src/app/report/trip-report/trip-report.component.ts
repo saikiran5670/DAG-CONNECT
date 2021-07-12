@@ -22,6 +22,7 @@ import { Util } from '../../shared/util';
 import { Router, NavigationExtras } from '@angular/router';
 import { OrganizationService } from '../../services/organization.service';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
+import { element } from 'protractor';
 
 declare var H: any;
 
@@ -50,7 +51,9 @@ selectedStartTime: any = '00:00';
 selectedEndTime: any = '23:59'; 
 tripForm: FormGroup;
 mapFilterForm: FormGroup;
-displayedColumns = ['All', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
+// displayedColumns = ['All','vin', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
+// displayedColumns = ['All','vin','odometer','vehicleName','registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
+displayedColumns = ['All','vin','odometer','vehicleName','registrationNo','startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
 translationData: any;
 showMap: boolean = false;
 showBack: boolean = false;
@@ -104,63 +107,63 @@ internalSelection: boolean = false;
 herePOIArr: any = [];
 prefMapData: any = [
   {
-    key: 'da_report_details_averagespeed',
+    key: 'da_report_tripreportdetails_averagespeed',
     value: 'averageSpeed'
   },
   {
-    key: 'da_report_details_drivingtime',
+    key: 'da_report_tripreportdetails_drivingtime',
     value: 'drivingTime'
   },
   {
-    key: 'da_report_details_alerts',
+    key: 'da_report_tripreportdetails_alerts',
     value: 'alert'
   },
   {
-    key: 'da_report_details_averageweight',
+    key: 'da_report_tripreportdetails_averageweight',
     value: 'averageWeight'
   },
   {
-    key: 'da_report_details_events',
+    key: 'da_report_tripreportdetails_events',
     value: 'events'
   },
   {
-    key: 'da_report_details_distance',
+    key: 'da_report_tripreportdetails_distance',
     value: 'distance'
   },
   {
-    key: 'da_report_details_enddate',
+    key: 'da_report_tripreportdetails_enddate',
     value: 'endTimeStamp'
   },
   {
-    key: 'da_report_details_endposition',
+    key: 'da_report_tripreportdetails_endposition',
     value: 'endPosition'
   },
   {
-    key: 'da_report_details_fuelconsumed',
+    key: 'da_report_tripreportdetails_fuelconsumed',
     value: 'fuelConsumed100Km'
   },
   {
-    key: 'da_report_details_idleduration',
+    key: 'da_report_tripreportdetails_idleduration',
     value: 'idleDuration'
   },
-  // {
-  //   key: 'da_report_details_odometer',
-  //   value: 'odometer'
-  // },
-  // {
-  //   key: 'da_report_details_registrationnumber',
-  //   value: 'registrationnumber'
-  // },
   {
-    key: 'da_report_details_startdate',
+    key: 'da_report_tripreportdetails_odometer',
+    value: 'odometer'
+  },
+  {
+    key: 'da_report_tripreportdetails_platenumber',
+    value: 'registrationnumber'
+  },
+  {
+    key: 'da_report_tripreportdetails_startdate',
     value: 'startTimeStamp'
   },
-  // {
-  //   key: 'da_report_details_vin',
-  //   value: 'vin'
-  // },
   {
-    key: 'da_report_details_startposition',
+    key: 'da_report_tripreportdetails_vin',
+    value: 'vin'
+  },
+  {
+    key: 'da_report_tripreportdetails_startposition',
     value: 'startPosition'
   }
 ];
@@ -316,17 +319,33 @@ ngOnDestroy(){
   getReportPreferences(){
     this.reportService.getUserPreferenceReport(this.tripReportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
+      this.resetTripPrefData();
+      this.getTranslatedColumnName(this.reportPrefData);
       this.setDisplayColumnBaseOnPref();
       this.loadWholeTripData();
     }, (error) => {
       this.reportPrefData = [];
+      this.resetTripPrefData();
       this.setDisplayColumnBaseOnPref();
       this.loadWholeTripData();
     });
   }
 
+  resetTripPrefData(){
+    this.tripPrefData = [];
+  }
+
+  tripPrefData: any = [];
+  getTranslatedColumnName(prefData: any){
+    prefData.forEach(element => {
+      if(element.key.includes('da_report_tripreportdetails_')){
+        this.tripPrefData.push(element);
+      }
+    });
+  }
+
   setDisplayColumnBaseOnPref(){
-    let filterPref = this.reportPrefData.filter(i => i.state == 'I');
+    let filterPref = this.tripPrefData.filter(i => i.state == 'I');
     if(filterPref.length > 0){
       filterPref.forEach(element => {
         let search = this.prefMapData.filter(i => i.key == element.key);
@@ -337,11 +356,11 @@ ngOnDestroy(){
           }
         }
 
-        if(element.key == 'da_report_details_vehiclename'){
+        if(element.key == 'da_report_tripreportdetails_vehiclename'){
           this.showField.vehicleName = false;
-        }else if(element.key == 'da_report_details_vin'){
+        }else if(element.key == 'da_report_tripreportdetails_vin'){
           this.showField.vin = false;
-        }else if(element.key == 'da_report_details_registrationnumber'){
+        }else if(element.key == 'da_report_tripreportdetails_platenumber'){
           this.showField.regNo = false;
         }
       });
@@ -472,6 +491,8 @@ ngOnDestroy(){
       this.hideloader();
       this.wholeTripData.vinTripList = [];
       this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
+      this.filterDateData();
+      this.loadUserPOI();
     });
   }
 
@@ -486,18 +507,40 @@ ngOnDestroy(){
   makeUserCategoryPOIList(poiData: any){
     let categoryArr: any = [];
     let _arr: any = poiData.map(item => item.categoryId).filter((value, index, self) => self.indexOf(value) === index);
-    if(_arr.length > 0){
-      _arr.forEach(element => {
-        let _data = poiData.filter(i => i.categoryId == element);
-        if(_data.length > 0){
-          categoryArr.push({
-            categoryId: _data[0].categoryId,
-            categoryName: _data[0].categoryName,
-            poiList: _data
+    _arr.forEach(element => {
+      let _data = poiData.filter(i => i.categoryId == element);
+      if (_data.length > 0) {
+        let subCatUniq = _data.map(i => i.subCategoryId).filter((value, index, self) => self.indexOf(value) === index);
+        let _subCatArr = [];
+        if(subCatUniq.length > 0){
+          subCatUniq.forEach(elem => {
+            let _subData = _data.filter(i => i.subCategoryId == elem && i.subCategoryId != 0);
+            if (_subData.length > 0) { 
+            _subCatArr.push({ 
+              poiList: _subData, 
+              subCategoryName: _subData[0].subCategoryName, 
+              subCategoryId: _subData[0].subCategoryId,
+              checked: false
+            }); 
+            }
           });
         }
-      });
-    }
+
+        _data.forEach(data => {
+          data.checked = false;
+        });
+
+        categoryArr.push({
+          categoryId: _data[0].categoryId,
+          categoryName: _data[0].categoryName,
+          poiList: _data,
+          subCategoryPOIList: _subCatArr,
+          open: false,
+          parentChecked: false
+        });
+      } 
+    });
+
     return categoryArr;
   }
 
@@ -677,6 +720,7 @@ ngOnDestroy(){
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
+    // console.log("----UpdateDataSource---initData", this.initData )
     this.showMap = false;
     this.selectedTrip.clear();
     if(this.initData.length > 0){
@@ -727,11 +771,18 @@ ngOnDestroy(){
       }
   });
 
-    let pdfColumns = [['Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
+    let pdfColumns = [['VIN','Vehicle Name','Registration Number.','Odometer','Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
+    // let pdfColumns = [['Odometer','Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
 
   let prepare = []
     this.initData.forEach(e=>{
+      // console.log("---actual data--pdf columns", this.initData)
       var tempObj =[];
+      
+      tempObj.push(e.vin); ////need to confirm from backend for key
+      tempObj.push(e.vehicleName); ////need to confirm from backend for key
+      tempObj.push(e.registrationNo); //need to confirm from backend for key
+      tempObj.push(e.odometer);
       tempObj.push(e.convertedStartTime);
       tempObj.push(e.convertedEndTime);
       tempObj.push(e.convertedDistance);
@@ -1032,12 +1083,39 @@ ngOnDestroy(){
     this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
   }
 
-  changeUserPOISelection(event: any, poiData: any){
+  changeUserPOISelection(event: any, poiData: any, index: any){
+    if (event.checked){ // checked
+      this.userPOIList[index].subCategoryPOIList.forEach(element => {
+        element.checked = true;
+      });
+      this.userPOIList[index].poiList.forEach(_elem => {
+        _elem.checked = true;
+      });
+      this.userPOIList[index].parentChecked = true;
+      // if(this.selectedPOI.selected.length > 0){
+      //   let _s: any = this.selectedPOI.selected.filter(i => i.categoryId == this.userPOIList[index].categoryId);
+      //   if(_s.length > 0){
+
+      //   }
+      // }else{
+
+      // }
+    }else{ // unchecked
+      this.userPOIList[index].subCategoryPOIList.forEach(element => {
+        element.checked = false;
+      });
+      this.userPOIList[index].poiList.forEach(_elem => {
+        _elem.checked = false;
+      });
+      this.userPOIList[index].parentChecked = false;
+    }
     this.displayPOIList = [];
     this.selectedPOI.selected.forEach(item => {
       if(item.poiList && item.poiList.length > 0){
         item.poiList.forEach(element => {
-          this.displayPOIList.push(element);
+          if(element.checked){ // only checked
+            this.displayPOIList.push(element);
+          }
         });
       }
     });
@@ -1096,6 +1174,78 @@ ngOnDestroy(){
         }
       });
     }
+  }
+
+  changeSubCategory(event: any, subCatPOI: any, _index: any){
+    let _uncheckedCount: any = 0;
+    this.userPOIList[_index].subCategoryPOIList.forEach(element => {
+      if(element.subCategoryId == subCatPOI.subCategoryId){
+        element.checked = event.checked ? true : false;
+      }
+      
+      if(!element.checked){ // unchecked count
+        _uncheckedCount += element.poiList.length;
+      }
+    });
+
+    if(this.userPOIList[_index].poiList.length == _uncheckedCount){
+      this.userPOIList[_index].parentChecked = false; // parent POI - unchecked
+      let _s: any = this.selectedPOI.selected;
+      if(_s.length > 0){
+        this.selectedPOI.clear(); // clear parent category data
+        _s.forEach(element => {
+          if(element.categoryId != this.userPOIList[_index].categoryId){ // exclude parent category data
+            this.selectedPOI.select(element);
+          }
+        });
+      }
+    }else{
+      this.userPOIList[_index].parentChecked = true; // parent POI - checked
+      let _check: any = this.selectedPOI.selected.filter(k => k.categoryId == this.userPOIList[_index].categoryId); // already present
+      if(_check.length == 0){ // not present, add it
+        let _s: any = this.selectedPOI.selected;
+        if(_s.length > 0){ // other element present
+          this.selectedPOI.clear(); // clear all
+          _s.forEach(element => {
+            this.selectedPOI.select(element);  
+          });
+        }
+        this.userPOIList[_index].poiList.forEach(_el => {
+          if(_el.subCategoryId == 0){
+            _el.checked = true;
+          }
+        });
+        this.selectedPOI.select(this.userPOIList[_index]); // add parent element
+      }
+    }
+
+    this.displayPOIList = [];
+    //if(this.selectedPOI.selected.length > 0){
+      this.selectedPOI.selected.forEach(item => {
+        if(item.poiList && item.poiList.length > 0){
+          item.poiList.forEach(element => {
+            if(element.subCategoryId == subCatPOI.subCategoryId){ // element match
+              if(event.checked){ // event checked
+                element.checked = true;
+                this.displayPOIList.push(element);
+              }else{ // event unchecked
+                element.checked = false;
+              }
+            }else{
+              if(element.checked){ // element checked
+                this.displayPOIList.push(element);
+              }
+            }
+          });
+        }
+      });
+      let _ui = this.reportMapService.getUI();
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    //}
+  }
+
+  openClosedUserPOI(index: any){
+    this.userPOIList[index].open = !this.userPOIList[index].open;
   }
 
 }

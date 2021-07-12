@@ -9,6 +9,7 @@ using net.atos.daf.ct2.reportscheduler;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.ENUM;
 using net.atos.daf.ct2.reportscheduler.repository;
+using net.atos.daf.ct2.utilities;
 
 namespace atos.net.daf.ct2.reportscheduler.test
 {
@@ -132,10 +133,14 @@ namespace atos.net.daf.ct2.reportscheduler.test
         [TestMethod]
         public async Task UnT_Helpr_GetNextFrequencyTime()
         {
-            //  long date = 1624184687000;
-            //TimeFrequenyType timeFrequeny = TimeFrequenyType.Daily;
-            // var result = _helper.GetNextFrequencyTime(date, timeFrequeny);
-            //  Assert.IsNotNull(result);
+            long currentdate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            bool isresult;
+            ReportEmailFrequency objReportEmailFrequency = new ReportEmailFrequency();
+            objReportEmailFrequency.ReportNextScheduleRunDate = 1625574329670;
+            objReportEmailFrequency.FrequencyType = TimeFrequenyType.Daily;
+            _helper.GetNextFrequencyTime(objReportEmailFrequency);
+            isresult = true;
+            Assert.IsTrue(isresult);
         }
 
         [TestCategory("Unit-Test-Case")]

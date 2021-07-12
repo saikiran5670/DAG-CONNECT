@@ -13,9 +13,10 @@
         ChangeResetPasswordSuccess = 2,
         ResetPassword = 3,
         PasswordExpiryNotification = 4,
-        SendReport = 5,
+        ScheduledReportEmail = 5,
         //Below EventTypes are for Report Creation
-        TripReport = 6
+        TripReport = 6,
+        FleetUtilisation = 7
         //End
     }
 }

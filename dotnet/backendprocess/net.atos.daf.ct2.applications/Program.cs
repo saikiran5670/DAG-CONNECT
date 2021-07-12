@@ -66,10 +66,7 @@ namespace net.atos.daf.ct2.applications
                             services.AddTransient<IVisibilityRepository, VisibilityRepository>();
                             services.AddTransient<ITemplateManager, TemplateManager>();
                             services.AddTransient<IUnitConversionManager, UnitConversionManager>();
-
-                            //services.AddControllersWithViews();
-                            //services.AddRazorPages();
-                            //services.AddControllers();
+                            services.AddTransient<IUnitManager, UnitManager>();
                             services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
                             services.AddHostedService<ReportCreationSchedulerWorker>();
                         }

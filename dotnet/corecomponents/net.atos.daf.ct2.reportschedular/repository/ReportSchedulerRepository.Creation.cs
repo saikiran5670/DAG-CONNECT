@@ -56,18 +56,18 @@ date_trunc('day', NOW() AT TIME ZONE 'UTC') and rs.status = 'A' and r.id = rs.re
                 parameter.Add("@report_schedule_id", reprotSchedulerId);
                 var query = @"with cte_VehicaleList
                             AS (
-                            select distinct ref_id as VehicleId 
+                            select distinct ref_id as VehicleId,0 as VehicleGroupId , '' as VehicleGroupName
 						    from master.group g 
 								inner join master.scheduledreportvehicleref srvr 
-								on srvr.report_schedule_id =@report_schedule_id and srvr.vehicle_group_id = g.id and g.group_type = 'S' and g.object_type = 'V'
+								on srvr.report_schedule_id =@report_schedule_id and srvr.vehicle_group_id = g.id and g.group_type = 'S' and g.object_type = 'V' and srvr.state ='A'
                             union
-                            select distinct gr.ref_id as VehicleId 
+                            select distinct gr.ref_id as VehicleId ,g.id as VehicleGroupId, g.name as VehicleGroupName
 						    from master.group g 
 								inner join master.scheduledreportvehicleref srvr 
-								on srvr.report_schedule_id =@report_schedule_id  and srvr.vehicle_group_id = g.id and g.group_type = 'G' and g.object_type = 'V'
+								on srvr.report_schedule_id =@report_schedule_id  and srvr.vehicle_group_id = g.id and g.group_type = 'G' and g.object_type = 'V' and srvr.state ='A'
 								inner join master.groupref gr
 								on gr.group_id = g.id)
-                            select distinct v.id as Id ,v.vin as VIN ,v.name as VehicleName,v.license_plate_number as RegistrationNo
+                            select distinct v.id as Id ,v.vin as VIN ,v.name as VehicleName,v.license_plate_number as RegistrationNo,vl.VehicleGroupId as VehicleGroupId, vl.VehicleGroupName as VehicleGroupName
                             from cte_VehicaleList vl
                                  inner join master.vehicle v on v.id = vl.VehicleId";
                 return _dataAccess.QueryAsync<VehicleList>(query, parameter);
@@ -89,7 +89,7 @@ date_trunc('day', NOW() AT TIME ZONE 'UTC') and rs.status = 'A' and r.id = rs.re
                             select distinct ref_id as VehicleId 
 						    from master.group g 
 								inner join master.scheduledreportvehicleref srvr 
-								on srvr.report_schedule_id =@report_schedule_id and srvr.vehicle_group_id = g.id and g.group_type = 'S' and g.object_type = 'V'                            
+								on srvr.report_schedule_id =@report_schedule_id and srvr.vehicle_group_id = g.id and g.group_type = 'S' and g.object_type = 'V' and srvr.state ='A'                           
                             )
                             select distinct v.id as Id ,v.vin as VIN ,v.name as VehicleName,v.license_plate_number as RegistrationNo
                             from cte_VehicaleList vl
