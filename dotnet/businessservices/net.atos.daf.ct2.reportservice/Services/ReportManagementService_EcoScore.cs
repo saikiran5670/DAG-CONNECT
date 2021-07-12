@@ -524,7 +524,15 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 try
                 {
-                    response = _mapper.MapReportUserPreferences(userPreferences);
+                    if (userPreferences.Count() == 0)
+                    {
+                        response.Code = Responsecode.NotFound;
+                        response.Message = "No data found";
+                    }
+                    else
+                    {
+                        response = _mapper.MapReportUserPreferences(userPreferences);
+                    }
                 }
                 catch (Exception ex)
                 {
