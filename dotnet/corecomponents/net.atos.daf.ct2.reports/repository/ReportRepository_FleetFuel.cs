@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , SUM(average_speed)                                                     as average_speed
                                                   		  , MAX(max_speed)                                                         as max_speed
                                                   		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
-                                                  		  , SUM(fuel_consumption)                                                  as fuel_consumed
+                                                  		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
                                                   		  , SUM(fuel_consumption)                                                  as fuel_consumption
                                                   		  , SUM(co2_emission)                                                      as co2_emission
                                                   		  , SUM(idle_duration)                                                     as idle_duration
@@ -196,7 +196,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , SUM(average_speed)                                                     as average_speed
                                                		  , MAX(max_speed)                                                         as max_speed
                                                		  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
-                                               		  , SUM(fuel_consumption)                                                  as fuel_consumed
+                                               		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
                                                		  , SUM(fuel_consumption)                                                  as fuel_consumption
                                                		  , SUM(co2_emission)                                                      as co2_emission
                                                		  , SUM(idle_duration)                                                     as idle_duration
@@ -292,6 +292,7 @@ namespace net.atos.daf.ct2.reports.repository
                         sum(etl_gps_distance) as totaldistance,
                         sum(idle_duration) as totalidleduration,
 						sum(fuel_consumption) as fuelconsumption,
+                        sum(etl_gps_fuel_consumed) as fuelconsumed,
 						sum(co2_emission) as co2emission						
                         FROM tripdetail.trip_statistics CT
 						Join master.vehicle v
@@ -311,7 +312,8 @@ namespace net.atos.daf.ct2.reports.repository
                         CAST((totaldistance / totalworkingdays) as float) as Distance,
                         CAST((totalidleduration / totalworkingdays) as float) as IdleDuration ,
                         CAST((fuelconsumption / totalworkingdays) as float) as FuelConsumtion ,
-                        CAST((co2emission / totalworkingdays) as float) as Co2Emission 
+                        CAST((co2emission / totalworkingdays) as float) as Co2Emission,
+                        CAST((fuelconsumed / totalworkingdays) as float) as FuelConsumed    
                         --CAST((totalaverageweightperprip / totalworkingdays) as float) as Averageweight
                         from cte_workingdays";
                 List<FleetFuel_VehicleGraph> lstFleetDetails = (List<FleetFuel_VehicleGraph>)await _dataMartdataAccess.QueryAsync<FleetFuel_VehicleGraph>(query, parameterOfFilters);
@@ -395,7 +397,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , SUM(average_speed)                                                     as average_speed
 				  , MAX(max_speed)                                                         as max_speed
 				  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
-				  , SUM(fuel_consumption)                                                  as fuel_consumed
+				  , SUM(etl_gps_fuel_consumed)                                                  as fuel_consumed
 				  , SUM(fuel_consumption)                                                  as fuel_consumption
 				  , SUM(co2_emission)                                                      as co2_emission
 				  , SUM(idle_duration)                                                     as idle_duration
@@ -508,7 +510,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , SUM(average_speed)                                                     as average_speed
 				  , MAX(max_speed)                                                         as max_speed
 				  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
-				  , SUM(fuel_consumption)                                                  as fuel_consumed
+				  , SUM(etl_gps_fuel_consumed)                                                  as fuel_consumed
 				  , SUM(fuel_consumption)                                                  as fuel_consumption
 				  , SUM(co2_emission)                                                      as co2_emission
 				  , SUM(idle_duration)                                                     as idle_duration

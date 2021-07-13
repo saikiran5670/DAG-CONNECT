@@ -18,6 +18,7 @@ export class MapFunctionsService {
   startAddressPositionLong: number = 0; // = {lat : 18.50424,long : 73.85286};
   startMarker: any;
   endMarker: any;
+  polyLineArray:any = [];
   routeCorridorMarker: any;
   routeOutlineMarker: any;
   endAddressPositionLat: number = 0;
@@ -486,6 +487,7 @@ export class MapFunctionsService {
           }
         });
 
+         this.polyLineArray.push(this.corridorPath);
 
         // Add the polyline to the map
         this.mapGroup.addObjects([this.corridorPath, polylinePath]);
@@ -526,21 +528,33 @@ export class MapFunctionsService {
     }, false);
   }
 
-  updateWidth(_width){
+  updateWidth(_width,fromExistingTrip?){
     this.corridorWidthKm = _width;
     let setWidth = _width*10;
    // this.addTruckRouteShapeToMap();
     //let geoLineString = this.corridorPath.getGeometry();
+
+  if(fromExistingTrip && this.polyLineArray.length > 0) {
+    this.polyLineArray.forEach(getAllPaths => {
+      getAllPaths.setStyle({
+        lineWidth: setWidth,
+        strokeColor: 'rgba(181, 199, 239, 0.6)'
+      });
+    });
+  }else {
     if(this.corridorPath){
       this.corridorPath.setStyle({
         lineWidth: setWidth,
         strokeColor: 'rgba(181, 199, 239, 0.6)'
       });
     }
+  
+
     
     
     //this.corridorPath.setStyle( this.corridorPath.getStyle().getCopy({linewidth:_width}));
     //console.log(geoLineString)
     //this.corridorPath.setGeometry(geoLineString);
   }
+}
 }

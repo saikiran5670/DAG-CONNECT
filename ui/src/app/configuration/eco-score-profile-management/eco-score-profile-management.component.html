@@ -18,7 +18,7 @@
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblCreateProfile || 'Create Profile') : (translationData.lblManageProfile || 'Manage Profile')  }}</span>
             </div>
             <div  *ngIf="!adminAccessType.adminReadOnlyAccess" >
-                <button *ngIf="actionType != 'create'" mat-flat-button color="primary" (click)="createNewProfile()">
+                <button *ngIf="actionType != 'create'" mat-flat-button color="primary" (click)="createNewProfile()" [disabled]='profileList.length > 29'>
                   <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewProfile || 'New Profile' }}
                   </button>
                 </div>
@@ -29,7 +29,7 @@
                 <mat-label style='display: flex;'>
                     <span>{{ translationData.lblProfileSelection || 'Profile Selection' }}</span>
                 </mat-label>
-                <mat-form-field appearance="outline" class="full-width" formControlName="defaultName">
+                <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="{{ translationData.lblTestProfile || 'Test Profile' }}" formControlName="defaultName" (selectionChange)="profileSelectionDropDown($event.value)">
                     <mat-option *ngFor="let options of profileList" [value]="options.profileId">
                       {{options.profileName}}
@@ -37,7 +37,7 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label style='display: flex; place-content: space-between;'>
                     <span>
                         <span>{{ translationData.lblProfileName || 'Profile Name' }}</span>
@@ -49,8 +49,9 @@
                         <input maxlength="50" placeholder="{{ translationData.lblTestProfileName || 'Test Profile Name' }}" matInput
                             formControlName="profileName">
                     </mat-form-field>
+                    <span  *ngIf="actionType == 'create'" style='color: #000; text-align: right; font-size: 13px;'>({{ '30 profile max' }})</span>
                     <mat-error *ngIf="ecoScoreProfileForm.get('profileName').hasError('required')">
-                        {{ translationData.lblPleasenterprofilename || 'Please enter Profile Name'}}
+                        {{ translationData.lblPleasenterprofilename || 'Please Enter Profile Name'}}
                     </mat-error>
                     <mat-error *ngIf="ecoScoreProfileForm.get('profileName').hasError('whitespace')">
                         {{ translationData.lblPackagenamecannotcontainonlywhitespace || 'Profile Name
@@ -60,7 +61,7 @@
                         {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                     </mat-error>
                 </div>
-            <div class="areaWidth min-width-45-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label style='display: flex; place-content: space-between;'>
                     <span>{{ translationData.lblProfileDescription || 'Profile Description' }}</span>
                     <span>{{ translationData.lbl120CharMax || '120 characters max' }}</span>
@@ -77,11 +78,11 @@
                     </mat-error>
             </div>
             <div *ngIf="actionType != 'manage'" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label style='display: flex;'> 
+                <mat-label style='display: flex; padding-left: 25px;'> 
                     <span>{{ translationData.lblCreateBasedOnExistingProfile || 'Create based on existing profile' }}</span>
                 </mat-label>
-                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-                <mat-checkbox (change)='onChangeOption($event)'></mat-checkbox>  
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="0px">
+                <mat-checkbox style='padding: 13px 10px 0px 0px;' (change)='onChangeOption($event)'></mat-checkbox>  
                 <mat-form-field [disabled]="!isCreatedExistingProfile" appearance="outline" class="full-width">
                   <mat-select  [disabled]="!isCreatedExistingProfile" placeholder="{{ translationData.lblTestProfileSelection || 'Test Profile Selection' }}" (selectionChange)="profileSelectionDropDown($event.value)" >
                     <mat-option *ngFor="let options of profileList" [value]="options.profileId">
@@ -90,7 +91,12 @@
                   </mat-select>
                 </mat-form-field>
                 </div>
-              </div>
+            </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+            <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+
+            </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
         <div  fxLayout="column" fxLayoutAlign="start"> 
@@ -100,7 +106,7 @@
         </div>
         <div fxLayout="column" fxLayoutAlign="end">
             <div fxLayout="row" class='areaWidth'>
-                <button class='margin-right-10 min-width-100-px' mat-raised-button color="warn" *ngIf="actionType == 'manage'" [disabled]="!selectedElementData[0].isDeleteAllowed"
+                <button class='margin-right-10 min-width-100-px' mat-raised-button color="warn" *ngIf="actionType == 'manage'" [disabled]="!deleteSelection"
                 (click)='onDelete()'>{{ (translationData.lblDelete || 'Delete') }}</button>
                 <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" 
                     (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
@@ -173,13 +179,14 @@
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ brakingScoreKpiData.kpiName }}</span>
                 <app-breaking-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='brakingScoreKpiData' [kpiId] = 15 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ harshBrakingScoreKpiData.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='harshBrakingScoreKpiData' [kpiId] = 16 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-max-target-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='harshBrakingScoreKpiData' [kpiId] = 16 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
+                <!-- <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='harshBrakingScoreKpiData' [kpiId] = 16 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score> -->
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ harshBrakeDurationKpiData.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='harshBrakeDurationKpiData' [kpiId] = 17 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-max-target-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='harshBrakeDurationKpiData' [kpiId] = 17 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ brakeKpiData.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='brakeKpiData' [kpiId] = 18 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-max-target-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='brakeKpiData' [kpiId] = 18 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ brakeDurationKpiData.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='brakeDurationKpiData'  [kpiId] = 19 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-max-target-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='brakeDurationKpiData'  [kpiId] = 19 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
             </div>
     </mat-expansion-panel> 
 </div>
