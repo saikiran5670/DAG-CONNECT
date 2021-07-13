@@ -40,6 +40,8 @@
 
         #region FleetOverview
         public const string FLEETOVERVIEW_FEATURE_NAME = "FleetOverview";
+        public const string LOGBOOK_FEATURE_NAME = "FleetOverview.LogBook";
+        public const string ALERT_FEATURE_NAME = "Alert";
         public const string FLEETOVERVIEW_FILTER_SUCCESS_MSG = "Filter details fetched successfully.";
         #endregion
     }
