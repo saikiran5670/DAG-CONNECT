@@ -342,9 +342,10 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   }
 
   profileSelectionDropDown(filterValue: string){
-    // this.selectedElementData = [];
+    // this.selectedElementData = [];    
     this.selectedProfile = filterValue;
     this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile); 
+    this.deleteSelection = this.selectedElementData[0].isDeleteAllowed;
     this.setDefaultValue();
     this.loadProfileKpis(this.selectedProfile);
     this.isDAFStandard = false;
