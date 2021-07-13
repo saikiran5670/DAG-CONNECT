@@ -34,7 +34,10 @@ namespace net.atos.daf.ct2.notification
             if (string.IsNullOrEmpty(mailNotificationRequest.MessageRequest.AccountInfo.FullName))
             {
                 var account = await _emailRepository.GetAccountByEmailId(mailNotificationRequest.MessageRequest.AccountInfo.EmailId);
-                mailNotificationRequest.MessageRequest.AccountInfo.FullName = account.FullName;
+                if (account != null)
+                {
+                    mailNotificationRequest.MessageRequest.AccountInfo.FullName = account.FullName;
+                }
             }
 
             if (mailNotificationRequest.EventType == EmailEventType.PasswordExpiryNotification)

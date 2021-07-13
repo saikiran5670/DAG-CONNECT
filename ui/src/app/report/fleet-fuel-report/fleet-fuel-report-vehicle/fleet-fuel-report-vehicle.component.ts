@@ -91,7 +91,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   DurationChartType: any;
   showLoadingIndicator: boolean = false;
   tableInfoObj: any ;
-  summaryObj: any;
   detailSummaryObj: any;
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
@@ -306,37 +305,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   idleDuration: any =[];
   fromTripPageBack: boolean = false;
   displayData : any = [];
-  // rankingData : any =[
-  //   {
-  //     ranking: 1,
-  //     vehicleName: 'Name List 0001',
-  //     vin :'XLRTEMP4100G041999',
-  //     vehicleRegistrationNo: '12 HH 71',
-  //     fuelConsumption: 0.4
-  //   },
-  //   {
-  //     ranking: 1,
-  //     vehicleName: 'Name List 0002',
-  //     vin :'XLRTEMP4100G041999',
-  //     vehicleRegistrationNo: '12 HH 71',
-  //     fuelConsumption: 0.1
-  //   },
-  //   {
-  //     ranking: 1,
-  //     vehicleName: 'Name List 0003',
-  //     vin :'XLRTEMP4100G041999',
-  //     vehicleRegistrationNo: '12 HH 71',
-  //     fuelConsumption: 0.5
-  //   },
-  //   {
-  //     ranking: 1,
-  //     vehicleName: 'Name List 0004',
-  //     vin :'XLRTEMP4100G041999',
-  //     vehicleRegistrationNo: '12 HH 71',
-  //     fuelConsumption: 0.6
-  //   },
-
-  // ]
   showDetailedReport : boolean = false;
   
   constructor(private _formBuilder: FormBuilder, 
@@ -349,7 +317,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-    // console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -393,14 +360,14 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     let getFleetFuelObj = {
       "startDateTime": 1521843915459,
       "endDateTime": 1721843915459,
-      "viNs": _vinData,
+      "viNs=": _vinData,
       "LanguageCode": "EN-GB"
     }
     this.reportService.getFleetFuelDetails(getFleetFuelObj).subscribe((data:any) => {
     console.log("---getting data from getFleetFuelDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-    // this.setTableInfo();
+    //this.setTableInfo();
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
     if(this.prefUnitFormat == 'dunit_Metric')
@@ -490,7 +457,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         "viNs":  _vinData,
       }
       this.loadfleetFuelDetails(_vinData);
-      //  this.setTableInfo();
+      //this.setTableInfo();
       //  this.updateDataSource(this.FuelData);
       this.hideloader();
       this.isChartsOpen = true;
@@ -602,7 +569,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       vehicleName: vehName,
       noOfTrips: this.FuelData[0].numberOfTrips,
       distance:  this.FuelData[0].convertedDistance,
-      fuelconsumed:  this.FuelData.convertedFuelConsumed100Km,
+      fuelconsumed:  this.FuelData[0].convertedFuelConsumed100Km,
       idleDuration: this.FuelData[0].convertedIdleDuration,
       fuelConsumption: this.FuelData[0].fuelConsumption,
       co2emission: this.FuelData[0].cO2Emission,
@@ -653,7 +620,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
       this.barChartLabels.push(resultDate);
       this.barData.push(e.numberofTrips);
-      this.fuelConsumedChart.push(e.fuelConsumed);
+      let convertedFuelConsumed = e.fuelConsumed / 1000;
+      this.fuelConsumedChart.push(convertedFuelConsumed);
       this.co2Chart.push(e.co2Emission);
       this.distanceChart.push(e.distance);
       this.fuelConsumptionChart.push(e.fuelConsumtion);

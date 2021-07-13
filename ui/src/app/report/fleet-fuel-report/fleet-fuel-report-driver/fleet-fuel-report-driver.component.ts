@@ -147,7 +147,85 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'values()'    
+          labelString: 'values(Number Of Trips)'    
+        }
+      }]
+    }
+  };
+  lineChartOptions2 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'values(meter)'    
+        }
+      }]
+    }
+  };
+  lineChartOptions3 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'values(ltr)'    
+        }
+      }]
+    }
+  };
+  lineChartOptions4 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'values(t)'    
         }
       }]
     }
@@ -518,7 +596,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
       let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
       this.barChartLabels.push(resultDate);
       this.barData.push(e.numberofTrips);
-      this.fuelConsumedChart.push(e.fuelConsumed);
+      let convertedFuelConsumed = e.fuelConsumed / 1000;
+      this.fuelConsumedChart.push(convertedFuelConsumed);
       this.co2Chart.push(e.co2Emission);
       this.distanceChart.push(e.distance);
       this.fuelConsumptionChart.push(e.fuelConsumtion);
@@ -575,15 +654,15 @@ export class FleetFuelReportDriverComponent implements OnInit {
     //line chart for fuel consumed
     if(this.ConsumedChartType == 'Line')
     {
-    this.lineChartData1= [{ data: this.fuelConsumedChart, label: 'Values()' },];
+    this.lineChartData1= [{ data: this.fuelConsumedChart, label: 'Values(ltr)' },];
   }
     if(this.TripsChartType == 'Line')
     {
-    this.lineChartData2= [{ data: this.barData, label: 'Values()' }, ];
+    this.lineChartData2= [{ data: this.barData, label: 'Values(Number Of Trips)' }, ];
   }
     if(this.Co2ChartType == 'Line')
     {
-    this.lineChartData3= [{ data: this.co2Chart, label: 'Values()' },];
+    this.lineChartData3= [{ data: this.co2Chart, label: 'Values(t)' },];
   }
     if(this.DistanceChartType == 'Line')
     {
@@ -601,15 +680,15 @@ export class FleetFuelReportDriverComponent implements OnInit {
       //   }
       // }];
       // console.log(this.lineChartOptions);
-    this.lineChartData4= [{ data: this.distanceChart, label: 'Values()' }, ];
+    this.lineChartData4= [{ data: this.distanceChart, label: 'Values(meter)' }, ];
   }
     if(this.ConsumptionChartType == 'Line')
     {
-    this.lineChartData5= [{ data: this.fuelConsumptionChart, label: 'Values()' }, ];
+    this.lineChartData5= [{ data: this.fuelConsumptionChart, label: 'Values(ltr)' }, ];
   }
     if(this.DurationChartType == 'Line')
     {
-    this.lineChartData6= [{ data: this.idleDuration, label: 'Values()' }, ];
+    this.lineChartData6= [{ data: this.idleDuration, label: 'Values(Minutes)' }, ];
   }
   
     this.lineChartLabels = this.barChartLabels;

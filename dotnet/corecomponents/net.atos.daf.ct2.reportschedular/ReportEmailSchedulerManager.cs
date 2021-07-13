@@ -128,6 +128,8 @@ namespace net.atos.daf.ct2.reportscheduler
                 {
                     timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByCalenderTime(reportEmailFrequency);
                 }
+                emailItem.IsMailSent = true;
+                await _reportSchedulerRepository.UpdateIsMailSend(emailItem.ReportToken, emailItem.IsMailSent);
             }
             return timeupdated;
 
