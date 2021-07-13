@@ -26,6 +26,8 @@ import { CalendarOptions } from '@fullcalendar/angular';
 // import { CalendarOptions } from '@fullcalendar/angular';
 import { OrganizationService } from '../../services/organization.service';
 import { element } from 'protractor';
+import { Workbook } from 'exceljs';
+import * as fs from 'file-saver';
 
 @Component({
   selector: 'app-fleet-utilisation',
@@ -191,7 +193,8 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   greaterTimeCount :  any = 0;
   calendarpreferenceOption : any = "";
   calendarValue: any = [];
-
+  summaryObj:any=[];
+ 
 // Bar chart implementation
 
 barChartOptions: any = {
@@ -1370,11 +1373,127 @@ calendarOptions: CalendarOptions = {
     return date;
   }
 
-  
-
-  exportAsExcelFile(){
-    this.matTableExporter.exportTable('xlsx', {fileName:'Trip_Fleet_Utilisation', sheet: 'sheet_name'});
+getAllSummaryData(){
+    if(this.initData.length > 0){
+      let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
+      let averageDistPerDay = 0; let numbeOfVehicles = 0;
+      this.initData.forEach(item => {         
+        numberOfTrips += parseFloat(item.numberOfTrips);
+        distanceDone += parseFloat(item.convertedDistance);
+        idleDuration += parseFloat(item.idleDuration);
+        averageDistPerDay += parseFloat(item.convertedAverageDistance);       
+      });
+      numbeOfVehicles = this.initData.length;
+      let numberOfTrips_Val:any ; let distanceDone_Val:any; let idleDuration_Val :any;
+      let averageDistPerDay_Val:any; let numbeOfVehicles_Val :any;
+    
+      if(this.idleDurationStatus){
+        idleDuration_Val = idleDuration;     
+      }
+      else{
+        idleDuration_Val = '-';       
+      }
+      if(this.noOfVehStatus){
+        numbeOfVehicles_Val = numbeOfVehicles;      
+      }
+      else{
+        numbeOfVehicles_Val ='-';
+      }
+      if(this.avgDistanceStatus){
+        averageDistPerDay_Val =  averageDistPerDay;       
+      }
+      else{
+        averageDistPerDay_Val ='-';       
+      }
+      if(this.noOfTripsStatus){
+        numberOfTrips_Val = numberOfTrips;      
+      }
+      else{
+        numberOfTrips_Val='-';      
+      }
+      if(this.totalDistanceStatus){
+        distanceDone_Val = distanceDone;
+      }
+      else{
+        distanceDone_Val ='-';       
+      }    
+      this.summaryObj=[
+        ['Fleet Utilization Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+          this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numbeOfVehicles_Val, distanceDone_Val,
+          numberOfTrips_Val, idleDuration_Val, averageDistPerDay_Val
+        ]
+      ];
+    }
   }
+
+  exportAsExcelFile(){    
+  this.getAllSummaryData();
+  const title = 'Trip Fleet Utilisation Report';
+  const summary = 'Summary Section';
+  const detail = 'Detail Section';
+  const header = ['Vehicle Name', 'Vin', 'Registration Number', 'Distance', 'Number Of Trips', 'Trip Time', 'Driving Time', 'Iidle Duration', 'Stop Time', 'Average Speed', 'Average Weight', 'Average Distance Per Day', 'Odometer'];
+  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Vehicles', 'Total Distance', 'Number Of Trips', 'Idle Duration', 'Average Distance Per Day'];
+  const summaryData= this.summaryObj;
+  
+  //Create workbook and worksheet
+  let workbook = new Workbook();
+  let worksheet = workbook.addWorksheet('Trip Fleet Report');
+  //Add Row and formatting
+  let titleRow = worksheet.addRow([title]);
+  worksheet.addRow([]);
+  titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+ 
+  worksheet.addRow([]);  
+  let subTitleRow = worksheet.addRow([summary]);
+  let summaryRow = worksheet.addRow(summaryHeader);  
+  summaryData.forEach(element => {  
+    worksheet.addRow(element);   
+  });      
+  worksheet.addRow([]);
+  summaryRow.eachCell((cell, number) => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFFFFF00' },
+      bgColor: { argb: 'FF0000FF' }      
+    }
+    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+  })  
+  worksheet.addRow([]);   
+  let subTitleDetailRow = worksheet.addRow([detail]);
+  let headerRow = worksheet.addRow(header);
+  headerRow.eachCell((cell, number) => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFFFFF00' },
+      bgColor: { argb: 'FF0000FF' }
+    }
+    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+  })
+
+ this.initData.forEach(item => {     
+    worksheet.addRow([item.vehicleName,item.vin, item.registrationNumber,item.distance,
+      item.numberOfTrips,item.convertedTripTime, item.drivingTime, item.convertedIdleDuration,
+      item.convertedStopTime, item.convertedAverageSpeed, item.convertedAverageWeight,
+      item.averageDistancePerDay, item.odometer]);   
+  }); 
+  worksheet.mergeCells('A1:D2'); 
+  subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+  subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+  for (var i = 0; i < header.length; i++) {    
+    worksheet.columns[i].width = 20;      
+  }
+  for (var j = 0; j < summaryHeader.length; j++) {  
+    worksheet.columns[j].width = 20; 
+  }
+  worksheet.addRow([]); 
+  workbook.xlsx.writeBuffer().then((data) => {
+    let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    fs.saveAs(blob, 'Trip_Fleet_Utilisation.xlsx');
+ })
+    // this.matTableExporter.exportTable('xlsx', {fileName:'Trip_Fleet_Utilisation', sheet: 'sheet_name'});
+}
 
   exportAsPDFFile(){
    
