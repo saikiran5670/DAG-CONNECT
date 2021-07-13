@@ -306,37 +306,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   idleDuration: any =[];
   fromTripPageBack: boolean = false;
   displayData : any = [];
-  // rankingData : any =[
-  //   {
-  //     ranking: 1,
-  //     vehicleName: 'Name List 0001',
-  //     vin :'XLRTEMP4100G041999',
-  //     vehicleRegistrationNo: '12 HH 71',
-  //     fuelConsumption: 0.4
-  //   },
-  //   {
-  //     ranking: 1,
-  //     vehicleName: 'Name List 0002',
-  //     vin :'XLRTEMP4100G041999',
-  //     vehicleRegistrationNo: '12 HH 71',
-  //     fuelConsumption: 0.1
-  //   },
-  //   {
-  //     ranking: 1,
-  //     vehicleName: 'Name List 0003',
-  //     vin :'XLRTEMP4100G041999',
-  //     vehicleRegistrationNo: '12 HH 71',
-  //     fuelConsumption: 0.5
-  //   },
-  //   {
-  //     ranking: 1,
-  //     vehicleName: 'Name List 0004',
-  //     vin :'XLRTEMP4100G041999',
-  //     vehicleRegistrationNo: '12 HH 71',
-  //     fuelConsumption: 0.6
-  //   },
-
-  // ]
   showDetailedReport : boolean = false;
   
   constructor(private _formBuilder: FormBuilder, 
@@ -349,7 +318,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-    // console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
