@@ -36,7 +36,7 @@ rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthSt
 rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriverRequest) returns (FleetFuelDetailsResponse);
 rpc GetFilteredFuelDeviation (FuelDeviationFilterRequest) returns (FuelDeviationResponse);
-rpc GetLogbooksearchParameter (LogbookFilterIdRequest) returns (LogbookFilterResponse);
+rpc GetLogbookSearchParameter (LogbookFilterIdRequest) returns (LogbookFilterResponse);
 
 }
 

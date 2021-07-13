@@ -16,6 +16,8 @@ import { ReportMapService } from '../report-map.service';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { OrganizationService } from '../../services/organization.service';
+import { Workbook } from 'exceljs';
+import * as fs from 'file-saver';
 
 @Component({
   selector: 'app-eco-score-report',
@@ -843,8 +845,74 @@ let finalGroupDataList = [];
     this.dataSource.filter = filterValue;
   }
 
-  exportAsExcelFile(){
-    this.matTableExporter.exportTable('xlsx', {fileName:'Eco-Score_Report', sheet: 'sheet_name'});
+  exportAsExcelFile(){  
+    const title = 'Eco Score Report';
+    const summary = 'Summary Section';
+    const detail = 'Detail Section';
+    const header = ['Ranking', 'Driver Name', 'Driver ID', 'Eco-Score'];
+    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Driver ID', 'Driver Name', 'Driver Option'];
+    let summaryObj=[
+      ['Eco Score Report', new Date(), this.fromDisplayDate, this.toDisplayDate, this.selectedVehicleGroup, 
+      this.selectedVehicle, this.selectedDriverId, this.selectedDriverName, this.selectedDriverOption
+      ]
+    ];
+    const summaryData= summaryObj;
+    
+    //Create workbook and worksheet
+    let workbook = new Workbook();
+    let worksheet = workbook.addWorksheet('Eco Score Report');
+    //Add Row and formatting
+    let titleRow = worksheet.addRow([title]);
+    worksheet.addRow([]);
+    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+   
+    worksheet.addRow([]);  
+    let subTitleRow = worksheet.addRow([summary]);
+    let summaryRow = worksheet.addRow(summaryHeader);  
+    summaryData.forEach(element => {  
+      worksheet.addRow(element);   
+    });      
+    worksheet.addRow([]);
+    summaryRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }      
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })  
+    worksheet.addRow([]);   
+    let subTitleDetailRow = worksheet.addRow([detail]);
+    let headerRow = worksheet.addRow(header);
+    headerRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })
+  
+   this.initData.forEach(item => {     
+      worksheet.addRow([item.ranking, item.driverName, item.driverId, item.ecoScoreRanking]);   
+    }); 
+    worksheet.mergeCells('A1:D2'); 
+    subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    for (var i = 0; i < header.length; i++) {    
+      worksheet.columns[i].width = 20;      
+    }
+    for (var j = 0; j < summaryHeader.length; j++) {  
+      worksheet.columns[j].width = 20; 
+    }
+    worksheet.addRow([]); 
+    workbook.xlsx.writeBuffer().then((data) => {
+      let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      fs.saveAs(blob, 'Eco-Score_Report.xlsx');
+   })
+    //this.matTableExporter.exportTable('xlsx', {fileName:'Eco-Score_Report', sheet: 'sheet_name'});
   }
 
   exportAsPDFFile(){   
