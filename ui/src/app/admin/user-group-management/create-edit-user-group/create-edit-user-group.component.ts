@@ -171,12 +171,11 @@ export class CreateEditUserGroupComponent implements OnInit {
   }
 
   compare(a: any, b: any, isAsc: boolean, columnName:any) {
-    if(a instanceof String) {
-      a = a.toUpperCase();
-    } 
-    if(b instanceof String) {
-      b = b.toUpperCase();
-    }if(columnName == "roles" && (Array.isArray(a) || Array.isArray(b))) { //Condition added for Role columns
+    if(columnName == "firstName" || columnName == "emailId"){ // //Condition added for firstName, emailId columns
+    if(!(a instanceof Number)) a = a.toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    }
+    if(columnName == "roles" && (Array.isArray(a) || Array.isArray(b))) { //Condition added for Role columns
       a= Object.keys(a).length > 0 ? a[0].name : "";
       b= Object.keys(b).length > 0 ? b[0].name : "";
       a = a.toUpperCase();
@@ -184,6 +183,12 @@ export class CreateEditUserGroupComponent implements OnInit {
       // a.roles.forEach(rolesValue => {
       //   a = rolesValue.name
       // });
+    }
+    if(columnName == "accountGroups" && (Array.isArray(a) || Array.isArray(b))) { //Condition added for accountGroups columns
+      a= Object.keys(a).length > 0 ? a[0].name : "";
+      b= Object.keys(b).length > 0 ? b[0].name : "";
+    if(!(a instanceof Number)) a = a.toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.toString().toUpperCase();
     }
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }

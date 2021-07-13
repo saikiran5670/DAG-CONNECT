@@ -112,9 +112,15 @@ namespace net.atos.daf.ct2.reports
 
         #region Eco Score Report - Create Profile
 
-        public async Task<bool> CreateEcoScoreProfile(EcoScoreProfileDto dto)
+        public async Task<int> CreateEcoScoreProfile(EcoScoreProfileDto dto)
         {
-            return await _reportRepository.CreateEcoScoreProfile(dto);
+            var isExist = await _reportRepository.CheckEcoScoreProfileIsExist(dto.OrganizationId, dto.Name, dto.Id);
+            if (!isExist)// check if profile is avilable in DB or not
+            {
+                return await _reportRepository.CreateEcoScoreProfile(dto);
+            }
+            else
+                return -1;
         }
 
         public async Task<int> GetEcoScoreProfilesCount(int orgId)
@@ -149,8 +155,8 @@ namespace net.atos.daf.ct2.reports
             // Default Profile for basic and advance -	DAF Admin – Not Allowed Update Profile Name , Allowed  Rest profile KPIs modifications  2) Org Admin – nothing Allowed
             // Custom profile(Global) -	DAF Admin – All allowed 2) Org Admin – nothing Allowed
             // Custom profile(Org) – DAF Admin – All allowed  2)Org Admin – Allowed(Based on Role and Subscription)
-            var isExist = await _reportRepository.CheckEcoScoreProfileIsExist(ecoScoreProfileDto.OrganizationId, ecoScoreProfileDto.Name);
-            if (isExist)// check if profile is avilable in DB or not
+            var isExist = await _reportRepository.CheckEcoScoreProfileIsExist(ecoScoreProfileDto.OrganizationId, ecoScoreProfileDto.Name, ecoScoreProfileDto.Id);
+            if (!isExist)// check if profile is avilable in DB or not
             {
                 string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(ecoScoreProfileDto.Id);
                 bool isGlobalProfile = await _reportRepository.GetGlobalProfile(ecoScoreProfileDto.Id);
@@ -170,6 +176,7 @@ namespace net.atos.daf.ct2.reports
                         {
                             return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
                         }
+                        return -3;
                     }
                     else
                     {
@@ -194,7 +201,7 @@ namespace net.atos.daf.ct2.reports
             int ecoScoreProfileId;
             string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(profileId);
 
-            if (!string.IsNullOrEmpty(versionType))
+            if (string.IsNullOrEmpty(versionType))
             {
                 bool isGlobalProfile = await _reportRepository.GetGlobalProfile(profileId);
 
@@ -203,6 +210,7 @@ namespace net.atos.daf.ct2.reports
                     if (isAdminRights)
                     {
                         ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(profileId);
+                        return ecoScoreProfileId;
                     }
                     else
                     {
@@ -211,7 +219,7 @@ namespace net.atos.daf.ct2.reports
                 }
                 else
                 {
-                    ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(profileId);
+                    return await _reportRepository.DeleteEcoScoreProfile(profileId);
                 }
 
             }
@@ -508,6 +516,13 @@ namespace net.atos.daf.ct2.reports
             return _reportRepository.GetFilteredFuelDeviation(fuelDeviationFilters);
         }
 
+        #endregion
+
+        #region LogBook
+        public async Task<LogbookSearchFilter> GetLogbookSearchParameter(List<string> vins)
+        {
+            return await _reportRepository.GetLogbookSearchParameter(vins);
+        }
         #endregion
     }
 }

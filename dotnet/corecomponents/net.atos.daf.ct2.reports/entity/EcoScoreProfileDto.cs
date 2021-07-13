@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.reports.entity
     public class EcoScoreProfileDto
     {
         public int Id { get; set; }
-        public int? OrganizationId { get; set; }
+        public int OrganizationId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string ActionedBy { get; set; }

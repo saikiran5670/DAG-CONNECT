@@ -14,6 +14,8 @@ import 'jspdf-autotable';
 import { ChartOptions, ChartType, ChartDataSets ,ChartColor,Chart} from 'chart.js';
 import { color } from 'html2canvas/dist/types/css/types/color';
 import * as crosshair from 'chartjs-plugin-crosshair';
+import { Workbook } from 'exceljs';
+import * as fs from 'file-saver';
 
 @Component({
   selector: 'app-driver-time-detail',
@@ -66,6 +68,7 @@ export class DriverTimeDetailComponent implements OnInit {
   ctx: any;
   chartPlugins = [crosshair];
   zoomMsg : boolean = true;
+  summaryObj:any=[];
 
   constructor(private reportMapService:ReportMapService) { }
 
@@ -342,9 +345,77 @@ export class DriverTimeDetailComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  exportAsExcelFile(){
-    this.matTableExporter.exportTable('xlsx', {fileName:'Driver_Details_Time_Report', sheet: 'sheet_name'});
+  exportAsExcelFile(){    
+  const title = 'Driver Details Time Report';
+  const summary = 'Summary Section';
+  const detail = 'Detail Section';
+  const header = ['Date', 'Drive Time', 'Work Time', 'Service Time', 'Rest Time', 'Available Time'];
+  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Driver Name', 'Driver Id', 'Total Drive Time', 'Total Work Time', 'Total Available Time', 'Total Rest Time', 'Total Service Time'];
+  this.summaryObj=[
+    ['Driver Details Time Report', new Date(), this.driverDetails.fromDisplayDate, this.driverDetails.toDisplayDate,
+    this.driverDetails.selectedDriverName, this.driverDetails.selectedDriverId, this.driverDetails.driveTime, this.driverDetails.workTime, 
+    this.driverDetails.availableTime, this.driverDetails.restTime, this.driverDetails.serviceTime
+    ]
+  ];
+  const summaryData= this.summaryObj;
+  
+  //Create workbook and worksheet
+  let workbook = new Workbook();
+  let worksheet = workbook.addWorksheet('Driver Details Time Report');
+  //Add Row and formatting
+  let titleRow = worksheet.addRow([title]);
+  worksheet.addRow([]);
+  titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+ 
+  worksheet.addRow([]);  
+  let subTitleRow = worksheet.addRow([summary]);
+  let summaryRow = worksheet.addRow(summaryHeader);  
+  summaryData.forEach(element => {  
+    worksheet.addRow(element);   
+  });      
+  worksheet.addRow([]);
+  summaryRow.eachCell((cell, number) => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFFFFF00' },
+      bgColor: { argb: 'FF0000FF' }      
+    }
+    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+  })  
+  worksheet.addRow([]);   
+  let subTitleDetailRow = worksheet.addRow([detail]);
+  let headerRow = worksheet.addRow(header);
+  headerRow.eachCell((cell, number) => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFFFFF00' },
+      bgColor: { argb: 'FF0000FF' }
+    }
+    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+  })
+
+ this.initData.forEach(item => {     
+    worksheet.addRow([item.startTime,item.driveTime, item.workTime,item.serviceTime,
+      item.restTime, item.availableTime,]);   
+  }); 
+  worksheet.mergeCells('A1:D2'); 
+  subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+  subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+  for (var i = 0; i < header.length; i++) {    
+    worksheet.columns[i].width = 20;      
   }
+  for (var j = 0; j < summaryHeader.length; j++) {  
+    worksheet.columns[j].width = 20; 
+  }
+  worksheet.addRow([]); 
+  workbook.xlsx.writeBuffer().then((data) => {
+    let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    fs.saveAs(blob, 'Driver_Details_Time_Report.xlsx');
+ })
+  // this.matTableExporter.exportTable('xlsx', {fileName:'Driver_Details_Time_Report', sheet: 'sheet_name'});
+}
 
   exportAsPDFFile(){
    

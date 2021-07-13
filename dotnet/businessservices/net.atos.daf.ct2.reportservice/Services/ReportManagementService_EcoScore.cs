@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             {
                 var profileRequest = MapCreateProfileRequestToDto(request);
 
-                if (profileRequest.OrganizationId.HasValue)
+                if (profileRequest.OrganizationId > 0)
                 {
                     var countByOrg = await _reportManager.GetEcoScoreProfilesCount(request.OrgId);
                     var maxLimit = Convert.ToInt32(_configuration["MaxAllowedEcoScoreProfiles"]);
@@ -59,12 +59,24 @@ namespace net.atos.daf.ct2.reportservice.Services
 
         private async Task<CreateEcoScoreProfileResponse> CallCreateEcoScoreProfile(EcoScoreProfileDto profileRequest)
         {
-            await _reportManager.CreateEcoScoreProfile(profileRequest);
-            return new CreateEcoScoreProfileResponse()
+            var result = await _reportManager.CreateEcoScoreProfile(profileRequest);
+            var response = new CreateEcoScoreProfileResponse();
+            if (result > 0)
             {
-                Code = Responsecode.Success,
-                Message = "Eco-Score profile is created successfully."
-            };
+                response.Message = "Eco-Score profile is created successfully.";
+                response.Code = Responsecode.Success;
+            }
+            else if (result == -1)
+            {
+                response.Message = string.Format(entity.ReportConstants.ECOSCORE_PROFILE_ALREADY_EXIST_MSG, profileRequest.Name);
+                response.Code = Responsecode.Failed;
+            }
+            else
+            {
+                response.Message = "Create Eco-Score Profile fail.";
+                response.Code = Responsecode.Failed;
+            }
+            return response;
         }
 
         /// <summary>
@@ -77,7 +89,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             var dto = new EcoScoreProfileDto();
             List<EcoScoreProfileKPI> profileKPIs = new List<EcoScoreProfileKPI>();
             dto.Name = request.Name;
-            dto.OrganizationId = request.IsDAFStandard ? new int?() : request.OrgId;
+            dto.OrganizationId = request.IsDAFStandard ? new int() : request.OrgId;
             dto.Description = request.Description;
             dto.ActionedBy = Convert.ToString(request.AccountId);
             foreach (var profileKPI in request.ProfileKPIs)
@@ -294,12 +306,17 @@ namespace net.atos.daf.ct2.reportservice.Services
                 }
                 else if (result == -1)
                 {
-                    response.Message = obj.Name + entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_NOT_EXIST_MSG;
-                    response.Code = Responsecode.NotFound;
+                    response.Message = string.Format(entity.ReportConstants.ECOSCORE_PROFILE_ALREADY_EXIST_MSG, obj.Name);
+                    response.Code = Responsecode.Failed;
                 }
                 else if (result == -2)
                 {
                     response.Message = entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_DEFAULT_PROFILE_MSG;
+                    response.Code = Responsecode.Failed;
+                }
+                else if (result == -3)
+                {
+                    response.Message = entity.ReportConstants.ECOSCORE_PROFILE_NOT_AUTH_MSG;
                     response.Code = Responsecode.Failed;
                 }
                 else

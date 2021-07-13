@@ -74,12 +74,6 @@ namespace net.atos.daf.ct2.poigeofence
 
             if (objCorridorRequest.OrganizationId > 0 && objCorridorRequest.CorridorId > 0)
             {
-                //objCorridorLookUp.EditView = await _corridorRepository.GetCorridorListByOrgIdAndCorriId(objCorridorRequest);
-                ////loop to get existing trip corridore details.
-                //for (int i = 0; i < objCorridorLookUp.EditView.Count; i++)
-                //{
-                //    objCorridorLookUp.EditView[i].ViaAddressDetails = await _corridorRepository.GetCorridorViaStopById(objCorridorLookUp.EditView[i].Id);
-                //}
                 objCorridorLookUp.EditView = await _corridorRepository.GetCorridorListByOrgIdAndCorriId(objCorridorRequest);
                 //loop to get existing trip corridore details.
                 if (objCorridorLookUp.EditView != null)
@@ -101,11 +95,6 @@ namespace net.atos.daf.ct2.poigeofence
             }
             else if (objCorridorRequest.OrganizationId > 0 && objCorridorRequest.CorridorId <= 0)
             {
-                //objCorridorLookUp.GridView = await _corridorRepository.GetCorridorListByOrganization(objCorridorRequest);
-                //for (int i = 0; i < objCorridorLookUp.GridView.Count; i++)
-                //{
-                //    objCorridorLookUp.GridView[i].ViaAddressDetails = await _corridorRepository.GetCorridorViaStopById(objCorridorLookUp.GridView[i].Id);
-                //}
                 objCorridorLookUp.GridView = await _corridorRepository.GetCorridorListByOrganization(objCorridorRequest);
                 for (int i = 0; i < objCorridorLookUp.GridView.Count; i++)
                 {
@@ -117,6 +106,14 @@ namespace net.atos.daf.ct2.poigeofence
                 {
                     if ((LandmarkType)item.CorridorType.ToCharArray()[0] == LandmarkType.ExistingTripCorridor)
                     {
+                        //This is to bind latest End Lat and long by sequence Number from nodes table
+                        NodeEndLatLongResponse objNodeEndLatLongResponse = await _corridorRepository.GetExistingTripCorridorListByLandMarkId(item.Id);
+                        if (objNodeEndLatLongResponse != null)
+                        {
+                            item.EndLat = objNodeEndLatLongResponse.EndLat;
+                            item.EndLong = objNodeEndLatLongResponse.EndLong;
+                            item.EndPoint = objNodeEndLatLongResponse.Address;
+                        }
                         item.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(item.Id);
                         foreach (var trips in item.CorridoreTrips)
                         {

@@ -456,7 +456,7 @@
   
             <div *ngIf="ConsumptionChartType =='Line'" class="chart-wrapper">
   
-              <canvas baseChart [datasets]="lineChartData5" [labels]="lineChartLabels" [options]="lineChartOptions3" [colors]="lineChartColors"
+              <canvas baseChart [datasets]="lineChartData5" [labels]="lineChartLabels" [options]="lineChartOptions5" [colors]="lineChartColors"
                 [legend]="lineChartLegend" [chartType]="lineChartType" [plugins]="lineChartPlugins">
   
               </canvas>
@@ -1163,16 +1163,5 @@
       </mat-expansion-panel>
   
     </mat-card>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-  </div>
-</div>
-<app-fleetfueldetails *ngIf='showDetailedReport && FuelData' [translationData]='translationData' [detailsObject]='detailSummaryObj'></app-fleetfueldetails>
-=======
-=======
->>>>>>> 03a122a7218c31eb7213919ee5f7a04a238538e3
-=======
->>>>>>> 03a122a7218c31eb7213919ee5f7a04a238538e3
-<app-fleetfueldetails *ngIf='showDetailedReport'></app-fleetfueldetails>
->>>>>>> 03a122a7218c31eb7213919ee5f7a04a238538e3
+
+<app-fleetfueldetails *ngIf='showDetailedReport && FuelData'></app-fleetfueldetails>

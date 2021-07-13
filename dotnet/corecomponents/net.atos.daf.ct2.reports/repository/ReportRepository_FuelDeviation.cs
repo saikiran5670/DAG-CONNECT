@@ -16,7 +16,8 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
                 string query = @"SELECT 
-	                      fueldev.fuel_event_type as FuelEventType
+                          fueldev.id as FuelDeviationId
+	                    , fueldev.fuel_event_type as FuelEventType
 	                    , fueldev.vehicle_activity_type as VehicleActivityType
 	                    , fueldev.fuel_difference  as FuelDiffernce
                         , fueldev.latitude  as Latitude
