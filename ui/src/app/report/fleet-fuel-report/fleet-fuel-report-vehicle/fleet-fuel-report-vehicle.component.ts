@@ -705,7 +705,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     //line chart for fuel consumed
     if(this.ConsumedChartType == 'Line')
     {
-      let data1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs || 'Ltrs') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallon || 'gallon') : (this.translationData.lblmile || 'gallon');
+      let data1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs || 'Ltrs') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallon || 'Gallon') : (this.translationData.lblGallon || 'Gallon');
       this.lineChartOptions3.scales.yAxes= [{
         id: "y-axis-1",
         position: 'left',
@@ -745,7 +745,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
     if(this.DistanceChartType == 'Line')
     {    
-      let data3 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'miles') : (this.translationData.lblmile || 'miles');
+      let data3 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
       this.lineChartOptions2.scales.yAxes= [{
         id: "y-axis-1",
         position: 'left',
@@ -763,7 +763,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
     if(this.ConsumptionChartType == 'Line')
     {
-      let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrsperkm || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'miles per gallon') : (this.translationData.lblMilesPerGallon || 'miles per gallon');
+      let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrsperkm || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
       this.lineChartOptions5.scales.yAxes= [{
         id: "y-axis-1",
         position: 'left',

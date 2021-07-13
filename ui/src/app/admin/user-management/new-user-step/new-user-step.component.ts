@@ -93,6 +93,19 @@ export class NewUserStepComponent implements OnInit {
     this.roleDataSource.sort = this.sort.toArray()[0];
     this.userGrpDataSource.paginator = this.paginator.toArray()[1];
     this.userGrpDataSource.sort = this.sort.toArray()[1];
+    this.roleDataSource.sortData = (data: String[], sort: MatSort) => {
+      const isAsc = sort.direction === 'asc';
+      return data.sort((a: any, b: any) => {
+          let columnName = sort.active;
+        return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+      });
+     }
+  }
+
+  compare(a: any, b: any, isAsc: boolean, columnName:any) {
+    if(!(a instanceof Number)) a = a.toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.toString().toUpperCase(); 
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
   ngOnInit() {
