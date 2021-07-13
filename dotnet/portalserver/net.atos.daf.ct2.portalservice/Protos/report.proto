@@ -946,6 +946,7 @@ message FuelDeviationDetails {
     double Longitude = 24;
     int32 GeoLocationAddressId = 25;
     string GeoLocationAddress = 26;
+    int32 FuelDeviationId = 27;
 }
 
 message FuelDeviationFilterRequest{
