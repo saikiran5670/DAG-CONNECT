@@ -360,7 +360,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     let getFleetFuelObj = {
       "startDateTime": 1521843915459,
       "endDateTime": 1721843915459,
-      "viNs=": _vinData,
+      "viNs": _vinData,
       "LanguageCode": "EN-GB"
     }
     this.reportService.getFleetFuelDetails(getFleetFuelObj).subscribe((data:any) => {
