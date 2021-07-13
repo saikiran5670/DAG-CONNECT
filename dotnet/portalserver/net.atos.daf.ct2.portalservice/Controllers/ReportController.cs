@@ -1144,5 +1144,48 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
+        #region Fuel Deviation Report
+
+        #region Fuel Deviation Report Table Details 
+        #endregion
+        [HttpGet]
+        [Route("getfueldeviationfilterdata")]
+        public async Task<IActionResult> GetFuelDeviationFilterData([FromQuery] FuelDeviationFilterRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) return BadRequest(ReportConstants.VALIDATION_STARTDATE_MSG);
+                if (!(request.EndDateTime > 0)) return BadRequest(ReportConstants.VALIDATION_ENDDATE_MSG);
+                if (request.VINs == null || request.VINs?.Count == 0) return BadRequest(ReportConstants.VALIDATION_VINREQUIRED_MSG);
+                if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.VALIDATION_DATEMISMATCH_MSG);
+
+                _logger.Info("GetFilteredFuelDeviationAsync method in Report (Fuel Deviation Report) API called.");
+                var response = await _reportServiceClient.GetFilteredFuelDeviationAsync(request);
+
+                foreach (var item in response.FuelDeviationDetails)
+                    _hereMapAddressProvider.UpdateFuelDeviationReportAddress(item);
+
+
+                if (response?.FuelDeviationDetails?.Count > 0)
+                {
+                    return Ok(new { Data = response.FuelDeviationDetails, Message = ReportConstants.GET_FUEL_DEVIATION_SUCCESS_MSG });
+                }
+                else
+                {
+                    return StatusCode((int)response.Code, response.Message);
+                }
+            }
+
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.GET_FUEL_DEVIATION_SUCCESS_MSG, 0, 0, string.Empty,
+                                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
     }
 }
