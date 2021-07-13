@@ -1187,5 +1187,49 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
+
+
+        #region Logbook
+
+        [HttpGet]
+        [Route("fleetoverview/getlogbookfilters")]
+        public async Task<IActionResult> GetLogBookFilter()
+        {
+            try
+            {
+                LogBookFilter logBookFilter = new LogBookFilter();
+                var logBookFilterRequest = new LogbookFilterIdRequest();
+                logBookFilterRequest.AccountId = _userDetails.AccountId;
+                logBookFilterRequest.OrganizationId = GetContextOrgId();
+                logBookFilterRequest.RoleId = _userDetails.RoleId;
+                logBookFilterRequest.AccountId = 171;
+                logBookFilterRequest.OrganizationId = 36;
+                logBookFilterRequest.RoleId = 61;
+                LogbookFilterResponse response = await _reportServiceClient.GetLogbookSearchParameterAsync(logBookFilterRequest);
+
+                // reportFleetOverviewFilter = _mapper.ToFleetOverviewEntity(response);
+
+
+
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (response.Code == Responsecode.Success)
+                    return Ok(response);
+                if (response.Code == Responsecode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                 ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"{ nameof(GetFleetOverviewFilter) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
     }
 }

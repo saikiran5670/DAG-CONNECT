@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.reportservice.Services
     {
 
 
-        public override async Task<LogbookFilterResponse> GetLogbooksearchParameter(LogbookFilterIdRequest request, ServerCallContext context)
+        public override async Task<LogbookFilterResponse> GetLogbookSearchParameter(LogbookFilterIdRequest request, ServerCallContext context)
         {
             try
             {
@@ -34,11 +34,24 @@ namespace net.atos.daf.ct2.reportservice.Services
                                                     .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
                                                                                        request.RoleId, vehicleDetailsAccountVisibilty,
                                                                                        ReportConstants.LOGBOOK_FEATURE_NAME);
+                    var vehicleByVisibilityAndAlertFeature
+                                                = await _visibilityManager
+                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
+                                                                                       request.RoleId, vehicleDetailsAccountVisibilty,
+                                                                                       ReportConstants.ALERT_FEATURE_NAME);
 
-                    res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
+
+                    var intersectedData = vehicleByVisibilityAndFeature.Select(x => x.VehicleGroupId).Intersect(vehicleByVisibilityAndAlertFeature.Select(x => x.VehicleGroupId));
+                    var result = vehicleByVisibilityAndFeature.Where(x => intersectedData.Contains(x.VehicleGroupId));
+                    var vinIds = vehicleDetailsAccountVisibilty.Select(x => x.Vin).Distinct().ToList();
+
+                    var tripdata = _reportManager.GetLogbookSearchParameter(vinIds);
+
+                    res = JsonConvert.SerializeObject(result);
                     response.FleetOverviewVGFilterResponse.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetOverviewVGFilterRequest>>(res)
                         );
+
 
 
                     var alertLevel = await _reportManager.GetAlertLevelList();
