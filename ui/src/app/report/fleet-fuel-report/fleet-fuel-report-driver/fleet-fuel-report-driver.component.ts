@@ -1094,14 +1094,21 @@ setVehicleGroupAndVehiclePreSelection() {
   exportAsPDFFile(){
    
     var doc = new jsPDF('p', 'mm', 'a4');
-    
-  // let pdfColumns = this.getPDFHeaders();
+  let pdfColumns = [this.displayedColumns];
   let prepare = []
     this.displayData.forEach(e=>{
       var tempObj =[];
       this.displayedColumns.forEach(element => {
         switch(element){
-          case 'vehiclename' :{
+          case 'driverName' :{
+            tempObj.push(e.driverName);
+            break;
+          }
+          case 'driverID' :{
+            tempObj.push(e.driverID);
+            break;
+          }
+          case 'vehicleName' :{
             tempObj.push(e.vehicleName);
             break;
           }
@@ -1109,48 +1116,128 @@ setVehicleGroupAndVehiclePreSelection() {
             tempObj.push(e.vin);
             break;
           }
-          case 'registrationnumber' :{
-            tempObj.push(e.registrationNumber);
+          case 'vehicleRegistrationNo' :{
+            tempObj.push(e.vehicleRegistrationNo);
             break;
           }
           case 'distance' :{
             tempObj.push(e.convertedDistance);
             break;
           }
-          case 'numberOfTrips' :{
-            tempObj.push(e.numberOfTrips);
-            break;
-          }
-          case 'tripTime' :{
-            tempObj.push(e.convertedTripTime);
-            break;
-          }
-          case 'drivingTime' :{
-            tempObj.push(e.convertedDrivingTime);
-            break;
-          }
-          case 'idleDuration' :{
-            tempObj.push(e.convertedIdleDuration);
-            break;
-          }
-          case 'stopTime' :{
-            tempObj.push(e.convertedStopTime);
+          case 'averageDistancePerDay' :{
+            tempObj.push(e.convertedAverageDistance);
             break;
           }
           case 'averageSpeed' :{
             tempObj.push(e.convertedAverageSpeed);
             break;
           }
-          case 'averageWeight' :{
-            tempObj.push(e.convertedAverageWeight);
+          case 'maxSpeed' :{
+            tempObj.push(e.maxSpeed);
             break;
           }
-          case 'averageDistancePerDay' :{
-            tempObj.push(e.convertedAverageDistance);
+          case 'numberOfTrips' :{
+            tempObj.push(e.numberOfTrips);
             break;
           }
-          case 'odometer' :{
-            tempObj.push(e.odometer);
+          case 'averageGrossWeightComb' :{
+            tempObj.push(e.averageGrossWeightComb);
+            break;
+          }
+          case 'fuelConsumed' :{
+            tempObj.push(e.fuelConsumed);
+            break;
+          }
+          case 'fuelConsumption' :{
+            tempObj.push(e.fuelConsumption);
+            break;
+          }
+          case 'cO2Emission' :{
+            tempObj.push(e.cO2Emission);
+            break;
+          }
+          case 'idleDuration' :{
+            tempObj.push(e.convertedIdleDuration);
+            break;
+          }
+          case 'ptoDuration' :{
+            tempObj.push(e.ptoDuration);
+            break;
+          }
+          case 'harshBrakeDuration' :{
+            tempObj.push(e.harshBrakeDuration);
+            break;
+          }
+          case 'heavyThrottleDuration' :{
+            tempObj.push(e.heavyThrottleDuration);
+            break;
+          }
+          case 'cruiseControlDistance3050' :{
+            tempObj.push(e.cruiseControlDistance3050);
+            break;
+          }
+          case 'cruiseControlDistance5075' :{
+            tempObj.push(e.cruiseControlDistance5075);
+            break;
+          }
+          case 'cruiseControlDistance75' :{
+            tempObj.push(e.cruiseControlDistance75);
+            break;
+          }
+          case 'averageTrafficClassification' :{
+            tempObj.push(e.averageTrafficClassification);
+            break;
+          }
+          case 'ccFuelConsumption' :{
+            tempObj.push(e.ccFuelConsumption);
+            break;
+          }
+          case 'fuelconsumptionCCnonactive' :{
+            tempObj.push(e.fuelconsumptionCCnonactive);
+            break;
+          }
+          case 'idlingConsumption' :{
+            tempObj.push(e.idlingConsumption);
+            break;
+          }
+          case 'dpaScore' :{
+            tempObj.push(e.dpaScore);
+            break;
+          }
+          case 'dpaAnticipationScore' :{
+            tempObj.push(e.dpaAnticipationScore);
+            break;
+          }
+          case 'dpaBrakingScore' :{
+            tempObj.push(e.dpaBrakingScore);
+            break;
+          }
+          case 'idlingPTOScore' :{
+            tempObj.push(e.idlingPTOScore);
+            break;
+          }
+          case 'idlingPTO' :{
+            tempObj.push(e.idlingPTO);
+            break;
+          }
+          case 'idlingWithoutPTOpercent' :{
+            tempObj.push(e.idlingWithoutPTOpercent);
+            break;
+          }
+          case 'footBrake' :{
+            tempObj.push(e.footBrake);
+            break;
+          }
+          case 'cO2Emmision' :{
+            tempObj.push(e.cO2Emmision);
+            break;
+          }
+          case 'averageTrafficClassificationValue' :{
+            tempObj.push(e.averageTrafficClassificationValue);
+            break;
+          }
+          case 'idlingConsumptionValue' :{
+            tempObj.push(e.idlingConsumptionValue);
             break;
           }
         }
@@ -1165,7 +1252,7 @@ setVehicleGroupAndVehiclePreSelection() {
     .then(canvas => {  
       (doc as any).autoTable({
         styles: {
-            cellPadding: 0.5,
+            cellPadding: 0.6,
             fontSize: 12
         },       
         didDrawPage: function(data) {     
@@ -1184,6 +1271,7 @@ setVehicleGroupAndVehiclePreSelection() {
             top:30 
         }  
       });
+
         let fileWidth = 170;
         let fileHeight = canvas.height * fileWidth / canvas.width;
         
@@ -1194,17 +1282,19 @@ setVehicleGroupAndVehiclePreSelection() {
         doc.addPage();
 
       (doc as any).autoTable({
-      // head: this.displayedColumns,
+      head: pdfColumns,
       body: prepare,
       theme: 'striped',
       didDrawCell: data => {
         //console.log(data.column.index)
       }
     })
+
     doc.save('fleetFuelByVehicle.pdf');
        
     });     
   }
+
   onDriverSelected(vehData: any){
     const navigationExtras: NavigationExtras = {
       state: {
