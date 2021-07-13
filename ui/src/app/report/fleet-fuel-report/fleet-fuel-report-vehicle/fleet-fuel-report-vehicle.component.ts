@@ -91,7 +91,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   DurationChartType: any;
   showLoadingIndicator: boolean = false;
   tableInfoObj: any ;
-  summaryObj: any;
   detailSummaryObj: any;
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
@@ -361,14 +360,14 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     let getFleetFuelObj = {
       "startDateTime": 1521843915459,
       "endDateTime": 1721843915459,
-      "viNs": _vinData,
+      "viNs=": _vinData,
       "LanguageCode": "EN-GB"
     }
     this.reportService.getFleetFuelDetails(getFleetFuelObj).subscribe((data:any) => {
     console.log("---getting data from getFleetFuelDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-    // this.setTableInfo();
+    //this.setTableInfo();
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
     if(this.prefUnitFormat == 'dunit_Metric')
@@ -458,7 +457,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         "viNs":  _vinData,
       }
       this.loadfleetFuelDetails(_vinData);
-      //  this.setTableInfo();
+      //this.setTableInfo();
       //  this.updateDataSource(this.FuelData);
       this.hideloader();
       this.isChartsOpen = true;
@@ -570,7 +569,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       vehicleName: vehName,
       noOfTrips: this.FuelData[0].numberOfTrips,
       distance:  this.FuelData[0].convertedDistance,
-      fuelconsumed:  this.FuelData.convertedFuelConsumed100Km,
+      fuelconsumed:  this.FuelData[0].convertedFuelConsumed100Km,
       idleDuration: this.FuelData[0].convertedIdleDuration,
       fuelConsumption: this.FuelData[0].fuelConsumption,
       co2emission: this.FuelData[0].cO2Emission,
@@ -621,7 +620,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
       this.barChartLabels.push(resultDate);
       this.barData.push(e.numberofTrips);
-      this.fuelConsumedChart.push(e.fuelConsumed);
+      let convertedFuelConsumed = e.fuelConsumed / 1000;
+      this.fuelConsumedChart.push(convertedFuelConsumed);
       this.co2Chart.push(e.co2Emission);
       this.distanceChart.push(e.distance);
       this.fuelConsumptionChart.push(e.fuelConsumtion);
