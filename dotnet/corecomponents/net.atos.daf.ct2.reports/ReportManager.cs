@@ -475,9 +475,21 @@ namespace net.atos.daf.ct2.reports
 
         #region Eco-Score Data service
 
-        public Task<bool> GetKPIInfo(EcoScoreDataServiceRequest request) => _reportRepository.GetKPIInfo(request);
+        public Task<EcoScoreKPIInfoDataServiceResponse> GetKPIInfo(EcoScoreDataServiceRequest request)
+        {
+            _reportRepository.GetKPIInfo(request);
 
-        public Task<bool> GetChartInfo(EcoScoreDataServiceRequest request) => _reportRepository.GetChartInfo(request);
+            var response = new EcoScoreKPIInfoDataServiceResponse();
+            return Task.FromResult(response);
+        }
+
+        public Task<EcoScoreChartInfoDataServiceResponse> GetChartInfo(EcoScoreDataServiceRequest request)
+        {
+            _reportRepository.GetChartInfo(request);
+
+            var response = new EcoScoreChartInfoDataServiceResponse();
+            return Task.FromResult(response);
+        }
 
         #endregion
 
