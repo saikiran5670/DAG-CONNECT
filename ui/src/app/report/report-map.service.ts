@@ -1154,7 +1154,7 @@ export class ReportMapService {
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       element.convertedFuelConsumed100Km = this.getFuelConsumed(element.fuelConsumption, unitFormat);
       // element.cruiseControlDistance3050 = this.getcruiseControlDistance3050(element.cruiseControlDistance3050, unitFormat);
-
+      element.dpaScore = element.dpaScore.toFixed(2);
     });
     return gridData;
   }
