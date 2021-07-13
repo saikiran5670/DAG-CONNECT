@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                                        ON repsch.id=schrep.schedule_report_id AND repsch.start_date=schrep.start_date AND repsch.end_date=schrep.end_date AND repsch.status='A'
                                             Inner JOIN master.report as report
 										    ON report.id=repsch.report_id";
-                queryAlert += " where date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date/1000) AT TIME ZONE 'UTC')) = date_trunc('hour', NOW() AT TIME ZONE 'UTC')";
+                queryAlert += " where schrep.is_mail_send=false AND date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date/1000) AT TIME ZONE 'UTC')) <= date_trunc('hour', NOW() AT TIME ZONE 'UTC')";
 
                 IEnumerable<ReportSchedulerEmailResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerEmailResult>(queryAlert);
                 return reportSchedulerResult;
@@ -104,6 +104,26 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 throw;
             }
         }
+
+        public async Task<int> UpdateIsMailSend(Guid token, bool isMailSend)
+        {
+            try
+            {
+                var query = @"UPDATE master.scheduledreport 
+                            SET is_mail_send=@isMailSend
+                            WHERE token=@token RETURNING id";
+                var parameter = new DynamicParameters();
+                parameter.Add("@token", token);
+                parameter.Add("@isMailSend", isMailSend);
+                int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
+                return rowEffected;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
 
 
     }

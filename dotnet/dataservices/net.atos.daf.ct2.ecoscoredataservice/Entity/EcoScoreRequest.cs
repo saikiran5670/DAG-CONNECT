@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using net.atos.daf.ct2.ecoscoredataservice.CustomAttributes;
 
 namespace net.atos.daf.ct2.ecoscoredataservice.Entity
@@ -10,6 +7,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Entity
     public class EcoScoreRequest
     {
         [Required(AllowEmptyStrings = true, ErrorMessage = "MISSING_PARAMETER")]
+        [EmailRegex(ErrorMessage = "INVALID_PARAMETER")]
         public string AccountId { get; set; }
 
         [Required(AllowEmptyStrings = true, ErrorMessage = "MISSING_PARAMETER")]

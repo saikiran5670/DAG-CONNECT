@@ -66,19 +66,6 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     console.log(JSON.stringify(this.compareEcoScore));
 
     this.mockDataset();
-    // this.reportService.getEcoScoreDriverCompare(this.compareEcoScore).subscribe((_drivers: any) => {
-    //   this.driverDetails = _drivers.drivers;
-    //   this.defineGrid();
-    //   this.defineGridGen();
-
-    //   let res = (JSON.stringify(_drivers)).replace(/dataAttributeId/g, "id");
-    //   let fin = JSON.parse(res);
-    //   this.datasetHierarchical = fin.compareDrivers.subCompareDrivers[1].subCompareDrivers;
-    //   this.datasetGen = fin.compareDrivers.subCompareDrivers[0].subCompareDrivers;  
-    // });
-
-    // mock a dataset
-    //this.datasetHierarchical = this.mockDataset();
   }
 
   translationUpdate(){
@@ -109,6 +96,9 @@ export class EcoScoreDriverCompareComponent implements OnInit {
       { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage 50-75 km/h(%)' },
       { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage 30-75 km/h(%)' },
       { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage>75 km/h(%)' },
+      { key:'rp_harshbraking' , value:'Harsh Braking(%)' },
+      { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration' },
+      { key:'rp_brakeduration' , value:'Brake Duration' }
      ];
 
     // this.translationData.rp_general = 'General';
@@ -353,8 +343,14 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   }
 
   treeFormatter: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+    if (value === null || value === undefined || dataContext === undefined) {
+      return '';
+    }
     var foundValue = this.translationData.filter(obj=>obj.key === value);
-    value = foundValue[0].value;
+    if(foundValue === undefined || foundValue === null || foundValue.length === 0)
+      value = value;
+    else
+      value = foundValue[0].value;
     const gridOptions = grid.getOptions() as GridOption;
     const treeLevelPropName = gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName || '__treeLevel';
     if (value === null || value === undefined || dataContext === undefined) {
@@ -364,7 +360,8 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     const data = dataView.getItems();
     const identifierPropName = dataView.getIdPropertyName() || 'id';
     const idx = dataView.getIdxById(dataContext[identifierPropName]);
-
+    if (value === null || value === undefined)
+    return '';
     value = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const spacer = `<span style="display:inline-block; width:${(15 * dataContext[treeLevelPropName])}px;"></span>`;
 
@@ -381,26 +378,34 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   }
   
   getScore0: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-    if(value !== undefined && value !== null && value.length > 0)
-      return '<span style="color:' + value[0].color + '">' + value[0].value + "</span>";
+    if(value !== undefined && value !== null && value.length > 0){
+      let color = value[0].color === 'Amber'?'Orange':value[0].color;
+      return '<span style="color:' + color + '">' + value[0].value + "</span>";
+    }
     return '';
   }
   
   getScore1: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-    if(value !== undefined && value !== null && value.length > 1)
-      return '<span style="color:' + value[1].color + '">' + value[1].value + "</span>";
+    if(value !== undefined && value !== null && value.length > 1){
+      let color = value[1].color === 'Amber'?'Orange':value[1].color;
+      return '<span style="color:' + color + '">' + value[1].value + "</span>";
+    }
     return '';
   }
 
   getScore2: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-    if(value !== undefined && value !== null && value.length > 2)
-      return '<span style="color:' + value[2].color + '">' + value[2].value + "</span>";
+    if(value !== undefined && value !== null && value.length > 2){
+      let color = value[2].color === 'Amber'?'Orange':value[2].color;
+      return '<span style="color:' + color + '">' + value[2].value + "</span>";
+    }
     return '';
   }
 
   getScore3: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-    if(value !== undefined && value !== null && value.length > 3)
-      return '<span style="color:' + value[3].color + '">' + value[3].value + "</span>";
+    if(value !== undefined && value !== null && value.length > 3){
+      let color = value[3].color === 'Amber'?'Orange':value[3].color;
+      return '<span style="color:' + color + '">' + value[3].value + "</span>";
+    }
     return '';
   }
 

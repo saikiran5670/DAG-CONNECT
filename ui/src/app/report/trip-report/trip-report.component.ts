@@ -23,6 +23,8 @@ import { Router, NavigationExtras } from '@angular/router';
 import { OrganizationService } from '../../services/organization.service';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { element } from 'protractor';
+import { Workbook } from 'exceljs';
+import * as fs from 'file-saver';
 
 declare var H: any;
 
@@ -743,10 +745,79 @@ ngOnDestroy(){
     });
   }
 
-  exportAsExcelFile(){
-    this.matTableExporter.exportTable('xlsx', {fileName:'Trip_Report', sheet: 'sheet_name'});
-  }
+  exportAsExcelFile(){  
+  const title = 'Trip Report';
+  const summary = 'Summary Section';
+  const detail = 'Detail Section';
+  const header = ['VIN', 'Odometer', 'Vehicle Name', 'Registration No', 'Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumption', 'Driving Time', 'Alerts', 'Events'];
+  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Vehicle VIN', 'Reg. Plate Number'];
+  let summaryObj=[
+    ['Trip Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+    this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, this.tableInfoObj.vin, this.tableInfoObj.regNo
+    ]
+  ];
+  const summaryData= summaryObj;
+  
+  //Create workbook and worksheet
+  let workbook = new Workbook();
+  let worksheet = workbook.addWorksheet('Trip Report');
+  //Add Row and formatting
+  let titleRow = worksheet.addRow([title]);
+  worksheet.addRow([]);
+  titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+ 
+  worksheet.addRow([]);  
+  let subTitleRow = worksheet.addRow([summary]);
+  let summaryRow = worksheet.addRow(summaryHeader);  
+  summaryData.forEach(element => {  
+    worksheet.addRow(element);   
+  });      
+  worksheet.addRow([]);
+  summaryRow.eachCell((cell, number) => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFFFFF00' },
+      bgColor: { argb: 'FF0000FF' }      
+    }
+    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+  })  
+  worksheet.addRow([]);   
+  let subTitleDetailRow = worksheet.addRow([detail]);
+  let headerRow = worksheet.addRow(header);
+  headerRow.eachCell((cell, number) => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFFFFF00' },
+      bgColor: { argb: 'FF0000FF' }
+    }
+    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+  })
 
+ this.initData.forEach(item => {     
+    worksheet.addRow([item.vin, item.odometer, item.vehicleName, item.registrationNo, item.convertedStartTime, 
+      item.convertedEndTime, item.convertedDistance, item.convertedIdleDuration, item.convertedAverageSpeed,
+      item.convertedAverageWeight, item.startPosition, item.endPosition, item.convertedFuelConsumed100Km,
+      item.convertedDrivingTime, item.alert, item.events]);   
+  }); 
+  worksheet.mergeCells('A1:D2'); 
+  subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+  subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+  for (var i = 0; i < header.length; i++) {    
+    worksheet.columns[i].width = 20;      
+  }
+  for (var j = 0; j < summaryHeader.length; j++) {  
+    worksheet.columns[j].width = 20; 
+  }
+  worksheet.addRow([]); 
+  workbook.xlsx.writeBuffer().then((data) => {
+    let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    fs.saveAs(blob, 'Trip_Report.xlsx');
+ })
+  // this.matTableExporter.exportTable('xlsx', {fileName:'Trip_Report', sheet: 'sheet_name'});
+}
+  
   exportAsPDFFile(){
     var doc = new jsPDF();
     (doc as any).autoTable({

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.reportscheduler.entity;
 
@@ -37,6 +38,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         Task<IEnumerable<ReportSchedulerEmailResult>> GetReportEmailDetails();
         Task<int> UpdateTimeRangeByDate(ReportEmailFrequency reportEmailFrequency);
         Task<int> UpdateTimeRangeByCalenderTime(ReportEmailFrequency reportEmailFrequency);
+        Task<int> UpdateIsMailSend(Guid token, bool isMailSend);
 
     }
 }

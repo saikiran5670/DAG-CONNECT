@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.mapservice;
@@ -78,5 +79,12 @@ namespace net.atos.daf.ct2.portalservice.Common
 
         }
 
+        internal void UpdateFuelDeviationReportAddress(FuelDeviationDetails item)
+        {
+            if (item.GeoLocationAddressId == 0)
+            {
+                item.GeoLocationAddress = GetAddress(item.Latitude, item.Longitude);
+            }
+        }
     }
 }

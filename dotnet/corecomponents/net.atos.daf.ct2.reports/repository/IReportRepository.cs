@@ -18,12 +18,12 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter activityFilters);
         Task<IEnumerable<ReportDetails>> GetReportDetails();
         Task<List<Driver>> GetDriversByVIN(long StartDateTime, long EndDateTime, List<string> VIN);
-        Task<bool> CreateEcoScoreProfile(EcoScoreProfileDto dto);
+        Task<int> CreateEcoScoreProfile(EcoScoreProfileDto dto);
         Task<int> GetEcoScoreProfilesCount(int orgId);
         Task<List<EcoScoreProfileDto>> GetEcoScoreProfiles(int orgId);
         Task<EcoScoreProfileDto> GetEcoScoreProfileKPIDetails(int profileId);
         Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto);
-        Task<bool> CheckEcoScoreProfileIsExist(int? organizationId, string name);
+        Task<bool> CheckEcoScoreProfileIsExist(int organizationId, string name, int profileId);
         Task<int> DeleteEcoScoreProfile(int profileId);
         Task<string> IsEcoScoreProfileBasicOrAdvance(int profileId);
         Task<bool> GetGlobalProfile(int profileId);
@@ -62,5 +62,11 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest);
         Task<List<WarningDetails>> GetWarningDetails(List<int> warningClass, List<int> warningNumber, string lngCode);
         Task<List<DriverDetails>> GetDriverDetails(List<string> driverIds, int organizationId);
+        #region Fuel Deviation Report
+        Task<IEnumerable<FuelDeviation>> GetFilteredFuelDeviation(FuelDeviationFilter fuelDeviationFilters);
+        #endregion
+        #region LogBook
+        Task<LogbookSearchFilter> GetLogbookSearchParameter(List<string> vins);
+        #endregion
     }
 }

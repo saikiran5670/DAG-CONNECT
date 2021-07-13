@@ -317,6 +317,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         break;
       }
       case 'B': {
+          endDate= Util.utcToDateConversion(this.selectedRowData[0].endDate);
        
           this.biweeklyEndDateValue = this.setStartEndDateTime(endDate, this.selectedEndTime, 'end');
           this.reportSchedulerForm.get('biweeklyEndDay').setValue(this.weekdays.filter(item => item.id == (this.biweeklyEndDateValue.getDay()))[0].value);
@@ -488,6 +489,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       if(!pattern.test(element.trim())){
         this.isInvalidEmail = true;    
         this.invalidEmail += element +",";
+        this.invalidEmail= this.invalidEmail.slice(0, -1);
         return;
       }
     });
@@ -598,7 +600,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         {
           "id": 0,
           "scheduleReportId": 0,
-          "email": element,
+          "email": element.trim(),
           "state": "A",
           "createdAt": 0,
           "modifiedAt": 0
@@ -648,8 +650,8 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         "createdBy": this.accountId,
         "modifiedAt": 0,
         "modifiedBy": 0,
-        "mailSubject": this.reportSchedulerForm.controls.mailSubject.value,
-        "mailDescription": this.reportSchedulerForm.controls.mailDescription.value,
+        "mailSubject": (this.reportSchedulerForm.controls.mailSubject.value).trim(),
+        "mailDescription": (this.reportSchedulerForm.controls.mailDescription.value).trim(),
         "reportDispatchTime": this.reportSchedulerForm.controls.reportDispatchTime.value,
         "scheduledReport": scheduledReport,
         "scheduledReportRecipient": scheduledReportRecipient,
@@ -727,8 +729,8 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         "createdBy": this.selectedRowData[0].createdBy,
         "modifiedAt": 0,
         "modifiedBy": this.accountId,
-        "mailSubject": this.reportSchedulerForm.controls.mailSubject.value,
-        "mailDescription": this.reportSchedulerForm.controls.mailDescription.value,
+        "mailSubject": (this.reportSchedulerForm.controls.mailSubject.value).trim(),
+        "mailDescription": (this.reportSchedulerForm.controls.mailDescription.value).trim(),
         "reportDispatchTime": this.reportSchedulerForm.controls.reportDispatchTime.value,
         "scheduledReport": scheduledReport,
         "scheduledReportRecipient": scheduledReportRecipient,

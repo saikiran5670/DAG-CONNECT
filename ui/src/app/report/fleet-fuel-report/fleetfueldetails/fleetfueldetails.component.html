@@ -1,4 +1,100 @@
 <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-    <p>fleetfueldetails works!</p>
+    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+        <mat-expansion-panel [(expanded)]="generalExpandPanel" class="full-width" fxLayoutGap="10px">
+          <mat-expansion-panel-header class="full-width">
+            <mat-panel-title >
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary || 'Summary' }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div>
+            <div style='padding: 20px; margin-bottom: 10px; background: #eee9e9;'>
+              <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblFrom || 'From' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.fromDate }}</span>
+                  </span>
+                </div>
+                <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                    <span>
+                      <span>{{ translationData.lblTo || 'To' }}: </span>
+                      <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.endDate }}</span>
+                    </span>
+                  </div>
+                <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblVehicleGroup|| 'Vehicle Group' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.vehGroupName }}</span>
+                  </span>
+                </div>
+                <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                    <span>
+                      <span>{{ translationData.lblVehicleGroup|| 'Vehicle Name' }}: </span>
+                      <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.vehicleName }}</span>
+                    </span>
+                  </div>
+                  </div>
+                  <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                      <span>
+                        <span>{{ translationData.lbldriverName || 'driver Name' }}: </span>
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.driverName }}</span>
+                      </span>
+                    </div>
+                    <div  class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                      <span>
+                        <span>{{ translationData.lbldriverID || 'driverID' }}: </span>
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.driverID }}</span>
+                      </span>
+                    </div>
+                  </div>
+              
+            </div>
+            <div style='margin-bottom: 10px;' >
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                
+                <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <div>{{ translationData.lblNoOfTrips || 'Number Of Trips' }}: </div>
+                    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.noOfTrips }}</div>
+                  </span>
+                </div>
+                  <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+                    <span>
+                      <div>{{ translationData.lblDistance || 'Distance' }}: </div>
+                      <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.distance }} km</div>
+                    </span>
+                  </div>
+                  <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+                    <span>
+                      <div>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}: </div>
+                      <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.fuelconsumed }} l</div>
+                    </span>
+                  </div>
+                  <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+                    <span>
+                      <div>{{ translationData.lblIdleDuration || 'Idle Duration' }}: </div>
+                      <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.idleDuration }} (hh:mm)</div>
+                    </span>
+                  </div>
+                  <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+                    <span>
+                      <div>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}: </div>
+                      <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.fuelConsumption }} ltrs/100km </div>
+                    </span>
+                  </div>
+                  <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+                    <span>
+                      <div>{{ translationData.lblCoEmission || 'CO2 Emission' }}: </div>
+                      <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.co2emission }} t </div>
+                    </span>
+                  </div>
+              </div>
+            </div> 
+          </div>
+          </mat-expansion-panel>
+      </mat-card>
 
 </mat-card>
+<!--details table-->
+

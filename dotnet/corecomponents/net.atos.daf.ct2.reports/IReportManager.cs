@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.reports
         Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter driverActivityFilter);
         Task<IEnumerable<ReportDetails>> GetReportDetails();
         Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin);
-        Task<bool> CreateEcoScoreProfile(EcoScoreProfileDto dto);
+        Task<int> CreateEcoScoreProfile(EcoScoreProfileDto dto);
         Task<int> GetEcoScoreProfilesCount(int orgId);
         Task<List<EcoScoreProfileDto>> GetEcoScoreProfiles(int orgId);
         Task<EcoScoreProfileDto> GetEcoScoreProfileKPIDetails(int profileId);
@@ -53,5 +53,10 @@ namespace net.atos.daf.ct2.reports
         Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest);
         Task<List<WarningDetails>> GetWarningDetails(List<int> warningClass, List<int> warningNumber, string lngCode);
         Task<List<DriverDetails>> GetDriverDetails(List<string> driverIds, int organizationId);
+
+        #region Fuel Deviation Report
+        Task<IEnumerable<FuelDeviation>> GetFilteredFuelDeviation(FuelDeviationFilter fuelDeviationFilters);
+        #endregion
+        Task<LogbookSearchFilter> GetLogbookSearchParameter(List<string> vins);
     }
 }

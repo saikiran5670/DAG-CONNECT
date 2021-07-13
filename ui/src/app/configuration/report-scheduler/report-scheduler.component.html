@@ -65,28 +65,28 @@
         <div *ngIf='initData.length > 0'>
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort >
              <ng-container matColumnDef="reportName">      
-              <mat-header-cell *matHeaderCellDef mat-sort-header class="min-width-10-per"> {{ translationData.lblReportType || 'Report Type'}}</mat-header-cell>     
-              <mat-cell *matCellDef="let row" class="min-width-10-per" style="word-break: 'break-word'">
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="min-width-12-per"> {{ translationData.lblReportType || 'Report Type'}}</mat-header-cell>     
+              <mat-cell *matCellDef="let row" class="min-width-12-per" style="word-break: 'break-word'">
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>               
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.reportName}}</span> 
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="scheduledReportVehicleRef">
+            <ng-container matColumnDef="vehicleGroupAndVehicleList">
                 <mat-header-cell *matHeaderCellDef mat-sort-header class="min-width-12-per">{{ translationData.lblVehicleGroup || 'Vehicle Group/Vehicle' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row" class="min-width-12-per" matTooltip="{{ row.vehicleGroupAndVehicleList }}">
-                  <span *ngIf="row.scheduledReportVehicleRef.length ==1 && row.scheduledReportVehicleRef[0].vehicleGroupType == 'G'">
+                <mat-cell *matCellDef="let row" class="min-width-12-per" style="margin-right: 5px;" matTooltip="{{ row.vehicleGroupAndVehicleList }}">
+                  <span class="text-truncate" *ngIf="row.scheduledReportVehicleRef.length ==1 && row.scheduledReportVehicleRef[0].vehicleGroupType == 'G'">
                   <span [ngClass]="row.scheduledReportVehicleRef[0].vehicleGroupName != '' ? 'row-hover' : ''"
                   (click)="row.scheduledReportVehicleRef[0].vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
-                  {{ row.scheduledReportVehicleRef[0].vehicleGroupName }}</span>
+                  {{ row.vehicleGroupAndVehicleList }}</span>
                   </span>              
-                  <span *ngIf="row.scheduledReportVehicleRef.length ==1 && row.scheduledReportVehicleRef[0].vehicleGroupType == 'S'">{{ row.scheduledReportVehicleRef[0].vehicleName }}</span>
-                  <span *ngIf="row.scheduledReportVehicleRef.length != 1" class="text-truncate">{{ row.scheduledReportVehicleRef.length > 0 ? row.vehicleGroupAndVehicleList : '&nbsp; &nbsp; -' }}</span>
+                  <span class="text-truncate" *ngIf="row.scheduledReportVehicleRef.length ==1 && row.scheduledReportVehicleRef[0].vehicleGroupType == 'S'">{{ row.vehicleGroupAndVehicleList }}</span>
+                  <span class="text-truncate" *ngIf="row.scheduledReportVehicleRef.length != 1" class="text-truncate">{{ row.scheduledReportVehicleRef.length > 0 ? row.vehicleGroupAndVehicleList : '&nbsp; &nbsp; -' }}</span>
                 </mat-cell>
              </ng-container> 
              <ng-container matColumnDef="frequencyType">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFrequency || 'Frequency' }}</mat-header-cell>
-              <mat-cell *matCellDef="let row">
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="min-width-8-per">{{ translationData.lblFrequency || 'Frequency' }}</mat-header-cell>
+              <mat-cell *matCellDef="let row" class="min-width-8-per">
                 <span *ngIf="row.frequencyType=='D'">Daily</span>
                 <span *ngIf="row.frequencyType=='W'">Weekly</span>
                 <span *ngIf="row.frequencyType=='B'">Biweekly</span>
@@ -96,14 +96,14 @@
             </ng-container>
             <ng-container matColumnDef="recipientList">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRecipient || 'Recipient' }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" matTooltip="{{ row.recipientList }}">
+              <mat-cell *matCellDef="let row" style="margin-right: 5px;" matTooltip="{{ row.recipientList }}">
                 <span *ngIf="row.scheduledReportRecipient.length != 1" class="text-truncate">{{ row.scheduledReportRecipient.length > 0 ? row.recipientList : '&nbsp; &nbsp; -' }}</span>
-                <span *ngIf="row.scheduledReportRecipient.length == 1">{{ row.recipientList }} </span>
+                <span *ngIf="row.scheduledReportRecipient.length == 1" class="text-truncate">{{ row.recipientList }} </span>
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="driverList">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriver || 'Driver' }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" matTooltip="{{ row.driverList }}"><span class="text-truncate">{{ row.scheduledReportDriverRef.length > 0 ? row.driverList : '&nbsp; &nbsp; -' }}</span></mat-cell>
+              <mat-cell *matCellDef="let row" style="margin-right: 5px;" matTooltip="{{ row.driverList }}"><span class="text-truncate">{{ row.scheduledReportDriverRef.length > 0 ? row.driverList : '&nbsp; &nbsp; -' }}</span></mat-cell>
             </ng-container>
             <ng-container matColumnDef="lastScheduleRunDate">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblLastRun || 'Last  Run' }}</mat-header-cell>

@@ -19,7 +19,7 @@ import { Util } from 'src/app/shared/util';
 
 export class ReportSchedulerComponent implements OnInit {
 
-  displayedColumns: string[] = ['reportName','scheduledReportVehicleRef','frequencyType','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate','status','action'];
+  displayedColumns: string[] = ['reportName','vehicleGroupAndVehicleList','frequencyType','recipientList','driverList','lastScheduleRunDate','nextScheduleRunDate','status','action'];
   grpTitleVisible : boolean = false;
   errorMsgVisible: boolean = false;
   displayMessage: any;
@@ -170,7 +170,7 @@ export class ReportSchedulerComponent implements OnInit {
       });
     }
 
-    if(element.scheduledReportVehicleRef.length > 1){
+    if(element.scheduledReportVehicleRef.length > 0){
       let vehicleGroups = element.scheduledReportVehicleRef.filter(item => item.vehicleGroupType == 'G');
       if(vehicleGroups.length > 0){
         vehicleGroups = this.getUnique(vehicleGroups, 'vehicleGroupId');
@@ -180,15 +180,17 @@ export class ReportSchedulerComponent implements OnInit {
       });
 
       let vehicles = element.scheduledReportVehicleRef.filter(item => item.vehicleGroupType == 'S');
-      vehicles.forEach(resp => {
-        vehicleGroupTxt += resp.vin + ', ';
-      });
+      if(vehicles.length > 0){
+        vehicles.forEach(resp => {
+          vehicleGroupTxt += resp.vin + ', ';
+        });
+      }
     }
   
     initdata[index].recipientList = recipientTxt.slice(0, -2); 
     initdata[index].driverList = driverTxt.slice(0, -2);
     initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt == "" ? vehicleGroupTxt : vehicleGroupTxt.slice(0, -2);
-    initdata[index].lastScheduleRunDate = Util.convertUtcToDateFormat(element.lastScheduleRunDate, "MM/DD/YYYY");
+    initdata[index].lastScheduleRunDate = element.lastScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.lastScheduleRunDate, "MM/DD/YYYY");
     initdata[index].nextScheduleRunDate = Util.convertUtcToDateFormat(element.nextScheduleRunDate, "MM/DD/YYYY");
     initdata[index].isDriver = this.ReportTypeList.filter(item => item.id == initdata[index].reportId)[0].isDriver == 'Y' ? true : false;
   });

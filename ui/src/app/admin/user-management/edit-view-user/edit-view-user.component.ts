@@ -161,15 +161,36 @@ export class EditViewUserComponent implements OnInit {
     setTimeout(()=>{
       this.selectedRoleDataSource.paginator = this.paginator.toArray()[0];
       this.selectedRoleDataSource.sort = this.sort.toArray()[0];
+      this.selectedRoleDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+       }
     });
+  }
+
+  compare(a: any, b: any, isAsc: boolean, columnName:any) {
+    if(!(a instanceof Number)) a = a.toString().toUpperCase();
+    if(!(b instanceof Number)) b = b.toString().toUpperCase(); 
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
   loadAccountGroupTable(){
     let filterAccountGroupData = this.filterAccountGroupTableData();
     this.selecteUserGrpDataSource = new MatTableDataSource(filterAccountGroupData);
+    console.log("Testing 2 ---------------------------");
     setTimeout(()=>{
       this.selecteUserGrpDataSource.paginator = this.paginator.toArray()[1];
       this.selecteUserGrpDataSource.sort = this.sort.toArray()[1];
+      this.selecteUserGrpDataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+            let columnName = sort.active;
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+       }
     });
   }
 

@@ -40,6 +40,7 @@ import { EcoScoreProfileManagementComponent } from './eco-score-profile-manageme
 import { CreateEditReportSchedulerComponent } from './report-scheduler/create-edit-report-scheduler/create-edit-report-scheduler.component';
 import { ViewReportSchedulerComponent } from './report-scheduler/view-report-scheduler/view-report-scheduler.component';
 import { BreakingScoreComponent } from './eco-score-profile-management/breaking-score/breaking-score.component';
+import { MaxTargetScoreComponent } from './eco-score-profile-management/max-target-score/max-target-score.component';
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { BreakingScoreComponent } from './eco-score-profile-management/breaking-
     EcoScoreProfileManagementComponent,
     ViewReportSchedulerComponent,
     BreakingScoreComponent,
+    MaxTargetScoreComponent,
   ],
   imports: [
     CommonModule,

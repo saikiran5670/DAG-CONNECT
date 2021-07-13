@@ -29,6 +29,7 @@ export class RelationshipManagementComponent implements OnInit {
   titleText: string;
   translationData: any;
   grpTitleVisible : boolean = false;
+  errorMsgVisible: boolean = false;
   displayMessage: any;
   organizationId: number;
   localStLanguage: any;
@@ -220,23 +221,33 @@ export class RelationshipManagementComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
-       {
-        this.organizationService
-        .deleteRelationship(row.id)
-        .subscribe((d) => {
-          this.successMsgBlink(this.getDeletMsg(name));
-          this.loadInitData();
-        });
+      this.organizationService
+      .deleteRelationship(row.id)
+      .subscribe((d) => {
+        this.successMsgBlink(this.getDeletMsg(name));
+        this.loadInitData();
+      }, error => {
+        if(error.status == 409){
+          this.errorMsgBlink(this.getDeletMsg(name, true));
         }
+      });
     }
   });
   }
 
-  getDeletMsg(relationshipName: any){
-    if(this.translationData.lblRelationshipwassuccessfullydeleted)
-      return this.translationData.lblRelationshipwassuccessfullydeleted.replace('$', relationshipName);
-    else
-      return ("Relationship '$' was successfully deleted").replace('$', relationshipName);
+  getDeletMsg(relationshipName: any, isError? :boolean){
+    if(!isError){
+      if(this.translationData.lblRelationshipwassuccessfullydeleted)
+        return this.translationData.lblRelationshipwassuccessfullydeleted.replace('$', relationshipName);
+      else
+        return ("Relationship '$' was successfully deleted").replace('$', relationshipName);
+    } else {
+      if(this.translationData.lblAlertDeleteError)
+        return this.translationData.lblAlertDeleteError.replace('$', relationshipName);
+      else
+        return ("Relationship '$' cannot be deleted as it is mapped with organisation").replace('$', relationshipName);
+    }
+    
   }
 
   successMsgBlink(msg: any){
@@ -244,6 +255,14 @@ export class RelationshipManagementComponent implements OnInit {
     this.displayMessage = msg;
     setTimeout(() => {  
       this.grpTitleVisible = false;
+    }, 5000);
+  }
+
+  errorMsgBlink(errorMsg: any){
+    this.errorMsgVisible = true;
+    this.displayMessage = errorMsg;
+    setTimeout(() => {  
+      this.errorMsgVisible = false;
     }, 5000);
   }
 
