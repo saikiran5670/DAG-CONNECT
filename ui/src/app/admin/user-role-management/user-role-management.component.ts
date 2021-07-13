@@ -139,6 +139,12 @@ export class UserRoleManagementComponent implements OnInit {
         this.dataSource = new MatTableDataSource(this.initData);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+        this.dataSource.sortData = (data: String[], sort: MatSort) => {
+          const isAsc = sort.direction === 'asc';  
+          return data.sort((a: any, b: any) => {
+            return this.compare(a[sort.active], b[sort.active], isAsc);
+          });
+        }
       });
     }, (error) => {
       //console.log(error)
@@ -146,6 +152,12 @@ export class UserRoleManagementComponent implements OnInit {
     });
   }
 
+  compare(a: Number | String, b: Number | String, isAsc: boolean) {
+     if(!(a instanceof Number)) a = a.toString().toUpperCase();
+     if(!(b instanceof Number)) b = b.toString().toUpperCase();
+     return (a < b ? -1 : 1) * (isAsc ? 1 : -1); 
+   }
+   
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach(row => {
