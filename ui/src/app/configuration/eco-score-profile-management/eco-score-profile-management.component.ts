@@ -60,6 +60,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   lastUpdated: any;
   updatedBy: any;
   defaultProfile: any
+  profileFlag: boolean = false;
   
 
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportService: ReportService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,) { }
@@ -96,7 +97,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   deleteSelection: any = false;
   loadProfileData(){
-    this.reportService.getEcoScoreProfiles().subscribe((data: any) =>{
+    this.reportService.getEcoScoreProfiles(this.profileFlag).subscribe((data: any) =>{
       this.profileList = data["profiles"];
       this.selectedProfile = this.profileList[0].profileId;
       this.defaultProfile = this.profileList[0].profileName;
@@ -188,6 +189,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
        this.reportService.createEcoScoreProfile(profileParams).subscribe(()=>{
         this.loadProfileData();
         this.successMsgBlink(this.getUserCreatedMessage());
+        this.profileFlag = false;
        });
      }
     } else {
@@ -333,6 +335,10 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   onChangeOption(event){
     this.isCreatedExistingProfile = event.checked;
+    if(event.checked)
+      this.profileFlag = true
+    else
+      this.profileFlag = false;
   }
 
   profileSelectionDropDown(filterValue: string){
