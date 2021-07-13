@@ -27,15 +27,16 @@
         public const string GET_ECOSCORE_REPORT_FAILURE_MSG = "Eco-Score Report details fetched failed. With Error : {0}";
         public const string GET_ECOSCORE_REPORT_NOTFOUND_MSG = "No records found for Eco-Score reprot.";
         public const string UPDATE_ECOSCORE_PROFILE_SUCCESS_MSG = "Update successfully.";
-        public const string UPDATE_ECOSCORE_PROFILE_NOT_EXIST_MSG = "does not exist to update.";
+        public const string ECOSCORE_PROFILE_ALREADY_EXIST_MSG = "Profile {0} already exist with the same name";
         public const string UPDATE_ECOSCORE_PROFILE_FAIL_MSG = "Update Eco Score Profile Fail.";
         public const string UPDATE_ECOSCORE_PROFILE_DEFAULT_PROFILE_MSG = "Is a default profile, Can't update.";
+        public const string ECOSCORE_PROFILE_NOT_AUTH_MSG = "User is Not Authorize to update the profile.";
 
         public const string DELETE_ECOSCORE_PROFILE_SUCCESS_MSG = "Delete successfully.";
         public const string DELETE_ECOSCORE_PROFILE_NOT_EXIST_MSG = "does not exist to delete.";
         public const string DELETE_ECOSCORE_PROFILE_FAIL_MSG = "Delete Eco Score Profile Fail.";
         public const string DELETE_ECOSCORE_PROFILE_DEFAULT_PROFILE_MSG = "Is a default profile, Can't delete.";
-        public const string DELETE_ECOSCORE_PROFILE_GLOBAL_PROFILE_MSG = "Is a global profile, Can't delete.";
+        public const string DELETE_ECOSCORE_PROFILE_GLOBAL_PROFILE_MSG = "User is Not Authorize to delete Profile.";
         #endregion
 
         #region FleetOverview
