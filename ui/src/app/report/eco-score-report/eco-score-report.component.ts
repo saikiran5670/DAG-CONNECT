@@ -106,9 +106,11 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   selectedDriverOption: any;
   selectedDriverId: String;
   selectedDriverName: String;
+  ecoScoreDriver: boolean = false;
   compareEcoScore: boolean = false;
   compareButton: boolean = false;
   targetProfileSelected: Number;
+  ecoScoreDriverDetails: any;
   prefMapData: any = [
     {
       key: 'da_report_alldriver_general_driverscount',
@@ -433,6 +435,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    console.log(this.translationData);
   }
 
   onVehicleGroupChange(event: any){
@@ -576,6 +579,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
           this.setDataForAll();
         }
         else{
+          this.ecoScoreDriver = true;
+          this.ecoScoreDriverDetails ={};
           this.driverDetails = tripData.driverActivities;
           this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
           this.setGeneralDriverDetailValue();
@@ -890,16 +895,20 @@ let finalGroupDataList = [];
   }
 
   onDriverSelected(_row){
+    console.log(_row);
     this.selectedDriverData = _row;
     // let setId = (this.driverListData.filter(elem=>elem.driverID === _row.driverId)[0]['driverID']);
     // this.ecoScoreForm.get('driver').setValue(setId);
-    // this.onSearch();  
+    // this.onSearch();   
     this.driverSelected = true;
+    this.compareEcoScore = false;
+    this.ecoScoreDriver = true;
   }
 
   backToMainPage(){
     this.compareEcoScore = false;
     this.driverSelected = false;
+    this.ecoScoreDriver = false;
     this.updateDataSource(this.initData);
     this.ecoScoreForm.get('driver').setValue(0);
   }
@@ -910,17 +919,17 @@ let finalGroupDataList = [];
     this.totalRestTime = 0;
     this.totalAvailableTime= 0;
     this.totalServiceTime = 0;
-    
+
     this.fromDisplayDate = Util.convertUtcToDateFormat(this.startDateValue,'DD/MM/YYYY HH:MM:SS');
     this.toDisplayDate = Util.convertUtcToDateFormat(this.endDateValue,'DD/MM/YYYY HH:MM:SS');
     this.driverDetails.forEach(element => {
-      this.totalDriveTime += element.driveTime,
-      this.totalWorkTime += element.workTime,
-      this.totalRestTime += element.restTime,
-      this.totalAvailableTime += element.availableTime,
-      this.totalServiceTime += element.serviceTime
-      });
-            this.tableDetailsInfoObj= {
+    this.totalDriveTime += element.driveTime,
+    this.totalWorkTime += element.workTime,
+    this.totalRestTime += element.restTime,
+    this.totalAvailableTime += element.availableTime,
+    this.totalServiceTime += element.serviceTime
+    });
+      this.tableDetailsInfoObj= {
         fromDisplayDate : this.fromDisplayDate,
         toDisplayDate : this.toDisplayDate,
         fromDisplayOnlyDate :  this.fromDisplayDate.split(" ")[0],
@@ -932,7 +941,7 @@ let finalGroupDataList = [];
         restTime: Util.getHhMmTime(this.totalRestTime),
         availableTime: Util.getHhMmTime(this.totalAvailableTime),
         serviceTime: Util.getHhMmTime(this.totalServiceTime)
-      
+
       }
   }
   //********************************** Date Time Functions *******************************************//
