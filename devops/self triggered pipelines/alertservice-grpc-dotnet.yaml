@@ -1,27 +1,27 @@
 trigger:
-#- none
-  branches:
-    include:
-    - development
-    - release
+- none
+#  branches:
+#    include:
+#    - development
+#    - release
 #    - testing
-  paths:
-    include:
-    - dotnet/businessservices/net.atos.daf.ct2.notificationservice
+#  paths:
+#    include:
+#    - dotnet/businessservices/net.atos.daf.ct2.alertservice
 
 variables:
  - name: imageName
-   value: 'notificationservice-grpc'
+   value: 'alertservice-grpc'
  - name: dockerFile
-   value: 'dotnet/NotificationService_Dockerfile'
+   value: 'dotnet/AlertService_Dockerfile'
  - name: manifestFile
-   value: 'devops/self\ triggered\ pipelines/notificationservice-grpc-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+   value: 'devops/self\ triggered\ pipelines/alertservice-grpc-dotnet-kubernetes-manifest-dev1-dev2.yaml'
  - name: manifestFileDev0
-   value: 'devops/self\ triggered\ pipelines/notificationservice-grpc-dotnet-kubernetes-manifest.yaml'
+   value: 'devops/self\ triggered\ pipelines/alertservice-grpc-dotnet-kubernetes-manifest.yaml'
  - name: appsettingsFile
-   value: 'dotnet/businessservices/net.atos.daf.ct2.notificationservice/appsettings.Production.json'
+   value: 'dotnet/businessservices/net.atos.daf.ct2.alertservice/appsettings.Production.json'
  - name: log4netConfigFile
-   value: 'dotnet/businessservices/net.atos.daf.ct2.notificationservice/log4net.config'
+   value: 'dotnet/businessservices/net.atos.daf.ct2.alertservice/log4net.config'
 
 stages:
   #- stage: stage_dev0

@@ -1,27 +1,28 @@
 trigger:
-#- none
-  branches:
-    include:
-    - development
-    - release
-#    - testing
-  paths:
-    include:
-    - dotnet/businessservices/net.atos.daf.ct2.notificationservice
+- none
+  #branches:
+  #  include:
+  #  - development
+  #  - release
+  #  - testing
+  #paths:
+  #  include:
+  #  - dotnet/dataservices/net.atos.daf.ct2.authenticationservicerest
+
 
 variables:
  - name: imageName
-   value: 'notificationservice-grpc'
+   value: 'authenticationservicerest'
  - name: dockerFile
-   value: 'dotnet/NotificationService_Dockerfile'
+   value: 'dotnet/AuthenticationServiceRest_Dockerfile'
  - name: manifestFile
-   value: 'devops/self\ triggered\ pipelines/notificationservice-grpc-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+   value: 'devops/self\ triggered\ pipelines/authenticationdataservice-api-dotnet-kubernetes-manifest-dev1-dev2.yaml'
  - name: manifestFileDev0
-   value: 'devops/self\ triggered\ pipelines/notificationservice-grpc-dotnet-kubernetes-manifest.yaml'
+   value: 'devops/self\ triggered\ pipelines/authenticationdataservice-api-dotnet-kubernetes-manifest.yaml'
  - name: appsettingsFile
-   value: 'dotnet/businessservices/net.atos.daf.ct2.notificationservice/appsettings.Production.json'
+   value: 'dotnet/dataservices/net.atos.daf.ct2.authenticationservicerest/appsettings.Production.json'
  - name: log4netConfigFile
-   value: 'dotnet/businessservices/net.atos.daf.ct2.notificationservice/log4net.config'
+   value: 'dotnet/dataservices/net.atos.daf.ct2.authenticationservicerest/log4net.config'
 
 stages:
   #- stage: stage_dev0
@@ -97,16 +98,16 @@ stages:
 # Commented out because ACC 1 builds should not be triggered. It will be un-commented in future
   - stage: stage_acc1
     jobs:
-      - template: dotnet-pipeline-template.yaml  # Template reference
-        parameters:
-          subscription: 'DAF CT AZURE DTA LANDING ZONE ACC1'
-          containerRegistry: '{"loginServer":"acraksk3kcvqdoasw7w.azurecr.io", "id" : "/subscriptions/72b19713-3728-48ab-95ac-3edf02341c45/resourceGroups/daf-lan7-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acraksk3kcvqdoasw7w"}'
-          variableGroup: 'ACC01-Build-Variables'
-          imageName: $(imageName)
-          dockerFile: $(dockerFile)
-          manifestFile: $(manifestFile)
-          appsettingsPath: $(appsettingsFile)
-          log4netConfigPath: $(log4netConfigFile)
+     - template: dotnet-pipeline-template.yaml  # Template reference
+       parameters:
+         subscription: 'DAF CT AZURE DTA LANDING ZONE ACC1'
+         containerRegistry: '{"loginServer":"acraksk3kcvqdoasw7w.azurecr.io", "id" : "/subscriptions/72b19713-3728-48ab-95ac-3edf02341c45/resourceGroups/daf-lan7-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acraksk3kcvqdoasw7w"}'
+         variableGroup: 'ACC01-Build-Variables'
+         imageName: $(imageName)
+         dockerFile: $(dockerFile)
+         manifestFile: $(manifestFile)
+         appsettingsPath: $(appsettingsFile)
+         log4netConfigPath: $(log4netConfigFile)
     condition: eq(variables['Build.SourceBranchName'],  'release')
 
   - stage: stage_acc3

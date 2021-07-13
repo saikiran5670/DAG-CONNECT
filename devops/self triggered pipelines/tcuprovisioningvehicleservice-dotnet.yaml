@@ -1,27 +1,27 @@
 trigger:
-#- none
-  branches:
-    include:
-    - development
-    - release
+- none
+#  branches:
+#    include:
+#    - development
+#    - release
 #    - testing
-  paths:
-    include:
-    - dotnet/businessservices/net.atos.daf.ct2.notificationservice
+#  paths:
+#    include:
+#    - dotnet/interfaces/tcuprovisioning/net.atos.daf.ct2.tcuvehiclebusinessservice
 
 variables:
  - name: imageName
-   value: 'notificationservice-grpc'
+   value: 'tcuprovisioningvehicleservice'
  - name: dockerFile
-   value: 'dotnet/NotificationService_Dockerfile'
+   value: 'dotnet/TCUVehicle_Dockerfile'
  - name: manifestFile
-   value: 'devops/self\ triggered\ pipelines/notificationservice-grpc-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+   value: 'devops/self\ triggered\ pipelines/tcuprovisioningvehicleservice-dotnet-kubernetes-manifest-dev1-dev2.yaml'
  - name: manifestFileDev0
-   value: 'devops/self\ triggered\ pipelines/notificationservice-grpc-dotnet-kubernetes-manifest.yaml'
+   value: 'devops/self\ triggered\ pipelines/tcuprovisioningvehicleservice-dotnet-kubernetes-manifest.yaml'
  - name: appsettingsFile
-   value: 'dotnet/businessservices/net.atos.daf.ct2.notificationservice/appsettings.Production.json'
+   value: 'dotnet/interfaces/tcuprovisioning/net.atos.daf.ct2.tcuvehiclebusinessservice/appsettings.json'
  - name: log4netConfigFile
-   value: 'dotnet/businessservices/net.atos.daf.ct2.notificationservice/log4net.config'
+   value: 'dotnet/interfaces/tcuprovisioning/net.atos.daf.ct2.tcuvehiclebusinessservice/log4net.config'
 
 stages:
   #- stage: stage_dev0
