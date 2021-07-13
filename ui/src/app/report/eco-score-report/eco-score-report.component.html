@@ -374,9 +374,9 @@
       [displayedColumns]='detaildisplayedColumns'  [showField]='showField' (backToMainPage)="backToMainPage()" [driverSelected]='driverSelected'
     ></app-driver-time-detail>
   </div> -->
-  <!-- <div *ngIf="ecoScoreDriver">
-    <app-eco-score-report-driver (backToMainPage)='backToMainPage()' [ecoScoreDriverDetails]="ecoScoreDriverDetails"></app-eco-score-report-driver>
-  </div> -->
+  <div *ngIf="ecoScoreDriver">
+    <app-eco-score-report-driver (backToMainPage)='backToMainPage()' [ecoScoreDriverDetails]="selectedDriverData" [ecoScoreForm]="ecoScoreForm" [translationData]="translationData"></app-eco-score-report-driver>
+  </div>
   <div *ngIf="compareEcoScore">
     <app-eco-score-driver-compare (backToMainPage)='backToMainPage()' [compareEcoScore]="compareDriverEcoScoreSearchParam"></app-eco-score-driver-compare>
   </div>
