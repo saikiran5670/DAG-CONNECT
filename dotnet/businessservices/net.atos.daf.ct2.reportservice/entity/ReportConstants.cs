@@ -35,7 +35,7 @@
         public const string DELETE_ECOSCORE_PROFILE_NOT_EXIST_MSG = "does not exist to delete.";
         public const string DELETE_ECOSCORE_PROFILE_FAIL_MSG = "Delete Eco Score Profile Fail.";
         public const string DELETE_ECOSCORE_PROFILE_DEFAULT_PROFILE_MSG = "Is a default profile, Can't delete.";
-        public const string DELETE_ECOSCORE_PROFILE_GLOBAL_PROFILE_MSG = "Is a global profile, Can't delete.";
+        public const string DELETE_ECOSCORE_PROFILE_GLOBAL_PROFILE_MSG = "User is Not Authorize to delete Profile.";
         #endregion
 
         #region FleetOverview
