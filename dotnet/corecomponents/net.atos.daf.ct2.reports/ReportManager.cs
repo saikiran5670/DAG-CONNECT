@@ -201,7 +201,7 @@ namespace net.atos.daf.ct2.reports
             int ecoScoreProfileId;
             string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(profileId);
 
-            if (!string.IsNullOrEmpty(versionType))
+            if (string.IsNullOrEmpty(versionType))
             {
                 bool isGlobalProfile = await _reportRepository.GetGlobalProfile(profileId);
 
@@ -210,6 +210,7 @@ namespace net.atos.daf.ct2.reports
                     if (isAdminRights)
                     {
                         ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(profileId);
+                        return ecoScoreProfileId;
                     }
                     else
                     {
@@ -218,7 +219,7 @@ namespace net.atos.daf.ct2.reports
                 }
                 else
                 {
-                    ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(profileId);
+                    return await _reportRepository.DeleteEcoScoreProfile(profileId);
                 }
 
             }
