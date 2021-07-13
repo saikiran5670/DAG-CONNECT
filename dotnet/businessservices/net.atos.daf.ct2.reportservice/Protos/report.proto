@@ -35,6 +35,8 @@ rpc GetFleetOverviewDetails(FleetOverviewDetailsRequest) returns (FleetOverviewD
 rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthStatusListResponse);
 rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriverRequest) returns (FleetFuelDetailsResponse);
+rpc GetFilteredFuelDeviation (FuelDeviationFilterRequest) returns (FuelDeviationResponse);
+rpc GetLogbookSearchParameter (LogbookFilterIdRequest) returns (LogbookFilterResponse);
 
 }
 
@@ -917,15 +919,14 @@ message GetEcoScoreReportCompareDriversRequest {
 /// END: Eco Score Report Compare Drivers
 
 /// START: Fuel Deviation Report
-message FuelDivationDetails {
+message FuelDeviationDetails {
     int32 Id =1;
     string TripId=2;
     string VIN=3;
     int64 StartTimeStamp=4;
     int64 EndTimeStamp=5; 
     int32 Distance=6; 
-    int32 IdleDuration=7;
-    
+    int32 IdleDuration=7;    
     int32 AverageSpeed=8;
     int32 AverageWeight=9;
     int64 Odometer=10;
@@ -934,21 +935,50 @@ message FuelDivationDetails {
     double FuelConsumed=13;
     int32 DrivingTime =14;
     int32 Alert =15;
-    int32 Events=16;
-    double FuelConsumed100km=17;   
-    string FuelEventType=18;
-    double StartPositionLattitude=19;
-    double StartPositionLongitude=20;
-    double EndPositionLattitude=21;
-    double EndPositionLongitude=22;
-    string RegistrationNo =23;
-    string VehicleName=24;
-
-    string VehicleActivityType = 25;
-    int64 EventTime=26;
-    double FuelDiffernce = 27;
-    double Latitude = 28;
-    double Longitude = 29;
-    double Heading = 30;
+    int32 Events=16;     
+    string FuelEventType=17;   
+    string RegistrationNo =18;
+    string VehicleName=19;
+    string VehicleActivityType = 20;
+    int64 EventTime=21;
+    double FuelDiffernce = 22;
+    double Latitude = 23;
+    double Longitude = 24;
+    int32 GeoLocationAddressId = 25;
+    string GeoLocationAddress = 26;
+    int32 FuelDeviationId = 27;
 }
+
+message FuelDeviationFilterRequest{
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    repeated string VINs = 3;
+}
+
+message FuelDeviationResponse{
+    repeated FuelDeviationDetails FuelDeviationDetails=1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+
 /// END: Fuel Deviation Report
+
+
+///Logbook*************************
+message LogbookFilterIdRequest {
+  int32 AccountId = 1;
+  int32 OrganizationId = 2;
+  int32 RoleId = 3;
+}
+message LogbookFilterResponse {
+  repeated AssociatedVehicleRequest AssociatedVehicleRequest = 1;
+  repeated FilterResponse ALFilterResponse = 2;
+  repeated AlertCategoryFilterResponse ACFilterResponse = 3;
+  repeated FilterResponse HSFilterResponse = 4;
+  repeated FilterResponse OFilterResponse = 5;
+  repeated FleetOverviewVGFilterRequest FleetOverviewVGFilterResponse = 6;
+  Responsecode code = 7;
+  string message = 8;
+  repeated DriverListResponse DriverList = 9;
+}
+//***************End Logbook*******************

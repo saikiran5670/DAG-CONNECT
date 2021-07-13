@@ -88,5 +88,10 @@ namespace net.atos.daf.ct2.organization
         {
             return await _organizationRepository.GetLevelByRoleId(orgId, roleId);
         }
+
+        public async Task<Organization> GetOrganizationByOrgCode(string organizationCode)
+        {
+            return await _organizationRepository.GetOrganizationByOrgCode(organizationCode);
+        }
     }
 }

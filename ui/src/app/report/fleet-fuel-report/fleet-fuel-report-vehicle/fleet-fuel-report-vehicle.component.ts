@@ -91,7 +91,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   DurationChartType: any;
   showLoadingIndicator: boolean = false;
   tableInfoObj: any ;
-  summaryObj: any;
   detailSummaryObj: any;
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
@@ -125,7 +124,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'values(Minutes)'    
+          labelString: 'Minutes'    
         }
       }]
     }
@@ -177,7 +176,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'values(meter)'    
+          labelString: 'meter'    
         }
       }]
     }
@@ -203,11 +202,65 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'values(ltr)'    
+          labelString: 'ltr'    
         }
       }]
     }
   };
+  lineChartOptions4 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 't'    
+        }
+      }]
+    }
+  };
+
+  lineChartOptions5 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: ''    
+        }
+      }]
+    }
+  };
+
   lineChartColors: Color[] = [
     {
       borderColor: '#7BC5EC',
@@ -232,7 +285,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'Values (Number of Trips)'    
+          labelString: 'Number of Trips'    
         }}
       ]}
   };
@@ -279,37 +332,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   idleDuration: any =[];
   fromTripPageBack: boolean = false;
   displayData : any = [];
-  // rankingData : any =[
-  //   {
-  //     ranking: 1,
-  //     vehicleName: 'Name List 0001',
-  //     vin :'XLRTEMP4100G041999',
-  //     vehicleRegistrationNo: '12 HH 71',
-  //     fuelConsumption: 0.4
-  //   },
-  //   {
-  //     ranking: 1,
-  //     vehicleName: 'Name List 0002',
-  //     vin :'XLRTEMP4100G041999',
-  //     vehicleRegistrationNo: '12 HH 71',
-  //     fuelConsumption: 0.1
-  //   },
-  //   {
-  //     ranking: 1,
-  //     vehicleName: 'Name List 0003',
-  //     vin :'XLRTEMP4100G041999',
-  //     vehicleRegistrationNo: '12 HH 71',
-  //     fuelConsumption: 0.5
-  //   },
-  //   {
-  //     ranking: 1,
-  //     vehicleName: 'Name List 0004',
-  //     vin :'XLRTEMP4100G041999',
-  //     vehicleRegistrationNo: '12 HH 71',
-  //     fuelConsumption: 0.6
-  //   },
-
-  // ]
   showDetailedReport : boolean = false;
   
   constructor(private _formBuilder: FormBuilder, 
@@ -322,7 +344,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-    // console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -373,7 +394,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     console.log("---getting data from getFleetFuelDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-    // this.setTableInfo();
+    //this.setTableInfo();
     this.updateDataSource(this.FuelData);
     this.setTableInfo();
     if(this.prefUnitFormat == 'dunit_Metric')
@@ -463,7 +484,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         "viNs":  _vinData,
       }
       this.loadfleetFuelDetails(_vinData);
-      //  this.setTableInfo();
+      //this.setTableInfo();
       //  this.updateDataSource(this.FuelData);
       this.hideloader();
       this.isChartsOpen = true;
@@ -575,7 +596,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       vehicleName: vehName,
       noOfTrips: this.FuelData[0].numberOfTrips,
       distance:  this.FuelData[0].convertedDistance,
-      fuelconsumed:  this.FuelData.convertedFuelConsumed100Km,
+      fuelconsumed:  this.FuelData[0].convertedFuelConsumed100Km,
       idleDuration: this.FuelData[0].convertedIdleDuration,
       fuelConsumption: this.FuelData[0].fuelConsumption,
       co2emission: this.FuelData[0].cO2Emission,
@@ -626,7 +647,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
       this.barChartLabels.push(resultDate);
       this.barData.push(e.numberofTrips);
-      this.fuelConsumedChart.push(e.fuelConsumed);
+      let convertedFuelConsumed = e.fuelConsumed / 1000;
+      this.fuelConsumedChart.push(convertedFuelConsumed);
       this.co2Chart.push(e.co2Emission);
       this.distanceChart.push(e.distance);
       this.fuelConsumptionChart.push(e.fuelConsumtion);
@@ -647,7 +669,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   if(this.TripsChartType == 'Bar'){
     this.barChartData2= [
       { data: this.barData,
-        label: 'Values (Number of Trips)',
+        label: 'Number of Trips',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -683,45 +705,85 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     //line chart for fuel consumed
     if(this.ConsumedChartType == 'Line')
     {
-    this.lineChartData1= [{ data: this.fuelConsumedChart, label: 'Values()' },];
+      let data1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs || 'Ltrs') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallon || 'Gallon') : (this.translationData.lblGallon || 'Gallon');
+      this.lineChartOptions3.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data1    
+        }
+      }];
+    this.lineChartData1= [{ data: this.fuelConsumedChart, label: data1 },];
   }
     if(this.TripsChartType == 'Line')
     {
-    this.lineChartData2= [{ data: this.barData, label: 'Values()' }, ];
+    this.lineChartData2= [{ data: this.barData, label: 'No Of Trips' }, ];
   }
     if(this.Co2ChartType == 'Line')
     {
-    this.lineChartData3= [{ data: this.co2Chart, label: 'Values()' },];
+      let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblTon || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblTon || 'Ton') : (this.translationData.lblTon || 'Ton');
+      
+        this.lineChartOptions4.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data2    
+        }
+      }];
+
+    this.lineChartData3= [{ data: this.co2Chart, label: data2},];
   }
     if(this.DistanceChartType == 'Line')
-    {
-      // let distUnit =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
-      // this.lineChartOptions.scales.yAxes= [{
-      //   id: "y-axis-1",
-      //   position: 'left',
-      //   type: 'linear',
-      //   ticks: {
-      //     beginAtZero:true
-      //   },
-      //   scaleLabel: {
-      //     display: true,
-      //     labelString: 'value(' +distUnit+ ')'    
-      //   }
-      // }];
-      // console.log(this.lineChartOptions);
-    this.lineChartData4= [{ data: this.distanceChart, label: 'Values()' }, ];
+    {    
+      let data3 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
+      this.lineChartOptions2.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data3    
+        }
+      }];
+
+    this.lineChartData4= [{ data: this.distanceChart, label: data3 }, ];
   }
     if(this.ConsumptionChartType == 'Line')
     {
-    this.lineChartData5= [{ data: this.fuelConsumptionChart, label: 'Values()' }, ];
+      let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrsperkm || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
+      this.lineChartOptions5.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data4   
+        }
+      }];
+    this.lineChartData5= [{ data: this.fuelConsumptionChart, label: data4 }, ];
   }
     if(this.DurationChartType == 'Line')
     {
-    this.lineChartData6= [{ data: this.idleDuration, label: 'Values()' }, ];
+    this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
   }
   
-    this.lineChartLabels = this.barChartLabels;
-  
+    this.lineChartLabels = this.barChartLabels; 
     this.lineChartColors= [
       {
         borderColor:'#7BC5EC'

@@ -719,31 +719,56 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 string query = string.Empty; var parameter = new DynamicParameters();
                 query = @"select l.id 
-                                ,l.organization_id as OrganizationId
-	                            ,l.name as CorridoreName
-	                            ,l.address as StartPoint
-	                            ,l.latitude as StartLat
-	                            ,l.longitude as StartLong
-                                ,n.address as EndPoint
-	                            ,n.latitude as EndLat
-	                            ,n.longitude as EndLong
-	                            ,l.distance as Distance
-	                            ,l.width as Width
-                                ,l.state as State
-                                ,l.type as CorridorType
-	                            ,l.created_at as CreatedAt
-	                            ,l.created_by as CreatedBy
-	                            ,l.modified_at as ModifiedAt
-	                            ,l.modified_by as ModifiedBy
-                        FROM       master.landmark l
-                        LEFT JOIN master.nodes n on l.id = n.landmark_id
-                        WHERE      l.type = 'E' and l.state in ('A', 'I')
-                        AND        l.organization_id = @organization_id";
-
+				                ,l.organization_id as OrganizationId
+				                ,l.name as CorridoreName
+				                ,l.address as StartPoint
+				                ,l.latitude as StartLat
+				                ,l.longitude as StartLong
+				                ,l.distance as Distance
+				                ,l.width as Width
+				                ,l.state as State
+				                ,l.type as CorridorType
+				                ,l.created_at as CreatedAt
+				                ,l.created_by as CreatedBy
+				                ,l.modified_at as ModifiedAt
+				                ,l.modified_by as ModifiedBy
+		                FROM       master.landmark l
+		                WHERE      l.organization_id = @organization_id 
+		                AND        l.type = 'E' and l.state <> 'D' ";
                 parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
                 var data = await _dataAccess.QueryAsync<CorridorResponse>(query, parameter);
                 List<CorridorResponse> objCorridorResponseList;
                 return objCorridorResponseList = data.ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<NodeEndLatLongResponse> GetExistingTripCorridorListByLandMarkId(int landMarkId)
+        {
+            try
+            {
+                string query = string.Empty; var parameter = new DynamicParameters();
+                query = @"SELECT id as Id
+                                ,max(seq_no) as SequenceNo
+                                ,latitude as EndLat
+                                ,longitude as EndLong
+                                ,address as Address
+                                ,landmark_id as LandMArkId
+		                  FROM MASTER.NODES GROUP BY 
+                                seq_no
+                                ,latitude
+                                ,longitude
+                                ,address
+                                ,id
+                                ,landmark_id 
+                          HAVING landmark_id=@landmark_id 
+                          ORDER BY 1 DESC";
+                parameter.Add("@landmark_id", landMarkId);
+                var data = await _dataAccess.QueryFirstOrDefaultAsync<NodeEndLatLongResponse>(query, parameter);
+                return data;
             }
             catch (Exception)
             {

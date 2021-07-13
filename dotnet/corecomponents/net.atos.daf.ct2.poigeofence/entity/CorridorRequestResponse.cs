@@ -79,58 +79,13 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public double VehicleLimitedWeight { get; set; }
         public double VehicleWeightPerAxle { get; set; }
     }
-
-
-
-    //public class Attribute
-    //{
-    //    public int NoOfTrailers { get; set; }
-    //    public bool IsExplosive { get; set; }
-    //    public bool IsGas { get; set; }
-    //    public bool IsFlammable { get; set; }
-    //    public bool IsCombustible { get; set; }
-    //    public bool IsOrganic { get; set; }
-    //    public bool IsPoision { get; set; }
-    //    public bool IsRadioActive { get; set; }
-    //    public bool IsCorrosive { get; set; }
-    //    public bool IsPoisonousInhalation { get; set; }
-    //    public bool IsWaterHarm { get; set; }
-    //    public bool IsOther { get; set; }
-    //}
-
-    //public class Exclusion
-    //{
-    //    public string TollRoadType { get; set; }
-    //    public string mortorway { get; set; }
-    //    public string BoatFerriesType { get; set; }
-    //    public string RailFerriesType { get; set; }
-    //    public string TunnelsType { get; set; }
-    //    public string DirtRoadType { get; set; }
-    //}
-
-    //public class VehicleSize
-    //{
-    //    public int VehicleHeight { get; set; }
-    //    public int vehicleWidth { get; set; }
-    //    public int vehicleLength { get; set; }
-    //    public int vehicleLimitedWeight { get; set; }
-    //    public int vehicleWeightPerAxle { get; set; }
-    //}
-
-    //public class CorridorEditViewResponse : CorridorResponse
-    //{
-    //    public CorridorAdvanceOptions corridorAdvanceOptions { get; set; }
-    //}
-
-    //public class CorridorAdvanceOptions
-    //{
-    //    public int CorridorpropertiesId { get; set; }
-    //    public bool IsTransportData { get; set; }
-    //    public bool IsTrafficFlow { get; set; }
-    //    public Attribute Attribute { get; set; }
-    //    public Exclusion Exclusion { get; set; }
-    //    public VehicleSize VehicleSize { get; set; }
-    //    public long CreatedAt { get; set; }
-    //    public long ModifiedAt { get; set; }
-    //}
+    public class NodeEndLatLongResponse
+    {
+        public int Id { get; set; }
+        public int SequenceNo { get; set; }
+        public double EndLat { get; set; }
+        public double EndLong { get; set; }
+        public string Address { get; set; }
+        public int LandMarkId { get; set; }
+    }
 }

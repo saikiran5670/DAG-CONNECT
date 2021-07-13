@@ -177,13 +177,12 @@ namespace net.atos.daf.ct2.reportservice.Services
                 var vehicleDeatilsWithAccountVisibility =
                               await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
 
-                if (vehicleDeatilsWithAccountVisibility.Count() == 0)
+                if (vehicleDeatilsWithAccountVisibility.Count() == 0 || !vehicleDeatilsWithAccountVisibility.Any(x => x.Vin == request.VIN))
                 {
                     response.Message = string.Format(ReportConstants.GET_VIN_VISIBILITY_FAILURE_MSG, request.AccountId, request.OrganizationId);
                     response.Code = Responsecode.Failed;
                     return response;
                 }
-
 
                 reports.entity.VehicleHealthStatusRequest objVehicleHealthStatusRequest = new reports.entity.VehicleHealthStatusRequest
                 {
