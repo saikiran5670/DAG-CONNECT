@@ -9,6 +9,15 @@
         <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
       </div>
     </div>
+    <div *ngIf='errorMsgVisible' fxLayout="row" fxLayoutAlign="center center"
+      style='padding:10px; color:#fff; background: red;'>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+      {{ poiCreatedMsg }}
+      </div>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+      <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+      </div>
+    </div>
   </div>
   <!-- <div  #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" >  </div> -->
   <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'

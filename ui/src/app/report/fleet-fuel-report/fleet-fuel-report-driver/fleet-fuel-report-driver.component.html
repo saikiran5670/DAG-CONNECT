@@ -172,11 +172,10 @@
   </form>
   
   <!-- </div> -->
-<div *ngIf='!showDetailedReport'>
   <!-- Summary Section -->
   
   <div id="charts">
-  
+    <div *ngIf='!showDetailedReport'>
     <mat-card *ngIf='displayData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg' id="summary">
   
       <mat-expansion-panel [(expanded)]="isSummaryOpen" class="full-width" fxLayoutGap="10px" (opened)="isSummaryOpen == true"
@@ -190,24 +189,6 @@
   
             </span>
   
-            <div>
-  
-              <button mat-button [matMenuTriggerFor]="menu" style="margin-left: 745px;">
-  
-                <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}
-                <mat-icon>more_vert</mat-icon>
-  
-              </button>
-  
-              <mat-menu #menu="matMenu">
-  
-                <button mat-menu-item (click)="exportAsExcelFile()">{{ translationData.lblExcel || 'Excel' }}</button>
-  
-                <button mat-menu-item (click)="exportAsPDFFile()">{{ translationData.lblPDF || 'PDF' }}</button>
-  
-              </mat-menu>
-  
-            </div>
   
           </mat-panel-title>
   
@@ -338,13 +319,13 @@
       </mat-expansion-panel>
   
     </mat-card>
-  
-  
+    </div>
+
   
     <!-- Charts view -->
   
   
-  
+
     <mat-card *ngIf='displayData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg'>
   
       <mat-expansion-panel [(expanded)]="isChartsOpen" class="full-width" fxLayoutGap="10px" (opened)="isChartsOpen" (closed)="!isChartsOpen">
@@ -367,7 +348,7 @@
   
             <div *ngIf="ConsumedChartType =='Line'" class="chart-wrapper">
   
-              <canvas baseChart [datasets]="lineChartData1" [labels]="lineChartLabels" [options]="lineChartOptions" [colors]="lineChartColors"
+              <canvas baseChart [datasets]="lineChartData1" [labels]="lineChartLabels" [options]="lineChartOptions3" [colors]="lineChartColors"
                 [legend]="lineChartLegend" [chartType]="lineChartType" [plugins]="lineChartPlugins">
   
               </canvas>
@@ -421,7 +402,7 @@
   
             <div *ngIf="Co2ChartType =='Line'" class="chart-wrapper">
   
-              <canvas baseChart [datasets]="lineChartData3" [labels]="lineChartLabels" [options]="lineChartOptions" [colors]="lineChartColors"
+              <canvas baseChart [datasets]="lineChartData3" [labels]="lineChartLabels" [options]="lineChartOptions4" [colors]="lineChartColors"
                 [legend]="lineChartLegend" [chartType]="lineChartType" [plugins]="lineChartPlugins">
   
               </canvas>
@@ -445,7 +426,7 @@
   
             <div *ngIf="DistanceChartType =='Line'" class="chart-wrapper">
   
-              <canvas baseChart [datasets]="lineChartData4" [labels]="lineChartLabels" [options]="lineChartOptions" [colors]="lineChartColors"
+              <canvas baseChart [datasets]="lineChartData4" [labels]="lineChartLabels" [options]="lineChartOptions2" [colors]="lineChartColors"
                 [legend]="lineChartLegend" [chartType]="lineChartType" [plugins]="lineChartPlugins">
   
               </canvas>
@@ -475,7 +456,7 @@
   
             <div *ngIf="ConsumptionChartType =='Line'" class="chart-wrapper">
   
-              <canvas baseChart [datasets]="lineChartData5" [labels]="lineChartLabels" [options]="lineChartOptions" [colors]="lineChartColors"
+              <canvas baseChart [datasets]="lineChartData5" [labels]="lineChartLabels" [options]="lineChartOptions3" [colors]="lineChartColors"
                 [legend]="lineChartLegend" [chartType]="lineChartType" [plugins]="lineChartPlugins">
   
               </canvas>
@@ -524,11 +505,10 @@
       </mat-expansion-panel>
   
     </mat-card>
-  
+    </div>
   
   
     <!-- Fleet Table -->
-  
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
   
       <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
@@ -573,7 +553,16 @@
               </mat-form-field>
   
             </div>
-  
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+              <button mat-button [matMenuTriggerFor]="menu" style="margin-left: 745px;">
+                <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert
+                </mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="exportAsExcelFile()">{{ translationData.lblExcel || 'Excel' }}</button>
+                <button mat-menu-item (click)="exportAsPDFFile()">{{ translationData.lblPDF || 'PDF' }}</button>
+              </mat-menu>
+            </div>
           </div>
   
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
@@ -1174,6 +1163,5 @@
       </mat-expansion-panel>
   
     </mat-card>
-  </div>
-</div>
-<app-fleetfueldetails *ngIf='showDetailedReport'></app-fleetfueldetails>
+
+<app-fleetfueldetails *ngIf='showDetailedReport && FuelData'></app-fleetfueldetails>
