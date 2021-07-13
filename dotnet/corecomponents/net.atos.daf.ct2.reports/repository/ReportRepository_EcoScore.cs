@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.reports.repository
     {
         #region Eco Score Report - Create Profile
 
-        public async Task<bool> CreateEcoScoreProfile(EcoScoreProfileDto dto)
+        public async Task<int> CreateEcoScoreProfile(EcoScoreProfileDto dto)
         {
             var now = UTCHandling.GetUTCFromDateTime(DateTime.Now);
             _dataAccess.Connection.Open();
@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (@organization_id, @name, @description, NULL, @state, @created_at, @created_by) RETURNING id";
 
                 var parameters = new DynamicParameters();
-                parameters.Add("@organization_id", dto.OrganizationId);
+                parameters.Add("@organization_id", dto.OrganizationId > 0 ? dto.OrganizationId : new int?() );
                 parameters.Add("@name", dto.Name);
                 parameters.Add("@description", dto.Description);
                 parameters.Add("@state", 'A');
@@ -64,7 +64,7 @@ namespace net.atos.daf.ct2.reports.repository
                     await _dataAccess.ExecuteScalarAsync<int>(query, parameters);
                 }
                 txn.Commit();
-                return true;
+                return id;
             }
             catch (Exception)
             {
@@ -376,14 +376,23 @@ namespace net.atos.daf.ct2.reports.repository
             return id > 0;
         }
 
-        public async Task<bool> CheckEcoScoreProfileIsExist(int? organizationId, string name)
+        public async Task<bool> CheckEcoScoreProfileIsExist(int organizationId, string name, int profileId)
         {
             var parameterDuplicate = new DynamicParameters();
+            string query;
 
-            var query = "SELECT id FROM master.ecoscoreprofile where state ='A' and name=@name and (organization_id = @organization_id or organization_id is null)";
+            if (organizationId > 0)
+            {
+                query = "SELECT id FROM master.ecoscoreprofile where state ='A' and name=@name and id <> @profileId  and organization_id = @organization_id ";
+            }
+            else
+            {
+                query = "SELECT id FROM master.ecoscoreprofile where state ='A' and name=@name and id <> @profileId  and organization_id is null";
+            }
 
             parameterDuplicate.Add("@name", name);
             parameterDuplicate.Add("@organization_id", organizationId);
+            parameterDuplicate.Add("@profileId", profileId);
             int reportNameExist = await _dataAccess.ExecuteScalarAsync<int>(query, parameterDuplicate);
 
             return reportNameExist != 0;
@@ -445,12 +454,10 @@ namespace net.atos.daf.ct2.reports.repository
         public async Task<bool> GetGlobalProfile(int profileId)
         {
             var parameter = new DynamicParameters();
-            var query = "select name from master.ecoscoreprofile where id= @ProfileId and organization_id is null and default_es_version_type is null and state = 'A'";
+            var query = "select exists(select 1 from master.ecoscoreprofile where id= @ProfileId and organization_id is null and state = 'A')";
             parameter.Add("@ProfileId", profileId);
 
-            string profileName = await _dataAccess.ExecuteScalarAsync<string>(query, parameter);
-
-            return string.IsNullOrEmpty(profileName);
+            return await _dataAccess.ExecuteScalarAsync<bool>(query, parameter);
         }
 
         #endregion
