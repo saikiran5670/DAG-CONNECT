@@ -600,7 +600,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         {
           "id": 0,
           "scheduleReportId": 0,
-          "email": element,
+          "email": element.trim(),
           "state": "A",
           "createdAt": 0,
           "modifiedAt": 0
