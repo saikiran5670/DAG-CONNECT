@@ -33,6 +33,7 @@ namespace net.atos.daf.ct2.reports.entity
         #endregion
 
         #region livefleet_trip_fuel_deviation    
+        public int FuelDeviationId { get; set; }
         public char FuelEventType { get; set; }
         public char VehicleActivityType { get; set; }
         public long EventTime { get; set; }
