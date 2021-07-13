@@ -36,6 +36,7 @@ rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthSt
 rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriverRequest) returns (FleetFuelDetailsResponse);
 rpc GetFilteredFuelDeviation (FuelDeviationFilterRequest) returns (FuelDeviationResponse);
+rpc GetLogbooksearchParameter (LogbookFilterIdRequest) returns (LogbookFilterResponse);
 
 }
 
@@ -960,3 +961,23 @@ message FuelDeviationResponse{
 }
 
 /// END: Fuel Deviation Report
+
+
+///Logbook*************************
+message LogbookFilterIdRequest {
+  int32 AccountId = 1;
+  int32 OrganizationId = 2;
+  int32 RoleId = 3;
+}
+message LogbookFilterResponse {
+  repeated AssociatedVehicleRequest AssociatedVehicleRequest = 1;
+  repeated FilterResponse ALFilterResponse = 2;
+  repeated AlertCategoryFilterResponse ACFilterResponse = 3;
+  repeated FilterResponse HSFilterResponse = 4;
+  repeated FilterResponse OFilterResponse = 5;
+  repeated FleetOverviewVGFilterRequest FleetOverviewVGFilterResponse = 6;
+  Responsecode code = 7;
+  string message = 8;
+  repeated DriverListResponse DriverList = 9;
+}
+//***************End Logbook*******************

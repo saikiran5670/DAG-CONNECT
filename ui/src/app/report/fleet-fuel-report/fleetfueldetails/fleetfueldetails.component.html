@@ -33,7 +33,22 @@
                       <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.vehicleName }}</span>
                     </span>
                   </div>
-              </div>
+                  </div>
+                  <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                      <span>
+                        <span>{{ translationData.lbldriverName || 'driver Name' }}: </span>
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.driverName }}</span>
+                      </span>
+                    </div>
+                    <div  class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                      <span>
+                        <span>{{ translationData.lbldriverID || 'driverID' }}: </span>
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ detailsObject.driverID }}</span>
+                      </span>
+                    </div>
+                  </div>
+              
             </div>
             <div style='margin-bottom: 10px;' >
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
@@ -81,3 +96,5 @@
       </mat-card>
 
 </mat-card>
+<!--details table-->
+

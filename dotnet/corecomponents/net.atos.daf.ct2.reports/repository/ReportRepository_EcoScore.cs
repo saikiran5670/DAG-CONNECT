@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (@organization_id, @name, @description, NULL, @state, @created_at, @created_by) RETURNING id";
 
                 var parameters = new DynamicParameters();
-                parameters.Add("@organization_id", dto.OrganizationId > 0 ? dto.OrganizationId : new int?() );
+                parameters.Add("@organization_id", dto.OrganizationId > 0 ? dto.OrganizationId : new int?());
                 parameters.Add("@name", dto.Name);
                 parameters.Add("@description", dto.Description);
                 parameters.Add("@state", 'A');
@@ -150,7 +150,7 @@ namespace net.atos.daf.ct2.reports.repository
             objProfile.Id = profile.profileid;
             objProfile.Name = profile.profilename;
             objProfile.Description = profile.profiledescription;
-            objProfile.OrganizationId = profile.organizationid;
+            objProfile.OrganizationId = profile.organizationid ?? new int();
             if (profile.type is null)
                 objProfile.Type = ProfileType.None;
             else
@@ -254,7 +254,7 @@ namespace net.atos.daf.ct2.reports.repository
                 if (pro.profileid > 0)
                 {
                     objProfile.Id = pro.profileid;
-                    objProfile.OrganizationId = pro.organizationid;
+                    objProfile.OrganizationId = pro.organizationid ?? new int();
                     objProfile.Name = pro.profilename;
                     objProfile.Description = pro.profiledescription;
                     objProfile.ActionedBy = pro.actionedby;
