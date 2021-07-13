@@ -724,6 +724,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                            ,l.address as StartPoint
 	                            ,l.latitude as StartLat
 	                            ,l.longitude as StartLong
+                                ,n.address as EndPoint
+	                            ,n.latitude as EndLat
+	                            ,n.longitude as EndLong
 	                            ,l.distance as Distance
 	                            ,l.width as Width
                                 ,l.state as State
@@ -733,7 +736,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                            ,l.modified_at as ModifiedAt
 	                            ,l.modified_by as ModifiedBy
                         FROM       master.landmark l
-                        WHERE      l.type IN ('E') and state in ('A', 'I')
+                        LEFT JOIN master.nodes n on l.id = n.landmark_id
+                        WHERE      l.type = 'E' and l.state in ('A', 'I')
                         AND        l.organization_id = @organization_id";
 
                 parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
