@@ -208,6 +208,33 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       }]
     }
   };
+  lineChartOptions4 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'values(t)'    
+        }
+      }]
+    }
+  };
+
   lineChartColors: Color[] = [
     {
       borderColor: '#7BC5EC',
@@ -683,15 +710,15 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     //line chart for fuel consumed
     if(this.ConsumedChartType == 'Line')
     {
-    this.lineChartData1= [{ data: this.fuelConsumedChart, label: 'Values()' },];
+    this.lineChartData1= [{ data: this.fuelConsumedChart, label: 'Values(ltr)' },];
   }
     if(this.TripsChartType == 'Line')
     {
-    this.lineChartData2= [{ data: this.barData, label: 'Values()' }, ];
+    this.lineChartData2= [{ data: this.barData, label: 'Values(No Of Trips)' }, ];
   }
     if(this.Co2ChartType == 'Line')
     {
-    this.lineChartData3= [{ data: this.co2Chart, label: 'Values()' },];
+    this.lineChartData3= [{ data: this.co2Chart, label: 'Values(t)' },];
   }
     if(this.DistanceChartType == 'Line')
     {
@@ -709,15 +736,15 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       //   }
       // }];
       // console.log(this.lineChartOptions);
-    this.lineChartData4= [{ data: this.distanceChart, label: 'Values()' }, ];
+    this.lineChartData4= [{ data: this.distanceChart, label: 'Values(meter)' }, ];
   }
     if(this.ConsumptionChartType == 'Line')
     {
-    this.lineChartData5= [{ data: this.fuelConsumptionChart, label: 'Values()' }, ];
+    this.lineChartData5= [{ data: this.fuelConsumptionChart, label: 'Values(ltr)' }, ];
   }
     if(this.DurationChartType == 'Line')
     {
-    this.lineChartData6= [{ data: this.idleDuration, label: 'Values()' }, ];
+    this.lineChartData6= [{ data: this.idleDuration, label: 'Values(Minutes)' }, ];
   }
   
     this.lineChartLabels = this.barChartLabels;
