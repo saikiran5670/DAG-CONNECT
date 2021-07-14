@@ -192,6 +192,7 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log("-------selectedElementData---",this.selectedElementData)
     this.vehicleGroupList.forEach(item => {
       this.vehicleGroupIdsSet.push(item.vehicleGroupId);
       this.vehicleGroupIdsSet = [...new Set(this.vehicleGroupIdsSet)];
@@ -248,10 +249,22 @@ export class ExistingTripsComponent implements OnInit {
     // this.loadExistingTripData();
     this.setDefaultTodayDate();
     this.existingTripForm.get('vehicleGroup').setValue('All');
+    //For Edit Screen
+    // if(this.actionType === 'edit'){
+    //   this.existingTripForm.controls.label.disable();
+    // }
   }
 
   public ngAfterViewInit() {
-    // this.initMap();
+    //For Edit Screen
+    // if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
+    //   this.setCorridorData();
+    //   this.createFlag = false;
+    //   this.strPresentStart = true;
+    //   this.strPresentEnd = true;
+    // }
+    // this.subscribeWidthValue();
+    // this.existingTripForm.controls.widthInput.setValue(this.corridorWidthKm);
     setTimeout(() => {
       this.mapFunctions.initMap(this.mapElement);
     }, 0);

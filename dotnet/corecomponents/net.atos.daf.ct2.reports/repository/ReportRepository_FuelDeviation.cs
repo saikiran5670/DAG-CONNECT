@@ -50,7 +50,10 @@ namespace net.atos.daf.ct2.reports.repository
 	                     INNER JOIN master.vehicle as v 
 	 	                    ON v.vin = trpst.vin
 	                     left JOIN master.geolocationaddress as geoaddr
-	 	                    ON geoaddr.id = fueldev.geolocation_address_id ";
+                            on TRUNC(CAST(geoaddr.latitude as numeric),4)= TRUNC(CAST(fueldev.latitude as numeric),4) 
+                    and TRUNC(CAST(geoaddr.longitude as numeric),4) = TRUNC(CAST(fueldev.longitude as numeric),4)
+                    	 	                   
+ON geoaddr.id = fueldev.geolocation_address_id ";
 
                 var parameter = new DynamicParameters();
                 parameter.Add("@StartDateTime", fuelDeviationFilters.StartDateTime);
