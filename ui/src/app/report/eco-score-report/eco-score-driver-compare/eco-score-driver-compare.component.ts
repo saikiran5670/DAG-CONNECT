@@ -57,8 +57,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   ngOnInit() {
     this.translationUpdate();
     this.showTable = true;
-    this.driverDetails = this.compareEcoScore.drivers;    
-    this.driverHeaders();
+    this.driverDetails = this.compareEcoScore.drivers;
     this.tableColumns();
     this.defineGridGen();
     this.defineGrid();
@@ -126,27 +125,6 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     // this.translationData.rp_fuelconsumption = 'Fuel Consumption';
   }
 
-  driverHeaders(){    
-    if((this.driverDetails !== undefined && this.driverDetails !== null)){
-      if(this.driverDetails.length > 0){
-        this.driver1= '<span style="font-weight:700">'+this.driverDetails[0].driverName+'</span><br/><span class="backBtnCss driver1">X</span><span style="font-weight:normal">('+this.driverDetails[0].driverId+')</span>';
-        this.driverG1= '<span style="font-weight:700">'+this.driverDetails[0].driverName+'</span><br/><span class="backBtnCss driverG1">X</span><span style="font-weight:normal">('+this.driverDetails[0].driverId+')</span>';
-      }
-      if(this.driverDetails.length > 1){
-        this.driver2= '<span style="font-weight:700">'+this.driverDetails[1].driverName+'</span><br/><span class="backBtnCss driver2">X</span><span style="font-weight:normal">('+this.driverDetails[1].driverId+')</span>';
-        this.driverG2= '<span style="font-weight:700">'+this.driverDetails[1].driverName+'</span><br/><span class="backBtnCss driverG2">X</span><span style="font-weight:normal">('+this.driverDetails[1].driverId+')</span>';
-      }
-      if(this.driverDetails.length > 2){
-        this.driver3= '<span style="font-weight:700">'+this.driverDetails[2].driverName+'</span><br/><span class="backBtnCss driver3">X</span><span style="font-weight:normal">('+this.driverDetails[2].driverId+')</span>';
-        this.driverG3= '<span style="font-weight:700">'+this.driverDetails[2].driverName+'</span><br/><span class="backBtnCss driverG3">X</span><span style="font-weight:normal">('+this.driverDetails[2].driverId+')</span>';
-      }
-      if(this.driverDetails.length > 3){
-        this.driver4= '<span style="font-weight:700">'+this.driverDetails[3].driverName+'</span><br/><span class="backBtnCss driver4">X</span><span style="font-weight:normal">('+this.driverDetails[3].driverId+')</span>';
-        this.driverG4= '<span style="font-weight:700">'+this.driverDetails[3].driverName+'</span><br/><span class="backBtnCss driverG4">X</span><span style="font-weight:normal">('+this.driverDetails[3].driverId+')</span>';
-      }
-    }
-  }
-
   tableColumns(){
     this.columnDefinitions = [
       {
@@ -175,8 +153,8 @@ export class EcoScoreDriverCompareComponent implements OnInit {
       }
       this.compareDriverCount = this.driverDetails.length;
       if(this.driverDetails.length > 0){
-        let driver1= '<span style="font-weight:700">'+this.driverDetails[0].driverName+'</span><br/><span class="backBtnCss driver1">X</span><span style="font-weight:normal">('+this.driverDetails[0].driverId+')</span>';
-        let driverG1= '<span style="font-weight:700">'+this.driverDetails[0].driverName+'</span><br/><span class="backBtnCss driverG1">X</span><span style="font-weight:normal">('+this.driverDetails[0].driverId+')</span>';
+        let driver1= '<span style="font-weight:700">'+this.driverDetails[0].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[0].driverId+')</span>';
+        let driverG1= '<span style="font-weight:700">'+this.driverDetails[0].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[0].driverId+')</span>';
         this.columnDefinitions.push({
           id: 'driver1', name: driver1, field: 'score',
           type: FieldType.number, minWidth: 90, formatter: this.getScore0, maxWidth: 250
@@ -187,8 +165,8 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         });
       }
       if(this.driverDetails.length > 1){
-        let driver2= '<span style="font-weight:700">'+this.driverDetails[1].driverName+'</span><br/><span class="backBtnCss driver2">X</span><span style="font-weight:normal">('+this.driverDetails[1].driverId+')</span>';
-        let driverG2= '<span style="font-weight:700">'+this.driverDetails[1].driverName+'</span><br/><span class="backBtnCss driverG2">X</span><span style="font-weight:normal">('+this.driverDetails[1].driverId+')</span>';
+        let driver2= '<span style="font-weight:700">'+this.driverDetails[1].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[1].driverId+')</span>';
+        let driverG2= '<span style="font-weight:700">'+this.driverDetails[1].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[1].driverId+')</span>';
         this.columnDefinitions.push({
           id: 'driver2', name: driver2, field: 'score',
           type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 250
@@ -199,8 +177,8 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         });
       }
       if(this.driverDetails.length > 2){
-        let driver3= '<span style="font-weight:700">'+this.driverDetails[2].driverName+'</span><br/><span class="backBtnCss driver3">X</span><span style="font-weight:normal">('+this.driverDetails[2].driverId+')</span>';
-        let driverG3= '<span style="font-weight:700">'+this.driverDetails[2].driverName+'</span><br/><span class="backBtnCss driverG3">X</span><span style="font-weight:normal">('+this.driverDetails[2].driverId+')</span>';
+        let driver3= '<span style="font-weight:700">'+this.driverDetails[2].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[2].driverId+')</span>';
+        let driverG3= '<span style="font-weight:700">'+this.driverDetails[2].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[2].driverId+')</span>';
         this.columnDefinitions.push({
           id: 'driver3', name: driver3, field: 'score',
           type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 250
@@ -211,8 +189,8 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         });
       }
       if(this.driverDetails.length > 3){
-        let driver4= '<span style="font-weight:700">'+this.driverDetails[3].driverName+'</span><br/><span class="backBtnCss driver4">X</span><span style="font-weight:normal">('+this.driverDetails[3].driverId+')</span>';
-        let driverG4= '<span style="font-weight:700">'+this.driverDetails[3].driverName+'</span><br/><span class="backBtnCss driverG4">X</span><span style="font-weight:normal">('+this.driverDetails[3].driverId+')</span>';
+        let driver4= '<span style="font-weight:700">'+this.driverDetails[3].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[3].driverId+')</span>';
+        let driverG4= '<span style="font-weight:700">'+this.driverDetails[3].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[3].driverId+')</span>';
         this.columnDefinitions.push({
           id: 'driver4', name: driver4, field: 'score',
           type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 250
