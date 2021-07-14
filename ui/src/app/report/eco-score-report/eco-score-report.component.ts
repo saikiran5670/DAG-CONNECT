@@ -610,7 +610,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   onReset(){
-    this.internalSelection = false;
+    this.internalSelection = true;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.onSearchData = [];
@@ -673,7 +673,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   }
   setGlobalSearchData(globalSearchFilterData:any) {
-    this.searchFilterpersistData["modifiedFrom"] = "TripReport";
+    this.searchFilterpersistData["modifiedFrom"] = "EcoScoreReport";
     localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
   }
 
@@ -749,8 +749,8 @@ let finalGroupDataList = [];
   }
 
   setGeneralDriverValue(){
-    this.fromDisplayDate = Util.convertUtcToDateFormat(this.startDateValue,'DD/MM/YYYY HH:MM:SS');
-    this.toDisplayDate = Util.convertUtcToDateFormat(this.endDateValue,'DD/MM/YYYY HH:MM:SS');
+    this.fromDisplayDate = this.formStartDate(this.startDateValue);
+    this.toDisplayDate = this.formStartDate(this.endDateValue);
     this.selectedVehicleGroup = this.vehicleGroupListData.filter(item => item.vehicleGroupId == parseInt(this.ecoScoreForm.controls.vehicleGroup.value))[0]["vehicleGroupName"];
     this.selectedVehicle = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.ecoScoreForm.controls.vehicle.value))[0]["vehicleName"];
     this.selectedDriverId = this.driverListData.filter(item => item.driverID == parseInt(this.ecoScoreForm.controls.driver.value))[0]["firstName"];
@@ -845,7 +845,7 @@ let finalGroupDataList = [];
     this.dataSource.filter = filterValue;
   }
 
-  exportAsExcelFile(){  
+  exportAsExcelFile(){
     const title = 'Eco Score Report';
     const summary = 'Summary Section';
     const detail = 'Detail Section';
@@ -988,8 +988,8 @@ let finalGroupDataList = [];
     this.totalAvailableTime= 0;
     this.totalServiceTime = 0;
 
-    this.fromDisplayDate = Util.convertUtcToDateFormat(this.startDateValue,'DD/MM/YYYY HH:MM:SS');
-    this.toDisplayDate = Util.convertUtcToDateFormat(this.endDateValue,'DD/MM/YYYY HH:MM:SS');
+    this.fromDisplayDate = this.formStartDate(this.startDateValue);
+    this.toDisplayDate = this.formStartDate(this.endDateValue);
     this.driverDetails.forEach(element => {
     this.totalDriveTime += element.driveTime,
     this.totalWorkTime += element.workTime,
@@ -1048,10 +1048,18 @@ let finalGroupDataList = [];
       }else{
         this.selectionTab = 'today';
       }
+      if(this.searchFilterpersistData.startDateStamp !== '' && this.searchFilterpersistData.endDateStamp !== ''){
       let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
       let endDateFromSearch = new Date(this.searchFilterpersistData.endDateStamp);
       this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
+      } else {
+        this.selectionTab = 'today';
+        this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        this.last3MonthDate = this.getLast3MonthDate();
+        this.todayDate = this.getTodayDate();
+      }
     }else{
     this.selectionTab = 'today';
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
@@ -1325,6 +1333,7 @@ let finalGroupDataList = [];
     //   return {'width': + ((row.ecoScore / 10) * 100) +'%', 'height': '18px', 'background-color': '#33cc33'};
     // else
     //   return {'width': + ((row.ecoScore / 10) * 100) +'%', 'height': '18px', 'background-color': '#ff9900'};
+
       return {'width': + ((row.ecoScoreRanking / 10) * 100) +'%', 'height': '18px', 'background-color': (row.ecoScoreRankingColor === 'Amber'?'Orange':row.ecoScoreRankingColor)};
   }
 

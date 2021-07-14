@@ -1,4 +1,5 @@
 trigger:
+- none
   #branches:
   #  include:
   #  - development
@@ -7,17 +8,17 @@ trigger:
   #paths:
   #  include:
   #  - dotnet/dataservices/net.atos.daf.ct2.vehicledataservice
-  none
+
 
 variables:
  - name: imageName
-   value: 'vehicledataservice-auto'
+   value: 'vehicledataservice'
  - name: dockerFile
    value: 'dotnet/VehicleDataService_Dockerfile'
  - name: manifestFile
-   value: 'vehicledataservice-api-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+   value: 'devops/self\ triggered\ pipelines/vehicledataservice-api-dotnet-kubernetes-manifest-dev1-dev2.yaml'
  - name: manifestFileDev0
-   value: 'vehicledataservice-api-dotnet-kubernetes-manifest.yaml'
+   value: 'devops/self\ triggered\ pipelines/vehicledataservice-api-dotnet-kubernetes-manifest.yaml'
  - name: appsettingsFile
    value: 'dotnet/dataservices/net.atos.daf.ct2.vehicledataservice/appsettings.Production.json'
  - name: log4netConfigFile

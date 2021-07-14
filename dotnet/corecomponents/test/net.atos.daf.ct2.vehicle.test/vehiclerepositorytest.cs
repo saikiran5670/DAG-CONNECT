@@ -178,7 +178,7 @@ namespace net.atos.daf.ct2.vehicle.test
         public async Task UnT_vehicle_VehicleManager_GetVehicleBySubscriptionSet()
         {
             int subscriptionId = 1;
-            var results = await _vehicleRepository.GetVehicleBySubscriptionId(subscriptionId);
+            var results = await _vehicleRepository.GetVehicleBySubscriptionId(subscriptionId, "A");
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
         }

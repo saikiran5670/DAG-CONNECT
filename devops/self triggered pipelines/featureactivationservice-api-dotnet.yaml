@@ -1,4 +1,5 @@
 trigger:
+- none
   #branches:
   #  include:
   #  - development
@@ -7,17 +8,17 @@ trigger:
   #paths:
   #  include:
   #  - dotnet/dataservices/net.atos.daf.ct2.featureactivationservice
-  none
+
 
 variables:
  - name: imageName
-   value: 'featureactivationservice-auto'
+   value: 'featureactivationservice'
  - name: dockerFile
    value: 'dotnet/FeatureActivationService_Dockerfile'
  - name: manifestFile
-   value: 'featureactivationservice-api-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+   value: 'devops/self\ triggered\ pipelines/featureactivationservice-api-dotnet-kubernetes-manifest-dev1-dev2.yaml'
  - name: manifestFileDev0
-   value: 'featureactivationservice-api-dotnet-kubernetes-manifest.yaml'
+   value: 'devops/self\ triggered\ pipelines/featureactivationservice-api-dotnet-kubernetes-manifest.yaml'
  - name: appsettingsFile
    value: 'dotnet/dataservices/net.atos.daf.ct2.featureactivationservice/appsettings.Production.json'
  - name: log4netConfigFile

@@ -81,6 +81,14 @@ namespace net.atos.daf.ct2.poigeofence
                     objCorridorLookUp.EditView.ViaAddressDetails = await _corridorRepository.GetCorridorViaStopById(objCorridorLookUp.EditView.Id);
                     if ((LandmarkType)objCorridorLookUp.EditView.CorridorType.ToCharArray()[0] == LandmarkType.ExistingTripCorridor)
                     {
+                        //This is to bind latest End Lat and long by sequence Number from nodes table
+                        NodeEndLatLongResponse objNodeEndLatLongResponse = await _corridorRepository.GetExistingTripCorridorListByLandMarkId(objCorridorLookUp.EditView.Id);
+                        if (objNodeEndLatLongResponse != null)
+                        {
+                            objCorridorLookUp.EditView.EndLat = objNodeEndLatLongResponse.EndLat;
+                            objCorridorLookUp.EditView.EndLong = objNodeEndLatLongResponse.EndLong;
+                            objCorridorLookUp.EditView.EndPoint = objNodeEndLatLongResponse.Address;
+                        }
                         objCorridorLookUp.EditView.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(objCorridorRequest.CorridorId);
                         foreach (var trips in objCorridorLookUp.EditView.CorridoreTrips)
                         {
