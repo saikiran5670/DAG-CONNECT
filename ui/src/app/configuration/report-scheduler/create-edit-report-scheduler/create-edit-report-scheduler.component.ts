@@ -249,7 +249,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   getBreadcum() {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
-    ${this.translationData.lblLandmarks ? this.translationData.lblReportScheduler : "ReportScheduler"} / 
+    ${this.translationData.lblPathReportScheduler ? this.translationData.lblPathReportScheduler : "ReportScheduler"} / 
     ${(this.actionType == 'edit') ? (this.translationData.lblEditScheduleDetails ? this.translationData.lblEditScheduleDetails : 'Edit Schedule Details') : (this.actionType == 'view') ? (this.translationData.lblViewScheduleDetails ? this.translationData.lblViewScheduleDetails : 'View Schedule Details') : (this.translationData.lblCreateScheduleDetails ? this.translationData.lblScheduleNewReport : 'Schedule New Report')}`;
   }
 

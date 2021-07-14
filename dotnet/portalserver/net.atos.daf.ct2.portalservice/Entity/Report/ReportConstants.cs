@@ -94,5 +94,13 @@
         public const string GET_FUEL_DEVIATION_SUCCESS_MSG = "Fuel Deviation fetched successfully for requested Filters";
         public const string GET_FUEL_DEVIATION_FAIL_MSG = "Fuel Deviation fetched failed for requested Filters";
         #endregion
+        #region Fuel Bechmark Report
+        public const string GET_FUEL_BENCHMARK_STARTDATE_MSG = "Invalid start date.";
+        public const string GET_FUEL_BENCHMARK_ENDDATE_MSG = "Invalid end date.";
+        public const string GET_FUEL_BENCHMARK_VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
+        public const string GET_FUEL_BENCHMARK_GROUPVEHICLEID_MSG = "Invalid Vechicle group Id.";
+        public const string GET_FUEL_BENCHMARK_SUCCESS_MSG = "Fleet Fuel details fetched successfully";
+        public const string GET_FUEL_BENCHMARK_FAILURE_MSG = "No Result Found";
+        #endregion
     }
 }

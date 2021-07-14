@@ -485,13 +485,13 @@
                                     <mat-label>{{ translationData.lblBySmsMobileNumber || '(By SMS) Mobile Number' }} <span
                                             class='mandatoryColor'>*</span>
                                     </mat-label>
-                                    <mat-form-field appearance="outline" class="full-width">
-                                        <ngx-intl-tel-input [cssClass]="''" [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
+                                    <div class="mb-2">
+                                        <ngx-intl-tel-input [cssClass]="''" class="full-width" [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
                                             [searchCountryFlag]="true" [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-                                            [selectFirstCountry]="false" [maxLength]="15" [tooltipField]="TooltipLabel.Name" [phoneValidation]="true"
+                                            [selectFirstCountry]="false" [maxLength]="15" [phoneValidation]="true"
                                             [separateDialCode]="true" name="phone" formControlName="mobileNumber">
                                         </ngx-intl-tel-input>
-                                    </mat-form-field>
+                                    </div>
                                     <mat-hint>{{translationData.lblOnlyOneContactNumberCanBeAddedAtATime || 'Only one contact number can be added at a time' }}</mat-hint>
                                     <mat-error
                                         *ngIf="notificationForm.controls['FormSMSArray']['controls'][0].get('mobileNumber').hasError('required') && notificationForm.controls['FormSMSArray']['controls'][0].get('mobileNumber').touched">

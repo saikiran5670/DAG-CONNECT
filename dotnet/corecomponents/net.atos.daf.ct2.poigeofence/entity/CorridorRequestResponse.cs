@@ -48,6 +48,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
     public class CorridorEditViewResponse : CorridorResponse
     {
         public int CorridorPropertiesId { get; set; }
+        public string VIN { get; set; }
         public bool IsTransportData { get; set; }
         public bool IsTrafficFlow { get; set; }
         public long CreatedAtForCP { get; set; }

@@ -35,8 +35,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         public ReportController(ReportServiceClient reportServiceClient, AuditHelper auditHelper,
                                IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper,
-                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient
-                               ) : base(httpContextAccessor, sessionHelper)
+                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient, AccountPrivilegeChecker privilegeChecker
+                               ) : base(httpContextAccessor, sessionHelper, privilegeChecker)
         {
             _reportServiceClient = reportServiceClient;
             _auditHelper = auditHelper;
@@ -1239,6 +1239,41 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  $"{ nameof(GetFleetOverviewFilter) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
                   _userDetails);
                 _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+        #region Fuel Benchmark Details Report
+
+        [HttpGet]
+        [Route("getFuelbenchmark")]
+        public async Task<IActionResult> GetFuelBechmarkReport([FromQuery] FuelBenchmarkRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0))
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0))
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_ENDDATE_MSG); }
+                if (request.StartDateTime > request.EndDateTime)
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_VALIDATION_DATEMISMATCH_MSG); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                FuelBenchmarkRequest objFleetFilter = JsonConvert.DeserializeObject<FuelBenchmarkRequest>(filters);
+                var data = await _reportServiceClient.GetFuelBenchmarksAsync(objFleetFilter);
+                if (data?.FuelBenchmarkDetails?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_FUEL_BENCHMARK_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_FUEL_BENCHMARK_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }

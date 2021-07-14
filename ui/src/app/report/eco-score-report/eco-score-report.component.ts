@@ -758,7 +758,7 @@ let finalGroupDataList = [];
     this.selectedDriverOption += (this.ecoScoreForm.controls.minTripCheck.value === true) ? (this.translationData.lblInclude || 'Include') : (this.translationData.lblExclude || 'Exclude');
     this.selectedDriverOption += ' ' + (this.translationData.lblShortTrips || 'Short Trips') + ' ';
     this.selectedDriverOption += (this.ecoScoreForm.controls.minDriverCheck.value === true) ?  (this.translationData.lblInclude || 'Include') : (this.translationData.lblExclude || 'Exclude');
-    this.selectedDriverOption += ' ' + (this.translationData.minimumDriverTotDist || 'Minimum Driver Total Distance');
+    this.selectedDriverOption += ' ' + (this.translationData.lblMinDriverTotDist || 'Minimum Driver Total Distance');
   }
   setTableInfo(){
   }
