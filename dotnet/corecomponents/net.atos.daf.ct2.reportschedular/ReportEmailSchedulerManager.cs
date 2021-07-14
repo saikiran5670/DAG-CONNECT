@@ -67,6 +67,7 @@ namespace net.atos.daf.ct2.reportscheduler
                         mailSent.EmailId = emailItem.EmailId;
                         mailSent.IsMailSent = emailItem.IsMailSent;
                         mailSent.ReportId = emailItem.ReportSchedulerId;
+                        await AddAuditLog(mailSent.IsMailSent, mailSent.EmailId);
                     }
                     mailNotification.ContentType = EmailContentType.Html;
                     mailNotification.EventType = EmailEventType.ScheduledReportEmail;

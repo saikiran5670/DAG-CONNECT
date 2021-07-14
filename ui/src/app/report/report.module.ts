@@ -25,6 +25,7 @@ import { EcoScoreDriverCompareComponent } from './eco-score-report/eco-score-dri
 import { AngularSlickgridModule } from 'angular-slickgrid';
 import { FleetfueldetailsComponent } from './fleet-fuel-report/fleetfueldetails/fleetfueldetails.component';
 import { EcoScoreReportDriverComponent } from './eco-score-report/eco-score-report-driver/eco-score-report-driver.component';
+import { FuelBenchmarkingComponent } from './fuel-benchmarking/fuel-benchmarking.component';
 
 // import interactionPlugin from '@fullcalendar/interaction';
 
@@ -42,7 +43,7 @@ export const MY_DATE_FORMAT = {
 }
 
 @NgModule({
-  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent, EcoScoreReportComponent, EcoScoreDriverCompareComponent, FleetfueldetailsComponent, EcoScoreReportDriverComponent],
+  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent, EcoScoreReportComponent, EcoScoreDriverCompareComponent, FleetfueldetailsComponent, EcoScoreReportDriverComponent, FuelBenchmarkingComponent],
   imports: [
     CommonModule,
     ReportRoutingModule,
