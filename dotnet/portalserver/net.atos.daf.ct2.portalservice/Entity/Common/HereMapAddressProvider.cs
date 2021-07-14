@@ -76,13 +76,5 @@ namespace net.atos.daf.ct2.portalservice.Common
             return ((lng < -180 || lng > 180) && (lat < -90 || lat > 90));
 
         }
-
-        internal void UpdateFuelDeviationReportAddress(FuelDeviationDetails item)
-        {
-            if (item.GeoLocationAddressId == 0)
-            {
-                item.GeoLocationAddress = GetAddress(item.Latitude, item.Longitude);
-            }
-        }
     }
 }

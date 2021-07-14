@@ -55,7 +55,7 @@ tripForm: FormGroup;
 mapFilterForm: FormGroup;
 // displayedColumns = ['All','vin', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
 // displayedColumns = ['All','vin','odometer','vehicleName','registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
-displayedColumns = ['All','vin','odometer','vehicleName','registrationNo','startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
+displayedColumns = ['All', 'vin', 'odometer', 'vehicleName', 'registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
 translationData: any;
 showMap: boolean = false;
 showBack: boolean = false;
@@ -109,64 +109,68 @@ internalSelection: boolean = false;
 herePOIArr: any = [];
 prefMapData: any = [
   {
-    key: 'da_report_tripreportdetails_averagespeed',
+    key: 'rp_tr_report_tripreportdetails_averagespeed',
     value: 'averageSpeed'
   },
   {
-    key: 'da_report_tripreportdetails_drivingtime',
+    key: 'rp_tr_report_tripreportdetails_drivingtime',
     value: 'drivingTime'
   },
   {
-    key: 'da_report_tripreportdetails_alerts',
+    key: 'rp_tr_report_tripreportdetails_alerts',
     value: 'alert'
   },
   {
-    key: 'da_report_tripreportdetails_averageweight',
+    key: 'rp_tr_report_tripreportdetails_averageweight',
     value: 'averageWeight'
   },
   {
-    key: 'da_report_tripreportdetails_events',
+    key: 'rp_tr_report_tripreportdetails_events',
     value: 'events'
   },
   {
-    key: 'da_report_tripreportdetails_distance',
+    key: 'rp_tr_report_tripreportdetails_distance',
     value: 'distance'
   },
   {
-    key: 'da_report_tripreportdetails_enddate',
+    key: 'rp_tr_report_tripreportdetails_enddate',
     value: 'endTimeStamp'
   },
   {
-    key: 'da_report_tripreportdetails_endposition',
+    key: 'rp_tr_report_tripreportdetails_endposition',
     value: 'endPosition'
   },
   {
-    key: 'da_report_tripreportdetails_fuelconsumed',
+    key: 'rp_tr_report_tripreportdetails_fuelconsumed',
     value: 'fuelConsumed100Km'
   },
   {
-    key: 'da_report_tripreportdetails_idleduration',
+    key: 'rp_tr_report_tripreportdetails_idleduration',
     value: 'idleDuration'
   },
   {
-    key: 'da_report_tripreportdetails_odometer',
+    key: 'rp_tr_report_tripreportdetails_odometer',
     value: 'odometer'
   },
   {
-    key: 'da_report_tripreportdetails_platenumber',
-    value: 'registrationnumber'
+    key: 'rp_tr_report_tripreportdetails_platenumber',
+    value: 'registrationNo'
   },
   {
-    key: 'da_report_tripreportdetails_startdate',
+    key: 'rp_tr_report_tripreportdetails_startdate',
     value: 'startTimeStamp'
   },
   {
-    key: 'da_report_tripreportdetails_vin',
+    key: 'rp_tr_report_tripreportdetails_vin',
     value: 'vin'
   },
   {
-    key: 'da_report_tripreportdetails_startposition',
+    key: 'rp_tr_report_tripreportdetails_startposition',
     value: 'startPosition'
+  },
+  {
+    key: 'rp_tr_report_tripreportdetails_vehiclename',
+    value: 'vehicleName'
   }
 ];
 _state: any ;
@@ -319,7 +323,7 @@ ngOnDestroy(){
   }
 
   getReportPreferences(){
-    this.reportService.getUserPreferenceReport(this.tripReportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
+    this.reportService.getReportUserPreference(this.tripReportId).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetTripPrefData();
       this.getTranslatedColumnName(this.reportPrefData);
@@ -339,30 +343,36 @@ ngOnDestroy(){
 
   tripPrefData: any = [];
   getTranslatedColumnName(prefData: any){
-    prefData.forEach(element => {
-      if(element.key.includes('da_report_tripreportdetails_')){
-        this.tripPrefData.push(element);
-      }
-    });
+    if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
+      prefData.subReportUserPreferences.forEach(element => {
+        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+          element.subReportUserPreferences.forEach(item => {
+            if(item.key.includes('rp_tr_report_tripreportdetails_')){
+              this.tripPrefData.push(item);
+            }
+          });
+        }
+      });
+    }
   }
 
   setDisplayColumnBaseOnPref(){
-    let filterPref = this.tripPrefData.filter(i => i.state == 'I');
+    let filterPref = this.tripPrefData.filter(i => i.state == 'I'); // removed unchecked
     if(filterPref.length > 0){
       filterPref.forEach(element => {
-        let search = this.prefMapData.filter(i => i.key == element.key);
+        let search = this.prefMapData.filter(i => i.key == element.key); // present or not
         if(search.length > 0){
-          let index = this.displayedColumns.indexOf(search[0].value);
+          let index = this.displayedColumns.indexOf(search[0].value); // find index
           if (index > -1) {
-              this.displayedColumns.splice(index, 1);
+            this.displayedColumns.splice(index, 1); // removed
           }
         }
 
-        if(element.key == 'da_report_tripreportdetails_vehiclename'){
+        if(element.key == 'rp_tr_report_tripreportdetails_vehiclename'){
           this.showField.vehicleName = false;
-        }else if(element.key == 'da_report_tripreportdetails_vin'){
+        }else if(element.key == 'rp_tr_report_tripreportdetails_vin'){
           this.showField.vin = false;
-        }else if(element.key == 'da_report_tripreportdetails_platenumber'){
+        }else if(element.key == 'rp_tr_report_tripreportdetails_platenumber'){
           this.showField.regNo = false;
         }
       });
@@ -749,7 +759,12 @@ ngOnDestroy(){
   const title = 'Trip Report';
   const summary = 'Summary Section';
   const detail = 'Detail Section';
-  const header = ['VIN', 'Odometer', 'Vehicle Name', 'Registration No', 'Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumption', 'Driving Time', 'Alerts', 'Events'];
+  let unitVal100km =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'gallon/100mile') : (this.translationData.lblgallonmile || 'gallon/100mile');
+  let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound || 'pound');
+  let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
+  let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile') ;
+
+  const header = ['VIN', 'Odometer', 'Vehicle Name', 'Registration No', 'Start Date', 'End Date', 'Distance('+ unitValkm + ')', 'Idle Duration(hh:mm)', 'Average Speed('+ unitValkmh + ')', 'Average Weight('+ unitValkg + ')', 'Start Position', 'End Position', 'Fuel Consumption('+ unitVal100km + ')', 'Driving Time(hh:mm)', 'Alerts', 'Events'];
   const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Vehicle VIN', 'Reg. Plate Number'];
   let summaryObj=[
     ['Trip Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
@@ -842,7 +857,7 @@ ngOnDestroy(){
       }
   });
 
-    let pdfColumns = [['VIN','Vehicle Name','Registration Number.','Odometer','Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
+    let pdfColumns = [['VIN', 'Vehicle Name', 'Registration Number', 'Odometer', 'Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
     // let pdfColumns = [['Odometer','Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
 
   let prepare = []

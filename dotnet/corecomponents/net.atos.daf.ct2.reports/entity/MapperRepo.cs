@@ -13,6 +13,7 @@ namespace net.atos.daf.ct2.reports.entity
             //Lookups are implemeted to avoid inserting duplicate entry of same id into the list
             Dictionary<int, FleetOverviewDetails> fleetOverviewDetailsLookup = new Dictionary<int, FleetOverviewDetails>();
             Dictionary<int, LiveFleetPosition> liveFleetPositionLookup = new Dictionary<int, LiveFleetPosition>();
+            Dictionary<int, FleetOverviewAlert> liveFleetAlertLookup = new Dictionary<int, FleetOverviewAlert>();
             foreach (var fleetOverviewItem in fleetOverviewResult)
             {
                 if (!fleetOverviewDetailsLookup.TryGetValue(Convert.ToInt32(fleetOverviewItem.Lcts_Id), out FleetOverviewDetails fleetOverviewDetails))
@@ -34,6 +35,16 @@ namespace net.atos.daf.ct2.reports.entity
                         fleetOverviewDetails.LiveFleetPositions.Add(liveFleetPosition);
                     }
                 }
+                if (fleetOverviewItem.Lcts_TripId == fleetOverviewItem.Tripal_TripId)
+                {
+                    if (!liveFleetAlertLookup.TryGetValue(Convert.ToInt32(fleetOverviewItem.Tripal_Id), out _))
+                    {
+                        FleetOverviewAlert fleetOverviewAlert;
+                        liveFleetAlertLookup.Add(Convert.ToInt32(fleetOverviewItem.Tripal_Id), fleetOverviewAlert = ToLiveFleetAlertModel(fleetOverviewItem));
+                        fleetOverviewDetails.FleetOverviewAlert.Add(fleetOverviewAlert);
+                    }
+                }
+
             }
             foreach (var keyValuePair in fleetOverviewDetailsLookup)
             {
@@ -98,6 +109,23 @@ namespace net.atos.daf.ct2.reports.entity
                 Fuelconsumtion = fleetOverviewResult.Lps_FuelConsumption,
             };
             return liveFleetPosition;
+        }
+
+        public FleetOverviewAlert ToLiveFleetAlertModel(FleetOverviewResult fleetOverviewResult)
+        {
+            FleetOverviewAlert liveFleetAlert = new FleetOverviewAlert
+            {
+                Id = fleetOverviewResult.Tripal_Id,
+                AlertName = fleetOverviewResult.AlertName,
+                AlertType = fleetOverviewResult.AlertType,
+                AlertLocation = fleetOverviewResult.AlertLocation,
+                AlertTime = fleetOverviewResult.AlertTime,
+                AlertLevel = fleetOverviewResult.AlertLevel,
+                CategoryType = fleetOverviewResult.CategoryType,
+                AlertLatitude = fleetOverviewResult.AlertLatitude,
+                AlertLongitude = fleetOverviewResult.AlertLongitude,
+            };
+            return liveFleetAlert;
         }
     }
 }

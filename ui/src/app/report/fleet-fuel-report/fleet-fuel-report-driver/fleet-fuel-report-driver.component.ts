@@ -1237,7 +1237,7 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   exportAsExcelFile(){
-    this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Vehicle', sheet: 'sheet_name'});
+    this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Driver', sheet: 'sheet_name'});
   }
 
   exportAsPDFFile(){
@@ -1407,7 +1407,7 @@ setVehicleGroupAndVehiclePreSelection() {
         didDrawPage: function(data) {     
             // Header
             doc.setFontSize(14);
-            var fileTitle = "Fleet Fuel Report by Vehicle Details";
+            var fileTitle = "Fleet Fuel Report by Driver Details";
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG',10,10,0,0);
   
@@ -1439,7 +1439,7 @@ setVehicleGroupAndVehiclePreSelection() {
       }
     })
 
-    doc.save('fleetFuelByVehicle.pdf');
+    doc.save('fleetFuelByDriver.pdf');
        
     });     
   }
