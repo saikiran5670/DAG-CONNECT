@@ -55,8 +55,8 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<FilterProperty>> GetHealthStatusList();
         Task<List<FilterProperty>> GetOtherFilter();
         Task<List<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter);
-        Task<bool> GetKPIInfo(EcoScoreDataServiceRequest request);
-        Task<bool> GetChartInfo(EcoScoreDataServiceRequest request);
+        Task<dynamic> GetKPIInfo(EcoScoreDataServiceRequest request);
+        Task<dynamic> GetChartInfo(EcoScoreDataServiceRequest request);
         Task<List<DriverFilter>> GetDriverList(List<string> vins);
 
         Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest);

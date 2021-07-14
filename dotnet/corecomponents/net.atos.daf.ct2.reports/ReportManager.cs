@@ -483,20 +483,73 @@ namespace net.atos.daf.ct2.reports
 
         #region Eco-Score Data service
 
-        public Task<EcoScoreKPIInfoDataServiceResponse> GetKPIInfo(EcoScoreDataServiceRequest request)
+        public async Task<EcoScoreKPIInfoDataServiceResponse> GetKPIInfo(EcoScoreDataServiceRequest request)
         {
-            _reportRepository.GetKPIInfo(request);
-
-            var response = new EcoScoreKPIInfoDataServiceResponse();
-            return Task.FromResult(response);
+            var kpiInfo = await _reportRepository.GetKPIInfo(request);
+            var response = MapEcoScoreKPIInfoDataReponse(kpiInfo);
+            return response;
         }
 
-        public Task<EcoScoreChartInfoDataServiceResponse> GetChartInfo(EcoScoreDataServiceRequest request)
+        public async Task<EcoScoreChartInfoDataServiceResponse> GetChartInfo(EcoScoreDataServiceRequest request)
         {
-            _reportRepository.GetChartInfo(request);
+            var chartInfo = await _reportRepository.GetChartInfo(request);
+            var response = MapEcoScoreChartInfoDataReponse(chartInfo);
+            return response;
+        }
 
+        private EcoScoreKPIInfoDataServiceResponse MapEcoScoreKPIInfoDataReponse(dynamic kpiInfo)
+        {
+            var response = new EcoScoreKPIInfoDataServiceResponse();
+
+            var kpiInfoResponse = new KPIInfo();
+            kpiInfoResponse.StartTimestamp = kpiInfo.StartTimestamp;
+            kpiInfoResponse.EndTimestamp = kpiInfo.EndTimestamp;
+            kpiInfoResponse.AnticipationScore = new KPI(kpiInfo.AnticipationScore_Total, kpiInfo.AnticipationScore_Count);
+            kpiInfoResponse.BrakingScore = new KPI(kpiInfo.BrakingScore_Total, kpiInfo.BrakingScore_Count);
+            kpiInfoResponse.FuelConsumption = new KPI(kpiInfo.FuelConsumption_Total, kpiInfo.FuelConsumption_Count);
+            kpiInfoResponse.Ecoscore = new KPI(kpiInfo.EcoScore_Total, kpiInfo.EcoScore_Count);
+            kpiInfoResponse.NumberOfTrips = kpiInfo.NumberOfTrips;
+            kpiInfoResponse.NumberOfVehicles = kpiInfo.NumberOfVehicles;
+            kpiInfoResponse.AverageGrossWeight = new KPI(kpiInfo.AverageGrossweight_Total, kpiInfo.AverageGrossweight_Count);
+            kpiInfoResponse.Distance = new KPI(kpiInfo.Distance_Total, kpiInfo.Distance_Count);
+            kpiInfoResponse.AverageDistancePerDay = new KPI(kpiInfo.AverageDistancePerDay_Total, kpiInfo.AverageDistancePerDay_Count);
+            kpiInfoResponse.CruiseControlUsage = new KPI(kpiInfo.CruiseControlUsage_Total, kpiInfo.CruiseControlUsage_Count);
+            kpiInfoResponse.CruiseControlUsage3050kmph = new KPI(kpiInfo.CruiseControlUsage30_Total, kpiInfo.CruiseControlUsage30_Count);
+            kpiInfoResponse.CruiseControlUsage5075kmph = new KPI(kpiInfo.CruiseControlUsage50_Total, kpiInfo.CruiseControlUsage50_Count);
+            kpiInfoResponse.CruiseControlUsage75kmph = new KPI(kpiInfo.CruiseControlUsage75_Total, kpiInfo.CruiseControlUsage75_Count);
+            kpiInfoResponse.PTOPercentage = new KPI(kpiInfo.PTOUsage_Total, kpiInfo.PTOUsage_Count);
+            kpiInfoResponse.PTODuration = new KPI(kpiInfo.PTODuration_Total, kpiInfo.PTODuration_Count);
+            kpiInfoResponse.AverageDrivingSpeed = new KPI(kpiInfo.AverageDrivingSpeed_Total, kpiInfo.AverageDrivingSpeed_Count);
+            kpiInfoResponse.AverageSpeed = new KPI(kpiInfo.AverageSpeed_Total, kpiInfo.AverageSpeed_Count);
+            kpiInfoResponse.HeavyThrottlingPercentage = new KPI(kpiInfo.HeavyThrottling_Total, kpiInfo.HeavyThrottling_Count);
+            kpiInfoResponse.HeavyThrottlingDuration = new KPI(kpiInfo.HeavyThrottleDuration_Total, kpiInfo.HeavyThrottleDuration_Count);
+            kpiInfoResponse.IdlingPercentage = new KPI(kpiInfo.Idling_Total, kpiInfo.Idling_Count);
+            kpiInfoResponse.IdleDuration = new KPI(kpiInfo.IdleDuration_Total, kpiInfo.IdleDuration_Count);
+            kpiInfoResponse.HarshBrakePercentage = new KPI(kpiInfo.HarshBraking_Total, kpiInfo.HarshBraking_Count);
+            kpiInfoResponse.HarshBrakeDuration = new KPI(kpiInfo.HarshBrakeDuration_Total, kpiInfo.HarshBrakeDuration_Count);
+            kpiInfoResponse.BrakingDuration = new KPI(kpiInfo.BrakeDuration_Total, kpiInfo.BrakeDuration_Count);
+            kpiInfoResponse.BrakingPercentage = new KPI(kpiInfo.Braking_Total, kpiInfo.Braking_Count);
+
+            response.KPIInfo = new KPIInfo[] { kpiInfoResponse };
+
+            return response;
+        }
+
+        private EcoScoreChartInfoDataServiceResponse MapEcoScoreChartInfoDataReponse(dynamic chartInfo)
+        {
             var response = new EcoScoreChartInfoDataServiceResponse();
-            return Task.FromResult(response);
+
+            var chartInfoResponse = new ChartInfo();
+            chartInfoResponse.StartTimestamp = chartInfo.StartTimestamp;
+            chartInfoResponse.EndTimestamp = chartInfo.EndTimestamp;
+            chartInfoResponse.AnticipationScore = new KPI(chartInfo.AnticipationScore_Total, chartInfo.AnticipationScore_Count);
+            chartInfoResponse.BrakingScore = new KPI(chartInfo.BrakingScore_Total, chartInfo.BrakingScore_Count);
+            chartInfoResponse.FuelConsumption = new KPI(chartInfo.FuelConsumption_Total, chartInfo.FuelConsumption_Count);
+            chartInfoResponse.Ecoscore = new KPI(chartInfo.EcoScore_Total, chartInfo.EcoScore_Count);
+
+            response.ChartInfo = new ChartInfo[] { chartInfoResponse };
+
+            return response;
         }
 
         #endregion
