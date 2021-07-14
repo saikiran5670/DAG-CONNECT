@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tcuprovisioningdataservice
+spec:
+  selector:
+    matchLabels:
+      run: tcuprovisioningdataservice
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: tcuprovisioningdataservice
+    spec:
+      containers:
+      - name: tcuprovisioningdataservice
+        image: dafdev017756.azurecr.io/tcuprovisioningdataservice
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tcuprovisioningdataservice
+spec:
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    run: tcuprovisioningdataservice

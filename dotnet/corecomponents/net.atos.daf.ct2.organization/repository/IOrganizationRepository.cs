@@ -28,5 +28,6 @@ namespace net.atos.daf.ct2.organization.repository
         Task<IEnumerable<Organization>> GetAllOrganizations(int OrganizationID);
         Task<IEnumerable<OrganizationContextListResponse>> GetAllOrganizationsForContext();
         Task<int> GetLevelByRoleId(int orgId, int roleId);
+        Task<Organization> GetOrganizationByOrgCode(string organizationCode);
     }
 }

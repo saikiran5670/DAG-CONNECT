@@ -958,58 +958,18 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.dataSource.filter = filterValue;
   }
 
-  getAllSummaryData(){
-    if(this.initData.length > 0){
-      
-      let numberOfTrips_Val:any ; let distanceDone_Val:any; let idleDuration_Val :any;
-      let averageDistPerDay_Val:any; let numbeOfVehicles_Val :any;
-    
-      // if(this.idleDurationStatus){
-      //   idleDuration_Val = idleDuration;     
-      // }
-      // else{
-      //   idleDuration_Val = '-';       
-      // }
-      // if(this.noOfVehStatus){
-      //   numbeOfVehicles_Val = numbeOfVehicles;      
-      // }
-      // else{
-      //   numbeOfVehicles_Val ='-';
-      // }
-      // if(this.avgDistanceStatus){
-      //   averageDistPerDay_Val =  averageDistPerDay;       
-      // }
-      // else{
-      //   averageDistPerDay_Val ='-';       
-      // }
-      // if(this.noOfTripsStatus){
-      //   numberOfTrips_Val = numberOfTrips;      
-      // }
-      // else{
-      //   numberOfTrips_Val='-';      
-      // }
-      // if(this.totalDistanceStatus){
-      //   distanceDone_Val = distanceDone;
-      // }
-      // else{
-      //   distanceDone_Val ='-';       
-      // }    
-      this.summaryObj=[
-        ['Driver Time Report', new Date(), this.fromDisplayDate, this.toDisplayDate,
-          this.selectedVehicleGroup, this.selectedVehicle, this.totalDriverCount, this.tableInfoObj.driveTime, 
-          this.tableInfoObj.workTime, this.tableInfoObj.availableTime, this.tableInfoObj.restTime
-        ]
-      ];
-    }
-  }
-
-  exportAsExcelFile(){    
-  this.getAllSummaryData();
+  exportAsExcelFile(){      
   const title = 'Driver Time Report';
   const summary = 'Summary Section';
   const detail = 'Detail Section';
-  const header = ['Driver Name', 'Driver Id', 'Start Time', 'End Time', 'Drive Time', 'Work Time', 'Service Time', 'Rest Time', 'Available Time'];
-  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Drivers Count', 'Total Drive Time', 'Total Work Time', 'Total Available Time', 'Total Rest Time'];
+  const header = ['Driver Name', 'Driver Id', 'Start Time', 'End Time', 'Drive Time(hh:mm)', 'Work Time(hh:mm)', 'Service Time(hh:mm)', 'Rest Time(hh:mm)', 'Available Time(hh:mm)'];
+  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Drivers Count', 'Total Drive Time(hh:mm)', 'Total Work Time(hh:mm)', 'Total Available Time(hh:mm)', 'Total Rest Time(hh:mm)'];
+  this.summaryObj=[
+    ['Driver Time Report', new Date(), this.fromDisplayDate, this.toDisplayDate,
+      this.selectedVehicleGroup, this.selectedVehicle, this.totalDriverCount, this.tableInfoObj.driveTime, 
+      this.tableInfoObj.workTime, this.tableInfoObj.availableTime, this.tableInfoObj.restTime
+    ]
+  ];
   const summaryData= this.summaryObj;
   
   //Create workbook and worksheet

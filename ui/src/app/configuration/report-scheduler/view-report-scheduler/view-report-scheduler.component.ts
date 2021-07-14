@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import * as moment from 'moment';
 import { OrganizationService } from 'src/app/services/organization.service';
 import { ReportSchedulerService } from 'src/app/services/report.scheduler.service';
 import { TranslationService } from 'src/app/services/translation.service';
@@ -199,8 +200,11 @@ export class ViewReportSchedulerComponent implements OnInit {
         break;
       }
       case 'B' : {
-        this.startDate= Util.convertUtcToDateFormat(this.selectedRowData[0].startDate, this.prefDateFormat);
+        // this.startDate= Util.convertUtcToDateFormat(this.selectedRowData[0].startDate, this.prefDateFormat);
         this.endDate=  Util.convertUtcToDateFormat(this.selectedRowData[0].endDate, this.prefDateFormat);
+        this.startDate= new Date(this.selectedRowData[0].endDate);
+        this.startDate.setDate(this.startDate.getDate() - 13);
+        this.startDate= moment(this.startDate).format(this.prefDateFormat);
         break;
       }
       case 'M' : {

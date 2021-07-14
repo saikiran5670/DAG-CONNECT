@@ -81,7 +81,17 @@ namespace net.atos.daf.ct2.poigeofence
                     objCorridorLookUp.EditView.ViaAddressDetails = await _corridorRepository.GetCorridorViaStopById(objCorridorLookUp.EditView.Id);
                     if ((LandmarkType)objCorridorLookUp.EditView.CorridorType.ToCharArray()[0] == LandmarkType.ExistingTripCorridor)
                     {
-                        objCorridorLookUp.EditView.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(objCorridorRequest.CorridorId);
+                        objCorridorLookUp.EditView.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(objCorridorRequest.CorridorId, out string vIN);
+                        objCorridorLookUp.EditView.VIN = vIN;
+                        //This is to bind latest End Lat and long by sequence Number from nodes table
+                        NodeEndLatLongResponse objNodeEndLatLongResponse = await _corridorRepository.GetExistingTripCorridorListByLandMarkId(objCorridorLookUp.EditView.Id);
+                        if (objNodeEndLatLongResponse != null)
+                        {
+                            objCorridorLookUp.EditView.EndLat = objNodeEndLatLongResponse.EndLat;
+                            objCorridorLookUp.EditView.EndLong = objNodeEndLatLongResponse.EndLong;
+                            objCorridorLookUp.EditView.EndPoint = objNodeEndLatLongResponse.Address;
+                        }
+
                         foreach (var trips in objCorridorLookUp.EditView.CorridoreTrips)
                         {
                             trips.NodePoints = _corridorRepository.GetTripNodes(trips.TripId, objCorridorLookUp.EditView.Id);
@@ -114,7 +124,8 @@ namespace net.atos.daf.ct2.poigeofence
                             item.EndLong = objNodeEndLatLongResponse.EndLong;
                             item.EndPoint = objNodeEndLatLongResponse.Address;
                         }
-                        item.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(item.Id);
+
+                        item.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(item.Id, out string vin);
                         foreach (var trips in item.CorridoreTrips)
                         {
                             trips.NodePoints = _corridorRepository.GetTripNodes(trips.TripId, item.Id);
@@ -132,7 +143,8 @@ namespace net.atos.daf.ct2.poigeofence
             var varExistingTripCorridor = new ExistingTripCorridor();
             var isExist = await _corridorRepository.CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id,
                                                                        Convert.ToChar(existingTripCorridor.CorridorType));
-            if (isExist)
+            //wrong condition removed
+            if (!isExist)
             {
                 varExistingTripCorridor = await _corridorRepository.UpdateExistingTripCorridor(existingTripCorridor);
             }

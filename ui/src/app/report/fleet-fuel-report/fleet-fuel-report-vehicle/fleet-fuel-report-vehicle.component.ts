@@ -90,7 +90,9 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   ConsumptionChartType: any;
   DurationChartType: any;
   showLoadingIndicator: boolean = false;
+  chartExportFlag: boolean = false;
   tableInfoObj: any ;
+  summaryObj: any;
   detailSummaryObj: any;
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
@@ -1451,7 +1453,15 @@ setVehicleGroupAndVehiclePreSelection() {
       prepare.push(tempObj);    
     });
     
-    
+    let displayHeader = document.getElementById("chartHeader");
+    if(this.isChartsOpen){
+    displayHeader.style.display ="block";
+    }
+    else{
+      displayHeader.style.display = "none";
+    }
+
+
     let DATA = document.getElementById('charts');
     html2canvas( DATA)
     .then(canvas => {  
@@ -1506,8 +1516,10 @@ doc.addPage();
 
     doc.save('fleetFuelByVehicle.pdf');
        
-    });     
+    }); 
+    displayHeader.style.display ="block";
   }
+
   gotoTrip(vehData: any){
     const navigationExtras: NavigationExtras = {
       state: {

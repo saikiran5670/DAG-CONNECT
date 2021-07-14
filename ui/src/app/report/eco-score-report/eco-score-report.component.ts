@@ -266,7 +266,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
       type: "Menu",
-      name: "",
+      name: "ECO Score Report",
       value: "",
       filter: "",
       menuId: 15 
@@ -274,7 +274,6 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
        this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        //let prefData = {"code":0,"message":"","language":[{"id":2,"code":"EN-GB","type":"L","name":"dlanguage_Czech","value":"Czech","filter":"","menuId":0},{"id":3,"code":"EN-GB","type":"L","name":"dlanguage_Danish","value":"Danish","filter":"","menuId":0},{"id":1,"code":"EN-GB","type":"L","name":"dlanguage_Bulgarian","value":"Bulgarian","filter":"","menuId":0}],"unit":[{"id":1,"code":"EN-GB","type":"D","name":"dunit_Metric","value":"Metric","filter":"","menuId":0},{"id":2,"code":"EN-GB","type":"D","name":"dunit_Imperial","value":"Imperial","filter":"","menuId":0}],"timezone":[{"id":231,"code":"EN-GB","type":"D","name":"dtimezone_Europe/Luxembourg","value":"Europe/Luxembourg","filter":"","menuId":0},{"id":174,"code":"EN-GB","type":"D","name":"dtimezone_Europe/Athens","value":"Europe/Athens","filter":"","menuId":0},{"id":274,"code":"EN-GB","type":"D","name":"dtimezone_Europe/Amsterdam","value":"Europe/Amsterdam","filter":"","menuId":0},{"id":50,"code":"EN-GB","type":"L","name":"dtimezone_Australia/Melbourne","value":"Australia/Melbourne","filter":"","menuId":0},{"id":430,"code":"EN-GB","type":"L","name":"dtimezone_Europe/Mariehamn","value":"Europe/Mariehamn","filter":"","menuId":0}],"currency":[{"id":1,"code":"EN-GB","type":"D","name":"dcurrency_Euro","value":"Euro (€)","filter":"","menuId":0},{"id":2,"code":"EN-GB","type":"D","name":"dcurrency_USDollar","value":"US Dollar ($)","filter":"","menuId":0},{"id":3,"code":"EN-GB","type":"L","name":"dcurrency_PoundSterling","value":"Pound Sterling (£)","filter":"","menuId":0}],"landingpagedisplay":[{"id":8,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_FleetFuelReport","value":"Report.FleetFuelReport","filter":"","menuId":0},{"id":9,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_FleetUtilisation","value":"Report.FleetUtilisation","filter":"","menuId":0},{"id":10,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_FuelBenchmarking","value":"Report.FuelBenchmarking","filter":"","menuId":0},{"id":11,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_FuelDeviationReport","value":"Report.FuelDeviationReport","filter":"","menuId":0},{"id":13,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_DriveTimeManagement","value":"Report.DriveTimeManagement","filter":"","menuId":0},{"id":14,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_ECOScoreReport","value":"Report.ECOScoreReport","filter":"","menuId":0},{"id":15,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_Configuration","value":"Configuration","filter":"","menuId":0},{"id":16,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_Alerts","value":"Configuration.Alerts","filter":"","menuId":0},{"id":17,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_Landmarks","value":"Configuration.Landmarks","filter":"","menuId":0},{"id":18,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_ReportScheduler","value":"Configuration.ReportScheduler","filter":"","menuId":0},{"id":19,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_DriverManagement","value":"Configuration.DriverManagement","filter":"","menuId":0},{"id":23,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_AccountGroupManagement","value":"Admin.AccountGroupManagement","filter":"","menuId":0},{"id":24,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_AccountManagement","value":"Admin.AccountManagement","filter":"","menuId":0},{"id":26,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_VehicleGroupManagement","value":"Admin.VehicleGroupManagement","filter":"","menuId":0},{"id":27,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_FeatureManagement","value":"Admin.FeatureManagement","filter":"","menuId":0},{"id":28,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_OrgnisationRelationshipManagement","value":"Admin.OrgRelationship","filter":"","menuId":0},{"id":29,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_AccessRelationshipManagement","value":"Admin.AccessRelationship","filter":"","menuId":0},{"id":30,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_TranslationManagement","value":"Admin.TranslationManagement","filter":"","menuId":0},{"id":31,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_ConfigurationManagemnt","value":"Admin.ConfigurationManagement","filter":"","menuId":0},{"id":32,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_PackageManagement","value":"Admin.PackageManagement","filter":"","menuId":0},{"id":33,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_SubscriptionManagement","value":"Admin.SubscriptionManagement","filter":"","menuId":0},{"id":34,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_Tachograph","value":"Tachograph","filter":"","menuId":0},{"id":3,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_LogBook","value":"FleetOverview.LogBook","filter":"","menuId":0},{"id":35,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_MobilePortal","value":"MobilePortal","filter":"","menuId":0},{"id":36,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_Shop","value":"Shop","filter":"","menuId":0},{"id":38,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_LegalNotices","value":"LegalNotices","filter":"","menuId":0},{"id":37,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_Information","value":"Information","filter":"","menuId":0},{"id":20,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_VehicleManagement","value":"Configuration.VehicleManagement","filter":"","menuId":0},{"id":21,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_Admin","value":"Admin","filter":"","menuId":0},{"id":22,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_OrgnisationDetails","value":"Admin.OrgnizationManagement","filter":"","menuId":0},{"id":25,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_AccountRoleManagement","value":"Admin.AccountManagement","filter":"","menuId":0},{"id":4,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_Report","value":"Report","filter":"","menuId":0},{"id":6,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_TripTracing","value":"Report.TripTracing","filter":"","menuId":0},{"id":1,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_Dashboard","value":"Dashboard","filter":"","menuId":0},{"id":5,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_TripReport","value":"Report.TripReport","filter":"","menuId":0},{"id":12,"code":"EN-GB","type":"D","name":"dlandingpagedisplay_VehiclePerformanceReport","value":"Report.VehiclePerformanceReport","filter":"","menuId":0}],"dateformat":[{"id":1,"code":"EN-GB","type":"D","name":"ddateformat_dd/mm/yyyy","value":"dd/mm/yyyy","filter":"","menuId":0},{"id":2,"code":"EN-GB","type":"D","name":"ddateformat_mm/dd/yyyy","value":"mm/dd/yyyy","filter":"","menuId":0},{"id":3,"code":"EN-GB","type":"D","name":"ddateformat_dd-mm-yyyy","value":"dd-mm-yyyy","filter":"","menuId":0},{"id":4,"code":"EN-GB","type":"D","name":"ddateformat_mm-dd-yyyy","value":"mm-dd-yyyy","filter":"","menuId":0}],"timeformat":[{"id":1,"code":"EN-GB","type":"D","name":"dtimeformat_12Hours","value":"12 Hours","filter":"","menuId":0},{"id":2,"code":"EN-GB","type":"D","name":"dtimeformat_24Hours","value":"24 Hours","filter":"","menuId":0}],"vehicledisplay":[{"id":2,"code":"EN-GB","type":"D","name":"dvehicledisplay_VehicleRegistrationNumber","value":"Vehicle Registration Number","filter":"","menuId":0},{"id":1,"code":"EN-GB","type":"D","name":"dvehicledisplay_VehicleName","value":"Vehicle Name","filter":"","menuId":0},{"id":3,"code":"EN-GB","type":"D","name":"dvehicledisplay_VehicleIdentificationNumber","value":"Vehicle Identification Number","filter":"","menuId":0}],"translationsPreferencDropDowns":null};
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
         }else{ // org pref
@@ -610,7 +609,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   }
 
   onReset(){
-    this.internalSelection = false;
+    this.internalSelection = true;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.onSearchData = [];
@@ -673,7 +672,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
 
   }
   setGlobalSearchData(globalSearchFilterData:any) {
-    this.searchFilterpersistData["modifiedFrom"] = "TripReport";
+    this.searchFilterpersistData["modifiedFrom"] = "EcoScoreReport";
     localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
   }
 
@@ -749,17 +748,17 @@ let finalGroupDataList = [];
   }
 
   setGeneralDriverValue(){
-    this.fromDisplayDate = Util.convertUtcToDateFormat(this.startDateValue,'DD/MM/YYYY HH:MM:SS');
-    this.toDisplayDate = Util.convertUtcToDateFormat(this.endDateValue,'DD/MM/YYYY HH:MM:SS');
+    this.fromDisplayDate = this.formStartDate(this.startDateValue);
+    this.toDisplayDate = this.formStartDate(this.endDateValue);
     this.selectedVehicleGroup = this.vehicleGroupListData.filter(item => item.vehicleGroupId == parseInt(this.ecoScoreForm.controls.vehicleGroup.value))[0]["vehicleGroupName"];
     this.selectedVehicle = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.ecoScoreForm.controls.vehicle.value))[0]["vehicleName"];
     this.selectedDriverId = this.driverListData.filter(item => item.driverID == parseInt(this.ecoScoreForm.controls.driver.value))[0]["firstName"];
     this.selectedDriverName = this.driverListData.filter(item => item.driverID == parseInt(this.ecoScoreForm.controls.driver.value))[0]["firstName"];
     this.selectedDriverOption='';
-    this.selectedDriverOption += (this.ecoScoreForm.controls.minTripCheck.value === true) ? 'Include ' : 'Exclude ';
-    this.selectedDriverOption += 'Short Trips ';
-    this.selectedDriverOption += (this.ecoScoreForm.controls.minDriverCheck.value === true) ? 'Include ' : 'Exclude ';
-    this.selectedDriverOption += 'Minimum Driver Total Distance';
+    this.selectedDriverOption += (this.ecoScoreForm.controls.minTripCheck.value === true) ? (this.translationData.lblInclude || 'Include') : (this.translationData.lblExclude || 'Exclude');
+    this.selectedDriverOption += ' ' + (this.translationData.lblShortTrips || 'Short Trips') + ' ';
+    this.selectedDriverOption += (this.ecoScoreForm.controls.minDriverCheck.value === true) ?  (this.translationData.lblInclude || 'Include') : (this.translationData.lblExclude || 'Exclude');
+    this.selectedDriverOption += ' ' + (this.translationData.lblMinDriverTotDist || 'Minimum Driver Total Distance');
   }
   setTableInfo(){
   }
@@ -845,7 +844,7 @@ let finalGroupDataList = [];
     this.dataSource.filter = filterValue;
   }
 
-  exportAsExcelFile(){  
+  exportAsExcelFile(){
     const title = 'Eco Score Report';
     const summary = 'Summary Section';
     const detail = 'Detail Section';
@@ -988,8 +987,8 @@ let finalGroupDataList = [];
     this.totalAvailableTime= 0;
     this.totalServiceTime = 0;
 
-    this.fromDisplayDate = Util.convertUtcToDateFormat(this.startDateValue,'DD/MM/YYYY HH:MM:SS');
-    this.toDisplayDate = Util.convertUtcToDateFormat(this.endDateValue,'DD/MM/YYYY HH:MM:SS');
+    this.fromDisplayDate = this.formStartDate(this.startDateValue);
+    this.toDisplayDate = this.formStartDate(this.endDateValue);
     this.driverDetails.forEach(element => {
     this.totalDriveTime += element.driveTime,
     this.totalWorkTime += element.workTime,
@@ -1048,10 +1047,18 @@ let finalGroupDataList = [];
       }else{
         this.selectionTab = 'today';
       }
+      if(this.searchFilterpersistData.startDateStamp !== '' && this.searchFilterpersistData.endDateStamp !== ''){
       let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
       let endDateFromSearch = new Date(this.searchFilterpersistData.endDateStamp);
       this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
       this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
+      } else {
+        this.selectionTab = 'today';
+        this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        this.last3MonthDate = this.getLast3MonthDate();
+        this.todayDate = this.getTodayDate();
+      }
     }else{
     this.selectionTab = 'today';
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
@@ -1314,10 +1321,6 @@ let finalGroupDataList = [];
     return numSelected === numRows;
   }
 
-  setClass(row: any){
-    //console.log(row);
-  }
-
   setStyle(row: any){
     // if(row.ecoScore < 5)
     //   return {'width': + ((row.ecoScore / 10) * 100) +'%', 'height': '18px', 'background-color': '#f44336'};
@@ -1325,6 +1328,7 @@ let finalGroupDataList = [];
     //   return {'width': + ((row.ecoScore / 10) * 100) +'%', 'height': '18px', 'background-color': '#33cc33'};
     // else
     //   return {'width': + ((row.ecoScore / 10) * 100) +'%', 'height': '18px', 'background-color': '#ff9900'};
+
       return {'width': + ((row.ecoScoreRanking / 10) * 100) +'%', 'height': '18px', 'background-color': (row.ecoScoreRankingColor === 'Amber'?'Orange':row.ecoScoreRankingColor)};
   }
 

@@ -1,4 +1,5 @@
 trigger:
+- none
   #branches:
   #  include:
   #  - development
@@ -7,17 +8,17 @@ trigger:
   #paths:
   #  include:
   #  - dotnet/dataservices/net.atos.daf.ct2.customerdataservice
-  none
+
 
 variables:
  - name: imageName
-   value: 'customerdataservice-auto'
+   value: 'customerdataservice'
  - name: dockerFile
    value: 'dotnet/CustomerDataService_Dockerfile'
  - name: manifestFile
-   value: 'customerdataservice-api-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+   value: 'devops/self\ triggered\ pipelines/customerdataservice-api-dotnet-kubernetes-manifest-dev1-dev2.yaml'
  - name: manifestFileDev0
-   value: 'customerdataservice-api-dotnet-kubernetes-manifest.yaml'
+   value: 'devops/self\ triggered\ pipelines/customerdataservice-api-dotnet-kubernetes-manifest.yaml'
  - name: appsettingsFile
    value: 'dotnet/dataservices/net.atos.daf.ct2.customerdataservice/appsettings.Production.json'
  - name: log4netConfigFile
