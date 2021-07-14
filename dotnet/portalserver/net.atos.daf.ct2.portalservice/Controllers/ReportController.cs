@@ -400,7 +400,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 grpcRequest.AccountId = _userDetails.AccountId;
                 grpcRequest.OrgId = GetContextOrgId();
                 var response = await _reportServiceClient.CreateEcoScoreProfileAsync(grpcRequest);
-                return Ok(response);
+                return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
             {
@@ -429,7 +429,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 Metadata headers = new Metadata();
                 headers.Add("hasRights", Convert.ToString(hasRights));
                 var response = await _reportServiceClient.UpdateEcoScoreProfileAsync(grpcRequest, headers);
-                return Ok(response);
+                return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
             {
