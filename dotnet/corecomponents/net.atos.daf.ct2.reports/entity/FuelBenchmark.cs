@@ -22,4 +22,21 @@ namespace net.atos.daf.ct2.reports.entity
         public long EndDate { get; set; }
 
     }
+
+    public class FuelBenchmarkConsumption
+    {
+        public int Numbersofactivevehicle { get; set; }
+        public int Totalnumberofvehicle { get; set; }
+        public int Totalmileage { get; set; }
+        public decimal Totalfuelconsumed { get; set; }
+        public decimal Averagefuelconsumption { get; set; }
+    }
+
+    public class FuelBenchmarkConsumptionParameter
+    {
+        public long FromDate { get; set; }
+        public long ToDate { get; set; }
+        public string Vin { get; set; }
+    }
+
 }

@@ -282,6 +282,7 @@ namespace net.atos.daf.ct2.reports.repository
             return query;
         }
         #endregion
+
         #region Fuel Benchmark report
         public Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter)
         {
@@ -290,9 +291,66 @@ namespace net.atos.daf.ct2.reports.repository
                 var query = @"select id as Id,name as Name, key as Key from master.report";
                 return _dataAccess.QueryAsync<FuelBenchmark>(query);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<Ranking>> GetFuelBenchmarkRanking(FuelBenchmarkConsumptionParameter fuelBenchmarkConsumptionParameter)
+        {
+            try
+            {
+                var param = new DynamicParameters();
+                string query = @"Select
+                                trips.vin,
+                                veh.name,
+                                Round(SUM(trips.etl_gps_fuel_consumed),2) as totalfuelconsumed
+                                From
+                                tripdetail.trip_statistics as trips
+                                Left JOIN master.vehicle as veh
+                                ON trips.vin = veh.vin
+                                WHERE (start_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
+                                AND VIN=ANY(@vin)
+                                GROUP BY
+                                trips.vin,veh.name";
+                param.Add("@vin", fuelBenchmarkConsumptionParameter.Vin);
+                param.Add("@fromDate", fuelBenchmarkConsumptionParameter.FromDate);
+                param.Add("@endDate", fuelBenchmarkConsumptionParameter.ToDate);
+                IEnumerable<Ranking> rankingList = await _dataAccess.QueryAsync<Ranking>(query, param);
+                return rankingList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<FuelBenchmarkConsumption> GetFuelBenchmarkDetail(FuelBenchmarkConsumptionParameter fuelBenchmarkConsumptionParameter)
+        {
+            try
+            {
+                var param = new DynamicParameters();
+                string query = @"Select
+                                count(VIN) as numbersofactivevehicle                                                  		 
+                                , SUM(etl_gps_distance) as totalmileage
+                                , Round(SUM(etl_gps_fuel_consumed),2) as totalfuelconsumed
+                                , Round(SUM(etl_gps_fuel_consumed)/ count(VIN),2) as averagefuelconsumption
+                                From
+                                tripdetail.trip_statistics 
+                                WHERE (start_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
+                                AND VIN=ANY(@vin)
+                                GROUP BY
+                                trips.vin,veh.name";
+                param.Add("@vin", fuelBenchmarkConsumptionParameter.Vin);
+                param.Add("@fromDate", fuelBenchmarkConsumptionParameter.FromDate);
+                param.Add("@endDate", fuelBenchmarkConsumptionParameter.ToDate);
+                var fuelConsumptionList = await _dataAccess.QueryAsync<FuelBenchmarkConsumption>(query, param);
+                return fuelConsumptionList as FuelBenchmarkConsumption;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
         #endregion
