@@ -29,6 +29,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                 State = "A",
                 ExistingTrips = request.ExistingTrips.Select(x => new poigeofence.entity.ExistingTrip()
                 {
+                    Id = x.Id,
                     Distance = x.Distance,
                     DriverId1 = x.DriverId1,
                     DriverId2 = x.DriverId2,

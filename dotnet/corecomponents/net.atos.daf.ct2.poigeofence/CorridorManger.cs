@@ -87,7 +87,8 @@ namespace net.atos.daf.ct2.poigeofence
                     objCorridorLookUp.EditView.ViaAddressDetails = await _corridorRepository.GetCorridorViaStopById(objCorridorLookUp.EditView.Id);
                     if ((LandmarkType)objCorridorLookUp.EditView.CorridorType.ToCharArray()[0] == LandmarkType.ExistingTripCorridor)
                     {
-                        objCorridorLookUp.EditView.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(objCorridorRequest.CorridorId);
+                        objCorridorLookUp.EditView.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(objCorridorRequest.CorridorId, out string VIN);
+                        objCorridorLookUp.EditView.VIN = VIN;
                         foreach (var trips in objCorridorLookUp.EditView.CorridoreTrips)
                         {
                             trips.NodePoints = _corridorRepository.GetTripNodes(trips.TripId, objCorridorLookUp.EditView.Id);
@@ -117,7 +118,7 @@ namespace net.atos.daf.ct2.poigeofence
                 {
                     if ((LandmarkType)item.CorridorType.ToCharArray()[0] == LandmarkType.ExistingTripCorridor)
                     {
-                        item.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(item.Id);
+                        item.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(item.Id, out string vin);
                         foreach (var trips in item.CorridoreTrips)
                         {
                             trips.NodePoints = _corridorRepository.GetTripNodes(trips.TripId, item.Id);
@@ -135,7 +136,8 @@ namespace net.atos.daf.ct2.poigeofence
             var varExistingTripCorridor = new ExistingTripCorridor();
             var isExist = await _corridorRepository.CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id,
                                                                        Convert.ToChar(existingTripCorridor.CorridorType));
-            if (isExist)
+            //wrong condition removed
+            if (!isExist)
             {
                 varExistingTripCorridor = await _corridorRepository.UpdateExistingTripCorridor(existingTripCorridor);
             }

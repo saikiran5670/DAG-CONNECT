@@ -42,6 +42,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     objCorridorEditViewResponse.Id = item.Id;
                     objCorridorEditViewResponse.OrganizationId = item.OrganizationId;
                     objCorridorEditViewResponse.CorridoreName = CheckNull(item.CorridoreName);
+                    objCorridorEditViewResponse.Vin = CheckNull(item.VIN);
                     objCorridorEditViewResponse.StartPoint = CheckNull(item.StartPoint);
                     objCorridorEditViewResponse.StartLat = item.StartLat;
                     objCorridorEditViewResponse.StartLong = item.StartLong;
