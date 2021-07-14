@@ -282,5 +282,19 @@ namespace net.atos.daf.ct2.reports.repository
             return query;
         }
         #endregion
+        #region Fuel Benchmark report
+        public Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter)
+        {
+            try
+            {
+                var query = @"select id as Id,name as Name, key as Key from master.report";
+                return _dataAccess.QueryAsync<FuelBenchmark>(query);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
     }
 }
