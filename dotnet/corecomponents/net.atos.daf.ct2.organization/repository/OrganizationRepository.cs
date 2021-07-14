@@ -1198,5 +1198,21 @@ namespace net.atos.daf.ct2.organization.repository
                 throw;
             }
         }
+
+        public async Task<Organization> GetOrganizationByOrgCode(string organizationCode)
+        {
+            try
+            {
+
+                var parameters = new DynamicParameters();
+                parameters.Add("@org_id", organizationCode);
+                var query = @"SELECT * FROM master.organization where org_id=@org_id";
+                return await _dataAccess.QueryFirstOrDefaultAsync<Organization>(query, parameters);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
