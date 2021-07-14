@@ -16,7 +16,7 @@
 
         public const string VALIDATION_STARTDATE_MSG = "Invalid start date.";
         public const string VALIDATION_ENDDATE_MSG = "Invalid end date.";
-        public const string VALIDATION_VINREQUIRED_MSG = "Invalid VIN details.";
+        public const string VALIDATION_VINREQUIRED_MSG = "Invalid or empty VIN details.";
         public const string VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
 
         #region Trip Details Report
@@ -92,6 +92,7 @@
 
         #region Fuel Deviation Report Table Details
         public const string GET_FUEL_DEVIATION_SUCCESS_MSG = "Fuel Deviation fetched successfully for requested Filters";
+        public const string GET_FUEL_DEVIATION_FAIL_MSG = "Fuel Deviation fetched failed for requested Filters";
         #endregion
     }
 }

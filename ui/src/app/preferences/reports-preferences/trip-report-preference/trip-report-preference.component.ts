@@ -42,27 +42,27 @@ export class TripReportPreferenceComponent implements OnInit {
 
   translationUpdate(){
     this.translationData = {
-      da_report_tripreportdetails_averageweight: 'Average Weight',
-      da_report_tripreportdetails_vin: 'VIN',
-      da_report_tripreportdetails_vehiclename: 'Vehicle Name',
-      da_report_tripreportdetails_alerts: 'Alerts',
-      da_report_tripreportdetails_platenumber: 'Reg. Plate Number',
-      da_report_tripreportdetails_events: 'Events',
-      da_report_tripreportdetails_odometer: 'Odometer',
-      da_report_tripreportdetails_averagespeed: 'Average Speed',
-      da_report_tripreportdetails_drivingtime: 'Driving Time',
-      da_report_tripreportdetails_fuelconsumed: 'Fuel consumed',
-      da_report_tripreportdetails_startposition: 'Start Position',
-      da_report_tripreportdetails_idleduration: 'Idle Duration',
-      da_report_tripreportdetails_startdate: 'Start Date',
-      da_report_tripreportdetails_distance: 'Distance',
-      da_report_tripreportdetails_enddate: 'End Date',
-      da_report_tripreportdetails_endposition: 'End Position'
+      rp_tr_report_tripreportdetails_averageweight: 'Average Weight',
+      rp_tr_report_tripreportdetails_vin: 'VIN',
+      rp_tr_report_tripreportdetails_vehiclename: 'Vehicle Name',
+      rp_tr_report_tripreportdetails_alerts: 'Alerts',
+      rp_tr_report_tripreportdetails_platenumber: 'Reg. Plate Number',
+      rp_tr_report_tripreportdetails_events: 'Events',
+      rp_tr_report_tripreportdetails_odometer: 'Odometer',
+      rp_tr_report_tripreportdetails_averagespeed: 'Average Speed',
+      rp_tr_report_tripreportdetails_drivingtime: 'Driving Time',
+      rp_tr_report_tripreportdetails_fuelconsumed: 'Fuel consumed',
+      rp_tr_report_tripreportdetails_startposition: 'Start Position',
+      rp_tr_report_tripreportdetails_idleduration: 'Idle Duration',
+      rp_tr_report_tripreportdetails_startdate: 'Start Date',
+      rp_tr_report_tripreportdetails_distance: 'Distance',
+      rp_tr_report_tripreportdetails_enddate: 'End Date',
+      rp_tr_report_tripreportdetails_endposition: 'End Position'
     }
   }
 
   loadTripReportPreferences(){
-    this.reportService.getUserPreferenceReport(this.reportId, this.accountId, this.accountOrganizationId).subscribe((prefData : any) => {
+    this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
       this.initData = prefData['userPreferences'];
       this.resetColumnData();
       this.getTranslatedColumnName(this.initData);
@@ -78,19 +78,25 @@ export class TripReportPreferenceComponent implements OnInit {
   }
 
   getTranslatedColumnName(prefData: any){
-    prefData.forEach(element => {
-      let _data: any;
-      if(element.key.includes('da_report_tripreportdetails_')){
-         _data = element;
-        if(this.translationData[element.key]){
-          _data.translatedName = this.translationData[element.key];  
-        }else{
-          _data.translatedName = this.getName(element.name, 25);   
+    if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
+      prefData.subReportUserPreferences.forEach(element => {
+        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+          element.subReportUserPreferences.forEach(item => {
+            let _data: any;
+            if(item.key.includes('rp_tr_report_tripreportdetails_')){
+              _data = item;
+              if(this.translationData[item.key]){
+                _data.translatedName = this.translationData[item.key];  
+              }else{
+                _data.translatedName = this.getName(item.name, 25);   
+              }
+              this.tripPrefData.push(_data);
+            }
+          });
         }
-        this.tripPrefData.push(_data);
-      }
-    });
-    this.setColumnCheckbox();
+      });
+      this.setColumnCheckbox();
+    }
   }
 
   getName(name: any, _count: any) {
@@ -110,7 +116,7 @@ export class TripReportPreferenceComponent implements OnInit {
   validateRequiredField(){
     let _flag = true;
     if(this.selectionForTripColumns.selected.length > 0){
-      let _search = this.selectionForTripColumns.selected.filter(i => (i.key == 'da_report_tripreportdetails_vehiclename' || i.key == 'da_report_tripreportdetails_vin' || i.key == 'da_report_tripreportdetails_platenumber'));
+      let _search = this.selectionForTripColumns.selected.filter(i => (i.key == 'rp_tr_report_tripreportdetails_vehiclename' || i.key == 'rp_tr_report_tripreportdetails_vin' || i.key == 'rp_tr_report_tripreportdetails_platenumber'));
       if(_search.length){
         _flag = false;
       }
@@ -159,23 +165,28 @@ export class TripReportPreferenceComponent implements OnInit {
   onConfirm(){
     let _dataArr: any = [];
     this.tripPrefData.forEach(element => {
-      let search = this.selectionForTripColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
+      let search = this.selectionForTripColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
       if(search.length > 0){
-        _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }else{
-        _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
     });
 
-    let objData: any = {
-      accountId: this.accountId,
-      reportId: this.reportId,
-      organizationId: this.accountOrganizationId,
-      createdAt: 0,
-      modifiedAt: 0,
-      atributesShowNoShow: _dataArr
+    if(this.selectionForTripColumns.selected.length == this.tripPrefData.length){ // parent selected
+       _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+       _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+    }else{ // parent un-selected
+      _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
     }
-    this.reportService.createReportUserPreference(objData).subscribe((_tripPrefData: any) => {
+
+    let objData: any = {
+      reportId: this.reportId,
+      attributes: _dataArr
+    }
+
+    this.reportService.updateReportUserPreference(objData).subscribe((_tripPrefData: any) => {
       this.loadTripReportPreferences();
       this.setTripReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
       if((this.router.url).includes("tripreport")){
