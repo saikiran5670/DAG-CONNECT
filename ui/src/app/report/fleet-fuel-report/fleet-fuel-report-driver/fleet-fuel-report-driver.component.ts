@@ -1395,6 +1395,13 @@ setVehicleGroupAndVehiclePreSelection() {
       prepare.push(tempObj);    
     });
     
+    let displayHeader = document.getElementById("chartHeader");
+    if(this.isChartsOpen){
+    displayHeader.style.display ="block";
+    }
+    else{
+      displayHeader.style.display = "none";
+    }
     
     let DATA = document.getElementById('charts');
     html2canvas( DATA)
@@ -1441,7 +1448,9 @@ setVehicleGroupAndVehiclePreSelection() {
 
     doc.save('fleetFuelByDriver.pdf');
        
-    });     
+    }); 
+    
+    displayHeader.style.display ="block";
   }
 
   onDriverSelected(vehData: any){
