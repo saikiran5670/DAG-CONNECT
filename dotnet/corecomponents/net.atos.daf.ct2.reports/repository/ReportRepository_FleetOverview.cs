@@ -213,7 +213,18 @@ namespace net.atos.daf.ct2.reports.repository
                     stageoadd.id as stageoadd_StartGeolocationAddressId,
                     coalesce(stageoadd.address,'') as stageoadd_StartGeolocationAddress,
                     wangeoadd.id as wangeoadd_LatestWarningGeolocationAddressId,
-                    coalesce(wangeoadd.address,'') as wangeoadd_LatestWarningGeolocationAddress
+                    coalesce(wangeoadd.address,'') as wangeoadd_LatestWarningGeolocationAddress,
+                    tripal.id,
+                    coalesce(tripal.trip_id,'') as tripal_TripId,
+                    tripal.name as alertname,
+                    tripal.type as alerttype,
+                    tripal.alert_generated_time as alert_generated_time,
+                    tripal.alertlevel as alert_level,
+                    tripal.category_type as category_type,
+                    tripal.latitude as alert_latitude,
+                    tripal.longitude as alert_longitude
+                    
+
                     from CTE_Unique_latest_trip lcts
                     left join 
                     livefleet.livefleet_position_statistics lps
@@ -222,6 +233,13 @@ namespace net.atos.daf.ct2.reports.repository
                     on lcts.vin=veh.vin
                     left join master.driver dri
                     on lcts.driver1_id=dri.driver_id
+
+                    left join tripdetail.tripalert tripal
+                    on lcts.vin=tripal.vin
+
+                    left join master.geolocationaddress latgeoadd
+                    on TRUNC(CAST(tripdetail.tripaler.latitude as numeric),4)= TRUNC(CAST(latgeoadd.latitude as numeric),4) 
+                    and TRUNC(CAST(tripdetail.tripaler.longitude as numeric),4) = TRUNC(CAST(latgeoadd.longitude as numeric),4)
                     left join master.geolocationaddress latgeoadd
                     on TRUNC(CAST(lcts.latest_received_position_lattitude as numeric),4)= TRUNC(CAST(latgeoadd.latitude as numeric),4) 
                     and TRUNC(CAST(lcts.latest_received_position_longitude as numeric),4) = TRUNC(CAST(latgeoadd.longitude as numeric),4)
@@ -245,10 +263,15 @@ namespace net.atos.daf.ct2.reports.repository
                 if (fleetOverviewFilter.AlertCategory.Count > 0)
                 {
                     //need to be implement in upcomming sprint 
+
+                    parameterFleetOverview.Add("@alertcategory", fleetOverviewFilter.AlertCategory);
+                    queryFleetOverview += " and tripal.category_type = Any(@alertcategory) ";
                 }
                 if (fleetOverviewFilter.AlertLevel.Count > 0)
                 {
                     //need to be implement in upcomming sprint 
+                    parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
+                    queryFleetOverview += " and tripal.alert_level = Any(@alertlevel) ";
                 }
                 IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
                 return repositoryMapper.GetFleetOverviewDetails(alertResult);
