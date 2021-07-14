@@ -806,7 +806,6 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
-        public List<ExistingTrip> GetExistingtripListByCorridorId(int corridoreid)
         public List<ExistingTrip> GetExistingtripListByCorridorId(int corridoreid, out string vin)
         {
             try
