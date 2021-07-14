@@ -14,6 +14,11 @@
         public const string GET_REPORT_DETAILS_SUCCESS_MSG = "Report details fetched successfully.";
         public const string GET_REPORT_DETAILS_FAILURE_MSG = "Report details fetched failed. With Error : {0}";
 
+        public const string VALIDATION_STARTDATE_MSG = "Invalid start date.";
+        public const string VALIDATION_ENDDATE_MSG = "Invalid end date.";
+        public const string VALIDATION_VINREQUIRED_MSG = "Invalid or empty VIN details.";
+        public const string VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
+
         #region Trip Details Report
         public const string GET_TRIP_VALIDATION_STARTDATE_MSG = "Invalid start date.";
         public const string GET_TRIP_VALIDATION_ENDDATE_MSG = "Invalid end date.";
@@ -83,6 +88,11 @@
         public const string VALIDATION_MSG_FROMDATE = "From Date should be less than To Date.";
         public const string FAILURE_MSG = "No Result Found.";
         public const string SUCCESS_MSG = "Vehicle summary details fetched successfully.";
+        #endregion
+
+        #region Fuel Deviation Report Table Details
+        public const string GET_FUEL_DEVIATION_SUCCESS_MSG = "Fuel Deviation fetched successfully for requested Filters";
+        public const string GET_FUEL_DEVIATION_FAIL_MSG = "Fuel Deviation fetched failed for requested Filters";
         #endregion
     }
 }

@@ -17,16 +17,15 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
-                var result = await _reportManager.GetFilteredFuelDeviation(
-                    new FuelDeviationFilter
-                    {
-                        StartDateTime = request.StartDateTime
-                        ,
-                        EndDateTime = request.EndDateTime
-                        ,
-                        VINs = request.VINs
-                    }
-                    );
+                var result = await _reportManager
+                                            .GetFilteredFuelDeviation(
+                                                                        new FuelDeviationFilter
+                                                                        {
+                                                                            StartDateTime = request.StartDateTime,
+                                                                            EndDateTime = request.EndDateTime,
+                                                                            VINs = request.VINs
+                                                                        }
+                                                                     );
                 var response = new FuelDeviationResponse();
                 if (result.Any())
                 {

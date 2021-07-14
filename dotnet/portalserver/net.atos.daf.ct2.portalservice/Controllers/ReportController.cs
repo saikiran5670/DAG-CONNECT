@@ -400,7 +400,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 grpcRequest.AccountId = _userDetails.AccountId;
                 grpcRequest.OrgId = GetContextOrgId();
                 var response = await _reportServiceClient.CreateEcoScoreProfileAsync(grpcRequest);
-                return Ok(response);
+                return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
             {
@@ -429,7 +429,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 Metadata headers = new Metadata();
                 headers.Add("hasRights", Convert.ToString(hasRights));
                 var response = await _reportServiceClient.UpdateEcoScoreProfileAsync(grpcRequest, headers);
-                return Ok(response);
+                return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
             {
@@ -1141,6 +1141,98 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+            }
+        }
+        #endregion
+
+        #region Fuel Deviation Report
+
+        #region Fuel Deviation Report Table Details 
+        #endregion
+        [HttpGet]
+        [Route("getfueldeviationfilterdata")]
+        public async Task<IActionResult> GetFuelDeviationFilterData([FromQuery] FuelDeviationFilterRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) return BadRequest(ReportConstants.VALIDATION_STARTDATE_MSG);
+                if (!(request.EndDateTime > 0)) return BadRequest(ReportConstants.VALIDATION_ENDDATE_MSG);
+                if (request.VINs == null || request.VINs?.Count == 0) return BadRequest(ReportConstants.VALIDATION_VINREQUIRED_MSG);
+                if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.VALIDATION_DATEMISMATCH_MSG);
+
+                _logger.Info("GetFilteredFuelDeviationAsync method in Report (Fuel Deviation Report) API called.");
+                var response = await _reportServiceClient.GetFilteredFuelDeviationAsync(request);
+
+                foreach (var item in response.FuelDeviationDetails)
+                {
+                    if (item.GeoLocationAddressId == 0 && item.Latitude != 0 && item.Longitude != 0)
+                    {
+                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.Latitude, item.Longitude);
+                        item.GeoLocationAddress = getMapRequestLatest?.Address;
+                        item.GeoLocationAddressId = (int)getMapRequestLatest?.Id;
+                    }
+                }
+                if (response?.FuelDeviationDetails?.Count > 0)
+                {
+                    return Ok(new { Data = response.FuelDeviationDetails, Message = ReportConstants.GET_FUEL_DEVIATION_SUCCESS_MSG });
+                }
+                else
+                {
+                    return StatusCode((int)response.Code, response.Message);
+                }
+            }
+
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.GET_FUEL_DEVIATION_FAIL_MSG, 0, 0, string.Empty,
+                                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
+
+
+        #region Logbook
+
+        [HttpGet]
+        [Route("fleetoverview/getlogbookfilters")]
+        public async Task<IActionResult> GetLogBookFilter()
+        {
+            try
+            {
+                LogBookFilter logBookFilter = new LogBookFilter();
+                var logBookFilterRequest = new LogbookFilterIdRequest();
+                logBookFilterRequest.AccountId = _userDetails.AccountId;
+                logBookFilterRequest.OrganizationId = GetContextOrgId();
+                logBookFilterRequest.RoleId = _userDetails.RoleId;
+                logBookFilterRequest.AccountId = 171;
+                logBookFilterRequest.OrganizationId = 36;
+                logBookFilterRequest.RoleId = 61;
+                LogbookFilterResponse response = await _reportServiceClient.GetLogbookSearchParameterAsync(logBookFilterRequest);
+
+                // reportFleetOverviewFilter = _mapper.ToFleetOverviewEntity(response);
+
+
+
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (response.Code == Responsecode.Success)
+                    return Ok(response);
+                if (response.Code == Responsecode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                 ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"{ nameof(GetFleetOverviewFilter) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
         #endregion

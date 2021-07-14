@@ -36,7 +36,7 @@ rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthSt
 rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriverRequest) returns (FleetFuelDetailsResponse);
 rpc GetFilteredFuelDeviation (FuelDeviationFilterRequest) returns (FuelDeviationResponse);
-rpc GetLogbooksearchParameter (LogbookFilterIdRequest) returns (LogbookFilterResponse);
+rpc GetLogbookSearchParameter (LogbookFilterIdRequest) returns (LogbookFilterResponse);
 
 }
 
@@ -702,12 +702,25 @@ message FleetOverviewDetails
 	string LatestWarningGeolocationAddress=36;
 	string LatestWarningName=37;
     repeated LiveFleetPosition LiveFleetPosition=38;
+    repeated FleetOverviewAlert FleetOverviewAlert=39;
 }
 
 message FleetOverviewDetailsResponse {
     repeated FleetOverviewDetails FleetOverviewDetailList= 1;   
     Responsecode Code = 2;
     string Message = 3;
+}
+
+message FleetOverviewAlert {
+    string AlertName=1;
+    string AlertType=2; 
+    string AlertLocation=3;
+    string AlertTime=4; 
+    string AlertLevel=5;
+    string CategoryType=6;
+    string AlertLatitude=7;
+    string AlertLongitude=8;
+    int32 Id=9;
 }
 /// END: FleetOverview
 
@@ -946,6 +959,7 @@ message FuelDeviationDetails {
     double Longitude = 24;
     int32 GeoLocationAddressId = 25;
     string GeoLocationAddress = 26;
+    int32 FuelDeviationId = 27;
 }
 
 message FuelDeviationFilterRequest{

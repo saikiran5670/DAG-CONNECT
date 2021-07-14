@@ -344,7 +344,7 @@
           (closed)="!isChartsOpen">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts ||
+              <span id="chartHeader" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts ||
                 'Charts' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
@@ -429,7 +429,7 @@
                 style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px;'>{{
                 translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
               <div *ngIf="ConsumptionChartType =='Line'" class="chart-wrapper">
-                <canvas baseChart [datasets]="lineChartData5" [labels]="lineChartLabels" [options]="lineChartOptions3"
+                <canvas baseChart [datasets]="lineChartData5" [labels]="lineChartLabels" [options]="lineChartOptions5"
                   [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType"
                   [plugins]="lineChartPlugins">
                 </canvas>

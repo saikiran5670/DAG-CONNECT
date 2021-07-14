@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: packageservice-grpc-deployment
+spec:
+  selector:
+    matchLabels:
+      run: packageservice-grpc
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: packageservice-grpc
+    spec:
+      containers:
+      - name: packageservice-grpc
+        image: dafdev017756.azurecr.io/packageservice-grpc
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: packageservice
+spec:
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    run: packageservice-grpc
