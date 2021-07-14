@@ -442,231 +442,430 @@
                         </div>
                     </div>
                 </mat-card>
-
-                <!-- For view  -->
-                <div fxLayout="row" *ngIf="actionType == 'view'" fxLayoutAlign="space-between"
-                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                    <!-- for web service -->
-                    <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
-                        <div *ngFor="let item of selectedRowData.notifications[0].notificationRecipients">
-                            <div *ngIf="item.notificationModeType == 'W'">
-                                <div fxLayout="row" fxLayoutAlign="space-between"
-                                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblRecipientLabel || 'Recipient Label' }}
-                                        </mat-label>
-                                        <span style='font-weight: 500!important;'>{{ item.recipientLabel }}</span>
-                                    </div>
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblNotificationModeType || 'Notification Mode
-                                            Type' }}</mat-label>
-                                        <span style='font-weight: 500!important;'>Web Service</span>
-                                    </div>
-                                </div>
-                                <div fxLayout="row" fxLayoutAlign="space-between"
-                                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblWebServiceURL || 'Web Service URL' }}
-                                        </mat-label>
-                                        <span style='font-weight: 500!important;'>{{ item.wsUrl }}</span>
-                                    </div>
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblWebDescription || 'Web Service Description' }}
-                                        </mat-label>
-                                        <span style='font-weight: 500!important;'>{{ item.wsText }}</span>
-                                    </div>
-                                </div>
-                                <div fxLayout="row" fxLayoutAlign="space-between"
-                                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblAuthentication || 'Authentication' }}
-                                        </mat-label>
-                                        <span style='font-weight: 500!important;'>{{ item.wsType == 'N'? 'No
-                                            Authentication' : 'Authentication' }}</span>
-                                    </div>
-                                    <div *ngIf="item.wsType == 'A'" class="areaWidth half-width" fxLayout="column"
-                                        fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblLoginId || 'Login Id' }}</mat-label>
-                                        <span style='font-weight: 500!important;'>{{ item.wsLogin }}</span>
-                                    </div>
-                                </div>
-                                <div fxLayout="row" fxLayoutAlign="space-between"
-                                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblNotifyType || 'NotifyType' }}</mat-label>
-                                        <div *ngIf="item.notificationLimits[0].notificationModeType == 'A'">
-                                            <span style='font-weight: 500!important;'>{{ translationData.lblAlways ||
-                                                'Always'}}</span>
-                                        </div>
-                                        <div *ngIf="item.notificationLimits[0].notificationModeType == 'C'">
-                                            <span style='font-weight: 500!important;'>{{ translationData.lblCustom ||
-                                                'Custom'}}</span>
-                                        </div>
-                                    </div>
-                                    <div *ngIf="item.notificationLimits[0].notificationModeType == 'C'"
-                                        class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                            <mat-label>{{ translationData.lblRestrictTo || 'RestrictTo' }}</mat-label>
-                                            <span style='font-weight: 500!important;'>{{
-                                                item.notificationLimits[0].maxLimit }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div fxLayout="row" fxLayoutAlign="space-between"
-                                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblWebEach || 'WebEach' }}</mat-label>
-                                        <span style='font-weight: 500!important;'>{{
-                                            item.notificationLimits[0].periodLimit }}</span>
-                                    </div>
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblPeriodType || 'Period Type' }}</mat-label>
-                                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'M'">
-                                            <span style='font-weight: 500!important;'>{{translationData.lblMinutes ||
-                                                'Minutes' }}</span>
-                                        </div>
-                                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'H'">
-                                            <span style='font-weight: 500!important;'>{{translationData.lblHours ||
-                                                'Hours' }}</span>
-                                        </div>
-                                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
-                                            <span style='font-weight: 500!important;'>{{translationData.lblDays ||
-                                                'Days' }}</span>
-                                        </div>
-                                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'W'">
-                                            <span style='font-weight: 500!important;'>{{translationData.lblWeeks ||
-                                                'Weeks' }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div *ngIf="item.notificationModeType == 'E'">
-                                <div fxLayout="row" fxLayoutAlign="space-between"
-                                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblRecipientLabel || 'Recipient Label' }}
-                                        </mat-label>
-                                        <span style='font-weight: 500!important;'>{{ item.recipientLabel }}</span>
-                                    </div>
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblNotificationModeType || 'Notification Mode
-                                            Type' }}</mat-label>
-                                        <span style='font-weight: 500!important;'>Email</span>
-                                    </div>
-                                </div>
-                                <div fxLayout="row" fxLayoutAlign="space-between"
-                                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblEmailId || 'EmailId' }}</mat-label>
-                                        <span style='font-weight: 500!important;'>{{ item.emailId }}</span>
-                                    </div>
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblEmailSubject || 'Email Subject' }}</mat-label>
-                                        <span style='font-weight: 500!important;'>{{ item.emailSub }}</span>
-                                    </div>
-                                </div>
-                                <div fxLayout="row" fxLayoutAlign="space-between"
-                                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblEmailText || 'Email Description' }}</mat-label>
-                                        <span style='font-weight: 500!important;'>{{ item.emailText }}</span>
-                                    </div>
-                                </div>
-                                <div fxLayout="row" fxLayoutAlign="space-between"
-                                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblNotifyType || 'NotifyType' }}</mat-label>
-                                        <div *ngIf="item.notificationLimits[0].notificationModeType == 'A'">
-                                            <span style='font-weight: 500!important;'>{{ translationData.lblAlways ||
-                                                'Always'}}</span>
-                                        </div>
-                                        <div *ngIf="item.notificationLimits[0].notificationModeType == 'C'">
-                                            <span style='font-weight: 500!important;'>{{ translationData.lblCustom ||
-                                                'Custom'}}</span>
-                                        </div>
-                                    </div>
-                                    <div *ngIf="item.notificationLimits[0].notificationModeType == 'C'"
-                                        class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                            <mat-label>{{ translationData.lblRestrictTo || 'RestrictTo' }}</mat-label>
-                                            <span style='font-weight: 500!important;'>{{
-                                                item.notificationLimits[0].maxLimit }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div fxLayout="row" fxLayoutAlign="space-between"
-                                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblEmailEach || 'EmailEach' }}</mat-label>
-                                        <span style='font-weight: 500!important;'>{{
-                                            item.notificationLimits[0].periodLimit }}</span>
-                                    </div>
-                                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblPeriodType || 'Period Type' }}</mat-label>
-                                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'M'">
-                                            <span style='font-weight: 500!important;'>{{translationData.lblMinutes ||
-                                                'Minutes' }}</span>
-                                        </div>
-                                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'H'">
-                                            <span style='font-weight: 500!important;'>{{translationData.lblHours ||
-                                                'Hours' }}</span>
-                                        </div>
-                                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
-                                            <span style='font-weight: 500!important;'>{{translationData.lblDays ||
-                                                'Days' }}</span>
-                                        </div>
-                                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'W'">
-                                            <span style='font-weight: 500!important;'>{{translationData.lblWeeks ||
-                                                'Weeks' }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style='padding: 20px; position: relative;'>
-                                <mat-divider></mat-divider>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
-                    fxLayoutGap="10px">
-                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                        <a class="linkBtn" (click)="onClickAdvancedFilter()"> Advanced Filter <mat-icon
-                                class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' :
-                                'keyboard_arrow_down' }}</mat-icon></a>
-                    </div>
-                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
-                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
-                </div>
-
-                <div *ngIf="openAdvancedFilter" class="full-width">
-                    <mat-card class='mat-elevation-z' style="background:#c3f1f7;">
-                        <app-notification-advanced-filter [translationData]='translationData'
-                            [alert_category_selected]='alert_category_selected'
-                            [alert_type_selected]='alert_type_selected' [selectedRowData]='selectedRowData'
-                            [actionType]='actionType'>
-                        </app-notification-advanced-filter>
-                    </mat-card>
-                </div>
-
-
-                <!-- <div *ngIf="openAdvancedFilter && actionType != 'view'" style="background:#c3f1f7;" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-        <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-            <mat-card  class='mat-elevation-z' style="background:#c3f1f7;">
-                <mat-panel-title>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilterDetails || 'Advanced Filter Details' }}</span>
-                </mat-panel-title>
-                <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
-                    <p style="color: darkgray; font-size: 2em">This feature is part of sprint5</p>
-                </div>   
-            </mat-card>
-        </div>
-    </div> -->
             </div>
         </div>
     </div>
+
+    <!-- For SMS -->
+
+    <div formArrayName="FormSMSArray">
+        <div *ngFor="let item of notificationForm.controls['FormSMSArray']['controls']; let i = index">
+            <div [formGroupName]="i">
+                <!-- For email -->
+                <mat-card class='mat-elevation-z' *ngIf="(contactModeType == 'E' && addSmsFlag) || smsCount > 0"
+                    style="border: 1px solid #000">
+                    <mat-panel-title>
+                        <div fxLayout="row" fxLayoutAlign="space-between" style="width: 100%;">
+                            <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="right" class="areawidth">
+                                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+
+                                    translationData.lblRecipientLabel02 || 'Recipient Label' }} </span>
+                                <div class="ng-autocomplete">
+                                    <ng-autocomplete [data]="notificationReceipients" [searchKeyword]="keyword"
+                                        (selected)='deleteSMSNotificationRow(i); addMultipleItems(false, $event);'
+                                        [itemTemplate]="itemTemplateSms" formControlName="smsRecipientLabel">
+                                    </ng-autocomplete>
+
+                                    <ng-template #itemTemplateSms let-item>
+                                        <a [innerHTML]="item.recipientLabel"></a>
+                                    </ng-template>
+                                </div>
+                            </div>
+                            <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
+                                <mat-icon style="color: red;cursor: pointer;" (click)="deleteSMSNotificationRow(i)">
+                                    deleteicon</mat-icon>
+                            </div>
+                        </div>
+                    </mat-panel-title>
+                    <div fxLayout="row" class="full-width filter-direction" fxLayoutAlign="space-between">
+                        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                            <div fxLayout="row" fxLayoutAlign="space-between"
+                                class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                                <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                                    <mat-label>{{ translationData.lblBySmsMobileNumber || '(By SMS) Mobile Number' }} <span
+                                            class='mandatoryColor'>*</span>
+                                    </mat-label>
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <ngx-intl-tel-input [cssClass]="''" [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
+                                            [searchCountryFlag]="true" [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                                            [selectFirstCountry]="false" [maxLength]="15" [tooltipField]="TooltipLabel.Name" [phoneValidation]="true"
+                                            [separateDialCode]="true" name="phone" formControlName="mobileNumber">
+                                        </ngx-intl-tel-input>
+                                    </mat-form-field>
+                                    <mat-hint>{{translationData.lblOnlyOneContactNumberCanBeAddedAtATime || 'Only one contact number can be added at a time' }}</mat-hint>
+                                    <mat-error
+                                        *ngIf="notificationForm.controls['FormSMSArray']['controls'][0].get('mobileNumber').hasError('required') && notificationForm.controls['FormSMSArray']['controls'][0].get('mobileNumber').touched">
+                                        {{ translationData.lblPleaseEnterMobileNumber || 'Please Enter Mobile Number' }}
+                                    </mat-error>
+                                </div>
+                                
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="space-between"
+                                class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                                <div class="full-width  " fxLayout="column" fxLayoutAlign="left">
+                                    <mat-label style='display: flex; place-content: space-between;'>{{
+                                        translationData.lblMessageDescription || 'Message Description' }} <span
+                                            class='mandatoryColor'>*</span>
+                                        <span>{{ translationData.lbl250CharMax || '250 characters max' }}</span>
+                                    </mat-label>
+
+                                    <mat-form-field appearance="outline">
+                                        <textarea matInput maxlength="250"
+                                            formControlName="smsDescription"></textarea>
+                                    </mat-form-field>
+                                    <mat-hint>{{translationData.lblSMSTextDescription || 'SMS Text Description' }}</mat-hint>
+                                    <mat-error
+                                        *ngIf="notificationForm.controls['FormSMSArray']['controls'][0].get('smsDescription').hasError('required') && notificationForm.controls['FormSMSArray']['controls'][0].get('smsDescription').touched">
+                                        {{ translationData.lblPleaseEnterSmsDescription || 'Please enter sms description' }}
+                                    </mat-error>
+                                </div>
+                            </div>
+                        </div>
+                        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
+                            style="background: #dedddd;padding: 0.5em" class="areaWidth">
+                            <!-- <div class="full-width orgGrayDefault" fxLayout="column" fxLayoutAlign="left" style="background: grey"> -->
+                            <span
+                                style='font: 500 Roboto, "Helvetica Neue", sans-serif;font-weight: bold;padding-left: 10px;padding-top: 10px;'>{{
+                                translationData.lblSetLimitations || 'Set Limitations' }}</span>
+                            <span
+                                style="padding-bottom: 15px;padding-left: 8px;">{{translationData.lblMaxAlertNotificationsPerVehicle
+                                || 'Max 10
+                                alert notifications per vehicle' }}</span>
+                            <span style="padding-left: 10px;" class='radioLabel'>{{ translationData.lblNotify ||
+                                'Notify' }}<span class='mandatoryColor'>*</span></span>
+                           <mat-radio-group (change)="onSMSLimitationButtonChange($event)" formControlName="notifyPeriodSms"
+                                style='margin-right: 20px;'>
+                                <mat-radio-button style='margin-right: 20px;' value="A">
+                                    {{ translationData.lblAlways || 'Always' }}
+                                </mat-radio-button>
+                                <mat-radio-button style='margin-right: 20px;' value="C">
+                                    {{ translationData.lblCustom || 'Custom' }}
+                                </mat-radio-button>
+                            </mat-radio-group>
+                            <div *ngIf="limitButton == 'C'" fxLayout="row" class="full-width">
+                                <div fxLayout="column" fxLayoutAlign="left" class="limitation">
+                                    <mat-label>{{translationData.lblRestrictTo || 'RestrictTo'}}</mat-label>
+                                    <!-- <mat-form-field appearance="outline" class="full-width"> -->
+                                    <input type="number" min="0" max="24" formControlName="smsRetrictTo" class="textField">
+                                    <!-- </mat-form-field> -->
+                                </div>
+                                <div fxLayout="column" fxLayoutAlign="left" class="limitation">
+                                    <mat-label>{{translationData.lblSmsEach || 'SMS Each'}}</mat-label>
+                                    <!-- <mat-form-field appearance="outline" class="full-width"> -->
+                                    <div fxLayout="row" fxLayoutGap="6px">
+                                        <input type="number" min="0" max="60" matInput formControlName="smsEach"
+                                            class="textField">
+                                        <mat-form-field appearance="outline" class="areawidth">
+                                            <mat-select (selectionChange)="onChangeTimeUnitForSMS($event.value)"
+                                                placeholder="{{ translationData.lblMinutes || 'Minutes' }}"
+                                                formControlName="smsMinutes">
+                                                <mat-option *ngFor="let item of timeList" [value]="item.id">
+                                                    {{item.value}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                    <!-- </mat-form-field> -->
+                                </div>
+
+                            </div>
+                            <!-- </div> -->
+                        </div>
+                    </div>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+
+ <!-- For view  -->
+    <div fxLayout="row" *ngIf="actionType == 'view'" fxLayoutAlign="space-between"
+    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+    <!-- for web service -->
+    <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
+        <div *ngFor="let item of selectedRowData.notifications[0].notificationRecipients">
+            <div *ngIf="item.notificationModeType == 'W'">
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblRecipientLabel || 'Recipient Label' }}
+                        </mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.recipientLabel }}</span>
+                    </div>
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblNotificationModeType || 'Notification Mode
+                            Type' }}</mat-label>
+                        <span style='font-weight: 500!important;'>Web Service</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblWebServiceURL || 'Web Service URL' }}
+                        </mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.wsUrl }}</span>
+                    </div>
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblWebDescription || 'Web Service Description' }}
+                        </mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.wsText }}</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblAuthentication || 'Authentication' }}
+                        </mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.wsType == 'N'? 'No
+                            Authentication' : 'Authentication' }}</span>
+                    </div>
+                    <div *ngIf="item.wsType == 'A'" class="areaWidth half-width" fxLayout="column"
+                        fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblLoginId || 'Login Id' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.wsLogin }}</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblNotifyType || 'NotifyType' }}</mat-label>
+                        <div *ngIf="item.notificationLimits[0].notificationModeType == 'A'">
+                            <span style='font-weight: 500!important;'>{{ translationData.lblAlways ||
+                                'Always'}}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationModeType == 'C'">
+                            <span style='font-weight: 500!important;'>{{ translationData.lblCustom ||
+                                'Custom'}}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="item.notificationLimits[0].notificationModeType == 'C'"
+                        class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                            <mat-label>{{ translationData.lblRestrictTo || 'RestrictTo' }}</mat-label>
+                            <span style='font-weight: 500!important;'>{{
+                                item.notificationLimits[0].maxLimit }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblWebEach || 'WebEach' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{
+                            item.notificationLimits[0].periodLimit }}</span>
+                    </div>
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblPeriodType || 'Period Type' }}</mat-label>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'M'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblMinutes ||
+                                'Minutes' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'H'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblHours ||
+                                'Hours' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblDays ||
+                                'Days' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'W'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblWeeks ||
+                                'Weeks' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="item.notificationModeType == 'E'">
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblRecipientLabel || 'Recipient Label' }}
+                        </mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.recipientLabel }}</span>
+                    </div>
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblNotificationModeType || 'Notification Mode
+                            Type' }}</mat-label>
+                        <span style='font-weight: 500!important;'>Email</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblEmailId || 'EmailId' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.emailId }}</span>
+                    </div>
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblEmailSubject || 'Email Subject' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.emailSub }}</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblEmailText || 'Email Description' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.emailText }}</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblNotifyType || 'NotifyType' }}</mat-label>
+                        <div *ngIf="item.notificationLimits[0].notificationModeType == 'A'">
+                            <span style='font-weight: 500!important;'>{{ translationData.lblAlways ||
+                                'Always'}}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationModeType == 'C'">
+                            <span style='font-weight: 500!important;'>{{ translationData.lblCustom ||
+                                'Custom'}}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="item.notificationLimits[0].notificationModeType == 'C'"
+                        class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                            <mat-label>{{ translationData.lblRestrictTo || 'RestrictTo' }}</mat-label>
+                            <span style='font-weight: 500!important;'>{{
+                                item.notificationLimits[0].maxLimit }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblEmailEach || 'EmailEach' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{
+                            item.notificationLimits[0].periodLimit }}</span>
+                    </div>
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblPeriodType || 'Period Type' }}</mat-label>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'M'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblMinutes ||
+                                'Minutes' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'H'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblHours ||
+                                'Hours' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblDays ||
+                                'Days' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'W'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblWeeks ||
+                                'Weeks' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="item.notificationModeType == 'S'">
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblRecipientLabel || 'Recipient Label' }}
+                        </mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.recipientLabel }}</span>
+                    </div>
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblNotificationModeType || 'Notification Mode
+                            Type' }}</mat-label>
+                        <span style='font-weight: 500!important;'>SMS</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblMobileNumber || 'Mobile Number' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.phoneNo }}</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblMessageDescription || 'Message Description' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.sms }}</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblNotifyType || 'NotifyType' }}</mat-label>
+                        <div *ngIf="item.notificationLimits[0].notificationModeType == 'A'">
+                            <span style='font-weight: 500!important;'>{{ translationData.lblAlways ||
+                                'Always'}}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationModeType == 'C'">
+                            <span style='font-weight: 500!important;'>{{ translationData.lblCustom ||
+                                'Custom'}}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="item.notificationLimits[0].notificationModeType == 'C'"
+                        class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                            <mat-label>{{ translationData.lblRestrictTo || 'RestrictTo' }}</mat-label>
+                            <span style='font-weight: 500!important;'>{{
+                                item.notificationLimits[0].maxLimit }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between"
+                    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblSmsEach || 'Sms Each' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{
+                            item.notificationLimits[0].periodLimit }}</span>
+                    </div>
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblPeriodType || 'Period Type' }}</mat-label>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'M'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblMinutes ||
+                                'Minutes' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'H'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblHours ||
+                                'Hours' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblDays ||
+                                'Days' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'W'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblWeeks ||
+                                'Weeks' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style='padding: 20px; position: relative;'>
+                <mat-divider></mat-divider>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
+    fxLayoutGap="10px">
+    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+        <a class="linkBtn" (click)="onClickAdvancedFilter()"> Advanced Filter <mat-icon
+                class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' :
+                'keyboard_arrow_down' }}</mat-icon></a>
+    </div>
+    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+</div>
+
+<div *ngIf="openAdvancedFilter" class="full-width">
+    <mat-card class='mat-elevation-z' style="background:#c3f1f7;">
+        <app-notification-advanced-filter [translationData]='translationData'
+            [alert_category_selected]='alert_category_selected'
+            [alert_type_selected]='alert_type_selected' [selectedRowData]='selectedRowData'
+            [actionType]='actionType'>
+        </app-notification-advanced-filter>
+    </mat-card>
+</div>
+
+
     <!-- </div>
 </div>
 </div> -->
