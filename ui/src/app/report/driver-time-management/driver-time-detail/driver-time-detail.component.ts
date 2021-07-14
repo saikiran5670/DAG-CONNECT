@@ -349,8 +349,8 @@ export class DriverTimeDetailComponent implements OnInit {
   const title = 'Driver Details Time Report';
   const summary = 'Summary Section';
   const detail = 'Detail Section';
-  const header = ['Date', 'Drive Time', 'Work Time', 'Service Time', 'Rest Time', 'Available Time'];
-  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Driver Name', 'Driver Id', 'Total Drive Time', 'Total Work Time', 'Total Available Time', 'Total Rest Time', 'Total Service Time'];
+  const header = ['Date', 'Drive Time(hh:mm)', 'Work Time(hh:mm)', 'Service Time(hh:mm)', 'Rest Time(hh:mm)', 'Available Time(hh:mm)'];
+  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Driver Name', 'Driver Id', 'Total Drive Time(hh:mm)', 'Total Work Time(hh:mm)', 'Total Available Time(hh:mm)', 'Total Rest Time(hh:mm)', 'Total Service Time(hh:mm)'];
   this.summaryObj=[
     ['Driver Details Time Report', new Date(), this.driverDetails.fromDisplayDate, this.driverDetails.toDisplayDate,
     this.driverDetails.selectedDriverName, this.driverDetails.selectedDriverId, this.driverDetails.driveTime, this.driverDetails.workTime, 
