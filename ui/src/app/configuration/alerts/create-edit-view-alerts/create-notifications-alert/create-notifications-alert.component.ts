@@ -4,6 +4,7 @@ import { FormControl } from '@angular/forms';
 import { EmailValidator, FormArray, FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
+import { SearchCountryField, CountryISO } from 'ngx-intl-tel-input';
 import { element } from 'protractor';
 import { AlertService } from 'src/app/services/alert.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
@@ -120,6 +121,10 @@ export class CreateNotificationsAlertComponent implements OnInit {
   timeUnitValue: any;
   emailtimeUnitValue: any;
   smsTimeUnitValue: any;
+  SearchCountryField = SearchCountryField;
+  // TooltipLabel = TooltipLabel;
+  CountryISO = CountryISO;
+  preferredCountries: CountryISO[] = [CountryISO.India];
 
   @ViewChild(NotificationAdvancedFilterComponent)
   notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
