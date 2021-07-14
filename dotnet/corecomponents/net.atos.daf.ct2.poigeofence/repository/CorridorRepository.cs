@@ -14,14 +14,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
     public class CorridorRepository : ICorridorRepository
     {
         private readonly IDataAccess _dataAccess;
+        private readonly IDataMartDataAccess _dataMartdataAccess;
         private static readonly log4net.ILog _log =
        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private readonly CorridorCoreMapper _corridorCoreMapper;
 
-        public CorridorRepository(IDataAccess dataAccess)
+        public CorridorRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             _dataAccess = dataAccess;
-
+            _dataMartdataAccess = dataMartdataAccess;
             _corridorCoreMapper = new CorridorCoreMapper();
 
         }
@@ -364,6 +365,39 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
             return existingTripCorridor;
         }
+
+
+        private async Task<List<ExistingTrip>> UpdateTripsCorridor(ExistingTripCorridor existingTripCorridor)
+        {
+            var tripList = new List<ExistingTrip>();
+            try
+            {
+                foreach (var existingTrip in existingTripCorridor.ExistingTrips)
+                {
+                    existingTrip.LandmarkId = existingTripCorridor.Id;
+                    var getntoCorridorTrips = @"Select id from master.corridortrips where landmark_id=@landmarkid";
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@landmarkid", existingTrip.LandmarkId);
+                    var id = await _dataAccess.QueryAsync<int>(getntoCorridorTrips, parameter);
+                    var selectedtrips = existingTripCorridor.ExistingTrips.Select(e => e.Id).ToArray();
+                    var deleteid = id.Where(e => !selectedtrips.Contains(e));
+                    if (deleteid.Count() > 0)
+                    {
+                        var deletdids = await DeleteTrips(deleteid.ToList());
+                    }
+                    tripList.Add(existingTrip);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.ToString());
+                // throw;
+            }
+            return tripList;
+
+
+        }
         private async Task<List<ExistingTrip>> AddTripsCorridor(ExistingTripCorridor existingTripCorridor)
         {
             var tripList = new List<ExistingTrip>();
@@ -563,12 +597,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 if (id > 0)
                 {
                     existingTripCorridor.Id = id;
-                    var tripDetailsDeleted = await DeleteTripsCorridor(existingTripCorridor);
-                    if (tripDetailsDeleted)
-                    {
+                    var tripDetailsDeleted = await UpdateTripsCorridor(existingTripCorridor);
 
-                        var result = await AddTripsCorridor(existingTripCorridor);
-                    }
                 }
 
 
@@ -776,7 +806,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
-        public List<ExistingTrip> GetExistingtripListByCorridorId(int corridoreid)
+        public List<ExistingTrip> GetExistingtripListByCorridorId(int corridoreid, out string vin)
         {
             try
             {
@@ -800,6 +830,16 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 parameter.Add("@landmark_id", corridoreid);
                 var data = _dataAccess.Query<ExistingTrip>(query, parameter);
+                //getting vin from trip statistics
+                vin = "";
+                if (data.Count() > 0)
+                {
+                    var tripparameter = new DynamicParameters();
+                    tripparameter.Add("@tripid", data.FirstOrDefault().TripId ?? "");
+                    string tripquery = @"SELECT VIN FROM tripdetail.trip_statistics where trip_id=@tripid limit 1";
+                    vin = _dataMartdataAccess.ExecuteScalar<string>(tripquery, tripparameter);
+                }
+
                 List<ExistingTrip> objCorridorResponseList;
                 return objCorridorResponseList = data.ToList();
             }
