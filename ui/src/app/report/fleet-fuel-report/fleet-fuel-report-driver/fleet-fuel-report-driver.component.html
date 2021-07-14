@@ -31,7 +31,7 @@
             </div>
   
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} </mat-label>
+              <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"
                   formControlName="vehicleGroup">
@@ -128,7 +128,7 @@
   
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
   
-              <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}</mat-label>
+              <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
   
               <mat-form-field appearance="outline">
   
@@ -1166,4 +1166,4 @@
     </div>
 
     <app-fleetfueldetails *ngIf='showDetailedReport && FuelData' [translationData]='translationData' [detailsObject]='detailSummaryObj' 
-    [displayedColumns]='detaildisplayedColumns' ></app-fleetfueldetails>
+    [displayedColumns]='detaildisplayedColumns' [FuelData] ='FuelData'></app-fleetfueldetails>
