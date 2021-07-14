@@ -233,6 +233,7 @@
     <!-- Summary Section -->
   
     <div id="charts">
+        <div *ngIf='!showDetailedReport'>
       <mat-card *ngIf='displayData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg' id="summary">
         <mat-expansion-panel [(expanded)]="isSummaryOpen" class="full-width" fxLayoutGap="10px"
           (opened)="isSummaryOpen == true" (closed)="isSummaryOpen == false">

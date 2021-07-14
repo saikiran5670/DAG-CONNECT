@@ -23,6 +23,8 @@ import { ViewChild } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Router, NavigationExtras } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
+import { QueryList } from '@angular/core';
+import { ViewChildren } from '@angular/core';
 
 
 
@@ -41,10 +43,17 @@ export class FleetFuelReportDriverComponent implements OnInit {
   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
   'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
   'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
+  detaildisplayedColumns = ['driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
+  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
+  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
+  'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
+  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
+  'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
+  'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
+  @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
@@ -89,6 +98,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   showLoadingIndicator: boolean = false;
   tableInfoObj: any ;
   summaryObj: any;
+  detailSummaryObj: any;
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
   bufferValue = 75;
@@ -147,7 +157,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'values(Number Of Trips)'    
+          labelString: 'values()'    
         }
       }]
     }
@@ -173,7 +183,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'values(meter)'    
+          labelString: 'meter'    
         }
       }]
     }
@@ -199,7 +209,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'values(ltr)'    
+          labelString: 'ltr'    
         }
       }]
     }
@@ -225,7 +235,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'values(t)'    
+          labelString: 't'    
         }
       }]
     }
@@ -284,7 +294,25 @@ export class FleetFuelReportDriverComponent implements OnInit {
         }}
       ]}
   };
-
+  barChartOptions3= {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Values (ltr)'    
+        }}
+      ]}
+  };
 
   barChartData1: ChartDataSets[] = [{ data: [], label: '' },];
   barChartData2: ChartDataSets[] = [{ data: [], label: '' },];
@@ -308,37 +336,6 @@ export class FleetFuelReportDriverComponent implements OnInit {
   idleDuration: any =[];
   fromTripPageBack: boolean = false;
   displayData : any = [];
-  rankingData : any =[
-    {
-      ranking: 1,
-      vehicleName: 'Name List 0001',
-      vin :'XLRTEMP4100G041999',
-      vehicleRegistrationNo: '12 HH 71',
-      fuelConsumption: 0.4
-    },
-    {
-      ranking: 1,
-      vehicleName: 'Name List 0002',
-      vin :'XLRTEMP4100G041999',
-      vehicleRegistrationNo: '12 HH 71',
-      fuelConsumption: 0.1
-    },
-    {
-      ranking: 1,
-      vehicleName: 'Name List 0003',
-      vin :'XLRTEMP4100G041999',
-      vehicleRegistrationNo: '12 HH 71',
-      fuelConsumption: 0.5
-    },
-    {
-      ranking: 1,
-      vehicleName: 'Name List 0004',
-      vin :'XLRTEMP4100G041999',
-      vehicleRegistrationNo: '12 HH 71',
-      fuelConsumption: 0.6
-    },
-
-  ]
   showDetailedReport : boolean = false;
   
   constructor(private _formBuilder: FormBuilder, 
@@ -404,7 +401,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
     this.updateDataSource(this.FuelData);
-
+    this.setTableInfo();
     })
   }
 
@@ -479,7 +476,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
         "viNs":  _vinData,
       }
       this.loadfleetFuelDetails(_vinData);
-       this.setTableInfo();
+       //this.setTableInfo();
       //  this.updateDataSource(this.FuelData);
       this.hideloader();
       this.isChartsOpen = true;
@@ -525,21 +522,13 @@ export class FleetFuelReportDriverComponent implements OnInit {
     });
   }
 
-  updateRankingDataSource(tableData: any) {
-    this.initData = tableData;
-    this.showMap = false;
-    this.selectedTrip.clear();
-    this.dataSource2 = new MatTableDataSource(tableData);
-    setTimeout(() => {
-      this.dataSource2.paginator = this.paginator;
-      this.dataSource2.sort = this.sort;
-    });
-  }
-
+ 
  
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';
+    let driverName : any ='';
+    let driverID : any ='';
     let vin: any = '';
     let plateNo: any = '';
     // this.vehicleGroupListData.forEach(element => {
@@ -576,6 +565,20 @@ export class FleetFuelReportDriverComponent implements OnInit {
       vehGroupName: vehGrpName,
       vehicleName: vehName
     }    
+    this.detailSummaryObj={
+            fromDate: this.formStartDate(this.startDateValue),
+            endDate: this.formStartDate(this.endDateValue),
+            vehGroupName: vehGrpName,
+            vehicleName: vehName,
+            driverName : this.displayData.driverName,
+            driverID : this.displayData.driverID,
+            noOfTrips: this.FuelData[0].numberOfTrips,
+            distance:  this.FuelData[0].convertedDistance,
+            fuelconsumed:  this.FuelData[0].convertedFuelConsumed100Km,
+            idleDuration: this.FuelData[0].convertedIdleDuration,
+            fuelConsumption: this.FuelData[0].fuelConsumption,
+            co2emission: this.FuelData[0].cO2Emission,
+            }  
   }
 
   formStartDate(date: any){
@@ -697,7 +700,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   }
     if(this.TripsChartType == 'Line')
     {
-    this.lineChartData2= [{ data: this.barData, label: 'Number Of Trips' }, ];
+    this.lineChartData2= [{ data: this.barData, label: 'No Of Trips' }, ];
   }
     if(this.Co2ChartType == 'Line')
     {
@@ -1405,7 +1408,7 @@ setVehicleGroupAndVehiclePreSelection() {
     .then(canvas => {  
       (doc as any).autoTable({
         styles: {
-            cellPadding: 0.6,
+            cellPadding: 0.5,
             fontSize: 12
         },       
         didDrawPage: function(data) {     

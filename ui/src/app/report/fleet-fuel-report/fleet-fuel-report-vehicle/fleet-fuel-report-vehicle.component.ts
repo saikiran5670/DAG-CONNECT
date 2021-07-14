@@ -92,6 +92,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   showLoadingIndicator: boolean = false;
   chartExportFlag: boolean = false;
   tableInfoObj: any ;
+  summaryObj: any;
   detailSummaryObj: any;
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';

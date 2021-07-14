@@ -50,6 +50,7 @@ message CorridorGridViewResponse{
 message CorridorEditViewResponse{
     int32 Id =1;
     int32 OrganizationId =2;
+    string vin=21;
     string CorridoreName =3;
     string StartPoint=4;
     double StartLat=5;
