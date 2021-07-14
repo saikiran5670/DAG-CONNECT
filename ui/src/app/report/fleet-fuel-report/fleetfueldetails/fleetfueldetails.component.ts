@@ -13,6 +13,7 @@ export class FleetfueldetailsComponent implements OnInit {
   @Input() translationData;
   @Input() detailsObject;
   @Input() displayedColumns:any;
+  @Input() FuelData : any;
   generalExpandPanel : boolean = true;
   isSummaryOpen: boolean = false;
   showLoadingIndicator: boolean = false;
