@@ -1164,9 +1164,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var response = await _reportServiceClient.GetFilteredFuelDeviationAsync(request);
 
                 foreach (var item in response.FuelDeviationDetails)
-                    _hereMapAddressProvider.UpdateFuelDeviationReportAddress(item);
-
-
+                {
+                    if (item.GeoLocationAddressId == 0 && item.Latitude != 0 && item.Longitude != 0)
+                    {
+                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.Latitude, item.Longitude);
+                        item.GeoLocationAddress = getMapRequestLatest?.Address;
+                        item.GeoLocationAddressId = (int)getMapRequestLatest?.Id;
+                    }
+                }
                 if (response?.FuelDeviationDetails?.Count > 0)
                 {
                     return Ok(new { Data = response.FuelDeviationDetails, Message = ReportConstants.GET_FUEL_DEVIATION_SUCCESS_MSG });
@@ -1180,7 +1185,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
-                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.GET_FUEL_DEVIATION_SUCCESS_MSG, 0, 0, string.Empty,
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.GET_FUEL_DEVIATION_FAIL_MSG, 0, 0, string.Empty,
                                  _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
