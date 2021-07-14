@@ -703,6 +703,8 @@ message FleetOverviewDetails
 	string LatestWarningName=37;
     repeated LiveFleetPosition LiveFleetPosition=38;
     repeated FleetOverviewAlert FleetOverviewAlert=39;
+    int32 AlertGeolocationAddressId=40;
+	string AlertGeolocationAddress=41;
 }
 
 message FleetOverviewDetailsResponse {

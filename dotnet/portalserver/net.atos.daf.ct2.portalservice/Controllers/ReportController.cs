@@ -862,6 +862,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
                             fleetoverviewItem.StartGeolocationAddress = getMapRequestStart.Address;
                         }
+                        //if (fleetoverviewItem.AlertGeolocationAddressId == 0 && fleetoverviewItem.StartPositionLattitude != 0 && fleetoverviewItem.StartPositionLongitude != 0)
+                        //{
+                        //    GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.StartPositionLattitude, fleetoverviewItem.StartPositionLongitude);
+                        //    fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
+                        //    fleetoverviewItem.StartGeolocationAddress = getMapRequestStart.Address;
+                        //}
+
                     }
                     return Ok(response.FleetOverviewDetailList);
                 }
