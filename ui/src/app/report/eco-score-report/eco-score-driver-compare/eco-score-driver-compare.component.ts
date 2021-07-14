@@ -16,10 +16,11 @@ import { ReportService } from '../../../services/report.service';
   encapsulation: ViewEncapsulation.None
 })
 export class EcoScoreDriverCompareComponent implements OnInit {
-  @Input() translationData: any;
+  @Input() translationData: any=[];
   @Input() compareEcoScore: any;
   @Output() backToMainPage = new EventEmitter<any>();
   generalExpandPanel: boolean = true;
+  translationDataLocal: any=[];
   //performance table
   angularGrid!: AngularGridInstance;
   dataViewObj: any;
@@ -65,7 +66,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   }
 
   translationUpdate(){
-    this.translationData = [
+    this.translationDataLocal = [
       { key:'rp_general' , value:'General' },
       { key:'rp_averagegrossweight' , value:'Average Gross Weight' },
       { key:'rp_distance' , value:'Distance' },
@@ -97,48 +98,22 @@ export class EcoScoreDriverCompareComponent implements OnInit {
       { key:'rp_brakeduration' , value:'Brake Duration' },
       { key:'rp_brakingscore' , value:'Braking Score' }
      ];
-
-    // this.translationData.rp_general = 'General';
-    // this.translationData.rp_averagegrossweight = 'Average Gross Weight';
-    // this.translationData.rp_distance = 'Distance';
-    // this.translationData.rp_numberoftrips = 'Number of Trips';
-    // this.translationData.rp_numberofvehicles = 'Number of vehicles';
-    // this.translationData.rp_averagedistanceperday = 'Average distance per day';
-    // this.translationData.rp_driverperformance = 'Driver Performance';
-    // this.translationData.rp_ecoscore = 'Eco Score';
-    // this.translationData.rp_fuelconsumption = 'Fuel Consumption';
-    // this.translationData.rp_braking = 'Braking(%)';
-    // this.translationData.rp_anticipationscore = 'Anticipation Score';
-    // this.translationData.rp_averagedrivingspeed = 'Average Driving Speed';
-    // this.translationData.rp_idleduration = 'Idle Duration';
-    // this.translationData.rp_idling = 'Idling(%)';
-    // this.translationData.rp_heavythrottleduration = 'Heavy Throttle Duration';
-    // this.translationData.rp_heavythrottling = 'Heavy Throttling(%)';
-    // this.translationData.rp_averagespeed = 'Average Speed';
-    // this.translationData.rp_averagedrivingspeed = 'Average Driving Speed';
-    // this.translationData.rp_ptoduration = 'PTO Duration';
-    // this.translationData.rp_ptousage = 'PTO Usage(%)';
-    // this.translationData.rp_cruisecontroldistance30 = 'Cruise Control Usage 30-75km/h(%)';
-    // this.translationData.rp_cruisecontroldistance75 = 'Cruise Control Usage>75km/h(%)';
-    // this.translationData.rp_cruisecontroldistance50 = 'Cruise Control Usage 50-75km/h(%)';
-    // this.translationData.rp_cruisecontrolusage = 'Cruise Control Usage';
-    // this.translationData.rp_fuelconsumption = 'Fuel Consumption';
   }
 
   tableColumns(){
     this.columnDefinitions = [
       {
-        id: 'category', name: 'Category', field: 'key',
+        id: 'category', name: (this.translationData.lblCategory || 'Category'), field: 'key',
         type: FieldType.string, width: 150, formatter: this.treeFormatter
       },
       {
-        id: 'target', name: 'Target', field: 'target',
+        id: 'target', name: (this.translationData.lblTarget || 'Target'), field: 'target',
         type: FieldType.string, minWidth: 90, maxWidth: 100
       }
     ];
     this.columnDefinitionsGen = [
       {
-        id: 'categoryG', name: 'Category', field: 'key',
+        id: 'categoryG', name: (this.translationData.lblCategory || 'Category'), field: 'key',
         type: FieldType.string, width: 150, formatter: this.treeFormatter,// maxWidth: 400
       }
     ];
@@ -321,7 +296,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     if (value === null || value === undefined || dataContext === undefined) {
       return '';
     }
-    var foundValue = this.translationData.filter(obj=>obj.key === value);
+    var foundValue = this.translationData.value || this.translationDataLocal.filter(obj=>obj.key === value);
     if(foundValue === undefined || foundValue === null || foundValue.length === 0)
       value = value;
     else
