@@ -102,7 +102,7 @@
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
                    <div fxLayout="row" fxLayoutGap="2px">
-                    <mat-checkbox (change)="validateMinTripVal()" [(ngModel)]='minTripCheck' formControlName="minTripCheck"></mat-checkbox><mat-label>{{ translationData.lblFrom || 'Minimum Trip Distance' }} 
+                    <mat-checkbox (change)="validateMinTripVal()" [(ngModel)]='minTripCheck' formControlName="minTripCheck"></mat-checkbox><mat-label>{{ translationData.lblMinTripDistance || 'Minimum Trip Distance' }} 
                       <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') :
                          (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile') }})</span>
                       <span class='mandatoryColor'>*</span></mat-label>
@@ -118,7 +118,7 @@
                 </div>
                 <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
                   <div fxLayout="row" fxLayoutGap="2px">
-                    <mat-checkbox (change)="validateMinDistVal()" [(ngModel)]='minDriverCheck' formControlName="minDriverCheck"></mat-checkbox><mat-label>{{ translationData.lblTo || 'Minimum Driver Total Distance' }} 
+                    <mat-checkbox (change)="validateMinDistVal()" [(ngModel)]='minDriverCheck' formControlName="minDriverCheck"></mat-checkbox><mat-label>{{ translationData.lblMinDriverTotalDist || 'Minimum Driver Total Distance' }} 
                       <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') :
                         (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile') }})</span>
                       <span class='mandatoryColor'>*</span></mat-label>
