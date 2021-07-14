@@ -1373,54 +1373,31 @@ calendarOptions: CalendarOptions = {
     return date;
   }
 
-getAllSummaryData(){
+getAllSummaryData(){ 
     if(this.initData.length > 0){
       let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
       let averageDistPerDay = 0; let numbeOfVehicles = 0;
       this.initData.forEach(item => {         
-        numberOfTrips += parseFloat(item.numberOfTrips);
+        numberOfTrips += item.numberOfTrips;
         distanceDone += parseFloat(item.convertedDistance);
-        idleDuration += parseFloat(item.idleDuration);
-        averageDistPerDay += parseFloat(item.convertedAverageDistance);       
+       // idleDuration += parseFloat(item.idleDuration);
+        averageDistPerDay += parseFloat(item.convertedAverageDistance);   
+        
+        let time: any = 0;
+        time += (item.idleDuration);
+        let data: any = "00:00";
+        let hours = Math.floor(time / 3600);
+        time %= 3600;
+        let minutes = Math.floor(time / 60);
+        let seconds = time % 60;
+        data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
+        idleDuration = data;    
       });
-      numbeOfVehicles = this.initData.length;
-      let numberOfTrips_Val:any ; let distanceDone_Val:any; let idleDuration_Val :any;
-      let averageDistPerDay_Val:any; let numbeOfVehicles_Val :any;
-    
-      if(this.idleDurationStatus){
-        idleDuration_Val = idleDuration;     
-      }
-      else{
-        idleDuration_Val = '-';       
-      }
-      if(this.noOfVehStatus){
-        numbeOfVehicles_Val = numbeOfVehicles;      
-      }
-      else{
-        numbeOfVehicles_Val ='-';
-      }
-      if(this.avgDistanceStatus){
-        averageDistPerDay_Val =  averageDistPerDay;       
-      }
-      else{
-        averageDistPerDay_Val ='-';       
-      }
-      if(this.noOfTripsStatus){
-        numberOfTrips_Val = numberOfTrips;      
-      }
-      else{
-        numberOfTrips_Val='-';      
-      }
-      if(this.totalDistanceStatus){
-        distanceDone_Val = distanceDone;
-      }
-      else{
-        distanceDone_Val ='-';       
-      }    
+      numbeOfVehicles = this.initData.length;      
       this.summaryObj=[
         ['Fleet Utilization Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
-          this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numbeOfVehicles_Val, distanceDone_Val,
-          numberOfTrips_Val, idleDuration_Val, averageDistPerDay_Val
+          this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numbeOfVehicles, distanceDone.toFixed(2),
+          numberOfTrips, idleDuration, averageDistPerDay.toFixed(2)
         ]
       ];
     }
@@ -1431,8 +1408,12 @@ getAllSummaryData(){
   const title = 'Trip Fleet Utilisation Report';
   const summary = 'Summary Section';
   const detail = 'Detail Section';
-  const header = ['Vehicle Name', 'Vin', 'Registration Number', 'Distance', 'Number Of Trips', 'Trip Time', 'Driving Time', 'Iidle Duration', 'Stop Time', 'Average Speed', 'Average Weight', 'Average Distance Per Day', 'Odometer'];
-  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Vehicles', 'Total Distance', 'Number Of Trips', 'Idle Duration', 'Average Distance Per Day'];
+  let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+  let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
+  let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound || 'pound');
+  
+  const header = ['Vehicle Name', 'Vin', 'Registration Number', 'Distance('+ unitValkm + ')', 'Number Of Trips', 'Trip Time(hh:mm)', 'Driving Time(hh:mm)', 'Iidle Duration(hh:mm)', 'Stop Time(hh:mm)', 'Average Speed('+ unitValkmh + ')', 'Average Weight('+ unitValkg + ')', 'Average Distance Per Day('+ unitValkm + ')', 'Odometer('+ unitValkg + ')'];
+  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Vehicles', 'Total Distance('+ unitValkm + ')', 'Number Of Trips', 'Idle Duration', 'Average Distance Per Day('+ unitValkm + ')'];
   const summaryData= this.summaryObj;
   
   //Create workbook and worksheet
@@ -1473,10 +1454,10 @@ getAllSummaryData(){
   })
 
  this.initData.forEach(item => {     
-    worksheet.addRow([item.vehicleName,item.vin, item.registrationNumber,item.distance,
-      item.numberOfTrips,item.convertedTripTime, item.drivingTime, item.convertedIdleDuration,
+    worksheet.addRow([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
+      item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, item.convertedIdleDuration,
       item.convertedStopTime, item.convertedAverageSpeed, item.convertedAverageWeight,
-      item.averageDistancePerDay, item.odometer]);   
+      item.convertedAverageDistance, item.odometer]);   
   }); 
   worksheet.mergeCells('A1:D2'); 
   subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
