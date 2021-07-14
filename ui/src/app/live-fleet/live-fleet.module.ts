@@ -7,9 +7,10 @@ import { SharedModule } from '../shared/shared.module';
 import { ChartsModule } from 'ng2-charts';
 import { CurrentFleetComponent } from './current-fleet/current-fleet.component';
 import { LogBookComponent } from './log-book/log-book.component';
+import { FleetOverviewSummaryComponent } from './current-fleet/fleet-overview-summary/fleet-overview-summary.component';
 
 @NgModule({
-  declarations: [LiveFleetComponent, CurrentFleetComponent, LogBookComponent],
+  declarations: [LiveFleetComponent, CurrentFleetComponent, LogBookComponent, FleetOverviewSummaryComponent],
   imports: [
     CommonModule,
     LiveFleetRoutingModule,

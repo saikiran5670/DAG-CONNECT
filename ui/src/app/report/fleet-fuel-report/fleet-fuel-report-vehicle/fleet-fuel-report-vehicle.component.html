@@ -39,7 +39,7 @@
             </div>
   
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} </mat-label>
+              <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select (selectionChange)="onVehicleGroupChange($event)"
                   placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"
@@ -121,7 +121,7 @@
             </div>
   
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}</mat-label>
+              <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}<span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)"
                   placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
@@ -195,7 +195,7 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
   
             </mat-header-cell>
-            <mat-cell *matCellDef="let row">
+            <mat-cell *matCellDef="let row" >
               <span>{{row.vin}}</span>
             </mat-cell>
           </ng-container>
@@ -203,7 +203,7 @@
           <ng-container matColumnDef="vehicleRegistrationNo">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPlateNo || 'Plate No' }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row">
+            <mat-cell *matCellDef="let row" >
               <span>{{row.vehicleRegistrationNo}}</span>
             </mat-cell>
           </ng-container>
@@ -514,7 +514,7 @@
                   <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-'
                     }}</span>
                 </mat-cell>
-                <mat-cell *matCellDef="let row">
+                <mat-cell *matCellDef="let row" class="text-truncate">
                   <span>{{row.vehicleName}}</span>
                 </mat-cell>
               </ng-container>
@@ -522,16 +522,16 @@
               <ng-container matColumnDef="vin">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">
+                <mat-cell *matCellDef="let row" class="text-truncate">
                   <span>{{row.vin}}</span>
                 </mat-cell>
                 <!-- <mat-cell *matCellDef="let row">{{ row.vin != '' ? row.vin : '-' }}</mat-cell> -->
               </ng-container>
   
-              <ng-container matColumnDef="vehicleRegistrationNo">
+              <ng-container matColumnDef="vehicleRegistrationNo" >
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPlateNo || 'Plate No' }}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">
+                <mat-cell *matCellDef="let row" class="text-truncate">
                   <span>{{row.vehicleRegistrationNo}}</span>
                 </mat-cell>
                 <!-- <mat-cell *matCellDef="let row">{{ row.registrationNumber != '' ? row.registrationNumber : '-' }}</mat-cell> -->
