@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -43,6 +44,9 @@ namespace net.atos.daf.ct2.reports.entity
         public int LatestWarningGeolocationAddressId { get; set; }
         public string LatestWarningGeolocationAddress { get; set; }
         public string LatestWarningName { get; set; }
+        public int AlertGeolocationAddressId { get; set; }
+        public string AlertGeolocationAddress { get; set; }
         public List<LiveFleetPosition> LiveFleetPositions { get; set; }
+        public List<FleetOverviewAlert> FleetOverviewAlert { get; set; }
     }
 }

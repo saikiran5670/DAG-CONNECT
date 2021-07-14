@@ -341,10 +341,10 @@ namespace net.atos.daf.ct2.reports.repository
         }
         private async Task<bool> UpdateEcoscoreProfileKpi(List<EcoScoreProfileKPI> ecoScoreProfileKPI, int actionedBy, int id)
         {
-            var updateParameter = new DynamicParameters();
-            StringBuilder query = new StringBuilder();
             foreach (var item in ecoScoreProfileKPI)
             {
+                var updateParameter = new DynamicParameters();
+                StringBuilder query = new StringBuilder();
 
                 var temp = new EcoScoreProfileKPI();
                 temp.KPIId = item.KPIId;

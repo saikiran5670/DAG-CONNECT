@@ -347,6 +347,9 @@ namespace net.atos.daf.ct2.reportservice.entity
                 StartGeolocationAddress = fleetOverviewEntity.StartGeolocationAddress,
                 LatestWarningGeolocationAddressId = fleetOverviewEntity.LatestWarningGeolocationAddressId,
                 LatestWarningGeolocationAddress = fleetOverviewEntity.LatestWarningGeolocationAddress,
+
+                AlertGeolocationAddressId = fleetOverviewEntity.AlertGeolocationAddressId,
+                AlertGeolocationAddress = fleetOverviewEntity.AlertGeolocationAddress,
                 LatestWarningName = fleetOverviewEntity.LatestWarningName,
             };
             if (fleetOverviewEntity.LiveFleetPositions.Count > 0)
@@ -354,6 +357,14 @@ namespace net.atos.daf.ct2.reportservice.entity
                 foreach (var item in fleetOverviewEntity.LiveFleetPositions)
                 {
                     response.LiveFleetPosition.Add(ToLiveFleetPositionResponse(item));
+                }
+            }
+
+            if (fleetOverviewEntity.FleetOverviewAlert.Count > 0)
+            {
+                foreach (var item in fleetOverviewEntity.FleetOverviewAlert)
+                {
+                    response.FleetOverviewAlert.Add(ToLiveFleetAlertResponse(item));
                 }
             }
             return response;
@@ -372,6 +383,22 @@ namespace net.atos.daf.ct2.reportservice.entity
                 Fuelconsumtion = fleetOverviewEntity.Fuelconsumtion,
             };
             return liveFleetPosition;
+        }
+        public FleetOverviewAlert ToLiveFleetAlertResponse(net.atos.daf.ct2.reports.entity.FleetOverviewAlert fleetOverviewAlertEntity)
+        {
+            FleetOverviewAlert fleetOverviewAlert = new FleetOverviewAlert
+            {
+                Id = fleetOverviewAlertEntity.Id,
+                AlertName = fleetOverviewAlertEntity.AlertName,
+                AlertType = fleetOverviewAlertEntity.AlertType,
+                AlertLocation = fleetOverviewAlertEntity.AlertLocation,
+                AlertTime = fleetOverviewAlertEntity.AlertTime,
+                AlertLevel = fleetOverviewAlertEntity.AlertLevel,
+                CategoryType = fleetOverviewAlertEntity.CategoryType,
+                AlertLatitude = fleetOverviewAlertEntity.AlertLatitude,
+                AlertLongitude = fleetOverviewAlertEntity.AlertLongitude,
+            };
+            return fleetOverviewAlert;
         }
 
     }

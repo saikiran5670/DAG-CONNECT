@@ -53,5 +53,17 @@ namespace net.atos.daf.ct2.reports.entity
         public string Stageoadd_StartGeolocationAddress { get; set; }
         public int Wangeoadd_LatestWarningGeolocationAddressId { get; set; }
         public string Wangeoadd_LatestWarningGeolocationAddress { get; set; }
+        public int Tripal_Id { get; set; }
+        public string Tripal_TripId { get; set; }
+        public string AlertName { get; set; }
+        public string AlertType { get; set; }
+        public string AlertLocation { get; set; }
+        public string AlertTime { get; set; }
+        public string AlertLevel { get; set; }
+        public string CategoryType { get; set; }
+        public string AlertLatitude { get; set; }
+        public string AlertLongitude { get; set; }
+        public int Alertgeoadd_LatestAlertGeolocationAddressId { get; set; }
+        public string Alertgeoadd_LatestAlertGeolocationAddress { get; set; }
     }
 }

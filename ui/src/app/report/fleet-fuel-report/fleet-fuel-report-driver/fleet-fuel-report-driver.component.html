@@ -31,7 +31,7 @@
             </div>
   
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} </mat-label>
+              <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"
                   formControlName="vehicleGroup">
@@ -128,7 +128,7 @@
   
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
   
-              <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}</mat-label>
+              <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
   
               <mat-form-field appearance="outline">
   
@@ -173,7 +173,7 @@
   
   <!-- </div> -->
   <!-- Summary Section -->
-  
+  <div *ngIf='!showDetailedReport'>
   <div id="charts">
     <div *ngIf='!showDetailedReport'>
     <mat-card *ngIf='displayData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg' id="summary">
@@ -185,7 +185,7 @@
   
           <mat-panel-title>
   
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary || 'Summary' }}
+            <span  style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary || 'Summary' }}
   
             </span>
   
@@ -334,7 +334,7 @@
   
           <mat-panel-title>
   
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
+            <span id= "chartHeader" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
   
           </mat-panel-title>
   
@@ -1163,5 +1163,7 @@
       </mat-expansion-panel>
   
     </mat-card>
+    </div>
 
-<app-fleetfueldetails *ngIf='showDetailedReport && FuelData'></app-fleetfueldetails>
+    <app-fleetfueldetails *ngIf='showDetailedReport && FuelData' [translationData]='translationData' [detailsObject]='detailSummaryObj' 
+    [displayedColumns]='detaildisplayedColumns' [FuelData] ='FuelData'></app-fleetfueldetails>
