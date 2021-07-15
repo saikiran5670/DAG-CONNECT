@@ -20,6 +20,16 @@ namespace net.atos.daf.ct2.reports.entity
 
     }
 
+    public class FuelBenchmarkDetails
+    {
+        public int NumberOfActiveVehicles { get; set; }
+        public int NumberOfTotalVehicles { get; set; }
+        public decimal TotalFuelConsumed { get; set; }
+        public int TotalMileage { get; set; }
+        public decimal AverageFuelConsumption { get; set; }
+        public IEnumerable<Ranking> VehicleRanking { get; set; }
+    }
+
     public class FuelBenchmarkConsumption
     {
         public int Numbersofactivevehicle { get; set; }
