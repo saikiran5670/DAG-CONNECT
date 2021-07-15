@@ -455,7 +455,7 @@
                 <mat-card class='mat-elevation-z' *ngIf="(contactModeType == 'E' && addSmsFlag) || smsCount > 0"
                     style="border: 1px solid #000">
                     <mat-panel-title>
-                        <div fxLayout="row" fxLayoutAlign="space-between" style="width: 100%;">
+                        <div fxLayout="row" fxLayoutAlign="space-between" class="margin-bottom-sm" style="width: 100%;">
                             <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="right" class="areawidth">
                                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
 
@@ -478,18 +478,18 @@
                         </div>
                     </mat-panel-title>
                     <div fxLayout="row" class="full-width filter-direction" fxLayoutAlign="space-between">
-                        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                        <div fxLayout="column" class="min-width-50-per" fxLayoutGap="3px" fxLayoutAlign="left">
                             <div fxLayout="row" fxLayoutAlign="space-between"
                                 class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                                <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                                <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
                                     <mat-label>{{ translationData.lblBySmsMobileNumber || '(By SMS) Mobile Number' }} <span
                                             class='mandatoryColor'>*</span>
                                     </mat-label>
                                     <div class="mb-2">
-                                        <ngx-intl-tel-input [cssClass]="''" class="full-width" [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
-                                            [searchCountryFlag]="true" [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                                        <ngx-intl-tel-input [cssClass]="''" class="full-width" [enableAutoCountrySelect]="true" [enablePlaceholder]="true" 
+                                            [enableAutoCountrySelect]="true"  [searchCountryFlag]="true" [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
                                             [selectFirstCountry]="false" [maxLength]="15" [phoneValidation]="true"
-                                            [separateDialCode]="true" name="phone" formControlName="mobileNumber">
+                                            [separateDialCode]="true" name="mobileNumber" formControlName="mobileNumber">
                                         </ngx-intl-tel-input>
                                     </div>
                                     <mat-hint>{{translationData.lblOnlyOneContactNumberCanBeAddedAtATime || 'Only one contact number can be added at a time' }}</mat-hint>
@@ -502,7 +502,7 @@
                             </div>
                             <div fxLayout="row" fxLayoutAlign="space-between"
                                 class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-                                <div class="full-width  " fxLayout="column" fxLayoutAlign="left">
+                                <div class="areaWidth full-width  " fxLayout="column" fxLayoutAlign="left">
                                     <mat-label style='display: flex; place-content: space-between;'>{{
                                         translationData.lblMessageDescription || 'Message Description' }} <span
                                             class='mandatoryColor'>*</span>
@@ -521,7 +521,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
+                        <div fxLayout="column" class="min-width-50-per" fxLayoutGap="3px" fxLayoutAlign="left"
                             style="background: #dedddd;padding: 0.5em" class="areaWidth">
                             <!-- <div class="full-width orgGrayDefault" fxLayout="column" fxLayoutAlign="left" style="background: grey"> -->
                             <span
@@ -542,7 +542,7 @@
                                     {{ translationData.lblCustom || 'Custom' }}
                                 </mat-radio-button>
                             </mat-radio-group>
-                            <div *ngIf="limitButton == 'C'" fxLayout="row" class="full-width">
+                            <div *ngIf="smsLimitButton == 'C'" fxLayout="row" class="full-width">
                                 <div fxLayout="column" fxLayoutAlign="left" class="limitation">
                                     <mat-label>{{translationData.lblRestrictTo || 'RestrictTo'}}</mat-label>
                                     <!-- <mat-form-field appearance="outline" class="full-width"> -->

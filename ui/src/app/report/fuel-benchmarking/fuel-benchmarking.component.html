@@ -8,7 +8,23 @@
                   <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
                 </span>
               </mat-panel-title>
+
             </mat-expansion-panel-header>
+
+              <div class='areaWidth margin-bottom-xlg' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
+                <span class='radioLabel'>{{ translationData.lblBenchmarkBetween || 'Benchmark Between' }}:</span>
+                <mat-radio-group (change)='onBenchmarkChange($event)'>
+                  <mat-radio-button style='margin-right: 20px;' value="timePeriods"
+                    [checked]="selectedBenchmarking ===  'timePeriods' ? true : false">{{ translationData.lblTimePeriods || 'Time Periods' }}
+                  </mat-radio-button>
+                  <mat-radio-button style='margin-right: 20px;' value="vehicleGroup"
+                    [checked]="selectedBenchmarking ===  'vehicleGroup' ? true : false">{{ translationData.lblVehicleGroups || 'Vehicle Groups ' }}
+                  </mat-radio-button>
+                </mat-radio-group>
+                <div>{{ translationData.lblSelectionText || 'Select *Time Periods* to compare several groups on the same period or *Vehicle Groups* to compare one group on different periods.' }}</div>
+              </div>
+
+
             <div>
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
@@ -79,13 +95,13 @@
                       </div>
                     </div>
                   </div>
-                 </div>
+                </div>
                 <!--<div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline">
                     <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
                       <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
-                          {{ rer.vehicleName }}
+                        {{ rer.vehicleName }}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
@@ -94,9 +110,10 @@
                   </mat-error>
                 </div> -->
               </div>
+              <div class="margin-bottom-xlg">{{ translationData.lblBottomBenchmarkText || 'Add a period to compare in the benchmark (maximum 4 )' }}</div>
               <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
                 <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
-                  (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
+                (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
                 <button [disabled]="!fuelBenchmarkingForm.valid" class='no-margin' mat-raised-button color="primary"
                   (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
               </div>
