@@ -132,6 +132,12 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
             if (vehicle.FirstOrDefault() == null)
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "VIN_NOT_FOUND", parameter: nameof(request.VIN));
 
+            var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(account.Id, org.Id);
+            if (!visibleVehicles.Any(x => x.VIN == request.VIN))
+            {
+                return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "VIN_NOT_FOUND", parameter: nameof(request.VIN));
+            }
+
             return NoContent();
         }
 
