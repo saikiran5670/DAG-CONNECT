@@ -16,6 +16,7 @@ namespace net.atos.daf.ct2.reports
                                                                     bool isLiveFleetRequired = true);
         Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter driverActivityFilter);
         Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter driverActivityFilter);
+        Task<List<DriverActivityChart>> GetDriversActivityChartDetails(DriverActivityChartFilter driverActivityFilter);
         Task<IEnumerable<ReportDetails>> GetReportDetails();
         Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin);
         Task<int> CreateEcoScoreProfile(EcoScoreProfileDto dto);

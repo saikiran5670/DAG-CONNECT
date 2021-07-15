@@ -67,9 +67,9 @@ namespace net.atos.daf.ct2.reports
         /// </summary>
         /// <param name="DriverActivityFilter">Filters for driver activity with VIN and Driver ID </param>
         /// <returns></returns>
-        public async Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter DriverActivityFilter)
+        public async Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter driverActivityFilter)
         {
-            List<DriversActivities> driverActivities = await _reportRepository.GetDriversActivity(DriverActivityFilter);
+            List<DriversActivities> driverActivities = await _reportRepository.GetDriversActivity(driverActivityFilter);
             List<DriversActivities> combineDriverActivities = new List<DriversActivities>();
             combineDriverActivities = driverActivities.GroupBy(activityGroup => activityGroup.DriverId)
                                                       .Select(activityItem => new DriversActivities
@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.reports
         /// </summary>
         /// <param name="DriverActivityFilter">Filters for driver activity with VIN and Driver ID </param>
         /// <returns></returns>
-        public async Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter DriverActivityFilter) => await _reportRepository.GetDriversActivity(DriverActivityFilter);
+        public async Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter driverActivityFilter) => await _reportRepository.GetDriversActivity(driverActivityFilter);
 
         public async Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin)
         {
@@ -106,6 +106,13 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetReportSearchParameterByVIN(reportID, startDateTime, endDateTime, vin);
         }
+
+        /// <summary>
+        /// Fetch Single driver activities data for Stack Bar chart
+        /// </summary>
+        /// <param name="DriverActivityChartFilter">Filters for driver activity with VIN and Driver ID </param>
+        /// <returns></returns>
+        public async Task<List<DriverActivityChart>> GetDriversActivityChartDetails(DriverActivityChartFilter driverActivityFilter) => await _reportRepository.GetDriversActivityChartDetails(driverActivityFilter);
         #endregion
 
         #region Eco Score Report
