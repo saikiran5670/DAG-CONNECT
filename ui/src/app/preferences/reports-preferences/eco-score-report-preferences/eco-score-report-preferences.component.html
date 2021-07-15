@@ -1,0 +1,59 @@
+<!-- General tab -->
+<div *ngIf='generalColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 summaryPref' fxLayoutAlign="left center"
+    style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForGeneralColumns() : null'
+            [checked]='selectionForGeneralColumns.hasValue() && isAllSelectedForGeneralColumns()'
+            [indeterminate]='selectionForGeneralColumns.hasValue() && !isAllSelectedForGeneralColumns()'
+            [aria-label]='checkboxLabelForGeneralColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
+                translationData.lblGeneral || 'General'
+                }}</span>
+        </mat-checkbox>
+    </div>
+</div>
+<div *ngIf='generalColumnData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForGeneralColumns.toggle(generalColumnData[0]) : null; checkboxClicked($event, generalColumnData[0])'
+                [checked]="selectionForGeneralColumns.isSelected(generalColumnData[0])"
+                [aria-label]='checkboxLabelForGeneralColumns(generalColumnData[0])' class='custom-checkbox'><span>{{
+                    generalColumnData.length > 0 ? generalColumnData[0].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForGeneralColumns.toggle(generalColumnData[1]) : null; checkboxClicked($event, generalColumnData[1])'
+                [checked]="selectionForGeneralColumns.isSelected(generalColumnData[1])"
+                [aria-label]='checkboxLabelForGeneralColumns(generalColumnData[1])' class='custom-checkbox'><span>{{
+                    generalColumnData.length > 0 ? generalColumnData[1].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForGeneralColumns.toggle(generalColumnData[2]) : null; checkboxClicked($event, generalColumnData[2])'
+                [checked]="selectionForGeneralColumns.isSelected(generalColumnData[2])"
+                [aria-label]='checkboxLabelForGeneralColumns(generalColumnData[2])' class='custom-checkbox'><span>{{
+                    generalColumnData.length > 0 ? generalColumnData[2].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForGeneralColumns.toggle(generalColumnData[3]) : null; checkboxClicked($event, generalColumnData[3])'
+                [checked]="selectionForGeneralColumns.isSelected(generalColumnData[3])"
+                [aria-label]='checkboxLabelForGeneralColumns(generalColumnData[3])' class='custom-checkbox'><span>{{
+                    generalColumnData.length > 0 ? generalColumnData[3].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForGeneralColumns.toggle(generalColumnData[4]) : null; checkboxClicked($event, generalColumnData[4])'
+                [checked]="selectionForGeneralColumns.isSelected(generalColumnData[4])"
+                [aria-label]='checkboxLabelForGeneralColumns(generalColumnData[4])' class='custom-checkbox'><span>{{
+                    generalColumnData.length > 0 ? generalColumnData[4].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+</div>
