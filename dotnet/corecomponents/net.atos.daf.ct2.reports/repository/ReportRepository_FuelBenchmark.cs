@@ -67,7 +67,7 @@ namespace net.atos.daf.ct2.reports.repository
                 fuelBenchmarkConsumption = await _dataMartdataAccess.QueryFirstOrDefaultAsync<FuelBenchmarkConsumption>(query, param);
                 return fuelBenchmarkConsumption;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

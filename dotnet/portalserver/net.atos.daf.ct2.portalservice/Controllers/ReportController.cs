@@ -16,6 +16,7 @@ using net.atos.daf.ct2.portalservice.Entity.Report;
 using net.atos.daf.ct2.reportservice;
 using Newtonsoft.Json;
 using static net.atos.daf.ct2.reportservice.ReportService;
+using net.atos.daf.ct2.vehicleservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -32,10 +33,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly HereMapAddressProvider _hereMapAddressProvider;
         private readonly poiservice.POIService.POIServiceClient _poiServiceClient;
         private readonly MapService.MapServiceClient _mapServiceClient;
+        private readonly VehicleService.VehicleServiceClient _vehicleClient;
 
         public ReportController(ReportServiceClient reportServiceClient, AuditHelper auditHelper,
                                IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper,
-                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient, AccountPrivilegeChecker privilegeChecker
+                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient, AccountPrivilegeChecker privilegeChecker,
+                               VehicleService.VehicleServiceClient vehicleClient
                                ) : base(httpContextAccessor, sessionHelper, privilegeChecker)
         {
             _reportServiceClient = reportServiceClient;
@@ -45,6 +48,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _poiServiceClient = poiServiceClient;
             _mapServiceClient = mapServiceClient;
             _hereMapAddressProvider = new HereMapAddressProvider(_mapServiceClient, _poiServiceClient);
+            _vehicleClient = vehicleClient;
         }
 
 
@@ -1344,6 +1348,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var data = await _reportServiceClient.GetFuelBenchmarkByVehicleGroupAsync(objFleetFilter);
                 if (data?.FuelBenchmarkDetails != null)
                 {
+                    VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
+                    vehicleRequest.VehicleGroupId = request.VehicleGroupId;
+                    vehicleRequest.GroupType = "G";
+                    vehicleRequest.FunctionEnum = "";
+                    vehicleRequest.OrgnizationId = GetContextOrgId();
+                    VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
+                    data.FuelBenchmarkDetails.NumberOfTotalVehicles = vehicleResponse.VehicleCount;
                     data.Message = ReportConstants.GET_FUEL_BENCHMARK_SUCCESS_MSG;
                     return Ok(data);
                 }
