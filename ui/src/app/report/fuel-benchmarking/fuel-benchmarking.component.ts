@@ -262,7 +262,7 @@ fromTripPageBack: boolean = false;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.fuelBenchmarkingForm = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
-      // vehicle: ['', [Validators.required]],
+      vehicle: ['', []],
       startDate: ['', []],
       endDate: ['', []],
       startTime: ['', []],
@@ -622,8 +622,107 @@ fromTripPageBack: boolean = false;
   }
 
   onSearch(){
+    this.internalSelection = true;
+    // this.resetChartData(); // reset chart data
+    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
+    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    let selectedVehicleGroup = this.fuelBenchmarkingForm.controls.vehicleGroup.value;
+    let _vinData: any = [];
     
-  }
+ 
+    if(selectedVehicleGroup){
+      this.showLoadingIndicator = true;
+      //request payload 
+      let searchDataParam = {
+        "VechileGroupID": selectedVehicleGroup,
+        "StartDate": _startTime,
+        "EndDate": _endTime,
+        "VINs": [
+          "VIN1",
+          "VIN2",
+          "VIN3",
+          "VIN4"
+        ]
+      }
+
+
+
+    //Response payload for time period
+
+let responseDataTP = {
+  "VechileGroupID": "value",
+  "vehicleGroupName": "value",
+  "ActiveVehicle": "value",
+  "TotalFuelConsumed": "value",
+  "TotalMileage": "value",
+  "AverageFuelConumption": "value",
+  "Ranking": [
+    {
+      "Vehicle Name": "value",
+      "VIN": "value",
+      "FuelConsumption": "value",
+      
+    }
+  ]
+}
+
+
+if( parseInt(this.fuelBenchmarkingForm.controls.vehicle.value ) == 0){
+  _vinData = this.vehicleDD.filter(i => i.vehicleId != 0).map(item => item.vin);
+}else{
+let search = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.fuelBenchmarkingForm.controls.vehicle.value));
+if(search.length > 0){
+  _vinData.push(search[0].vin);
+}
+}
+if(_vinData.length > 0){
+this.showLoadingIndicator = true;
+let searchDataParam = {
+ "startDateTime":_startTime,
+ "endDateTime":_endTime,
+ "viNs":  _vinData,
+}
+this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
+
+this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+// this.setTableInfo();
+// this.updateDataSource(this.tripData);
+this.hideloader();
+this.isChartsOpen = true;
+//this.isCalendarOpen = true;
+this.isSummaryOpen = true;
+this.tripData.forEach(element => {
+ if(element.distance > this.mileagebasedThreshold){
+   this.greaterMileageCount = this.greaterMileageCount + 1;
+ }
+ if(element.drivingTime > this.timebasedThreshold){
+   this.greaterTimeCount = this.greaterTimeCount + 1;
+ }
+});
+let percentage1 = (this.greaterMileageCount/this.tripData.length)*100 ;
+this.doughnutChartData = [percentage1, 100- percentage1];
+this.mileagePieChartData = [percentage1,  100- percentage1]
+let percentage2 = (this.greaterTimeCount/this.tripData.length)* 100;
+this.doughnutChartDataForTime = [percentage2, 100- percentage2];
+this.timePieChartData = [percentage2, 100- percentage2];
+
+}, (error)=>{
+  //console.log(error);
+ this.hideloader();
+ this.tripData = [];
+  this.tableInfoObj = {};
+//  this.updateDataSource(this.tripData);
+});
+// this.reportService.getCalendarDetails(searchDataParam).subscribe((calendarData: any) => {
+//  this.setChartData(calendarData["calenderDetails"]);
+//  this.calendarSelectedValues(calendarData["calenderDetails"]);
+// })
+}
+
+     }
+     console.log("---all selected value--",_startTime,_endTime,selectedVehicleGroup,this.vehicleDD)
+    }
+
   onVehicleGroupChange(event: any){
     if(event.value || event.value == 0){
        this.internalSelection = true; 
