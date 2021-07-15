@@ -194,6 +194,7 @@ export class ReportService {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
     };
     return this.httpClient
       .post<any[]>(
@@ -206,6 +207,7 @@ export class ReportService {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
     };
     return this.httpClient
       .put<any[]>(
@@ -218,6 +220,7 @@ export class ReportService {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
     };
    return this.httpClient
       .delete<any>(`${this.reportServiceUrl}/ecoscore/deleteprofile?ProfileId=${profileId}`, headers)

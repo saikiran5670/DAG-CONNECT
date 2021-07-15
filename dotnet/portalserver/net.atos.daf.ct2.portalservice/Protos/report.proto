@@ -702,12 +702,27 @@ message FleetOverviewDetails
 	string LatestWarningGeolocationAddress=36;
 	string LatestWarningName=37;
     repeated LiveFleetPosition LiveFleetPosition=38;
+    repeated FleetOverviewAlert FleetOverviewAlert=39;
+    int32 AlertGeolocationAddressId=40;
+	string AlertGeolocationAddress=41;
 }
 
 message FleetOverviewDetailsResponse {
     repeated FleetOverviewDetails FleetOverviewDetailList= 1;   
     Responsecode Code = 2;
     string Message = 3;
+}
+
+message FleetOverviewAlert {
+    string AlertName=1;
+    string AlertType=2; 
+    string AlertLocation=3;
+    string AlertTime=4; 
+    string AlertLevel=5;
+    string CategoryType=6;
+    string AlertLatitude=7;
+    string AlertLongitude=8;
+    int32 Id=9;
 }
 /// END: FleetOverview
 
@@ -789,7 +804,10 @@ message FleetFuelDetails {
     google.protobuf.StringValue IdlingConsumptionValue = 34;
     google.protobuf.StringValue DriverID = 35;
     google.protobuf.StringValue DriverName = 36;
-    repeated LiveFleetPosition LiveFleetPosition=37;
+    int64 StartDate = 37;
+    int64 EndDate = 38;
+    repeated LiveFleetPosition LiveFleetPosition=39;
+   
 }
 message FleetFuelDetailsByDriver {
     google.protobuf.StringValue VehicleName = 1;
@@ -828,7 +846,9 @@ message FleetFuelDetailsByDriver {
     google.protobuf.StringValue IdlingConsumptionValue = 34;
     google.protobuf.StringValue DriverID = 35;
     google.protobuf.StringValue DriverName = 36;
-    repeated LiveFleetPosition LiveFleetPosition=37;
+    int64 StartDate = 37;
+    int64 EndDate = 38;
+    repeated LiveFleetPosition LiveFleetPosition=39;  
 }
 message FleetFuelTripDetails {
     string VehicleName = 1;

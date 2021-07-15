@@ -214,6 +214,8 @@ namespace net.atos.daf.ct2.reports.repository
                     coalesce(stageoadd.address,'') as stageoadd_StartGeolocationAddress,
                     wangeoadd.id as wangeoadd_LatestWarningGeolocationAddressId,
                     coalesce(wangeoadd.address,'') as wangeoadd_LatestWarningGeolocationAddress,
+                    alertgeoadd.id as alertgeoadd_LatestAlertGeolocationAddressId,
+                    coalesce(alertgeoadd.address,'') as alertgeoadd_LatestAlertGeolocationAddress,
                     tripal.id,
                     coalesce(tripal.trip_id,'') as tripal_TripId,
                     tripal.name as alertname,
@@ -237,7 +239,7 @@ namespace net.atos.daf.ct2.reports.repository
                     left join tripdetail.tripalert tripal
                     on lcts.vin=tripal.vin
 
-                    left join master.geolocationaddress latgeoadd
+                    left join master.geolocationaddress alertgeoadd
                     on TRUNC(CAST(tripdetail.tripaler.latitude as numeric),4)= TRUNC(CAST(latgeoadd.latitude as numeric),4) 
                     and TRUNC(CAST(tripdetail.tripaler.longitude as numeric),4) = TRUNC(CAST(latgeoadd.longitude as numeric),4)
                     left join master.geolocationaddress latgeoadd

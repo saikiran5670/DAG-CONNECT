@@ -31,7 +31,7 @@
         public KPI FuelConsumption { get; set; }
         public KPI HarshBrakeDuration { get; set; }
         public KPI HarshBrakePercentage { get; set; }
-        public KPI HeavyThrottlinglDuration { get; set; }
+        public KPI HeavyThrottlingDuration { get; set; }
         public KPI HeavyThrottlingPercentage { get; set; }
         public KPI IdlingTime { get; set; }
         public KPI IdleDuration { get; set; }
@@ -56,5 +56,11 @@
     {
         public double Total { get; set; }
         public int Count { get; set; }
+
+        public KPI(double total, int count)
+        {
+            Total = total;
+            Count = count;
+        }
     }
 }

@@ -1,5 +1,5 @@
 import { EventEmitter } from '@angular/core';
-import { Component, Input, OnInit, Output, ViewEncapsulation, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, Output, ViewEncapsulation, ElementRef } from '@angular/core';
 import {
   AngularGridInstance,
   Column,
@@ -52,6 +52,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   displayColumns: string[];
   displayData: any[];
   showTable: boolean;
+  gridOptionsCommon: GridOption;
   
   constructor(private reportService: ReportService, private elementRef:ElementRef) { }
 
@@ -60,7 +61,6 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     this.showTable = true;
     this.driverDetails = this.compareEcoScore.drivers;
     this.tableColumns();
-    this.defineGridGen();
     this.defineGrid();
     this.loadData();
   }
@@ -104,17 +104,17 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     this.columnDefinitions = [
       {
         id: 'category', name: (this.translationData.lblCategory || 'Category'), field: 'key',
-        type: FieldType.string, width: 150, formatter: this.treeFormatter
+        type: FieldType.string, width: 150, formatter: this.treeFormatter, excludeFromHeaderMenu: true
       },
       {
         id: 'target', name: (this.translationData.lblTarget || 'Target'), field: 'target',
-        type: FieldType.string, minWidth: 90, maxWidth: 100
+        type: FieldType.string, minWidth: 90, maxWidth: 100, excludeFromHeaderMenu: true
       }
     ];
     this.columnDefinitionsGen = [
       {
         id: 'categoryG', name: (this.translationData.lblCategory || 'Category'), field: 'key',
-        type: FieldType.string, width: 150, formatter: this.treeFormatter,// maxWidth: 400
+        type: FieldType.string, width: 150, formatter: this.treeFormatter, excludeFromHeaderMenu: true// maxWidth: 400
       }
     ];
     
@@ -178,22 +178,13 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     }
   }
 
-  defineGrid() {
-    this.gridOptions = {
-      autoResize: {
-        containerId: 'container-DriverPerformance',
-        sidePadding: 10
-      },
-      autoTooltipOptions: {
-        enableForCells: true,
-        enableForHeaderCells: true,
-        maxToolTipLength: 200
-      },
+  defineGrid(){
+    this.gridOptionsCommon = {
       enableAutoSizeColumns: true,
       enableAutoResize: true,
       forceFitColumns: true,
       enableExport: false,
-      enableHeaderMenu: false,
+      enableHeaderMenu: true,
       enableContextMenu: false,
       enableGridMenu: false,
       enableFiltering: true,
@@ -203,12 +194,9 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         childrenPropName: 'subCompareDrivers'
       },
       multiColumnSort: false, // multi-column sorting is not supported with Tree Data, so you need to disable it
-      // change header/cell row height for salesforce theme
       headerRowHeight: 45,
       rowHeight: 40,
       showCustomFooter: true,
-
-      // use Material Design SVG icons
       contextMenu: {
         iconCollapseAllGroupsCommand: 'mdi mdi-arrow-collapse',
         iconExpandAllGroupsCommand: 'mdi mdi-arrow-expand',
@@ -219,63 +207,41 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         iconExportTextDelimitedCommand: 'mdi mdi-download',
       },
       headerMenu: {
-        hideColumnHideCommand: true,
+        hideColumnHideCommand: false,
         hideClearFilterCommand: true,
         hideColumnResizeByContentCommand: true
       },
-      presets: {
-        columns: this.columnPerformance
+    }
+    this.defineGridGeneral();
+    this.defineGridPerformance();
+  }
+
+  defineGridPerformance() {
+    this.gridOptions = {
+      ...this.gridOptionsCommon,
+      ...{
+        autoResize: {
+          containerId: 'container-DriverPerformance',
+          sidePadding: 10
+        },
+        presets: {
+          columns: this.columnPerformance
+        }
       }
     };
   }
 
-  defineGridGen() {
+  defineGridGeneral() {
     this.gridOptionsGen = {
-      autoResize: {
-        containerId: 'container-General',
-        sidePadding: 10
-      },
-      autoTooltipOptions: {
-        enableForCells: true,
-        enableForHeaderCells: true,
-        maxToolTipLength: 200
-      },
-      autoHeight: true,
-      enableAutoSizeColumns: true,
-      enableAutoResize: true,
-      forceFitColumns: true,
-      enableExport: false,
-      enableHeaderMenu: false,
-      enableContextMenu: false,
-      enableGridMenu: false,
-      enableFiltering: true,
-      enableTreeData: true, // you must enable this flag for the filtering & sorting to work as expected
-      treeDataOptions: {
-        columnId: 'categoryG',
-        childrenPropName: 'subCompareDrivers'
-      },
-      multiColumnSort: false,
-      headerRowHeight: 45,
-      rowHeight: 40,
-      showCustomFooter: true,
-
-      // use Material Design SVG icons
-      contextMenu: {
-        iconCollapseAllGroupsCommand: 'mdi mdi-arrow-collapse',
-        iconExpandAllGroupsCommand: 'mdi mdi-arrow-expand',
-        iconClearGroupingCommand: 'mdi mdi-close',
-        iconCopyCellValueCommand: 'mdi mdi-content-copy',
-        iconExportCsvCommand: 'mdi mdi-download',
-        iconExportExcelCommand: 'mdi mdi-file-excel-outline',
-        iconExportTextDelimitedCommand: 'mdi mdi-download',
-      },
-      headerMenu: {
-        hideColumnHideCommand: true,
-        hideClearFilterCommand: true,
-        hideColumnResizeByContentCommand: true
-      },
-      presets: {
-        columns: this.columnGeneral
+      ...this.gridOptionsCommon,
+      ...{
+        autoResize: {
+          containerId: 'container-General',
+          sidePadding: 10
+        },
+        presets: {
+          columns: this.columnGeneral
+        }
       }
     };
   }
@@ -371,54 +337,5 @@ export class EcoScoreDriverCompareComponent implements OnInit {
       successMsg: ""
     }  
     this.backToMainPage.emit(emitObj);
-  }
-
-  ngAfterViewInit() {
-    // this.elementRef.nativeElement.querySelector('.driver1')
-    //                               .addEventListener('click', this.removeHeader.bind(this));
-    // this.elementRef.nativeElement.querySelector('.driver2')
-    //                               .addEventListener('click', this.removeHeader.bind(this));
-    // this.elementRef.nativeElement.querySelector('.driver3')
-    //                               .addEventListener('click', this.removeHeader.bind(this));
-    // this.elementRef.nativeElement.querySelector('.driver4')
-    //                               .addEventListener('click', this.removeHeader.bind(this));
-    // this.elementRef.nativeElement.querySelector('.driverG1')
-    //                               .addEventListener('click', this.removeHeader.bind(this));
-    // this.elementRef.nativeElement.querySelector('.driverG2')
-    //                               .addEventListener('click', this.removeHeader.bind(this));
-    // this.elementRef.nativeElement.querySelector('.driverG3')
-    //                               .addEventListener('click', this.removeHeader.bind(this));
-    // this.elementRef.nativeElement.querySelector('.driverG4')
-    //                               .addEventListener('click', this.removeHeader.bind(this));
-  }
-
-  removeHeader(event: any){
-    if(event.srcElement.outerHTML.indexOf("driver1") !== -1){
-      this.removeColumn("driver1");
-    } else if(event.srcElement.outerHTML.indexOf("driver2") !== -1){
-      this.removeColumn("driver2");
-    } else if(event.srcElement.outerHTML.indexOf("driver3") !== -1){
-      this.removeColumn("driver3");
-    } else if(event.srcElement.outerHTML.indexOf("driver4") !== -1){
-      this.removeColumn("driver4");
-    } else if(event.srcElement.outerHTML.indexOf("driverG1") !== -1){
-      this.removeColumnG("driverG1");
-    } else if(event.srcElement.outerHTML.indexOf("driverG2") !== -1){
-      this.removeColumnG("driverG2");
-    } else if(event.srcElement.outerHTML.indexOf("driverG3") !== -1){
-      this.removeColumnG("driverG3");
-    } else if(event.srcElement.outerHTML.indexOf("driverG4") !== -1){
-      this.removeColumnG("driverG4");
-    } 
-  }
-
-  removeColumn(driverId){
-    this.angularGrid.gridService.hideColumnById(driverId);
-    //this.dataViewObj.refresh();
-  }
-
-  removeColumnG(driverId){
-    this.angularGridGen.gridService.hideColumnById(driverId);
-    //this.dataViewObjGen.refresh();
   }
 }

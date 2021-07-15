@@ -55,8 +55,8 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<FilterProperty>> GetHealthStatusList();
         Task<List<FilterProperty>> GetOtherFilter();
         Task<List<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter);
-        Task<bool> GetKPIInfo(EcoScoreDataServiceRequest request);
-        Task<bool> GetChartInfo(EcoScoreDataServiceRequest request);
+        Task<dynamic> GetKPIInfo(EcoScoreDataServiceRequest request);
+        Task<dynamic> GetChartInfo(EcoScoreDataServiceRequest request);
         Task<List<DriverFilter>> GetDriverList(List<string> vins);
 
         Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest);
@@ -66,10 +66,13 @@ namespace net.atos.daf.ct2.reports.repository
         Task<IEnumerable<FuelDeviation>> GetFilteredFuelDeviation(FuelDeviationFilter fuelDeviationFilters);
         #endregion
         #region LogBook
-        Task<LogbookSearchFilter> GetLogbookSearchParameter(List<string> vins);
+        Task<IEnumerable<LogbookSearchFilter>> GetLogbookSearchParameter(List<string> vins);
         #endregion
+
         #region Fuel Benchmark Report
         Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter);
+        Task<IEnumerable<Ranking>> GetFuelBenchmarkRanking(FuelBenchmarkConsumptionParameter fuelBenchmarkConsumptionParameter);
+        Task<FuelBenchmarkConsumption> GetFuelBenchmarkDetail(FuelBenchmarkConsumptionParameter fuelBenchmarkConsumptionParameter);
         #endregion
     }
 }
