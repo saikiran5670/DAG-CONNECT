@@ -59,8 +59,8 @@ namespace net.atos.daf.ct2.reports
         #endregion
         Task<IEnumerable<LogbookSearchFilter>> GetLogbookSearchParameter(List<string> vins);
         #region Fuel Benchmark Report
-        Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter);
-        Task<FuelBenchmarkDetails> GetFuelBenchmarkDetails(FuelBenchmarkConsumptionParameter fuelBenchmarkFilter);
+       // Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter);
+        Task<FuelBenchmarkDetails> GetFuelBenchmarkDetails(FuelBenchmarkFilter fuelBenchmarkFilter);
         #endregion
     }
 }

@@ -1006,7 +1006,7 @@ message LogbookFilterResponse {
 message FuelBenchmarkRequest{
     int64 StartDateTime = 1;
     int64 EndDateTime = 2;   
-    string VIN = 3;
+    repeated string VINs = 3;
 }
 
 message FuelBenchmarkResponse{
@@ -1016,18 +1016,18 @@ message FuelBenchmarkResponse{
 }
 
 message FuelBenchmarkDetails {
-    int32 Number_of_Active_Vehicles = 1;
-    int32 Number_of_Total_Vehicles = 2;
-    string Total_fuel_consumed = 3;
-    string Total_Mileage = 4;
-    string Average_fuel_consumption = 5;
-    string Vehicle_Group_Name = 6;
+    int32 NumberOfActiveVehicles = 1;
+    int32 NumberOfTotalVehicles = 2;
+    double TotalFuelConsumed = 3;
+    double TotalMileage = 4;
+    double AverageFuelConsumption = 5;
+    string VehicleGroupName = 6;
     repeated Ranking Ranking = 7;
 }
 
 message Ranking {
       string VIN = 1;
       string VehicleName = 2;
-      string ConsumptionName = 3;
+      double ConsumptionName = 3;
 }
 /// END: Fuel Bechmark Report

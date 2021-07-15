@@ -579,11 +579,11 @@ namespace net.atos.daf.ct2.reports
         #endregion
 
         #region Fuel Benchmark Report
-        public Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter)
-        {
-            return _reportRepository.GetFuelBenchmarks(fuelBenchmarkFilter);
-        }
-        public async Task<FuelBenchmarkDetails> GetFuelBenchmarkDetails(FuelBenchmarkConsumptionParameter fuelBenchmarkFilter)
+        //public Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter)
+        //{
+        //    return _reportRepository.GetFuelBenchmarks(fuelBenchmarkFilter);
+        //}
+        public async Task<FuelBenchmarkDetails> GetFuelBenchmarkDetails(FuelBenchmarkFilter fuelBenchmarkFilter)
         {
             var fuelConsumptionCalculation = await _reportRepository.GetFuelBenchmarkDetail(fuelBenchmarkFilter);
             var vehicleRanking = await _reportRepository.GetFuelBenchmarkRanking(fuelBenchmarkFilter);

@@ -70,9 +70,9 @@ namespace net.atos.daf.ct2.reports.repository
         #endregion
 
         #region Fuel Benchmark Report
-        Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter);
-        Task<IEnumerable<Ranking>> GetFuelBenchmarkRanking(FuelBenchmarkConsumptionParameter fuelBenchmarkConsumptionParameter);
-        Task<FuelBenchmarkConsumption> GetFuelBenchmarkDetail(FuelBenchmarkConsumptionParameter fuelBenchmarkConsumptionParameter);
+      //  Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter);
+        Task<IEnumerable<Ranking>> GetFuelBenchmarkRanking(FuelBenchmarkFilter fuelBenchmarkFilter);
+        Task<FuelBenchmarkConsumption> GetFuelBenchmarkDetail(FuelBenchmarkFilter fuelBenchmarkFilter);
         #endregion
     }
 }
