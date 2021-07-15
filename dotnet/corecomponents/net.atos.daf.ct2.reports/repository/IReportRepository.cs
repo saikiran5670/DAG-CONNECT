@@ -68,11 +68,13 @@ namespace net.atos.daf.ct2.reports.repository
         #endregion
         #region LogBook
         Task<IEnumerable<LogbookSearchFilter>> GetLogbookSearchParameter(List<string> vins);
+        Task<List<FilterProperty>> GetAlertLevelList(List<string> enums);
+        Task<List<AlertCategory>> GetAlertCategoryList(List<string> enums);
         Task<List<LogbookDetailsFilter>> GetLogbookDetails(LogbookFilter logbookFilter);
         #endregion
 
         #region Fuel Benchmark Report
-      //  Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter);
+        //  Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter);
         Task<IEnumerable<Ranking>> GetFuelBenchmarkRanking(FuelBenchmarkFilter fuelBenchmarkFilter);
         Task<FuelBenchmarkConsumption> GetFuelBenchmarkDetail(FuelBenchmarkFilter fuelBenchmarkFilter);
         #endregion

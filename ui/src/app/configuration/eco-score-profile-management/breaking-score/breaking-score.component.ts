@@ -28,6 +28,7 @@ export class BreakingScoreComponent implements OnInit {
         ceil: this.kpiData.upperValue,
         step: 4,  
         showTicks: true, 
+        showOuterSelectionBars: true,
   };  
 
   constructor(private _formBuilder: FormBuilder) { }

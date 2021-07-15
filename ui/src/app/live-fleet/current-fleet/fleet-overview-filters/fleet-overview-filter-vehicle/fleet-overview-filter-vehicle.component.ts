@@ -14,4 +14,10 @@ export class FleetOverviewFilterVehicleComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  applyFilter(filterValue: string) {
+    // filterValue = filterValue.trim();
+    // filterValue = filterValue.toLowerCase();
+    // this.dataSource.filter = filterValue;
+  }
+
 }
