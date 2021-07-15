@@ -45,20 +45,22 @@ namespace net.atos.daf.ct2.reportscheduler
                     Dictionary<string, string> reportTokens = new Dictionary<string, string>();
                     Dictionary<string, string> toAddressList = new Dictionary<string, string>();
                     var mailSent = new ReportEmailDetail();
-
+                    List<ReportTokens> reportTokensList = new List<ReportTokens>();
                     foreach (var emailItem in item.ReportSchedulerEmailResult)
                     {
-                        reportTokens.Add(emailItem.ReportToken.ToString(), emailItem.Key.Trim());
+                        ReportTokens objReportTokens = new ReportTokens();
+                        objReportTokens.Token = emailItem.ReportToken.ToString();
+                        objReportTokens.ReportName = emailItem.Key.Trim();
+                        reportTokensList.Add(objReportTokens);
                         if (!toAddressList.ContainsKey(emailItem.EmailId))
                         {
                             toAddressList.Add(emailItem.EmailId, null);
                         }
-
                         mailNotification.MessageRequest = new MessageRequest()
                         {
                             AccountInfo = new AccountInfo() { EmailId = emailItem.EmailId, Organization_Id = emailItem.OrganizationId },
                             LanguageCode = emailItem.LanguageCode.Trim(),
-                            ReportTokens = reportTokens,
+                            ReportTokens = reportTokensList,
                             ToAddressList = toAddressList,
                             Subject = emailItem.MailSubject,
                             Description = emailItem.MailDescription,

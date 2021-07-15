@@ -325,6 +325,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
+        [Route("drivetime/getdetails/chart")]
+        public async Task<IActionResult> GetDriverActivityChartDetails([FromBody] Entity.Report.DriverTimeChartFilter request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG); }
+                if (string.IsNullOrEmpty(request.DriverId)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_DRIVERIDREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                DriverActivityChartFilterRequest objDriverChartData = JsonConvert.DeserializeObject<DriverActivityChartFilterRequest>(filters);
+                _logger.Info("GetDriverActivityAsync method in Report (Single Driver Time details Report) API called.");
+                var data = await _reportServiceClient.GetDriverActivityChartDetailsAsync(objDriverChartData);
+                if (data?.DriverActivitiesChartData?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_DRIVER_TIME_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPost]
         [Route("drivetime/getparameters")]
         public async Task<IActionResult> GetDriverActivityParameters([FromBody] IdRequestForDriverActivity request)
         {
@@ -1175,8 +1207,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     if (item.GeoLocationAddressId == 0 && item.Latitude != 0 && item.Longitude != 0)
                     {
                         var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.Latitude, item.Longitude);
-                        item.GeoLocationAddress = getMapRequestLatest?.Address;
-                        item.GeoLocationAddressId = (int)getMapRequestLatest?.Id;
+                        item.GeoLocationAddress = getMapRequestLatest.Address;
+                        item.GeoLocationAddressId = getMapRequestLatest.Id;
                     }
                 }
                 if (response?.FuelDeviationDetails?.Count > 0)

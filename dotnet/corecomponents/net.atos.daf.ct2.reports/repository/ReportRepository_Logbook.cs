@@ -35,6 +35,74 @@ namespace net.atos.daf.ct2.reports.repository
             return tripAlertList.AsList<LogbookSearchFilter>();
         }
 
+        public async Task<List<LogbookDetailsFilter>> GetLogbookDetails(LogbookFilter logbookFilter)
+        {
+            List<LogbookDetailsFilter> logbookDetailsFilters = new List<LogbookDetailsFilter>();
+
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vins", logbookFilter.VIN);
+                parameter.Add("@start_time_stamp", logbookFilter.Start_Time, System.Data.DbType.Int32);
+                parameter.Add("@end_time_stamp", logbookFilter.End_time, System.Data.DbType.Int32);
+                string queryLogBookPull = @"select ta.vin as VIN,
+                                v.registration_no,
+                                v.name as Vehicle_Name,
+                                ta.trip_id,category_type as Alert_Category,
+                                ta.type as Alert_Type,
+                                ta.name as Alert_name
+                                alert_id,
+                                param_filter_distance_threshold_value as Threshold_Value,
+                                param_filter_distance_threshold_value_unit_type as Threshold_unit,
+                                latitude,
+                                longitude,
+                                alert_generated_time,
+                                start_time_stamp as Trip_Start,
+                                end_time_stamp as Trip_End
+                                from tripdetail.tripalert ta left join master.vehicle v on ta.vin = v.vin inner join tripdetail.trip_statistics ts
+                                on ta.vin = ts.vin where ta.vin =@vins and ta.start_time_stamp = @start_time_stamp and ta.end_time_stamp = @end_time_stamp";
+
+
+                if (logbookFilter.VIN.Count > 0)
+                {
+                    parameter.Add("@vin", logbookFilter.VIN);
+                    queryLogBookPull += " and ta.vin = Any(@vin) ";
+                }
+                if (logbookFilter.AlertLevel.Count > 0)
+                {
+                    parameter.Add("@alert_level", logbookFilter.AlertLevel);
+                    queryLogBookPull += " and ta.alert_level = Any(@alert_level) ";
+                }
+
+                if (logbookFilter.AlertType.Count > 0)
+                {
+                    parameter.Add("@alert_level", logbookFilter.AlertLevel);
+                    queryLogBookPull += " and ta.alert_level = Any(@alert_level) ";
+                }
+                if (logbookFilter.AlertCategory.Count > 0)
+                {
+                    parameter.Add("@alert_category", logbookFilter.AlertCategory);
+                    queryLogBookPull += " and ta.alert_category = Any(@alert_category) ";
+                }
+                List<LogbookDetailsFilter> logBookDetailsResult = (List<LogbookDetailsFilter>)await _dataMartdataAccess.QueryAsync<LogbookDetailsFilter>(queryLogBookPull, parameter);
+                if (logBookDetailsResult.Count > 0)
+                {
+                    return logBookDetailsResult;
+                }
+                else
+                {
+                    return new List<LogbookDetailsFilter>();
+                }
+
+            }
+
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+    }
+
         public async Task<List<FilterProperty>> GetAlertLevelList(List<string> enums)
         {
             var parameter = new DynamicParameters();

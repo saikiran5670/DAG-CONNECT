@@ -16,7 +16,8 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
                 string query = @"SELECT 
-                          fueldev.id as FuelDeviationId
+                           trpst .trip_id as TripId
+                        ,  fueldev.id as FuelDeviationId
 	                    , fueldev.fuel_event_type as FuelEventType
 	                    , fueldev.vehicle_activity_type as VehicleActivityType
 	                    , fueldev.fuel_difference  as FuelDiffernce
@@ -36,10 +37,10 @@ namespace net.atos.daf.ct2.reports.repository
 	                    , trpst.etl_gps_driving_time as DrivingTime
 	                    , trpst.no_of_alerts as Alerts
 	                    , trpst.vin as VIN
-	                    , v.registration_no as RegistrationNo
-	                    , v.name as VehicleName
-                        , fueldev.geolocation_address_id as GeoLocationAddressId
-	                    , geoaddr.address as GeoLocationAddress
+	                    , CASE WHEN v.registration_no IS NULL THEN '' ELSE v.registration_no END as RegistrationNo
+	                    , CASE WHEN v.name IS NULL THEN '' ELSE v.name END as VehicleName
+                        , geoaddr.id as GeoLocationAddressId
+	                    , CASE WHEN geoaddr.address IS NULL THEN '' ELSE geoaddr.address END as GeoLocationAddress
                     from tripdetail.trip_statistics as trpst	 
 	                     INNER JOIN livefleet.livefleet_trip_fuel_deviation as fueldev
 	 	                    ON fueldev.trip_id = trpst.trip_id AND trpst.vin = Any(@vins)
@@ -47,13 +48,11 @@ namespace net.atos.daf.ct2.reports.repository
 		                                            trpst.end_time_stamp >= @StartDateTime
 		                                            AND trpst.end_time_stamp <= @EndDateTime
 		                                            )
-	                     INNER JOIN master.vehicle as v 
+	                     Left JOIN master.vehicle as v 
 	 	                    ON v.vin = trpst.vin
 	                     left JOIN master.geolocationaddress as geoaddr
                             on TRUNC(CAST(geoaddr.latitude as numeric),4)= TRUNC(CAST(fueldev.latitude as numeric),4) 
-                    and TRUNC(CAST(geoaddr.longitude as numeric),4) = TRUNC(CAST(fueldev.longitude as numeric),4)
-                    	 	                   
-ON geoaddr.id = fueldev.geolocation_address_id ";
+                    and TRUNC(CAST(geoaddr.longitude as numeric),4) = TRUNC(CAST(fueldev.longitude as numeric),4) ";
 
                 var parameter = new DynamicParameters();
                 parameter.Add("@StartDateTime", fuelDeviationFilters.StartDateTime);

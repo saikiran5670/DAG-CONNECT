@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, NgZone } from '@angular/core';
+import { TranslationService } from '../../services/translation.service';
 
 declare var H: any;
 
@@ -10,30 +11,48 @@ declare var H: any;
 export class CurrentFleetComponent implements OnInit {
 
   private platform: any;
-  constructor(private zone: NgZone) { }
-  ngOnInit() { }
-
-  public ngAfterViewInit() {
-    
-    // this.platform = new H.service.Platform({
-    //   "app_id": 'devportal-demo-20180625',
-    //   "app_code": '9v2BkviRwi9Ot26kp2IysQ'
-    // });
-
-    // let defaultLayers = this.platform.createDefaultLayers();
-    // let map = new H.Map(
-    //   document.getElementById('here-map'),
-    //     defaultLayers.normal.map,
-    //     {
-    //         zoom: 10,
-    //         center: { lat: 18.5204, lng: 73.8567 }
-    //     }
-    // );
+  public userPreferencesFlag: boolean = false;
+  localStLanguage: any;
+  accountOrganizationId: any;
+  translationData: any = {};
   
-    // var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));  
-    // // Create the default UI components
-    // var ui = H.ui.UI.createDefault(map, defaultLayers);
-    // map.getViewPort().resize();
+  constructor(private translationService: TranslationService) { }
+
+  ngOnInit() {
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    let translationObj = {
+      id: 0,
+      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 18 
+    }
+    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+      this.processTranslation(data);
+    });
+   }
+
+   processTranslation(transData: any) {
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
+
+   userPreferencesSetting(event) {
+    this.userPreferencesFlag = !this.userPreferencesFlag;
+    let summary = document.getElementById("summary");
+    let sidenav = document.getElementById("sidenav");
+
+    if(this.userPreferencesFlag){
+    summary.style.width = '70%';
+    sidenav.style.width = '30%';
+    }
+    else{
+      summary.style.width = '100%';
+      sidenav.style.width = '0%';
+    }
+  } 
+
 
 }

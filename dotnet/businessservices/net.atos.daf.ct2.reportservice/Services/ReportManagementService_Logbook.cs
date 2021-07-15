@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using net.atos.daf.ct2.reportservice.entity;
 using Newtonsoft.Json;
+using ReportComponent = net.atos.daf.ct2.reports;
+using net.atos.daf.ct2.reports.entity;
 
 namespace net.atos.daf.ct2.reportservice.Services
 {
@@ -77,6 +79,62 @@ namespace net.atos.daf.ct2.reportservice.Services
                     Message = ex.Message
                 });
             }
+        }
+
+        public override async Task<LogbookDetailsResponse> GetLogbookDetails(LogbookDetailsRequest logbookDetailsRequest, ServerCallContext context)
+        {
+            try
+            {
+                _logger.Info("Get GetLogbookDetails ");
+                LogbookDetailsResponse response = new LogbookDetailsResponse();
+                var vehicleDeatilsWithAccountVisibility =
+                                await _visibilityManager.GetVehicleByAccountVisibility(logbookDetailsRequest.AccountId, logbookDetailsRequest.OrganizationId);
+
+                if (vehicleDeatilsWithAccountVisibility.Count() == 0)
+                {
+                    response.Message = string.Format(ReportConstants.GET_VIN_VISIBILITY_FAILURE_MSG, logbookDetailsRequest.AccountId, logbookDetailsRequest.OrganizationId);
+                    response.Code = Responsecode.Failed;
+                    return response;
+                }
+
+
+                ReportComponent.entity.LogbookFilter logbookFilter = new ReportComponent.entity.LogbookFilter
+                {
+                    GroupId = logbookDetailsRequest.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : logbookDetailsRequest.GroupIds.ToList(),
+                    AlertCategory = logbookDetailsRequest.AlertCategories.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : logbookDetailsRequest.AlertCategories.ToList(),
+                    AlertLevel = logbookDetailsRequest.AlertLevels.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : logbookDetailsRequest.AlertLevels.ToList(),
+                    AlertType = logbookDetailsRequest.AlertType.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : logbookDetailsRequest.AlertType.ToList(),
+                    VIN = logbookDetailsRequest.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ?
+                    vehicleDeatilsWithAccountVisibility.Select(x => x.Vin).Distinct().ToList() :
+                    vehicleDeatilsWithAccountVisibility.Where(x => logbookDetailsRequest.GroupIds.ToList().Contains(x.VehicleGroupId.ToString())).Select(x => x.Vin).Distinct().ToList(),
+                    Start_Time = logbookDetailsRequest.StartTime,
+                    End_time = logbookDetailsRequest.EndTime
+                };
+                var result = await _reportManager.GetLogbookDetails(logbookFilter);
+                if (result?.Count > 0)
+                {
+                    response.Code = Responsecode.Success;
+                    response.Message = Responsecode.Success.ToString();
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = "No Result Found";
+                }
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new LogbookDetailsResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetLogbookDetails get failed due to - " + ex.Message
+                });
+
+            }
+
         }
     }
 }
