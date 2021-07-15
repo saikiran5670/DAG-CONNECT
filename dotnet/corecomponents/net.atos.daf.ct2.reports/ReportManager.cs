@@ -576,6 +576,10 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetLogbookSearchParameter(vins);
         }
+        public async Task<List<LogbookDetailsFilter>> GetLogbookDetails(LogbookFilter logbookFilter)
+        {
+            return await _reportRepository.GetLogbookDetails(logbookFilter);
+        }
         #endregion
 
         #region Fuel Benchmark Report
