@@ -136,6 +136,44 @@ namespace net.atos.daf.ct2.reports.repository
                 return new List<Driver>();
             }
         }
+
+        public async Task<List<DriverActivityChart>> GetDriversActivityChartDetails(DriverActivityChartFilter activityFilters)
+        {
+            try
+            {
+                var parameterOfFilters = new DynamicParameters();
+                parameterOfFilters.Add("@FromDate", activityFilters.StartDateTime);
+                parameterOfFilters.Add("@ToDate", activityFilters.EndDateTime);
+                parameterOfFilters.Add("@DriverId", activityFilters.DriverId);
+                string queryActivities = @"SELECT
+                                           	activity_date as activitDate
+                                             , code
+                                             , duration as Duration
+                                             , start_time as starttime
+                                             , end_time as endtime
+                                           FROM
+                                              livefleet.livefleet_trip_driver_activity
+                                           WHERE 
+                                                start_time >= @FromDate
+                                           	    AND end_time <= @ToDate
+                                           	    AND driver_id = @DriverId
+                                           GROUP BY
+                                               code
+                                             , date_trunc('day', to_timestamp(activity_date/1000)) 
+                                             , activity_date
+                                             , start_time
+                                             , end_time";
+
+                List<DriverActivityChart> lstDriverActivitiesChartData = (List<DriverActivityChart>)await _dataMartdataAccess.QueryAsync<DriverActivityChart>(queryActivities, parameterOfFilters);
+
+                return lstDriverActivitiesChartData;
+
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+        }
         #endregion
     }
 }

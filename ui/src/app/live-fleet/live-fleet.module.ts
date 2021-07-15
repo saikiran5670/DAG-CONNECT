@@ -9,9 +9,11 @@ import { CurrentFleetComponent } from './current-fleet/current-fleet.component';
 import { LogBookComponent } from './log-book/log-book.component';
 import { FleetOverviewSummaryComponent } from './current-fleet/fleet-overview-summary/fleet-overview-summary.component';
 import { FleetOverviewFiltersComponent } from './current-fleet/fleet-overview-filters/fleet-overview-filters.component';
+import { FleetOverviewFilterVehicleComponent } from './current-fleet/fleet-overview-filters/fleet-overview-filter-vehicle/fleet-overview-filter-vehicle.component';
+import { FleetOverviewFilterDriverComponent } from './current-fleet/fleet-overview-filters/fleet-overview-filter-driver/fleet-overview-filter-driver.component';
 
 @NgModule({
-  declarations: [LiveFleetComponent, CurrentFleetComponent, LogBookComponent, FleetOverviewSummaryComponent, FleetOverviewFiltersComponent],
+  declarations: [LiveFleetComponent, CurrentFleetComponent, LogBookComponent, FleetOverviewSummaryComponent, FleetOverviewFiltersComponent, FleetOverviewFilterVehicleComponent, FleetOverviewFilterDriverComponent],
   imports: [
     CommonModule,
     LiveFleetRoutingModule,

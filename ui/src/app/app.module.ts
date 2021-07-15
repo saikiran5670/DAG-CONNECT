@@ -41,6 +41,7 @@ import { NotificationAdvancedFilterComponent } from './configuration/alerts/crea
 import {AutocompleteLibModule} from 'angular-ng-autocomplete';
 import { DownloadReportModule } from './download-report/download-report.module';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
@@ -69,6 +70,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     PreferencesModule,
     AutocompleteLibModule,
     DownloadReportModule,
+    BsDropdownModule.forRoot(),
     NgxIntlTelInputModule
     //RouterModule.forRoot(appRoute)
   ],

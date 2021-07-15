@@ -12,6 +12,7 @@ rpc GetVinsFromTripStatisticsWithVehicleDetails (VehicleListRequest) returns (Ve
 rpc GetFilteredTripDetails (TripFilterRequest) returns (TripResponse);
 rpc GetDriversActivity (ActivityFilterRequest) returns (DriverActivityResponse);
 rpc GetDriverActivity (SingleDriverActivityFilterRequest) returns (DriverActivityResponse);
+rpc GetDriverActivityChartDetails (DriverActivityChartFilterRequest) returns (DriverActivityChartResponse);
 rpc GetReportDetails (TempPara) returns (ReportDetailsResponse);
 rpc GetDriverActivityParameters (IdRequestForDriverActivity) returns (DriverListAndVehicleDetailsResponse);
 rpc CreateEcoScoreProfile (CreateEcoScoreProfileRequest) returns (CreateEcoScoreProfileResponse);
@@ -37,6 +38,7 @@ rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelD
 rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriverRequest) returns (FleetFuelDetailsResponse);
 rpc GetFilteredFuelDeviation (FuelDeviationFilterRequest) returns (FuelDeviationResponse);
 rpc GetLogbookSearchParameter (LogbookFilterIdRequest) returns (LogbookFilterResponse);
+rpc GetLogbookDetails(LogbookDetailsRequest) returns (LogbookDetailsResponse);
 rpc GetFuelBenchmarks (FuelBenchmarkRequest) returns (FuelBenchmarkResponse);
 }
 
@@ -342,7 +344,11 @@ message ActivityFilterRequest {
     repeated string VINs = 3;
     repeated string DriverIds = 4;
 }
-
+message DriverActivityChartFilterRequest {
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    string DriverId = 3;
+}
 message DriverActivityResponse {
     repeated DriverActivity DriverActivities = 1;   
     Responsecode code = 2;
@@ -362,8 +368,18 @@ message DriverActivity {
     int64 DriveTime = 11;
     int64 ServiceTime = 12;
 }
-
-
+message DriverActivityChartResponse {
+    repeated DriverActivityChartData DriverActivitiesChartData = 1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+message DriverActivityChartData {
+    int64 ActivityDate = 1;
+    int32 Code = 2; 
+    int64 Duration = 3;
+    int64 StartTime = 4;
+    int64 EndTime = 5;
+}
 message DriverListAndVehicleDetailsResponse{
 Responsecode Code = 1;
 string Message = 2;
@@ -940,33 +956,32 @@ message GetEcoScoreReportCompareDriversRequest {
 
 /// START: Fuel Deviation Report
 message FuelDeviationDetails {
-    int32 Id =1;
-    string TripId=2;
-    string VIN=3;
-    int64 StartTimeStamp=4;
-    int64 EndTimeStamp=5; 
-    int32 Distance=6; 
-    int32 IdleDuration=7;    
-    int32 AverageSpeed=8;
-    int32 AverageWeight=9;
-    int64 Odometer=10;
-    string StartPosition =11;
-    string EndPosition=12;
-    double FuelConsumed=13;
-    int32 DrivingTime =14;
-    int32 Alert =15;
-    int32 Events=16;     
-    string FuelEventType=17;   
-    string RegistrationNo =18;
-    string VehicleName=19;
-    string VehicleActivityType = 20;
-    int64 EventTime=21;
-    double FuelDiffernce = 22;
-    double Latitude = 23;
-    double Longitude = 24;
-    int32 GeoLocationAddressId = 25;
-    string GeoLocationAddress = 26;
-    int32 FuelDeviationId = 27;
+    string TripId=1;
+    string VIN=2;
+    int64 StartTimeStamp=3;
+    int64 EndTimeStamp=4; 
+    int32 Distance=5; 
+    int32 IdleDuration=6;    
+    int32 AverageSpeed=7;
+    int32 AverageWeight=8;
+    int64 Odometer=9;
+    string StartPosition =10;
+    string EndPosition=11;
+    double FuelConsumed=12;
+    int32 DrivingTime =13;
+    int32 Alert =14;
+    int32 Events=15;     
+    string FuelEventType=16;   
+    string RegistrationNo =17;
+    string VehicleName=18;
+    string VehicleActivityType = 19;
+    int64 EventTime=20;
+    double FuelDiffernce = 21;
+    double Latitude = 22;
+    double Longitude = 23;
+    int32 GeoLocationAddressId = 24;
+    string GeoLocationAddress = 25;
+    int32 FuelDeviationId = 26;
 }
 
 message FuelDeviationFilterRequest{
@@ -1001,12 +1016,51 @@ message LogbookFilterResponse {
   string message = 8;
   repeated DriverListResponse DriverList = 9;
 }
+
+message LogbookDetailsRequest{
+    repeated string GroupIds = 1;
+    repeated string VIN = 2;
+    repeated string AlertLevels = 3;
+    repeated string AlertCategories = 4;
+    repeated string AlertType = 5;
+    int64 StartTime = 6;
+    int64 EndTime =7;
+    int32 AccountId = 8;
+    int32 OrganizationId = 9;
+    int32 RoleId = 10;
+}
+
+message LogbookDetails{
+         string VIN = 1;
+         string TripId = 2;
+         string VehicleRegNo =3;
+         string VehicleName =4;
+         string AlertName =5;
+         string AlertType =6;
+         int32 Occurrence  =7;
+         string AlertLevel =8;
+         string AlertCategory =9;
+         int64 TripStartTime =10;
+         int64 TripEndTime =11;
+         double Latitude =12;
+         double Longitude =13;
+         string Address =14;
+         string Threshold =15;
+         string GroupIds= 16;
+}
+
+message LogbookDetailsResponse{
+    repeated LogbookDetails LogbookDetails= 1;   
+    Responsecode Code = 2;
+    string Message = 3;
+    }
+
 //***************End Logbook*******************
 /// START : Fuel Bechmark Report
 message FuelBenchmarkRequest{
     int64 StartDateTime = 1;
     int64 EndDateTime = 2;   
-    string VIN = 3;
+    repeated string VINs = 3;
 }
 
 message FuelBenchmarkResponse{
@@ -1016,18 +1070,18 @@ message FuelBenchmarkResponse{
 }
 
 message FuelBenchmarkDetails {
-    int32 Number_of_Active_Vehicles = 1;
-    int32 Number_of_Total_Vehicles = 2;
-    string Total_fuel_consumed = 3;
-    string Total_Mileage = 4;
-    string Average_fuel_consumption = 5;
-    string Vehicle_Group_Name = 6;
+    int32 NumberOfActiveVehicles = 1;
+    int32 NumberOfTotalVehicles = 2;
+    double TotalFuelConsumed = 3;
+    double TotalMileage = 4;
+    double AverageFuelConsumption = 5;
+    string VehicleGroupName = 6;
     repeated Ranking Ranking = 7;
 }
 
 message Ranking {
       string VIN = 1;
       string VehicleName = 2;
-      string ConsumptionName = 3;
+      double ConsumptionName = 3;
 }
 /// END: Fuel Bechmark Report
