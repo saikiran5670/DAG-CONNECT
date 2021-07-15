@@ -400,6 +400,25 @@ namespace net.atos.daf.ct2.reportservice.entity
             return fleetOverviewAlert;
         }
 
+        public FuelBenchmarkDetails MapFuelBenchmarktoModel(net.atos.daf.ct2.reports.entity.FuelBenchmarkDetails request)
+        {
+            FuelBenchmarkDetails fuelbenchmark = new FuelBenchmarkDetails();
+            fuelbenchmark.NumberOfActiveVehicles = request.NumberOfActiveVehicles;
+            fuelbenchmark.NumberOfTotalVehicles = request.NumberOfTotalVehicles;
+            fuelbenchmark.TotalMileage = request.TotalMileage;
+            fuelbenchmark.TotalFuelConsumed = request.TotalFuelConsumed;
+            fuelbenchmark.AverageFuelConsumption = request.AverageFuelConsumption;
+            foreach (var item in request.Ranking)
+            {
+                Ranking objRanking = new Ranking();
+                objRanking.VIN = item.VIN;
+                objRanking.FuelConsumption = item.FuelConsumption;
+                objRanking.VehicleName = item.VehicleName;
+                fuelbenchmark.Ranking.Add(objRanking);
+            }
+            return fuelbenchmark;
+        }
+
     }
 
 }
