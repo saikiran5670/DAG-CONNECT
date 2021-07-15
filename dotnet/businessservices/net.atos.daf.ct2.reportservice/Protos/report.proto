@@ -941,33 +941,32 @@ message GetEcoScoreReportCompareDriversRequest {
 
 /// START: Fuel Deviation Report
 message FuelDeviationDetails {
-    int32 Id =1;
-    string TripId=2;
-    string VIN=3;
-    int64 StartTimeStamp=4;
-    int64 EndTimeStamp=5; 
-    int32 Distance=6; 
-    int32 IdleDuration=7;    
-    int32 AverageSpeed=8;
-    int32 AverageWeight=9;
-    int64 Odometer=10;
-    string StartPosition =11;
-    string EndPosition=12;
-    double FuelConsumed=13;
-    int32 DrivingTime =14;
-    int32 Alert =15;
-    int32 Events=16;     
-    string FuelEventType=17;   
-    string RegistrationNo =18;
-    string VehicleName=19;
-    string VehicleActivityType = 20;
-    int64 EventTime=21;
-    double FuelDiffernce = 22;
-    double Latitude = 23;
-    double Longitude = 24;
-    int32 GeoLocationAddressId = 25;
-    string GeoLocationAddress = 26;
-    int32 FuelDeviationId = 27;
+    string TripId=1;
+    string VIN=2;
+    int64 StartTimeStamp=3;
+    int64 EndTimeStamp=4; 
+    int32 Distance=5; 
+    int32 IdleDuration=6;    
+    int32 AverageSpeed=7;
+    int32 AverageWeight=8;
+    int64 Odometer=9;
+    string StartPosition =10;
+    string EndPosition=11;
+    double FuelConsumed=12;
+    int32 DrivingTime =13;
+    int32 Alert =14;
+    int32 Events=15;     
+    string FuelEventType=16;   
+    string RegistrationNo =17;
+    string VehicleName=18;
+    string VehicleActivityType = 19;
+    int64 EventTime=20;
+    double FuelDiffernce = 21;
+    double Latitude = 22;
+    double Longitude = 23;
+    int32 GeoLocationAddressId = 24;
+    string GeoLocationAddress = 25;
+    int32 FuelDeviationId = 26;
 }
 
 message FuelDeviationFilterRequest{
