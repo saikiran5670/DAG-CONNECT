@@ -46,20 +46,23 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
                 var param = new DynamicParameters();
+                int totalActiveVehicle = 0;
+                totalActiveVehicle = fuelBenchmarkFilter.VINs.Count();
+
                 string query = @"Select
-                                count(VIN) as numbersofactivevehicle                                                  		 
+                                @totalActiveVehicle as numbersofactivevehicle                                                  		 
                                 , SUM(etl_gps_distance) as totalmileage
                                 , Round(SUM(etl_gps_fuel_consumed),2) as totalfuelconsumed
-                                , Round(SUM(etl_gps_fuel_consumed)/ count(VIN),2) as averagefuelconsumption
+                                , Round(SUM(etl_gps_fuel_consumed)/ @totalActiveVehicle,2) as averagefuelconsumption
                                 From
                                 tripdetail.trip_statistics 
                                 WHERE (start_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
-                                AND VIN=ANY(@vin)
-                                GROUP BY
-                                vin,etl_gps_fuel_consumed";
+                                AND VIN=ANY(@vin)";
                 param.Add("@vin", fuelBenchmarkFilter.VINs);
                 param.Add("@fromDate", fuelBenchmarkFilter.StartDateTime);
                 param.Add("@endDate", fuelBenchmarkFilter.EndDateTime);
+                param.Add("@totalActiveVehicle", totalActiveVehicle);
+
                 FuelBenchmarkConsumption fuelBenchmarkConsumption = new FuelBenchmarkConsumption();
                 fuelBenchmarkConsumption = await _dataMartdataAccess.QueryFirstOrDefaultAsync<FuelBenchmarkConsumption>(query, param);
                 return fuelBenchmarkConsumption;
