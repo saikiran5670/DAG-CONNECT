@@ -8,9 +8,10 @@ import { ChartsModule } from 'ng2-charts';
 import { CurrentFleetComponent } from './current-fleet/current-fleet.component';
 import { LogBookComponent } from './log-book/log-book.component';
 import { FleetOverviewSummaryComponent } from './current-fleet/fleet-overview-summary/fleet-overview-summary.component';
+import { FleetOverviewFiltersComponent } from './current-fleet/fleet-overview-filters/fleet-overview-filters.component';
 
 @NgModule({
-  declarations: [LiveFleetComponent, CurrentFleetComponent, LogBookComponent, FleetOverviewSummaryComponent],
+  declarations: [LiveFleetComponent, CurrentFleetComponent, LogBookComponent, FleetOverviewSummaryComponent, FleetOverviewFiltersComponent],
   imports: [
     CommonModule,
     LiveFleetRoutingModule,
