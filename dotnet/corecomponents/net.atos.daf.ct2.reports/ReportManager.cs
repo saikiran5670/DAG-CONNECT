@@ -576,6 +576,15 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetLogbookSearchParameter(vins);
         }
+
+        public async Task<List<FilterProperty>> GetAlertLevelList(List<string> enums)
+        {
+            return await _reportRepository.GetAlertLevelList(enums);
+        }
+        public async Task<List<AlertCategory>> GetAlertCategoryList(List<string> enums)
+        {
+            return await _reportRepository.GetAlertCategoryList(enums);
+        }
         #endregion
         #region Fuel Benchmark Report
         public Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter)

@@ -988,13 +988,18 @@ message LogbookFilterIdRequest {
 message LogbookFilterResponse {
   repeated AssociatedVehicleRequest AssociatedVehicleRequest = 1;
   repeated FilterResponse ALFilterResponse = 2;
-  repeated AlertCategoryFilterResponse ACFilterResponse = 3;
-  repeated FilterResponse HSFilterResponse = 4;
-  repeated FilterResponse OFilterResponse = 5;
-  repeated FleetOverviewVGFilterRequest FleetOverviewVGFilterResponse = 6;
-  Responsecode code = 7;
-  string message = 8;
-  repeated DriverListResponse DriverList = 9;
+  repeated AlertCategoryFilterResponse ACFilterResponse = 3;    
+  repeated AlertCategoryFilterRequest AlertTypeFilterRequest=4;
+   Responsecode code = 5;
+  string message = 6;
+
+}
+message AlertCategoryFilterRequest {
+		 int32 VehicleGroupId =  1;
+         int32 VehicleId =  2;
+         string FeatureName =  3;
+         string FeatureKey =  4;
+         bool Subscribe =  5;
 }
 //***************End Logbook*******************
 /// START : Fuel Bechmark Report
