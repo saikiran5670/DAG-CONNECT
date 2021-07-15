@@ -1,1 +1,6 @@
-<p>fleet-overview-filter-vehicle works!</p>
+<div fxLayout="row" fxLayoutAlign="space-between" style="padding-top: 20px;">
+      <mat-form-field appearance="outline">
+          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+          <span matPrefix><mat-icon>search</mat-icon></span>
+      </mat-form-field>
+</div>
