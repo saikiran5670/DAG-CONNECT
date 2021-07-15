@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
                 var result = await ValidateParameters(request, minDistance);
                 if (result is NoContentResult)
                 {
-                    var response = _reportManager.GetChartInfo(MapRequest(request, minDistance));
+                    var response = await _reportManager.GetChartInfo(MapRequest(request, minDistance));
 
                     return Ok(response);
                 }
@@ -121,7 +121,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
             if (account == null)
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ACCOUNT_NOT_FOUND", parameter: nameof(request.AccountEmail));
 
-            if (!account.DriverId.Equals(request.DriverId))
+            if (string.IsNullOrEmpty(account.DriverId) || (!string.IsNullOrEmpty(account.DriverId) && !account.DriverId.Equals(request.DriverId)))
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INCORRECT_DRIVERID", parameter: nameof(request.DriverId));
 
             var org = await _organizationManager.GetOrganizationByOrgCode(request.OrganizationId);

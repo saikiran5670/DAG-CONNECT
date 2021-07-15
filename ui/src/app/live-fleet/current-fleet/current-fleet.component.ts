@@ -10,8 +10,25 @@ declare var H: any;
 export class CurrentFleetComponent implements OnInit {
 
   private platform: any;
+  public userPreferencesFlag: boolean = false;
   constructor(private zone: NgZone) { }
-  ngOnInit() { }
+  ngOnInit() {
+    
+   }
+   userPreferencesSetting(event) {
+    this.userPreferencesFlag = !this.userPreferencesFlag;
+    let summary = document.getElementById("summary");
+    let sidenav = document.getElementById("sidenav");
+
+    if(this.userPreferencesFlag){
+    summary.style.width = '70%';
+    sidenav.style.width = '30%';
+    }
+    else{
+      summary.style.width = '100%';
+      sidenav.style.width = '0%';
+    }
+  } 
 
   public ngAfterViewInit() {
     
