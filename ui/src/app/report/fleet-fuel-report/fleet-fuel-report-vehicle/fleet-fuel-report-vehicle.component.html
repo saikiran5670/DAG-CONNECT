@@ -39,7 +39,7 @@
             </div>
   
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} </mat-label>
+              <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select (selectionChange)="onVehicleGroupChange($event)"
                   placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"
@@ -121,7 +121,7 @@
             </div>
   
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}</mat-label>
+              <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}<span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)"
                   placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
@@ -195,7 +195,7 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
   
             </mat-header-cell>
-            <mat-cell *matCellDef="let row">
+            <mat-cell *matCellDef="let row" >
               <span>{{row.vin}}</span>
             </mat-cell>
           </ng-container>
@@ -203,7 +203,7 @@
           <ng-container matColumnDef="vehicleRegistrationNo">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPlateNo || 'Plate No' }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row">
+            <mat-cell *matCellDef="let row" >
               <span>{{row.vehicleRegistrationNo}}</span>
             </mat-cell>
           </ng-container>
@@ -233,6 +233,7 @@
     <!-- Summary Section -->
   
     <div id="charts">
+        <div *ngIf='!showDetailedReport'>
       <mat-card *ngIf='displayData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg' id="summary">
         <mat-expansion-panel [(expanded)]="isSummaryOpen" class="full-width" fxLayoutGap="10px"
           (opened)="isSummaryOpen == true" (closed)="isSummaryOpen == false">
@@ -344,7 +345,7 @@
           (closed)="!isChartsOpen">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts ||
+              <span id="chartHeader" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts ||
                 'Charts' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
@@ -429,7 +430,7 @@
                 style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px;'>{{
                 translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
               <div *ngIf="ConsumptionChartType =='Line'" class="chart-wrapper">
-                <canvas baseChart [datasets]="lineChartData5" [labels]="lineChartLabels" [options]="lineChartOptions3"
+                <canvas baseChart [datasets]="lineChartData5" [labels]="lineChartLabels" [options]="lineChartOptions5"
                   [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType"
                   [plugins]="lineChartPlugins">
                 </canvas>
@@ -513,7 +514,7 @@
                   <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-'
                     }}</span>
                 </mat-cell>
-                <mat-cell *matCellDef="let row">
+                <mat-cell *matCellDef="let row" class="text-truncate">
                   <span>{{row.vehicleName}}</span>
                 </mat-cell>
               </ng-container>
@@ -521,16 +522,16 @@
               <ng-container matColumnDef="vin">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">
+                <mat-cell *matCellDef="let row" class="text-truncate">
                   <span>{{row.vin}}</span>
                 </mat-cell>
                 <!-- <mat-cell *matCellDef="let row">{{ row.vin != '' ? row.vin : '-' }}</mat-cell> -->
               </ng-container>
   
-              <ng-container matColumnDef="vehicleRegistrationNo">
+              <ng-container matColumnDef="vehicleRegistrationNo" >
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPlateNo || 'Plate No' }}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">
+                <mat-cell *matCellDef="let row" class="text-truncate">
                   <span>{{row.vehicleRegistrationNo}}</span>
                 </mat-cell>
                 <!-- <mat-cell *matCellDef="let row">{{ row.registrationNumber != '' ? row.registrationNumber : '-' }}</mat-cell> -->
@@ -839,7 +840,7 @@
   
               <ng-container matColumnDef="averageTrafficClassificationValue">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblaverageTrafficClassificationValue
-                  || 'averageTrafficClassificationValue' }}
+                  || 'average TrafficClassification Value' }}
                   <!-- <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
             (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||
             'pound') }})</span> -->
@@ -852,7 +853,7 @@
   
               <ng-container matColumnDef="idlingConsumptionValue">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblidlingConsumptionValue ||
-                  'idlingConsumptionValue' }}
+                  'idling Consumption Value' }}
                   <!-- <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
             (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||
             'pound') }})</span> -->

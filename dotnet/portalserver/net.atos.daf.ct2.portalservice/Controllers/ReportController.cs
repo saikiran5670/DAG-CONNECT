@@ -35,8 +35,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         public ReportController(ReportServiceClient reportServiceClient, AuditHelper auditHelper,
                                IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper,
-                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient
-                               ) : base(httpContextAccessor, sessionHelper)
+                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient, AccountPrivilegeChecker privilegeChecker
+                               ) : base(httpContextAccessor, sessionHelper, privilegeChecker)
         {
             _reportServiceClient = reportServiceClient;
             _auditHelper = auditHelper;
@@ -400,7 +400,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 grpcRequest.AccountId = _userDetails.AccountId;
                 grpcRequest.OrgId = GetContextOrgId();
                 var response = await _reportServiceClient.CreateEcoScoreProfileAsync(grpcRequest);
-                return Ok(response);
+                return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
             {
@@ -429,7 +429,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 Metadata headers = new Metadata();
                 headers.Add("hasRights", Convert.ToString(hasRights));
                 var response = await _reportServiceClient.UpdateEcoScoreProfileAsync(grpcRequest, headers);
-                return Ok(response);
+                return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
             {
@@ -862,6 +862,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
                             fleetoverviewItem.StartGeolocationAddress = getMapRequestStart.Address;
                         }
+                        //if (fleetoverviewItem.AlertGeolocationAddressId == 0 && fleetoverviewItem.StartPositionLattitude != 0 && fleetoverviewItem.StartPositionLongitude != 0)
+                        //{
+                        //    GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.StartPositionLattitude, fleetoverviewItem.StartPositionLongitude);
+                        //    fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
+                        //    fleetoverviewItem.StartGeolocationAddress = getMapRequestStart.Address;
+                        //}
+
                     }
                     return Ok(response.FleetOverviewDetailList);
                 }
@@ -1145,6 +1152,54 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
+        #region Fuel Deviation Report
+
+        #region Fuel Deviation Report Table Details 
+        #endregion
+        [HttpGet]
+        [Route("getfueldeviationfilterdata")]
+        public async Task<IActionResult> GetFuelDeviationFilterData([FromQuery] FuelDeviationFilterRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) return BadRequest(ReportConstants.VALIDATION_STARTDATE_MSG);
+                if (!(request.EndDateTime > 0)) return BadRequest(ReportConstants.VALIDATION_ENDDATE_MSG);
+                if (request.VINs == null || request.VINs?.Count == 0) return BadRequest(ReportConstants.VALIDATION_VINREQUIRED_MSG);
+                if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.VALIDATION_DATEMISMATCH_MSG);
+
+                _logger.Info("GetFilteredFuelDeviationAsync method in Report (Fuel Deviation Report) API called.");
+                var response = await _reportServiceClient.GetFilteredFuelDeviationAsync(request);
+
+                foreach (var item in response.FuelDeviationDetails)
+                {
+                    if (item.GeoLocationAddressId == 0 && item.Latitude != 0 && item.Longitude != 0)
+                    {
+                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.Latitude, item.Longitude);
+                        item.GeoLocationAddress = getMapRequestLatest?.Address;
+                        item.GeoLocationAddressId = (int)getMapRequestLatest?.Id;
+                    }
+                }
+                if (response?.FuelDeviationDetails?.Count > 0)
+                {
+                    return Ok(new { Data = response.FuelDeviationDetails, Message = ReportConstants.GET_FUEL_DEVIATION_SUCCESS_MSG });
+                }
+                else
+                {
+                    return StatusCode((int)response.Code, response.Message);
+                }
+            }
+
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.GET_FUEL_DEVIATION_FAIL_MSG, 0, 0, string.Empty,
+                                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
 
 
         #region Logbook
@@ -1184,6 +1239,41 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  $"{ nameof(GetFleetOverviewFilter) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
                   _userDetails);
                 _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+        #region Fuel Benchmark Details Report
+
+        [HttpGet]
+        [Route("getFuelbenchmark")]
+        public async Task<IActionResult> GetFuelBechmarkReport([FromQuery] FuelBenchmarkRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0))
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0))
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_ENDDATE_MSG); }
+                if (request.StartDateTime > request.EndDateTime)
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_VALIDATION_DATEMISMATCH_MSG); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                FuelBenchmarkRequest objFleetFilter = JsonConvert.DeserializeObject<FuelBenchmarkRequest>(filters);
+                var data = await _reportServiceClient.GetFuelBenchmarksAsync(objFleetFilter);
+                if (data?.FuelBenchmarkDetails?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_FUEL_BENCHMARK_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_FUEL_BENCHMARK_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }

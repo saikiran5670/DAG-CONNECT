@@ -4,6 +4,7 @@ import { FormControl } from '@angular/forms';
 import { EmailValidator, FormArray, FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
+import { SearchCountryField, CountryISO } from 'ngx-intl-tel-input';
 import { element } from 'protractor';
 import { AlertService } from 'src/app/services/alert.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
@@ -21,9 +22,11 @@ export class CreateNotificationsAlertComponent implements OnInit {
   FormArrayItems: FormArray;
   FormEmailArray: FormArray;
   FormWebArray: FormArray;
+  FormSMSArray: FormArray;
   ArrayList: any = [];
   emailIndex: any = 0;
   wsIndex: any = 0;
+  smsIndex: any= 0;
   @Input() alert_category_selected: any;
   @Input() alertTypeName: string;
   @Input() isCriticalLevelSelected: any;
@@ -37,6 +40,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
   accountId: number;
   addEmailFlag: boolean = false;
   addWsFlag: boolean = false;
+  addSmsFlag: boolean= false;
   contactModeType: any;
   radioButtonVal: any = 'N';
   notificationReceipients: any = [];
@@ -50,6 +54,10 @@ export class CreateNotificationsAlertComponent implements OnInit {
     {
       id: "E",
       value: 'Email'
+    },
+    {
+      id: "S",
+      value: 'SMS'
     }
   ];
   recipientLabel: any;
@@ -65,10 +73,13 @@ export class CreateNotificationsAlertComponent implements OnInit {
   notifyPeriod: any;
   emailCount: number = 0;
   wsCount: number = 0;
+  smsCount: number= 0;
   emailLabel: any;
   wsLabel: any;
+  smsLabel: any;
   limitButton: any;
   weblimitButton: any;
+  smsLimitButton: any;
   notificationRecipients = [];
   keyword = 'recipientLabel';
   timeList: any = [
@@ -109,6 +120,11 @@ export class CreateNotificationsAlertComponent implements OnInit {
   ];
   timeUnitValue: any;
   emailtimeUnitValue: any;
+  smsTimeUnitValue: any;
+  SearchCountryField = SearchCountryField;
+  // TooltipLabel = TooltipLabel;
+  CountryISO = CountryISO;
+  preferredCountries: CountryISO[] = [CountryISO.India];
 
   @ViewChild(NotificationAdvancedFilterComponent)
   notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
@@ -129,6 +145,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
       // FormArrayItems : this._formBuilder.array([this.initItems()]),
       FormEmailArray: this._formBuilder.array([this.initEmailItems()]),
       FormWebArray: this._formBuilder.array([this.initWebItems()]),
+      FormSMSArray: this._formBuilder.array([this.initSMSItems()])
     },
       {
         validator: [
@@ -192,6 +209,22 @@ export class CreateNotificationsAlertComponent implements OnInit {
 
   }
 
+  initSMSItems(): FormGroup {
+    return this._formBuilder.group({
+      mobileNumber: ['', [Validators.required]],
+      smsDescription: ['This is default text for ' + this.alertTypeName, [Validators.required]],
+      notifyPeriodSms: ['A'],
+      smsRecipientLabel: [''],
+      smsContactModes: [''],
+      smsReceipientId: [],
+      smsRetrictTo: ['1'],
+      smsEach: ['1'],
+      smsMinutes: ['1'],
+      smslimitId: []
+    });
+
+  }
+
   onReset() {
     this.setDefaultValues();
     if (this.notificationAdvancedFilterComponent) {
@@ -211,6 +244,10 @@ export class CreateNotificationsAlertComponent implements OnInit {
     this.emailtimeUnitValue = event.value;
   }
 
+  onChangeTimeUnitForSMS(event: any) {
+    this.smsTimeUnitValue = event.value;
+  }
+
 
   setDefaultValues() {
     if (this.FormWebArray && this.FormWebArray.length != 0) {
@@ -221,6 +258,11 @@ export class CreateNotificationsAlertComponent implements OnInit {
     if (this.FormEmailArray && this.FormEmailArray.length != 0) {
       for (let i = 0; i < this.FormEmailArray.length; i++) {
         this.deleteEmailNotificationRow(i);
+      }
+    }
+    if (this.FormSMSArray && this.FormSMSArray.length != 0) {
+      for (let i = 0; i < this.FormSMSArray.length; i++) {
+        this.deleteSMSNotificationRow(i);
       }
     }
     this.selectedRowData.notifications[0].notificationRecipients.forEach(element => {
@@ -279,12 +321,38 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.notificationForm.get("contactMode").reset();
         }
       }
+      // For sms
+      else if (this.contactModeType == 'S') {
+        this.addSmsFlag = true;
+        this.smsCount = this.smsCount + 1;
+        if (!this.FormSMSArray) {
+          this.FormSMSArray = this.notificationForm.get("FormSMSArray") as FormArray;
+          this.smsLabel = this.notificationForm.get("recipientLabel").value;
+          this.FormSMSArray.at(this.smsIndex).get("smsRecipientLabel").setValue(this.smsLabel);
+          this.FormSMSArray.at(this.smsIndex).get("smsContactModes").setValue(this.contactModeType);
+          this.FormSMSArray.at(this.smsIndex).get("smsMinutes").setValue(this.smsTimeUnitValue);
+          this.notificationForm.get("recipientLabel").reset();
+          this.notificationForm.get("contactMode").reset();
+        }
+        else {
+          this.smsIndex = this.smsIndex + 1;
+          this.FormSMSArray.push(this.initSMSItems());
+          this.smsLabel = this.notificationForm.get("recipientLabel").value;
+          this.FormSMSArray.at(this.smsIndex).get("smsRecipientLabel").setValue(this.smsLabel);
+          this.FormSMSArray.at(this.smsIndex).get("smsContactModes").setValue(this.contactModeType);
+          this.FormSMSArray.at(this.smsIndex).get("smsMinutes").setValue(this.smsTimeUnitValue);
+          this.notificationForm.get("recipientLabel").reset();
+          this.notificationForm.get("contactMode").reset();
+        }
+      }
     }
     //for edit or duplicate functionality
     else {
       this.contactModeType = data.notificationModeType;
       this.weblimitButton = data.notificationLimits[0].notificationModeType;
       this.limitButton = data.notificationLimits[0].notificationModeType;
+      this.smsLimitButton= data.notificationLimits[0].notificationModeType;
+
       //this is for email
       if (this.contactModeType == 'E') {
         this.addEmailFlag = true;
@@ -363,6 +431,38 @@ export class CreateNotificationsAlertComponent implements OnInit {
           }
         }
       }
+      //this is for sms
+      else if (this.contactModeType == 'S') {
+        this.addSmsFlag = true;
+        this.smsCount = this.smsCount + 1;
+        if (!this.FormSMSArray) {
+          this.FormSMSArray = this.notificationForm.get("FormSMSArray") as FormArray;
+          this.FormSMSArray.at(this.smsIndex).get("mobileNumber").setValue(data.phoneNo);
+          this.FormSMSArray.at(this.smsIndex).get("smsRecipientLabel").setValue(data.recipientLabel);
+          this.FormSMSArray.at(this.smsIndex).get("smsDescription").setValue(data.sms);
+          this.FormSMSArray.at(this.smsIndex).get("smsReceipientId").setValue(data.id);
+          this.FormSMSArray.at(this.smsIndex).get("smsContactModes").setValue(data.notificationModeType);
+          this.FormSMSArray.at(this.smsIndex).get("notifyPeriodSms").setValue(data.notificationLimits[0].notificationModeType);
+          this.FormSMSArray.at(this.smsIndex).get("smsMinutes").setValue(data.notificationLimits[0].notificationPeriodType);
+          this.FormSMSArray.at(this.smsIndex).get("smsRetrictTo").setValue(data.notificationLimits[0].maxLimit);
+          this.FormSMSArray.at(this.smsIndex).get("smsEach").setValue(data.notificationLimits[0].periodLimit);
+          this.FormSMSArray.at(this.smsIndex).get("smslimitId").setValue(data.notificationLimits[0].id);
+        }
+        else {
+          this.smsIndex = this.smsIndex + 1;
+          this.FormSMSArray.push(this.initEmailItems());
+          this.FormSMSArray.at(this.smsIndex).get("mobileNumber").setValue(data.phoneNo);
+          this.FormSMSArray.at(this.smsIndex).get("smsRecipientLabel").setValue(data.recipientLabel);
+          this.FormSMSArray.at(this.smsIndex).get("smsDescription").setValue(data.sms);
+          this.FormSMSArray.at(this.smsIndex).get("smsReceipientId").setValue(data.id);
+          this.FormSMSArray.at(this.smsIndex).get("smsContactModes").setValue(data.notificationModeType);
+          this.FormSMSArray.at(this.smsIndex).get("notifyPeriodSms").setValue(data.notificationLimits[0].notificationModeType);
+          this.FormSMSArray.at(this.smsIndex).get("smsMinutes").setValue(data.notificationLimits[0].notificationPeriodType);
+          this.FormSMSArray.at(this.smsIndex).get("smsRetrictTo").setValue(data.notificationLimits[0].maxLimit);
+          this.FormSMSArray.at(this.smsIndex).get("smsEach").setValue(data.notificationLimits[0].periodLimit);
+          this.FormSMSArray.at(this.smsIndex).get("smslimitId").setValue(data.notificationLimits[0].id);
+        }
+      }
     }
   }
 
@@ -378,6 +478,13 @@ export class CreateNotificationsAlertComponent implements OnInit {
     console.log("deleted");
     this.emailIndex = this.emailIndex - 1;
     this.emailCount = this.emailCount - 1;
+  }
+
+  deleteSMSNotificationRow(index: number) {
+    this.FormSMSArray.removeAt(index);
+    console.log("deleted");
+    this.smsIndex = this.smsIndex - 1;
+    this.smsCount = this.smsCount - 1;
   }
 
   setDefaultValueForws() {
@@ -406,6 +513,10 @@ export class CreateNotificationsAlertComponent implements OnInit {
     this.weblimitButton = event.value;
   }
 
+  onSMSLimitationButtonChange(event: any) {
+    this.smsLimitButton = event.value;
+  }
+
   onClickAdvancedFilter() {
     this.openAdvancedFilter = !this.openAdvancedFilter;
   }
@@ -426,6 +537,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
     this.notificationReceipients = [];
     let WsData;
     let EmailData;
+    let smsData;
     let webPayload = {};
 
     if (this.FormWebArray && this.FormWebArray.length > 0) {

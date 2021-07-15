@@ -19,6 +19,13 @@ using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reports.repository;
+using net.atos.daf.ct2.organization;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.organization.repository;
+using net.atos.daf.ct2.vehicle.repository;
+using net.atos.daf.ct2.group;
+using net.atos.daf.ct2.subscription;
+using net.atos.daf.ct2.subscription.repository;
 
 namespace net.atos.daf.ct2.ecoscoredataservice
 {
@@ -65,6 +72,14 @@ namespace net.atos.daf.ct2.ecoscoredataservice
             services.AddSingleton<IPostConfigureOptions<BasicAuthenticationOptions>, BasicAuthenticationPostConfigureOptions>();
             services.AddTransient<IBasicAuthenticationService, BasicAuthenticationService>();
             services.AddTransient<IReportManager, ReportManager>();
+            services.AddTransient<IOrganizationManager, OrganizationManager>();
+            services.AddTransient<IGroupManager, GroupManager>();
+            services.AddTransient<IGroupRepository, GroupRepository>();
+            services.AddTransient<ISubscriptionManager, SubscriptionManager>();
+            services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
+            services.AddTransient<IOrganizationRepository, OrganizationRepository>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
+            services.AddTransient<IVehicleRepository, VehicleRepository>();
             services.AddTransient<IReportRepository, ReportRepository>();
 
             services.AddControllers();

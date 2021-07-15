@@ -105,7 +105,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       if(this.actionType == 'manage'){
         this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile);  
         this.loadProfileKpis(this.selectedProfile);
-        //this.setDefaultValue()
+        this.setDefaultValue()
       }
     });
   }
@@ -151,7 +151,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   
 
   this.isKPI = true;
-  this.setDefaultValue()
+ 
   }
 
   processTranslation(transData: any) {
@@ -191,6 +191,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
         this.successMsgBlink(this.getUserCreatedMessage());
         this.profileFlag = false;
        });
+       this.toBack();
      }
     } else {
 
@@ -288,20 +289,21 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   onDelete(){
     let profileId = this.selectedProfile;
+    let name = (this.profileList.filter(e => e.profileId == profileId)) ;
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
-    this.dialogService.DeleteModelOpen(options, this.selectedElementData.profileName);
+    this.dialogService.DeleteModelOpen(options, name[0].profileName);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
       this.reportService.deleteEcoScoreProfile(profileId).subscribe((data) => {
         this.openSnackBar('Item delete', 'dismiss');
         this.loadProfileData();
-      })
-        this.successMsgBlink(this.getDeletMsg(this.selectedElementData.ProfileName));
+        this.successMsgBlink(this.getDeletMsg(name[0].profileName));
+      }) 
       }
     });
   }
@@ -329,27 +331,36 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.loadProfileData();
   }
 
+  onClose(){
+    this.titleVisible = false;
+  }
+
   onChange(event){
     this.isDAFStandard = event.checked;
   }
 
   onChangeOption(event){
     this.isCreatedExistingProfile = event.checked;
-    if(event.checked)
-      this.profileFlag = true
+    if(event.checked){
+      this.profileFlag = true;
+      this.loadProfileData();
+    }
     else
       this.profileFlag = false;
   }
 
   profileSelectionDropDown(filterValue: string){
     // this.selectedElementData = [];    
+    this.isKPI = false;
     this.selectedProfile = filterValue;
     this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile); 
     this.deleteSelection = this.selectedElementData[0].isDeleteAllowed;
     this.setDefaultValue();
     this.loadProfileKpis(this.selectedProfile);
+    //this.loadProfileData();
     this.isDAFStandard = false;
     this.isCreatedExistingProfile = false;
+    
  }
 
  createKPIEmit(item: any){

@@ -66,7 +66,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         if (data.CorridorEditViewList != null && data.CorridorEditViewList.Count > 0)
                         {
-                            for (int i = 0; i < data.CorridorGridViewList.Count; i++)
+                            for (int i = 0; i < data.CorridorEditViewList.Count; i++)
                             {
                                 if (data.CorridorEditViewList[i].EndPoint == "" && data.CorridorEditViewList[i].EndLat > 0 && data.CorridorEditViewList[i].EndLong > 0)
                                 {

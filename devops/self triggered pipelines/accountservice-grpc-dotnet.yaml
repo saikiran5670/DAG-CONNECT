@@ -1,23 +1,23 @@
 trigger:
-  #branches:
-  #  include:
-  #  - development
-  #  - release
-  #  - testing
-  #paths:
-  #  include:
-  #  - dotnet/businessservices/net.atos.daf.ct2.accountservice
-  none
+- none
+#  branches:
+#    include:
+#    - development
+#    - release
+#    - testing
+#  paths:
+#    include:
+#    - dotnet/businessservices/net.atos.daf.ct2.accountservice
 
 variables:
  - name: imageName
-   value: 'accountservice-grpc-auto'
+   value: 'accountservice-grpc'
  - name: dockerFile
    value: 'dotnet/AccountService_Dockerfile'
  - name: manifestFile
-   value: 'accountservice-grpc-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+   value: 'devops/self\ triggered\ pipelines/accountservice-grpc-dotnet-kubernetes-manifest-dev1-dev2.yaml'
  - name: manifestFileDev0
-   value: 'accountservice-grpc-dotnet-kubernetes-manifest.yaml'
+   value: 'devops/self\ triggered\ pipelines/accountservice-grpc-dotnet-kubernetes-manifest.yaml'
  - name: appsettingsFile
    value: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.Production.json'
  - name: log4netConfigFile

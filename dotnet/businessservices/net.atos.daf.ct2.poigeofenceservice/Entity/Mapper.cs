@@ -376,9 +376,9 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                 {
                     if (entity.LiveFleetPosition.Count() > 0)
                     {
-                        net.atos.daf.ct2.poiservice.LiveFleetPosition liveFleetPosition = new poiservice.LiveFleetPosition();
                         foreach (var item in entity.LiveFleetPosition)
                         {
+                            net.atos.daf.ct2.poiservice.LiveFleetPosition liveFleetPosition = new poiservice.LiveFleetPosition();
                             liveFleetPosition.GpsAltitude = item.GpsAltitude;
                             liveFleetPosition.GpsHeading = item.GpsHeading;
                             liveFleetPosition.GpsLatitude = item.GpsLatitude;

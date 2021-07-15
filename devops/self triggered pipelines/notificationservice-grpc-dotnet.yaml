@@ -1,9 +1,10 @@
 trigger:
+#- none
   branches:
     include:
     - development
     - release
-    - testing
+#    - testing
   paths:
     include:
     - dotnet/businessservices/net.atos.daf.ct2.notificationservice

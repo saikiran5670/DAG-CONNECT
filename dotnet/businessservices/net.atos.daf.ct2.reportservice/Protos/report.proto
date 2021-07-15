@@ -37,7 +37,7 @@ rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelD
 rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriverRequest) returns (FleetFuelDetailsResponse);
 rpc GetFilteredFuelDeviation (FuelDeviationFilterRequest) returns (FuelDeviationResponse);
 rpc GetLogbookSearchParameter (LogbookFilterIdRequest) returns (LogbookFilterResponse);
-
+rpc GetFuelBenchmarks (FuelBenchmarkRequest) returns (FuelBenchmarkResponse);
 }
 
 message VehicleHealthReportRequest{
@@ -702,12 +702,27 @@ message FleetOverviewDetails
 	string LatestWarningGeolocationAddress=36;
 	string LatestWarningName=37;
     repeated LiveFleetPosition LiveFleetPosition=38;
+    repeated FleetOverviewAlert FleetOverviewAlert=39;
+    int32 AlertGeolocationAddressId=40;
+	string AlertGeolocationAddress=41;
 }
 
 message FleetOverviewDetailsResponse {
     repeated FleetOverviewDetails FleetOverviewDetailList= 1;   
     Responsecode Code = 2;
     string Message = 3;
+}
+
+message FleetOverviewAlert {
+    string AlertName=1;
+    string AlertType=2; 
+    string AlertLocation=3;
+    string AlertTime=4; 
+    string AlertLevel=5;
+    string CategoryType=6;
+    string AlertLatitude=7;
+    string AlertLongitude=8;
+    int32 Id=9;
 }
 /// END: FleetOverview
 
@@ -946,6 +961,7 @@ message FuelDeviationDetails {
     double Longitude = 24;
     int32 GeoLocationAddressId = 25;
     string GeoLocationAddress = 26;
+    int32 FuelDeviationId = 27;
 }
 
 message FuelDeviationFilterRequest{
@@ -981,3 +997,32 @@ message LogbookFilterResponse {
   repeated DriverListResponse DriverList = 9;
 }
 //***************End Logbook*******************
+/// START : Fuel Bechmark Report
+message FuelBenchmarkRequest{
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;   
+    string VIN = 3;
+}
+
+message FuelBenchmarkResponse{
+    repeated FuelBenchmarkDetails FuelBenchmarkDetails=1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+
+message FuelBenchmarkDetails {
+    int32 Number_of_Active_Vehicles = 1;
+    int32 Number_of_Total_Vehicles = 2;
+    string Total_fuel_consumed = 3;
+    string Total_Mileage = 4;
+    string Average_fuel_consumption = 5;
+    string Vehicle_Group_Name = 6;
+    repeated Ranking Ranking = 7;
+}
+
+message Ranking {
+      string VIN = 1;
+      string VehicleName = 2;
+      string ConsumptionName = 3;
+}
+/// END: Fuel Bechmark Report
