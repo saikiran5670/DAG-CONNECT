@@ -37,6 +37,7 @@ rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelD
 rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriverRequest) returns (FleetFuelDetailsResponse);
 rpc GetFilteredFuelDeviation (FuelDeviationFilterRequest) returns (FuelDeviationResponse);
 rpc GetLogbookSearchParameter (LogbookFilterIdRequest) returns (LogbookFilterResponse);
+rpc GetLogbookDetails(LogbookDetailsRequest) returns (LogbookDetailsResponse);
 rpc GetFuelBenchmarks (FuelBenchmarkRequest) returns (FuelBenchmarkResponse);
 }
 
@@ -804,7 +805,10 @@ message FleetFuelDetails {
     google.protobuf.StringValue IdlingConsumptionValue = 34;
     google.protobuf.StringValue DriverID = 35;
     google.protobuf.StringValue DriverName = 36;
-    repeated LiveFleetPosition LiveFleetPosition=37;
+    int64 StartDate = 37;
+    int64 EndDate = 38;
+    repeated LiveFleetPosition LiveFleetPosition=39;
+   
 }
 message FleetFuelDetailsByDriver {
     google.protobuf.StringValue VehicleName = 1;
@@ -843,7 +847,9 @@ message FleetFuelDetailsByDriver {
     google.protobuf.StringValue IdlingConsumptionValue = 34;
     google.protobuf.StringValue DriverID = 35;
     google.protobuf.StringValue DriverName = 36;
-    repeated LiveFleetPosition LiveFleetPosition=37;
+    int64 StartDate = 37;
+    int64 EndDate = 38;
+    repeated LiveFleetPosition LiveFleetPosition=39;  
 }
 message FleetFuelTripDetails {
     string VehicleName = 1;
@@ -995,6 +1001,45 @@ message LogbookFilterResponse {
   Responsecode code = 7;
   string message = 8;
   repeated DriverListResponse DriverList = 9;
+}
+
+message LogbookDetailsRequest{
+    repeated string GroupIds = 1;
+    repeated string VIN = 2;
+    repeated string AlertLevels = 3;
+    repeated string AlertCategories = 4;
+    repeated string AlertType = 5;
+    int64 StartTime = 6;
+    int64 EndTime =7;
+    int32 AccountId = 8;
+    int32 OrganizationId = 9;
+    int32 RoleId = 10;
+}
+
+message LogbookDetails{
+         string VIN = 1;
+         string TripId = 2;
+         string VehicleRegNo =3;
+         string VehicleName =4;
+         string AlertName =5;
+         string AlertType =6;
+         int32 Occurrence  =7;
+         string AlertLevel =8;
+         string AlertCategory =9;
+         int64 TripStartTime =10;
+         int64 TripEndTime =11;
+         double Latitude =12;
+         double Longitude =13;
+         string Address =14;
+         string Threshold =15;
+         string GroupIds= 16;
+}
+
+message LogbookDetailsResponse{
+    repeated LogbookDetails LogbookDetails= 1;   
+    Responsecode Code = 2;
+    string Message = 3;
+
 }
 //***************End Logbook*******************
 /// START : Fuel Bechmark Report

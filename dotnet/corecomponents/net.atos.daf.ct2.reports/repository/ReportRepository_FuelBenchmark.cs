@@ -41,9 +41,9 @@ namespace net.atos.daf.ct2.reports.repository
                                 AND VIN=ANY(@vin)
                                 GROUP BY
                                 trips.vin,veh.name";
-                param.Add("@vin", fuelBenchmarkConsumptionParameter.Vin);
-                param.Add("@fromDate", fuelBenchmarkConsumptionParameter.FromDate);
-                param.Add("@endDate", fuelBenchmarkConsumptionParameter.ToDate);
+                param.Add("@vin", fuelBenchmarkConsumptionParameter.VINs);
+                param.Add("@fromDate", fuelBenchmarkConsumptionParameter.StartDateTime);
+                param.Add("@endDate", fuelBenchmarkConsumptionParameter.EndDateTime);
                 IEnumerable<Ranking> rankingList = await _dataAccess.QueryAsync<Ranking>(query, param);
                 return rankingList;
             }
@@ -69,9 +69,9 @@ namespace net.atos.daf.ct2.reports.repository
                                 AND VIN=ANY(@vin)
                                 GROUP BY
                                 trips.vin,veh.name";
-                param.Add("@vin", fuelBenchmarkConsumptionParameter.Vin);
-                param.Add("@fromDate", fuelBenchmarkConsumptionParameter.FromDate);
-                param.Add("@endDate", fuelBenchmarkConsumptionParameter.ToDate);
+                param.Add("@vin", fuelBenchmarkConsumptionParameter.VINs);
+                param.Add("@fromDate", fuelBenchmarkConsumptionParameter.StartDateTime);
+                param.Add("@endDate", fuelBenchmarkConsumptionParameter.EndDateTime);
                 var fuelConsumptionList = await _dataAccess.QueryAsync<FuelBenchmarkConsumption>(query, param);
                 return fuelConsumptionList as FuelBenchmarkConsumption;
             }

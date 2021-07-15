@@ -583,15 +583,34 @@ namespace net.atos.daf.ct2.reports
         #endregion
 
         #region LogBook
-        public async Task<LogbookSearchFilter> GetLogbookSearchParameter(List<string> vins)
+        public async Task<IEnumerable<LogbookSearchFilter>> GetLogbookSearchParameter(List<string> vins)
         {
             return await _reportRepository.GetLogbookSearchParameter(vins);
         }
+        public async Task<List<LogbookDetailsFilter>> GetLogbookDetails(LogbookFilter logbookFilter)
+        {
+            return await _reportRepository.GetLogbookDetails(logbookFilter);
+        }
         #endregion
+
         #region Fuel Benchmark Report
         public Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter)
         {
             return _reportRepository.GetFuelBenchmarks(fuelBenchmarkFilter);
+        }
+        public async Task<FuelBenchmarkDetails> GetFuelBenchmarkDetails(FuelBenchmarkConsumptionParameter fuelBenchmarkFilter)
+        {
+            var fuelConsumptionCalculation = await _reportRepository.GetFuelBenchmarkDetail(fuelBenchmarkFilter);
+            var vehicleRanking = await _reportRepository.GetFuelBenchmarkRanking(fuelBenchmarkFilter);
+            FuelBenchmarkDetails fuelBenchmarkDetails = new FuelBenchmarkDetails();
+            fuelBenchmarkDetails.NumberOfActiveVehicles = fuelConsumptionCalculation.Numbersofactivevehicle;
+            fuelBenchmarkDetails.NumberOfTotalVehicles = fuelConsumptionCalculation.Totalnumberofvehicle;
+            fuelBenchmarkDetails.TotalMileage = fuelConsumptionCalculation.Totalmileage;
+            fuelBenchmarkDetails.TotalFuelConsumed = fuelConsumptionCalculation.Totalfuelconsumed;
+            fuelBenchmarkDetails.AverageFuelConsumption = fuelConsumptionCalculation.Averagefuelconsumption;
+            fuelBenchmarkDetails.VehicleRanking = new List<Ranking>();
+            fuelBenchmarkDetails.VehicleRanking = vehicleRanking;
+            return fuelBenchmarkDetails;
         }
         #endregion
     }

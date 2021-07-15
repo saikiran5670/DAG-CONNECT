@@ -133,6 +133,7 @@
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ kpiData.kpiName }}</span>
+                <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblEcoScoreInfoLable || 'The Eco-Score represents the Overall Performance of the driver. The Eco-Score is the rounded down average of the Anticipation and Braking Scores. The Fuel Consumption is not part of the Eco-Score calculation' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
             <app-breaking-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='kpiData' [kpiId] = 1 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
@@ -143,6 +144,7 @@
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Fuel Consumption</span>
+                <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblFuelScoreInfoLable || 'The Fuel Consumption is not part of the Eco-Score calculation' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
@@ -180,6 +182,7 @@
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Braking Score</span>
+                <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblBrakingScoreInfoLable || 'The Eco-Score is the rounded down average of the  Braking Scores' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
@@ -202,6 +205,7 @@
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ anticipationKpiData.kpiName }}</span>
+                <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblAnticipationScoreInfoLable || 'The Eco-Score is the rounded down average of the Eco score' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
         <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='anticipationKpiData' [kpiId] = 20 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
@@ -212,6 +216,7 @@
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Other Fuel Consumption Indicators</span>
+                <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblOtherFuelScoreInfoLable || 'The other  Fuel Consumption is not part of the Eco-Score calculation' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
