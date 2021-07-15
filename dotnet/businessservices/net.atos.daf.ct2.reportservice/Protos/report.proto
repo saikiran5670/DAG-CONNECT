@@ -804,7 +804,10 @@ message FleetFuelDetails {
     google.protobuf.StringValue IdlingConsumptionValue = 34;
     google.protobuf.StringValue DriverID = 35;
     google.protobuf.StringValue DriverName = 36;
-    repeated LiveFleetPosition LiveFleetPosition=37;
+    int64 StartDate = 37;
+    int64 EndDate = 38;
+    repeated LiveFleetPosition LiveFleetPosition=39;
+   
 }
 message FleetFuelDetailsByDriver {
     google.protobuf.StringValue VehicleName = 1;
@@ -843,7 +846,9 @@ message FleetFuelDetailsByDriver {
     google.protobuf.StringValue IdlingConsumptionValue = 34;
     google.protobuf.StringValue DriverID = 35;
     google.protobuf.StringValue DriverName = 36;
-    repeated LiveFleetPosition LiveFleetPosition=37;
+    int64 StartDate = 37;
+    int64 EndDate = 38;
+    repeated LiveFleetPosition LiveFleetPosition=39;  
 }
 message FleetFuelTripDetails {
     string VehicleName = 1;

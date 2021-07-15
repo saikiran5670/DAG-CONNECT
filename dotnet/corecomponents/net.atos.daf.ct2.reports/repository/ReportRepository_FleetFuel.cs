@@ -416,12 +416,14 @@ namespace net.atos.daf.ct2.reports.repository
 				  , SUM(fuel_consumption_cc_non_active)                                    as fuel_consumption_cc_non_active
 				  , SUM(idling_consumption)                                                as idling_consumption
 				  , SUM(dpa_score)                                                         as dpa_score
+                  , start_time_stamp                                                       as StarDate
+                  , end_time_stamp                                                         as EndDate
 				From
 					tripdetail.trip_statistics
 				where (start_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) and  VIN =ANY(@Vins)
 				GROUP BY					
-				  VIN, trip_id        
+				  VIN, trip_id,start_time_stamp, end_time_stamp       
 			)
 		  , cte_combine as
 			(
@@ -451,6 +453,8 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactivesx
 				  , idling_consumption                                     as IdlingConsumption
 				  , dpa_score                                              as DPAScore
+                  ,StarDate
+                  ,EndDate
 				FROM
 					CTE_FleetDeatils fd
 				    left join
@@ -486,7 +490,7 @@ namespace net.atos.daf.ct2.reports.repository
                 }
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
                 throw;
             }
@@ -529,6 +533,8 @@ namespace net.atos.daf.ct2.reports.repository
 				  , SUM(fuel_consumption_cc_non_active)                                    as fuel_consumption_cc_non_active
 				  , SUM(idling_consumption)                                                as idling_consumption
 				  , SUM(dpa_score)                                                         as dpa_score
+                  , start_time_stamp                                                       as StarDate
+                  , end_time_stamp                                                         as EndDate
 				From
 					tripdetail.trip_statistics
 				where (start_time_stamp >= @FromDate 
@@ -537,7 +543,7 @@ namespace net.atos.daf.ct2.reports.repository
 				GROUP BY
 					driver1_id 
 				  , VIN
-                   ,trip_id
+                   ,trip_id,start_time_stamp, end_time_stamp 
 			)
 		  , cte_combine as
 			(
@@ -568,6 +574,8 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactivesx
 				  , idling_consumption                                     as IdlingConsumption
 				  , dpa_score                                              as DPAScore
+                  , StarDate
+                  , EndDate
 				FROM
 					CTE_FleetDeatils fd
 				    left join
