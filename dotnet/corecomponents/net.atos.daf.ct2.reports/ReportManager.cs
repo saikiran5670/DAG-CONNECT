@@ -4,6 +4,7 @@ using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reports.repository;
 using System.Linq;
 using net.atos.daf.ct2.reports.entity.fleetFuel;
+using System;
 
 namespace net.atos.daf.ct2.reports
 {
@@ -485,14 +486,40 @@ namespace net.atos.daf.ct2.reports
 
         public async Task<EcoScoreKPIInfoDataServiceResponse> GetKPIInfo(EcoScoreDataServiceRequest request)
         {
-            var kpiInfo = await _reportRepository.GetKPIInfo(request);
+            dynamic kpiInfo = null;
+            switch (request.AggregationType)
+            {
+                case AggregateType.TRIP:
+                    kpiInfo = await _reportRepository.GetKPIInfoPerTrip(request);
+                    break;
+                case AggregateType.DAY:
+                case AggregateType.WEEK:
+                case AggregateType.MONTH:
+                    var aggregationCount = CalculateAggregationCount(request.AggregationType, request.StartTimestamp, request.EndTimestamp);
+                    kpiInfo = await _reportRepository.GetKPIInfo(request, aggregationCount);
+                    break;
+            }
+
             var response = MapEcoScoreKPIInfoDataReponse(kpiInfo);
             return response;
         }
 
         public async Task<EcoScoreChartInfoDataServiceResponse> GetChartInfo(EcoScoreDataServiceRequest request)
         {
-            var chartInfo = await _reportRepository.GetChartInfo(request);
+            dynamic chartInfo = null;
+            switch (request.AggregationType)
+            {
+                case AggregateType.TRIP:
+                    chartInfo = await _reportRepository.GetChartInfoPerTrip(request);
+                    break;
+                case AggregateType.DAY:
+                case AggregateType.WEEK:
+                case AggregateType.MONTH:
+                    var aggregationCount = CalculateAggregationCount(request.AggregationType, request.StartTimestamp, request.EndTimestamp);
+                    chartInfo = await _reportRepository.GetChartInfo(request, aggregationCount);
+                    break;
+            }
+
             var response = MapEcoScoreChartInfoDataReponse(chartInfo);
             return response;
         }
@@ -561,6 +588,24 @@ namespace net.atos.daf.ct2.reports
                 response.ChartInfo.Add(chartInfoResponse);
             }
             return response;
+        }
+
+        private int CalculateAggregationCount(AggregateType aggregateType, long startTimestamp, long endTimestamp)
+        {
+            var startDate = new DateTime(1970, 1, 1).AddMilliseconds(startTimestamp);
+            var endDate = new DateTime(1970, 1, 1).AddMilliseconds(endTimestamp);
+            var noOfDays = Math.Ceiling((endDate - startDate).TotalDays);
+
+            switch (aggregateType)
+            {
+                case AggregateType.DAY:
+                    return (int)noOfDays;
+                case AggregateType.WEEK:
+                    return (int)(noOfDays / 7);
+                case AggregateType.MONTH:
+                    return (int)(noOfDays / 30);
+            }
+            return 0;
         }
 
         #endregion
