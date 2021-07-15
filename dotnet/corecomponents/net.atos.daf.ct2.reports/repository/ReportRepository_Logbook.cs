@@ -101,7 +101,7 @@ namespace net.atos.daf.ct2.reports.repository
                 throw;
             }
         }
-    }
+    
 
         public async Task<List<FilterProperty>> GetAlertLevelList(List<string> enums)
         {
