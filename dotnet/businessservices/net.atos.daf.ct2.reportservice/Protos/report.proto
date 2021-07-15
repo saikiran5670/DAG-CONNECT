@@ -983,6 +983,10 @@ message FuelDeviationDetails {
     int32 GeoLocationAddressId = 24;
     string GeoLocationAddress = 25;
     int32 FuelDeviationId = 26;
+    double StartPositionLattitude = 27;
+    double StartPositionLongitude = 28;
+    double EndPositionLattitude = 29;
+    double EndPositionLongitude = 30;
 }
 
 message FuelDeviationFilterRequest{
