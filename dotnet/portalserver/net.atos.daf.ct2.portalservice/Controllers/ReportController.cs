@@ -1274,6 +1274,54 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpGet]
+        [Route("fleetoverview/getlogbookdetails")]
+        public async Task<IActionResult> GetLogbookDetails(LogbookFilter logbookFilter)
+        {
+            try
+            {
+                LogbookDetailsRequest logbookDetailsRequest = new LogbookDetailsRequest
+                {
+                    AccountId = _userDetails.AccountId,
+                    OrganizationId = GetContextOrgId(),
+                    RoleId = _userDetails.RoleId
+                };
+
+                logbookDetailsRequest.GroupIds.AddRange(logbookFilter.GroupId);
+                logbookDetailsRequest.VIN.AddRange(logbookFilter.VIN);
+                logbookDetailsRequest.AlertLevels.AddRange(logbookFilter.AlertLevel);
+                logbookDetailsRequest.AlertType.AddRange(logbookFilter.AlertType);
+                logbookDetailsRequest.AlertCategories.AddRange(logbookFilter.AlertCategory);
+                logbookDetailsRequest.StartTime = logbookFilter.Start_Time;
+                logbookDetailsRequest.EndTime = logbookFilter.End_time;
+                /* Need to comment Start */
+                logbookDetailsRequest.AccountId = 171;
+                logbookDetailsRequest.OrganizationId = 36;
+                logbookDetailsRequest.RoleId = 61;
+                /* Need to comment End */
+
+                LogbookDetailsResponse response = await _reportServiceClient.GetLogbookDetailsAsync(logbookDetailsRequest);
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (response.Code == Responsecode.Success)
+                    return Ok(response);
+                if (response.Code == Responsecode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                $"{ nameof(GetLogbookDetails) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+
+        }
         #endregion
         #region Fuel Benchmark Details Report
 
