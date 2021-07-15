@@ -12,6 +12,7 @@ rpc GetVinsFromTripStatisticsWithVehicleDetails (VehicleListRequest) returns (Ve
 rpc GetFilteredTripDetails (TripFilterRequest) returns (TripResponse);
 rpc GetDriversActivity (ActivityFilterRequest) returns (DriverActivityResponse);
 rpc GetDriverActivity (SingleDriverActivityFilterRequest) returns (DriverActivityResponse);
+rpc GetDriverActivityChartDetails (DriverActivityChartFilterRequest) returns (DriverActivityChartResponse);
 rpc GetReportDetails (TempPara) returns (ReportDetailsResponse);
 rpc GetDriverActivityParameters (IdRequestForDriverActivity) returns (DriverListAndVehicleDetailsResponse);
 rpc CreateEcoScoreProfile (CreateEcoScoreProfileRequest) returns (CreateEcoScoreProfileResponse);
@@ -343,7 +344,11 @@ message ActivityFilterRequest {
     repeated string VINs = 3;
     repeated string DriverIds = 4;
 }
-
+message DriverActivityChartFilterRequest {
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    string DriverId = 3;
+}
 message DriverActivityResponse {
     repeated DriverActivity DriverActivities = 1;   
     Responsecode code = 2;
@@ -363,8 +368,18 @@ message DriverActivity {
     int64 DriveTime = 11;
     int64 ServiceTime = 12;
 }
-
-
+message DriverActivityChartResponse {
+    repeated DriverActivityChartData DriverActivitiesChartData = 1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+message DriverActivityChartData {
+    int64 ActivityDate = 1;
+    int32 Code = 2; 
+    int64 Duration = 3;
+    int64 StartTime = 4;
+    int64 EndTime = 5;
+}
 message DriverListAndVehicleDetailsResponse{
 Responsecode Code = 1;
 string Message = 2;
