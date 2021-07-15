@@ -894,13 +894,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
                             fleetoverviewItem.StartGeolocationAddress = getMapRequestStart.Address;
                         }
-                        //if (fleetoverviewItem.AlertGeolocationAddressId == 0 && fleetoverviewItem.StartPositionLattitude != 0 && fleetoverviewItem.StartPositionLongitude != 0)
-                        //{
-                        //    GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.StartPositionLattitude, fleetoverviewItem.StartPositionLongitude);
-                        //    fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
-                        //    fleetoverviewItem.StartGeolocationAddress = getMapRequestStart.Address;
-                        //}
-
+                        if (fleetoverviewItem.FleetOverviewAlert != null && fleetoverviewItem.FleetOverviewAlert.Count > 0)
+                        {
+                            foreach (var addressesult in fleetoverviewItem.FleetOverviewAlert)
+                            {
+                                GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(Convert.ToDouble(addressesult.AlertLatitude), Convert.ToDouble(addressesult.AlertLongitude));
+                                addressesult.AlertGeolocationAddressId = getMapRequestStart.Id;
+                                addressesult.AlertGeolocationAddress = getMapRequestStart.Address;
+                            }
+                        }
                     }
                     return Ok(response.FleetOverviewDetailList);
                 }
