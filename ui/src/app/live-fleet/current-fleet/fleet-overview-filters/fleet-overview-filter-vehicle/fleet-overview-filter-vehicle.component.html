@@ -1,0 +1,62 @@
+<div fxLayout="row" fxLayoutAlign="space-between">
+      <mat-form-field appearance="outline">
+          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+          <span matPrefix><mat-icon>search</mat-icon></span>
+      </mat-form-field>
+</div>
+<div fxLayout="column" fxLayoutAlign="space-between" >
+    <mat-label>{{ translationData.lblSelectGroup || 'Select Group' }} </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-select placeholder="All" (selectionChange)="onChangeGroup($event.value)" formControlName="group">
+            <mat-option value="all">All</mat-option>
+            <mat-option *ngFor="let item of groupList" [value]="item.id">
+                {{item.val}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+<div fxLayout="column" fxLayoutAlign="space-between" >
+    <mat-label>{{ translationData.lblAlertLevel || 'Alert Level' }} </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-select placeholder="All" (selectionChange)="onChangeLevel($event.value)" formControlName="level">
+            <mat-option value="all">All</mat-option>
+            <mat-option *ngFor="let item of levelList" [value]="item.id">
+                {{item.val}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+<div fxLayout="column" fxLayoutAlign="space-between" >
+    <mat-label>{{ translationData.lblAlertCategory || 'Alert Category' }} </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-select placeholder="All" (selectionChange)="onChangeCategory($event.value)" formControlName="category">
+            <mat-option value="all">All</mat-option>
+            <mat-option *ngFor="let item of categoryList" [value]="item.id">
+                {{item.val}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+<div fxLayout="column" fxLayoutAlign="space-between" >
+    <mat-label>{{ translationData.lblHealthStatus|| 'Health Status' }} </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-select placeholder="All" (selectionChange)="onChangHealthStatus($event.value)" formControlName="status">
+            <mat-option value="all">All</mat-option>
+            <mat-option *ngFor="let item of healthList" [value]="item.id">
+                {{item.val}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+<div fxLayout="column" fxLayoutAlign="space-between" >
+    <mat-label>{{ translationData.lblOtherFilter || 'Other Filter' }} </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-select placeholder="All" (selectionChange)="onChangeOtherFilter($event.value)" formControlName="otherFilter">
+            <mat-option value="all">All</mat-option>
+            <mat-option *ngFor="let item of otherList" [value]="item.id">
+                {{item.val}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+

@@ -15,5 +15,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string CategoryType { get; set; }
         public string AlertLatitude { get; set; }
         public string AlertLongitude { get; set; }
+        public int AlertGeolocationAddressId { get; set; }
+        public string AlertGeolocationAddress { get; set; }
     }
 }

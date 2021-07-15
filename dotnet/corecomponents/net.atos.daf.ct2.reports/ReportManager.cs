@@ -68,9 +68,9 @@ namespace net.atos.daf.ct2.reports
         /// </summary>
         /// <param name="DriverActivityFilter">Filters for driver activity with VIN and Driver ID </param>
         /// <returns></returns>
-        public async Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter DriverActivityFilter)
+        public async Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter driverActivityFilter)
         {
-            List<DriversActivities> driverActivities = await _reportRepository.GetDriversActivity(DriverActivityFilter);
+            List<DriversActivities> driverActivities = await _reportRepository.GetDriversActivity(driverActivityFilter);
             List<DriversActivities> combineDriverActivities = new List<DriversActivities>();
             combineDriverActivities = driverActivities.GroupBy(activityGroup => activityGroup.DriverId)
                                                       .Select(activityItem => new DriversActivities
@@ -97,7 +97,7 @@ namespace net.atos.daf.ct2.reports
         /// </summary>
         /// <param name="DriverActivityFilter">Filters for driver activity with VIN and Driver ID </param>
         /// <returns></returns>
-        public async Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter DriverActivityFilter) => await _reportRepository.GetDriversActivity(DriverActivityFilter);
+        public async Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter driverActivityFilter) => await _reportRepository.GetDriversActivity(driverActivityFilter);
 
         public async Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin)
         {
@@ -107,6 +107,13 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetReportSearchParameterByVIN(reportID, startDateTime, endDateTime, vin);
         }
+
+        /// <summary>
+        /// Fetch Single driver activities data for Stack Bar chart
+        /// </summary>
+        /// <param name="DriverActivityChartFilter">Filters for driver activity with VIN and Driver ID </param>
+        /// <returns></returns>
+        public async Task<List<DriverActivityChart>> GetDriversActivityChartDetails(DriverActivityChartFilter driverActivityFilter) => await _reportRepository.GetDriversActivityChartDetails(driverActivityFilter);
         #endregion
 
         #region Eco Score Report
@@ -632,6 +639,15 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetLogbookSearchParameter(vins);
         }
+
+        public async Task<List<FilterProperty>> GetAlertLevelList(List<string> enums)
+        {
+            return await _reportRepository.GetAlertLevelList(enums);
+        }
+        public async Task<List<AlertCategory>> GetAlertCategoryList(List<string> enums)
+        {
+            return await _reportRepository.GetAlertCategoryList(enums);
+        }
         public async Task<List<LogbookDetailsFilter>> GetLogbookDetails(LogbookFilter logbookFilter)
         {
             return await _reportRepository.GetLogbookDetails(logbookFilter);
@@ -646,15 +662,19 @@ namespace net.atos.daf.ct2.reports
         public async Task<FuelBenchmarkDetails> GetFuelBenchmarkDetails(FuelBenchmarkFilter fuelBenchmarkFilter)
         {
             var fuelConsumptionCalculation = await _reportRepository.GetFuelBenchmarkDetail(fuelBenchmarkFilter);
-            var vehicleRanking = await _reportRepository.GetFuelBenchmarkRanking(fuelBenchmarkFilter);
+
             FuelBenchmarkDetails fuelBenchmarkDetails = new FuelBenchmarkDetails();
-            fuelBenchmarkDetails.NumberOfActiveVehicles = fuelConsumptionCalculation.Numbersofactivevehicle;
-            fuelBenchmarkDetails.NumberOfTotalVehicles = fuelConsumptionCalculation.Totalnumberofvehicle;
-            fuelBenchmarkDetails.TotalMileage = fuelConsumptionCalculation.Totalmileage;
-            fuelBenchmarkDetails.TotalFuelConsumed = fuelConsumptionCalculation.Totalfuelconsumed;
-            fuelBenchmarkDetails.AverageFuelConsumption = fuelConsumptionCalculation.Averagefuelconsumption;
-            fuelBenchmarkDetails.VehicleRanking = new List<Ranking>();
-            fuelBenchmarkDetails.VehicleRanking = vehicleRanking;
+            if (fuelConsumptionCalculation != null)
+            {
+                var vehicleRanking = await _reportRepository.GetFuelBenchmarkRanking(fuelBenchmarkFilter);
+                fuelBenchmarkDetails.NumberOfActiveVehicles = fuelConsumptionCalculation.Numbersofactivevehicle;
+                fuelBenchmarkDetails.NumberOfTotalVehicles = fuelConsumptionCalculation.Totalnumberofvehicle;
+                fuelBenchmarkDetails.TotalMileage = fuelConsumptionCalculation.Totalmileage;
+                fuelBenchmarkDetails.TotalFuelConsumed = fuelConsumptionCalculation.Totalfuelconsumed;
+                fuelBenchmarkDetails.AverageFuelConsumption = fuelConsumptionCalculation.Averagefuelconsumption;
+                fuelBenchmarkDetails.Ranking = new List<Ranking>();
+                fuelBenchmarkDetails.Ranking = vehicleRanking;
+            }
             return fuelBenchmarkDetails;
         }
         #endregion

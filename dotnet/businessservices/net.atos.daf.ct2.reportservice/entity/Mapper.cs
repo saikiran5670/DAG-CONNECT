@@ -347,9 +347,6 @@ namespace net.atos.daf.ct2.reportservice.entity
                 StartGeolocationAddress = fleetOverviewEntity.StartGeolocationAddress,
                 LatestWarningGeolocationAddressId = fleetOverviewEntity.LatestWarningGeolocationAddressId,
                 LatestWarningGeolocationAddress = fleetOverviewEntity.LatestWarningGeolocationAddress,
-
-                AlertGeolocationAddressId = fleetOverviewEntity.AlertGeolocationAddressId,
-                AlertGeolocationAddress = fleetOverviewEntity.AlertGeolocationAddress,
                 LatestWarningName = fleetOverviewEntity.LatestWarningName,
             };
             if (fleetOverviewEntity.LiveFleetPositions.Count > 0)
@@ -397,8 +394,29 @@ namespace net.atos.daf.ct2.reportservice.entity
                 CategoryType = fleetOverviewAlertEntity.CategoryType,
                 AlertLatitude = fleetOverviewAlertEntity.AlertLatitude,
                 AlertLongitude = fleetOverviewAlertEntity.AlertLongitude,
+                AlertGeolocationAddressId = fleetOverviewAlertEntity.AlertGeolocationAddressId,
+                AlertGeolocationAddress = fleetOverviewAlertEntity.AlertGeolocationAddress,
             };
             return fleetOverviewAlert;
+        }
+
+        public FuelBenchmarkDetails MapFuelBenchmarktoModel(net.atos.daf.ct2.reports.entity.FuelBenchmarkDetails request)
+        {
+            FuelBenchmarkDetails fuelbenchmark = new FuelBenchmarkDetails();
+            fuelbenchmark.NumberOfActiveVehicles = request.NumberOfActiveVehicles;
+            fuelbenchmark.NumberOfTotalVehicles = request.NumberOfTotalVehicles;
+            fuelbenchmark.TotalMileage = request.TotalMileage;
+            fuelbenchmark.TotalFuelConsumed = request.TotalFuelConsumed;
+            fuelbenchmark.AverageFuelConsumption = request.AverageFuelConsumption;
+            foreach (var item in request.Ranking)
+            {
+                Ranking objRanking = new Ranking();
+                objRanking.VIN = item.VIN;
+                objRanking.FuelConsumption = item.FuelConsumption;
+                objRanking.VehicleName = item.VehicleName;
+                fuelbenchmark.Ranking.Add(objRanking);
+            }
+            return fuelbenchmark;
         }
 
     }

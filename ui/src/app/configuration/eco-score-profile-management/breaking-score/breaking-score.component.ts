@@ -1,6 +1,7 @@
 import { Options } from '@angular-slider/ngx-slider';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { CustomValidators } from 'src/app/shared/custom.validators';
 
 @Component({
   selector: 'app-breaking-score',
@@ -28,16 +29,31 @@ export class BreakingScoreComponent implements OnInit {
         ceil: this.kpiData.upperValue,
         step: 4,  
         showTicks: true, 
+        showOuterSelectionBars: true,
   };  
 
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
+    this.kpiData = this.selectedElementData;
+    this.value = this.kpiData.limitValue;
+    this.maxvalue =  this.kpiData.targetValue;
+    this.options.floor = this.kpiData.lowerValue;
+    this.options.ceil = this.kpiData.upperValue;
+    this.options.step = this.kpiData.upperValue/10,  
+    this.options.showTicks = true 
     this.ecoScoreProfileKPIForm = this._formBuilder.group({
       lowerValue: [''],
       upperValue: [''],
       limitValue: [''],
       targetValue: [''],
+  }, {
+    validator: [
+      CustomValidators.numberFieldValidation('lowerValue',this.kpiData.limitValue),
+      CustomValidators.numberFieldValidation('upperValue',this.kpiData.maxUpperValue),
+      CustomValidators.numberFieldValidation('limitValue',this.kpiData.targetValue),
+      CustomValidators.numberFieldValidation('targetValue',this.kpiData.upperValue),
+    ]
   });
   this.SliderData();
   // if(this.isCreate){
@@ -46,14 +62,6 @@ export class BreakingScoreComponent implements OnInit {
   }
 
   SliderData(){
-    this.kpiData = this.selectedElementData;
-    this.value = this.kpiData.limitValue;
-    this.maxvalue =  this.kpiData.targetValue;
-    this.options.floor = this.kpiData.lowerValue;
-    this.options.ceil = this.kpiData.upperValue;
-    this.options.step = this.kpiData.upperValue/10,  
-    this.options.showTicks = true  
- 
     this.isKPI = true;
     this.setDefaultValue();
   }

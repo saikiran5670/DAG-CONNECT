@@ -16,6 +16,7 @@ namespace net.atos.daf.ct2.reports
                                                                     bool isLiveFleetRequired = true);
         Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter driverActivityFilter);
         Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter driverActivityFilter);
+        Task<List<DriverActivityChart>> GetDriversActivityChartDetails(DriverActivityChartFilter driverActivityFilter);
         Task<IEnumerable<ReportDetails>> GetReportDetails();
         Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin);
         Task<int> CreateEcoScoreProfile(EcoScoreProfileDto dto);
@@ -59,8 +60,11 @@ namespace net.atos.daf.ct2.reports
         #endregion
         Task<IEnumerable<LogbookSearchFilter>> GetLogbookSearchParameter(List<string> vins);
         Task<List<LogbookDetailsFilter>> GetLogbookDetails(LogbookFilter logbookFilter);
+        Task<List<FilterProperty>> GetAlertLevelList(List<string> enums);
+        Task<List<AlertCategory>> GetAlertCategoryList(List<string> enums);
+
         #region Fuel Benchmark Report
-       // Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter);
+        // Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter);
         Task<FuelBenchmarkDetails> GetFuelBenchmarkDetails(FuelBenchmarkFilter fuelBenchmarkFilter);
         #endregion
     }

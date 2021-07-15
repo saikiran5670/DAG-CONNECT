@@ -25,8 +25,9 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
-
-                    var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);
+                    var vinIds = vehicleDetailsAccountVisibilty.Select(x => x.Vin).Distinct().ToList();
+                    var tripAlertdData = await _reportManager.GetLogbookSearchParameter(vinIds);
+                    var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty.Where(x => tripAlertdData.Any(y => y.Vin == x.Vin)));
                     response.AssociatedVehicleRequest.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AssociatedVehicleRequest>>(res)
                         );
@@ -43,52 +44,24 @@ namespace net.atos.daf.ct2.reportservice.Services
                                                                                        ReportConstants.ALERT_FEATURE_NAME);
 
 
-                    var intersectedData = vehicleByVisibilityAndFeature.Select(x => x.VehicleGroupId).Intersect(vehicleByVisibilityAndAlertFeature.Select(x => x.VehicleGroupId));
-                    var result = vehicleByVisibilityAndFeature.Where(x => intersectedData.Contains(x.VehicleGroupId));
-                    var vinIds = vehicleDetailsAccountVisibilty.Select(x => x.Vin).Distinct().ToList();
-
-                    var tripdata = _reportManager.GetLogbookSearchParameter(vinIds);
-
+                    var intersectedData = vehicleByVisibilityAndAlertFeature.Select(x => x.Vin).Intersect(vehicleByVisibilityAndFeature.Select(x => x.Vin));
+                    var result = vehicleByVisibilityAndAlertFeature.Where(x => intersectedData.Contains(x.Vin));
+                    result = result.Where(x => tripAlertdData.Any(y => y.Vin == x.Vin));
                     res = JsonConvert.SerializeObject(result);
-                    response.FleetOverviewVGFilterResponse.AddRange(
-                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetOverviewVGFilterRequest>>(res)
-                        );
-
-
-
-                    var alertLevel = await _reportManager.GetAlertLevelList();
+                    response.AlertTypeFilterRequest.AddRange(
+                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterRequest>>(res)
+                     );
+                    var alertLevel = await _reportManager.GetAlertLevelList(tripAlertdData.Select(x => x.AlertLevel).Distinct().ToList());
                     var resalertLevel = JsonConvert.SerializeObject(alertLevel);
                     response.ALFilterResponse.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resalertLevel)
                         );
 
-                    var alertCategory = await _reportManager.GetAlertCategoryList();
+
+                    var alertCategory = await _reportManager.GetAlertCategoryList(tripAlertdData.Select(x => x.AlertCategoryType).Distinct().ToList());
                     var resAlertCategory = JsonConvert.SerializeObject(alertCategory);
                     response.ACFilterResponse.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterResponse>>(resAlertCategory)
-                        );
-
-                    var healthStatus = await _reportManager.GetHealthStatusList();
-                    var resHealthStatus = JsonConvert.SerializeObject(healthStatus);
-                    response.HSFilterResponse.AddRange(
-                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resHealthStatus)
-                        );
-
-                    var otherFilter = await _reportManager.GetOtherFilter();
-                    var resOtherFilter = JsonConvert.SerializeObject(otherFilter);
-                    response.OFilterResponse.AddRange(
-                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resOtherFilter)
-                        );
-                    List<string> vehicleIdList = new List<string>();
-                    var matchingVins = vehicleDetailsAccountVisibilty.Where(l1 => vehicleByVisibilityAndFeature.Any(l2 => (l2.VehicleId == l1.VehicleId))).ToList();
-                    foreach (var item in matchingVins)
-                    {
-                        vehicleIdList.Add(item.Vin);
-                    }
-                    var driverFilter = await _reportManager.GetDriverList(vehicleIdList.Distinct().ToList());
-                    var resDriverFilter = JsonConvert.SerializeObject(driverFilter);
-                    response.DriverList.AddRange(
-                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<DriverListResponse>>(resDriverFilter)
                         );
 
                     response.Message = ReportConstants.FLEETOVERVIEW_FILTER_SUCCESS_MSG;

@@ -16,6 +16,7 @@ using net.atos.daf.ct2.portalservice.Entity.Report;
 using net.atos.daf.ct2.reportservice;
 using Newtonsoft.Json;
 using static net.atos.daf.ct2.reportservice.ReportService;
+using net.atos.daf.ct2.vehicleservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -32,10 +33,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly HereMapAddressProvider _hereMapAddressProvider;
         private readonly poiservice.POIService.POIServiceClient _poiServiceClient;
         private readonly MapService.MapServiceClient _mapServiceClient;
+        private readonly VehicleService.VehicleServiceClient _vehicleClient;
 
         public ReportController(ReportServiceClient reportServiceClient, AuditHelper auditHelper,
                                IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper,
-                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient, AccountPrivilegeChecker privilegeChecker
+                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient, AccountPrivilegeChecker privilegeChecker,
+                               VehicleService.VehicleServiceClient vehicleClient
                                ) : base(httpContextAccessor, sessionHelper, privilegeChecker)
         {
             _reportServiceClient = reportServiceClient;
@@ -45,6 +48,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _poiServiceClient = poiServiceClient;
             _mapServiceClient = mapServiceClient;
             _hereMapAddressProvider = new HereMapAddressProvider(_mapServiceClient, _poiServiceClient);
+            _vehicleClient = vehicleClient;
         }
 
 
@@ -308,6 +312,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Info("GetDriverActivityAsync method in Report (Single Driver Time details Report) API called.");
                 var data = await _reportServiceClient.GetDriverActivityAsync(objSingleDriver);
                 if (data?.DriverActivities?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_DRIVER_TIME_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPost]
+        [Route("drivetime/getdetails/chart")]
+        public async Task<IActionResult> GetDriverActivityChartDetails([FromBody] Entity.Report.DriverTimeChartFilter request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG); }
+                if (string.IsNullOrEmpty(request.DriverId)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_DRIVERIDREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                DriverActivityChartFilterRequest objDriverChartData = JsonConvert.DeserializeObject<DriverActivityChartFilterRequest>(filters);
+                _logger.Info("GetDriverActivityAsync method in Report (Single Driver Time details Report) API called.");
+                var data = await _reportServiceClient.GetDriverActivityChartDetailsAsync(objDriverChartData);
+                if (data?.DriverActivitiesChartData?.Count > 0)
                 {
                     data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
                     return Ok(data);
@@ -862,13 +898,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
                             fleetoverviewItem.StartGeolocationAddress = getMapRequestStart.Address;
                         }
-                        //if (fleetoverviewItem.AlertGeolocationAddressId == 0 && fleetoverviewItem.StartPositionLattitude != 0 && fleetoverviewItem.StartPositionLongitude != 0)
-                        //{
-                        //    GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.StartPositionLattitude, fleetoverviewItem.StartPositionLongitude);
-                        //    fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
-                        //    fleetoverviewItem.StartGeolocationAddress = getMapRequestStart.Address;
-                        //}
-
+                        if (fleetoverviewItem.FleetOverviewAlert != null && fleetoverviewItem.FleetOverviewAlert.Count > 0)
+                        {
+                            foreach (var addressesult in fleetoverviewItem.FleetOverviewAlert)
+                            {
+                                GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(Convert.ToDouble(addressesult.AlertLatitude), Convert.ToDouble(addressesult.AlertLongitude));
+                                addressesult.AlertGeolocationAddressId = getMapRequestStart.Id;
+                                addressesult.AlertGeolocationAddress = getMapRequestStart.Address;
+                            }
+                        }
                     }
                     return Ok(response.FleetOverviewDetailList);
                 }
@@ -1175,8 +1213,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     if (item.GeoLocationAddressId == 0 && item.Latitude != 0 && item.Longitude != 0)
                     {
                         var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.Latitude, item.Longitude);
-                        item.GeoLocationAddress = getMapRequestLatest?.Address;
-                        item.GeoLocationAddressId = (int)getMapRequestLatest?.Id;
+                        item.GeoLocationAddress = getMapRequestLatest.Address;
+                        item.GeoLocationAddressId = getMapRequestLatest.Id;
                     }
                 }
                 if (response?.FuelDeviationDetails?.Count > 0)
@@ -1199,8 +1237,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
-
-
 
         #region Logbook
 
@@ -1242,12 +1278,61 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        #endregion
-        #region Fuel Benchmark Details Report
 
         [HttpGet]
-        [Route("getFuelbenchmark")]
-        public async Task<IActionResult> GetFuelBechmarkReport([FromQuery] FuelBenchmarkRequest request)
+        [Route("fleetoverview/getlogbookdetails")]
+        public async Task<IActionResult> GetLogbookDetails(LogbookFilter logbookFilter)
+        {
+            try
+            {
+                LogbookDetailsRequest logbookDetailsRequest = new LogbookDetailsRequest
+                {
+                    AccountId = _userDetails.AccountId,
+                    OrganizationId = GetContextOrgId(),
+                    RoleId = _userDetails.RoleId
+                };
+
+                logbookDetailsRequest.GroupIds.AddRange(logbookFilter.GroupId);
+                logbookDetailsRequest.VIN.AddRange(logbookFilter.VIN);
+                logbookDetailsRequest.AlertLevels.AddRange(logbookFilter.AlertLevel);
+                logbookDetailsRequest.AlertType.AddRange(logbookFilter.AlertType);
+                logbookDetailsRequest.AlertCategories.AddRange(logbookFilter.AlertCategory);
+                logbookDetailsRequest.StartTime = logbookFilter.Start_Time;
+                logbookDetailsRequest.EndTime = logbookFilter.End_time;
+                /* Need to comment Start */
+                logbookDetailsRequest.AccountId = 171;
+                logbookDetailsRequest.OrganizationId = 36;
+                logbookDetailsRequest.RoleId = 61;
+                /* Need to comment End */
+
+                LogbookDetailsResponse response = await _reportServiceClient.GetLogbookDetailsAsync(logbookDetailsRequest);
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (response.Code == Responsecode.Success)
+                    return Ok(response);
+                if (response.Code == Responsecode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                $"{ nameof(GetLogbookDetails) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+
+        }
+        #endregion
+
+        #region Fuel Benchmark Details Report
+
+        [HttpPost]
+        [Route("fuelbenchmark/vehiclegroup")]
+        public async Task<IActionResult> GetFuelBenchmarkByVehicleGroup([FromBody] Entity.Report.ReportFuelBenchmarkFilter request)
         {
             try
             {
@@ -1260,8 +1345,48 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 string filters = JsonConvert.SerializeObject(request);
                 FuelBenchmarkRequest objFleetFilter = JsonConvert.DeserializeObject<FuelBenchmarkRequest>(filters);
-                var data = await _reportServiceClient.GetFuelBenchmarksAsync(objFleetFilter);
-                if (data?.FuelBenchmarkDetails?.Count > 0)
+                var data = await _reportServiceClient.GetFuelBenchmarkByVehicleGroupAsync(objFleetFilter);
+                if (data?.FuelBenchmarkDetails != null)
+                {
+                    VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
+                    vehicleRequest.VehicleGroupId = request.VehicleGroupId;
+                    vehicleRequest.GroupType = "G";
+                    vehicleRequest.FunctionEnum = "";
+                    vehicleRequest.OrgnizationId = GetContextOrgId();
+                    VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
+                    data.FuelBenchmarkDetails.NumberOfTotalVehicles = vehicleResponse.VehicleCount;
+                    data.Message = ReportConstants.GET_FUEL_BENCHMARK_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_FUEL_BENCHMARK_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPost]
+        [Route("fuelbenchmark/timeperiod")]
+        public async Task<IActionResult> GetFuelBenchmarkByTimePeriod([FromBody] Entity.Report.ReportFuelBenchmarkFilter request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0))
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0))
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_ENDDATE_MSG); }
+                if (request.StartDateTime > request.EndDateTime)
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_VALIDATION_DATEMISMATCH_MSG); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                FuelBenchmarkRequest objFleetFilter = JsonConvert.DeserializeObject<FuelBenchmarkRequest>(filters);
+                var data = await _reportServiceClient.GetFuelBenchmarkByTimePeriodAsync(objFleetFilter);
+                if (data?.FuelBenchmarkDetails != null)
                 {
                     data.Message = ReportConstants.GET_FUEL_BENCHMARK_SUCCESS_MSG;
                     return Ok(data);
