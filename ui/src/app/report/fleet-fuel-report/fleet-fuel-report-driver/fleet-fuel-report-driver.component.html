@@ -511,7 +511,8 @@
     <!-- Fleet Table -->
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
   
-      <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+      <mat-expansion-panel [(expanded)]="isDetailsOpen" class="full-width" fxLayoutGap="10px"
+      (opened)="isDetailsOpen == true"(closed)="isDetailsOpen == false">
   
         <mat-expansion-panel-header class="full-width">
   
@@ -1165,5 +1166,4 @@
     </mat-card>
     </div>
 
-    <app-fleetfueldetails *ngIf='showDetailedReport && FuelData' [translationData]='translationData' [detailsObject]='detailSummaryObj' 
-    [displayedColumns]='detaildisplayedColumns' [FuelData] ='FuelData'></app-fleetfueldetails>
+   

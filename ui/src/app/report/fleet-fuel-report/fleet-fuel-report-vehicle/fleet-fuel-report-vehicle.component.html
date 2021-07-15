@@ -154,7 +154,8 @@
   
     <!-- Ranking section -->
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-      <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+      <mat-expansion-panel [(expanded)]="isRankingOpen" class="full-width" fxLayoutGap="10px"
+      (opened)="isRankingOpen == true" (closed)="isRankingOpen == false">
         <mat-expansion-panel-header class="full-width">
           <mat-panel-title>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblRanking ||
@@ -466,7 +467,8 @@
   
     <div>
       <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+        <mat-expansion-panel [(expanded)]="isDetailsOpen" class="full-width" fxLayoutGap="10px"
+        (opened)="isDetailsOpen == true" (closed)="isDetailsOpen == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails ||
@@ -875,4 +877,3 @@
     </div>
   <!-- </div> -->
   
-  <app-fleetfueldetails *ngIf='showDetailedReport && FuelData' [translationData]='translationData' [detailsObject]='detailSummaryObj'></app-fleetfueldetails>

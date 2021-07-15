@@ -59,8 +59,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   rankingExpandPanel: boolean = false;
   rankingData :any;
   isSummaryOpen: boolean = false;
+  isRankingOpen: boolean =  false;
   summaryColumnData: any = [];
   isChartsOpen: boolean = false;
+  isDetailsOpen:boolean = false;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   startTimeDisplay: any = '00:00:00';
@@ -489,8 +491,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       //this.setTableInfo();
       //  this.updateDataSource(this.FuelData);
       this.hideloader();
+      this.isRankingOpen = true;
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
+      this.isDetailsOpen = true;
       this.tripData.forEach(element => {
 
       
@@ -1520,14 +1524,12 @@ doc.addPage();
     displayHeader.style.display ="block";
   }
 
-  gotoTrip(vehData: any){
-    const navigationExtras: NavigationExtras = {
-      state: {
-        fromFleetUtilReport: true,
-        vehicleData: vehData
-      }
-    };
-    this.router.navigate(['report/tripreport'], navigationExtras);
+  gotoTrip(_row){
+    this.isRankingOpen= false;
+    this.isChartsOpen = true;
+    this.summaryColumnData = true;
+    this.isDetailsOpen =true;
+
   }
 
   sumOfColumns(columnName : any){
