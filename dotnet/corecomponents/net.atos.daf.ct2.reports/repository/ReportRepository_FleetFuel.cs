@@ -416,7 +416,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , SUM(fuel_consumption_cc_non_active)                                    as fuel_consumption_cc_non_active
 				  , SUM(idling_consumption)                                                as idling_consumption
 				  , SUM(dpa_score)                                                         as dpa_score
-                  , start_time_stamp                                                       as StarDate
+                  , start_time_stamp                                                       as StartDate
                   , end_time_stamp                                                         as EndDate
 				From
 					tripdetail.trip_statistics
@@ -453,7 +453,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactivesx
 				  , idling_consumption                                     as IdlingConsumption
 				  , dpa_score                                              as DPAScore
-                  ,StarDate
+                  ,StartDate
                   ,EndDate
 				FROM
 					CTE_FleetDeatils fd
@@ -533,7 +533,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , SUM(fuel_consumption_cc_non_active)                                    as fuel_consumption_cc_non_active
 				  , SUM(idling_consumption)                                                as idling_consumption
 				  , SUM(dpa_score)                                                         as dpa_score
-                  , start_time_stamp                                                       as StarDate
+                  , start_time_stamp                                                       as StartDate
                   , end_time_stamp                                                         as EndDate
 				From
 					tripdetail.trip_statistics
@@ -574,7 +574,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactivesx
 				  , idling_consumption                                     as IdlingConsumption
 				  , dpa_score                                              as DPAScore
-                  , StarDate
+                  , StartDate
                   , EndDate
 				FROM
 					CTE_FleetDeatils fd
