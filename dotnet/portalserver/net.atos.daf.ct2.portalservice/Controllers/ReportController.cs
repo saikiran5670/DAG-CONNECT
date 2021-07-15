@@ -1175,8 +1175,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     if (item.GeoLocationAddressId == 0 && item.Latitude != 0 && item.Longitude != 0)
                     {
                         var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.Latitude, item.Longitude);
-                        item.GeoLocationAddress = getMapRequestLatest?.Address;
-                        item.GeoLocationAddressId = (int)getMapRequestLatest?.Id;
+                        item.GeoLocationAddress = getMapRequestLatest.Address;
+                        item.GeoLocationAddressId = getMapRequestLatest.Id;
                     }
                 }
                 if (response?.FuelDeviationDetails?.Count > 0)
