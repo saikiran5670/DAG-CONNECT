@@ -507,7 +507,7 @@ namespace net.atos.daf.ct2.reports
         #endregion
 
         #region LogBook
-        public async Task<LogbookSearchFilter> GetLogbookSearchParameter(List<string> vins)
+        public async Task<IEnumerable<LogbookSearchFilter>> GetLogbookSearchParameter(List<string> vins)
         {
             return await _reportRepository.GetLogbookSearchParameter(vins);
         }
