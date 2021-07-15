@@ -33,7 +33,7 @@
         public const string GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG = "Invalid start date.";
         public const string GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG = "Invalid end date.";
         public const string GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG = "Invalid VIN details.";
-        public const string GET_DRIVER_TIME_VALIDATION_IDREQUIRED_MSG = "Invalid driver id/ids details.";
+        public const string GET_DRIVER_TIME_VALIDATION_DRIVERIDREQUIRED_MSG = "Invalid driver id/ids details.";
         public const string GET_DRIVER_TIME_VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
 
         public const string GET_DRIVER_TIME_SUCCESS_MSG = "Driver details fetched successfully for requested Filters";

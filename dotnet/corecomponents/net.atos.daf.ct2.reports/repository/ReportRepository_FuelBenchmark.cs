@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
-        public async Task<IEnumerable<Ranking>> GetFuelBenchmarkRanking(FuelBenchmarkConsumptionParameter fuelBenchmarkConsumptionParameter)
+        public async Task<IEnumerable<Ranking>> GetFuelBenchmarkRanking(FuelBenchmarkFilter fuelBenchmarkFilter)
         {
             try
             {
@@ -41,9 +41,9 @@ namespace net.atos.daf.ct2.reports.repository
                                 AND VIN=ANY(@vin)
                                 GROUP BY
                                 trips.vin,veh.name";
-                param.Add("@vin", fuelBenchmarkConsumptionParameter.VINs);
-                param.Add("@fromDate", fuelBenchmarkConsumptionParameter.StartDateTime);
-                param.Add("@endDate", fuelBenchmarkConsumptionParameter.EndDateTime);
+                param.Add("@vin", fuelBenchmarkFilter.VINs);
+                param.Add("@fromDate", fuelBenchmarkFilter.StartDateTime);
+                param.Add("@endDate", fuelBenchmarkFilter.EndDateTime);
                 IEnumerable<Ranking> rankingList = await _dataAccess.QueryAsync<Ranking>(query, param);
                 return rankingList;
             }
@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
-        public async Task<FuelBenchmarkConsumption> GetFuelBenchmarkDetail(FuelBenchmarkConsumptionParameter fuelBenchmarkConsumptionParameter)
+        public async Task<FuelBenchmarkConsumption> GetFuelBenchmarkDetail(FuelBenchmarkFilter fuelBenchmarkFilter)
         {
             try
             {
@@ -69,9 +69,9 @@ namespace net.atos.daf.ct2.reports.repository
                                 AND VIN=ANY(@vin)
                                 GROUP BY
                                 trips.vin,veh.name";
-                param.Add("@vin", fuelBenchmarkConsumptionParameter.VINs);
-                param.Add("@fromDate", fuelBenchmarkConsumptionParameter.StartDateTime);
-                param.Add("@endDate", fuelBenchmarkConsumptionParameter.EndDateTime);
+                param.Add("@vin", fuelBenchmarkFilter.VINs);
+                param.Add("@fromDate", fuelBenchmarkFilter.StartDateTime);
+                param.Add("@endDate", fuelBenchmarkFilter.EndDateTime);
                 var fuelConsumptionList = await _dataAccess.QueryAsync<FuelBenchmarkConsumption>(query, param);
                 return fuelConsumptionList as FuelBenchmarkConsumption;
             }
