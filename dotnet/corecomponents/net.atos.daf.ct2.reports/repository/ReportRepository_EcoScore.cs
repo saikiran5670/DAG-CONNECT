@@ -1095,9 +1095,9 @@ namespace net.atos.daf.ct2.reports.repository
                         (SELECT start_time FROM ecoscorequery ORDER BY start_time LIMIT 1) as StartTimestamp,
                         (SELECT end_time FROM ecoscorequery ORDER BY end_time DESC LIMIT 1) as EndTimestamp,
                         -- No. of Trips
-                        COUNT (eco.trip_id) as NumberOfTrips,
+                        CAST(COUNT(eco.trip_id) AS INTEGER) as NumberOfTrips,
                         -- No. of Vehicles
-                        1 as NumberOfVehicles,
+                        CAST(1 AS INTEGER) as NumberOfVehicles,
                         -- Average Gross Weight
                         (CAST(SUM (eco.gross_weight_combination)as DOUBLE PRECISION) * CAST(SUM (eco.trip_distance)as DOUBLE PRECISION)) as AverageGrossweight_Total, COUNT(1) as AverageGrossweight_Count,
                         -- Distance
@@ -1121,7 +1121,7 @@ namespace net.atos.daf.ct2.reports.repository
                         0 as CruiseControlUsage75_Total, COUNT(1) as CruiseControlUsage75_Count,
                         -- PTO Usage
                         CASE WHEN ( SUM (eco.end_time)- SUM (eco.start_time) ) <> 0 and (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) <>0 
-	                            THEN SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) 
+	                            THEN CAST(SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) AS DOUBLE PRECISION)
 	                            ELSE NULL END as PTOUsage_Total, COUNT(1) as PTOUsage_Count,
                         -- PTO Duration
                         SUM(eco.pto_duration) as PTODuration_Total, COUNT(1) as PTODuration_Count,
@@ -1131,11 +1131,11 @@ namespace net.atos.daf.ct2.reports.repository
                                 ELSE NULL END as AverageDrivingSpeed_Total, COUNT(1) as AverageDrivingSpeed_Count,
                         -- Average Speed
                         CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <>0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000) <>0
-	                            THEN SUM(eco.trip_distance)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)  
+	                            THEN CAST(SUM(eco.trip_distance)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000) AS DOUBLE PRECISION) 
                                 ELSE NULL END as AverageSpeed_Total, COUNT(1) as AverageSpeed_Count,
                         -- Heavy Throttling
                         CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 
-	                            THEN SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)  
+	                            THEN CAST(SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000) AS DOUBLE PRECISION)  
 	                            ELSE NULL END as HeavyThrottling_Total, COUNT(1) as HeavyThrottling_Count,
                         -- Heavy Throttle Duration
                         (CAST(SUM(eco.heavy_throttle_pedal_duration ) AS DOUBLE PRECISION)) as HeavyThrottleDuration_Total, COUNT(1) as HeavyThrottleDuration_Count,

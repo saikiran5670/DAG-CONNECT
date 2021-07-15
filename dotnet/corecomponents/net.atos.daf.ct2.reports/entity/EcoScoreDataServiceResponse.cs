@@ -1,13 +1,15 @@
-﻿namespace net.atos.daf.ct2.reports.entity
+﻿using System.Collections.Generic;
+
+namespace net.atos.daf.ct2.reports.entity
 {
     public class EcoScoreKPIInfoDataServiceResponse
     {
-        public KPIInfo[] KPIInfo { get; set; }
+        public List<KPIInfo> KPIInfo { get; set; }
     }
 
     public class EcoScoreChartInfoDataServiceResponse
     {
-        public ChartInfo[] ChartInfo { get; set; }
+        public List<ChartInfo> ChartInfo { get; set; }
     }
 
     public class KPIInfo
@@ -55,9 +57,9 @@
     public class KPI
     {
         public double Total { get; set; }
-        public int Count { get; set; }
+        public double Count { get; set; }
 
-        public KPI(double total, int count)
+        public KPI(double total, double count)
         {
             Total = total;
             Count = count;

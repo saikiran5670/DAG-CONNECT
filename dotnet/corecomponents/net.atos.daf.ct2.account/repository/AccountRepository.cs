@@ -296,7 +296,7 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@email", emailId.ToLower());
-                var query = @"select id, email, salutation, first_name, last_name from master.account where lower(email) = @email and state='A'";
+                var query = @"select id, email, salutation, first_name, last_name, driver_id from master.account where lower(email) = @email and state='A'";
 
                 dynamic result = await _dataAccess.QueryFirstOrDefaultAsync<dynamic>(query, parameter);
 
@@ -1471,6 +1471,7 @@ namespace net.atos.daf.ct2.account
             account.Salutation = record.salutation;
             account.FirstName = record.first_name;
             account.LastName = record.last_name;
+            account.DriverId = record.driver_id;
             return account;
         }
         private Account Map(dynamic record)
