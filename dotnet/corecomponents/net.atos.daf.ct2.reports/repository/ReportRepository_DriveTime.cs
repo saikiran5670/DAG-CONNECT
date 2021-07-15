@@ -146,7 +146,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameterOfFilters.Add("@ToDate", activityFilters.EndDateTime);
                 parameterOfFilters.Add("@DriverId", activityFilters.DriverId);
                 string queryActivities = @"SELECT
-                                           	activity_date as activitDate
+                                           	activity_date as ActivityDate
                                              , code
                                              , SUM(duration) as Duration
                                              , start_time as starttime
