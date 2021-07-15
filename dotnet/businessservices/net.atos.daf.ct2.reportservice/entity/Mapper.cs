@@ -347,9 +347,6 @@ namespace net.atos.daf.ct2.reportservice.entity
                 StartGeolocationAddress = fleetOverviewEntity.StartGeolocationAddress,
                 LatestWarningGeolocationAddressId = fleetOverviewEntity.LatestWarningGeolocationAddressId,
                 LatestWarningGeolocationAddress = fleetOverviewEntity.LatestWarningGeolocationAddress,
-
-                AlertGeolocationAddressId = fleetOverviewEntity.AlertGeolocationAddressId,
-                AlertGeolocationAddress = fleetOverviewEntity.AlertGeolocationAddress,
                 LatestWarningName = fleetOverviewEntity.LatestWarningName,
             };
             if (fleetOverviewEntity.LiveFleetPositions.Count > 0)
@@ -397,6 +394,8 @@ namespace net.atos.daf.ct2.reportservice.entity
                 CategoryType = fleetOverviewAlertEntity.CategoryType,
                 AlertLatitude = fleetOverviewAlertEntity.AlertLatitude,
                 AlertLongitude = fleetOverviewAlertEntity.AlertLongitude,
+                AlertGeolocationAddressId = fleetOverviewAlertEntity.AlertGeolocationAddressId,
+                AlertGeolocationAddress = fleetOverviewAlertEntity.AlertGeolocationAddress,
             };
             return fleetOverviewAlert;
         }
