@@ -11,18 +11,6 @@ namespace net.atos.daf.ct2.reports.repository
 {
     public partial class ReportRepository : IReportRepository
     {
-        public Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter)
-        {
-            try
-            {
-                var query = @"select id as Id,name as Name, key as Key from master.report";
-                return _dataAccess.QueryAsync<FuelBenchmark>(query);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
 
         public async Task<IEnumerable<Ranking>> GetFuelBenchmarkRanking(FuelBenchmarkFilter fuelBenchmarkFilter)
         {
@@ -31,20 +19,20 @@ namespace net.atos.daf.ct2.reports.repository
                 var param = new DynamicParameters();
                 string query = @"Select
                                 trips.vin,
-                                veh.name,
-                                Round(SUM(trips.etl_gps_fuel_consumed),2) as totalfuelconsumed
+                                veh.name as VehicleName,
+                                Round(SUM(trips.etl_gps_fuel_consumed),2) as FuelConsumption
                                 From
                                 tripdetail.trip_statistics as trips
                                 Left JOIN master.vehicle as veh
                                 ON trips.vin = veh.vin
                                 WHERE (start_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
-                                AND VIN=ANY(@vin)
+                                AND trips.VIN=ANY(@vin)
                                 GROUP BY
                                 trips.vin,veh.name";
                 param.Add("@vin", fuelBenchmarkFilter.VINs);
                 param.Add("@fromDate", fuelBenchmarkFilter.StartDateTime);
                 param.Add("@endDate", fuelBenchmarkFilter.EndDateTime);
-                IEnumerable<Ranking> rankingList = await _dataAccess.QueryAsync<Ranking>(query, param);
+                IEnumerable<Ranking> rankingList = await _dataMartdataAccess.QueryAsync<Ranking>(query, param);
                 return rankingList;
             }
             catch (Exception)
@@ -68,14 +56,15 @@ namespace net.atos.daf.ct2.reports.repository
                                 WHERE (start_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
                                 AND VIN=ANY(@vin)
                                 GROUP BY
-                                trips.vin,veh.name";
+                                vin,etl_gps_fuel_consumed";
                 param.Add("@vin", fuelBenchmarkFilter.VINs);
                 param.Add("@fromDate", fuelBenchmarkFilter.StartDateTime);
                 param.Add("@endDate", fuelBenchmarkFilter.EndDateTime);
-                var fuelConsumptionList = await _dataAccess.QueryAsync<FuelBenchmarkConsumption>(query, param);
-                return fuelConsumptionList as FuelBenchmarkConsumption;
+                FuelBenchmarkConsumption fuelBenchmarkConsumption = new FuelBenchmarkConsumption();
+                fuelBenchmarkConsumption = await _dataMartdataAccess.QueryFirstOrDefaultAsync<FuelBenchmarkConsumption>(query, param);
+                return fuelBenchmarkConsumption;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

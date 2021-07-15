@@ -62,6 +62,7 @@ namespace net.atos.daf.ct2.reports
         Task<List<LogbookDetailsFilter>> GetLogbookDetails(LogbookFilter logbookFilter);
         Task<List<FilterProperty>> GetAlertLevelList(List<string> enums);
         Task<List<AlertCategory>> GetAlertCategoryList(List<string> enums);
+
         #region Fuel Benchmark Report
         // Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter);
         Task<FuelBenchmarkDetails> GetFuelBenchmarkDetails(FuelBenchmarkFilter fuelBenchmarkFilter);

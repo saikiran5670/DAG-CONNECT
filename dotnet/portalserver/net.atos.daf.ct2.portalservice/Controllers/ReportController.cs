@@ -1232,8 +1232,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
-
-
         #region Logbook
 
         [HttpGet]
@@ -1323,11 +1321,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         }
         #endregion
+
         #region Fuel Benchmark Details Report
 
-        [HttpGet]
-        [Route("getFuelbenchmark")]
-        public async Task<IActionResult> GetFuelBechmarkReport([FromQuery] FuelBenchmarkRequest request)
+        [HttpPost]
+        [Route("fuelbenchmark/vehiclegroup")]
+        public async Task<IActionResult> GetFuelBenchmarkByVehicleGroup([FromBody] Entity.Report.ReportFuelBenchmarkFilter request)
         {
             try
             {
@@ -1340,8 +1339,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 string filters = JsonConvert.SerializeObject(request);
                 FuelBenchmarkRequest objFleetFilter = JsonConvert.DeserializeObject<FuelBenchmarkRequest>(filters);
-                var data = await _reportServiceClient.GetFuelBenchmarksAsync(objFleetFilter);
-                if (data?.FuelBenchmarkDetails?.Count > 0)
+                var data = await _reportServiceClient.GetFuelBenchmarkByVehicleGroupAsync(objFleetFilter);
+                if (data?.FuelBenchmarkDetails != null)
                 {
                     data.Message = ReportConstants.GET_FUEL_BENCHMARK_SUCCESS_MSG;
                     return Ok(data);

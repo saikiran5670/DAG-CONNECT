@@ -39,7 +39,7 @@ rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriverRequest) returns (Fleet
 rpc GetFilteredFuelDeviation (FuelDeviationFilterRequest) returns (FuelDeviationResponse);
 rpc GetLogbookSearchParameter (LogbookFilterIdRequest) returns (LogbookFilterResponse);
 rpc GetLogbookDetails(LogbookDetailsRequest) returns (LogbookDetailsResponse);
-rpc GetFuelBenchmarks (FuelBenchmarkRequest) returns (FuelBenchmarkResponse);
+rpc GetFuelBenchmarkByVehicleGroup (FuelBenchmarkRequest) returns (FuelBenchmarkResponse);
 }
 
 message VehicleHealthReportRequest{
@@ -1074,7 +1074,7 @@ message FuelBenchmarkRequest{
 }
 
 message FuelBenchmarkResponse{
-    repeated FuelBenchmarkDetails FuelBenchmarkDetails=1;   
+    FuelBenchmarkDetails FuelBenchmarkDetails=1;   
     Responsecode code = 2;
     string message = 3;
 }
@@ -1085,13 +1085,13 @@ message FuelBenchmarkDetails {
     double TotalFuelConsumed = 3;
     double TotalMileage = 4;
     double AverageFuelConsumption = 5;
-    string VehicleGroupName = 6;
+     google.protobuf.StringValue VehicleGroupName = 6;
     repeated Ranking Ranking = 7;
 }
 
 message Ranking {
-      string VIN = 1;
-      string VehicleName = 2;
-      double ConsumptionName = 3;
+       google.protobuf.StringValue VIN = 1;
+       google.protobuf.StringValue VehicleName = 2;
+      double FuelConsumption = 3;
 }
 /// END: Fuel Bechmark Report
