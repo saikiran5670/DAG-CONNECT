@@ -9,7 +9,6 @@ import { Router } from '@angular/router';
   styleUrls: ['./driver-time-preferences.component.less']
 })
 export class DriverTimePreferencesComponent implements OnInit {
-
   @Input() editFlag: any;
   @Input() reportListData: any;
   @Input() translationData: any;

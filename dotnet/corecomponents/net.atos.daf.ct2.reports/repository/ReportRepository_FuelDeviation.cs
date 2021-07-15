@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                    , trpst.vin as VIN
 	                    , CASE WHEN v.registration_no IS NULL THEN '' ELSE v.registration_no END as RegistrationNo
 	                    , CASE WHEN v.name IS NULL THEN '' ELSE v.name END as VehicleName
-                        , fueldev.geolocation_address_id as GeoLocationAddressId
+                        , geoaddr.id as GeoLocationAddressId
 	                    , CASE WHEN geoaddr.address IS NULL THEN '' ELSE geoaddr.address END as GeoLocationAddress
                     from tripdetail.trip_statistics as trpst	 
 	                     INNER JOIN livefleet.livefleet_trip_fuel_deviation as fueldev
