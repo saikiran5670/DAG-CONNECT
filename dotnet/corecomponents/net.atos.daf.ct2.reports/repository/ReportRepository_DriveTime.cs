@@ -148,7 +148,7 @@ namespace net.atos.daf.ct2.reports.repository
                 string queryActivities = @"SELECT
                                            	activity_date as activitDate
                                              , code
-                                             , duration as Duration
+                                             , SUM(duration) as Duration
                                              , start_time as starttime
                                              , end_time as endtime
                                            FROM
