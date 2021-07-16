@@ -1286,9 +1286,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 logBookFilterRequest.AccountId = _userDetails.AccountId;
                 logBookFilterRequest.OrganizationId = GetContextOrgId();
                 logBookFilterRequest.RoleId = _userDetails.RoleId;
-                logBookFilterRequest.AccountId = 171;
-                logBookFilterRequest.OrganizationId = 36;
-                logBookFilterRequest.RoleId = 61;
+             //   logBookFilterRequest.AccountId = 171;
+              //  logBookFilterRequest.OrganizationId = 36;
+              //  logBookFilterRequest.RoleId = 61;
                 LogbookFilterResponse response = await _reportServiceClient.GetLogbookSearchParameterAsync(logBookFilterRequest);
 
                 // reportFleetOverviewFilter = _mapper.ToFleetOverviewEntity(response);

@@ -51,22 +51,23 @@ namespace net.atos.daf.ct2.reportservice.Services
                     response.AlertTypeFilterRequest.AddRange(
                          JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterRequest>>(res)
                      );
-                    var alertLevel = await _reportManager.GetAlertLevelList();// tripAlertdData.Select(x => x.AlertLevel).Distinct().ToList());
-                    var resalertLevel = JsonConvert.SerializeObject(alertLevel);
-                    response.ALFilterResponse.AddRange(
-                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resalertLevel)
-                        );
-
-
-                    var alertCategory = await _reportManager.GetAlertCategoryList();// tripAlertdData.Select(x => x.AlertCategoryType).Distinct().ToList());
-                    var resAlertCategory = JsonConvert.SerializeObject(alertCategory);
-                    response.ACFilterResponse.AddRange(
-                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterResponse>>(resAlertCategory)
-                        );
-
-                    response.Message = ReportConstants.FLEETOVERVIEW_FILTER_SUCCESS_MSG;
-                    response.Code = Responsecode.Success;
                 }
+                var alertLevel = await _reportManager.GetAlertLevelList();// tripAlertdData.Select(x => x.AlertLevel).Distinct().ToList());
+                var resalertLevel = JsonConvert.SerializeObject(alertLevel);
+                response.ALFilterResponse.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resalertLevel)
+                    );
+
+
+                var alertCategory = await _reportManager.GetAlertCategoryList();// tripAlertdData.Select(x => x.AlertCategoryType).Distinct().ToList());
+                var resAlertCategory = JsonConvert.SerializeObject(alertCategory);
+                response.ACFilterResponse.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterResponse>>(resAlertCategory)
+                    );
+
+                response.Message = ReportConstants.FLEETOVERVIEW_FILTER_SUCCESS_MSG;
+                response.Code = Responsecode.Success;
+
                 _logger.Info("Get method in report service called.");
                 return await Task.FromResult(response);
             }
