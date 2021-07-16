@@ -46,19 +46,22 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@start_time_stamp", logbookFilter.Start_Time, System.Data.DbType.Int32);
                 parameter.Add("@end_time_stamp", logbookFilter.End_time, System.Data.DbType.Int32);
                 string queryLogBookPull = @"select ta.vin as VIN,
-                                v.registration_no,
-                                v.name as Vehicle_Name,
-                                ta.trip_id,category_type as Alert_Category,
-                                ta.type as Alert_Type,
-                                ta.name as Alert_name,
-                                alert_id AlertId,                             
-                                latitude,
-                                longitude,
-                                alert_generated_time,
-                                start_time_stamp as Trip_Start,
-                                end_time_stamp as Trip_End
-                                from tripdetail.tripalert ta left join master.vehicle v on ta.vin = v.vin inner join tripdetail.trip_statistics ts
-                                on ta.vin = ts.vin where 1=1 
+                                v.registration_no as VehicleRegNo,
+                                v.name as VehicleName,
+                                ta.trip_id as TripId,
+                                ta.category_type as AlertCategory,
+                                ta.type as AlertType,
+                                ta.name as Alertname,
+                                ta.alert_id as AlertId,                             
+                                ta.latitude as Latitude,
+                                ta.longitude as Longitude,
+                                ta.urgency_level_type as AlertLevel,
+                                ta.alert_generated_time as AlertGeneratedTime,
+                                ts.start_time_stamp as TripStartTime,
+                                ts.end_time_stamp as TripEndTime
+                                from tripdetail.tripalert ta left join master.vehicle v on ta.vin = v.vin 
+                                inner join tripdetail.trip_statistics ts
+                                on ta.vin = ts.vin  and ta.trip_id=ts.trip_id where 1=1 
                                 and ((to_timestamp(ta.alert_generated_time)::date) >= (to_timestamp(@start_time_stamp)::date)
                                 and (to_timestamp(ta.alert_generated_time)::date) <= (to_timestamp(@end_time_stamp )::date))";
 
