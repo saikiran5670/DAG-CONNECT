@@ -28,8 +28,7 @@ namespace net.atos.daf.ct2.reports.repository
                             from tripdetail.tripalert tripalert   
                             left join tripdetail.trip_statistics lcts on lcts.vin=tripalert.vin and lcts.trip_id=tripalert.trip_id
                             where tripalert.vin= ANY(@vins)
-                            and (lcts.start_time_stamp >= (extract(epoch from (to_timestamp(tripalert.alert_generated_time)::date - @days ))*1000) 
-                            and (extract(epoch from (to_timestamp(tripalert.alert_generated_time)::date - @days ))*1000) <= lcts.end_time_stamp)";
+                           and (to_timestamp(tripalert.alert_generated_time)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time)::date) >= (now()::date - @days) ";
 
             tripAlertList = await _dataMartdataAccess.QueryAsync<LogbookTripAlertDetails>(query, parameter);
             return tripAlertList.AsList<LogbookTripAlertDetails>();
@@ -60,7 +59,10 @@ namespace net.atos.daf.ct2.reports.repository
                                 start_time_stamp as Trip_Start,
                                 end_time_stamp as Trip_End
                                 from tripdetail.tripalert ta left join master.vehicle v on ta.vin = v.vin inner join tripdetail.trip_statistics ts
-                                on ta.vin = ts.vin where 1=1 "; //and ta.start_time_stamp = @start_time_stamp and ta.end_time_stamp = @end_time_stamp";
+                                on ta.vin = ts.vin where 1=1 
+                                and (to_timestamp(ta.alert_generated_time)::date) >= (to_timestamp(@start_time_stamp)::date)
+                                and (to_timestamp(ta.alert_generated_time)::date) <= (to_timestamp(@end_time_stamp )::date) ";
+
 
 
                 if (logbookFilter.VIN.Count > 0)
