@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslationService } from '../../../services/translation.service';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
@@ -48,7 +48,7 @@ selectedPOI = new SelectionModel(true, []);
 selectedHerePOI = new SelectionModel(true, []);
 trackType: any = 'snail';
 displayRouteView: any = 'C';
-
+@ViewChild("map") public mapElement: ElementRef;
   constructor(
   private translationService: TranslationService, 
   private _formBuilder: FormBuilder, 
@@ -78,6 +78,9 @@ displayRouteView: any = 'C';
     });
     this.mapFilterForm.get('trackType').setValue('snail');
     this.mapFilterForm.get('routeType').setValue('C');
+    setTimeout(() => {
+      this.reportMapService.initMap(this.mapElement);
+    }, 0);
   }
 
   
@@ -207,6 +210,13 @@ displayRouteView: any = 'C';
   }
   onAdvanceFilterOpen(){
     this.advanceFilterOpen = !this.advanceFilterOpen;
+  }
+
+  
+  onDisplayChange(event: any){
+    this.displayRouteView = event.value;
+    let _ui = this.reportMapService.getUI();
+    //this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
   }
 
 }
