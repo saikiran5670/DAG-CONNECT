@@ -1051,21 +1051,22 @@ message LogbookDetailsRequest{
 
 message LogbookDetails{
          string VIN = 1;
-         string TripId = 2;
-         string VehicleRegNo =3;
-         string VehicleName =4;
-         string AlertName =5;
-         string AlertType =6;
-         int32 Occurrence  =7;
-         string AlertLevel =8;
-         string AlertCategory =9;
-         int64 TripStartTime =10;
-         int64 TripEndTime =11;
-         double Latitude =12;
-         double Longitude =13;
-         string Address =14;
-         string Threshold =15;
-         string GroupIds= 16;
+		 string GroupIds= 2;
+         string TripId = 3;
+		 int32 AlertId =4;
+         string VehicleRegNo =5;
+         string VehicleName =6;
+         string AlertName =7;
+         string AlertType =8;
+         int32 Occurrence  =9;
+         string AlertLevel =10;
+         string AlertCategory =11;
+         int64 TripStartTime =12;
+         int64 TripEndTime =13;
+         double Latitude =14;
+         double Longitude =15;
+         string Address =16;
+         string Threshold =17;
 }
 
 message LogbookDetailsResponse{

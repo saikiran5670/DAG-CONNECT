@@ -200,8 +200,8 @@ export class ReportMapService {
   }
 
   showHereMapPOI(POIArr: any, selectedRoutes: any, _ui: any){
-    let lat: any = 53.000751; // DAF Netherland lat
-    let lng: any = 6.580920; // DAF Netherland lng
+    let lat: any = 51.43175839453286; // DAF Netherland lat
+    let lng: any = 5.519981221425336; // DAF Netherland lng
     if(selectedRoutes && selectedRoutes.length > 0){
       lat = selectedRoutes[selectedRoutes.length - 1].startPositionLattitude;
       lng = selectedRoutes[selectedRoutes.length - 1].startPositionLongitude;
