@@ -36,7 +36,7 @@ import { ViewChildren } from '@angular/core';
 
 export class DetailDriverReportComponent implements OnInit {
   @Input() translationData: any;
-  displayedColumns = ['driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
+  displayedColumns = ['startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
   'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
@@ -389,11 +389,11 @@ export class DetailDriverReportComponent implements OnInit {
 
 
   }
-  loadfleetFuelDetails(data: any){
+  loadfleetFuelDetails(vin: any){
     let getFleetFuelObj = {
       "startDateTime": 1521843915459,
       "endDateTime": 1721843915459,
-      "vin": "BLRAE75PC0E272200",
+      "vin":"BLRAE75PC0E272200",
       "driverId": "NL B000384974000000"
     }
     this.reportService.getDriverTripDetails(getFleetFuelObj).subscribe((data:any) => {

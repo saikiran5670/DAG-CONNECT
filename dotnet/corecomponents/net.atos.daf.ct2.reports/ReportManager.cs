@@ -566,36 +566,39 @@ namespace net.atos.daf.ct2.reports
 
             foreach (var kpiInfo in records)
             {
-                var kpiInfoResponse = new KPIInfo();
-                kpiInfoResponse.StartTimestamp = kpiInfo.starttimestamp;
-                kpiInfoResponse.EndTimestamp = kpiInfo.endtimestamp;
-                kpiInfoResponse.AnticipationScore = new KPI(kpiInfo.anticipationscore_total, kpiInfo.anticipationscore_count);
-                kpiInfoResponse.BrakingScore = new KPI(kpiInfo.brakingscore_total, kpiInfo.brakingscore_count);
-                kpiInfoResponse.FuelConsumption = new KPI(kpiInfo.fuelconsumption_total, kpiInfo.fuelconsumption_count);
-                kpiInfoResponse.Ecoscore = new KPI(kpiInfo.ecoscore_total, kpiInfo.ecoscore_count);
-                kpiInfoResponse.NumberOfTrips = kpiInfo.numberoftrips;
-                kpiInfoResponse.NumberOfVehicles = kpiInfo.numberofvehicles;
-                kpiInfoResponse.AverageGrossWeight = new KPI(kpiInfo.averagegrossweight_total, kpiInfo.averagegrossweight_count);
-                kpiInfoResponse.Distance = new KPI(kpiInfo.distance_total, kpiInfo.distance_count);
-                kpiInfoResponse.AverageDistancePerDay = new KPI(kpiInfo.averagedistanceperday_total, kpiInfo.averagedistanceperday_count);
-                kpiInfoResponse.CruiseControlUsage = new KPI(kpiInfo.cruisecontrolusage_total, kpiInfo.cruisecontrolusage_count);
-                kpiInfoResponse.CruiseControlUsage3050kmph = new KPI(kpiInfo.cruisecontrolusage30_total, kpiInfo.cruisecontrolusage30_count);
-                kpiInfoResponse.CruiseControlUsage5075kmph = new KPI(kpiInfo.cruisecontrolusage50_total, kpiInfo.cruisecontrolusage50_count);
-                kpiInfoResponse.CruiseControlUsage75kmph = new KPI(kpiInfo.cruisecontrolusage75_total, kpiInfo.cruisecontrolusage75_count);
-                kpiInfoResponse.PTOPercentage = new KPI(kpiInfo.ptousage_total, kpiInfo.ptousage_count);
-                kpiInfoResponse.PTODuration = new KPI(kpiInfo.ptoduration_total, kpiInfo.ptoduration_count);
-                kpiInfoResponse.AverageDrivingSpeed = new KPI(kpiInfo.averagedrivingspeed_total, kpiInfo.averagedrivingspeed_count);
-                kpiInfoResponse.AverageSpeed = new KPI(kpiInfo.averagespeed_total, kpiInfo.averagespeed_count);
-                kpiInfoResponse.HeavyThrottlingPercentage = new KPI(kpiInfo.heavythrottling_total, kpiInfo.heavythrottling_count);
-                kpiInfoResponse.HeavyThrottlingDuration = new KPI(kpiInfo.heavythrottleduration_total, kpiInfo.heavythrottleduration_count);
-                kpiInfoResponse.IdlingPercentage = new KPI(kpiInfo.idling_total, kpiInfo.idling_count);
-                kpiInfoResponse.IdleDuration = new KPI(kpiInfo.idleduration_total, kpiInfo.idleduration_count);
-                kpiInfoResponse.HarshBrakePercentage = new KPI(kpiInfo.harshbraking_total, kpiInfo.harshbraking_count);
-                kpiInfoResponse.HarshBrakeDuration = new KPI(kpiInfo.harshbrakeduration_total, kpiInfo.harshbrakeduration_count);
-                kpiInfoResponse.BrakingDuration = new KPI(kpiInfo.brakeduration_total, kpiInfo.brakeduration_count);
-                kpiInfoResponse.BrakingPercentage = new KPI(kpiInfo.braking_total, kpiInfo.braking_count);
+                if (kpiInfo.starttimestamp != null)
+                {
+                    var kpiInfoResponse = new KPIInfo();
+                    kpiInfoResponse.StartTimestamp = kpiInfo.starttimestamp;
+                    kpiInfoResponse.EndTimestamp = kpiInfo.endtimestamp;
+                    kpiInfoResponse.AnticipationScore = new KPI(kpiInfo.anticipationscore_total, kpiInfo.anticipationscore_count);
+                    kpiInfoResponse.BrakingScore = new KPI(kpiInfo.brakingscore_total, kpiInfo.brakingscore_count);
+                    kpiInfoResponse.FuelConsumption = new KPI(kpiInfo.fuelconsumption_total, kpiInfo.fuelconsumption_count);
+                    kpiInfoResponse.Ecoscore = new KPI(kpiInfo.ecoscore_total, kpiInfo.ecoscore_count);
+                    kpiInfoResponse.NumberOfTrips = kpiInfo.numberoftrips;
+                    kpiInfoResponse.NumberOfVehicles = kpiInfo.numberofvehicles;
+                    kpiInfoResponse.AverageGrossWeight = new KPI(kpiInfo.averagegrossweight_total, kpiInfo.averagegrossweight_count);
+                    kpiInfoResponse.Distance = new KPI(kpiInfo.distance_total, kpiInfo.distance_count);
+                    kpiInfoResponse.AverageDistancePerDay = new KPI(kpiInfo.averagedistanceperday_total, kpiInfo.averagedistanceperday_count);
+                    kpiInfoResponse.CruiseControlUsage = new KPI(kpiInfo.cruisecontrolusage_total, kpiInfo.cruisecontrolusage_count);
+                    kpiInfoResponse.CruiseControlUsage3050kmph = new KPI(kpiInfo.cruisecontrolusage30_total, kpiInfo.cruisecontrolusage30_count);
+                    kpiInfoResponse.CruiseControlUsage5075kmph = new KPI(kpiInfo.cruisecontrolusage50_total, kpiInfo.cruisecontrolusage50_count);
+                    kpiInfoResponse.CruiseControlUsage75kmph = new KPI(kpiInfo.cruisecontrolusage75_total, kpiInfo.cruisecontrolusage75_count);
+                    kpiInfoResponse.PTOPercentage = new KPI(kpiInfo.ptousage_total, kpiInfo.ptousage_count);
+                    kpiInfoResponse.PTODuration = new KPI(kpiInfo.ptoduration_total, kpiInfo.ptoduration_count);
+                    kpiInfoResponse.AverageDrivingSpeed = new KPI(kpiInfo.averagedrivingspeed_total, kpiInfo.averagedrivingspeed_count);
+                    kpiInfoResponse.AverageSpeed = new KPI(kpiInfo.averagespeed_total, kpiInfo.averagespeed_count);
+                    kpiInfoResponse.HeavyThrottlingPercentage = new KPI(kpiInfo.heavythrottling_total, kpiInfo.heavythrottling_count);
+                    kpiInfoResponse.HeavyThrottlingDuration = new KPI(kpiInfo.heavythrottleduration_total, kpiInfo.heavythrottleduration_count);
+                    kpiInfoResponse.IdlingPercentage = new KPI(kpiInfo.idling_total, kpiInfo.idling_count);
+                    kpiInfoResponse.IdleDuration = new KPI(kpiInfo.idleduration_total, kpiInfo.idleduration_count);
+                    kpiInfoResponse.HarshBrakePercentage = new KPI(kpiInfo.harshbraking_total, kpiInfo.harshbraking_count);
+                    kpiInfoResponse.HarshBrakeDuration = new KPI(kpiInfo.harshbrakeduration_total, kpiInfo.harshbrakeduration_count);
+                    kpiInfoResponse.BrakingDuration = new KPI(kpiInfo.brakeduration_total, kpiInfo.brakeduration_count);
+                    kpiInfoResponse.BrakingPercentage = new KPI(kpiInfo.braking_total, kpiInfo.braking_count);
 
-                response.KPIInfo.Add(kpiInfoResponse);
+                    response.KPIInfo.Add(kpiInfoResponse);
+                }
             }
 
             return response;
@@ -610,15 +613,18 @@ namespace net.atos.daf.ct2.reports
 
             foreach (var chartInfo in records)
             {
-                var chartInfoResponse = new ChartInfo();
-                chartInfoResponse.StartTimestamp = chartInfo.starttimestamp;
-                chartInfoResponse.EndTimestamp = chartInfo.endtimestamp;
-                chartInfoResponse.AnticipationScore = new KPI(chartInfo.anticipationscore_total, chartInfo.anticipationscore_count);
-                chartInfoResponse.BrakingScore = new KPI(chartInfo.brakingscore_total, chartInfo.brakingscore_count);
-                chartInfoResponse.FuelConsumption = new KPI(chartInfo.fuelconsumption_total, chartInfo.fuelconsumption_count);
-                chartInfoResponse.Ecoscore = new KPI(chartInfo.ecoscore_total, chartInfo.ecoscore_count);
+                if (chartInfo.starttimestamp != null)
+                {
+                    var chartInfoResponse = new ChartInfo();
+                    chartInfoResponse.StartTimestamp = chartInfo.starttimestamp;
+                    chartInfoResponse.EndTimestamp = chartInfo.endtimestamp;
+                    chartInfoResponse.AnticipationScore = new KPI(chartInfo.anticipationscore_total, chartInfo.anticipationscore_count);
+                    chartInfoResponse.BrakingScore = new KPI(chartInfo.brakingscore_total, chartInfo.brakingscore_count);
+                    chartInfoResponse.FuelConsumption = new KPI(chartInfo.fuelconsumption_total, chartInfo.fuelconsumption_count);
+                    chartInfoResponse.Ecoscore = new KPI(chartInfo.ecoscore_total, chartInfo.ecoscore_count);
 
-                response.ChartInfo.Add(chartInfoResponse);
+                    response.ChartInfo.Add(chartInfoResponse);
+                }
             }
             return response;
         }
@@ -661,7 +667,7 @@ namespace net.atos.daf.ct2.reports
         #endregion
 
         #region LogBook
-        public async Task<IEnumerable<LogbookSearchFilter>> GetLogbookSearchParameter(List<string> vins)
+        public async Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins)
         {
             return await _reportRepository.GetLogbookSearchParameter(vins);
         }

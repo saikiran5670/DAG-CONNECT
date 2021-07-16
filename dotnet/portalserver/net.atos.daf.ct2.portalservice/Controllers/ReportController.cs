@@ -1385,8 +1385,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
                     vehicleRequest.VehicleGroupId = request.VehicleGroupId;
-                    vehicleRequest.GroupType = "G";
-                    vehicleRequest.FunctionEnum = "";
                     vehicleRequest.OrgnizationId = GetContextOrgId();
                     VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
                     data.FuelBenchmarkDetails.NumberOfTotalVehicles = vehicleResponse.VehicleCount;
@@ -1423,6 +1421,39 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var data = await _reportServiceClient.GetFuelBenchmarkByTimePeriodAsync(objFleetFilter);
                 if (data?.FuelBenchmarkDetails != null)
                 {
+                    //Vehicle Group
+                    if (request.VehicleGroupId > 0)
+                    {
+                        VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
+                        vehicleRequest.VehicleGroupId = request.VehicleGroupId;
+                        vehicleRequest.OrgnizationId = GetContextOrgId();
+                        VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
+                        data.FuelBenchmarkDetails.NumberOfTotalVehicles = vehicleResponse.VehicleCount;
+                    }
+                    //Find vehicle group according to time period 
+                    else
+                    {
+
+                        AssociatedVehicleResponse vehicleGroupResponse = await _reportServiceClient.GetAssociatedVehiclGroupAsync(new VehicleListRequest { AccountId = _userDetails.AccountId, OrganizationId = GetUserSelectedOrgId() });
+                        if (vehicleGroupResponse.Code == Responsecode.Success)
+                        {
+                            int vehicleCount = 0;
+                            foreach (var item in vehicleGroupResponse.AssociatedVehicle)
+                            {
+                                if (item.VehicleGroupId > 0)
+                                {
+                                    VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
+                                    vehicleRequest.VehicleGroupId = item.VehicleGroupId;
+                                    vehicleRequest.OrgnizationId = GetContextOrgId();
+                                    VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
+                                    vehicleCount = vehicleCount + vehicleResponse.VehicleCount;
+                                }
+                            }
+
+                            data.FuelBenchmarkDetails.NumberOfTotalVehicles = vehicleCount;
+                        }
+                    }
+
                     data.Message = ReportConstants.GET_FUEL_BENCHMARK_SUCCESS_MSG;
                     return Ok(data);
                 }

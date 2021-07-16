@@ -2,10 +2,10 @@
 {
     public enum AggregateType
     {
+        TRIP = -1,
         DAY = 0,
-        WEEK = 1,
-        MONTH = 2,
-        TRIP = 3
+        WEEK = 6,
+        MONTH = 29
     }
 
     public class EcoScoreDataServiceRequest

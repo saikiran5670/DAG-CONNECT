@@ -38,7 +38,7 @@
                   </div>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span *ngIf="selectedBenchmarking == 'vehicleGroup'" class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline">
                     <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
                       <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
@@ -46,6 +46,8 @@
                       </mat-option>
                     </mat-select>
                   </mat-form-field> 
+                  <div *ngIf="selectedBenchmarking == 'timePeriods'">{{translationData.lblBottomBenchmarkVehicleGroupText || 'Select the Target Vehicle Group' }}</div>
+                  <div *ngIf="selectedBenchmarking == 'vehicleGroup'">{{translationData.lblBottomBenchmarkVehicleGroupText || 'Add a group to compare in the benchmark (maximum 4)' }}</div>
                   <mat-error *ngIf="fuelBenchmarkingForm.get('vehicleGroup').hasError('required') && vehicleGrpDD.length > 0">
                     {{translationData.lblPleaseSelectvehicleGroup || 'Please Select Vehicle Group' }}
                   </mat-error>
@@ -110,15 +112,22 @@
                   </mat-error> -->
                 </div>
               </div>
-              <div class="margin-bottom-xlg">{{ translationData.lblBottomBenchmarkText || 'Add a period to compare in the benchmark (maximum 4 )' }}</div>
+              <div *ngIf="selectedBenchmarking == 'timePeriods'" class="margin-bottom-xlg">{{ translationData.lblBottomBenchmarkText || 'Add a period to compare in the benchmark (maximum 4 )' }}</div>
               <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
                 <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
                 (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
-                <button [disabled]="!fuelBenchmarkingForm.valid" class='no-margin' mat-raised-button color="primary"
-                  (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
+                  <button *ngIf="selectedBenchmarking == 'timePeriods'" [disabled]="!fuelBenchmarkingForm.valid" class='no-margin' mat-raised-button color="primary" (click)='onSearch()'>               
+                    <mat-icon>add_circle_outline</mat-icon>{{ translationData.lblAddPeriod || ' Add Period' }}
+                  </button>
+                  <button *ngIf="selectedBenchmarking == 'vehicleGroup'" [disabled]="!fuelBenchmarkingForm.valid" class='no-margin' mat-raised-button color="primary" (click)='onSearch()'>               
+                    <mat-icon>add_circle_outline</mat-icon>{{ translationData.lblAddPeriod || ' Add Group' }}
+                  </button>
               </div>
             </div>
           </mat-expansion-panel>
         </mat-card>
       </form>
+
+      <app-fuel-benchmarking-table></app-fuel-benchmarking-table>
 </div>
+

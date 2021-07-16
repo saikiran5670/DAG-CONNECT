@@ -26,22 +26,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 FuelBenchmarkResponse response = new FuelBenchmarkResponse();
                 if (result != null)
                 {
-                    response.FuelBenchmarkDetails = new FuelBenchmarkDetails();
-                    response.FuelBenchmarkDetails.NumberOfActiveVehicles = result.NumberOfActiveVehicles;
-                    response.FuelBenchmarkDetails.NumberOfTotalVehicles = result.NumberOfTotalVehicles;
-                    response.FuelBenchmarkDetails.TotalMileage = result.TotalMileage;
-                    response.FuelBenchmarkDetails.TotalFuelConsumed = result.TotalFuelConsumed;
-                    response.FuelBenchmarkDetails.AverageFuelConsumption = result.AverageFuelConsumption;
-
-                    foreach (var item in result.Ranking)
-                    {
-                        Ranking objRanking = new Ranking();
-                        objRanking.VIN = item.VIN;
-                        objRanking.FuelConsumption = item.FuelConsumption;
-                        objRanking.VehicleName = item.VehicleName;
-                        response.FuelBenchmarkDetails.Ranking.Add(objRanking);
-                    }
-
+                    response.FuelBenchmarkDetails = _mapper.MapFuelBenchmarktoModel(result);
                     response.Message = Responsecode.Success.ToString();
                 }
                 else
@@ -91,6 +76,41 @@ namespace net.atos.daf.ct2.reportservice.Services
             {
                 _logger.Error(null, ex);
                 return await Task.FromResult(new FuelBenchmarkResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetFuelBenchmarkByVehicleGroup get failed due to - " + ex.Message
+                });
+            }
+        }
+
+        public override async Task<AssociatedVehicleResponse> GetAssociatedVehiclGroup(VehicleListRequest request, ServerCallContext context)
+        {
+            try
+            {
+
+                var vehicleDetailsAccountVisibilty
+                                              = await _visibilityManager
+                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                AssociatedVehicleResponse response = new AssociatedVehicleResponse();
+
+                if (vehicleDetailsAccountVisibilty.Any())
+                {
+
+                    var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);
+                    response.AssociatedVehicle.AddRange(
+                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AssociatedVehicleRequest>>(res)
+                        );
+                    response.Message = Responsecode.Success.ToString();
+                    response.Code = Responsecode.Success;
+                }
+
+                _logger.Info("Get method in report parameter called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new AssociatedVehicleResponse
                 {
                     Code = Responsecode.Failed,
                     Message = "GetFuelBenchmarkByVehicleGroup get failed due to - " + ex.Message

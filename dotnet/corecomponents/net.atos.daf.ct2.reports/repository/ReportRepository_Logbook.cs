@@ -11,12 +11,12 @@ namespace net.atos.daf.ct2.reports.repository
     {
         //vin,trip_id,level,alert_generated_time,alert type,alert from datamart of 90 days and in(vinid)
 
-        public async Task<IEnumerable<LogbookSearchFilter>> GetLogbookSearchParameter(List<string> vins)
+        public async Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins)
         {
             var parameter = new DynamicParameters();
             parameter.Add("@vins", vins);
             parameter.Add("@days", 90); // return last 3 month of data
-            IEnumerable<LogbookSearchFilter> tripAlertList;
+            IEnumerable<LogbookTripAlertDetails> tripAlertList;
             string query = @"select tripalert.vin as Vin
                             ,tripalert.trip_id as TripId
                             ,tripalert.alert_id as AlertId
@@ -31,8 +31,8 @@ namespace net.atos.daf.ct2.reports.repository
                             and (lcts.start_time_stamp >= (extract(epoch from (to_timestamp(tripalert.alert_generated_time)::date - @days ))*1000) 
                             and (extract(epoch from (to_timestamp(tripalert.alert_generated_time)::date - @days ))*1000) <= lcts.end_time_stamp)";
 
-            tripAlertList = await _dataMartdataAccess.QueryAsync<LogbookSearchFilter>(query, parameter);
-            return tripAlertList.AsList<LogbookSearchFilter>();
+            tripAlertList = await _dataMartdataAccess.QueryAsync<LogbookTripAlertDetails>(query, parameter);
+            return tripAlertList.AsList<LogbookTripAlertDetails>();
         }
 
         public async Task<List<LogbookDetailsFilter>> GetLogbookDetails(LogbookFilter logbookFilter)
