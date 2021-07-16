@@ -1444,8 +1444,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 string filters = JsonConvert.SerializeObject(request);
                 FuelBenchmarkTimePeriodRequest objFluelBenchMarkFilter = JsonConvert.DeserializeObject<FuelBenchmarkTimePeriodRequest>(filters);
-                objFluelBenchMarkFilter.AccountId = 171;//_userDetails.AccountId;
-                objFluelBenchMarkFilter.OrganizationId = 36;//GetContextOrgId();
+                objFluelBenchMarkFilter.AccountId = _userDetails.AccountId;
+                objFluelBenchMarkFilter.OrganizationId = GetContextOrgId();
                 var data = await _reportServiceClient.GetFuelBenchmarkByTimePeriodAsync(objFluelBenchMarkFilter);
                 if (data?.FuelBenchmarkDetails != null)
                 {
@@ -1455,14 +1455,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         data.FuelBenchmarkDetails.VehicleGroupId = request.VehicleGroupId;
                         VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
                         vehicleRequest.VehicleGroupId = request.VehicleGroupId;
-                        vehicleRequest.OrgnizationId = 36;//GetContextOrgId();
+                        vehicleRequest.OrgnizationId = GetContextOrgId();
                         VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
                         data.FuelBenchmarkDetails.NumberOfTotalVehicles = vehicleResponse.VehicleCount;
                     }
                     //Find vehicle group according to time period 
                     else
                     {
-
                         AssociatedVehicleResponse vehicleGroupResponse = await _reportServiceClient.GetAssociatedVehiclGroupAsync(new VehicleListRequest { AccountId = _userDetails.AccountId, OrganizationId = GetUserSelectedOrgId() });
                         if (vehicleGroupResponse.Code == Responsecode.Success)
                         {
