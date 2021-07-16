@@ -1210,6 +1210,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         item.GeoLocationAddress = getMapRequestLatest.Address;
                         item.GeoLocationAddressId = getMapRequestLatest.Id;
                     }
+                    if (item.StartPositionId == 0 && item.StartPositionLattitude != 0 && item.StartPositionLongitude != 0)
+                    {
+                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.StartPositionLattitude, item.StartPositionLongitude);
+                        item.StartPosition = getMapRequestLatest.Address;
+                        item.StartPositionId = getMapRequestLatest.Id;
+                    }
+                    if (item.EndPositionId == 0 && item.EndPositionLattitude != 0 && item.EndPositionLongitude != 0)
+                    {
+                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.EndPositionLattitude, item.EndPositionLongitude);
+                        item.EndPosition = getMapRequestLatest.Address;
+                        item.EndPositionId = getMapRequestLatest.Id;
+                    }
                 }
                 if (response?.FuelDeviationDetails?.Count > 0)
                 {

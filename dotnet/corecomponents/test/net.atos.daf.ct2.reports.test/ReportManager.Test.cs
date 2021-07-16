@@ -121,7 +121,7 @@ namespace net.atos.daf.ct2.reports.test
             var fuelDeviationFilterRequest = new FuelDeviationFilter
             {
                 StartDateTime = 1623330412000,
-                EndDateTime = 1627341411000,
+                EndDateTime = 1629341411000,
                 VINs = new List<string> { "XLR0998HGFFT76657", "XLRAE75PC0E348696" }
 
             };
