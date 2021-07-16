@@ -221,7 +221,7 @@ namespace net.atos.daf.ct2.reports.repository
                     tripal.name as alertname,
                     tripal.type as alerttype,
                     tripal.alert_generated_time as alert_generated_time,
-                    tripal.alertlevel as alert_level,
+                    tripal.urgency_level_type as alert_level,
                     tripal.category_type as category_type,
                     tripal.latitude as alert_latitude,
                     tripal.longitude as alert_longitude
@@ -269,7 +269,7 @@ namespace net.atos.daf.ct2.reports.repository
                 {
                     //need to be implement in upcomming sprint 
                     parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
-                    queryFleetOverview += " and tripal.alert_level = Any(@alertlevel) ";
+                    queryFleetOverview += " and tripal.urgency_level_type = Any(@alertlevel) ";
                 }
                 IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
                 return repositoryMapper.GetFleetOverviewDetails(alertResult);
