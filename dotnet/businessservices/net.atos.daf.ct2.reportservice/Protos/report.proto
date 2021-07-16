@@ -1069,6 +1069,27 @@ message LogbookDetailsResponse{
     string Message = 3;
 
 }
+
+message LogbookTripAlertDetailsRequest
+    {
+         string Vin =1;
+         string TripId =2;
+         string AlertId =3;
+         int64 AlertGeneratedTime =4;
+         string AlertCategoryType =5;
+         string AlertType =6;
+         string AlertName =7;
+         string AlertLevel =8;
+         int32 Days =9;
+         string LanguageCode =10;
+    }
+
+    message LogbookTripAlertDetailsResponse
+    {
+        repeated LogbookTripAlertDetailsRequest LogbookTripAlertDetailsRequest =1;
+        Responsecode code =2;
+        string Message = 3;
+    }
 //***************End Logbook*******************
 /// START : Fuel Bechmark Report
 message FuelBenchmarkRequest{
