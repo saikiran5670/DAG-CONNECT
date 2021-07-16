@@ -19,6 +19,9 @@
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('limitValue').hasError('cannotExceedMaxValue')">
                         Min Value cannot be greater than target value
                      </mat-error>
+                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('limitValue').hasError('cannotExceedMinValue')">
+                        Min Value cannot be lesser than lower value
+                     </mat-error>
                      <mat-error *ngIf="ecoScoreProfileKPIForm.get('limitValue').hasError('noNegativeValueAllowed')">
                         Min Value cannot be negative
                      </mat-error>
@@ -33,6 +36,9 @@
                     </mat-form-field>
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('targetValue').hasError('cannotExceedMaxValue')">
                         Target Value cannot be greater than upper value
+                     </mat-error>
+                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('targetValue').hasError('cannotExceedMinValue')">
+                        Target Value cannot be less than min value
                      </mat-error>
                      <mat-error *ngIf="ecoScoreProfileKPIForm.get('targetValue').hasError('noNegativeValueAllowed')">
                         Target Value cannot be negative
@@ -70,6 +76,9 @@
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('upperValue').hasError('cannotExceedMaxValue')">
                        Upper Value cannot be greater than Max upper value
                     </mat-error>
+                    <mat-error *ngIf="ecoScoreProfileKPIForm.get('upperValue').hasError('cannotExceedMinValue')">
+                        Upper Value cannot be lesser than Target upper value
+                     </mat-error>
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('upperValue').hasError('noNegativeValueAllowed')">
                         Upper Value cannot be negative
                      </mat-error>
