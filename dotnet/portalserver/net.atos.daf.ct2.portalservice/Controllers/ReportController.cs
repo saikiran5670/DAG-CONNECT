@@ -1281,7 +1281,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                LogBookFilter logBookFilter = new LogBookFilter();
+
                 var logBookFilterRequest = new LogbookFilterIdRequest();
                 logBookFilterRequest.AccountId = _userDetails.AccountId;
                 logBookFilterRequest.OrganizationId = GetContextOrgId();
@@ -1314,9 +1314,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("fleetoverview/getlogbookdetails")]
-        public async Task<IActionResult> GetLogbookDetails(LogbookFilter logbookFilter)
+        public async Task<IActionResult> GetLogbookDetails([FromBody] LogbookDetailsFilter logbookFilter)
         {
             try
             {

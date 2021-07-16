@@ -105,7 +105,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 }
 
 
-                ReportComponent.entity.LogbookFilter logbookFilter = new ReportComponent.entity.LogbookFilter
+                ReportComponent.entity.LogbookDetailsFilter logbookFilter = new ReportComponent.entity.LogbookDetailsFilter
                 {
                     // GroupId = logbookDetailsRequest.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : logbookDetailsRequest.GroupIds.ToList(),
                     AlertCategory = logbookDetailsRequest.AlertCategories.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : logbookDetailsRequest.AlertCategories.ToList(),
@@ -120,6 +120,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                 var result = await _reportManager.GetLogbookDetails(logbookFilter);
                 if (result?.Count > 0)
                 {
+                    var resDetails = JsonConvert.SerializeObject(result);
+                    response.LogbookDetails.AddRange(
+                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<LogbookDetails>>(resDetails,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
                     response.Code = Responsecode.Success;
                     response.Message = Responsecode.Success.ToString();
                 }
