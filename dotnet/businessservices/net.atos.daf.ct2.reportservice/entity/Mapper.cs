@@ -445,9 +445,9 @@ namespace net.atos.daf.ct2.reportservice.entity
                 var obj = new EcoScoreReportSingleDriverHeader
                 {
                     HeaderType = item.HeaderType,
-                    VIN = item.VIN,
-                    VehicleName = item.VehicleName,
-                    RegistrationNo = item.RegistrationNo
+                    VIN = item.VIN ?? string.Empty,
+                    VehicleName = item.VehicleName ?? string.Empty,
+                    RegistrationNo = item.RegistrationNo ?? string.Empty
                 };
                 lstDriver.Add(obj);
             }
@@ -505,7 +505,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 {
                     obj = new EcoScoreReportSingleDriverAttribute();
                     obj.HeaderType = item.HeaderType;
-                    obj.VIN = item.VIN;
+                    obj.VIN = item.VIN ?? string.Empty;
                     obj.Value = Convert.ToDouble(String.Format("{0:0.0}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault())));
                     lstAttributes.Add(obj);
                 }
