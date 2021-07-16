@@ -18,6 +18,7 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import { SelectionModel } from '@angular/cdk/collections';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-fuel-benchmarking',
@@ -57,6 +58,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   wholeTripData: any = [];
   tableInfoObj: any = {};
   tripTraceArray: any = [];
+  selectionValueBenchmarkBY:any;
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
   selectedStartTime: any = '00:00';
@@ -77,6 +79,8 @@ export class FuelBenchmarkingComponent implements OnInit {
   timebasedThreshold : any = 0; // hh:mm
   mileagebasedThreshold : any = 0; // km
   mileageDChartType : boolean = true;
+  startDateRange: any;
+  endDateRange: any;
   timeDChartType : boolean = true;
   fuelBenchmarkingForm: FormGroup;
   // showField: any = {
@@ -634,13 +638,18 @@ fromTripPageBack: boolean = false;
     }
   }
 
-  onSearch(){
+  onSearch(selectedValue?:any){
+    this.selectionValueBenchmarkBY = selectedValue;
+    console.log("this.selectionValueBenchmarkBY parent",this.selectionValueBenchmarkBY)
+
     this.internalSelection = true;
     // this.resetChartData(); // reset chart data
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     let selectedVehicleGroup = this.fuelBenchmarkingForm.controls.vehicleGroup.value;
     let _vinData: any = [];
+    this.startDateRange = moment(_startTime).format("DD/MM/YYYY");
+    this.endDateRange = moment(_endTime).format("DD/MM/YYYY");
     
  
     if(selectedVehicleGroup){
@@ -658,26 +667,6 @@ fromTripPageBack: boolean = false;
         ]
       }
 
-
-
-    //Response payload for time period
-
-let responseDataTP = {
-  "VechileGroupID": "value",
-  "vehicleGroupName": "value",
-  "ActiveVehicle": "value",
-  "TotalFuelConsumed": "value",
-  "TotalMileage": "value",
-  "AverageFuelConumption": "value",
-  "Ranking": [
-    {
-      "Vehicle Name": "value",
-      "VIN": "value",
-      "FuelConsumption": "value",
-      
-    }
-  ]
-}
 
 
 if( parseInt(this.fuelBenchmarkingForm.controls.vehicle.value ) == 0){
