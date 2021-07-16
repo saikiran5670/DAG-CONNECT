@@ -23,6 +23,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   @Input() endDateRange: any;
   @Input() selectionValueBenchmarkBY: any;
   initData: any = [];
+  responseDataTP: any = {}
   // displayedColumns: string[] = ['period','range1','range2','range3'];
   dataSource: any = new MatTableDataSource([]);
   tabledataSource: any = new MatTableDataSource([]);
@@ -52,7 +53,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
       // console.log("---selectedVehicleGroup",selectedVehicleGroup)
         //Response payload for time period
     
-        let responseDataTP = 
+        this.responseDataTP = 
         {
         VechileGroupID: "VehicleGroup1",
           vehicleGroupName : "value",
@@ -70,7 +71,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
           ]
         }
 
-    console.log("---responseDataTP--",responseDataTP)
+    console.log("---responseDataTP--",this.responseDataTP)
     
           this.dataSource =  [{
             "period": "Number of Active Vehicles",
@@ -112,7 +113,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
 
         // this.dataSource["responseData"] = responseDataTP;
         // console.log("responseData in data source",this.dataSource)
-        this.updateDataSource(responseDataTP);
+        this.updateDataSource(this.responseDataTP);
     }else if(this.selectionValueBenchmarkBY == "vehicleGroup"){
       console.log("---from VG selection")
     }
