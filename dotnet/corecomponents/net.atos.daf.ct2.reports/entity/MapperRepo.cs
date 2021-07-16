@@ -124,6 +124,8 @@ namespace net.atos.daf.ct2.reports.entity
                 CategoryType = fleetOverviewResult.CategoryType,
                 AlertLatitude = fleetOverviewResult.AlertLatitude,
                 AlertLongitude = fleetOverviewResult.AlertLongitude,
+                AlertGeolocationAddressId = fleetOverviewResult.Alertgeoadd_LatestAlertGeolocationAddressId,
+                AlertGeolocationAddress = fleetOverviewResult.Alertgeoadd_LatestAlertGeolocationAddress
             };
             return liveFleetAlert;
         }

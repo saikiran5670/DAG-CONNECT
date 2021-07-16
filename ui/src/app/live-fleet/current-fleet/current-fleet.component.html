@@ -1,6 +1,8 @@
     <div fxLayout="row" class="full-width margin-bottom-sm">
     <div id="summary" style="border: 1px solid black" class="full-width">
         <app-fleet-overview-summary></app-fleet-overview-summary>
+        <app-live-fleet-map></app-live-fleet-map>
+
     </div>
     <div id="sidenav">
         <div class="example-sidenav-content"
@@ -9,7 +11,7 @@
                 Click to Hide </button>
         </div>
         <div style="padding-top: 5%;">
-        <app-fleet-overview-filters *ngIf="userPreferencesFlag" [translationData]='translationData'></app-fleet-overview-filters>
+        <app-fleet-overview-filters *ngIf="userPreferencesFlag" [translationData]='translationData' [detailsData] ="detailsData"></app-fleet-overview-filters>
         </div>
     </div>
     </div>

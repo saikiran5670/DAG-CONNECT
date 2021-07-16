@@ -1,1 +1,99 @@
-<p>fleet-overview-filter-vehicle works!</p>
+<form [formGroup]="filterVehicle">
+<div fxLayout="row" fxLayoutAlign="space-between">
+      <mat-form-field appearance="outline">
+          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+          <span matPrefix><mat-icon>search</mat-icon></span>
+      </mat-form-field>
+</div>
+<div fxLayout="column" fxLayoutAlign="space-between" >
+    <mat-label>{{ translationData.lblSelectGroup || 'Select Group' }} </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-select placeholder="All" (selectionChange)="onChangeGroup($event.value)" formControlName="group">
+            <mat-option value="all">All</mat-option>
+            <mat-option *ngFor="let item of groupList" [value]="item.vehicleId">
+                {{item.vehicleGroupName}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+<div fxLayout="column" fxLayoutAlign="space-between" >
+    <mat-label>{{ translationData.lblAlertLevel || 'Alert Level' }} </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-select placeholder="All" (selectionChange)="onChangeLevel($event.value)" formControlName="level">
+            <mat-option value="all">All</mat-option>
+            <mat-option *ngFor="let item of levelList" [value]="item.value">
+                {{item.name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+<div fxLayout="column" fxLayoutAlign="space-between" >
+    <mat-label>{{ translationData.lblAlertCategory || 'Alert Category' }} </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-select placeholder="All" (selectionChange)="onChangeCategory($event.value)" formControlName="category">
+            <mat-option value="all">All</mat-option>
+            <mat-option *ngFor="let item of categoryList" [value]="item.value">
+                {{item.name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+<div fxLayout="column" fxLayoutAlign="space-between" >
+    <mat-label>{{ translationData.lblHealthStatus|| 'Health Status' }} </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-select placeholder="All" (selectionChange)="onChangHealthStatus($event.value)" formControlName="status">
+            <mat-option value="all">All</mat-option>
+            <mat-option *ngFor="let item of healthList" [value]="item.value">
+                {{item.name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+<div fxLayout="column" fxLayoutAlign="space-between" >
+    <mat-label>{{ translationData.lblOtherFilter || 'Other Filter' }} </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-select placeholder="All" (selectionChange)="onChangeOtherFilter($event.value)" formControlName="otherFilter">
+            <mat-option value="all">All</mat-option>
+            <mat-option *ngFor="let item of otherList" [value]="item.value">
+                {{item.name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+
+<mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <mat-expansion-panel style="padding: 0px;" [(expanded)]="isVehicleListOpen" class="full-width" fxLayoutGap="10px" (opened)="isVehicleListOpen"
+    (closed)="!isVehicleListOpen">
+      <mat-expansion-panel-header class="full-width" style="padding-left: 10px;">
+        <mat-panel-title>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbl || 'vehicle List' }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
+        <div class="full-width vehicleList-div">
+            <div class="vehicleList-icon">
+                <mat-icon style="font-size: 50px;padding: 26px 0px;"> person_pin_circle</mat-icon>
+            </div>
+            <div class="vehicleList-details">
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'VIN'}}: </span>
+                <span class="vehicle-details-data">XLRT4100G01234</span>
+            </div>
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'Driver Name'}}:</span>
+                <span class="vehicle-details-data">Oslaw Nski</span>
+            </div> 
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
+                <span class="vehicle-details-data">Driving</span>
+            </div> 
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
+                <span class="vehicle-details-data">Service Now</span>
+            </div>
+            </div>
+        </div>
+     </div>    
+  </mat-expansion-panel>
+  </mat-card>
+</form>

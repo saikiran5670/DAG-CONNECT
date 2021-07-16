@@ -16,6 +16,13 @@ export class EcoScoreReportDriverComponent implements OnInit {
   selectedDriverId : string;
   selectedDriverName : string;
   selectedDriverOption : string;
+  overallPerformancePanel: boolean = true;
+  trendlinesPanel: boolean = true;
+  generalTablePanel: boolean = true;
+  generalChartPanel: boolean = true;
+  driverPerformancePanel: boolean = true;
+  driverPerformanceChartPanel: boolean = true;
+
   constructor() { }
 
   ngOnInit(): void {

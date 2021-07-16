@@ -4,22 +4,6 @@ using System.Text;
 
 namespace net.atos.daf.ct2.reports.entity
 {
-    public class FuelBenchmark
-    {
-        public string VIN { get; set; }
-        public string VehicleGroupName { get; set; }
-        public int VehicleGroupId { get; set; }
-        public int NumberOfActiveVehicles { get; set; }
-        public int NumberOfTotalVehicles { get; set; }
-        public double TotalFuelConsumed { get; set; }
-        public double TotalMileage { get; set; }
-        public double AverageFuelConsumption { get; set; }
-        public List<Ranking> VehicleRanking { get; set; }
-        public long StartDate { get; set; }
-        public long EndDate { get; set; }
-
-    }
-
     public class FuelBenchmarkDetails
     {
         public int NumberOfActiveVehicles { get; set; }
@@ -27,7 +11,7 @@ namespace net.atos.daf.ct2.reports.entity
         public double TotalFuelConsumed { get; set; }
         public double TotalMileage { get; set; }
         public double AverageFuelConsumption { get; set; }
-        public IEnumerable<Ranking> VehicleRanking { get; set; }
+        public IEnumerable<Ranking> Ranking { get; set; }
     }
 
     public class FuelBenchmarkConsumption
