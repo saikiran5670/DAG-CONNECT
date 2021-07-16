@@ -12,8 +12,8 @@
                 </mat-tab-group>
              </mat-panel-title>
         </mat-expansion-panel-header>
-        <app-fleet-overview-filter-vehicle *ngIf="selectedIndex == 0" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData' [detailsData] ="detailsData"></app-fleet-overview-filter-vehicle>
-        <app-fleet-overview-filter-driver *ngIf="selectedIndex == 1" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData'></app-fleet-overview-filter-driver>
+        <app-fleet-overview-filter-vehicle *ngIf="selectedIndex == 0" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData' [detailsData] ="detailsData" [filterData]="filterData"></app-fleet-overview-filter-vehicle>
+        <app-fleet-overview-filter-driver *ngIf="selectedIndex == 1" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData' [detailsData] ="detailsData" [filterData]="filterData"></app-fleet-overview-filter-driver>
 
     </mat-expansion-panel>
 </div>

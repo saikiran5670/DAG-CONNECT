@@ -10,6 +10,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class FleetOverviewFilterVehicleComponent implements OnInit {
   @Input() translationData: any;
   @Input() detailsData: any;
+  @Input() filterData: any;
   filterVehicle:FormGroup;
   isVehicleListOpen: boolean = true;
   groupList : any= [
@@ -72,6 +73,7 @@ otherList : any= [
 
   ngOnInit(): void {
     console.log(this.detailsData);
+    this.filterData["vehicleGroups"].forEach(item=>console.log(item));
     this.filterVehicle = this._formBuilder.group({
       group: [''],
       level: [''],
