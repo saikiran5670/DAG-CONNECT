@@ -28,6 +28,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     response.FuelBenchmarkDetails = _mapper.MapFuelBenchmarktoModel(result);
                     response.Message = Responsecode.Success.ToString();
+                    response.Code = Responsecode.Success;
                 }
                 else
                 {
@@ -47,11 +48,32 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
         }
 
-        public override async Task<FuelBenchmarkResponse> GetFuelBenchmarkByTimePeriod(FuelBenchmarkRequest request, ServerCallContext context)
+        public override async Task<FuelBenchmarkResponse> GetFuelBenchmarkByTimePeriod(FuelBenchmarkTimePeriodRequest request, ServerCallContext context)
         {
             try
             {
                 _logger.Info("Get GetFuelBenchmarkByTimePeriod report by time period");
+                if (request.VINs.Count() == 0)
+                {
+                    var vehicleDeatilsWithAccountVisibility =
+                               await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+
+                    if (vehicleDeatilsWithAccountVisibility.Count() > 0)
+                    {
+                        var vinList = await _reportManager
+                                           .GetVinsFromTripStatistics(vehicleDeatilsWithAccountVisibility
+                                                                          .Select(s => s.Vin).Distinct());
+                        if (vinList.Count() > 0)
+                        {
+                            var vins = vinList.Where(x => x.StartTimeStamp >= request.StartDateTime && x.EndTimeStamp >= request.EndDateTime).Select(x => x.Vin);
+                            foreach (var item in vins)
+                            {
+                                request.VINs.Add(item);
+                            }
+                        }
+                    }
+
+                }
                 ReportComponent.entity.FuelBenchmarkFilter objFleetFilter = new ReportComponent.entity.FuelBenchmarkFilter
                 {
                     VINs = request.VINs.ToList<string>(),
@@ -64,6 +86,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     response.FuelBenchmarkDetails = _mapper.MapFuelBenchmarktoModel(result);
                     response.Message = Responsecode.Success.ToString();
+                    response.Code = Responsecode.Success;
                 }
                 else
                 {
