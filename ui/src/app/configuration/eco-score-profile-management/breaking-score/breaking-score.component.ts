@@ -61,6 +61,10 @@ export class BreakingScoreComponent implements OnInit {
       CustomValidators.numberFieldValidation('upperValue',this.kpiData.maxUpperValue),
       CustomValidators.numberFieldValidation('limitValue',this.maxvalue),
       CustomValidators.numberFieldValidation('targetValue',this.options.ceil),
+      CustomValidators.numberMinFieldValidation('lowerValue', this.value),
+      CustomValidators.numberMinFieldValidation('upperValue',this.kpiData.targetValue),
+      CustomValidators.numberMinFieldValidation('limitValue',this.options.floor),
+      CustomValidators.numberMinFieldValidation('targetValue',this.kpiData.limitValue),
     ]
   });
     this.isKPI = true;

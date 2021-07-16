@@ -1,6 +1,7 @@
 import { Options } from '@angular-slider/ngx-slider';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { CustomValidators } from 'src/app/shared/custom.validators';
 
 @Component({
   selector: 'app-max-target-score',
@@ -34,26 +35,38 @@ export class MaxTargetScoreComponent implements OnInit {
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
-    this.ecoScoreProfileKPIForm = this._formBuilder.group({
-      lowerValue: [''],
-      upperValue: [''],
-      limitValue: [''],
-      targetValue: [''],
-  });
-  this.SliderData();
-  // if(this.isCreate){
-  //   this.sendData()
-  // }
-  }
-
-  SliderData(){
     this.kpiData = this.selectedElementData;
     this.value = this.kpiData.limitValue;
     this.maxvalue =  this.kpiData.targetValue;
     this.options.floor = this.kpiData.lowerValue;
     this.options.ceil = this.kpiData.upperValue;
     this.options.step = this.kpiData.upperValue/10,  
-    this.options.showTicks = true  
+    this.options.showTicks = true
+    
+    this.SliderData();
+  // if(this.isCreate){
+  //   this.sendData()
+  // }
+  }
+
+  SliderData(){
+    this.ecoScoreProfileKPIForm = this._formBuilder.group({
+      lowerValue: [''],
+      upperValue: [''],
+      limitValue: [''],
+      targetValue: [''],
+  }, {
+    validator: [
+      CustomValidators.numberFieldValidation('lowerValue', this.value),
+      CustomValidators.numberFieldValidation('upperValue',this.kpiData.maxUpperValue),
+      CustomValidators.numberFieldValidation('limitValue',this.maxvalue),
+      CustomValidators.numberFieldValidation('targetValue',this.options.ceil),
+      CustomValidators.numberMinFieldValidation('lowerValue', this.value),
+      CustomValidators.numberMinFieldValidation('upperValue',this.kpiData.targetValue),
+      CustomValidators.numberMinFieldValidation('limitValue',this.options.floor),
+      CustomValidators.numberMinFieldValidation('targetValue',this.kpiData.limitValue),
+    ]
+  });
   
     this.isKPI = true;
     this.setDefaultValue();

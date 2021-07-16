@@ -15,7 +15,8 @@ import { Component, OnInit } from '@angular/core';
 
 export class FuelBenchmarkingTableComponent implements OnInit {
 
-  displayedColumns: string[] = ['period','range1','range2','range3'];
+  displayedColumns: string[] = ['period','range1'];
+  // displayedColumns: string[] = ['period','range1','range2','range3'];
   dataSource: any[];
 
   constructor() { }
