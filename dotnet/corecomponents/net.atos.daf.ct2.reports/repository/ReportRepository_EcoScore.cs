@@ -504,7 +504,7 @@ namespace net.atos.daf.ct2.reports.repository
                                  )
                                  
                                  SELECT ROW_NUMBER () OVER (ORDER BY  ecoscoreranking DESC) as Ranking,
-                                 driverName, driverid, ecoscoreranking
+                                 driverName, driverid, cast(ecoscoreranking as decimal(18,1)) as ecoscoreranking
                                  FROM ecoscorealldriver
                                  where 1=1 AND (totaldriverdistance >= @MinDriverTotalDistance OR @MinDriverTotalDistance IS NULL)
                                  ORDER BY ecoscoreranking DESC, driverName";
@@ -1054,6 +1054,123 @@ namespace net.atos.daf.ct2.reports.repository
 
                 List<EcoScoreCompareReportAtttributes> lastAttributes = (List<EcoScoreCompareReportAtttributes>)await _dataAccess.QueryAsync<EcoScoreCompareReportAtttributes>(query, parameters);
                 return lastAttributes?.Count > 0 ? lastAttributes : new List<EcoScoreCompareReportAtttributes>();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        #endregion
+
+        #region Eco Score Report Single Driver
+        /// <summary>
+        /// Get Eco Score Report Single Driver - Overall Driver 
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
+        public async Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallDriver(EcoScoreReportSingleDriverRequest request)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@FromDate", request.StartDateTime);
+                parameters.Add("@ToDate", request.EndDateTime);
+                parameters.Add("@Vins", request.VINs.ToArray());
+                parameters.Add("@DriverId", request.DriverId);
+                parameters.Add("@MinTripDistance", request.MinTripDistance);
+                parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
+                parameters.Add("@OrgId", request.OrgId);
+
+                string query = string.Empty;
+
+                return await _dataMartdataAccess.QueryAsync<EcoScoreReportSingleDriver>(query, parameters);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get Eco Score Report Single Driver - Overall Company 
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
+        public async Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallCompany(EcoScoreReportSingleDriverRequest request)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@FromDate", request.StartDateTime);
+                parameters.Add("@ToDate", request.EndDateTime);
+                parameters.Add("@Vins", request.VINs.ToArray());
+                parameters.Add("@DriverId", request.DriverId);
+                parameters.Add("@MinTripDistance", request.MinTripDistance);
+                parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
+                parameters.Add("@OrgId", request.OrgId);
+
+                string query = string.Empty;
+
+                return await _dataMartdataAccess.QueryAsync<EcoScoreReportSingleDriver>(query, parameters);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get Eco Score Report Single Driver - VIN Driver 
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
+        public async Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportVINDriver(EcoScoreReportSingleDriverRequest request)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@FromDate", request.StartDateTime);
+                parameters.Add("@ToDate", request.EndDateTime);
+                parameters.Add("@Vins", request.VINs.ToArray());
+                parameters.Add("@DriverId", request.DriverId);
+                parameters.Add("@MinTripDistance", request.MinTripDistance);
+                parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
+                parameters.Add("@OrgId", request.OrgId);
+
+                string query = string.Empty;
+
+                List<EcoScoreReportSingleDriver> lstSingleDriver = (List<EcoScoreReportSingleDriver>)await _dataMartdataAccess.QueryAsync<EcoScoreReportSingleDriver>(query, parameters);
+                return lstSingleDriver?.Count > 0 ? lstSingleDriver : new List<EcoScoreReportSingleDriver>();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get Eco Score Report Single Driver - VIN Company 
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
+        public async Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportVINCompany(EcoScoreReportSingleDriverRequest request)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@FromDate", request.StartDateTime);
+                parameters.Add("@ToDate", request.EndDateTime);
+                parameters.Add("@Vins", request.VINs.ToArray());
+                parameters.Add("@DriverId", request.DriverId);
+                parameters.Add("@MinTripDistance", request.MinTripDistance);
+                parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
+                parameters.Add("@OrgId", request.OrgId);
+
+                string query = string.Empty;
+
+                List<EcoScoreReportSingleDriver> lstSingleDriver = (List<EcoScoreReportSingleDriver>)await _dataMartdataAccess.QueryAsync<EcoScoreReportSingleDriver>(query, parameters);
+                return lstSingleDriver?.Count > 0 ? lstSingleDriver : new List<EcoScoreReportSingleDriver>();
             }
             catch (Exception)
             {

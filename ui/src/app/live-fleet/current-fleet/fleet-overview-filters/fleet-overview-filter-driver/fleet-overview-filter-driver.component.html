@@ -1,1 +1,58 @@
-<p>fleet-overview-filter-driver works!</p>
+
+<div class="fleet-filter-driver">
+
+    <div fxLayout="row" fxLayoutAlign="space-between" style="padding-top: 20px;">
+        <mat-form-field appearance="outline">
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+            <span matPrefix><mat-icon>search</mat-icon></span>
+        </mat-form-field>        
+   </div>
+   <div  fxLayout="column" fxLayoutAlign="left">
+    <mat-label style='display: flex; place-content: space-between;'>
+        {{ translationData.lbl || 'Select Driver' }}
+    </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-select placeholder="{{ translationData.lblSelectUserRole || 'Select Vehicle Group' }}" >
+            <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
+            <!-- <mat-option *ngFor="let vehGroupList of vehicleGroupList | removeDuplicates" [value]="vehGroupList"> {{vehGroupList.value}}
+            </mat-option> -->
+        </mat-select>
+    </mat-form-field>
+</div>      
+
+<mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <mat-expansion-panel style="padding: 0px;" [(expanded)]="isVehicleListOpen" class="full-width" fxLayoutGap="10px" (opened)="isVehicleListOpen"
+    (closed)="!isVehicleListOpen">
+      <mat-expansion-panel-header class="full-width" style="padding-left: 10px;">
+        <mat-panel-title>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbl || 'vehicle List' }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
+        <div class="full-width vehicleList-div">
+            <div class="vehicleList-icon">
+                <mat-icon style="font-size: 50px;padding: 26px 0px;"> person_pin_circle</mat-icon>
+            </div>
+            <div class="vehicleList-details">
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'VIN'}}: </span>
+                <span class="vehicle-details-data">XLRT4100G01234</span>
+            </div>
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'Driver Name'}}:</span>
+                <span class="vehicle-details-data">Oslaw Nski</span>
+            </div> 
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
+                <span class="vehicle-details-data">Driving</span>
+            </div> 
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
+                <span class="vehicle-details-data">Service Now</span>
+            </div>
+            </div>
+        </div>
+     </div>    
+  </mat-expansion-panel>
+  </mat-card>
+  </div>

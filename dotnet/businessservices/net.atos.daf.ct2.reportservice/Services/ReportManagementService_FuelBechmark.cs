@@ -26,22 +26,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 FuelBenchmarkResponse response = new FuelBenchmarkResponse();
                 if (result != null)
                 {
-                    response.FuelBenchmarkDetails = new FuelBenchmarkDetails();
-                    response.FuelBenchmarkDetails.NumberOfActiveVehicles = result.NumberOfActiveVehicles;
-                    response.FuelBenchmarkDetails.NumberOfTotalVehicles = result.NumberOfTotalVehicles;
-                    response.FuelBenchmarkDetails.TotalMileage = result.TotalMileage;
-                    response.FuelBenchmarkDetails.TotalFuelConsumed = result.TotalFuelConsumed;
-                    response.FuelBenchmarkDetails.AverageFuelConsumption = result.AverageFuelConsumption;
-
-                    foreach (var item in result.Ranking)
-                    {
-                        Ranking objRanking = new Ranking();
-                        objRanking.VIN = item.VIN;
-                        objRanking.FuelConsumption = item.FuelConsumption;
-                        objRanking.VehicleName = item.VehicleName;
-                        response.FuelBenchmarkDetails.Ranking.Add(objRanking);
-                    }
-
+                    response.FuelBenchmarkDetails = _mapper.MapFuelBenchmarktoModel(result);
                     response.Message = Responsecode.Success.ToString();
                 }
                 else
