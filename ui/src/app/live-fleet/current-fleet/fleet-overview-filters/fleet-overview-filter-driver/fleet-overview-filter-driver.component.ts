@@ -8,10 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FleetOverviewFilterDriverComponent implements OnInit {
   @Input() translationData: any;
-  
+  isVehicleListOpen: boolean = true;
   constructor() { }
 
   ngOnInit(): void {
   }
 
+  applyFilter(filterValue: string) {
+    // filterValue = filterValue.trim();
+    // filterValue = filterValue.toLowerCase();
+    // this.dataSource.filter = filterValue;
+  }
 }
