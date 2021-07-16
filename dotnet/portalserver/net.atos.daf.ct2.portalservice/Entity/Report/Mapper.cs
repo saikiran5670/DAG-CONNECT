@@ -106,10 +106,27 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 MinTripDistance = request.MinTripDistance,
                 MinDriverTotalDistance = request.MinDriverTotalDistance,
                 TargetProfileId = request.TargetProfileId,
-                ReportId = request.ReportId,
+                ReportId = request.ReportId
             };
             grpcRequest.VINs.AddRange(request.VINs);
             grpcRequest.DriverIds.AddRange(request.DriverIds);
+            return grpcRequest;
+        }
+
+        internal reportservice.GetEcoScoreReportSingleDriverRequest MapEcoScoreReportSingleDriver(EcoScoreReportSingleDriverRequest request)
+        {
+            var grpcRequest = new reportservice.GetEcoScoreReportSingleDriverRequest
+            {
+                StartDateTime = request.StartDateTime,
+                EndDateTime = request.EndDateTime,
+                DriverId = request.DriverId,
+                MinTripDistance = request.MinTripDistance,
+                MinDriverTotalDistance = request.MinDriverTotalDistance,
+                TargetProfileId = request.TargetProfileId,
+                ReportId = request.ReportId,
+                OrgId = request.OrgId
+            };
+            grpcRequest.VINs.AddRange(request.VINs);
             return grpcRequest;
         }
 

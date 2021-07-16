@@ -459,6 +459,10 @@ namespace net.atos.daf.ct2.vehicle
             try
             {
                 List<VisibilityVehicle> vehicles = new List<VisibilityVehicle>();
+                if (string.IsNullOrEmpty(vehicleCountFilter.GroupType))
+                {
+                    vehicleCountFilter = await _vehicleRepository.GetGroupFilterDetail(vehicleCountFilter.VehicleGroupId, vehicleCountFilter.OrgnizationId);
+                }
                 switch (vehicleCountFilter.GroupType)
                 {
                     case "G":
