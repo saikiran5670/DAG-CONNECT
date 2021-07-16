@@ -1209,9 +1209,10 @@ namespace net.atos.daf.ct2.reports.repository
                     ecoscorequery as (
 	                    SELECT dr.first_name, dr.last_name, eco.driver1_id, eco.trip_distance,eco.trip_id,
                                     eco.dpa_Braking_score, eco.dpa_Braking_count, eco.dpa_anticipation_score, eco.dpa_anticipation_count, 
-                                    eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_total,
+                                    eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_count,
                                     eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
-                                    eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
+                                    eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75,
+                                    eco.tacho_gross_weight_combination
                         FROM tripdetail.ecoscoredata eco
 	                    INNER JOIN master.driver dr ON dr.driver_id = eco.driver1_id
 	                    WHERE eco.start_time >= @StartTimestamp
@@ -1219,6 +1220,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                    AND eco.vin = @VIN --'XLR0998HGFFT76657'
 	                    AND eco.driver1_id = @DriverId --'NL B000384974000000'
 	                    AND eco.trip_distance >= @MinTripDistance
+                        ORDER BY eco.start_time
                     )
                     SELECT
                         MIN(start_time) AS StartTimestamp,
@@ -1228,7 +1230,7 @@ namespace net.atos.daf.ct2.reports.repository
                         -- No. of Vehicles
                         CAST(1 AS INTEGER) as NumberOfVehicles,
                         -- Average Gross Weight
-                        (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION) * CAST(SUM (eco.trip_distance)as DOUBLE PRECISION)) as AverageGrossweight_Total, COUNT(1) as AverageGrossweight_Count,
+                        CAST(SUM (eco.tacho_gross_weight_combination)as DOUBLE PRECISION) as AverageGrossweight_Total, CAST(SUM (eco.gross_weight_combination_count) as DOUBLE PRECISION) as AverageGrossweight_Count,
                         -- Distance
                         (CAST(SUM (eco.trip_distance)as DOUBLE PRECISION)) as Distance_Total, COUNT(1) as Distance_Count,
                         -- Average Distance per day
@@ -1317,9 +1319,10 @@ namespace net.atos.daf.ct2.reports.repository
                     ecoscorequery as (
 	                    SELECT dr.first_name, dr.last_name, eco.driver1_id, eco.trip_distance,eco.trip_id,
                                     eco.dpa_Braking_score, eco.dpa_Braking_count, eco.dpa_anticipation_score, eco.dpa_anticipation_count, 
-                                    eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_total,
+                                    eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_count,
                                     eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
-                                    eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
+                                    eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75,
+                                    eco.tacho_gross_weight_combination
                         FROM tripdetail.ecoscoredata eco
 	                    INNER JOIN master.driver dr ON dr.driver_id = eco.driver1_id
 	                    WHERE eco.start_time >= @StartTimestamp
@@ -1327,6 +1330,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                    AND eco.vin = @VIN --'XLR0998HGFFT76657'
 	                    AND eco.driver1_id = @DriverId --'NL B000384974000000'
 	                    AND eco.trip_distance >= @MinTripDistance
+                        ORDER BY eco.start_time
                     )
                     SELECT
                         start_time AS StartTimestamp,
@@ -1336,7 +1340,7 @@ namespace net.atos.daf.ct2.reports.repository
                         -- No. of Vehicles
                         CAST(1 AS INTEGER) as NumberOfVehicles,
                         -- Average Gross Weight
-                        (CAST(eco.gross_weight_combination_total as DOUBLE PRECISION) * CAST(eco.trip_distance as DOUBLE PRECISION)) as AverageGrossweight_Total, 1 as AverageGrossweight_Count,
+                        CAST(eco.tacho_gross_weight_combination as DOUBLE PRECISION) as AverageGrossweight_Total, gross_weight_combination_count as AverageGrossweight_Count,
                         -- Distance
                         (CAST(eco.trip_distance as DOUBLE PRECISION)) as Distance_Total, 1 as Distance_Count,
                         -- Average Distance per day
@@ -1442,6 +1446,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                        AND eco.vin = @VIN --'XLR0998HGFFT76657'
 	                        AND eco.driver1_id = @DriverId --'NL B000384974000000'
 	                        AND eco.trip_distance >= @MinTripDistance
+                            ORDER BY eco.start_time
                         )
                         SELECT
                             MIN(start_time) AS StartTimestamp,
@@ -1496,6 +1501,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                    AND eco.vin = @VIN --'XLR0998HGFFT76657'
 	                    AND eco.driver1_id = @DriverId --'NL B000384974000000'
 	                    AND eco.trip_distance >= @MinTripDistance
+                        ORDER BY eco.start_time
                     )
                     SELECT
 	                    start_time AS StartTimestamp,
