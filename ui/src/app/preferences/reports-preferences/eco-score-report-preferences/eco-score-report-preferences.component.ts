@@ -474,4 +474,16 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
     
   }
 
+  onCancel(){
+
+  }
+
+  onReset(){
+
+  }
+
+  onConfirm(){
+    
+  }
+
 }

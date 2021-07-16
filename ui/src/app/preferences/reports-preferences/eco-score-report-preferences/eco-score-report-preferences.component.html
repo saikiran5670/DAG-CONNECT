@@ -1,6 +1,6 @@
 <!-- General tab -->
-<div *ngIf='generalColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 summaryPref' fxLayoutAlign="left center"
-    style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+<div *ngIf='generalColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 summaryPref'
+    fxLayoutAlign="left center" style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForGeneralColumns() : null'
             [checked]='selectionForGeneralColumns.hasValue() && isAllSelectedForGeneralColumns()'
@@ -21,7 +21,7 @@
                     generalColumnData.length > 0 ? generalColumnData[0].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
-        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForGeneralColumns.toggle(generalColumnData[1]) : null; checkboxClicked($event, generalColumnData[1])'
                 [checked]="selectionForGeneralColumns.isSelected(generalColumnData[1])"
@@ -47,7 +47,7 @@
                     generalColumnData.length > 0 ? generalColumnData[3].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
-        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForGeneralColumns.toggle(generalColumnData[4]) : null; checkboxClicked($event, generalColumnData[4])'
                 [checked]="selectionForGeneralColumns.isSelected(generalColumnData[4])"
@@ -55,5 +55,25 @@
                     generalColumnData.length > 0 ? generalColumnData[4].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left" style='height: 44px;'></div>
     </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left" style='height: 44px;'></div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left" style='height: 44px;'>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left" style='height: 44px;'></div>
+    </div>
+</div>
+
+<!-- Button -->
+<div *ngIf='(generalColumnData.length > 0 || generalGraphColumnData.length > 0 || driverPerformanceColumnData.length > 0 || driverPerformanceGraphColumnData.length > 0) && editFlag'
+    fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
+    <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
+        translationData.lblCancel || 'Cancel' }}</button>
+    <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
+        translationData.lblReset || 'Reset' }}</button>
+    <button
+        [disabled]='selectionForGeneralColumns.selected.length == 0 || selectionForGeneralGraphColumns.selected.length == 0 || selectionForDriverPerformanceColumns.selected.length == 0 || selectionForDriverPerformanceGraphColumns.selected.length == 0'
+        class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
+        'Confirm') }}</button>
 </div>
