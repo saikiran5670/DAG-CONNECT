@@ -87,6 +87,8 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   //For Radio Buttons 
   selectedBenchmarking: any  = 'timePeriods';
+  //For Button Label 
+  setBenchmarkingLabel: any;
 
   //For Charts
   chartsLabelsdefined: any = [];
@@ -926,7 +928,7 @@ getAllSummaryData(){
   //Radio buttons selection
   onBenchmarkChange(event: any){
     this.selectedBenchmarking = event.value;
-    console.log("---option choosen--",this.selectedBenchmarking)
+    console.log("---option choosen--",this.selectedBenchmarking);
     // this.changeGridOnVehicleList(event.value);
   }
   
