@@ -37,6 +37,7 @@ namespace net.atos.daf.ct2.tcudataservice
 
         private readonly string _accessUrl;
         private readonly string _grantType;
+        private readonly string _scope;
         private readonly string _clientId;
         private readonly string _clientSecret;
 
@@ -55,6 +56,7 @@ namespace net.atos.daf.ct2.tcudataservice
             _dafurl = this._config.GetSection("DAFURL").Value;
             _accessUrl = this._config.GetSection("ACCESS_TOKEN_URL").Value;
             _grantType = this._config.GetSection("GRANT_TYPE").Value;
+            _scope = this._config.GetSection("CLIENT_SCOPE").Value;
             _clientId = this._config.GetSection("CLIENT_ID").Value;
             _clientSecret = this._config.GetSection("CLIENT_SECRET").Value;
 
@@ -174,6 +176,7 @@ namespace net.atos.daf.ct2.tcudataservice
             var form = new Dictionary<string, string>
                 {
                     {"grant_type", _grantType},
+                    {"scope", _scope},
                     {"client_id", _clientId},
                     {"client_secret", _clientSecret},
                 };
