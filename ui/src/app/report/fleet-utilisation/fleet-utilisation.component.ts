@@ -1413,7 +1413,7 @@ getAllSummaryData(){
   let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound || 'pound');
   
   const header = ['Vehicle Name', 'Vin', 'Registration Number', 'Distance('+ unitValkm + ')', 'Number Of Trips', 'Trip Time(hh:mm)', 'Driving Time(hh:mm)', 'Iidle Duration(hh:mm)', 'Stop Time(hh:mm)', 'Average Speed('+ unitValkmh + ')', 'Average Weight('+ unitValkg + ')', 'Average Distance Per Day('+ unitValkm + ')', 'Odometer('+ unitValkg + ')'];
-  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Vehicles', 'Total Distance('+ unitValkm + ')', 'Number Of Trips', 'Idle Duration', 'Average Distance Per Day('+ unitValkm + ')'];
+  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Vehicles', 'Total Distance('+ unitValkm + ')', 'Number Of Trips', 'Idle Duration(hh:mm)', 'Average Distance Per Day('+ unitValkm + ')'];
   const summaryData= this.summaryObj;
   
   //Create workbook and worksheet

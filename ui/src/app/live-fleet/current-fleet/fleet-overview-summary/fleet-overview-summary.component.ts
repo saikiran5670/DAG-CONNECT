@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Input } from '@angular/core';
 
 @Component({
   selector: 'app-fleet-overview-summary',
@@ -6,6 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./fleet-overview-summary.component.less']
 })
 export class FleetOverviewSummaryComponent implements OnInit {
+  @Input() translationData: any; 
 
   constructor() { }
 

@@ -272,7 +272,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 {
                     obj = new EcoScoreReportAttribute();
                     obj.DriverId = item.DriverId;
-                    obj.Value = Convert.ToDouble(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault());
+                    obj.Value = Convert.ToDouble(String.Format("{0:0.0}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault())));
                     if (!string.IsNullOrEmpty(limitType))
                         obj.Color = Convert.ToString(GetEcoScoreAttributeColor(limitType, limitValue, targetValue, obj.Value));
                     lstAttributes.Add(obj);
@@ -417,6 +417,104 @@ namespace net.atos.daf.ct2.reportservice.entity
                 fuelbenchmark.Ranking.Add(objRanking);
             }
             return fuelbenchmark;
+        }
+
+        internal EcoScoreReportSingleDriverRequest MapEcoScoreReportSingleDriverRequest(GetEcoScoreReportSingleDriverRequest request)
+        {
+            var objRequest = new EcoScoreReportSingleDriverRequest
+            {
+                StartDateTime = request.StartDateTime,
+                EndDateTime = request.EndDateTime,
+                VINs = request.VINs.ToList<string>(),
+                DriverId = request.DriverId,
+                MinTripDistance = request.MinTripDistance,
+                MinDriverTotalDistance = request.MinDriverTotalDistance,
+                TargetProfileId = request.TargetProfileId,
+                ReportId = request.ReportId,
+                OrgId = request.OrgId,
+                AccountId = request.AccountId
+            };
+            return objRequest;
+        }
+
+        internal IEnumerable<EcoScoreReportSingleDriverHeader> MapEcoScoreReportSingleDriverHeader(IEnumerable<reports.entity.EcoScoreReportSingleDriver> result)
+        {
+            var lstDriver = new List<EcoScoreReportSingleDriverHeader>();
+            foreach (var item in result)
+            {
+                var obj = new EcoScoreReportSingleDriverHeader
+                {
+                    HeaderType = item.HeaderType,
+                    VIN = item.VIN,
+                    VehicleName = item.VehicleName,
+                    RegistrationNo = item.RegistrationNo
+                };
+                lstDriver.Add(obj);
+            }
+            return lstDriver;
+        }
+
+        internal EcoScoreReportSingleDriver MapEcoScoreReportSingleDriverResponse(IEnumerable<reports.entity.EcoScoreReportSingleDriver> result, IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> reportAttributes)
+        {
+            var root = reportAttributes.Where(up => up.Name.IndexOf('.') == -1).First();
+
+            return FillRecursiveEcoScoreSingleDriverReport(reportAttributes, new int[] { root.DataAttributeId }, result).FirstOrDefault();
+        }
+
+        private static List<EcoScoreReportSingleDriver> FillRecursiveEcoScoreSingleDriverReport(IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> flatObjects, int[] parentIds, IEnumerable<reports.entity.EcoScoreReportSingleDriver> result)
+        {
+            List<EcoScoreReportSingleDriver> recursiveObjects = new List<EcoScoreReportSingleDriver>();
+            try
+            {
+                if (parentIds != null)
+                {
+                    foreach (var item in flatObjects.Where(x => parentIds.Contains(x.DataAttributeId)))
+                    {
+                        var preference = new EcoScoreReportSingleDriver
+                        {
+                            DataAttributeId = item.DataAttributeId,
+                            Name = item.Name ?? string.Empty,
+                            Key = item.Key ?? string.Empty,
+                            LimitType = item.LimitType ?? string.Empty,
+                            LimitValue = item.TargetValue,
+                            TargetValue = item.TargetValue,
+                            RangeValueType = item.RangeValueType ?? string.Empty
+                        };
+                        if (!string.IsNullOrEmpty(item.DBColumnName))
+                            preference.Score.AddRange(GetEcoScoreSingleDriverReportAttributeValues(item.DBColumnName, result));
+                        preference.SubSingleDriver.AddRange(FillRecursiveEcoScoreSingleDriverReport(flatObjects, item.SubDataAttributes, result));
+
+                        recursiveObjects.Add(preference);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw new Exception("Error occurred while parsing the EcoScore single driver - FillRecursiveEcoScoreSingleDriverReport().");
+            }
+            return recursiveObjects;
+        }
+
+        private static List<EcoScoreReportSingleDriverAttribute> GetEcoScoreSingleDriverReportAttributeValues(string attributeName, IEnumerable<reports.entity.EcoScoreReportSingleDriver> result)
+        {
+            var lstAttributes = new List<EcoScoreReportSingleDriverAttribute>();
+            try
+            {
+                EcoScoreReportSingleDriverAttribute obj;
+                foreach (var item in result)
+                {
+                    obj = new EcoScoreReportSingleDriverAttribute();
+                    obj.HeaderType = item.HeaderType;
+                    obj.VIN = item.VIN;
+                    obj.Value = Convert.ToDouble(String.Format("{0:0.0}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault())));
+                    lstAttributes.Add(obj);
+                }
+            }
+            catch (Exception)
+            {
+                throw new Exception("Error occurred while parsing the EcoScore single driver - GetEcoScoreSingleDriverReportAttributeValues().");
+            }
+            return lstAttributes;
         }
 
     }
