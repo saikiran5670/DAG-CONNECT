@@ -42,6 +42,7 @@ rpc GetLogbookDetails(LogbookDetailsRequest) returns (LogbookDetailsResponse);
 rpc GetFuelBenchmarkByVehicleGroup (FuelBenchmarkRequest) returns (FuelBenchmarkResponse);
 rpc GetFuelBenchmarkByTimePeriod (FuelBenchmarkRequest) returns (FuelBenchmarkResponse);
 rpc GetEcoScoreReportSingleDriver (GetEcoScoreReportSingleDriverRequest) returns (GetEcoScoreReportSingleDriverResponse);
+rpc GetAssociatedVehiclGroup (VehicleListRequest) returns (AssociatedVehicleResponse);
 }
 
 message VehicleHealthReportRequest{
@@ -1097,6 +1098,13 @@ message Ranking {
        google.protobuf.StringValue VehicleName = 2;
       double FuelConsumption = 3;
 }
+
+message AssociatedVehicleResponse {
+    repeated AssociatedVehicleRequest AssociatedVehicle = 1;
+    Responsecode code = 2;
+    string message = 3;
+}
+
 /// END: Fuel Bechmark Report
 
 /// START: Eco Score Report Single Driver

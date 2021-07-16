@@ -82,5 +82,40 @@ namespace net.atos.daf.ct2.reportservice.Services
                 });
             }
         }
+
+        public override async Task<AssociatedVehicleResponse> GetAssociatedVehiclGroup(VehicleListRequest request, ServerCallContext context)
+        {
+            try
+            {
+
+                var vehicleDetailsAccountVisibilty
+                                              = await _visibilityManager
+                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                AssociatedVehicleResponse response = new AssociatedVehicleResponse();
+
+                if (vehicleDetailsAccountVisibilty.Any())
+                {
+
+                    var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);
+                    response.AssociatedVehicle.AddRange(
+                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AssociatedVehicleRequest>>(res)
+                        );
+                    response.Message = Responsecode.Success.ToString();
+                    response.Code = Responsecode.Success;
+                }
+
+                _logger.Info("Get method in report parameter called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new AssociatedVehicleResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetFuelBenchmarkByVehicleGroup get failed due to - " + ex.Message
+                });
+            }
+        }
     }
 }
