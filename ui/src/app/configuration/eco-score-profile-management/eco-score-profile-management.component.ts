@@ -306,6 +306,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   }
   
   toBack(){
+    this.isKPI = false;
     this.actionType = 'manage';
     this.loadProfileData();
   }
