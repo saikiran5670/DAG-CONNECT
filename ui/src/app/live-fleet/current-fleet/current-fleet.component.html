@@ -9,7 +9,8 @@
                 Click to Hide </button>
         </div>
         <div>
-        <app-fleet-overview-filters *ngIf="userPreferencesFlag" [translationData]='translationData'></app-fleet-overview-filters>
+        <app-fleet-overview-filters *ngIf="userPreferencesFlag" [translationData]='translationData'
+        [detailsData] ="detailsData"></app-fleet-overview-filters>
         </div>
     </div>
     </div>

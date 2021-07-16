@@ -7,6 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class FleetOverviewFiltersComponent implements OnInit {
 @Input() translationData: any;
+@Input() detailsData: any;
 tabVisibilityStatus: boolean = true;
 selectedIndex: number = 0;
 
