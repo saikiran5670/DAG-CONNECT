@@ -1,6 +1,7 @@
 import { Input } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReportService } from 'src/app/services/report.service';
 
 @Component({
   selector: 'app-fleet-overview-filter-vehicle',
@@ -10,70 +11,19 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class FleetOverviewFilterVehicleComponent implements OnInit {
   @Input() translationData: any;
   @Input() detailsData: any;
-  @Input() filterData: any;
+ filterData: any;
   filterVehicle:FormGroup;
   isVehicleListOpen: boolean = true;
-  groupList : any= [
-{
-  id:'1',
-  val:'test1 group'
-},
-{
-  id:'2',
-  val:'test2 group'
-}
-]
-
-categoryList : any= [
-  {
-    id:'1',
-    val:'category1'
-  },
-  {
-    id:'2',
-    val:'category12'
-  }
-]
-
-levelList : any= [
-  {
-    id:'1',
-    val:'level1'
-  },
-  {
-    id:'2',
-    val:'level2'
-  }
-]
-
-healthList : any= [
-  {
-    id:'1',
-    val:'Health Status1'
-  },
-  {
-    id:'2',
-    val:'Health Status1'
-  }
-]
-
-otherList : any= [
-  {
-    id:'1',
-    val:'Other Filter1'
-  },
-  {
-    id:'2',
-    val:'Other Filter2'
-  }
-]
+groupList : any= [];
+categoryList : any= [];
+levelList : any= [];
+healthList : any= [];
+otherList : any= [];
 
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private reportService: ReportService) { }
 
   ngOnInit(): void {
-    console.log(this.detailsData);
-    this.filterData["vehicleGroups"].forEach(item=>console.log(item));
     this.filterVehicle = this._formBuilder.group({
       group: [''],
       level: [''],
@@ -81,6 +31,22 @@ otherList : any= [
       status: [''],
       otherFilter: ['']
     })
+
+    this.reportService.getFilterDetails().subscribe((data: any) => {
+console.log("service data=" +data);
+this.filterData = data;
+this.filterData["vehicleGroups"].forEach(item=>
+this.groupList.push(item) );
+this.filterData["alertCategory"].forEach(item=>
+this.categoryList.push(item) );
+this.filterData["alertLevel"].forEach(item=>
+this.levelList.push(item) );
+this.filterData["healthStatus"].forEach(item=>
+this.healthList.push(item) );
+this.filterData["otherFilter"].forEach(item=>
+this.otherList.push(item) );
+
+    });
   }
 
   applyFilter(filterValue: string) {
@@ -90,23 +56,33 @@ otherList : any= [
   }
 
   onChangeGroup(event: any){
-    
+    // filterValue = filterValue.trim();
+    // filterValue = filterValue.toLowerCase();
+    // this.dataSource.filter = filterValue;
   }
 
   onChangeLevel(event: any){
-
+    // filterValue = filterValue.trim();
+    // filterValue = filterValue.toLowerCase();
+    // this.dataSource.filter = filterValue;
   }
 
   onChangeCategory(event: any){
-    
+    // filterValue = filterValue.trim();
+    // filterValue = filterValue.toLowerCase();
+    // this.dataSource.filter = filterValue;
   }
 
   onChangHealthStatus(event: any){
-    
+    // filterValue = filterValue.trim();
+    // filterValue = filterValue.toLowerCase();
+    // this.dataSource.filter = filterValue;
   }
 
   onChangeOtherFilter(event: any){
-    
+        // filterValue = filterValue.trim();
+    // filterValue = filterValue.toLowerCase();
+    // this.dataSource.filter = filterValue;
   }
   
 }
