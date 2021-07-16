@@ -19,15 +19,5 @@ namespace net.atos.daf.ct2.reports.entity
     }
 
 
-    public class LogbookSearchParameter
-    {
 
-        public List<string> GroupId { get; set; }
-        public List<string> VINIds { get; set; }
-        public List<string> AlertLevel { get; set; }
-        public List<string> AlertCategory { get; set; }
-        public List<string> AlertType { get; set; }
-
-
-    }
 }
