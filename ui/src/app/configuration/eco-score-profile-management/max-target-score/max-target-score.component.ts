@@ -27,7 +27,8 @@ export class MaxTargetScoreComponent implements OnInit {
         floor: this.kpiData.lowerValue,  
         ceil: this.kpiData.upperValue,
         step: 4,  
-        showTicks: true, 
+        showTicks: true,
+        showOuterSelectionBars: true,
   };  
 
   constructor(private _formBuilder: FormBuilder) { }

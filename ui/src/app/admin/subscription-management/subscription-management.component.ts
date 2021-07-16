@@ -258,6 +258,7 @@ export class SubscriptionManagementComponent implements OnInit {
   }
 
   callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
+    if (this.dialogRef) return;
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
@@ -268,6 +269,11 @@ export class SubscriptionManagementComponent implements OnInit {
       tableTitle: tableTitle
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
+    this.dialogRef
+      .afterClosed()
+      .subscribe((result => {
+        this.dialogRef = undefined
+      }))
   }
 
   processTranslation(transData: any){

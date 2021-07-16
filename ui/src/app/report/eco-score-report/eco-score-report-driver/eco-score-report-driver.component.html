@@ -1,0 +1,134 @@
+<p>eco-score-report-driver works!</p>
+<mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+  <mat-expansion-panel [(expanded)]="overallPerformancePanel" class="full-width" fxLayoutGap="10px">
+    <mat-expansion-panel-header class="full-width">
+      <mat-panel-title>
+        <div fxLayout="row" fxLayoutAlign='center center'>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverName || 'Driver Name' }}: -{{ translationData.lblOverallPerformance || 'Overall Performance'}}</span>
+          <mat-icon class='margin-right-10'>info</mat-icon>
+        </div>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+<div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+            <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+              <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+                <span>
+                  <span>{{ translationData.lblFrom || 'From' }} </span>
+                </span>
+              </div>
+              <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+                <span>
+                  <span>{{ translationData.lblTo|| 'To' }} </span>
+                </span>
+              </div>
+              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                <span>
+                  <span>{{ translationData.lblVehicle || 'Vehicle' }} </span>
+                </span>
+              </div>
+              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                <span>
+                  <span>{{ translationData.lblVehicleGroup|| 'Vehicle Group' }} </span>
+                </span>
+              </div>
+              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                <span>
+                  <span>{{ translationData.lblVehicleGroup|| 'Driver ID' }} </span>
+                </span>
+              </div>
+              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                <span>
+                  <span>{{ translationData.lblVehicleGroup|| 'Driver Name' }} </span>
+                </span>
+              </div>
+              <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+                <span>
+                  <span>{{ translationData.lblVehicleGroup|| 'Driver Option' }} </span>
+                </span>
+              </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+              <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ fromDisplayDate }}</span>
+              </div>
+              <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ toDisplayDate }}</span>
+              </div>
+              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedVehicle }}</span>
+              </div>
+              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedVehicleGroup }}</span>
+              </div>
+              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedDriverId }}</span>
+              </div>
+              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedDriverName }}</span>
+              </div>
+              <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedDriverOption }}</span>
+              </div>
+            </div>
+          </div>
+          </mat-expansion-panel>
+          </mat-card>
+          <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+            <mat-expansion-panel [(expanded)]="trendlinesPanel" class="full-width" fxLayoutGap="10px">
+              <mat-expansion-panel-header class="full-width">
+                <mat-panel-title>
+                  <div fxLayout="row" fxLayoutAlign='center center'>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTrendlines || 'Trendlines' }}</span>
+                    <mat-icon class='margin-right-10'>info</mat-icon>
+                  </div>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+            </mat-expansion-panel>
+          </mat-card>
+          <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+            <mat-expansion-panel [(expanded)]="generalTablePanel" class="full-width" fxLayoutGap="10px">
+              <mat-expansion-panel-header class="full-width">
+                <mat-panel-title>
+                  <div fxLayout="row" fxLayoutAlign='center center'>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneral || 'General' }} </span>
+                    <mat-icon class='margin-right-10'>info</mat-icon>
+                  </div>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+            </mat-expansion-panel>
+          </mat-card>
+          <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+            <mat-expansion-panel [(expanded)]="generalChartPanel" class="full-width" fxLayoutGap="10px">
+              <mat-expansion-panel-header class="full-width">
+                <mat-panel-title>
+                  <span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
+                  </span>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+            </mat-expansion-panel>
+          </mat-card>
+          <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+            <mat-expansion-panel [(expanded)]="driverPerformancePanel" class="full-width" fxLayoutGap="10px">
+              <mat-expansion-panel-header class="full-width">
+                <mat-panel-title>
+                  <div fxLayout="row" fxLayoutAlign='center center'>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverPerformance || 'Driver Performance' }}</span>
+                    <mat-icon class='margin-right-10'>info</mat-icon>
+                  </div>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+            </mat-expansion-panel>
+          </mat-card>
+          <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+            <mat-expansion-panel [(expanded)]="driverPerformanceChartPanel" class="full-width" fxLayoutGap="10px">
+              <mat-expansion-panel-header class="full-width">
+                <mat-panel-title>
+                  <span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
+                  </span>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+            </mat-expansion-panel>
+          </mat-card>
+          

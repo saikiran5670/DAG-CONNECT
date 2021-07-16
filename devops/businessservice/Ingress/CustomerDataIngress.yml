@@ -140,6 +140,14 @@ spec:
           serviceName: portalservice
           servicePort: 80
         path: /NotificationHub
+      - backend:
+          serviceName: ecoscoreservice
+          servicePort: 80
+        path: /ecoscore/kpiinfo
+      - backend:
+          serviceName: ecoscoreservice
+          servicePort: 80
+        path: /ecoscore/chartinfo
   tls:
   - hosts:
     - #{IngressURL}#

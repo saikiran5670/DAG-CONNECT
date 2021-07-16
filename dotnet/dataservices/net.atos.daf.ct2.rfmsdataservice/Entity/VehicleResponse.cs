@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
         public long RequestTimestamp { get; set; }
 
         [DataMember(Name = "vehicleResponse")]
-        public VehicleResponse VehicleResponse{ get; set; }
+        public VehicleResponse VehicleResponse { get; set; }
 
         [DataMember(Name = "moreDataAvailable")]
         public bool? MoreDataAvailable { get; set; }

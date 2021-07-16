@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Entity
     {
         [Required(AllowEmptyStrings = true, ErrorMessage = "MISSING_PARAMETER")]
         [EmailRegex(ErrorMessage = "INVALID_PARAMETER")]
-        public string AccountId { get; set; }
+        public string AccountEmail { get; set; }
 
         [Required(AllowEmptyStrings = true, ErrorMessage = "MISSING_PARAMETER")]
         [StringLength(19, MinimumLength = 1, ErrorMessage = "INVALID_PARAMETER")]
@@ -33,6 +33,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Entity
 
         [Range(0, long.MaxValue, ErrorMessage = "INVALID_PARAMETER")]
         [Required(ErrorMessage = "MISSING_PARAMETER")]
+        [GreaterThan(nameof(StartTimestamp), ErrorMessage = "INVALID_PARAMETER")]
         public long? EndTimestamp { get; set; }
     }
 }

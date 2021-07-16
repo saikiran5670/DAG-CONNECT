@@ -1,13 +1,15 @@
-﻿namespace net.atos.daf.ct2.reports.entity
+﻿using System.Collections.Generic;
+
+namespace net.atos.daf.ct2.reports.entity
 {
     public class EcoScoreKPIInfoDataServiceResponse
     {
-        public KPIInfo[] KPIInfo { get; set; }
+        public List<KPIInfo> KPIInfo { get; set; }
     }
 
     public class EcoScoreChartInfoDataServiceResponse
     {
-        public ChartInfo[] ChartInfo { get; set; }
+        public List<ChartInfo> ChartInfo { get; set; }
     }
 
     public class KPIInfo
@@ -31,7 +33,7 @@
         public KPI FuelConsumption { get; set; }
         public KPI HarshBrakeDuration { get; set; }
         public KPI HarshBrakePercentage { get; set; }
-        public KPI HeavyThrottlinglDuration { get; set; }
+        public KPI HeavyThrottlingDuration { get; set; }
         public KPI HeavyThrottlingPercentage { get; set; }
         public KPI IdlingTime { get; set; }
         public KPI IdleDuration { get; set; }
@@ -55,6 +57,12 @@
     public class KPI
     {
         public double Total { get; set; }
-        public int Count { get; set; }
+        public double Count { get; set; }
+
+        public KPI(double total, double count)
+        {
+            Total = total;
+            Count = count;
+        }
     }
 }

@@ -165,7 +165,7 @@ export class DriverManagementComponent implements OnInit {
       lblThedrivewasOptedoutsuccessfully : "The driver '$' was Opted-out successfully",
       lblThedrivewasOptedinsuccessfully : "The driver '$' was Opted-in successfully",
       lblThedrivewassuccessfully : "The driver '$' was successfully '#'",
-      lblAlldriverswassuccessfully: "All drivers was '$' successfully"
+      lblAlldriverswassuccessfully: "'#' drivers were successfully '$'"
     }
   }
 

@@ -23,6 +23,8 @@ import { ViewChild } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Router, NavigationExtras } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
+import { QueryList } from '@angular/core';
+import { ViewChildren } from '@angular/core';
 
 
 
@@ -41,10 +43,17 @@ export class FleetFuelReportDriverComponent implements OnInit {
   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
   'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
   'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
+  detaildisplayedColumns = ['driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
+  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
+  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
+  'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
+  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
+  'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
+  'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
+  @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
@@ -58,6 +67,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   isSummaryOpen: boolean = false;
   summaryColumnData: any = [];
   isChartsOpen: boolean = false;
+  isDetailsOpen: boolean = false;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   startTimeDisplay: any = '00:00:00';
@@ -89,6 +99,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   showLoadingIndicator: boolean = false;
   tableInfoObj: any ;
   summaryObj: any;
+  detailSummaryObj: any;
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
   bufferValue = 75;
@@ -121,7 +132,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'values(Minutes)'    
+          labelString: 'Minutes'    
         }
       }]
     }
@@ -152,6 +163,110 @@ export class FleetFuelReportDriverComponent implements OnInit {
       }]
     }
   };
+  lineChartOptions2 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'meter'    
+        }
+      }]
+    }
+  };
+  lineChartOptions3 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'ltr'    
+        }
+      }]
+    }
+  };
+  lineChartOptions4 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 't'    
+        }
+      }]
+    }
+  };
+  lineChartOptions5 = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    tooltips: {
+      mode: 'x-axis',
+      bodyFontColor: '#ffffff',
+      backgroundColor: '#000000',
+      multiKeyBackground: '#ffffff'
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: ''    
+        }
+      }]
+    }
+  };
   lineChartColors: Color[] = [
     {
       borderColor: '#7BC5EC',
@@ -176,11 +291,29 @@ export class FleetFuelReportDriverComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'Values (Number of Trips)'    
+          labelString: 'Number of Trips'    
         }}
       ]}
   };
-
+  barChartOptions3= {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Values (ltr)'    
+        }}
+      ]}
+  };
 
   barChartData1: ChartDataSets[] = [{ data: [], label: '' },];
   barChartData2: ChartDataSets[] = [{ data: [], label: '' },];
@@ -204,37 +337,6 @@ export class FleetFuelReportDriverComponent implements OnInit {
   idleDuration: any =[];
   fromTripPageBack: boolean = false;
   displayData : any = [];
-  rankingData : any =[
-    {
-      ranking: 1,
-      vehicleName: 'Name List 0001',
-      vin :'XLRTEMP4100G041999',
-      vehicleRegistrationNo: '12 HH 71',
-      fuelConsumption: 0.4
-    },
-    {
-      ranking: 1,
-      vehicleName: 'Name List 0002',
-      vin :'XLRTEMP4100G041999',
-      vehicleRegistrationNo: '12 HH 71',
-      fuelConsumption: 0.1
-    },
-    {
-      ranking: 1,
-      vehicleName: 'Name List 0003',
-      vin :'XLRTEMP4100G041999',
-      vehicleRegistrationNo: '12 HH 71',
-      fuelConsumption: 0.5
-    },
-    {
-      ranking: 1,
-      vehicleName: 'Name List 0004',
-      vin :'XLRTEMP4100G041999',
-      vehicleRegistrationNo: '12 HH 71',
-      fuelConsumption: 0.6
-    },
-
-  ]
   showDetailedReport : boolean = false;
   
   constructor(private _formBuilder: FormBuilder, 
@@ -300,7 +402,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
     this.updateDataSource(this.FuelData);
-
+    this.setTableInfo();
     })
   }
 
@@ -375,11 +477,12 @@ export class FleetFuelReportDriverComponent implements OnInit {
         "viNs":  _vinData,
       }
       this.loadfleetFuelDetails(_vinData);
-       this.setTableInfo();
+       //this.setTableInfo();
       //  this.updateDataSource(this.FuelData);
       this.hideloader();
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
+      this.isDetailsOpen = true;
       this.tripData.forEach(element => {
 
       
@@ -401,13 +504,13 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
     });
-    if(_vinData.length === 1){
-      this.showDetailedReport = true;
-    }
-    else{
-      this.showDetailedReport = false;
+    //if(_vinData.length === 1){
+    //  this.showDetailedReport = true;
+    //}
+    //else{
+    //  this.showDetailedReport = false;
 
-    }
+   // }
   }
   
   updateDataSource(tableData: any) {
@@ -421,21 +524,13 @@ export class FleetFuelReportDriverComponent implements OnInit {
     });
   }
 
-  updateRankingDataSource(tableData: any) {
-    this.initData = tableData;
-    this.showMap = false;
-    this.selectedTrip.clear();
-    this.dataSource2 = new MatTableDataSource(tableData);
-    setTimeout(() => {
-      this.dataSource2.paginator = this.paginator;
-      this.dataSource2.sort = this.sort;
-    });
-  }
-
+ 
  
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';
+    let driverName : any ='';
+    let driverID : any ='';
     let vin: any = '';
     let plateNo: any = '';
     // this.vehicleGroupListData.forEach(element => {
@@ -472,6 +567,20 @@ export class FleetFuelReportDriverComponent implements OnInit {
       vehGroupName: vehGrpName,
       vehicleName: vehName
     }    
+    this.detailSummaryObj={
+            fromDate: this.formStartDate(this.startDateValue),
+            endDate: this.formStartDate(this.endDateValue),
+            vehGroupName: vehGrpName,
+            vehicleName: vehName,
+            driverName : this.displayData.driverName,
+            driverID : this.displayData.driverID,
+            noOfTrips: this.FuelData[0].numberOfTrips,
+            distance:  this.FuelData[0].convertedDistance,
+            fuelconsumed:  this.FuelData[0].convertedFuelConsumed100Km,
+            idleDuration: this.FuelData[0].convertedIdleDuration,
+            fuelConsumption: this.FuelData[0].fuelConsumption,
+            co2emission: this.FuelData[0].cO2Emission,
+            }  
   }
 
   formStartDate(date: any){
@@ -518,7 +627,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
       let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
       this.barChartLabels.push(resultDate);
       this.barData.push(e.numberofTrips);
-      this.fuelConsumedChart.push(e.fuelConsumed);
+      let convertedFuelConsumed = e.fuelConsumed / 1000;
+      this.fuelConsumedChart.push(convertedFuelConsumed);
       this.co2Chart.push(e.co2Emission);
       this.distanceChart.push(e.distance);
       this.fuelConsumptionChart.push(e.fuelConsumtion);
@@ -539,7 +649,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   if(this.TripsChartType == 'Bar'){
     this.barChartData2= [
       { data: this.barData,
-        label: 'Values (Number of Trips)',
+        label: 'Number of Trips',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
@@ -575,41 +685,82 @@ export class FleetFuelReportDriverComponent implements OnInit {
     //line chart for fuel consumed
     if(this.ConsumedChartType == 'Line')
     {
-    this.lineChartData1= [{ data: this.fuelConsumedChart, label: 'Values()' },];
+      let data1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs || 'Ltrs') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallon || 'Gallon') : (this.translationData.lblGallon|| 'Gallon');
+      this.lineChartOptions3.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data1    
+        }
+      }];
+    this.lineChartData1= [{ data: this.fuelConsumedChart, label: data1 },];
   }
     if(this.TripsChartType == 'Line')
     {
-    this.lineChartData2= [{ data: this.barData, label: 'Values()' }, ];
+    this.lineChartData2= [{ data: this.barData, label: 'No Of Trips' }, ];
   }
     if(this.Co2ChartType == 'Line')
     {
-    this.lineChartData3= [{ data: this.co2Chart, label: 'Values()' },];
+      let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblTon || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblTon || 'Ton') : (this.translationData.lblTon || 'Ton');
+      
+      this.lineChartOptions4.scales.yAxes= [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: data2    
+      }
+    }];
+
+    this.lineChartData3= [{ data: this.co2Chart, label: data2 },];
   }
     if(this.DistanceChartType == 'Line')
     {
-      // let distUnit =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
-      // this.lineChartOptions.scales.yAxes= [{
-      //   id: "y-axis-1",
-      //   position: 'left',
-      //   type: 'linear',
-      //   ticks: {
-      //     beginAtZero:true
-      //   },
-      //   scaleLabel: {
-      //     display: true,
-      //     labelString: 'value(' +distUnit+ ')'    
-      //   }
-      // }];
-      // console.log(this.lineChartOptions);
-    this.lineChartData4= [{ data: this.distanceChart, label: 'Values()' }, ];
+      let data3 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
+      this.lineChartOptions2.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data3    
+        }
+      }];
+
+    this.lineChartData4= [{ data: this.distanceChart, label: data3 }, ];
   }
     if(this.ConsumptionChartType == 'Line')
     {
-    this.lineChartData5= [{ data: this.fuelConsumptionChart, label: 'Values()' }, ];
+      let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrsperkm || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
+      this.lineChartOptions5.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data4   
+        }
+      }];
+    this.lineChartData5= [{ data: this.fuelConsumptionChart, label: data4 }, ];
   }
     if(this.DurationChartType == 'Line')
     {
-    this.lineChartData6= [{ data: this.idleDuration, label: 'Values()' }, ];
+    this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
   }
   
     this.lineChartLabels = this.barChartLabels;
@@ -1088,20 +1239,27 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   exportAsExcelFile(){
-    this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Vehicle', sheet: 'sheet_name'});
+    this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Driver', sheet: 'sheet_name'});
   }
 
   exportAsPDFFile(){
    
     var doc = new jsPDF('p', 'mm', 'a4');
-    
-  // let pdfColumns = this.getPDFHeaders();
+  let pdfColumns = [this.displayedColumns];
   let prepare = []
     this.displayData.forEach(e=>{
       var tempObj =[];
       this.displayedColumns.forEach(element => {
         switch(element){
-          case 'vehiclename' :{
+          case 'driverName' :{
+            tempObj.push(e.driverName);
+            break;
+          }
+          case 'driverID' :{
+            tempObj.push(e.driverID);
+            break;
+          }
+          case 'vehicleName' :{
             tempObj.push(e.vehicleName);
             break;
           }
@@ -1109,48 +1267,128 @@ setVehicleGroupAndVehiclePreSelection() {
             tempObj.push(e.vin);
             break;
           }
-          case 'registrationnumber' :{
-            tempObj.push(e.registrationNumber);
+          case 'vehicleRegistrationNo' :{
+            tempObj.push(e.vehicleRegistrationNo);
             break;
           }
           case 'distance' :{
             tempObj.push(e.convertedDistance);
             break;
           }
-          case 'numberOfTrips' :{
-            tempObj.push(e.numberOfTrips);
-            break;
-          }
-          case 'tripTime' :{
-            tempObj.push(e.convertedTripTime);
-            break;
-          }
-          case 'drivingTime' :{
-            tempObj.push(e.convertedDrivingTime);
-            break;
-          }
-          case 'idleDuration' :{
-            tempObj.push(e.convertedIdleDuration);
-            break;
-          }
-          case 'stopTime' :{
-            tempObj.push(e.convertedStopTime);
+          case 'averageDistancePerDay' :{
+            tempObj.push(e.convertedAverageDistance);
             break;
           }
           case 'averageSpeed' :{
             tempObj.push(e.convertedAverageSpeed);
             break;
           }
-          case 'averageWeight' :{
-            tempObj.push(e.convertedAverageWeight);
+          case 'maxSpeed' :{
+            tempObj.push(e.maxSpeed);
             break;
           }
-          case 'averageDistancePerDay' :{
-            tempObj.push(e.convertedAverageDistance);
+          case 'numberOfTrips' :{
+            tempObj.push(e.numberOfTrips);
             break;
           }
-          case 'odometer' :{
-            tempObj.push(e.odometer);
+          case 'averageGrossWeightComb' :{
+            tempObj.push(e.averageGrossWeightComb);
+            break;
+          }
+          case 'fuelConsumed' :{
+            tempObj.push(e.fuelConsumed);
+            break;
+          }
+          case 'fuelConsumption' :{
+            tempObj.push(e.fuelConsumption);
+            break;
+          }
+          case 'cO2Emission' :{
+            tempObj.push(e.cO2Emission);
+            break;
+          }
+          case 'idleDuration' :{
+            tempObj.push(e.convertedIdleDuration);
+            break;
+          }
+          case 'ptoDuration' :{
+            tempObj.push(e.ptoDuration);
+            break;
+          }
+          case 'harshBrakeDuration' :{
+            tempObj.push(e.harshBrakeDuration);
+            break;
+          }
+          case 'heavyThrottleDuration' :{
+            tempObj.push(e.heavyThrottleDuration);
+            break;
+          }
+          case 'cruiseControlDistance3050' :{
+            tempObj.push(e.cruiseControlDistance3050);
+            break;
+          }
+          case 'cruiseControlDistance5075' :{
+            tempObj.push(e.cruiseControlDistance5075);
+            break;
+          }
+          case 'cruiseControlDistance75' :{
+            tempObj.push(e.cruiseControlDistance75);
+            break;
+          }
+          case 'averageTrafficClassification' :{
+            tempObj.push(e.averageTrafficClassification);
+            break;
+          }
+          case 'ccFuelConsumption' :{
+            tempObj.push(e.ccFuelConsumption);
+            break;
+          }
+          case 'fuelconsumptionCCnonactive' :{
+            tempObj.push(e.fuelconsumptionCCnonactive);
+            break;
+          }
+          case 'idlingConsumption' :{
+            tempObj.push(e.idlingConsumption);
+            break;
+          }
+          case 'dpaScore' :{
+            tempObj.push(e.dpaScore);
+            break;
+          }
+          case 'dpaAnticipationScore' :{
+            tempObj.push(e.dpaAnticipationScore);
+            break;
+          }
+          case 'dpaBrakingScore' :{
+            tempObj.push(e.dpaBrakingScore);
+            break;
+          }
+          case 'idlingPTOScore' :{
+            tempObj.push(e.idlingPTOScore);
+            break;
+          }
+          case 'idlingPTO' :{
+            tempObj.push(e.idlingPTO);
+            break;
+          }
+          case 'idlingWithoutPTOpercent' :{
+            tempObj.push(e.idlingWithoutPTOpercent);
+            break;
+          }
+          case 'footBrake' :{
+            tempObj.push(e.footBrake);
+            break;
+          }
+          case 'cO2Emmision' :{
+            tempObj.push(e.cO2Emmision);
+            break;
+          }
+          case 'averageTrafficClassificationValue' :{
+            tempObj.push(e.averageTrafficClassificationValue);
+            break;
+          }
+          case 'idlingConsumptionValue' :{
+            tempObj.push(e.idlingConsumptionValue);
             break;
           }
         }
@@ -1159,6 +1397,13 @@ setVehicleGroupAndVehiclePreSelection() {
       prepare.push(tempObj);    
     });
     
+    let displayHeader = document.getElementById("chartHeader");
+    if(this.isChartsOpen){
+    displayHeader.style.display ="block";
+    }
+    else{
+      displayHeader.style.display = "none";
+    }
     
     let DATA = document.getElementById('charts');
     html2canvas( DATA)
@@ -1171,7 +1416,7 @@ setVehicleGroupAndVehiclePreSelection() {
         didDrawPage: function(data) {     
             // Header
             doc.setFontSize(14);
-            var fileTitle = "Fleet Fuel Report by Vehicle Details";
+            var fileTitle = "Fleet Fuel Report by Driver Details";
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG',10,10,0,0);
   
@@ -1184,6 +1429,7 @@ setVehicleGroupAndVehiclePreSelection() {
             top:30 
         }  
       });
+
         let fileWidth = 170;
         let fileHeight = canvas.height * fileWidth / canvas.width;
         
@@ -1194,25 +1440,25 @@ setVehicleGroupAndVehiclePreSelection() {
         doc.addPage();
 
       (doc as any).autoTable({
-      // head: this.displayedColumns,
+      head: pdfColumns,
       body: prepare,
       theme: 'striped',
       didDrawCell: data => {
         //console.log(data.column.index)
       }
     })
-    doc.save('fleetFuelByVehicle.pdf');
+
+    doc.save('fleetFuelByDriver.pdf');
        
-    });     
+    }); 
+    
+    displayHeader.style.display ="block";
   }
-  onDriverSelected(vehData: any){
-    const navigationExtras: NavigationExtras = {
-      state: {
-        fromFleetUtilReport: true,
-        vehicleData: vehData
-      }
-    };
-    this.router.navigate(['report/tripreport'], navigationExtras);
+
+  onDriverSelected(_row){
+    this.isChartsOpen = true;
+    this.isSummaryOpen = true; 
+    this.isDetailsOpen = true;
   }
 
   sumOfColumns(columnName : any){

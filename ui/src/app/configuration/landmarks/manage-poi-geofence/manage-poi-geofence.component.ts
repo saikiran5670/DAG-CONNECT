@@ -41,6 +41,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   data: any = [];
   selectedElementData: any;
   titleVisible: boolean = false;
+  errorMsgVisible: boolean = false;
   poiCreatedMsg: any = '';
   actionType: any;
   roleID: any;
@@ -602,6 +603,14 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }, 5000);
   }
 
+  errorMsgBlink(errorMsg: any){
+    this.errorMsgVisible = true;
+    this.poiCreatedMsg = errorMsg;
+    setTimeout(() => {  
+      this.errorMsgVisible = false;
+    }, 5000);
+  }
+
   checkCreationForPoi(item: any) {
     this.tabVisibility.emit(true);
     this.createEditViewPoiFlag = item.stepFlag;
@@ -739,6 +748,13 @@ export class ManagePoiGeofenceComponent implements OnInit {
           this.resetAll();
           this.loadGeofenceData();
           this.loadPoiData();
+        },error => {
+          if(error.status == 400){
+            this.errorMsgBlink(this.getDeletMsg(rowData.name, true));
+            this.resetAll();
+            this.loadGeofenceData();
+            this.loadPoiData();
+          }
         });
       }
     });
@@ -775,6 +791,13 @@ export class ManagePoiGeofenceComponent implements OnInit {
             this.loadGeofenceData();
             this.loadPoiData();
             this.resetAll();
+          },error => {
+            if(error.status == 400){
+              this.errorMsgBlink(this.getDeletMsg(geofencesList, true));
+              this.resetAll();
+              this.loadGeofenceData();
+              this.loadPoiData();
+            }
           });
         }
       });
@@ -784,11 +807,19 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }
   }
 
-  getDeletMsg(name: any) {
-    if (this.translationData.lblGeofencewassuccessfullydeleted)
-      return this.translationData.lblGeofencewassuccessfullydeleted.replace('$', name);
-    else
-      return ("Geofence '$' was successfully deleted").replace('$', name);
+  getDeletMsg(name: any, isError? :boolean) {
+    if(!isError){
+      if (this.translationData.lblGeofencewassuccessfullydeleted)
+        return this.translationData.lblGeofencewassuccessfullydeleted.replace('$', name);
+      else
+        return ("Geofence '$' was successfully deleted").replace('$', name);
+    } else {
+      if(this.translationData.lblAlertDeleteError)
+        return this.translationData.lblAlertDeleteError.replace('$', name);
+      else
+        return ("Geofence '$' cannot be deleted as it is used in alert").replace('$', name);
+    }
+    
   }
 
   hideloader() {

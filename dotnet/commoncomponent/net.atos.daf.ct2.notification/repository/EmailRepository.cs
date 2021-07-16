@@ -94,7 +94,7 @@ namespace net.atos.daf.ct2.notification.repository
 
                 dynamic result = await _dataAccess.QueryFirstOrDefaultAsync<dynamic>(query, parameter);
 
-                return MapAccount(result);
+                return result == null ? result : MapAccount(result);
             }
             catch (Exception)
             {

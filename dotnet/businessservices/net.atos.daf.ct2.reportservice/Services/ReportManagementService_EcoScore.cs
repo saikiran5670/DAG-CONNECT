@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             {
                 var profileRequest = MapCreateProfileRequestToDto(request);
 
-                if (profileRequest.OrganizationId.HasValue)
+                if (profileRequest.OrganizationId > 0)
                 {
                     var countByOrg = await _reportManager.GetEcoScoreProfilesCount(request.OrgId);
                     var maxLimit = Convert.ToInt32(_configuration["MaxAllowedEcoScoreProfiles"]);
@@ -59,12 +59,24 @@ namespace net.atos.daf.ct2.reportservice.Services
 
         private async Task<CreateEcoScoreProfileResponse> CallCreateEcoScoreProfile(EcoScoreProfileDto profileRequest)
         {
-            await _reportManager.CreateEcoScoreProfile(profileRequest);
-            return new CreateEcoScoreProfileResponse()
+            var result = await _reportManager.CreateEcoScoreProfile(profileRequest);
+            var response = new CreateEcoScoreProfileResponse();
+            if (result > 0)
             {
-                Code = Responsecode.Success,
-                Message = "Eco-Score profile is created successfully."
-            };
+                response.Message = "Eco-Score profile is created successfully.";
+                response.Code = Responsecode.Success;
+            }
+            else if (result == -1)
+            {
+                response.Message = string.Format(entity.ReportConstants.ECOSCORE_PROFILE_ALREADY_EXIST_MSG, profileRequest.Name);
+                response.Code = Responsecode.Failed;
+            }
+            else
+            {
+                response.Message = "Create Eco-Score Profile fail.";
+                response.Code = Responsecode.Failed;
+            }
+            return response;
         }
 
         /// <summary>
@@ -77,7 +89,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             var dto = new EcoScoreProfileDto();
             List<EcoScoreProfileKPI> profileKPIs = new List<EcoScoreProfileKPI>();
             dto.Name = request.Name;
-            dto.OrganizationId = request.IsDAFStandard ? new int?() : request.OrgId;
+            dto.OrganizationId = request.IsDAFStandard ? new int() : request.OrgId;
             dto.Description = request.Description;
             dto.ActionedBy = Convert.ToString(request.AccountId);
             foreach (var profileKPI in request.ProfileKPIs)
@@ -118,10 +130,12 @@ namespace net.atos.daf.ct2.reportservice.Services
                     response.Code = Responsecode.Success;
                     response.Message = entity.ReportConstants.GET_ECOSCORE_PROFILE_SUCCESS_MSG;
 
-                    ProfileType profileType = (ProfileType)Convert.ToChar(context.RequestHeaders.Get("allowed_type").Value);
+                    ProfileType profileType = (ProfileType)Convert.ToChar(context.RequestHeaders.Get("used_type").Value);
 
                     if (profileType != ProfileType.None)
-                        result = result.Except(result.Where(x => x.Type != profileType)).ToList();
+                        result = result.Where(x => x.Type != profileType).ToList();
+                    else
+                        result = result.Where(x => x.Type == profileType).ToList();
 
                     response.Profiles.AddRange(MapEcoScoreProfileResponse(result));
                 }
@@ -292,12 +306,17 @@ namespace net.atos.daf.ct2.reportservice.Services
                 }
                 else if (result == -1)
                 {
-                    response.Message = obj.Name + entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_NOT_EXIST_MSG;
-                    response.Code = Responsecode.NotFound;
+                    response.Message = string.Format(entity.ReportConstants.ECOSCORE_PROFILE_ALREADY_EXIST_MSG, obj.Name);
+                    response.Code = Responsecode.Failed;
                 }
                 else if (result == -2)
                 {
                     response.Message = entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_DEFAULT_PROFILE_MSG;
+                    response.Code = Responsecode.Failed;
+                }
+                else if (result == -3)
+                {
+                    response.Message = entity.ReportConstants.ECOSCORE_PROFILE_NOT_AUTH_MSG;
                     response.Code = Responsecode.Failed;
                 }
                 else
@@ -452,6 +471,56 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     Code = Responsecode.Failed,
                     Message = "GetEcoScoreReportCompareDrivers get failed due to - " + ex.Message
+                });
+            }
+        }
+
+        #endregion
+
+        #region Eco Score Report Single Driver
+
+        /// <summary>
+        /// Get Eco Score Report Compare Drivers
+        /// </summary>
+        /// <param name="request"> Search Parameter object</param>
+        /// <param name="context"> GRPC context</param>
+        /// <returns></returns>
+        public override async Task<GetEcoScoreReportSingleDriverResponse> GetEcoScoreReportSingleDriver(GetEcoScoreReportSingleDriverRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var resultDataMart = await _reportManager.GetEcoScoreReportSingleDriver(_mapper.MapEcoScoreReportSingleDriverRequest(request));
+                var reportAttributes = await _reportManager.GetEcoScoreCompareReportAttributes(request.ReportId, request.TargetProfileId);
+                var response = new GetEcoScoreReportSingleDriverResponse();
+                if (resultDataMart?.Count > 0)
+                {
+                    response.SingleDriver.AddRange(_mapper.MapEcoScoreReportSingleDriverHeader(resultDataMart));
+                    try
+                    {
+                        response.SingleDriverKPIInfo = _mapper.MapEcoScoreReportCompareDriversResponse(resultDataMart, reportAttributes);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(null, ex);
+                        throw new Exception("Error occurred while parsing the EcoScore single driver.");
+                    }
+                    response.Code = Responsecode.Success;
+                    response.Message = ReportConstants.GET_REPORT_DETAILS_SUCCESS_MSG;
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_NOTFOUND_MSG;
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GetEcoScoreReportSingleDriverResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetEcoScoreReportSingleDriverResponse get failed due to - " + ex.Message
                 });
             }
         }

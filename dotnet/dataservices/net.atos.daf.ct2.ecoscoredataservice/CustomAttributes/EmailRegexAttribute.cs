@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
+using System.Text.RegularExpressions;
 
 namespace net.atos.daf.ct2.ecoscoredataservice.CustomAttributes
 {
@@ -16,9 +17,11 @@ namespace net.atos.daf.ct2.ecoscoredataservice.CustomAttributes
         {
             try
             {
-                MailAddress m = new MailAddress((string)value);
-
-                return ValidationResult.Success;
+                var emailString = value is null ? string.Empty : (string)value;
+                if (Regex.IsMatch(emailString, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", RegexOptions.IgnoreCase))
+                    return ValidationResult.Success;
+                else
+                    return new ValidationResult(ErrorMessageString);
             }
             catch (FormatException)
             {

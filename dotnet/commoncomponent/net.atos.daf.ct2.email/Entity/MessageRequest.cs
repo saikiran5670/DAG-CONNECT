@@ -17,10 +17,16 @@ namespace net.atos.daf.ct2.email.Entity
         public AccountInfo AccountInfo { get; set; }
         public Guid? TokenSecret { get; set; }
         public int RemainingDaysToExpire { get; set; }
-        public Dictionary<string, string> ReportTokens { get; set; }
+        public List<ReportTokens> ReportTokens { get; set; } = new List<ReportTokens>();
         public int MailRetryCount { get; set; } = 1;
         public string LanguageCode { get; set; }
         public bool IsBcc { get; set; }
         public string Description { get; set; }
+    }
+
+    public class ReportTokens
+    {
+        public string Token { get; set; }
+        public string ReportName { get; set; }
     }
 }

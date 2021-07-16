@@ -60,6 +60,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   lastUpdated: any;
   updatedBy: any;
   defaultProfile: any
+  profileFlag: boolean = false;
   
 
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportService: ReportService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,) { }
@@ -96,7 +97,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   deleteSelection: any = false;
   loadProfileData(){
-    this.reportService.getEcoScoreProfiles().subscribe((data: any) =>{
+    this.reportService.getEcoScoreProfiles(this.profileFlag).subscribe((data: any) =>{
       this.profileList = data["profiles"];
       this.selectedProfile = this.profileList[0].profileId;
       this.defaultProfile = this.profileList[0].profileName;
@@ -104,7 +105,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       if(this.actionType == 'manage'){
         this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile);  
         this.loadProfileKpis(this.selectedProfile);
-        //this.setDefaultValue()
+        this.setDefaultValue()
       }
     });
   }
@@ -150,7 +151,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   
 
   this.isKPI = true;
-  this.setDefaultValue()
+ 
   }
 
   processTranslation(transData: any) {
@@ -188,7 +189,9 @@ export class EcoScoreProfileManagementComponent implements OnInit {
        this.reportService.createEcoScoreProfile(profileParams).subscribe(()=>{
         this.loadProfileData();
         this.successMsgBlink(this.getUserCreatedMessage());
+        this.profileFlag = false;
        });
+       this.toBack();
      }
     } else {
 
@@ -286,20 +289,21 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   onDelete(){
     let profileId = this.selectedProfile;
+    let name = (this.profileList.filter(e => e.profileId == profileId)) ;
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
-    this.dialogService.DeleteModelOpen(options, this.selectedElementData.profileName);
+    this.dialogService.DeleteModelOpen(options, name[0].profileName);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
       this.reportService.deleteEcoScoreProfile(profileId).subscribe((data) => {
         this.openSnackBar('Item delete', 'dismiss');
         this.loadProfileData();
-      })
-        this.successMsgBlink(this.getDeletMsg(this.selectedElementData.ProfileName));
+        this.successMsgBlink(this.getDeletMsg(name[0].profileName));
+      }) 
       }
     });
   }
@@ -327,22 +331,36 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.loadProfileData();
   }
 
+  onClose(){
+    this.titleVisible = false;
+  }
+
   onChange(event){
     this.isDAFStandard = event.checked;
   }
 
   onChangeOption(event){
     this.isCreatedExistingProfile = event.checked;
+    if(event.checked){
+      this.profileFlag = true;
+      this.loadProfileData();
+    }
+    else
+      this.profileFlag = false;
   }
 
   profileSelectionDropDown(filterValue: string){
-    // this.selectedElementData = [];
+    // this.selectedElementData = [];    
+    this.isKPI = false;
     this.selectedProfile = filterValue;
     this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile); 
+    this.deleteSelection = this.selectedElementData[0].isDeleteAllowed;
     this.setDefaultValue();
     this.loadProfileKpis(this.selectedProfile);
+    //this.loadProfileData();
     this.isDAFStandard = false;
     this.isCreatedExistingProfile = false;
+    
  }
 
  createKPIEmit(item: any){

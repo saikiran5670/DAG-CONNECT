@@ -136,9 +136,9 @@ namespace net.atos.daf.ct2.email
             foreach (var token in messageRequest.ReportTokens)
             {
                 //Uri downloadReportUrl = new Uri(baseUrl, string.Format(downloadUrl, token.Key));
-                Uri downloadReportUrl = new Uri(baseUrl, $"#/downloadreport/{token.Key}");
+                Uri downloadReportUrl = new Uri(baseUrl, $"#/downloadreport/{token.Token}");
                 urldown += "<br/>";
-                urlplace += token.Value + "<br/>";
+                urlplace += token.ReportName + "<br/>";
                 urlplace += string.Format(urldown, downloadReportUrl);
             }
             builder.AppendFormat(emailTemplate, messageRequest.AccountInfo.FullName, lblDescription, urlplace);

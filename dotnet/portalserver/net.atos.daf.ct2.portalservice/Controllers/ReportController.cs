@@ -16,6 +16,7 @@ using net.atos.daf.ct2.portalservice.Entity.Report;
 using net.atos.daf.ct2.reportservice;
 using Newtonsoft.Json;
 using static net.atos.daf.ct2.reportservice.ReportService;
+using net.atos.daf.ct2.vehicleservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -32,11 +33,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly HereMapAddressProvider _hereMapAddressProvider;
         private readonly poiservice.POIService.POIServiceClient _poiServiceClient;
         private readonly MapService.MapServiceClient _mapServiceClient;
+        private readonly VehicleService.VehicleServiceClient _vehicleClient;
 
         public ReportController(ReportServiceClient reportServiceClient, AuditHelper auditHelper,
                                IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper,
-                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient
-                               ) : base(httpContextAccessor, sessionHelper)
+                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient, AccountPrivilegeChecker privilegeChecker,
+                               VehicleService.VehicleServiceClient vehicleClient
+                               ) : base(httpContextAccessor, sessionHelper, privilegeChecker)
         {
             _reportServiceClient = reportServiceClient;
             _auditHelper = auditHelper;
@@ -45,6 +48,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _poiServiceClient = poiServiceClient;
             _mapServiceClient = mapServiceClient;
             _hereMapAddressProvider = new HereMapAddressProvider(_mapServiceClient, _poiServiceClient);
+            _vehicleClient = vehicleClient;
         }
 
 
@@ -325,6 +329,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
+        [Route("drivetime/getdetails/chart")]
+        public async Task<IActionResult> GetDriverActivityChartDetails([FromBody] Entity.Report.DriverTimeChartFilter request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG); }
+                if (string.IsNullOrEmpty(request.DriverId)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_DRIVERIDREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                DriverActivityChartFilterRequest objDriverChartData = JsonConvert.DeserializeObject<DriverActivityChartFilterRequest>(filters);
+                _logger.Info("GetDriverActivityAsync method in Report (Single Driver Time details Report) API called.");
+                var data = await _reportServiceClient.GetDriverActivityChartDetailsAsync(objDriverChartData);
+                if (data?.DriverActivitiesChartData?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_DRIVER_TIME_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPost]
         [Route("drivetime/getparameters")]
         public async Task<IActionResult> GetDriverActivityParameters([FromBody] IdRequestForDriverActivity request)
         {
@@ -388,60 +424,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Eco Score Report
 
-        #region Eco Score Report - Create Profile
-
-        [HttpPost]
-        [Route("ecoscore/createprofile")]
-        public async Task<IActionResult> Create([FromBody] EcoScoreProfileCreateRequest request)
-        {
-            try
-            {
-                var grpcRequest = _mapper.MapCreateEcoScoreProfile(request);
-                grpcRequest.AccountId = _userDetails.AccountId;
-                grpcRequest.OrgId = GetContextOrgId();
-                var response = await _reportServiceClient.CreateEcoScoreProfileAsync(grpcRequest);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
-                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, "Eco Score profile created successfully", 0, 0, JsonConvert.SerializeObject(request),
-                                 _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
-            }
-        }
-
-        #endregion
-
-        #region Eco score Report - Update Profile
-
-        [HttpPut]
-        [Route("ecoscore/updateprofile")]
-        public async Task<IActionResult> Update([FromBody] EcoScoreProfileUpdateRequest request)
-        {
-            try
-            {
-                bool hasRights = await HasAdminPrivilege();
-                var grpcRequest = _mapper.MapUpdateEcoScoreProfile(request);
-                grpcRequest.AccountId = _userDetails.AccountId;
-                grpcRequest.OrgId = GetContextOrgId();
-                Metadata headers = new Metadata();
-                headers.Add("hasRights", Convert.ToString(hasRights));
-                var response = await _reportServiceClient.UpdateEcoScoreProfileAsync(grpcRequest, headers);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
-                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, "Eco Score profile updated successfully", 0, 0, JsonConvert.SerializeObject(request),
-                                 _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
-            }
-        }
-        #endregion
-
         #region Eco Score Report - Get Profile & KPI details
 
         [HttpGet]
@@ -452,14 +434,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 var organizationId = !isGlobal ? GetContextOrgId() : 0;
 
-                char allowed_type = 'N';
+                char used_type = 'N';
                 if (_userDetails.UserFeatures.Any(x => x.Contains("Report.ECOScoreReport")))
-                    allowed_type = 'D';
+                    used_type = 'A';
                 if (_userDetails.UserFeatures.Any(x => x.Contains("Report.ECOScoreReport.Advance")))
-                    allowed_type = 'A';
+                    used_type = 'D';
 
                 Metadata headers = new Metadata();
-                headers.Add("allowed_type", Convert.ToString(allowed_type));
+                headers.Add("used_type", Convert.ToString(used_type));
 
                 var response = await _reportServiceClient.GetEcoScoreProfilesAsync(new GetEcoScoreProfileRequest { OrgId = organizationId }, headers);
                 if (response?.Profiles?.Count > 0)
@@ -509,6 +491,60 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #endregion
 
+        #region Eco Score Report - Create Profile
+
+        [HttpPost]
+        [Route("ecoscore/createprofile")]
+        public async Task<IActionResult> Create([FromBody] EcoScoreProfileCreateRequest request)
+        {
+            try
+            {
+                var grpcRequest = _mapper.MapCreateEcoScoreProfile(request);
+                grpcRequest.AccountId = _userDetails.AccountId;
+                grpcRequest.OrgId = GetContextOrgId();
+                var response = await _reportServiceClient.CreateEcoScoreProfileAsync(grpcRequest);
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, "Eco Score profile created successfully", 0, 0, JsonConvert.SerializeObject(request),
+                                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        #endregion
+
+        #region Eco score Report - Update Profile
+
+        [HttpPut]
+        [Route("ecoscore/updateprofile")]
+        public async Task<IActionResult> Update([FromBody] EcoScoreProfileUpdateRequest request)
+        {
+            try
+            {
+                bool hasRights = await HasAdminPrivilege();
+                var grpcRequest = _mapper.MapUpdateEcoScoreProfile(request);
+                grpcRequest.AccountId = _userDetails.AccountId;
+                grpcRequest.OrgId = GetContextOrgId();
+                Metadata headers = new Metadata();
+                headers.Add("hasRights", Convert.ToString(hasRights));
+                var response = await _reportServiceClient.UpdateEcoScoreProfileAsync(grpcRequest, headers);
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, "Eco Score profile updated successfully", 0, 0, JsonConvert.SerializeObject(request),
+                                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
         #region Eco Score Report - Delete Profile
 
         [HttpDelete]
@@ -555,6 +591,77 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 var response = await _reportServiceClient.GetEcoScoreReportByAllDriversAsync(grpcRequest);
                 if (response?.DriverRanking?.Count > 0)
+                {
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode((int)response.Code, response.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
+        #region  Eco Score Report - Compare Drivers
+        [HttpPost]
+        [Route("ecoscore/comparedrivers")]
+        public async Task<IActionResult> GetEcoScoreReportCompareDrivers([FromBody] EcoScoreReportCompareDriversRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_DATEMISMATCH_MSG); }
+                if (request.DriverIds.Count < 2 || request.DriverIds.Count > 4) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_COMPAREDRIVER_MSG); }
+
+                var grpcRequest = _mapper.MapEcoScoreReportCompareDriver(request);
+                grpcRequest.AccountId = _userDetails.AccountId;
+                grpcRequest.OrgId = GetContextOrgId();
+
+                var response = await _reportServiceClient.GetEcoScoreReportCompareDriversAsync(grpcRequest);
+                if (response?.Drivers?.Count > 0)
+                {
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode((int)response.Code, response.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
+        #region  Eco Score Report - Single Driver
+        [HttpPost]
+        [Route("ecoscore/singledriver")]
+        public async Task<IActionResult> GetEcoScoreReportSingleDriver([FromBody] EcoScoreReportSingleDriverRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_DATEMISMATCH_MSG); }
+
+                var grpcRequest = _mapper.MapEcoScoreReportSingleDriver(request);
+                grpcRequest.AccountId = _userDetails.AccountId;
+                grpcRequest.OrgId = GetContextOrgId();
+
+                var response = await _reportServiceClient.GetEcoScoreReportSingleDriverAsync(grpcRequest);
+                if (response?.SingleDriver?.Count > 0)
                 {
                     response.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
                     return Ok(response);
@@ -658,42 +765,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-        #endregion
-
-        #region  Eco Score Report - Compare Drivers
-        [HttpPost]
-        [Route("ecoscore/comparedrivers")]
-        public async Task<IActionResult> GetEcoScoreReportCompareDrivers([FromBody] EcoScoreReportCompareDriversRequest request)
-        {
-            try
-            {
-                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_STARTDATE_MSG); }
-                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_ENDDATE_MSG); }
-                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_VINREQUIRED_MSG); }
-                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_DATEMISMATCH_MSG); }
-                if (request.DriverIds.Count < 2 || request.DriverIds.Count > 4) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_COMPAREDRIVER_MSG); }
-
-                var grpcRequest = _mapper.MapEcoScoreReportCompareDriver(request);
-                grpcRequest.AccountId = _userDetails.AccountId;
-                grpcRequest.OrgId = GetContextOrgId();
-
-                var response = await _reportServiceClient.GetEcoScoreReportCompareDriversAsync(grpcRequest);
-                if (response?.Drivers?.Count > 0)
-                {
-                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
-                    return Ok(response);
-                }
-                else
-                {
-                    return StatusCode((int)response.Code, response.Message);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
-            }
-        }
         #endregion
 
         #endregion
@@ -861,6 +932,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.StartPositionLattitude, fleetoverviewItem.StartPositionLongitude);
                             fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
                             fleetoverviewItem.StartGeolocationAddress = getMapRequestStart.Address;
+                        }
+                        if (fleetoverviewItem.FleetOverviewAlert != null && fleetoverviewItem.FleetOverviewAlert.Count > 0)
+                        {
+                            foreach (var addressesult in fleetoverviewItem.FleetOverviewAlert)
+                            {
+                                GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(Convert.ToDouble(addressesult.AlertLatitude), Convert.ToDouble(addressesult.AlertLongitude));
+                                addressesult.AlertGeolocationAddressId = getMapRequestStart.Id;
+                                addressesult.AlertGeolocationAddress = getMapRequestStart.Address;
+                            }
                         }
                     }
                     return Ok(response.FleetOverviewDetailList);
@@ -1141,6 +1221,220 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+            }
+        }
+        #endregion
+
+        #region Fuel Deviation Report
+
+        #region Fuel Deviation Report Table Details 
+        #endregion
+        [HttpGet]
+        [Route("getfueldeviationfilterdata")]
+        public async Task<IActionResult> GetFuelDeviationFilterData([FromQuery] FuelDeviationFilterRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) return BadRequest(ReportConstants.VALIDATION_STARTDATE_MSG);
+                if (!(request.EndDateTime > 0)) return BadRequest(ReportConstants.VALIDATION_ENDDATE_MSG);
+                if (request.VINs == null || request.VINs?.Count == 0) return BadRequest(ReportConstants.VALIDATION_VINREQUIRED_MSG);
+                if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.VALIDATION_DATEMISMATCH_MSG);
+
+                _logger.Info("GetFilteredFuelDeviationAsync method in Report (Fuel Deviation Report) API called.");
+                var response = await _reportServiceClient.GetFilteredFuelDeviationAsync(request);
+
+                foreach (var item in response.FuelDeviationDetails)
+                {
+                    if (item.GeoLocationAddressId == 0 && item.Latitude != 0 && item.Longitude != 0)
+                    {
+                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.Latitude, item.Longitude);
+                        item.GeoLocationAddress = getMapRequestLatest.Address;
+                        item.GeoLocationAddressId = getMapRequestLatest.Id;
+                    }
+                }
+                if (response?.FuelDeviationDetails?.Count > 0)
+                {
+                    return Ok(new { Data = response.FuelDeviationDetails, Message = ReportConstants.GET_FUEL_DEVIATION_SUCCESS_MSG });
+                }
+                else
+                {
+                    return StatusCode((int)response.Code, response.Message);
+                }
+            }
+
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.GET_FUEL_DEVIATION_FAIL_MSG, 0, 0, string.Empty,
+                                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
+        #region Logbook
+
+        [HttpGet]
+        [Route("fleetoverview/getlogbookfilters")]
+        public async Task<IActionResult> GetLogBookFilter()
+        {
+            try
+            {
+                LogBookFilter logBookFilter = new LogBookFilter();
+                var logBookFilterRequest = new LogbookFilterIdRequest();
+                logBookFilterRequest.AccountId = _userDetails.AccountId;
+                logBookFilterRequest.OrganizationId = GetContextOrgId();
+                logBookFilterRequest.RoleId = _userDetails.RoleId;
+                logBookFilterRequest.AccountId = 171;
+                logBookFilterRequest.OrganizationId = 36;
+                logBookFilterRequest.RoleId = 61;
+                LogbookFilterResponse response = await _reportServiceClient.GetLogbookSearchParameterAsync(logBookFilterRequest);
+
+                // reportFleetOverviewFilter = _mapper.ToFleetOverviewEntity(response);
+
+
+
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (response.Code == Responsecode.Success)
+                    return Ok(response);
+                if (response.Code == Responsecode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                 ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"{ nameof(GetFleetOverviewFilter) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("fleetoverview/getlogbookdetails")]
+        public async Task<IActionResult> GetLogbookDetails(LogbookFilter logbookFilter)
+        {
+            try
+            {
+                LogbookDetailsRequest logbookDetailsRequest = new LogbookDetailsRequest
+                {
+                    AccountId = _userDetails.AccountId,
+                    OrganizationId = GetContextOrgId(),
+                    RoleId = _userDetails.RoleId
+                };
+
+                logbookDetailsRequest.GroupIds.AddRange(logbookFilter.GroupId);
+                logbookDetailsRequest.VIN.AddRange(logbookFilter.VIN);
+                logbookDetailsRequest.AlertLevels.AddRange(logbookFilter.AlertLevel);
+                logbookDetailsRequest.AlertType.AddRange(logbookFilter.AlertType);
+                logbookDetailsRequest.AlertCategories.AddRange(logbookFilter.AlertCategory);
+                logbookDetailsRequest.StartTime = logbookFilter.Start_Time;
+                logbookDetailsRequest.EndTime = logbookFilter.End_time;
+                /* Need to comment Start */
+                logbookDetailsRequest.AccountId = 171;
+                logbookDetailsRequest.OrganizationId = 36;
+                logbookDetailsRequest.RoleId = 61;
+                /* Need to comment End */
+
+                LogbookDetailsResponse response = await _reportServiceClient.GetLogbookDetailsAsync(logbookDetailsRequest);
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (response.Code == Responsecode.Success)
+                    return Ok(response);
+                if (response.Code == Responsecode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                $"{ nameof(GetLogbookDetails) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+
+        }
+        #endregion
+
+        #region Fuel Benchmark Details Report
+
+        [HttpPost]
+        [Route("fuelbenchmark/vehiclegroup")]
+        public async Task<IActionResult> GetFuelBenchmarkByVehicleGroup([FromBody] Entity.Report.ReportFuelBenchmarkFilter request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0))
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0))
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_ENDDATE_MSG); }
+                if (request.StartDateTime > request.EndDateTime)
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_VALIDATION_DATEMISMATCH_MSG); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                FuelBenchmarkRequest objFleetFilter = JsonConvert.DeserializeObject<FuelBenchmarkRequest>(filters);
+                var data = await _reportServiceClient.GetFuelBenchmarkByVehicleGroupAsync(objFleetFilter);
+                if (data?.FuelBenchmarkDetails != null)
+                {
+                    VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
+                    vehicleRequest.VehicleGroupId = request.VehicleGroupId;
+                    vehicleRequest.GroupType = "G";
+                    vehicleRequest.FunctionEnum = "";
+                    vehicleRequest.OrgnizationId = GetContextOrgId();
+                    VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
+                    data.FuelBenchmarkDetails.NumberOfTotalVehicles = vehicleResponse.VehicleCount;
+                    data.Message = ReportConstants.GET_FUEL_BENCHMARK_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_FUEL_BENCHMARK_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPost]
+        [Route("fuelbenchmark/timeperiod")]
+        public async Task<IActionResult> GetFuelBenchmarkByTimePeriod([FromBody] Entity.Report.ReportFuelBenchmarkFilter request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0))
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0))
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_ENDDATE_MSG); }
+                if (request.StartDateTime > request.EndDateTime)
+                { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_VALIDATION_DATEMISMATCH_MSG); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                FuelBenchmarkRequest objFleetFilter = JsonConvert.DeserializeObject<FuelBenchmarkRequest>(filters);
+                var data = await _reportServiceClient.GetFuelBenchmarkByTimePeriodAsync(objFleetFilter);
+                if (data?.FuelBenchmarkDetails != null)
+                {
+                    data.Message = ReportConstants.GET_FUEL_BENCHMARK_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_FUEL_BENCHMARK_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
         #endregion

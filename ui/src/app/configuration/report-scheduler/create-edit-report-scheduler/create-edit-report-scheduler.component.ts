@@ -249,7 +249,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
   getBreadcum() {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
-    ${this.translationData.lblLandmarks ? this.translationData.lblReportScheduler : "ReportScheduler"} / 
+    ${this.translationData.lblPathReportScheduler ? this.translationData.lblPathReportScheduler : "ReportScheduler"} / 
     ${(this.actionType == 'edit') ? (this.translationData.lblEditScheduleDetails ? this.translationData.lblEditScheduleDetails : 'Edit Schedule Details') : (this.actionType == 'view') ? (this.translationData.lblViewScheduleDetails ? this.translationData.lblViewScheduleDetails : 'View Schedule Details') : (this.translationData.lblCreateScheduleDetails ? this.translationData.lblScheduleNewReport : 'Schedule New Report')}`;
   }
 
@@ -489,6 +489,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
       if(!pattern.test(element.trim())){
         this.isInvalidEmail = true;    
         this.invalidEmail += element +",";
+        this.invalidEmail= this.invalidEmail.slice(0, -1);
         return;
       }
     });
@@ -599,7 +600,7 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         {
           "id": 0,
           "scheduleReportId": 0,
-          "email": element,
+          "email": element.trim(),
           "state": "A",
           "createdAt": 0,
           "modifiedAt": 0
@@ -649,8 +650,8 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         "createdBy": this.accountId,
         "modifiedAt": 0,
         "modifiedBy": 0,
-        "mailSubject": this.reportSchedulerForm.controls.mailSubject.value,
-        "mailDescription": this.reportSchedulerForm.controls.mailDescription.value,
+        "mailSubject": (this.reportSchedulerForm.controls.mailSubject.value).trim(),
+        "mailDescription": (this.reportSchedulerForm.controls.mailDescription.value).trim(),
         "reportDispatchTime": this.reportSchedulerForm.controls.reportDispatchTime.value,
         "scheduledReport": scheduledReport,
         "scheduledReportRecipient": scheduledReportRecipient,
@@ -728,8 +729,8 @@ export class CreateEditReportSchedulerComponent implements OnInit {
         "createdBy": this.selectedRowData[0].createdBy,
         "modifiedAt": 0,
         "modifiedBy": this.accountId,
-        "mailSubject": this.reportSchedulerForm.controls.mailSubject.value,
-        "mailDescription": this.reportSchedulerForm.controls.mailDescription.value,
+        "mailSubject": (this.reportSchedulerForm.controls.mailSubject.value).trim(),
+        "mailDescription": (this.reportSchedulerForm.controls.mailDescription.value).trim(),
         "reportDispatchTime": this.reportSchedulerForm.controls.reportDispatchTime.value,
         "scheduledReport": scheduledReport,
         "scheduledReportRecipient": scheduledReportRecipient,

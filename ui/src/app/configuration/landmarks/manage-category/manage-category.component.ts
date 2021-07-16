@@ -214,7 +214,7 @@ export class ManageCategoryComponent implements OnInit {
       if(res){
         if(delType == 'category' || delType == 'subcategory'){
           let bulkDeleteObj: any = {
-            category_SubCategory_s: [{
+            category_SubCategory: [{
               categoryId : rowData.parentCategoryId, 
               subCategoryId : rowData.subCategoryId
             }]
@@ -575,7 +575,7 @@ export class ManageCategoryComponent implements OnInit {
     }
 
     bulkDeleteObj = {
-      category_SubCategory_s: bulkCategories
+      category_SubCategory: bulkCategories
     }
 
     const dialogConfig = new MatDialogConfig();

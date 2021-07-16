@@ -23,6 +23,8 @@ import { Router, NavigationExtras } from '@angular/router';
 import { OrganizationService } from '../../services/organization.service';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { element } from 'protractor';
+import { Workbook } from 'exceljs';
+import * as fs from 'file-saver';
 
 declare var H: any;
 
@@ -53,7 +55,7 @@ tripForm: FormGroup;
 mapFilterForm: FormGroup;
 // displayedColumns = ['All','vin', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
 // displayedColumns = ['All','vin','odometer','vehicleName','registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
-displayedColumns = ['All','vin','odometer','vehicleName','registrationNo','startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
+displayedColumns = ['All', 'vin', 'odometer', 'vehicleName', 'registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
 translationData: any;
 showMap: boolean = false;
 showBack: boolean = false;
@@ -107,64 +109,68 @@ internalSelection: boolean = false;
 herePOIArr: any = [];
 prefMapData: any = [
   {
-    key: 'da_report_tripreportdetails_averagespeed',
+    key: 'rp_tr_report_tripreportdetails_averagespeed',
     value: 'averageSpeed'
   },
   {
-    key: 'da_report_tripreportdetails_drivingtime',
+    key: 'rp_tr_report_tripreportdetails_drivingtime',
     value: 'drivingTime'
   },
   {
-    key: 'da_report_tripreportdetails_alerts',
+    key: 'rp_tr_report_tripreportdetails_alerts',
     value: 'alert'
   },
   {
-    key: 'da_report_tripreportdetails_averageweight',
+    key: 'rp_tr_report_tripreportdetails_averageweight',
     value: 'averageWeight'
   },
   {
-    key: 'da_report_tripreportdetails_events',
+    key: 'rp_tr_report_tripreportdetails_events',
     value: 'events'
   },
   {
-    key: 'da_report_tripreportdetails_distance',
+    key: 'rp_tr_report_tripreportdetails_distance',
     value: 'distance'
   },
   {
-    key: 'da_report_tripreportdetails_enddate',
+    key: 'rp_tr_report_tripreportdetails_enddate',
     value: 'endTimeStamp'
   },
   {
-    key: 'da_report_tripreportdetails_endposition',
+    key: 'rp_tr_report_tripreportdetails_endposition',
     value: 'endPosition'
   },
   {
-    key: 'da_report_tripreportdetails_fuelconsumed',
+    key: 'rp_tr_report_tripreportdetails_fuelconsumed',
     value: 'fuelConsumed100Km'
   },
   {
-    key: 'da_report_tripreportdetails_idleduration',
+    key: 'rp_tr_report_tripreportdetails_idleduration',
     value: 'idleDuration'
   },
   {
-    key: 'da_report_tripreportdetails_odometer',
+    key: 'rp_tr_report_tripreportdetails_odometer',
     value: 'odometer'
   },
   {
-    key: 'da_report_tripreportdetails_platenumber',
-    value: 'registrationnumber'
+    key: 'rp_tr_report_tripreportdetails_platenumber',
+    value: 'registrationNo'
   },
   {
-    key: 'da_report_tripreportdetails_startdate',
+    key: 'rp_tr_report_tripreportdetails_startdate',
     value: 'startTimeStamp'
   },
   {
-    key: 'da_report_tripreportdetails_vin',
+    key: 'rp_tr_report_tripreportdetails_vin',
     value: 'vin'
   },
   {
-    key: 'da_report_tripreportdetails_startposition',
+    key: 'rp_tr_report_tripreportdetails_startposition',
     value: 'startPosition'
+  },
+  {
+    key: 'rp_tr_report_tripreportdetails_vehiclename',
+    value: 'vehicleName'
   }
 ];
 _state: any ;
@@ -317,7 +323,7 @@ ngOnDestroy(){
   }
 
   getReportPreferences(){
-    this.reportService.getUserPreferenceReport(this.tripReportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
+    this.reportService.getReportUserPreference(this.tripReportId).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetTripPrefData();
       this.getTranslatedColumnName(this.reportPrefData);
@@ -337,30 +343,36 @@ ngOnDestroy(){
 
   tripPrefData: any = [];
   getTranslatedColumnName(prefData: any){
-    prefData.forEach(element => {
-      if(element.key.includes('da_report_tripreportdetails_')){
-        this.tripPrefData.push(element);
-      }
-    });
+    if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
+      prefData.subReportUserPreferences.forEach(element => {
+        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+          element.subReportUserPreferences.forEach(item => {
+            if(item.key.includes('rp_tr_report_tripreportdetails_')){
+              this.tripPrefData.push(item);
+            }
+          });
+        }
+      });
+    }
   }
 
   setDisplayColumnBaseOnPref(){
-    let filterPref = this.tripPrefData.filter(i => i.state == 'I');
+    let filterPref = this.tripPrefData.filter(i => i.state == 'I'); // removed unchecked
     if(filterPref.length > 0){
       filterPref.forEach(element => {
-        let search = this.prefMapData.filter(i => i.key == element.key);
+        let search = this.prefMapData.filter(i => i.key == element.key); // present or not
         if(search.length > 0){
-          let index = this.displayedColumns.indexOf(search[0].value);
+          let index = this.displayedColumns.indexOf(search[0].value); // find index
           if (index > -1) {
-              this.displayedColumns.splice(index, 1);
+            this.displayedColumns.splice(index, 1); // removed
           }
         }
 
-        if(element.key == 'da_report_tripreportdetails_vehiclename'){
+        if(element.key == 'rp_tr_report_tripreportdetails_vehiclename'){
           this.showField.vehicleName = false;
-        }else if(element.key == 'da_report_tripreportdetails_vin'){
+        }else if(element.key == 'rp_tr_report_tripreportdetails_vin'){
           this.showField.vin = false;
-        }else if(element.key == 'da_report_tripreportdetails_platenumber'){
+        }else if(element.key == 'rp_tr_report_tripreportdetails_platenumber'){
           this.showField.regNo = false;
         }
       });
@@ -743,10 +755,84 @@ ngOnDestroy(){
     });
   }
 
-  exportAsExcelFile(){
-    this.matTableExporter.exportTable('xlsx', {fileName:'Trip_Report', sheet: 'sheet_name'});
-  }
+  exportAsExcelFile(){  
+  const title = 'Trip Report';
+  const summary = 'Summary Section';
+  const detail = 'Detail Section';
+  let unitVal100km =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'gallon/100mile') : (this.translationData.lblgallonmile || 'gallon/100mile');
+  let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound || 'pound');
+  let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
+  let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile') ;
 
+  const header = ['VIN', 'Odometer', 'Vehicle Name', 'Registration No', 'Start Date', 'End Date', 'Distance('+ unitValkm + ')', 'Idle Duration(hh:mm)', 'Average Speed('+ unitValkmh + ')', 'Average Weight('+ unitValkg + ')', 'Start Position', 'End Position', 'Fuel Consumption('+ unitVal100km + ')', 'Driving Time(hh:mm)', 'Alerts', 'Events'];
+  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Vehicle VIN', 'Reg. Plate Number'];
+  let summaryObj=[
+    ['Trip Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+    this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, this.tableInfoObj.vin, this.tableInfoObj.regNo
+    ]
+  ];
+  const summaryData= summaryObj;
+  
+  //Create workbook and worksheet
+  let workbook = new Workbook();
+  let worksheet = workbook.addWorksheet('Trip Report');
+  //Add Row and formatting
+  let titleRow = worksheet.addRow([title]);
+  worksheet.addRow([]);
+  titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+ 
+  worksheet.addRow([]);  
+  let subTitleRow = worksheet.addRow([summary]);
+  let summaryRow = worksheet.addRow(summaryHeader);  
+  summaryData.forEach(element => {  
+    worksheet.addRow(element);   
+  });      
+  worksheet.addRow([]);
+  summaryRow.eachCell((cell, number) => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFFFFF00' },
+      bgColor: { argb: 'FF0000FF' }      
+    }
+    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+  })  
+  worksheet.addRow([]);   
+  let subTitleDetailRow = worksheet.addRow([detail]);
+  let headerRow = worksheet.addRow(header);
+  headerRow.eachCell((cell, number) => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFFFFF00' },
+      bgColor: { argb: 'FF0000FF' }
+    }
+    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+  })
+
+ this.initData.forEach(item => {     
+    worksheet.addRow([item.vin, item.odometer, item.vehicleName, item.registrationNo, item.convertedStartTime, 
+      item.convertedEndTime, item.convertedDistance, item.convertedIdleDuration, item.convertedAverageSpeed,
+      item.convertedAverageWeight, item.startPosition, item.endPosition, item.convertedFuelConsumed100Km,
+      item.convertedDrivingTime, item.alert, item.events]);   
+  }); 
+  worksheet.mergeCells('A1:D2'); 
+  subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+  subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+  for (var i = 0; i < header.length; i++) {    
+    worksheet.columns[i].width = 20;      
+  }
+  for (var j = 0; j < summaryHeader.length; j++) {  
+    worksheet.columns[j].width = 20; 
+  }
+  worksheet.addRow([]); 
+  workbook.xlsx.writeBuffer().then((data) => {
+    let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    fs.saveAs(blob, 'Trip_Report.xlsx');
+ })
+  // this.matTableExporter.exportTable('xlsx', {fileName:'Trip_Report', sheet: 'sheet_name'});
+}
+  
   exportAsPDFFile(){
     var doc = new jsPDF();
     (doc as any).autoTable({
@@ -771,7 +857,7 @@ ngOnDestroy(){
       }
   });
 
-    let pdfColumns = [['VIN','Vehicle Name','Registration Number.','Odometer','Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
+    let pdfColumns = [['VIN', 'Vehicle Name', 'Registration Number', 'Odometer', 'Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
     // let pdfColumns = [['Odometer','Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
 
   let prepare = []

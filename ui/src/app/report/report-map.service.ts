@@ -1153,8 +1153,29 @@ export class ReportMapService {
       element.convertedDistance = this.getDistance(element.distance, unitFormat);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       element.convertedFuelConsumed100Km = this.getFuelConsumed(element.fuelConsumption, unitFormat);
-      // element.cruiseControlDistance3050 = this.getcruiseControlDistance3050(element.cruiseControlDistance3050, unitFormat);
+      // element.dpaScore = element.dpaScore.toFixed(2);
 
+            //for 2 decimal points
+            element.convertedDistance = parseFloat(element.convertedDistance);
+            element.convertedDistance = element.convertedDistance.toFixed(2)*1;
+            element.convertedAverageDistance = parseFloat(element.convertedAverageDistance);
+            element.convertedAverageDistance = element.convertedAverageDistance.toFixed(2)*1;
+            element.convertedAverageSpeed =parseFloat(element.convertedAverageSpeed);
+            element.convertedAverageSpeed =element.convertedAverageSpeed.toFixed(2)*1;
+            element.averageGrossWeightComb =parseFloat(element.averageGrossWeightComb);
+            element.averageGrossWeightComb =element.averageGrossWeightComb.toFixed(2)*1;
+            element.fuelConsumed =parseFloat(element.fuelConsumed);
+            element.fuelConsumed =element.fuelConsumed.toFixed(2)*1;
+            element.fuelConsumption =parseFloat(element.fuelConsumption);
+            element.fuelConsumption =element.fuelConsumption.toFixed(2)*1;
+            element.cO2Emission =parseFloat(element.cO2Emission);
+            element.cO2Emission =element.cO2Emission.toFixed(2)*1;
+            element.harshBrakeDuration = parseFloat(element.harshBrakeDuration);
+            element.harshBrakeDuration =element.harshBrakeDuration.toFixed(2)*1;
+            element.heavyThrottleDuration = parseFloat(element.heavyThrottleDuration);
+            element.heavyThrottleDuration= element.heavyThrottleDuration.toFixed(2)*1;
+            element.dpaScore = parseFloat(element.dpaScore);
+            element.dpaScore = element.dpaScore.toFixed(2)*1;
     });
     return gridData;
   }

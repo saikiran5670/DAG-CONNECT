@@ -1,0 +1,144 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: organizationservice-grpc-deployment
+  labels:
+    app.kubernetes.io/name: organizationservice-grpc
+    app.kubernetes.io/type: businessservice
+spec:
+  template:
+    metadata:
+      annotations:
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+      labels:
+        app.kubernetes.io/name: organizationservice-grpc
+        app.kubernetes.io/type: businessservice
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 3000
+        fsGroup: 10001
+        runAsNonRoot: true
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - organizationservice-grpc
+              - key: app.kubernetes.io/type
+                operator: In
+                values:
+                - businessservice
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: organizationservice-grpc-container
+        image: #{acrurl}#/organizationservice-grpc
+        imagePullPolicy: "Always"
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+             - all
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        env:
+        - name: ASPNETCORE_URLS
+          value: "http://*:8080"
+        - name: COMPlus_EnableDiagnostics
+          value: "0"
+        ports:
+          - containerPort: 8080
+      - name: filebeatservice-container
+        image: #{acrurl}#/filebeat
+        imagePullPolicy: "Always"
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: filebeatdata 
+          mountPath: /usr/share/filebeat/data
+        - name: certs
+          mountPath: /certs
+          readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+             - all
+        resources:
+          limits:
+            cpu: 50m
+            memory: 50Mi
+          requests:
+            cpu: 20m
+            memory: 20Mi
+        env:
+        - name: serviceName
+          value: "OrganizationServiceGrpc"
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: filebeatdata
+        emptyDir: {}
+      - name: certs
+        secret:
+          secretName: filebeat
+      nodeSelector:
+        agentpool: npuser01         
+  selector:
+    matchLabels:
+        app.kubernetes.io/name: organizationservice-grpc
+        app.kubernetes.io/type: businessservice
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: organizationservice
+  labels:
+    svc.kubernetes.io/name: organizationservice-grpc
+    svc.kubernetes.io/type: businessservice
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: organizationservice-grpc
+    app.kubernetes.io/type: businessservice
+
+---
+kind: HorizontalPodAutoscaler 
+apiVersion: autoscaling/v2beta1 
+metadata: 
+  name: organizationservice-grpc-hpa
+  labels:
+    hpa.kubernetes.io/name: organizationservice-grpc
+    hpa.kubernetes.io/type: businessservice 
+spec: 
+  maxReplicas: 5 
+  minReplicas: 2
+  scaleTargetRef: 
+    apiVersion: apps/v1 
+    kind: Deployment 
+    name: organizationservice-grpc-deployment 
+  metrics: 
+  - type: Resource 
+    resource: 
+      name: cpu 
+      targetAverageUtilization: 70
