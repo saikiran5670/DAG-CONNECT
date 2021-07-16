@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
 {
     [ApiController]
     [Route("ecoscore")]
-    //[Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
+    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class EcoScoreDataController : ControllerBase
     {
         private readonly IAuditTraillib _auditTrail;
