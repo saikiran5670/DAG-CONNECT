@@ -262,6 +262,16 @@ fromTripPageBack: boolean = false;
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    if(this.selectedBenchmarking == 'timePeriods'){
+    this.fuelBenchmarkingForm = this._formBuilder.group({
+      vehicleGroup: ['', []],
+      vehicle: ['', []],
+      startDate: ['', []],
+      endDate: ['', []],
+      startTime: ['', []],
+      endTime: ['', []]
+    });
+  }else {
     this.fuelBenchmarkingForm = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
       vehicle: ['', []],
@@ -270,6 +280,7 @@ fromTripPageBack: boolean = false;
       startTime: ['', []],
       endTime: ['', []]
     });
+  }
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",

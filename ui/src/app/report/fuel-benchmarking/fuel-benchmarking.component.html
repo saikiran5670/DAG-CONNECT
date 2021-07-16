@@ -38,7 +38,7 @@
                   </div>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span *ngIf="selectedBenchmarking == 'vehicleGroup'" class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline">
                     <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
                       <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
