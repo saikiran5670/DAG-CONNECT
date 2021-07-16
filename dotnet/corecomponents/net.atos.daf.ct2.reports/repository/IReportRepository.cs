@@ -40,6 +40,10 @@ namespace net.atos.daf.ct2.reports.repository
         Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId, int organizationId, int contextOrgId);
         Task<List<EcoScoreReportCompareDrivers>> GetEcoScoreReportCompareDrivers(EcoScoreReportCompareDriversRequest request);
         Task<List<EcoScoreCompareReportAtttributes>> GetEcoScoreCompareReportAttributes(int reportId, int targetProfileId);
+        Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallDriver(EcoScoreReportSingleDriverRequest request);
+        Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallCompany(EcoScoreReportSingleDriverRequest request);
+        Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportVINDriver(EcoScoreReportSingleDriverRequest request);
+        Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportVINCompany(EcoScoreReportSingleDriverRequest request);
         Task<List<AlertCategory>> GetAlertCategoryList();
         #region FleetFuel
         Task<List<CO2Coefficient>> GetCO2CoEfficientData();
@@ -56,8 +60,10 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<FilterProperty>> GetHealthStatusList();
         Task<List<FilterProperty>> GetOtherFilter();
         Task<List<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter);
-        Task<dynamic> GetKPIInfo(EcoScoreDataServiceRequest request);
-        Task<dynamic> GetChartInfo(EcoScoreDataServiceRequest request);
+        Task<dynamic> GetKPIInfo(EcoScoreDataServiceRequest request, int aggregationCount);
+        Task<dynamic> GetKPIInfoPerTrip(EcoScoreDataServiceRequest request);
+        Task<dynamic> GetChartInfo(EcoScoreDataServiceRequest request, int aggregationCount);
+        Task<dynamic> GetChartInfoPerTrip(EcoScoreDataServiceRequest request);
         Task<List<DriverFilter>> GetDriverList(List<string> vins);
 
         Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest);
@@ -67,7 +73,7 @@ namespace net.atos.daf.ct2.reports.repository
         Task<IEnumerable<FuelDeviation>> GetFilteredFuelDeviation(FuelDeviationFilter fuelDeviationFilters);
         #endregion
         #region LogBook
-        Task<IEnumerable<LogbookSearchFilter>> GetLogbookSearchParameter(List<string> vins);
+        Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins);
         Task<List<FilterProperty>> GetAlertLevelList(List<string> enums);
         Task<List<AlertCategory>> GetAlertCategoryList(List<string> enums);
         Task<List<LogbookDetailsFilter>> GetLogbookDetails(LogbookFilter logbookFilter);
