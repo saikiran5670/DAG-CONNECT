@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
@@ -145,6 +146,26 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 return new List<AlertCategory>();
             }
+        }
+
+
+        public async Task<List<AlertThresholdDetails>> GetThresholdDetails(List<int> alertId, List<string> alertLevel)
+        {
+            IEnumerable<AlertThresholdDetails> thresholdList;
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@alert_id", alertId);
+                parameter.Add("@urgency_level_type", alertLevel);
+                string query = @" SELECT id, alert_id, urgency_level_type, threshold_value, unit_type from master.alerturgencylevelref
+                                where alert_id = any(@AlertId) and urgency_level_type = any(@AlertLevel) and state ='A' ";
+                thresholdList = await _dataAccess.QueryAsync<AlertThresholdDetails>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return thresholdList.ToList();
         }
     }
 }
