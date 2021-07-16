@@ -97,41 +97,42 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
 
   translationUpdate(){
     this.translationData = {
-      da_report_details_stoptime: 'Stop Time',
-      da_report_details_vin: 'VIN',
-      da_report_calendarview_drivingtime: 'Driving Time',
-      da_report_details_vehiclename: 'Vehicle Name',
-      da_report_details_averagedistanceperday: 'Average distance per day',
-      da_report_general_averagedistanceperday: 'Average distance per day',
-      da_report_details_numberoftrips: 'Number of Trips',
-      da_report_calendarview_totaltrips: 'Total trips',
-      da_report_charts_mileagebasedutilization: 'Mileage Based Utilisation',
-      da_report_general_idleduration: 'Idle Duration',
-      da_report_general_totaldistance: 'Total Distance',
-      da_report_calendarview_idleduration: 'Idle Duration',
-      da_report_details_registrationnumber: 'Registration Number',
-      da_report_details_odometer: 'Odometer',
-      da_report_details_averagespeed: 'Average Speed',
-      da_report_charts_distanceperday: 'Distance Per Day',
-      da_report_details_drivingtime: 'Driving Time',
-      da_report_calendarview_timebasedutilization: 'Time Based Utilisation',
-      da_report_general_numberofvehicles: 'Number of Vehicles',
-      da_report_details_averageweightpertrip: 'Average weight per trip',
-      da_report_charts_numberofvehiclesperday: 'Active Vehicles Per Day',
-      da_report_charts_timebasedutilization: 'Time Based Utilisation',
-      da_report_calendarview_mileagebasedutilization: 'Mileage Based Utilisation',
-      da_report_details_triptime: 'Trip Time',
-      da_report_calendarview_activevehicles: 'Active Vehicles',
-      da_report_details_idleduration: 'Idle Duration',
-      da_report_calendarview_distance: 'Distance',
-      da_report_details_distance: 'Distance',
-      da_report_calendarview_averageweight: 'Average Weight',
-      da_report_general_numberoftrips: 'Number of Trips'
+      rp_fu_report_summary_averagedistanceperday: 'Average distance per day',
+      rp_fu_report_summary_idleduration: 'Idle Duration',
+      rp_fu_report_summary_totaldistance: 'Total Distance',
+      rp_fu_report_summary_numberofvehicles: 'Number of Vehicles',
+      rp_fu_report_summary_numberoftrips: 'Number of Trips',
+      rp_fu_report_chart_mileagebased: 'Mileage Based Utilisation',
+      rp_fu_report_chart_distanceperday: 'Distance Per Day',
+      rp_fu_report_chart_activevehiclperday: 'Active Vehicles Per Day',
+      rp_fu_report_chart_timebased: 'Time Based Utilisation',
+      rp_fu_report_calendarview_drivingtime: 'Driving Time',
+      rp_fu_report_calendarview_totaltrips: 'Total trips',
+      rp_fu_report_calendarview_idleduration: 'Idle Duration',
+      rp_fu_report_calendarview_timebasedutlisation: 'Time Based Utilisation',
+      rp_fu_report_calendarview_mileagebasedutilization: 'Mileage Based Utilisation',
+      rp_fu_report_calendarview_activevehicles: 'Active Vehicles',
+      rp_fu_report_calendarview_distance: 'Distance',
+      rp_fu_report_calendarview_averageweight: 'Average Weight',
+      rp_fu_report_calendarview_expensiontype: 'Expension Type',
+      rp_fu_report_details_stoptime: 'Stop Time',
+      rp_fu_report_details_vin: 'VIN',
+      rp_fu_report_details_vehiclename: 'Vehicle Name',
+      rp_fu_report_details_registrationnumber: 'Registration Number',
+      rp_fu_report_details_averagedistanceperday: 'Average distance per day',
+      rp_fu_report_details_numberoftrips: 'Number of Trips',
+      rp_fu_report_details_odometer: 'Odometer',
+      rp_fu_report_details_averagespeed: 'Average Speed',
+      rp_fu_report_details_drivingtime: 'Driving Time',
+      rp_fu_report_details_averageweightpertrip: 'Average weight per trip',
+      rp_fu_report_details_triptime: 'Trip Time',
+      rp_fu_report_details_idleduration: 'Idle Duration',
+      rp_fu_report_details_distance: 'Distance'
     }
   }
 
   loadFleetUtilisationPreferences(){
-    this.reportService.getUserPreferenceReport(this.reportId, this.accountId, this.accountOrganizationId).subscribe((prefData: any) => {
+    this.reportService.getReportUserPreference(this.reportId).subscribe((prefData: any) => {
       this.initData = prefData['userPreferences'];
       this.resetColumnData();
       this.preparePrefData(this.initData);
@@ -176,66 +177,68 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   }
 
   preparePrefData(prefData: any){
-    prefData.forEach(element => {
-      let _data: any;
-      if(element.key.includes('da_report_general_')){
-         _data = element;
-        if(this.translationData[element.key]){
-          _data.translatedName = this.translationData[element.key];  
-        }else{
-          _data.translatedName = this.getName(element.name, 15);   
+    if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
+      prefData.subReportUserPreferences.forEach(element => {
+        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+          element.subReportUserPreferences.forEach(item => {
+            let _data: any = item;
+            if(item.key.includes('rp_fu_report_summary_')){
+              if(this.translationData[item.key]){
+               _data.translatedName = this.translationData[item.key];  
+             }else{
+               _data.translatedName = this.getName(item.name, 15);   
+             }
+             this.summaryColumnData.push(_data);
+           }else if(item.key.includes('rp_fu_report_chart_')){
+             if(this.translationData[item.key]){
+               _data.translatedName = this.translationData[item.key];  
+             }else{
+               _data.translatedName = this.getName(item.name, 13);   
+             }
+             let index: any;
+             switch(item.key){
+               case 'rp_fu_report_chart_distanceperday':{
+                 index = this.chartIndex.distanceIndex = 0;
+                 break;
+               }
+               case 'rp_fu_report_chart_activevehiclperday':{
+                 index = this.chartIndex.vehicleIndex = 1;
+                 break;
+               }
+               case 'rp_fu_report_chart_mileagebased':{
+                 index = this.chartIndex.mileageIndex = 2;
+                 break;
+               }
+               case 'rp_fu_report_chart_timebased':{
+                 index = this.chartIndex.timeIndex = 3;
+                 break;
+               }
+             }
+             this.chartsColumnData[index] = _data;
+           }else if(item.key.includes('rp_fu_report_calendarview_')){
+             if(this.translationData[item.key]){
+               _data.translatedName = this.translationData[item.key];  
+             }else{
+               _data.translatedName = this.getName(item.name, 20);   
+             }
+             if(item.key == 'rp_fu_report_calendarview_expensiontype'){
+               this.slideStateData = item;
+             }else{
+               this.calenderColumnData.push(_data);
+             }
+           }else if(item.key.includes('rp_fu_report_details_')){
+             if(this.translationData[item.key]){
+               _data.translatedName = this.translationData[item.key];  
+             }else{
+               _data.translatedName = this.getName(item.name, 15);   
+             }
+             this.detailColumnData.push(_data);
+           }
+          });
         }
-        this.summaryColumnData.push(_data);
-      }else if(element.key.includes('da_report_charts_')){
-        _data = element;
-        if(this.translationData[element.key]){
-          _data.translatedName = this.translationData[element.key];  
-        }else{
-          _data.translatedName = this.getName(element.name, 14);   
-        }
-        let index: any;
-        switch(element.key){
-          case 'da_report_charts_distanceperday':{
-            index = this.chartIndex.distanceIndex = 0;
-            break;
-          }
-          case 'da_report_charts_numberofvehiclesperday':{
-            index = this.chartIndex.vehicleIndex = 1;
-            break;
-          }
-          case 'da_report_charts_mileagebasedutilization':{
-            index = this.chartIndex.mileageIndex = 2;
-            break;
-          }
-          case 'da_report_charts_timebasedutilization':{
-            index = this.chartIndex.timeIndex = 3;
-            break;
-          }
-        }
-        this.chartsColumnData[index] = _data;
-      }else if(element.key.includes('da_report_calendarview_')){
-        _data = element;
-        if(this.translationData[element.key]){
-          _data.translatedName = this.translationData[element.key];  
-        }else{
-          _data.translatedName = this.getName(element.name, 20);   
-        }
-        if(element.key == 'da_report_calendarview_expensiontype'){
-          this.slideStateData = element;
-        }else{
-          this.calenderColumnData.push(_data);
-        }
-      }else if(element.key.includes('da_report_details_')){
-        _data = element;
-        if(this.translationData[element.key]){
-          _data.translatedName = this.translationData[element.key];  
-        }else{
-          _data.translatedName = this.getName(element.name, 15);   
-        }
-        this.detailColumnData.push(_data);
-      }
-    });
-    this.setColumnCheckbox();
+      });
+      this.setColumnCheckbox();
+    }
   }
 
   getName(name: any, index: any) {
@@ -319,54 +322,82 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     let _detailArr: any = [];
 
     this.summaryColumnData.forEach(element => {
-      let sSearch = this.selectionForSummaryColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
+      let sSearch = this.selectionForSummaryColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
       if(sSearch.length > 0){
-        _summaryArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        _summaryArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }else{
-        _summaryArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        _summaryArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
     });
 
     this.chartsColumnData.forEach((element, index) => {
-      let cSearch = this.selectionForChartsColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
+      let cSearch = this.selectionForChartsColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
       if(index == 2){ // mileage base utilisation
-        _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: (cSearch.length > 0) ? "A" : "I", type: "C", chartType: this.fleetUtilForm.controls.mileageChart.value, thresholdType: this.fleetUtilForm.controls.mileageThreshold.value, thresholdValue: this.convertKmToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value)) });
+        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fleetUtilForm.controls.mileageChart.value, thresholdType: this.fleetUtilForm.controls.mileageThreshold.value, thresholdValue: this.convertKmToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value)) });
       }else if(index == 3){ // time base utilisation
-        _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: (cSearch.length > 0) ? "A" : "I", type: "C", chartType: this.fleetUtilForm.controls.timeChart.value, thresholdType: this.fleetUtilForm.controls.timeThreshold.value, thresholdValue: this.convertHHMMToMs(this.fleetUtilForm.controls.timeTarget.value) });
+        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fleetUtilForm.controls.timeChart.value, thresholdType: this.fleetUtilForm.controls.timeThreshold.value, thresholdValue: this.convertHHMMToMs(this.fleetUtilForm.controls.timeTarget.value) });
       }else{ // distance & active vehicle
-        _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: (cSearch.length > 0) ? "A" : "I", type: "C", chartType: (index == 0) ? this.fleetUtilForm.controls.distanceChart.value : this.fleetUtilForm.controls.vehicleChart.value, thresholdType: "", thresholdValue: 0 });
+        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: (index == 0) ? this.fleetUtilForm.controls.distanceChart.value : this.fleetUtilForm.controls.vehicleChart.value, thresholdType: "", thresholdValue: 0 });
       }
     });
 
     this.calenderColumnData.forEach(element => {
-      if(element.dataAtrributeId == parseInt(this.fleetUtilForm.controls.calenderView.value)){
-        _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      if(element.dataAttributeId == parseInt(this.fleetUtilForm.controls.calenderView.value)){
+        _calenderArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }else{
-        _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        _calenderArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
     });
-    if(this.slideStateData.dataAtrributeId){
-      _calenderArr.push({ dataAttributeId: this.slideStateData.dataAtrributeId, state: (this.fleetUtilForm.controls.calenderViewMode.value) ? "A" : "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 })
+    if(this.slideStateData.dataAttributeId){
+      _calenderArr.push({ dataAttributeId: this.slideStateData.dataAttributeId, state: (this.fleetUtilForm.controls.calenderViewMode.value) ? "A" : "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 })
     }
 
     this.detailColumnData.forEach(element => {
-      let dSearch = this.selectionForDetailsColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
+      let dSearch = this.selectionForDetailsColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
       if(dSearch.length > 0){
-        _detailArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        _detailArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }else{
-        _detailArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        _detailArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
     });
 
-    let objData: any = {
-      accountId: this.accountId,
-      reportId: this.reportId,
-      organizationId: this.accountOrganizationId,
-      createdAt: 0,
-      modifiedAt: 0,
-      atributesShowNoShow: [..._summaryArr, ..._chartArr, ..._calenderArr, ..._detailArr] //-- merge data
+    let parentDataAttr: any = [];
+    if(this.initData && this.initData.subReportUserPreferences && this.initData.subReportUserPreferences.length > 0){
+      parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      this.initData.subReportUserPreferences.forEach(elem => {
+        if(elem.key.includes('rp_fu_report_summary')){
+          if(this.selectionForSummaryColumns.selected.length == this.summaryColumnData.length){ // parent selected
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }else{
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }
+        }else if(elem.key.includes('rp_fu_report_chart')){
+          if(this.selectionForChartsColumns.selected.length == this.chartsColumnData.length){ // parent selected
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }else{
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }
+        }else if(elem.key.includes('rp_fu_report_calendarview')){
+          if(this.selectionForCalenderColumns.selected.length == this.calenderColumnData.length){ // parent selected
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }else{
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }
+        }else if(elem.key.includes('rp_fu_report_details')){
+          if(this.selectionForDetailsColumns.selected.length == this.detailColumnData.length){ // parent selected
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }else{
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }
+        }
+      });
     }
-    this.reportService.createReportUserPreference(objData).subscribe((prefData: any) => {
+
+    let objData: any = {
+      reportId: this.reportId,
+      attributes: [..._summaryArr, ..._chartArr, ..._calenderArr, ..._detailArr, ...parentDataAttr] //-- merge data
+    }
+    this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
       this.loadFleetUtilisationPreferences();
       this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
       this.reloadCurrentComponent();
@@ -429,14 +460,14 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     let calenderSelectionId: any;
     let _selectionCalenderView = this.calenderColumnData.filter(i => i.state == 'A');
     if(_selectionCalenderView.length == this.calenderColumnData.length){
-      let search = this.calenderColumnData.filter(j => j.key == 'da_report_calendarview_totaltrips');
+      let search = this.calenderColumnData.filter(j => j.key == 'rp_fu_report_calendarview_totaltrips');
       if(search.length > 0){
-        calenderSelectionId = search[0].dataAtrributeId;
+        calenderSelectionId = search[0].dataAttributeId;
       }else{
-        calenderSelectionId = _selectionCalenderView[0].dataAtrributeId;
+        calenderSelectionId = _selectionCalenderView[0].dataAttributeId;
       }
     }else{
-      calenderSelectionId = _selectionCalenderView[0].dataAtrributeId;
+      calenderSelectionId = _selectionCalenderView[0].dataAttributeId;
     }
     this.fleetUtilForm.get('distanceChart').setValue(this.chartsColumnData[0].chartType != '' ? this.chartsColumnData[0].chartType : 'B');
     this.fleetUtilForm.get('vehicleChart').setValue(this.chartsColumnData[1].chartType != '' ? this.chartsColumnData[1].chartType : 'B');
@@ -473,7 +504,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   validateRequiredField(){
     let _flag = true;
     if(this.selectionForDetailsColumns.selected.length > 0){
-      let _search = this.selectionForDetailsColumns.selected.filter(i => (i.key == 'da_report_details_vehiclename' || i.key == 'da_report_details_vin' || i.key == 'da_report_details_registrationnumber'));
+      let _search = this.selectionForDetailsColumns.selected.filter(i => (i.key == 'rp_fu_report_details_vehiclename' || i.key == 'rp_fu_report_details_vin' || i.key == 'rp_fu_report_details_registrationnumber'));
       if(_search.length){
         _flag = false;
       }

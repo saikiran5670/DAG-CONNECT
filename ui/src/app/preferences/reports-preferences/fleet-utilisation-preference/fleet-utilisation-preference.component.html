@@ -235,13 +235,13 @@
                     (selectionChange)="onCalenderDetailDDChange($event)"
                     placeholder="{{ translationData.lblViewcalenderdetails || 'View calender details' }}"
                     formControlName="calenderView">
-                    <mat-option *ngFor="let rer of calenderColumnData" [value]="rer.dataAtrributeId">
+                    <mat-option *ngFor="let rer of calenderColumnData" [value]="rer.dataAttributeId">
                         {{ rer.translatedName }}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
         </div>
-        <div *ngIf='slideStateData.dataAtrributeId' fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+        <div *ngIf='slideStateData.dataAttributeId' fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
             <mat-label style="margin-bottom: 8px !important;">{{ translationData.lblViewcalenderviewmode || 'View
                 calender view mode' }}</mat-label>
             <span>
