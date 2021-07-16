@@ -40,8 +40,9 @@ rpc GetFilteredFuelDeviation (FuelDeviationFilterRequest) returns (FuelDeviation
 rpc GetLogbookSearchParameter (LogbookFilterIdRequest) returns (LogbookFilterResponse);
 rpc GetLogbookDetails(LogbookDetailsRequest) returns (LogbookDetailsResponse);
 rpc GetFuelBenchmarkByVehicleGroup (FuelBenchmarkRequest) returns (FuelBenchmarkResponse);
-rpc GetFuelBenchmarkByTimePeriod (FuelBenchmarkRequest) returns (FuelBenchmarkResponse);
+rpc GetFuelBenchmarkByTimePeriod (FuelBenchmarkTimePeriodRequest) returns (FuelBenchmarkResponse);
 rpc GetEcoScoreReportSingleDriver (GetEcoScoreReportSingleDriverRequest) returns (GetEcoScoreReportSingleDriverResponse);
+rpc GetAssociatedVehiclGroup (VehicleListRequest) returns (AssociatedVehicleResponse);
 }
 
 message VehicleHealthReportRequest{
@@ -1018,8 +1019,9 @@ message LogbookFilterResponse {
   repeated FilterResponse ALFilterResponse = 2;
   repeated AlertCategoryFilterResponse ACFilterResponse = 3;    
   repeated AlertCategoryFilterRequest AlertTypeFilterRequest=4;
-   Responsecode code = 5;
-  string message = 6;
+   repeated LogbookTripAlertDetailsRequest LogbookTripAlertDetailsRequest =5;
+   Responsecode code = 6;
+  string message = 7;
 
 }
 message AlertCategoryFilterRequest {
@@ -1068,6 +1070,22 @@ message LogbookDetailsResponse{
     string Message = 3;
 
 }
+
+message LogbookTripAlertDetailsRequest
+    {
+         string Vin =1;
+         string TripId =2;
+         string AlertId =3;
+         int64 AlertGeneratedTime =4;
+         string AlertCategoryType =5;
+         string AlertType =6;
+         string AlertName =7;
+         string AlertLevel =8;
+         int32 Days =9;
+         string LanguageCode =10;
+    }
+
+  
 //***************End Logbook*******************
 /// START : Fuel Bechmark Report
 message FuelBenchmarkRequest{
@@ -1075,7 +1093,13 @@ message FuelBenchmarkRequest{
     int64 EndDateTime = 2;   
     repeated string VINs = 3;
 }
-
+message FuelBenchmarkTimePeriodRequest{
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;   
+    repeated string VINs = 3;
+    int32 AccountId = 4;
+    int32 OrganizationId = 5;
+}
 message FuelBenchmarkResponse{
     FuelBenchmarkDetails FuelBenchmarkDetails=1;   
     Responsecode code = 2;
@@ -1088,8 +1112,9 @@ message FuelBenchmarkDetails {
     double TotalFuelConsumed = 3;
     double TotalMileage = 4;
     double AverageFuelConsumption = 5;
-     google.protobuf.StringValue VehicleGroupName = 6;
-    repeated Ranking Ranking = 7;
+    int32 VehicleGroupId = 6;
+    google.protobuf.StringValue VehicleGroupName = 7;
+    repeated Ranking Ranking = 8;
 }
 
 message Ranking {
@@ -1097,6 +1122,13 @@ message Ranking {
        google.protobuf.StringValue VehicleName = 2;
       double FuelConsumption = 3;
 }
+
+message AssociatedVehicleResponse {
+    repeated AssociatedVehicleRequest AssociatedVehicle = 1;
+    Responsecode code = 2;
+    string message = 3;
+}
+
 /// END: Fuel Bechmark Report
 
 /// START: Eco Score Report Single Driver

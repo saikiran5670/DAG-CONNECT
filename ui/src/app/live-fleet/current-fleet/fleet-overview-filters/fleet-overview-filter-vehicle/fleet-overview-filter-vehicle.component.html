@@ -10,8 +10,8 @@
     <mat-form-field appearance="outline" class="full-width">
         <mat-select placeholder="All" (selectionChange)="onChangeGroup($event.value)" formControlName="group">
             <mat-option value="all">All</mat-option>
-            <mat-option *ngFor="let item of groupList" [value]="item.id">
-                {{item.val}}
+            <mat-option *ngFor="let item of groupList" [value]="item.vehicleId">
+                {{item.vehicleGroupName}}
             </mat-option>
         </mat-select>
     </mat-form-field>
@@ -21,8 +21,8 @@
     <mat-form-field appearance="outline" class="full-width">
         <mat-select placeholder="All" (selectionChange)="onChangeLevel($event.value)" formControlName="level">
             <mat-option value="all">All</mat-option>
-            <mat-option *ngFor="let item of levelList" [value]="item.id">
-                {{item.val}}
+            <mat-option *ngFor="let item of levelList" [value]="item.value">
+                {{item.name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
@@ -32,8 +32,8 @@
     <mat-form-field appearance="outline" class="full-width">
         <mat-select placeholder="All" (selectionChange)="onChangeCategory($event.value)" formControlName="category">
             <mat-option value="all">All</mat-option>
-            <mat-option *ngFor="let item of categoryList" [value]="item.id">
-                {{item.val}}
+            <mat-option *ngFor="let item of categoryList" [value]="item.value">
+                {{item.name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
@@ -43,8 +43,8 @@
     <mat-form-field appearance="outline" class="full-width">
         <mat-select placeholder="All" (selectionChange)="onChangHealthStatus($event.value)" formControlName="status">
             <mat-option value="all">All</mat-option>
-            <mat-option *ngFor="let item of healthList" [value]="item.id">
-                {{item.val}}
+            <mat-option *ngFor="let item of healthList" [value]="item.value">
+                {{item.name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
@@ -54,8 +54,8 @@
     <mat-form-field appearance="outline" class="full-width">
         <mat-select placeholder="All" (selectionChange)="onChangeOtherFilter($event.value)" formControlName="otherFilter">
             <mat-option value="all">All</mat-option>
-            <mat-option *ngFor="let item of otherList" [value]="item.id">
-                {{item.val}}
+            <mat-option *ngFor="let item of otherList" [value]="item.value">
+                {{item.name}}
             </mat-option>
         </mat-select>
     </mat-form-field>

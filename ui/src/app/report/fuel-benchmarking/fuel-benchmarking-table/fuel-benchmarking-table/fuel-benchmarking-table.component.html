@@ -1,0 +1,47 @@
+<mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+    
+        <mat-card-title>
+          <span>
+            <span style='margin-left: 20px; padding-top: 40px; font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Benchmark Between Time Periods</span>
+          </span>
+        </mat-card-title>
+        <!-- <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+            <mat-card-title>Selected Group: Default base</mat-card-title>
+        </mat-card> -->
+
+        <mat-table [dataSource]="dataSource">
+            
+            <ng-container matColumnDef="period">
+                <mat-header-cell *matHeaderCellDef >{{'Period' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                <b style="font-size: 16px;">{{ row.period }}</b>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="range1">
+                <mat-header-cell *matHeaderCellDef >{{ startDateRange}} to {{endDateRange}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                {{ row.range1 }}
+                </mat-cell>
+            </ng-container>
+
+            <!-- <ng-container matColumnDef="range2">
+                <mat-header-cell *matHeaderCellDef >{{'06/13/2020 to 06/19/2021' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                {{ row.range2 }}
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="range3">
+                <mat-header-cell *matHeaderCellDef >{{'05/20/2020 to 06/19/2021' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                {{ row.range3 }}
+                </mat-cell>
+            </ng-container> -->
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;">
+                </mat-row>
+        </mat-table>
+      
+</mat-card>

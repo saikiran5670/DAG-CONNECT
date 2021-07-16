@@ -18,6 +18,7 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import { SelectionModel } from '@angular/cdk/collections';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-fuel-benchmarking',
@@ -57,6 +58,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   wholeTripData: any = [];
   tableInfoObj: any = {};
   tripTraceArray: any = [];
+  selectionValueBenchmarkBY:any;
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
   selectedStartTime: any = '00:00';
@@ -77,6 +79,8 @@ export class FuelBenchmarkingComponent implements OnInit {
   timebasedThreshold : any = 0; // hh:mm
   mileagebasedThreshold : any = 0; // km
   mileageDChartType : boolean = true;
+  startDateRange: any;
+  endDateRange: any;
   timeDChartType : boolean = true;
   fuelBenchmarkingForm: FormGroup;
   // showField: any = {
@@ -87,6 +91,8 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   //For Radio Buttons 
   selectedBenchmarking: any  = 'timePeriods';
+  //For Button Label 
+  setBenchmarkingLabel: any;
 
   //For Charts
   chartsLabelsdefined: any = [];
@@ -260,6 +266,16 @@ fromTripPageBack: boolean = false;
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    if(this.selectedBenchmarking == 'timePeriods'){
+    this.fuelBenchmarkingForm = this._formBuilder.group({
+      vehicleGroup: ['', []],
+      vehicle: ['', []],
+      startDate: ['', []],
+      endDate: ['', []],
+      startTime: ['', []],
+      endTime: ['', []]
+    });
+  }else {
     this.fuelBenchmarkingForm = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
       vehicle: ['', []],
@@ -268,6 +284,7 @@ fromTripPageBack: boolean = false;
       startTime: ['', []],
       endTime: ['', []]
     });
+  }
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -621,13 +638,18 @@ fromTripPageBack: boolean = false;
     }
   }
 
-  onSearch(){
+  onSearch(selectedValue?:any){
+    this.selectionValueBenchmarkBY = selectedValue;
+    console.log("this.selectionValueBenchmarkBY parent",this.selectionValueBenchmarkBY)
+
     this.internalSelection = true;
     // this.resetChartData(); // reset chart data
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     let selectedVehicleGroup = this.fuelBenchmarkingForm.controls.vehicleGroup.value;
     let _vinData: any = [];
+    this.startDateRange = moment(_startTime).format("DD/MM/YYYY");
+    this.endDateRange = moment(_endTime).format("DD/MM/YYYY");
     
  
     if(selectedVehicleGroup){
@@ -645,26 +667,6 @@ fromTripPageBack: boolean = false;
         ]
       }
 
-
-
-    //Response payload for time period
-
-let responseDataTP = {
-  "VechileGroupID": "value",
-  "vehicleGroupName": "value",
-  "ActiveVehicle": "value",
-  "TotalFuelConsumed": "value",
-  "TotalMileage": "value",
-  "AverageFuelConumption": "value",
-  "Ranking": [
-    {
-      "Vehicle Name": "value",
-      "VIN": "value",
-      "FuelConsumption": "value",
-      
-    }
-  ]
-}
 
 
 if( parseInt(this.fuelBenchmarkingForm.controls.vehicle.value ) == 0){
@@ -926,7 +928,7 @@ getAllSummaryData(){
   //Radio buttons selection
   onBenchmarkChange(event: any){
     this.selectedBenchmarking = event.value;
-    console.log("---option choosen--",this.selectedBenchmarking)
+    console.log("---option choosen--",this.selectedBenchmarking);
     // this.changeGridOnVehicleList(event.value);
   }
   
