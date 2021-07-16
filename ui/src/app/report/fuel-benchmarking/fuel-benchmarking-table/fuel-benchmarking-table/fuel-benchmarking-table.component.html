@@ -19,13 +19,13 @@
             </ng-container>
 
             <ng-container matColumnDef="range1">
-                <mat-header-cell *matHeaderCellDef >{{'06/20/2021 to 06/20/2021' }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef >{{ startDateRange}} to {{endDateRange}}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                 {{ row.range1 }}
                 </mat-cell>
             </ng-container>
 
-            <ng-container matColumnDef="range2">
+            <!-- <ng-container matColumnDef="range2">
                 <mat-header-cell *matHeaderCellDef >{{'06/13/2020 to 06/19/2021' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                 {{ row.range2 }}
@@ -37,7 +37,7 @@
                 <mat-cell *matCellDef="let row">
                 {{ row.range3 }}
                 </mat-cell>
-            </ng-container>
+            </ng-container> -->
 
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumns;">

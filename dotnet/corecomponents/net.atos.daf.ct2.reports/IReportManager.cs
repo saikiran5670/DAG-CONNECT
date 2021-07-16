@@ -59,8 +59,8 @@ namespace net.atos.daf.ct2.reports
         #region Fuel Deviation Report
         Task<IEnumerable<FuelDeviation>> GetFilteredFuelDeviation(FuelDeviationFilter fuelDeviationFilters);
         #endregion
-        Task<IEnumerable<LogbookSearchFilter>> GetLogbookSearchParameter(List<string> vins);
-        Task<List<LogbookDetailsFilter>> GetLogbookDetails(LogbookFilter logbookFilter);
+        Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins);
+        Task<List<LogbookDetails>> GetLogbookDetails(LogbookDetailsFilter logbookFilter);
         Task<List<FilterProperty>> GetAlertLevelList(List<string> enums);
         Task<List<AlertCategory>> GetAlertCategoryList(List<string> enums);
 
