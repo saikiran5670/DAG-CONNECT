@@ -25,7 +25,10 @@ namespace net.atos.daf.ct2.reports.entity
                 {
                     fleetOverviewDetails.LiveFleetPositions = new List<LiveFleetPosition>();
                 }
-
+                if (fleetOverviewDetails.FleetOverviewAlert == null)
+                {
+                    fleetOverviewDetails.FleetOverviewAlert = new List<FleetOverviewAlert>();
+                }
                 if (fleetOverviewItem.Lps_Id > 0 && fleetOverviewItem.Lcts_TripId == fleetOverviewItem.Lps_TripId)
                 {
                     if (!liveFleetPositionLookup.TryGetValue(Convert.ToInt32(fleetOverviewItem.Lps_Id), out _))
@@ -35,7 +38,7 @@ namespace net.atos.daf.ct2.reports.entity
                         fleetOverviewDetails.LiveFleetPositions.Add(liveFleetPosition);
                     }
                 }
-                if (fleetOverviewItem.Lcts_TripId == fleetOverviewItem.Tripal_TripId)
+                if (fleetOverviewItem.Tripal_Id > 0 && fleetOverviewItem.Lcts_Vin == fleetOverviewItem.Tripal_Vin)
                 {
                     if (!liveFleetAlertLookup.TryGetValue(Convert.ToInt32(fleetOverviewItem.Tripal_Id), out _))
                     {
@@ -44,7 +47,6 @@ namespace net.atos.daf.ct2.reports.entity
                         fleetOverviewDetails.FleetOverviewAlert.Add(fleetOverviewAlert);
                     }
                 }
-
             }
             foreach (var keyValuePair in fleetOverviewDetailsLookup)
             {
@@ -116,9 +118,9 @@ namespace net.atos.daf.ct2.reports.entity
             FleetOverviewAlert liveFleetAlert = new FleetOverviewAlert
             {
                 Id = fleetOverviewResult.Tripal_Id,
+                AlertId = fleetOverviewResult.Tripal_AlertId,
                 AlertName = fleetOverviewResult.AlertName,
                 AlertType = fleetOverviewResult.AlertType,
-                AlertLocation = fleetOverviewResult.AlertLocation,
                 AlertTime = fleetOverviewResult.AlertTime,
                 AlertLevel = fleetOverviewResult.AlertLevel,
                 CategoryType = fleetOverviewResult.CategoryType,

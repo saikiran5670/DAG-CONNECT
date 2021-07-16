@@ -41,8 +41,8 @@
               <div class='scrollArea' *ngIf='userPOIList.length > 0'>
                 <div *ngFor="let userPOI of userPOIList; let i = index" class="full-width" fxLayoutGap="10px">
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-                    <!-- <mat-checkbox (click)='$event.stopPropagation()'
-                    (change)='$event ? selectedPOI.toggle(userPOI) : null; changeUserPOISelection($event, userPOI, i)' [checked]='userPOI.parentChecked'>{{ userPOI.categoryName }} ({{ userPOI.poiList.length }})</mat-checkbox> -->
+                    <mat-checkbox (click)='$event.stopPropagation()'
+                    (change)='$event ? selectedPOI.toggle(userPOI) : null; changeUserPOISelection($event, userPOI, i)' [checked]='userPOI.parentChecked'>{{ userPOI.categoryName }} ({{ userPOI.poiList.length }})</mat-checkbox>
                     <mat-icon style='cursor: pointer;' *ngIf='userPOI.subCategoryPOIList.length > 0' (click)='openClosedUserPOI(i)'>
                       {{ userPOI.open ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
                     </mat-icon>
@@ -59,10 +59,10 @@
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
                  'Here POI(s)'}}</div>
-                <!-- <div *ngFor="let herePOI of herePOIList; let i = index" fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                <div *ngFor="let herePOI of herePOIList; let i = index" fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                   <mat-checkbox (click)='$event.stopPropagation()'
-                  (change)='$event ? selectedHerePOI.toggle(herePOI) : null; changeHerePOISelection($event, herePOI)' [checked]='selectedHerePOI.isSelected(herePOI)'>{{ 'abd' }}</mat-checkbox>
-                </div> -->
+                  (change)='$event ? selectedHerePOI.toggle(herePOI) : null; changeHerePOISelection($event, herePOI)' [checked]='selectedHerePOI.isSelected(herePOI)'>{{ herePOI.translatedName }}</mat-checkbox>
+                </div>
             </div>
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{

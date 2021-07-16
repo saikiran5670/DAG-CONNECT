@@ -933,13 +933,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
                             fleetoverviewItem.StartGeolocationAddress = getMapRequestStart.Address;
                         }
-                        if (fleetoverviewItem.FleetOverviewAlert != null && fleetoverviewItem.FleetOverviewAlert.Count > 0)
+                        for (int i = 0; i < fleetoverviewItem.FleetOverviewAlert.Count; i++)
                         {
-                            foreach (var addressesult in fleetoverviewItem.FleetOverviewAlert)
+                            if (string.IsNullOrEmpty(fleetoverviewItem.FleetOverviewAlert[i].GeolocationAddress) && fleetoverviewItem.FleetOverviewAlert[i].Latitude != 0 && fleetoverviewItem.FleetOverviewAlert[i].Longitude != 0)
                             {
-                                GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(Convert.ToDouble(addressesult.AlertLatitude), Convert.ToDouble(addressesult.AlertLongitude));
-                                addressesult.AlertGeolocationAddressId = getMapRequestStart.Id;
-                                addressesult.AlertGeolocationAddress = getMapRequestStart.Address;
+                                GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.FleetOverviewAlert[i].Latitude, fleetoverviewItem.FleetOverviewAlert[i].Longitude);
+                                fleetoverviewItem.FleetOverviewAlert[i].GeolocationAddressId = getMapRequestStart.Id;
+                                fleetoverviewItem.FleetOverviewAlert[i].GeolocationAddress = getMapRequestStart.Address;
                             }
                         }
                     }
@@ -1251,6 +1251,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         item.GeoLocationAddress = getMapRequestLatest.Address;
                         item.GeoLocationAddressId = getMapRequestLatest.Id;
                     }
+                    if (item.StartPositionId == 0 && item.StartPositionLattitude != 0 && item.StartPositionLongitude != 0)
+                    {
+                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.StartPositionLattitude, item.StartPositionLongitude);
+                        item.StartPosition = getMapRequestLatest.Address;
+                        item.StartPositionId = getMapRequestLatest.Id;
+                    }
+                    if (item.EndPositionId == 0 && item.EndPositionLattitude != 0 && item.EndPositionLongitude != 0)
+                    {
+                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.EndPositionLattitude, item.EndPositionLongitude);
+                        item.EndPosition = getMapRequestLatest.Address;
+                        item.EndPositionId = getMapRequestLatest.Id;
+                    }
                 }
                 if (response?.FuelDeviationDetails?.Count > 0)
                 {
@@ -1281,7 +1293,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                LogBookFilter logBookFilter = new LogBookFilter();
+
                 var logBookFilterRequest = new LogbookFilterIdRequest();
                 logBookFilterRequest.AccountId = _userDetails.AccountId;
                 logBookFilterRequest.OrganizationId = GetContextOrgId();
@@ -1314,9 +1326,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("fleetoverview/getlogbookdetails")]
-        public async Task<IActionResult> GetLogbookDetails(LogbookFilter logbookFilter)
+        public async Task<IActionResult> GetLogbookDetails([FromBody] LogbookDetailsFilter logbookFilter)
         {
             try
             {

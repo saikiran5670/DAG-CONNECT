@@ -680,7 +680,7 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetAlertCategoryList(enums);
         }
-        public async Task<List<LogbookDetailsFilter>> GetLogbookDetails(LogbookFilter logbookFilter)
+        public async Task<List<LogbookDetails>> GetLogbookDetails(LogbookDetailsFilter logbookFilter)
         {
             return await _reportRepository.GetLogbookDetails(logbookFilter);
         }
