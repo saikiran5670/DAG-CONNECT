@@ -1385,8 +1385,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
                     vehicleRequest.VehicleGroupId = request.VehicleGroupId;
-                    vehicleRequest.GroupType = "G";
-                    vehicleRequest.FunctionEnum = "";
                     vehicleRequest.OrgnizationId = GetContextOrgId();
                     VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
                     data.FuelBenchmarkDetails.NumberOfTotalVehicles = vehicleResponse.VehicleCount;

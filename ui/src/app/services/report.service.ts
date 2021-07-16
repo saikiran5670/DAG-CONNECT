@@ -270,7 +270,7 @@ export class ReportService {
     };
     return this.httpClient
       .post<any[]>(
-        `${this.reportServiceUrl}/fleetfuel/getdetails/vehicle/trip`, data, headers
+        `${this.reportServiceUrl}/fleetfuel/getdetails/trip`, data, headers
       )
       .pipe(catchError(this.handleError));
   }

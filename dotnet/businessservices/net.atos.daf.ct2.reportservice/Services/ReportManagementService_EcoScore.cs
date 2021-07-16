@@ -497,7 +497,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     response.SingleDriver.AddRange(_mapper.MapEcoScoreReportSingleDriverHeader(resultDataMart));
                     try
                     {
-                        response.SingleDriverKPIInfo = _mapper.MapEcoScoreReportCompareDriversResponse(resultDataMart, reportAttributes);
+                        response.SingleDriverKPIInfo = _mapper.MapEcoScoreReportSingleDriverResponse(resultDataMart, reportAttributes);
                     }
                     catch (Exception ex)
                     {

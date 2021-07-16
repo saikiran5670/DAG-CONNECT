@@ -1,5 +1,6 @@
 import { Input } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-fleet-overview-filter-vehicle',
@@ -8,6 +9,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FleetOverviewFilterVehicleComponent implements OnInit {
   @Input() translationData: any;
+  @Input() detailsData: any;
+  @Input() filterData: any;
+  filterVehicle:FormGroup;
+  isVehicleListOpen: boolean = true;
   groupList : any= [
 {
   id:'1',
@@ -64,9 +69,18 @@ otherList : any= [
 ]
 
 
-  constructor() { }
+  constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
+    console.log(this.detailsData);
+    this.filterData["vehicleGroups"].forEach(item=>console.log(item));
+    this.filterVehicle = this._formBuilder.group({
+      group: [''],
+      level: [''],
+      category: [''],
+      status: [''],
+      otherFilter: ['']
+    })
   }
 
   applyFilter(filterValue: string) {
