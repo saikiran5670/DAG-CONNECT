@@ -4,7 +4,7 @@ using System.Text;
 
 namespace net.atos.daf.ct2.reports.entity
 {
-    public class LogbookSearchFilter
+    public class LogbookTripAlertDetails
     {
         public string Vin { get; set; }
         public string TripId { get; set; }
