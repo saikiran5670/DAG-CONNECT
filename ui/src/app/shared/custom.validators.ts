@@ -244,10 +244,6 @@ export class CustomValidators {
        if(NAME.value < minValue){
           NAME.setErrors({ cannotExceedMinValue: true });
         }
-        else if(NAME.value < 0){
-          NAME.setErrors({ noNegativeValueAllowed: true });
-
-        }
       }
     };
   }
