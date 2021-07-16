@@ -8,8 +8,8 @@
         <!-- <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-card-title>Selected Group: Default base</mat-card-title>
         </mat-card> -->
-
-        <mat-table [dataSource]="dataSource">
+        <div style='display: flex;'>
+        <mat-table style="max-width: 20%;margin-right: 10px;" [dataSource]="dataSource">
             
             <ng-container matColumnDef="period">
                 <mat-header-cell *matHeaderCellDef >{{'Period' }}</mat-header-cell>
@@ -18,11 +18,19 @@
                 </mat-cell>
             </ng-container>
 
-            <ng-container matColumnDef="range1">
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;">
+                </mat-row>
+        </mat-table>
+      
+        <mat-table style="max-width: 20%; margin-right: 10px;"  [dataSource]="tabledataSource">
+
+            <ng-container matColumnDef="timerangeColumn">
                 <mat-header-cell *matHeaderCellDef >{{ startDateRange}} to {{endDateRange}}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                {{ row.range1 }}
+                {{ row.ActiveVehicle }}
                 </mat-cell>
+                
             </ng-container>
 
             <!-- <ng-container matColumnDef="range2">
@@ -39,9 +47,9 @@
                 </mat-cell>
             </ng-container> -->
 
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;">
+                <mat-header-row *matHeaderRowDef="timerangeColumn"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: timerangeColumn;">
                 </mat-row>
         </mat-table>
-      
+    </div>
 </mat-card>

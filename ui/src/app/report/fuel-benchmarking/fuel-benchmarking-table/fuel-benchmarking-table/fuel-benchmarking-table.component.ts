@@ -1,4 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableExporterDirective } from 'mat-table-exporter';
 
 @Component({
   selector: 'app-fuel-benchmarking-table',
@@ -18,11 +22,18 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   @Input() startDateRange: any;
   @Input() endDateRange: any;
   @Input() selectionValueBenchmarkBY: any;
+  initData: any = [];
   // displayedColumns: string[] = ['period','range1','range2','range3'];
-  dataSource: any[];
-  displayedColumns: string[] = ['period','range1'];
-  firstPeriodColumn: string[] = ['Number of Active Vehicles','Total Fuel Consumed','Total Mileage',
-  'Total Mileage','Average Fuel Consumption','Ranking','Fuel Consumption'];
+  dataSource: any = new MatTableDataSource([]);
+  tabledataSource: any = new MatTableDataSource([]);
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
+@ViewChild(MatPaginator) paginator: MatPaginator;
+@ViewChild(MatSort) sort: MatSort;
+  displayedColumns: string[] = ['period'];
+  timerangeColumn: string[] = ['timerangeColumn'];
+  firstColumn: string[] = ['ActiveVehicle','TotalFuelConsumed','TotalMileage','AverageFuelConumption','Ranking','TotalFuelConsumed'];
+  // firstPeriodColumn: string[] = ['Number of Active Vehicles','Total Fuel Consumed','Total Mileage',
+  // 'Total Mileage','Average Fuel Consumption','Ranking','Fuel Consumption'];
 
   constructor() { }
 
@@ -42,7 +53,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
         //Response payload for time period
     
         let responseDataTP = 
-        [{
+        {
         VechileGroupID: "VehicleGroup1",
           vehicleGroupName : "value",
           ActiveVehicle : 4/4,
@@ -57,25 +68,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
               
             }
           ]
-        }, 
-        {
-          VechileGroupID: "VehicleGroup2",
-            vehicleGroupName : "value",
-            "ActiveVehicle": "5/5",
-            "TotalFuelConsumed": "60.00 gal",
-            "TotalMileage": "1111.70 km",
-            "AverageFuelConumption": "2.60 mpg",
-            "Ranking": [
-              {
-                "Vehicle Name": "12.09",
-                "VIN": "VIN1",
-                "FuelConsumption": "1.30",
-                
-              }
-            ]
-           
-          
-          }]
+        }
 
     console.log("---responseDataTP--",responseDataTP)
     
@@ -117,13 +110,21 @@ export class FuelBenchmarkingTableComponent implements OnInit {
         ];
 
 
-        this.dataSource["responseData"] = responseDataTP;
-        console.log("responseData in data source",this.dataSource)
+        // this.dataSource["responseData"] = responseDataTP;
+        // console.log("responseData in data source",this.dataSource)
+        this.updateDataSource(responseDataTP);
     }else if(this.selectionValueBenchmarkBY == "vehicleGroup"){
       console.log("---from VG selection")
     }
 
-
-
   }
+  updateDataSource(tableData: any) {
+    this.initData = tableData;
+    this.tabledataSource = new MatTableDataSource(tableData);
+    setTimeout(() => {
+      this.tabledataSource.paginator = this.paginator;
+      this.tabledataSource.sort = this.sort;
+    });
+  }
+
 }
