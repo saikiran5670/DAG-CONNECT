@@ -933,13 +933,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
                             fleetoverviewItem.StartGeolocationAddress = getMapRequestStart.Address;
                         }
-                        if (fleetoverviewItem.FleetOverviewAlert != null && fleetoverviewItem.FleetOverviewAlert.Count > 0)
+                        for (int i = 0; i < fleetoverviewItem.FleetOverviewAlert.Count; i++)
                         {
-                            foreach (var addressesult in fleetoverviewItem.FleetOverviewAlert)
+                            if (string.IsNullOrEmpty(fleetoverviewItem.FleetOverviewAlert[i].GeolocationAddress) && fleetoverviewItem.FleetOverviewAlert[i].Latitude != 0 && fleetoverviewItem.FleetOverviewAlert[i].Longitude != 0)
                             {
-                                GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(Convert.ToDouble(addressesult.AlertLatitude), Convert.ToDouble(addressesult.AlertLongitude));
-                                addressesult.AlertGeolocationAddressId = getMapRequestStart.Id;
-                                addressesult.AlertGeolocationAddress = getMapRequestStart.Address;
+                                GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.FleetOverviewAlert[i].Latitude, fleetoverviewItem.FleetOverviewAlert[i].Longitude);
+                                fleetoverviewItem.FleetOverviewAlert[i].GeolocationAddressId = getMapRequestStart.Id;
+                                fleetoverviewItem.FleetOverviewAlert[i].GeolocationAddress = getMapRequestStart.Address;
                             }
                         }
                     }

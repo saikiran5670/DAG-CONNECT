@@ -349,7 +349,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 LatestWarningGeolocationAddress = fleetOverviewEntity.LatestWarningGeolocationAddress,
                 LatestWarningName = fleetOverviewEntity.LatestWarningName,
             };
-            if (fleetOverviewEntity.LiveFleetPositions.Count > 0)
+            if (fleetOverviewEntity.LiveFleetPositions != null && fleetOverviewEntity.LiveFleetPositions.Count > 0)
             {
                 foreach (var item in fleetOverviewEntity.LiveFleetPositions)
                 {
@@ -357,7 +357,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 }
             }
 
-            if (fleetOverviewEntity.FleetOverviewAlert.Count > 0)
+            if (fleetOverviewEntity.FleetOverviewAlert != null && fleetOverviewEntity.FleetOverviewAlert.Count > 0)
             {
                 foreach (var item in fleetOverviewEntity.FleetOverviewAlert)
                 {
@@ -386,16 +386,16 @@ namespace net.atos.daf.ct2.reportservice.entity
             FleetOverviewAlert fleetOverviewAlert = new FleetOverviewAlert
             {
                 Id = fleetOverviewAlertEntity.Id,
-                AlertName = fleetOverviewAlertEntity.AlertName,
-                AlertType = fleetOverviewAlertEntity.AlertType,
-                AlertLocation = fleetOverviewAlertEntity.AlertLocation,
-                AlertTime = fleetOverviewAlertEntity.AlertTime,
-                AlertLevel = fleetOverviewAlertEntity.AlertLevel,
+                Name = fleetOverviewAlertEntity.AlertName,
+                Type = fleetOverviewAlertEntity.AlertType,
+                Time = fleetOverviewAlertEntity.AlertTime,
+                Level = fleetOverviewAlertEntity.AlertLevel,
                 CategoryType = fleetOverviewAlertEntity.CategoryType,
-                AlertLatitude = fleetOverviewAlertEntity.AlertLatitude,
-                AlertLongitude = fleetOverviewAlertEntity.AlertLongitude,
-                AlertGeolocationAddressId = fleetOverviewAlertEntity.AlertGeolocationAddressId,
-                AlertGeolocationAddress = fleetOverviewAlertEntity.AlertGeolocationAddress,
+                Latitude = fleetOverviewAlertEntity.AlertLatitude,
+                Longitude = fleetOverviewAlertEntity.AlertLongitude,
+                GeolocationAddressId = fleetOverviewAlertEntity.AlertGeolocationAddressId,
+                GeolocationAddress = fleetOverviewAlertEntity.AlertGeolocationAddress,
+                AlertId = fleetOverviewAlertEntity.AlertId
             };
             return fleetOverviewAlert;
         }
