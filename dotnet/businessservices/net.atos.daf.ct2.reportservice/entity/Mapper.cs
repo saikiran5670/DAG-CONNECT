@@ -454,7 +454,7 @@ namespace net.atos.daf.ct2.reportservice.entity
             return lstDriver;
         }
 
-        internal EcoScoreReportSingleDriver MapEcoScoreReportCompareDriversResponse(IEnumerable<reports.entity.EcoScoreReportSingleDriver> result, IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> reportAttributes)
+        internal EcoScoreReportSingleDriver MapEcoScoreReportSingleDriverResponse(IEnumerable<reports.entity.EcoScoreReportSingleDriver> result, IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> reportAttributes)
         {
             var root = reportAttributes.Where(up => up.Name.IndexOf('.') == -1).First();
 
