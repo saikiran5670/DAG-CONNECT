@@ -1456,10 +1456,15 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   onDriverSelected(_row){
-    this.isChartsOpen = true;
-    this.isSummaryOpen = true; 
-    this.isDetailsOpen = true;
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromFleetFuelReport: true,
+        vehicleData: _row
+      }
+    };
+    this.router.navigate(['report/detaildriverreport'], navigationExtras);
   }
+  
 
   sumOfColumns(columnName : any){
     let sum: any = 0;

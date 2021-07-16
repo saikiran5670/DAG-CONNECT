@@ -39,7 +39,9 @@ rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriverRequest) returns (Fleet
 rpc GetFilteredFuelDeviation (FuelDeviationFilterRequest) returns (FuelDeviationResponse);
 rpc GetLogbookSearchParameter (LogbookFilterIdRequest) returns (LogbookFilterResponse);
 rpc GetLogbookDetails(LogbookDetailsRequest) returns (LogbookDetailsResponse);
-rpc GetFuelBenchmarks (FuelBenchmarkRequest) returns (FuelBenchmarkResponse);
+rpc GetFuelBenchmarkByVehicleGroup (FuelBenchmarkRequest) returns (FuelBenchmarkResponse);
+rpc GetFuelBenchmarkByTimePeriod (FuelBenchmarkRequest) returns (FuelBenchmarkResponse);
+rpc GetEcoScoreReportSingleDriver (GetEcoScoreReportSingleDriverRequest) returns (GetEcoScoreReportSingleDriverResponse);
 }
 
 message VehicleHealthReportRequest{
@@ -720,8 +722,7 @@ message FleetOverviewDetails
 	string LatestWarningName=37;
     repeated LiveFleetPosition LiveFleetPosition=38;
     repeated FleetOverviewAlert FleetOverviewAlert=39;
-    int32 AlertGeolocationAddressId=40;
-	string AlertGeolocationAddress=41;
+   
 }
 
 message FleetOverviewDetailsResponse {
@@ -740,6 +741,8 @@ message FleetOverviewAlert {
     string AlertLatitude=7;
     string AlertLongitude=8;
     int32 Id=9;
+    int32 AlertGeolocationAddressId=10;
+	string AlertGeolocationAddress=11;
 }
 /// END: FleetOverview
 
@@ -1074,7 +1077,7 @@ message FuelBenchmarkRequest{
 }
 
 message FuelBenchmarkResponse{
-    repeated FuelBenchmarkDetails FuelBenchmarkDetails=1;   
+    FuelBenchmarkDetails FuelBenchmarkDetails=1;   
     Responsecode code = 2;
     string message = 3;
 }
@@ -1085,13 +1088,60 @@ message FuelBenchmarkDetails {
     double TotalFuelConsumed = 3;
     double TotalMileage = 4;
     double AverageFuelConsumption = 5;
-    string VehicleGroupName = 6;
+     google.protobuf.StringValue VehicleGroupName = 6;
     repeated Ranking Ranking = 7;
 }
 
 message Ranking {
-      string VIN = 1;
-      string VehicleName = 2;
-      double ConsumptionName = 3;
+       google.protobuf.StringValue VIN = 1;
+       google.protobuf.StringValue VehicleName = 2;
+      double FuelConsumption = 3;
 }
 /// END: Fuel Bechmark Report
+
+/// START: Eco Score Report Single Driver
+message GetEcoScoreReportSingleDriverRequest {
+  int64 StartDateTime = 1;
+  int64 EndDateTime = 2; 
+  repeated string VINs = 3;
+  string DriverId = 4;
+  double MinTripDistance = 5;
+  double MinDriverTotalDistance = 6;
+  int32 TargetProfileId = 7;
+  int32 ReportId = 8;
+  int32 OrgId = 9;
+  int32 AccountId = 10;
+  }
+
+ message EcoScoreReportSingleDriverHeader {
+  string HeaderType = 1; 
+  string VIN = 2;
+  string VehicleName = 3;
+  string RegistrationNo = 4;
+  }
+
+ message EcoScoreReportSingleDriverAttribute {
+  string HeaderType = 1;
+  string VIN = 2;
+  double Value = 3; 
+  }
+
+ message EcoScoreReportSingleDriver {
+  int32 DataAttributeId = 1;
+  string Name = 2;
+  string Key = 3;
+  string LimitType = 4;
+  double LimitValue = 5;
+  double TargetValue = 6;
+  string RangeValueType = 7; 
+  repeated EcoScoreReportSingleDriverAttribute Score = 8;
+  repeated EcoScoreReportSingleDriver SubSingleDriver = 9;
+  }
+  
+ message GetEcoScoreReportSingleDriverResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+  repeated EcoScoreReportSingleDriverHeader SingleDriver = 3;
+  EcoScoreReportSingleDriver SingleDriverKPIInfo = 4;
+  }
+/// END: Eco Score Report Single Driver
