@@ -40,6 +40,10 @@ namespace net.atos.daf.ct2.reports.repository
         Task<IEnumerable<ReportUserPreference>> GetPrivilegeBasedReportUserPreferences(int reportId, int accountId, int roleId, int organizationId, int contextOrgId);
         Task<List<EcoScoreReportCompareDrivers>> GetEcoScoreReportCompareDrivers(EcoScoreReportCompareDriversRequest request);
         Task<List<EcoScoreCompareReportAtttributes>> GetEcoScoreCompareReportAttributes(int reportId, int targetProfileId);
+        Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallDriver(EcoScoreReportSingleDriverRequest request);
+        Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallCompany(EcoScoreReportSingleDriverRequest request);
+        Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportVINDriver(EcoScoreReportSingleDriverRequest request);
+        Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportVINCompany(EcoScoreReportSingleDriverRequest request);
         Task<List<AlertCategory>> GetAlertCategoryList();
         #region FleetFuel
         Task<List<CO2Coefficient>> GetCO2CoEfficientData();

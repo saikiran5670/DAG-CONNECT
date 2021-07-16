@@ -304,6 +304,32 @@ namespace net.atos.daf.ct2.reports
         }
         #endregion
 
+        #region Eco Score Report Single Driver
+        public async Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportSingleDriver(EcoScoreReportSingleDriverRequest request)
+        {
+            var lstSingleDriver = new List<EcoScoreReportSingleDriver>();
+
+            var objOverallDriver = await _reportRepository.GetEcoScoreReportOverallDriver(request);
+            if (objOverallDriver != null)
+                lstSingleDriver.AddRange(objOverallDriver);
+
+            var objOverallCompany = await _reportRepository.GetEcoScoreReportOverallCompany(request);
+            if (objOverallDriver != null)
+                lstSingleDriver.AddRange(objOverallCompany);
+
+            var lstVINDriver = await _reportRepository.GetEcoScoreReportVINDriver(request);
+            if (lstVINDriver.Count > 0)
+                lstSingleDriver.AddRange(lstVINDriver);
+
+            var lstVINCompany = await _reportRepository.GetEcoScoreReportVINCompany(request);
+            if (lstVINCompany.Count > 0)
+                lstSingleDriver.AddRange(lstVINCompany);
+
+            return lstSingleDriver;
+        }
+
+        #endregion
+
         #endregion
 
         #region Fleet Utilizaiton Report
