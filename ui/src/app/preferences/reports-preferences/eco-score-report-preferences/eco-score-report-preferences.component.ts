@@ -122,21 +122,18 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
         this.selectionForGeneralColumns.select(element);
       }
     });
-    
-    // this.detailColumnData.forEach(element => {
-    //   if(element.state == 'A'){
-    //     this.selectionForDetailsColumns.select(element);
-    //   }
-    // });
 
-    // this.chartsColumnData.forEach(element => {
-    //   if(element.state == 'A'){
-    //     this.selectionForChartsColumns.select(element);
-    //   }
-    // });
-    // if(this.summaryColumnData.length > 0 && this.chartsColumnData.length > 0 && this.calenderColumnData.length > 0 && this.detailColumnData.length > 0){
-    //   this.setDefaultFormValues();
-    // }
+    this.generalGraphColumnData.forEach(element => {
+      if(element.state == 'A'){
+        this.selectionForGeneralGraphColumns.select(element);
+      }
+    });
+
+    this.driverPerformanceGraphColumnData.forEach(element => {
+      if(element.state == 'A'){
+        this.selectionForDriverPerformanceGraphColumns.select(element);
+      }
+    });
   }
   
   getName(name: any, _count: any) {
@@ -162,16 +159,53 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
 
   }
 
+  masterToggleForGeneralGraphColumns(){
+    if(this.isAllSelectedForGeneralGraphColumns()){
+      this.selectionForGeneralGraphColumns.clear();
+    }else{
+      this.generalGraphColumnData.forEach(row => { this.selectionForGeneralGraphColumns.select(row) });
+    }
+  }
+
+  isAllSelectedForGeneralGraphColumns(){
+    const numSelected = this.selectionForGeneralGraphColumns.selected.length;
+    const numRows = this.generalGraphColumnData.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForGeneralGraphColumns(row?: any){
+
+  }
+
+  masterToggleForDriverPerformanceGraphColumns(){
+    if(this.isAllSelectedForDriverPerformanceGraphColumns()){
+      this.selectionForDriverPerformanceGraphColumns.clear();
+    }else{
+      this.driverPerformanceGraphColumnData.forEach(row => { this.selectionForDriverPerformanceGraphColumns.select(row) });
+    }
+  }
+
+  isAllSelectedForDriverPerformanceGraphColumns(){
+    const numSelected = this.selectionForDriverPerformanceGraphColumns.selected.length;
+    const numRows = this.driverPerformanceGraphColumnData.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForDriverPerformanceGraphColumns(row?: any){
+
+  }
+
   checkboxClicked(event: any, rowData: any){
     
   }
 
   onCancel(){
-
+    this.setEcoScoreFlag.emit({flag: false, msg: ''});
+    this.setColumnCheckbox();
   }
 
   onReset(){
-
+    this.setColumnCheckbox();
   }
 
   onConfirm(){

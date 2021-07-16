@@ -9,6 +9,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string VIN { get; set; }
         public string GroupId { get; set; }
         public string TripId { get; set; }
+        public int AlertId { get; set; }
         public string VehicleRegNo { get; set; }
         public string VehicleName { get; set; }
         public string AlertName { get; set; }
@@ -22,6 +23,6 @@ namespace net.atos.daf.ct2.reports.entity
         public double Longitude { get; set; }
         public string Address { get; set; }
         public string Threshold { get; set; }
-        public int AlertId { get; set; }
+
     }
 }
