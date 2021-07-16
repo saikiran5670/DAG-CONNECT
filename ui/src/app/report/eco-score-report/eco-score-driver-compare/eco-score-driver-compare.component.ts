@@ -104,17 +104,17 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     this.columnDefinitions = [
       {
         id: 'category', name: (this.translationData.lblCategory || 'Category'), field: 'key',
-        type: FieldType.string, width: 150, formatter: this.treeFormatter, excludeFromHeaderMenu: true
+        type: FieldType.string, width: 150, maxWidth: 400, formatter: this.treeFormatter, excludeFromHeaderMenu: true
       },
       {
         id: 'target', name: (this.translationData.lblTarget || 'Target'), field: 'target',
-        type: FieldType.string, minWidth: 90, maxWidth: 100, excludeFromHeaderMenu: true
+        type: FieldType.string, minWidth: 90, maxWidth: 175, excludeFromHeaderMenu: true
       }
     ];
     this.columnDefinitionsGen = [
       {
         id: 'categoryG', name: (this.translationData.lblCategory || 'Category'), field: 'key',
-        type: FieldType.string, width: 150, formatter: this.treeFormatter, excludeFromHeaderMenu: true// maxWidth: 400
+        type: FieldType.string, width: 150, maxWidth: 375, formatter: this.treeFormatter, excludeFromHeaderMenu: true
       }
     ];
     
@@ -132,11 +132,11 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         let driverG1= '<span style="font-weight:700">'+this.driverDetails[0].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[0].driverId+')</span>';
         this.columnDefinitions.push({
           id: 'driver1', name: driver1, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore0, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore0, maxWidth: 325
         });
         this.columnDefinitionsGen.push({
           id: 'driverG1', name: driverG1, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore0, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore0, maxWidth: 375
         });
       }
       if(this.driverDetails.length > 1){
@@ -144,11 +144,11 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         let driverG2= '<span style="font-weight:700">'+this.driverDetails[1].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[1].driverId+')</span>';
         this.columnDefinitions.push({
           id: 'driver2', name: driver2, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 375
         });
         this.columnDefinitionsGen.push({
           id: 'driverG2', name: driverG2, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 275
         });
       }
       if(this.driverDetails.length > 2){
@@ -156,11 +156,11 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         let driverG3= '<span style="font-weight:700">'+this.driverDetails[2].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[2].driverId+')</span>';
         this.columnDefinitions.push({
           id: 'driver3', name: driver3, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 325
         });
         this.columnDefinitionsGen.push({
           id: 'driverG3', name: driverG3, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 375
         });
       }
       if(this.driverDetails.length > 3){
@@ -168,11 +168,11 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         let driverG4= '<span style="font-weight:700">'+this.driverDetails[3].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[3].driverId+')</span>';
         this.columnDefinitions.push({
           id: 'driver4', name: driver4, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 325
         });
         this.columnDefinitionsGen.push({
           id: 'driverG4', name: driverG4, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 375
         });
       }
     }

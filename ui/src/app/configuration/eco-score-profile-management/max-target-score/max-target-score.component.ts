@@ -58,13 +58,13 @@ export class MaxTargetScoreComponent implements OnInit {
   }, {
     validator: [
       CustomValidators.numberFieldValidation('lowerValue', this.value),
-      CustomValidators.numberFieldValidation('upperValue',this.kpiData.maxUpperValue),
-      CustomValidators.numberFieldValidation('limitValue',this.maxvalue),
-      CustomValidators.numberFieldValidation('targetValue',this.options.ceil),
-      CustomValidators.numberMinFieldValidation('lowerValue', this.value),
-      CustomValidators.numberMinFieldValidation('upperValue',this.kpiData.targetValue),
-      CustomValidators.numberMinFieldValidation('limitValue',this.options.floor),
-      CustomValidators.numberMinFieldValidation('targetValue',this.kpiData.limitValue),
+      CustomValidators.numberFieldValidation('upperValue',this.kpiData.maxUpperValue == 0 ? this.options.ceil : this.kpiData.maxUpperValue ),
+      CustomValidators.numberFieldValidation('limitValue',this.options.ceil),
+      CustomValidators.numberFieldValidation('targetValue',this.maxvalue),
+      CustomValidators.numberMinFieldValidation('lowerValue', 0),
+      CustomValidators.numberMinFieldValidation('upperValue',this.maxvalue),
+      CustomValidators.numberMinFieldValidation('limitValue',this.value),
+      CustomValidators.numberMinFieldValidation('targetValue',this.options.floor),
     ]
   });
   
@@ -73,18 +73,12 @@ export class MaxTargetScoreComponent implements OnInit {
   }
 
   setDefaultValue(){
-    if(this.actionType == 'manage'){
+    
     this.ecoScoreProfileKPIForm.get("lowerValue").setValue(this.options.floor);
     this.ecoScoreProfileKPIForm.get("upperValue").setValue(this.options.ceil);
-    this.ecoScoreProfileKPIForm.get("limitValue").setValue(this.value);
-    this.ecoScoreProfileKPIForm.get("targetValue").setValue(this.maxvalue);
-    }
-    else {
-      this.ecoScoreProfileKPIForm.get("lowerValue").setValue('');
-    this.ecoScoreProfileKPIForm.get("upperValue").setValue('');
-    this.ecoScoreProfileKPIForm.get("limitValue").setValue('');
-    this.ecoScoreProfileKPIForm.get("targetValue").setValue('');
-    }
+    this.ecoScoreProfileKPIForm.get("limitValue").setValue(this.maxvalue);
+    this.ecoScoreProfileKPIForm.get("targetValue").setValue(this.value);
+
     this.sendData();
   }
 
@@ -104,21 +98,25 @@ export class MaxTargetScoreComponent implements OnInit {
   sliderEvent(value: any){
     this.ecoScoreProfileKPIForm.get("targetValue").setValue(value);
     this.sendData();
+    this.SliderData()
   }
  
   sliderEndEvent(endValue: any){
     this.ecoScoreProfileKPIForm.get("limitValue").setValue(endValue);
     this.sendData();
+    this.SliderData()
   }
  
   changeMax(changedVal: any){
     this.maxvalue = changedVal;
     this.sendData();
+    this.SliderData();
   }
  
   changeTarget(changedVal: any){
     this.value = changedVal;
     this.sendData();
+    this.SliderData();
   }
  
    changeLower(changedVal: any){
@@ -127,6 +125,7 @@ export class MaxTargetScoreComponent implements OnInit {
      newOptions.floor = changedVal;
      this.options = newOptions;
     this.sendData();
+    this.SliderData();
    }
  
    changeUpper(changedVal: any){
@@ -134,6 +133,7 @@ export class MaxTargetScoreComponent implements OnInit {
      newOptions.ceil = changedVal;
      this.options = newOptions;
     this.sendData();
+    this.SliderData();
    }
 
 }
