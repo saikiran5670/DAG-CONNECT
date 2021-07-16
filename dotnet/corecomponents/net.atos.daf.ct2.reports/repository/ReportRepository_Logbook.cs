@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.reports.repository
                             from tripdetail.tripalert tripalert   
                             left join tripdetail.trip_statistics lcts on lcts.vin=tripalert.vin and lcts.trip_id=tripalert.trip_id
                             where tripalert.vin= ANY(@vins)
-                           and (to_timestamp(tripalert.alert_generated_time)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time)::date) >= (now()::date - @days) ";
+                           and ((to_timestamp(tripalert.alert_generated_time)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time)::date) >= (now()::date - @days)) ";
 
             tripAlertList = await _dataMartdataAccess.QueryAsync<LogbookTripAlertDetails>(query, parameter);
             return tripAlertList.AsList<LogbookTripAlertDetails>();
@@ -50,9 +50,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ta.trip_id,category_type as Alert_Category,
                                 ta.type as Alert_Type,
                                 ta.name as Alert_name,
-                                alert_id AlertId,
-                              --  param_filter_distance_threshold_value as Threshold_Value,
-                             --   param_filter_distance_threshold_value_unit_type as Threshold_unit,
+                                alert_id AlertId,                             
                                 latitude,
                                 longitude,
                                 alert_generated_time,
@@ -60,8 +58,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 end_time_stamp as Trip_End
                                 from tripdetail.tripalert ta left join master.vehicle v on ta.vin = v.vin inner join tripdetail.trip_statistics ts
                                 on ta.vin = ts.vin where 1=1 
-                                and (to_timestamp(ta.alert_generated_time)::date) >= (to_timestamp(@start_time_stamp)::date)
-                                and (to_timestamp(ta.alert_generated_time)::date) <= (to_timestamp(@end_time_stamp )::date) ";
+                                and ((to_timestamp(ta.alert_generated_time)::date) >= (to_timestamp(@start_time_stamp)::date)
+                                and (to_timestamp(ta.alert_generated_time)::date) <= (to_timestamp(@end_time_stamp )::date))";
 
 
 

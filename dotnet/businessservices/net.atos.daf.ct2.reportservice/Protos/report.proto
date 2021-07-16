@@ -650,6 +650,7 @@ message FleetOverviewFilterResponse {
   Responsecode code = 7;
   string message = 8;
   repeated DriverListResponse DriverList = 9;
+  repeated LogbookTripAlertDetailsRequest LogbookTripAlertDetailsRequest =10;
 }
 
 message FleetOverviewVGFilterRequest {
