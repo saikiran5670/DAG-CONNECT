@@ -141,11 +141,11 @@ spec:
           servicePort: 80
         path: /NotificationHub
       - backend:
-          serviceName: ecoscoreservice
+          serviceName: ecoscoredataservice
           servicePort: 80
         path: /ecoscore/kpiinfo
       - backend:
-          serviceName: ecoscoreservice
+          serviceName: ecoscoredataservice
           servicePort: 80
         path: /ecoscore/chartinfo
   tls:
