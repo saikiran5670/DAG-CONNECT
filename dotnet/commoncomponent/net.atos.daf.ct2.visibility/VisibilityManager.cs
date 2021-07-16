@@ -48,6 +48,7 @@ namespace net.atos.daf.ct2.visibility
                             {
                                 vehicleByVisibilityAndFeature.Add(new VehicleDetailsVisibiltyAndFeature
                                 {
+                                    Vin = item.Vin,
                                     VehicleGroupId = item.VehicleGroupId,
                                     VehicleId = item.VehicleId,
                                     FeatureName = feature.Name,
@@ -64,6 +65,7 @@ namespace net.atos.daf.ct2.visibility
                                 {
                                     vehicleByVisibilityAndFeature.Add(new VehicleDetailsVisibiltyAndFeature
                                     {
+                                        Vin = item.Vin,
                                         VehicleGroupId = item.VehicleGroupId,
                                         VehicleId = item.VehicleId,
                                         FeatureName = feature.Name,

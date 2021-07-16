@@ -14,8 +14,8 @@ namespace net.atos.daf.ct2.reports.entity
 
     public class KPIInfo
     {
-        public long StartTimestamp { get; set; }
-        public long EndTimestamp { get; set; }
+        public long? StartTimestamp { get; set; }
+        public long? EndTimestamp { get; set; }
         public KPI AnticipationScore { get; set; }
         public KPI AverageDistancePerDay { get; set; }
         public KPI AverageGrossWeight { get; set; }
@@ -38,16 +38,16 @@ namespace net.atos.daf.ct2.reports.entity
         public KPI IdlingTime { get; set; }
         public KPI IdleDuration { get; set; }
         public KPI IdlingPercentage { get; set; }
-        public int NumberOfTrips { get; set; }
-        public int NumberOfVehicles { get; set; }
+        public int? NumberOfTrips { get; set; }
+        public int? NumberOfVehicles { get; set; }
         public KPI PTODuration { get; set; }
         public KPI PTOPercentage { get; set; }
     }
 
     public class ChartInfo
     {
-        public long StartTimestamp { get; set; }
-        public long EndTimestamp { get; set; }
+        public long? StartTimestamp { get; set; }
+        public long? EndTimestamp { get; set; }
         public KPI AnticipationScore { get; set; }
         public KPI BrakingScore { get; set; }
         public KPI Ecoscore { get; set; }
@@ -56,10 +56,10 @@ namespace net.atos.daf.ct2.reports.entity
 
     public class KPI
     {
-        public double Total { get; set; }
-        public double Count { get; set; }
+        public double? Total { get; set; }
+        public double? Count { get; set; }
 
-        public KPI(double total, double count)
+        public KPI(double? total, double? count)
         {
             Total = total;
             Count = count;

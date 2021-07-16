@@ -270,7 +270,7 @@ export class ReportService {
     };
     return this.httpClient
       .post<any[]>(
-        `${this.reportServiceUrl}/fleetfuel/getdetails/vehicle/trip`, data, headers
+        `${this.reportServiceUrl}/fleetfuel/getdetails/trip`, data, headers
       )
       .pipe(catchError(this.handleError));
   }
@@ -328,6 +328,19 @@ export class ReportService {
     return throwError(
       errResponse
     );
+}
+
+//for getfilterdetails for fleet overview
+getFilterDetails(): Observable<any[]> {
+  let headerObj = this.generateHeader();
+  const headers = {
+    headers: new HttpHeaders({ headerObj }),
+  };
+  return this.httpClient
+    .get<any[]>(
+      `${this.reportServiceUrl}/fleetoverview/getfilterdetails`, headers
+    )
+    .pipe(catchError(this.handleError));
 }
 
 }

@@ -459,38 +459,46 @@ namespace net.atos.daf.ct2.vehicle
             try
             {
                 List<VisibilityVehicle> vehicles = new List<VisibilityVehicle>();
-                switch (vehicleCountFilter.GroupType)
+                if (string.IsNullOrEmpty(vehicleCountFilter.GroupType))
                 {
-                    case "G":
-                        //Group
-                        vehicles.AddRange(await _vehicleRepository.GetGroupTypeVehicles(vehicleCountFilter.VehicleGroupId));
-                        break;
-                    case "D":
-                        //Dynamic
-                        switch (vehicleCountFilter.FunctionEnum)
-                        {
-                            case "A":
-                                //All
-                                vehicles.AddRange(await _vehicleRepository.GetDynamicAllVehicleForVisibility(vehicleCountFilter.OrgnizationId));
-                                break;
-                            case "O":
-                                //Owner
-                                vehicles.AddRange(await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(vehicleCountFilter.OrgnizationId));
-                                break;
-                            case "V":
-                                //Visible
-                                vehicles.AddRange(await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(vehicleCountFilter.OrgnizationId));
-                                break;
-                            case "M":
-                                //OEM
-                                vehicles.AddRange(await _vehicleRepository.GetDynamicOEMVehiclesForVisibility(vehicleCountFilter.VehicleGroupId));
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                    default:
-                        break;
+                    vehicleCountFilter = await _vehicleRepository.GetGroupFilterDetail(vehicleCountFilter.VehicleGroupId, vehicleCountFilter.OrgnizationId);
+                }
+
+                if (vehicleCountFilter != null)
+                {
+                    switch (vehicleCountFilter.GroupType)
+                    {
+                        case "G":
+                            //Group
+                            vehicles.AddRange(await _vehicleRepository.GetGroupTypeVehicles(vehicleCountFilter.VehicleGroupId));
+                            break;
+                        case "D":
+                            //Dynamic
+                            switch (vehicleCountFilter.FunctionEnum)
+                            {
+                                case "A":
+                                    //All
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicAllVehicleForVisibility(vehicleCountFilter.OrgnizationId));
+                                    break;
+                                case "O":
+                                    //Owner
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(vehicleCountFilter.OrgnizationId));
+                                    break;
+                                case "V":
+                                    //Visible
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(vehicleCountFilter.OrgnizationId));
+                                    break;
+                                case "M":
+                                    //OEM
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicOEMVehiclesForVisibility(vehicleCountFilter.VehicleGroupId));
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 return vehicles.Count();
             }
