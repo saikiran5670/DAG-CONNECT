@@ -139,20 +139,20 @@ export class CurrentFleetComponent implements OnInit {
    processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
-
-   userPreferencesSetting(event) {
+  userPreferencesSetting(event) {
     this.userPreferencesFlag = !this.userPreferencesFlag;
     let summary = document.getElementById("summary");
     let sidenav = document.getElementById("sidenav");
 
     if(this.userPreferencesFlag){
-    summary.style.width = '70%';
-    sidenav.style.width = '30%';
+    summary.style.width = '65%';
+    sidenav.style.width = '34%';
     }
     else{
       summary.style.width = '100%';
       sidenav.style.width = '0%';
     }
+  
   } 
 
 

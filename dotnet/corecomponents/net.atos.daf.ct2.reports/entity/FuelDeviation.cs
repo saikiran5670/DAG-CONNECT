@@ -19,8 +19,8 @@ namespace net.atos.daf.ct2.reports.entity
         public int Distance { get; set; }
         public int IdleDuration { get; set; }
 
-        public int AverageSpeed { get; set; }
-        public int AverageWeight { get; set; }
+        public double AverageSpeed { get; set; }
+        public double AverageWeight { get; set; }
 
         public double StartPositionLattitude { get; set; }
         public double StartPositionLongitude { get; set; }
@@ -29,7 +29,8 @@ namespace net.atos.daf.ct2.reports.entity
 
         public string StartPosition { get; set; }
         public string EndPosition { get; set; }
-
+        public int StartPositionId { get; set; }
+        public int EndPositionId { get; set; }
         public double FuelConsumed { get; set; }
         public int DrivingTime { get; set; }
 
@@ -40,7 +41,9 @@ namespace net.atos.daf.ct2.reports.entity
         #region livefleet_trip_fuel_deviation    
         public int FuelDeviationId { get; set; }
         public char FuelEventType { get; set; }
+        public string FuelEventTypeKey { get; set; }
         public char VehicleActivityType { get; set; }
+        public string VehicleActivityTypeKey { get; set; }
         public long EventTime { get; set; }
         public double FuelDiffernce { get; set; }
         public double Latitude { get; set; }

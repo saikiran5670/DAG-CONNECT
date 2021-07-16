@@ -51,8 +51,13 @@
   float: none !important;
 }
 
-#grid_general_table1 .slick-cell.l1.r1, .slick-cell.l2.r2, .slick-cell.l3.r3, .slick-cell.l4.r4, .slick-cell.l5.r5  {
-  padding-left: 50px !important;
+ .slick-cell.l1.r1, .slick-cell.l2.r2, .slick-cell.l3.r3, .slick-cell.l4.r4, .slick-cell.l5.r5  {
+  /* padding-left: 50px !important; */
+  text-align: center;
+}
+
+#grid_performance_table1 .slick-cell.l1.r1 {
+  padding-left: 37px !important;
 }
 
 #grid_performance_table1 .slick-cell.l1.r1 {

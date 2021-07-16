@@ -10,8 +10,8 @@
     <mat-form-field appearance="outline" class="full-width">
         <mat-select placeholder="All" (selectionChange)="onChangeGroup($event.value)" formControlName="group">
             <mat-option value="all">All</mat-option>
-            <mat-option *ngFor="let item of groupList" [value]="item.id">
-                {{item.val}}
+            <mat-option *ngFor="let item of groupList" [value]="item.vehicleId">
+                {{item.vehicleGroupName}}
             </mat-option>
         </mat-select>
     </mat-form-field>
@@ -21,8 +21,8 @@
     <mat-form-field appearance="outline" class="full-width">
         <mat-select placeholder="All" (selectionChange)="onChangeLevel($event.value)" formControlName="level">
             <mat-option value="all">All</mat-option>
-            <mat-option *ngFor="let item of levelList" [value]="item.id">
-                {{item.val}}
+            <mat-option *ngFor="let item of levelList" [value]="item.value">
+                {{item.name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
@@ -32,8 +32,8 @@
     <mat-form-field appearance="outline" class="full-width">
         <mat-select placeholder="All" (selectionChange)="onChangeCategory($event.value)" formControlName="category">
             <mat-option value="all">All</mat-option>
-            <mat-option *ngFor="let item of categoryList" [value]="item.id">
-                {{item.val}}
+            <mat-option *ngFor="let item of categoryList" [value]="item.value">
+                {{item.name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
@@ -43,8 +43,8 @@
     <mat-form-field appearance="outline" class="full-width">
         <mat-select placeholder="All" (selectionChange)="onChangHealthStatus($event.value)" formControlName="status">
             <mat-option value="all">All</mat-option>
-            <mat-option *ngFor="let item of healthList" [value]="item.id">
-                {{item.val}}
+            <mat-option *ngFor="let item of healthList" [value]="item.value">
+                {{item.name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
@@ -54,8 +54,8 @@
     <mat-form-field appearance="outline" class="full-width">
         <mat-select placeholder="All" (selectionChange)="onChangeOtherFilter($event.value)" formControlName="otherFilter">
             <mat-option value="all">All</mat-option>
-            <mat-option *ngFor="let item of otherList" [value]="item.id">
-                {{item.val}}
+            <mat-option *ngFor="let item of otherList" [value]="item.value">
+                {{item.name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
@@ -70,30 +70,76 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
-        <div class="full-width vehicleList-div">
+        <div class="full-width vehicleList-div" *ngFor="let item of vehicleListData">
             <div class="vehicleList-icon">
                 <mat-icon style="font-size: 50px;padding: 26px 0px;"> person_pin_circle</mat-icon>
             </div>
             <div class="vehicleList-details">
             <div>
                 <span class="vehicle-details-head">{{ translationData.lbl || 'VIN'}}: </span>
-                <span class="vehicle-details-data">XLRT4100G01234</span>
+                <span class="vehicle-details-data">{{item.vin}}</span>
             </div>
             <div>
                 <span class="vehicle-details-head">{{ translationData.lbl || 'Driver Name'}}:</span>
-                <span class="vehicle-details-data">Oslaw Nski</span>
+                <span class="vehicle-details-data">{{item.driverFirstName}}</span>
             </div> 
             <div>
                 <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
-                <span class="vehicle-details-data">Driving</span>
+                <span class="vehicle-details-data">{{item.vehicleDrivingStatusType}}</span>
             </div> 
             <div>
                 <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
-                <span class="vehicle-details-data">Service Now</span>
+                <span class="vehicle-details-data">{{item.vehicleHealthStatusType}}</span>
             </div>
             </div>
         </div>
      </div>    
   </mat-expansion-panel>
   </mat-card>
+
+  <!-- <mat-card  class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <mat-expansion-panel style="padding: 0px;" [(expanded)]="isVehicleListOpen" class="full-width" fxLayoutGap="10px" (opened)="isVehicleListOpen"
+    (closed)="!isVehicleListOpen">
+      <mat-expansion-panel-header class="full-width" style="padding-left: 10px;">
+        <mat-panel-title>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbl || 'Vehicle List' }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      
+      <mat-table matTableExporter [dataSource]="dataSource"  matSort >
+      <ng-container matColumnDef="icon">
+        <mat-header-cell *matHeaderCellDef>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+        <span matPrefix><mat-icon>{{ row.icon}}</mat-icon></span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="vin">
+        <mat-header-cell *matHeaderCellDef>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.vin }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="driverName">
+        <mat-header-cell *matHeaderCellDef>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.driverFirstName + '' + row.driverLastName  }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="drivingStatus">
+         <mat-header-cell *matHeaderCellDef>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.vehicleDrivingStatusType }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="healthStatus">
+        <mat-header-cell *matHeaderCellDef>
+        </mat-header-cell>        
+        <mat-cell *matCellDef="let row">{{ row.vehicleHealthStatusType }}</mat-cell>
+      </ng-container>
+      
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;">
+      </mat-row>
+      </mat-table>     
+      <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+  </mat-expansion-panel>
+  </mat-card> -->
 </form>

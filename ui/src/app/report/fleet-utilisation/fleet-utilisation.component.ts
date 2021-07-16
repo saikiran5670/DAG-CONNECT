@@ -98,6 +98,7 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   mileagebasedThreshold : any = 0; // km
   mileageDChartType : boolean = true;
   timeDChartType : boolean = true;
+  fleetUtilReportId: any = 5;
   showField: any = {
     vehicleName: true,
     vin: true,
@@ -105,83 +106,55 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   };
   prefMapData: any = [
     {
-      key: 'da_report_details_vehiclename',
+      key: 'rp_fu_report_details_vehiclename',
       value: 'vehiclename'
     },
     {
-      key: 'da_report_details_averagespeed',
+      key: 'rp_fu_report_details_averagespeed',
       value: 'averageSpeed'
     },
     {
-      key: 'da_report_details_drivingtime',
+      key: 'rp_fu_report_details_drivingtime',
       value: 'drivingTime'
     },
     {
-      key: 'da_report_details_alerts',
-      value: 'alert'
-    },
-    {
-      key: 'da_report_details_averageweight',
+      key: 'rp_fu_report_details_averageweightpertrip',
       value: 'averageWeight'
     },
     {
-      key: 'da_report_details_events',
-      value: 'events'
-    },
-    {
-      key: 'da_report_details_distance',
+      key: 'rp_fu_report_details_distance',
       value: 'distance'
     },
     {
-      key: 'da_report_details_enddate',
-      value: 'endTimeStamp'
-    },
-    {
-      key: 'da_report_details_endposition',
-      value: 'endPosition'
-    },
-    {
-      key: 'da_report_details_fuelconsumed',
-      value: 'fuelConsumed100Km'
-    },
-    {
-      key: 'da_report_details_idleduration',
+      key: 'rp_fu_report_details_idleduration',
       value: 'idleDuration'
     },
     {
-      key: 'da_report_details_odometer',
+      key: 'rp_fu_report_details_odometer',
       value: 'odometer'
     },
     {
-      key: 'da_report_details_registrationnumber',
+      key: 'rp_fu_report_details_registrationnumber',
       value: 'registrationnumber'
     },
     {
-      key: 'da_report_details_startdate',
-      value: 'startTimeStamp'
-    },
-    {
-      key: 'da_report_details_vin',
+      key: 'rp_fu_report_details_vin',
       value: 'vin'
     },
     {
-      key: 'da_report_details_startposition',
-      value: 'startPosition'
-    },
-    {
-      key: 'da_report_details_averageDistancePerDay',
+      key: 'rp_fu_report_details_averagedistanceperday',
       value: 'averageDistancePerDay'
     },
     {
-      key: 'da_report_details_numberoftrips',
+      key: 'rp_fu_report_details_numberoftrips',
       value: 'numberOfTrips'
     },
     {
-      key:'da_report_details_triptime',
+      key:'rp_fu_report_details_triptime',
       value: 'tripTime'
     },
     {
-      key:'da_report_details_stoptime',
+      key:'rp_fu_report_details_stoptime',
       value: 'stopTime'
     }
   ];
@@ -477,9 +450,7 @@ calendarOptions: CalendarOptions = {
   }
 
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
-   //data= {"userPreferences":[{"dataAtrributeId":140,"name":"Report.General.IdleDuration","description":"","type":"A","reportReferenceType":"","key":"da_report_general_idleduration","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":123,"name":"Report.General.TotalDistance","description":"","type":"A","reportReferenceType":"","key":"da_report_general_totaldistance","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":141,"name":"Report.General.NumberOfTrips","description":"","type":"A","reportReferenceType":"","key":"da_report_general_numberoftrips","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":18,"name":"Report.General.AverageDistancePerDay","description":"","type":"A","reportReferenceType":"","key":"da_report_general_averagedistanceperday","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":99,"name":"Report.General.NumberOfVehicles","description":"","type":"A","reportReferenceType":"","key":"da_report_general_numberofvehicles","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":140,"name":"Report.General.IdleDuration","description":"","type":"A","reportReferenceType":"","key":"da_report_general_idleduration","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":123,"name":"Report.General.TotalDistance","description":"","type":"A","reportReferenceType":"","key":"da_report_general_totaldistance","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":141,"name":"Report.General.NumberOfTrips","description":"","type":"A","reportReferenceType":"","key":"da_report_general_numberoftrips","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":18,"name":"Report.General.AverageDistancePerDay","description":"","type":"A","reportReferenceType":"","key":"da_report_general_averagedistanceperday","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":99,"name":"Report.General.NumberOfVehicles","description":"","type":"A","reportReferenceType":"","key":"da_report_general_numberofvehicles","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":142,"name":"Report.Charts.DistancePerDay","description":"","type":"A","reportReferenceType":"","key":"da_report_charts_distanceperday","state":"A","chartType":"L","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":143,"name":"Report.Charts.NumberOfVehiclesPerDay","description":"","type":"A","reportReferenceType":"","key":"da_report_charts_numberofvehiclesperday","state":"A","chartType":"L","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":144,"name":"Report.Charts.MileageBasedUtilization","description":"","type":"A","reportReferenceType":"","key":"da_report_charts_mileagebasedutilization","state":"A","chartType":"P","thresholdType":"U","thresholdValue":99000},{"dataAtrributeId":145,"name":"Report.Charts.TimeBasedUtilization","description":"","type":"A","reportReferenceType":"","key":"da_report_charts_timebasedutilization","state":"A","chartType":"P","thresholdType":"U","thresholdValue":65100000},{"dataAtrributeId":151,"name":"Report.CalendarView.TotalTrips","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_totaltrips","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":149,"name":"Report.CalendarView.DrivingTime","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_drivingtime","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":148,"name":"Report.CalendarView.Distance","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_distance","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":152,"name":"Report.CalendarView.MileageBasedUtilization","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_mileagebasedutilization","state":"I","chartType":"P","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":146,"name":"Report.CalendarView.AverageWeight","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_averageweight","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":147,"name":"Report.CalendarView.IdleDuration","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_idleduration","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":150,"name":"Report.CalendarView.ActiveVehicles","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_activevehicles","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":153,"name":"Report.CalendarView.TimeBasedUtilization","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_timebasedutilization","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":151,"name":"Report.CalendarView.TotalTrips","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_totaltrips","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":149,"name":"Report.CalendarView.DrivingTime","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_drivingtime","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":148,"name":"Report.CalendarView.Distance","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_distance","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":152,"name":"Report.CalendarView.MileageBasedUtilization","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_mileagebasedutilization","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":146,"name":"Report.CalendarView.AverageWeight","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_averageweight","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":147,"name":"Report.CalendarView.IdleDuration","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_idleduration","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":150,"name":"Report.CalendarView.ActiveVehicles","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_activevehicles","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":153,"name":"Report.CalendarView.TimeBasedUtilization","description":"","type":"A","reportReferenceType":"","key":"da_report_calendarview_timebasedutilization","state":"I","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":135,"name":"Report.Details.VehicleName","description":"","type":"A","reportReferenceType":"","key":"da_report_details_vehiclename","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":107,"name":"Report.Details.RegistrationNumber","description":"","type":"A","reportReferenceType":"","key":"da_report_details_registrationnumber","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":98,"name":"Report.Details.NumberOfTrips","description":"","type":"A","reportReferenceType":"","key":"da_report_details_numberoftrips","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":17,"name":"Report.Details.AverageDistancePerDay","description":"","type":"A","reportReferenceType":"","key":"da_report_details_averagedistanceperday","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":24,"name":"Report.Details.AverageSpeed","description":"","type":"A","reportReferenceType":"","key":"da_report_details_averagespeed","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":55,"name":"Report.Details.DrivingTime","description":"","type":"A","reportReferenceType":"","key":"da_report_details_drivingtime","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":84,"name":"Report.Details.IdleDuration","description":"","type":"A","reportReferenceType":"","key":"da_report_details_idleduration","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":119,"name":"Report.Details.StopTime","description":"","type":"A","reportReferenceType":"","key":"da_report_details_stoptime","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":100,"name":"Report.Details.Odometer","description":"","type":"A","reportReferenceType":"","key":"da_report_details_odometer","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":28,"name":"Report.Details.AverageWeightPerTrip","description":"","type":"A","reportReferenceType":"","key":"da_report_details_averageweightpertrip","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":137,"name":"Report.Details.VIN","description":"","type":"A","reportReferenceType":"","key":"da_report_details_vin","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":44,"name":"Report.Details.Distance","description":"","type":"A","reportReferenceType":"","key":"da_report_details_distance","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":132,"name":"Report.Details.TripTime","description":"","type":"A","reportReferenceType":"","key":"da_report_details_triptime","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":135,"name":"Report.Details.VehicleName","description":"","type":"A","reportReferenceType":"","key":"da_report_details_vehiclename","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":107,"name":"Report.Details.RegistrationNumber","description":"","type":"A","reportReferenceType":"","key":"da_report_details_registrationnumber","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":98,"name":"Report.Details.NumberOfTrips","description":"","type":"A","reportReferenceType":"","key":"da_report_details_numberoftrips","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":17,"name":"Report.Details.AverageDistancePerDay","description":"","type":"A","reportReferenceType":"","key":"da_report_details_averagedistanceperday","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":24,"name":"Report.Details.AverageSpeed","description":"","type":"A","reportReferenceType":"","key":"da_report_details_averagespeed","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":55,"name":"Report.Details.DrivingTime","description":"","type":"A","reportReferenceType":"","key":"da_report_details_drivingtime","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":84,"name":"Report.Details.IdleDuration","description":"","type":"A","reportReferenceType":"","key":"da_report_details_idleduration","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":119,"name":"Report.Details.StopTime","description":"","type":"A","reportReferenceType":"","key":"da_report_details_stoptime","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":100,"name":"Report.Details.Odometer","description":"","type":"A","reportReferenceType":"","key":"da_report_details_odometer","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":28,"name":"Report.Details.AverageWeightPerTrip","description":"","type":"A","reportReferenceType":"","key":"da_report_details_averageweightpertrip","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":137,"name":"Report.Details.VIN","description":"","type":"A","reportReferenceType":"","key":"da_report_details_vin","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":44,"name":"Report.Details.Distance","description":"","type":"A","reportReferenceType":"","key":"da_report_details_distance","state":"A","chartType":"","thresholdType":" ","thresholdValue":0},{"dataAtrributeId":132,"name":"Report.Details.TripTime","description":"","type":"A","reportReferenceType":"","key":"da_report_details_triptime","state":"A","chartType":"","thresholdType":" ","thresholdValue":0}],"code":200,"message":""}
-      
+    this.reportService.getReportUserPreference(this.fleetUtilReportId).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
       this.preparePrefData(this.reportPrefData);
@@ -493,20 +464,44 @@ calendarOptions: CalendarOptions = {
   }
 
   preparePrefData(prefData: any){
-    if(prefData.length > 0){
-      prefData.forEach(element => {
-        if(element.key.includes('da_report_general')){
-          this.summaryColumnData.push(element);
-        }else if(element.key.includes('da_report_charts')){
-          this.chartsColumnData.push(element);
-        }else if(element.key.includes('da_report_calendarview')){
-          if(element.key == 'da_report_calendarview_expensiontype'){
-            this.isCalendarOpen = (element.state == "A") ? true : false; 
-          }else{
-            this.calenderColumnData.push(element);
-          }
-        }else if(element.key.includes('da_report_details')){
-          this.detailColumnData.push(element);
+    // if(prefData.length > 0){
+    //   prefData.forEach(element => {
+    //     if(element.key.includes('da_report_general')){
+    //       this.summaryColumnData.push(element);
+    //     }else if(element.key.includes('da_report_charts')){
+    //       this.chartsColumnData.push(element);
+    //     }else if(element.key.includes('da_report_calendarview')){
+    //       if(element.key == 'da_report_calendarview_expensiontype'){
+    //         this.isCalendarOpen = (element.state == "A") ? true : false; 
+    //       }else{
+    //         this.calenderColumnData.push(element);
+    //       }
+    //     }else if(element.key.includes('da_report_details')){
+    //       this.detailColumnData.push(element);
+    //     }
+    //   });
+    //   this.setDefaultAttributeBaseOnPref();
+    // }
+
+    if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
+      prefData.subReportUserPreferences.forEach(element => {
+        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+          element.subReportUserPreferences.forEach(item => {
+            let _data: any = item;
+            if(item.key.includes('rp_fu_report_summary_')){
+              this.summaryColumnData.push(_data);
+            }else if(item.key.includes('rp_fu_report_chart_')){
+             this.chartsColumnData.push(_data);
+           }else if(item.key.includes('rp_fu_report_calendarview_')){
+            if(item.key == 'rp_fu_report_calendarview_expensiontype'){
+              this.isCalendarOpen = (item.state == "A") ? true : false; 
+            }else{
+              this.calenderColumnData.push(_data);
+            }
+           }else if(item.key.includes('rp_fu_report_details_')){
+              this.detailColumnData.push(_data);
+           }
+          });
         }
       });
       this.setDefaultAttributeBaseOnPref();
@@ -531,11 +526,11 @@ calendarOptions: CalendarOptions = {
                 this.displayedColumns.splice(index, 1);
             }
           }
-          if(element.key == 'da_report_details_vehiclename'){
+          if(element.key == 'rp_fu_report_details_vehiclename'){
             this.showField.vehicleName = false;
-          }else if(element.key == 'da_report_details_vin'){
+          }else if(element.key == 'rp_fu_report_details_vin'){
             this.showField.vin = false;
-          }else if(element.key == 'da_report_details_registrationnumber'){
+          }else if(element.key == 'rp_fu_report_details_registrationnumber'){
             this.showField.regNo = false;
           }
         });
@@ -544,15 +539,15 @@ calendarOptions: CalendarOptions = {
 
     if(this.summaryColumnData.length > 0){ // summary section
       this.summaryColumnData.forEach(element => {
-        if(element.key == 'da_report_general_numberofvehicles'){
+        if(element.key == 'rp_fu_report_summary_numberofvehicles'){
           this.noOfVehStatus = element.state == "A" ? true : false;
-        }else if(element.key == 'da_report_general_idleduration'){
+        }else if(element.key == 'rp_fu_report_summary_idleduration'){
           this.idleDurationStatus = element.state == "A" ? true : false;
-        }else if(element.key == 'da_report_general_totaldistance'){
+        }else if(element.key == 'rp_fu_report_summary_totaldistance'){
           this.totalDistanceStatus = element.state == "A" ? true : false;
-        }else if(element.key == 'da_report_general_numberoftrips'){
+        }else if(element.key == 'rp_fu_report_summary_numberoftrips'){
           this.noOfTripsStatus = element.state == "A" ? true : false;
-        }else if(element.key == 'da_report_general_averagedistanceperday'){
+        }else if(element.key == 'rp_fu_report_summary_averagedistanceperday'){
           this.avgDistanceStatus = element.state == "A" ? true : false;
         }
       });
@@ -561,7 +556,7 @@ calendarOptions: CalendarOptions = {
     if(this.calenderColumnData.length > 0){
       let _s = this.calenderColumnData.filter(i => i.state == 'A');
       if(_s.length == this.calenderColumnData.length){
-        this.calendarpreferenceOption = "da_report_calendarview_totaltrips";
+        this.calendarpreferenceOption = "rp_fu_report_calendarview_totaltrips";
       }else {
         this.calendarpreferenceOption = _s[0].key;
       }
@@ -569,13 +564,13 @@ calendarOptions: CalendarOptions = {
 
     if(this.chartsColumnData.length > 0){
       this.chartsColumnData.forEach(element => {
-        if(element.key == "da_report_charts_distanceperday"){
+        if(element.key == "rp_fu_report_chart_distanceperday"){
           this.distanceChart.state = element.state == "A" ? true : false;
           this.distanceChart.chartType = element.chartType;
-        }else if(element.key == "da_report_charts_numberofvehiclesperday"){
+        }else if(element.key == "rp_fu_report_chart_activevehiclperday"){
           this.activeVehicleChart.state = element.state == "A" ? true : false;
           this.activeVehicleChart.chartType = element.chartType;
-        }else if(element.key == "da_report_charts_mileagebasedutilization"){
+        }else if(element.key == "rp_fu_report_chart_mileagebased"){
           this.mileageBasedChart.state = element.state == "A" ? true : false;
           this.mileageBasedChart.chartType = element.chartType;
           this.mileageBasedChart.thresholdValue = element.thresholdValue;
@@ -584,7 +579,7 @@ calendarOptions: CalendarOptions = {
           this.mileageDChartType = element.chartType == "D" ? true : false;
           this.doughnutChartLabels = [`Percentage of vehicles with distance done above ${this.convertMeterToKm(this.mileagebasedThreshold)} km`, `Percentage of vehicles with distance done under ${this.convertMeterToKm(this.mileagebasedThreshold)} km`]
           this.mileagePieChartLabels = [`Percentage of vehicles with distance done above ${this.convertMeterToKm(this.mileagebasedThreshold)} km`, `Percentage of vehicles with distance done under ${this.convertMeterToKm(this.mileagebasedThreshold)} km`]
-        }else if(element.key == "da_report_charts_timebasedutilization"){
+        }else if(element.key == "rp_fu_report_chart_timebased"){
           this.timeBasedChart.state = element.state == "A" ? true : false;
           this.timeBasedChart.chartType = element.chartType;
           this.timeBasedChart.thresholdValue = element.thresholdValue;
@@ -638,20 +633,38 @@ calendarOptions: CalendarOptions = {
   }
 
   setPDFTranslations(){
-    this.translationData ={
-    da_report_details_vehiclename : 'Vehicle Name',
-    da_report_details_averagespeed : 'Average speed',
-    da_report_details_drivingtime : 'Driving Time',
-    da_report_details_averageweight : 'Average Weight',
-    da_report_details_distance : 'Distance',
-    da_report_details_idleduration : 'Duration',
-    da_report_details_odometer : 'Odometer',
-    da_report_details_registrationnumber : 'Registration Number',
-    da_report_details_vin : 'VIN',
-    da_report_details_numberoftrips : 'Number Of Trips',
-    da_report_details_triptime : 'Trip Time',
-    da_report_details_stoptime : 'Stop Time',
-    da_report_details_averageDistancePerDay : 'Average Distance Per Day'
+    this.translationData = {
+      rp_fu_report_summary_averagedistanceperday: 'Average distance per day',
+      rp_fu_report_summary_idleduration: 'Idle Duration',
+      rp_fu_report_summary_totaldistance: 'Total Distance',
+      rp_fu_report_summary_numberofvehicles: 'Number of Vehicles',
+      rp_fu_report_summary_numberoftrips: 'Number of Trips',
+      rp_fu_report_chart_mileagebased: 'Mileage Based Utilisation',
+      rp_fu_report_chart_distanceperday: 'Distance Per Day',
+      rp_fu_report_chart_activevehiclperday: 'Active Vehicles Per Day',
+      rp_fu_report_chart_timebased: 'Time Based Utilisation',
+      rp_fu_report_calendarview_drivingtime: 'Driving Time',
+      rp_fu_report_calendarview_totaltrips: 'Total trips',
+      rp_fu_report_calendarview_idleduration: 'Idle Duration',
+      rp_fu_report_calendarview_timebasedutlisation: 'Time Based Utilisation',
+      rp_fu_report_calendarview_mileagebasedutilization: 'Mileage Based Utilisation',
+      rp_fu_report_calendarview_activevehicles: 'Active Vehicles',
+      rp_fu_report_calendarview_distance: 'Distance',
+      rp_fu_report_calendarview_averageweight: 'Average Weight',
+      rp_fu_report_calendarview_expensiontype: 'Expension Type',
+      rp_fu_report_details_stoptime: 'Stop Time',
+      rp_fu_report_details_vin: 'VIN',
+      rp_fu_report_details_vehiclename: 'Vehicle Name',
+      rp_fu_report_details_registrationnumber: 'Registration Number',
+      rp_fu_report_details_averagedistanceperday: 'Average distance per day',
+      rp_fu_report_details_numberoftrips: 'Number of Trips',
+      rp_fu_report_details_odometer: 'Odometer',
+      rp_fu_report_details_averagespeed: 'Average Speed',
+      rp_fu_report_details_drivingtime: 'Driving Time',
+      rp_fu_report_details_averageweightpertrip: 'Average weight per trip',
+      rp_fu_report_details_triptime: 'Trip Time',
+      rp_fu_report_details_idleduration: 'Idle Duration',
+      rp_fu_report_details_distance: 'Distance'
     }
   }
 
@@ -904,36 +917,36 @@ calendarOptions: CalendarOptions = {
 
   calendarSelectedValues(element: any){
       switch(this.calendarpreferenceOption){
-      case "da_report_calendarview_averageweight": {  // avg weight
+      case "rp_fu_report_calendarview_averageweight": {  // avg weight
         this.calendarOptions.events =[ {title : `${this.reportMapService.getAvrgWeight(element.averageweight, this.prefUnitFormat)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         //console.log(this.calendarOptions.events);
         break;
       }
-      case "da_report_calendarview_idleduration":{ // idle duration
+      case "rp_fu_report_calendarview_idleduration":{ // idle duration
         this.calendarOptions.events =[ {title : `${this.reportMapService.getHhMmTime(element.averageidleduration)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
-      case "da_report_calendarview_distance": { // distance
+      case "rp_fu_report_calendarview_distance": { // distance
         this.calendarOptions.events =[ {title : `${this.reportMapService.getDistance(element.averagedistanceperday,  this.prefUnitFormat)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
-      case "da_report_calendarview_activevehicles": { // active vehicles
+      case "rp_fu_report_calendarview_activevehicles": { // active vehicles
         this.calendarOptions.events =[ {title : `${element.vehiclecount}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
-      case "da_report_calendarview_drivingtime": { // driving time
+      case "rp_fu_report_calendarview_drivingtime": { // driving time
         this.calendarOptions.events =[ {title : `${this.reportMapService.getHhMmTime(element.averagedrivingtime)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
-      case "da_report_calendarview_timebasedutilization": { // time based utilisation
+      case "rp_fu_report_calendarview_timebasedutlisation": { // time based utilisation
         this.calendarOptions.events =[ {title : `${(element.averagedrivingtime/this.timebasedThreshold) * 100}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
-      case "da_report_calendarview_mileagebasedutilization": { // maleage based utilisation
+      case "rp_fu_report_calendarview_mileagebasedutilization": { // maleage based utilisation
         this.calendarOptions.events =[ {title : `${(element.averagedistanceperday/this.mileagebasedThreshold)*100}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
-      case "da_report_calendarview_totaltrips": { // total trip 
+      case "rp_fu_report_calendarview_totaltrips": { // total trip 
         this.calendarOptions.events =[ {title : `${element.tripcount}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
@@ -1260,8 +1273,6 @@ calendarOptions: CalendarOptions = {
   setStartEndDateTime(date: any, timeObj: any, type: any){
 
     if(type == "start"){
-      console.log("--date type--",date)
-      console.log("--date type--",timeObj)
       // this.fleetUtilizationSearchData["startDateStamp"] = date;
       // this.fleetUtilizationSearchData.testDate = date;
       // this.fleetUtilizationSearchData["startTimeStamp"] = timeObj;
