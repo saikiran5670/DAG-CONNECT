@@ -8,6 +8,6 @@ namespace net.atos.daf.ct2.reports.entity
     {
         public string VIN { get; set; }
         public string VehicleName { get; set; }
-        public decimal Totalfuelconsumed { get; set; }
+        public double FuelConsumption { get; set; }
     }
 }

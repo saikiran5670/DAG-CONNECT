@@ -480,7 +480,7 @@ namespace net.atos.daf.ct2.subscription.repository
 
                         else if (objSubscriptionDetailsRequest.State > 0)
                         {
-                            parameter.Add("@state", objSubscriptionDetailsRequest.State == StatusType.A ? true : false);
+                            parameter.Add("@state", objSubscriptionDetailsRequest.State == StatusType.A ? 'A' : 'I');
                             query = $"{query} and sub.state=@state";
                         }
                     }

@@ -18,6 +18,7 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import { SelectionModel } from '@angular/cdk/collections';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-fuel-benchmarking',
@@ -57,6 +58,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   wholeTripData: any = [];
   tableInfoObj: any = {};
   tripTraceArray: any = [];
+  selectionValueBenchmarkBY:any;
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
   selectedStartTime: any = '00:00';
@@ -77,6 +79,8 @@ export class FuelBenchmarkingComponent implements OnInit {
   timebasedThreshold : any = 0; // hh:mm
   mileagebasedThreshold : any = 0; // km
   mileageDChartType : boolean = true;
+  startDateRange: any;
+  endDateRange: any;
   timeDChartType : boolean = true;
   fuelBenchmarkingForm: FormGroup;
   // showField: any = {
@@ -87,6 +91,8 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   //For Radio Buttons 
   selectedBenchmarking: any  = 'timePeriods';
+  //For Button Label 
+  setBenchmarkingLabel: any;
 
   //For Charts
   chartsLabelsdefined: any = [];
@@ -260,14 +266,25 @@ fromTripPageBack: boolean = false;
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    if(this.selectedBenchmarking == 'timePeriods'){
     this.fuelBenchmarkingForm = this._formBuilder.group({
-      vehicleGroup: ['', [Validators.required]],
-      // vehicle: ['', [Validators.required]],
+      vehicleGroup: ['', []],
+      vehicle: ['', []],
       startDate: ['', []],
       endDate: ['', []],
       startTime: ['', []],
       endTime: ['', []]
     });
+  }else {
+    this.fuelBenchmarkingForm = this._formBuilder.group({
+      vehicleGroup: ['', [Validators.required]],
+      vehicle: ['', []],
+      startDate: ['', []],
+      endDate: ['', []],
+      startTime: ['', []],
+      endTime: ['', []]
+    });
+  }
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -621,9 +638,93 @@ fromTripPageBack: boolean = false;
     }
   }
 
-  onSearch(){
+  onSearch(selectedValue?:any){
+    this.selectionValueBenchmarkBY = selectedValue;
+    console.log("this.selectionValueBenchmarkBY parent",this.selectionValueBenchmarkBY)
+
+    this.internalSelection = true;
+    // this.resetChartData(); // reset chart data
+    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
+    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    let selectedVehicleGroup = this.fuelBenchmarkingForm.controls.vehicleGroup.value;
+    let _vinData: any = [];
+    this.startDateRange = moment(_startTime).format("DD/MM/YYYY");
+    this.endDateRange = moment(_endTime).format("DD/MM/YYYY");
     
-  }
+ 
+    if(selectedVehicleGroup){
+      this.showLoadingIndicator = true;
+      //request payload 
+      let searchDataParam = {
+        "VechileGroupID": selectedVehicleGroup,
+        "StartDate": _startTime,
+        "EndDate": _endTime,
+        "VINs": [
+          "VIN1",
+          "VIN2",
+          "VIN3",
+          "VIN4"
+        ]
+      }
+
+
+
+if( parseInt(this.fuelBenchmarkingForm.controls.vehicle.value ) == 0){
+  _vinData = this.vehicleDD.filter(i => i.vehicleId != 0).map(item => item.vin);
+}else{
+let search = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.fuelBenchmarkingForm.controls.vehicle.value));
+if(search.length > 0){
+  _vinData.push(search[0].vin);
+}
+}
+if(_vinData.length > 0){
+this.showLoadingIndicator = true;
+let searchDataParam = {
+ "startDateTime":_startTime,
+ "endDateTime":_endTime,
+ "viNs":  _vinData,
+}
+this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
+
+this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+// this.setTableInfo();
+// this.updateDataSource(this.tripData);
+this.hideloader();
+this.isChartsOpen = true;
+//this.isCalendarOpen = true;
+this.isSummaryOpen = true;
+this.tripData.forEach(element => {
+ if(element.distance > this.mileagebasedThreshold){
+   this.greaterMileageCount = this.greaterMileageCount + 1;
+ }
+ if(element.drivingTime > this.timebasedThreshold){
+   this.greaterTimeCount = this.greaterTimeCount + 1;
+ }
+});
+let percentage1 = (this.greaterMileageCount/this.tripData.length)*100 ;
+this.doughnutChartData = [percentage1, 100- percentage1];
+this.mileagePieChartData = [percentage1,  100- percentage1]
+let percentage2 = (this.greaterTimeCount/this.tripData.length)* 100;
+this.doughnutChartDataForTime = [percentage2, 100- percentage2];
+this.timePieChartData = [percentage2, 100- percentage2];
+
+}, (error)=>{
+  //console.log(error);
+ this.hideloader();
+ this.tripData = [];
+  this.tableInfoObj = {};
+//  this.updateDataSource(this.tripData);
+});
+// this.reportService.getCalendarDetails(searchDataParam).subscribe((calendarData: any) => {
+//  this.setChartData(calendarData["calenderDetails"]);
+//  this.calendarSelectedValues(calendarData["calenderDetails"]);
+// })
+}
+
+     }
+     console.log("---all selected value--",_startTime,_endTime,selectedVehicleGroup,this.vehicleDD)
+    }
+
   onVehicleGroupChange(event: any){
     if(event.value || event.value == 0){
        this.internalSelection = true; 
@@ -827,7 +928,7 @@ getAllSummaryData(){
   //Radio buttons selection
   onBenchmarkChange(event: any){
     this.selectedBenchmarking = event.value;
-    console.log("---option choosen--",this.selectedBenchmarking)
+    console.log("---option choosen--",this.selectedBenchmarking);
     // this.changeGridOnVehicleList(event.value);
   }
   
