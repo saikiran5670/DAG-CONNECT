@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.reports.repository
             parameter.Add("@vins", vins);
             parameter.Add("@days", 90); // return last 3 month of data
             IEnumerable<LogbookTripAlertDetails> tripAlertList;
-            string query = @"select tripalert.vin as Vin
+            string query = @"select distinct tripalert.vin as Vin
                             ,tripalert.trip_id as TripId
                             ,tripalert.alert_id as AlertId
                             ,tripalert.alert_generated_time as AlertGeneratedTime
@@ -38,8 +38,8 @@ namespace net.atos.daf.ct2.reports.repository
                             from tripdetail.tripalert tripalert   
                             left join tripdetail.trip_statistics lcts on lcts.vin=tripalert.vin and lcts.trip_id=tripalert.trip_id
                             left join master.geolocationaddress alertgeoadd
-                            on TRUNC(CAST(tripalert.latitude as numeric),4)= TRUNC(CAST(tripalert.latitude as numeric),4) 
-                            and TRUNC(CAST(tripalert.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
+                            on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(tripalert.latitude as numeric),4) 
+                            and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
                             where tripalert.vin= ANY(@vins)
                            and ((to_timestamp(tripalert.alert_generated_time)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time)::date) >= (now()::date - @days)) ";
 
@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                 parameter.Add("@start_time_stamp", logbookFilter.Start_Time, System.Data.DbType.Int32);
                 parameter.Add("@end_time_stamp", logbookFilter.End_time, System.Data.DbType.Int32);
-                string queryLogBookPull = @"select ta.vin as VIN,
+                string queryLogBookPull = @"select distinct ta.vin as VIN,
                                 v.registration_no as VehicleRegNo,
                                 v.name as VehicleName,
                                 ta.trip_id as TripId,
@@ -73,12 +73,12 @@ namespace net.atos.daf.ct2.reports.repository
                                 ts.end_time_stamp as TripEndTime,
                                 alertgeoadd.id as AlertGeolocationAddressId,
                                 coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
-                                from tripdetail.tripalert ta left join master.vehicle v on ta.vin = v.vin 
-                                inner join tripdetail.trip_statistics ts
-                                on ta.vin = ts.vin  and ta.trip_id=ts.trip_id 
+                                from tripdetail.tripalert ta inner join master.vehicle v on ta.vin = v.vin 
+                                left join tripdetail.trip_statistics ts
+                                on ta.vin = ts.vin  --and ta.trip_id=ts.trip_id 
                                 left join master.geolocationaddress alertgeoadd
-                                on TRUNC(CAST(ta.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
-                                and TRUNC(CAST(ta.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)
+                                on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
+                                and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)
                                 where 1=1 
                                 and ((to_timestamp(ta.alert_generated_time)::date) >= (to_timestamp(@start_time_stamp)::date)
                                 and (to_timestamp(ta.alert_generated_time)::date) <= (to_timestamp(@end_time_stamp )::date))";
