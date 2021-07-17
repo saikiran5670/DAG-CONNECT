@@ -1347,9 +1347,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 logbookDetailsRequest.StartTime = logbookFilter.Start_Time;
                 logbookDetailsRequest.EndTime = logbookFilter.End_time;
                 /* Need to comment Start */
-                logbookDetailsRequest.AccountId = 171;
-                logbookDetailsRequest.OrganizationId = 36;
-                logbookDetailsRequest.RoleId = 61;
+                //logbookDetailsRequest.AccountId = 171;
+                //logbookDetailsRequest.OrganizationId = 36;
+                //logbookDetailsRequest.RoleId = 61;
                 /* Need to comment End */
 
                 LogbookDetailsResponse response = await _reportServiceClient.GetLogbookDetailsAsync(logbookDetailsRequest);
