@@ -47,7 +47,37 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
 
   translationUpdate(){
     this.translationData = {
-      
+      rp_ecoscore: 'Eco Score',
+      rp_general: 'General',
+      rp_distance: 'Distance',
+      rp_averagedistanceperday: 'Average Distance Per Day',
+      rp_numberofvehicles: 'Number Of Vehicles',
+      rp_averagegrossweight: 'Average Gross Weight',
+      rp_numberoftrips: 'Number Of Trips',
+      rp_generalgraph: 'General Graph',
+      rp_piechart: 'Pie Chart',
+      rp_bargraph: 'Bar Graph',
+      rp_driverperformancegraph: 'Driver Performance Graph',
+      rp_driverperformance: 'Driver Performance',
+      rp_anticipationscore: 'Anticipation Score (%)',
+      rp_fuelconsumption: 'Fuel Consumption',
+      rp_cruisecontrolusage: 'Cruise Control Usage (%)',
+      rp_CruiseControlUsage30: 'Cruise Control Usage 30-50 km/h (%)',
+      rp_cruisecontroldistance50: 'Cruise Control Usage 50-75 km/h (%)',
+      rp_cruisecontroldistance75: 'Cruise Control Usage >75 km/h (%)',
+      rp_heavythrottling: 'Heavy Throttling (%)',
+      rp_heavythrottleduration: 'Heavy Throtting Duration (hh:mm:ss)',
+      rp_ptousage: 'PTO Usage (%)',
+      rp_ptoduration: 'PTO Duration (hh:mm:ss)',
+      rp_averagespeed: 'Average Speed (mph)',
+      rp_idleduration: 'Idle duration (hh:mm:ss)',
+      rp_averagedrivingspeed: 'Average Driving Speed (mph)',
+      rp_idling: 'Idling (%)',
+      rp_brakingscore: 'Braking Score',
+      rp_braking: 'Braking (%)',
+      rp_harshbraking: 'Harsh Braking (%)',
+      rp_harshbrakeduration: 'Harsh Brake Duration (hh:mm:ss)',
+      rp_brakeduration: 'Brake Duration (hh:mm:ss)'
     }
   }
 
