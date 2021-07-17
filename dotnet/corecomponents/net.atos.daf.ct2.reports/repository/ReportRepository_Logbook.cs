@@ -14,6 +14,11 @@ namespace net.atos.daf.ct2.reports.repository
 
         public async Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins)
         {
+
+
+            // public int AlertGeolocationAddressId { get; set; }
+            //  public string AlertGeolocationAddress { get; set; }
+
             var parameter = new DynamicParameters();
             parameter.Add("@vins", vins);
             parameter.Add("@days", 90); // return last 3 month of data
@@ -22,6 +27,8 @@ namespace net.atos.daf.ct2.reports.repository
                             ,tripalert.trip_id as TripId
                             ,tripalert.alert_id as AlertId
                             ,tripalert.alert_generated_time as AlertGeneratedTime
+                            ,ta.latitude as AlertLatitude
+                            ,ta.longitude as AlertLongitude
                             ,tripalert.category_type as AlertCategoryType
                             ,tripalert.type as AlertType
                             ,tripalert.urgency_level_type as AlertLevel
@@ -150,6 +157,7 @@ namespace net.atos.daf.ct2.reports.repository
         }
 
 
+
         public async Task<List<AlertThresholdDetails>> GetThresholdDetails(List<int> alertId, List<string> alertLevel)
         {
             IEnumerable<AlertThresholdDetails> thresholdList;
@@ -158,11 +166,11 @@ namespace net.atos.daf.ct2.reports.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@alert_id", alertId);
                 parameter.Add("@urgency_level_type", alertLevel);
-                string query = @" SELECT id, alert_id, urgency_level_type, threshold_value, unit_type from master.alerturgencylevelref
-                                where alert_id = any(@AlertId) and urgency_level_type = any(@AlertLevel) and state ='A' ";
+                string query = @" SELECT id, alert_id as AlertId, urgency_level_type as AlertLevel, threshold_value as ThresholdValue, unit_type as ThresholdUnit from master.alerturgencylevelref
+                                where alert_id = any(@alert_id) and urgency_level_type = any(@urgency_level_type) and state ='A' ";
                 thresholdList = await _dataAccess.QueryAsync<AlertThresholdDetails>(query, parameter);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

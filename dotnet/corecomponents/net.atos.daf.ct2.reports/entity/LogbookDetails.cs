@@ -21,10 +21,12 @@ namespace net.atos.daf.ct2.reports.entity
         public long TripEndTime { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        public string Address { get; set; }
+        public string AlertGeolocationAddress { get; set; }
         public int ThresholdValue { get; set; }
         public string ThresholdUnit { get; set; }
         public long AlertGeneratedTime { get; set; }
+        public int AlertGeolocationAddressId { get; set; }
+
 
     }
 }
