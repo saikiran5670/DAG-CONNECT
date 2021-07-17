@@ -1,13 +1,17 @@
 <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-    
-        <mat-card-title>
+  <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
+    <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
           <span>
-            <span style='margin-left: 20px; padding-top: 40px; font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Benchmark Between Time Periods</span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Benchmark Between Time Periods</span>
           </span>
-        </mat-card-title>
-        <!-- <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-            <mat-card-title>Selected Group: Default base</mat-card-title>
-        </mat-card> -->
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+
+        <div class='areaWidth margin-bottom-xlg' style="background-color: #BEE3F8">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Selected Group: <b>Default base</b></span>
+        </div>
+
         <div style='display: flex;'>
         <mat-table style="max-width: 20%;margin-right: 10px;" [dataSource]="dataSource">
             
@@ -45,4 +49,6 @@
                 </mat-row>
         </mat-table>
     </div>
+      
+    </mat-expansion-panel>
 </mat-card>
