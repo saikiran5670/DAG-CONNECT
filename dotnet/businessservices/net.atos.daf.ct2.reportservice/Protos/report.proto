@@ -1070,6 +1070,7 @@ message LogbookDetails{
          string ThresholdUnit =18;
          int64 AlertGeneratedTime=19;
          int32 AlertGeolocationAddressId =20;
+          int64 ProcessedMessageTimestamp=21;
 }
 
 message LogbookDetailsResponse{
@@ -1089,10 +1090,11 @@ message LogbookTripAlertDetailsRequest
          string AlertType =6;
          string AlertName =7;
          string AlertLevel =8;     
-         int64 AlertLatitude =9;
-         int64 AlertLongitude =10;
+         double AlertLatitude =9;
+         double AlertLongitude =10;
          int32 AlertGeolocationAddressId =11;
          string AlertGeolocationAddress =12;
+        int64 ProcessedMessageTimestamp=13;
          
     }
 
