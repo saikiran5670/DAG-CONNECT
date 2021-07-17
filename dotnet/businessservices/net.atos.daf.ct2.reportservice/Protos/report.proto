@@ -1065,10 +1065,11 @@ message LogbookDetails{
          int64 TripEndTime =13;
          double Latitude =14;
          double Longitude =15;
-         string Address =16;
+         string AlertGeolocationAddress =16;
          int32 ThresholdValue =17;
          string ThresholdUnit =18;
          int64 AlertGeneratedTime=19;
+         int32 AlertGeolocationAddressId =20;
 }
 
 message LogbookDetailsResponse{
@@ -1082,14 +1083,17 @@ message LogbookTripAlertDetailsRequest
     {
          string Vin =1;
          string TripId =2;
-         string AlertId =3;
+         int32 AlertId =3;
          int64 AlertGeneratedTime =4;
          string AlertCategoryType =5;
          string AlertType =6;
          string AlertName =7;
-         string AlertLevel =8;
-         int32 Days =9;
-         string LanguageCode =10;
+         string AlertLevel =8;     
+         int64 AlertLatitude =9;
+         int64 AlertLongitude =10;
+         int32 AlertGeolocationAddressId =11;
+         string AlertGeolocationAddress =12;
+         
     }
 
   
