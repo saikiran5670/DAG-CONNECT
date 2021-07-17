@@ -590,18 +590,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       vehGroupName: vehGrpName,
       vehicleName: vehName
     }    
-    this.detailSummaryObj={
-      fromDate: this.formStartDate(this.startDateValue),
-      endDate: this.formStartDate(this.endDateValue),
-      vehGroupName: vehGrpName,
-      vehicleName: vehName,
-      noOfTrips: this.FuelData[0].numberOfTrips,
-      distance:  this.FuelData[0].convertedDistance,
-      fuelconsumed:  this.FuelData[0].convertedFuelConsumed100Km,
-      idleDuration: this.FuelData[0].convertedIdleDuration,
-      fuelConsumption: this.FuelData[0].fuelConsumption,
-      co2emission: this.FuelData[0].cO2Emission,
-    }  
   }
 
   formStartDate(date: any){
@@ -1519,10 +1507,10 @@ doc.addPage();
     displayHeader.style.display ="block";
   }
 
-  gotoTrip(vehData){
+  gotoTrip(vehData:any){
     const navigationExtras: NavigationExtras = {
       state: {
-        fromFleetUtilReport: true,
+        fromFleetfuelReport: true,
         vehicleData: vehData
       }
     };

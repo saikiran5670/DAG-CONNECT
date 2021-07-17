@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.tcucore;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicle.repository;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.tcuprovisioningtest
 {
@@ -23,6 +29,13 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
         private readonly IAuditLogRepository _auditrepo = null;
         private readonly IVehicleRepository _vehiclerepo = null;
 
+        private readonly string _dafurl;
+        private readonly string _accessUrl;
+        private readonly string _grantType;
+        private readonly string _scope;
+        private readonly string _clientId;
+        private readonly string _clientSecret;
+
         public TestVehicleMethods()
         {
             IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettingsDevelopment.json", optional: true, reloadOnChange: true).Build();
@@ -35,6 +48,14 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
             _auditrepo = new AuditLogRepository(_dataacess);
             _auditlog = new AuditTraillib(_auditrepo);
             _vehiclerepo = new VehicleRepository(_dataacess, _datamartDataacess);
+
+            _dafurl = config.GetSection("DAFURL").Value;
+            _accessUrl = config.GetSection("ACCESS_TOKEN_URL").Value;
+            _grantType = config.GetSection("GRANT_TYPE").Value;
+            _scope = config.GetSection("CLIENT_SCOPE").Value;
+            _clientId = config.GetSection("CLIENT_ID").Value;
+            _clientSecret = config.GetSection("CLIENT_SECRET").Value;
+
         }
 
         [TestMethod]
@@ -108,6 +129,49 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
             return veh;
         }
 
+        [TestMethod]
+        public async Task TestDAFUrl()
+        {
+            string tcuDataSendJson = @"{'vin':'1FMFK20579EB76681','deviceIdentifier':'CCU_2740003513','deviceSerialNumber':'CCU_2740003513','correlations':{'deviceId':'CCU_2740003513','vehicleId':'baad0c0c-5f85-4a86-8f1c-8fe69d0c1c9d'}}";
+            var client = await GetHttpClient();
+            var data = new StringContent(tcuDataSendJson, Encoding.UTF8, "application/json");
+            HttpResponseMessage response = new HttpResponseMessage();
+            response.StatusCode = HttpStatusCode.BadRequest;
 
+            response = await client.PostAsync(_dafurl, data);
+
+            var responseCode = response.StatusCode;
+            string result = response.Content.ReadAsStringAsync().Result;
+
+            Assert.AreEqual(HttpStatusCode.OK, responseCode);
+        }
+
+        private async Task<HttpClient> GetHttpClient()
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var token = await GetElibilityToken(client);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+            return client;
+
+        }
+
+        private async Task<TCUDataToken> GetElibilityToken(HttpClient client)
+        {
+            var form = new Dictionary<string, string>
+                {
+                    {"grant_type", _grantType},
+                    {"scope", _scope},
+                    {"client_id", _clientId},
+                    {"client_secret", _clientSecret},
+                };
+
+            HttpResponseMessage tokenResponse = await client.PostAsync(_accessUrl, new FormUrlEncodedContent(form));
+            var jsonContent = await tokenResponse.Content.ReadAsStringAsync();
+            TCUDataToken token = JsonConvert.DeserializeObject<TCUDataToken>(jsonContent);
+            return token;
+        }
     }
 }

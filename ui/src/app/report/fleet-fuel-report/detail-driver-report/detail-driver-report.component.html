@@ -533,7 +533,29 @@
       
         </mat-card>
         </div>
-      
+
+        <!-- map -->
+        <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='showMapPanel'>
+            <mat-expansion-panel [(expanded)]="showMap" class="full-width" fxLayoutGap="10px">
+              <mat-expansion-panel-header class="full-width">
+                <mat-panel-title>
+                  <span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif; margin-right: 20px;'>{{ translationData.lblMapView || 'Map View' }}</span>
+                  </span>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div>
+              </div>
+        
+             <!-- <div class="searchBoxContainer">
+                <ng2-completer placeholder='Search location' inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
+                    [datasource]="dataService" [minSearchLength]="0" (focus)="onSearchFocus()"  [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
+                    (selected)="onSearchSelected($event)" [selectOnClick]="true"></ng2-completer>
+              </div>-->
+        
+              <div #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px"></div>
+            </mat-expansion-panel>
+          </mat-card>
       
         <!-- Fleet Table -->
         <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
@@ -606,7 +628,7 @@
                                   <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
                                 </span>
                               </div>
-                              <div  class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                              <div   class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                                 <span>
                                   <span>{{ translationData.lblRegPlateNumber || ' Plate Number' }}: </span>
                                   <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleRegistrationNo }}</span>
@@ -617,6 +639,22 @@
       
       
               <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
+                  <ng-container matColumnDef="All">
+                      <mat-header-cell *matHeaderCellDef class="max-width-10-per">
+                        <mat-checkbox (change)='$event ? masterToggleForTrip() : null'
+                          [checked]='selectedTrip.hasValue() && isAllSelectedForTrip()'
+                          [indeterminate]='selectedTrip.hasValue() && !isAllSelectedForTrip()'
+                          [aria-label]='checkboxLabelForTrip()' matTooltip="{{ translationData.lblAllCheckboxViewTooltipMsg || 'Select to view all on map' }}">
+                        </mat-checkbox>
+                        <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row" class="max-width-10-per">
+                        <mat-checkbox (click)='$event.stopPropagation()'
+                          (change)='$event ? selectedTrip.toggle(row) : null; tripCheckboxClicked($event, row)' [checked]='selectedTrip.isSelected(row)'
+                          [aria-label]='checkboxLabelForTrip(row)' matTooltip="{{ translationData.lblCheckboxViewTooltipMsg || 'Select to view on map' }}">
+                        </mat-checkbox>
+                      </mat-cell>
+                    </ng-container>
                           <ng-container matColumnDef="startDate">
       
                                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblstartDate || 'start Date' }}
@@ -647,15 +685,15 @@
                                     <!-- <mat-cell *matCellDef="let row">{{ row.convertedIdleDuration != '' ? row.convertedIdleDuration : '-' }}</mat-cell> -->
                         
                                   </ng-container>
-               <ng-container matColumnDef="driverName">
+               <ng-container  matColumnDef="driverName">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'driver Name' }}
                   </mat-header-cell>
-                 <mat-cell *matCellDef="let row">
+                 <!--<mat-cell *matCellDef="let row">
                   <span class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.driverName != '' ? row.driverName : '-' }}</span>
-                </mat-cell> 
+                </mat-cell> -->
                 <mat-cell *matCellDef="let row">
       
-                  <span>{{row.driverName}}</span>
+                  <span>{{tableInfoObj.driverName}}</span>
     
                 </mat-cell>
               </ng-container>
@@ -666,7 +704,7 @@
                   <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>
                 </mat-cell> -->
                   <mat-cell *matCellDef="let row">
-                    <span>{{row.driverID}}</span>
+                    <span>{{tableInfoObj.driverID}}</span>
                   </mat-cell>
               </ng-container>
     
@@ -685,7 +723,7 @@
       
                   <mat-cell *matCellDef="let row">
       
-                    <span>{{row.vehicleName}}</span>
+                    <span>{{tableInfoObj.vehicleName}}</span>
       
                   </mat-cell>
       
@@ -699,7 +737,7 @@
       
                   <mat-cell *matCellDef="let row">
       
-                    <span>{{row.vin}}</span>
+                    <span>{{tableInfoObj.vin}}</span>
       
                   </mat-cell>
       
@@ -715,7 +753,7 @@
       
                   <mat-cell *matCellDef="let row">
       
-                    <span>{{row.vehicleRegistrationNo}}</span>
+                    <span>{{tableInfoObj.vehicleRegistrationNo}}</span>
       
                   </mat-cell>
       

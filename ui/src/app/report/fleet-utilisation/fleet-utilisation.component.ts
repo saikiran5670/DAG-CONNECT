@@ -464,25 +464,6 @@ calendarOptions: CalendarOptions = {
   }
 
   preparePrefData(prefData: any){
-    // if(prefData.length > 0){
-    //   prefData.forEach(element => {
-    //     if(element.key.includes('da_report_general')){
-    //       this.summaryColumnData.push(element);
-    //     }else if(element.key.includes('da_report_charts')){
-    //       this.chartsColumnData.push(element);
-    //     }else if(element.key.includes('da_report_calendarview')){
-    //       if(element.key == 'da_report_calendarview_expensiontype'){
-    //         this.isCalendarOpen = (element.state == "A") ? true : false; 
-    //       }else{
-    //         this.calenderColumnData.push(element);
-    //       }
-    //     }else if(element.key.includes('da_report_details')){
-    //       this.detailColumnData.push(element);
-    //     }
-    //   });
-    //   this.setDefaultAttributeBaseOnPref();
-    // }
-
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(element => {
         if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){

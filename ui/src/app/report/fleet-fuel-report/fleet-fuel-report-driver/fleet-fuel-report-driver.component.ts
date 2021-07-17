@@ -1455,11 +1455,11 @@ setVehicleGroupAndVehiclePreSelection() {
     displayHeader.style.display ="block";
   }
 
-  onDriverSelected(_row){
+  onDriverSelected(vehData:any){
     const navigationExtras: NavigationExtras = {
       state: {
         fromFleetFuelReport: true,
-        vehicleData: _row
+        vehicleData:vehData
       }
     };
     this.router.navigate(['report/detaildriverreport'], navigationExtras);
