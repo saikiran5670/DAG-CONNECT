@@ -1,0 +1,58 @@
+<!-- Component Tab -->
+<div *ngIf='fuelBenchmarkComponentPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 summaryPref'
+    fxLayoutAlign="left center" style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+    <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
+        <span class='headerFont'>{{ translationData.lblCompoent || 'Component' }}</span>
+    </div>
+    <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
+        <span class='headerFont'>{{ translationData.lblThresholdType || 'Threshold Type' }}</span>
+    </div>
+    <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left"></div>
+</div>
+<div *ngIf='fuelBenchmarkComponentPrefData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" style="height: 44px;" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <span>{{ fuelBenchmarkComponentPrefData.length > 0 ? fuelBenchmarkComponentPrefData[0].translatedName : '' }}</span>
+        </div>
+        <div fxLayout="row" style="height: 44px;" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <span>{{ fuelBenchmarkComponentPrefData.length > 0 ? fuelBenchmarkComponentPrefData[1].translatedName : '' }}</span>
+        </div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" style="height: 44px;" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            
+        </div>
+        <div fxLayout="row" style="height: 44px;" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            
+        </div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left" style='height: 44px;'></div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left" style='height: 44px;'></div>
+    </div>
+</div>
+
+<!-- Charts Tab -->
+<div *ngIf='fuelBenchmarkChartsPrefData.length > 0' fxLayout="row" class='areaWidth full-width margin-top-20 padding-10 summaryPref'
+    fxLayoutAlign="left center" style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+    <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
+        <span class='headerFont'>{{ translationData.lblCharts || 'Charts' }}</span>
+    </div>
+    <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
+        <span class='headerFont'>{{ translationData.lblChartType || 'Chart Type' }}</span>
+    </div>
+    <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left"></div>
+</div>
+<div *ngIf='fuelBenchmarkChartsPrefData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" style="height: 44px;" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <span>{{ fuelBenchmarkChartsPrefData.length > 0 ? fuelBenchmarkChartsPrefData[0].translatedName : '' }}</span>
+        </div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" style="height: 44px;" class='areaWidth adjust-padding' fxLayoutAlign="left"></div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" style="height: 44px;" class='areaWidth adjust-padding' fxLayoutAlign="left" style='height: 44px;'></div>
+    </div>
+</div>
