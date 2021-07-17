@@ -242,6 +242,23 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 driver.OrganizationId = item.OrganizationId;
                 reportFleetOverview.DriverList.Add(driver);
             }
+            reportFleetOverview.FleetOverviewAlerts = new List<FleetOverviewAlert>();
+            foreach (var item in fleetOverviewFilterResponse.LogbookTripAlertDetailsRequest)
+            {
+                FleetOverviewAlert fleetOverviewAlert = new FleetOverviewAlert();
+                fleetOverviewAlert.AlertId = item.AlertId;
+
+                fleetOverviewAlert.AlertName = item.AlertName;
+                fleetOverviewAlert.AlertType = item.AlertType;
+                fleetOverviewAlert.AlertLevel = item.AlertLevel;
+                fleetOverviewAlert.CategoryType = item.AlertCategoryType;
+                fleetOverviewAlert.AlertLatitude = item.AlertLatitude;
+                fleetOverviewAlert.AlertLongitude = item.AlertLongitude;
+                fleetOverviewAlert.AlertGeolocationAddressId = item.AlertGeolocationAddressId;
+                fleetOverviewAlert.AlertGeolocationAddress = item.AlertGeolocationAddress;
+
+            }
+
             return reportFleetOverview;
         }
 
