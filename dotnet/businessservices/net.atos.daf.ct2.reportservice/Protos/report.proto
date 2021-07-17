@@ -828,6 +828,10 @@ message FleetFuelDetails {
     google.protobuf.StringValue DriverName = 36;
     int64 StartDate = 37;
     int64 EndDate = 38;
+    double Startpositionlattitude= 40;
+    double Startpositionlongitude =41;
+    double Endpositionlattitude = 42;
+    double endpositionlongitude=44;
     repeated LiveFleetPosition LiveFleetPosition=39;
    
 }
