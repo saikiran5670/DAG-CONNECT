@@ -27,14 +27,19 @@ namespace net.atos.daf.ct2.reports.repository
                             ,tripalert.trip_id as TripId
                             ,tripalert.alert_id as AlertId
                             ,tripalert.alert_generated_time as AlertGeneratedTime
-                            ,ta.latitude as AlertLatitude
-                            ,ta.longitude as AlertLongitude
+                            ,tripalert.latitude as AlertLatitude
+                            ,tripalert.longitude as AlertLongitude
                             ,tripalert.category_type as AlertCategoryType
                             ,tripalert.type as AlertType
                             ,tripalert.urgency_level_type as AlertLevel
                             ,tripalert.name as AlertName
+                            , alertgeoadd.id as AlertGeolocationAddressId
+                            ,coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
                             from tripdetail.tripalert tripalert   
                             left join tripdetail.trip_statistics lcts on lcts.vin=tripalert.vin and lcts.trip_id=tripalert.trip_id
+                            left join master.geolocationaddress alertgeoadd
+                            on TRUNC(CAST(tripalert.latitude as numeric),4)= TRUNC(CAST(tripalert.latitude as numeric),4) 
+                            and TRUNC(CAST(tripalert.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
                             where tripalert.vin= ANY(@vins)
                            and ((to_timestamp(tripalert.alert_generated_time)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time)::date) >= (now()::date - @days)) ";
 
@@ -65,10 +70,16 @@ namespace net.atos.daf.ct2.reports.repository
                                 ta.urgency_level_type as AlertLevel,
                                 ta.alert_generated_time as AlertGeneratedTime,
                                 ts.start_time_stamp as TripStartTime,
-                                ts.end_time_stamp as TripEndTime
+                                ts.end_time_stamp as TripEndTime,
+                                alertgeoadd.id as AlertGeolocationAddressId,
+                                coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
                                 from tripdetail.tripalert ta left join master.vehicle v on ta.vin = v.vin 
                                 inner join tripdetail.trip_statistics ts
-                                on ta.vin = ts.vin  and ta.trip_id=ts.trip_id where 1=1 
+                                on ta.vin = ts.vin  and ta.trip_id=ts.trip_id 
+                                left join master.geolocationaddress alertgeoadd
+                                on TRUNC(CAST(ta.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
+                                and TRUNC(CAST(ta.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)
+                                where 1=1 
                                 and ((to_timestamp(ta.alert_generated_time)::date) >= (to_timestamp(@start_time_stamp)::date)
                                 and (to_timestamp(ta.alert_generated_time)::date) <= (to_timestamp(@end_time_stamp )::date))";
 
