@@ -1066,8 +1066,9 @@ message LogbookDetails{
          double Latitude =14;
          double Longitude =15;
          string Address =16;
-         string Threshold =17;
-         int64 AlertGeneratedTime=18;
+         int32 ThresholdValue =17;
+         string ThresholdUnit =18;
+         int64 AlertGeneratedTime=19;
 }
 
 message LogbookDetailsResponse{

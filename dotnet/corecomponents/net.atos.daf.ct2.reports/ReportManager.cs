@@ -684,6 +684,11 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetLogbookDetails(logbookFilter);
         }
+
+        public async Task<List<AlertThresholdDetails>> GetThresholdDetails(List<int> alertId, List<string> alertLevel)
+        {
+            return await _reportRepository.GetThresholdDetails(alertId, alertLevel);
+        }
         #endregion
 
         #region Fuel Benchmark Report

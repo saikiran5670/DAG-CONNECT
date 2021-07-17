@@ -22,7 +22,8 @@ namespace net.atos.daf.ct2.reports.entity
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public string Address { get; set; }
-        public string Threshold { get; set; }
+        public int ThresholdValue { get; set; }
+        public string ThresholdUnit { get; set; }
         public long AlertGeneratedTime { get; set; }
 
     }
