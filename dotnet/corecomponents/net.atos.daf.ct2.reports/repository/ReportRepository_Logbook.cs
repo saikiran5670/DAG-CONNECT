@@ -14,6 +14,11 @@ namespace net.atos.daf.ct2.reports.repository
 
         public async Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins)
         {
+
+
+            // public int AlertGeolocationAddressId { get; set; }
+            //  public string AlertGeolocationAddress { get; set; }
+
             var parameter = new DynamicParameters();
             parameter.Add("@vins", vins);
             parameter.Add("@days", 90); // return last 3 month of data
@@ -22,12 +27,19 @@ namespace net.atos.daf.ct2.reports.repository
                             ,tripalert.trip_id as TripId
                             ,tripalert.alert_id as AlertId
                             ,tripalert.alert_generated_time as AlertGeneratedTime
+                            ,tripalert.latitude as AlertLatitude
+                            ,tripalert.longitude as AlertLongitude
                             ,tripalert.category_type as AlertCategoryType
                             ,tripalert.type as AlertType
                             ,tripalert.urgency_level_type as AlertLevel
                             ,tripalert.name as AlertName
+                            , alertgeoadd.id as AlertGeolocationAddressId
+                            ,coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
                             from tripdetail.tripalert tripalert   
                             left join tripdetail.trip_statistics lcts on lcts.vin=tripalert.vin and lcts.trip_id=tripalert.trip_id
+                            left join master.geolocationaddress alertgeoadd
+                            on TRUNC(CAST(tripalert.latitude as numeric),4)= TRUNC(CAST(tripalert.latitude as numeric),4) 
+                            and TRUNC(CAST(tripalert.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
                             where tripalert.vin= ANY(@vins)
                            and ((to_timestamp(tripalert.alert_generated_time)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time)::date) >= (now()::date - @days)) ";
 
@@ -58,10 +70,16 @@ namespace net.atos.daf.ct2.reports.repository
                                 ta.urgency_level_type as AlertLevel,
                                 ta.alert_generated_time as AlertGeneratedTime,
                                 ts.start_time_stamp as TripStartTime,
-                                ts.end_time_stamp as TripEndTime
+                                ts.end_time_stamp as TripEndTime,
+                                alertgeoadd.id as AlertGeolocationAddressId,
+                                coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
                                 from tripdetail.tripalert ta left join master.vehicle v on ta.vin = v.vin 
                                 inner join tripdetail.trip_statistics ts
-                                on ta.vin = ts.vin  and ta.trip_id=ts.trip_id where 1=1 
+                                on ta.vin = ts.vin  and ta.trip_id=ts.trip_id 
+                                left join master.geolocationaddress alertgeoadd
+                                on TRUNC(CAST(ta.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
+                                and TRUNC(CAST(ta.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)
+                                where 1=1 
                                 and ((to_timestamp(ta.alert_generated_time)::date) >= (to_timestamp(@start_time_stamp)::date)
                                 and (to_timestamp(ta.alert_generated_time)::date) <= (to_timestamp(@end_time_stamp )::date))";
 
@@ -150,6 +168,7 @@ namespace net.atos.daf.ct2.reports.repository
         }
 
 
+
         public async Task<List<AlertThresholdDetails>> GetThresholdDetails(List<int> alertId, List<string> alertLevel)
         {
             IEnumerable<AlertThresholdDetails> thresholdList;
@@ -158,11 +177,11 @@ namespace net.atos.daf.ct2.reports.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@alert_id", alertId);
                 parameter.Add("@urgency_level_type", alertLevel);
-                string query = @" SELECT id, alert_id, urgency_level_type, threshold_value, unit_type from master.alerturgencylevelref
-                                where alert_id = any(@AlertId) and urgency_level_type = any(@AlertLevel) and state ='A' ";
+                string query = @" SELECT id, alert_id as AlertId, urgency_level_type as AlertLevel, threshold_value as ThresholdValue, unit_type as ThresholdUnit from master.alerturgencylevelref
+                                where alert_id = any(@alert_id) and urgency_level_type = any(@urgency_level_type) and state ='A' ";
                 thresholdList = await _dataAccess.QueryAsync<AlertThresholdDetails>(query, parameter);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

@@ -120,6 +120,22 @@ namespace net.atos.daf.ct2.reportservice.Services
                 var result = await _reportManager.GetLogbookDetails(logbookFilter);
                 if (result?.Count > 0)
                 {
+                    List<AlertThresholdDetails> alertThresholdDetails = await _reportManager.GetThresholdDetails(result.Where(p => p.AlertId > 0).Select(x => x.AlertId).Distinct().ToList(),
+                        result.Where(p => p.AlertLevel.Count() > 0).Select(x => x.AlertLevel).Distinct().ToList());
+                    foreach (var logbookDetail in result)
+                    {
+                        if (alertThresholdDetails != null && alertThresholdDetails.Count > 0)
+                        {
+                            var alertThreshold = alertThresholdDetails.FirstOrDefault(w => w.AlertId == logbookDetail.AlertId && w.AlertLevel == logbookDetail.AlertLevel);
+                            logbookDetail.ThresholdValue = alertThreshold.ThresholdValue;
+                            logbookDetail.ThresholdUnit = alertThreshold.ThresholdUnit ?? string.Empty;
+
+                        }
+
+                    }
+                }
+                if (result?.Count > 0)
+                {
                     var resDetails = JsonConvert.SerializeObject(result);
                     response.LogbookDetails.AddRange(
                          JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<LogbookDetails>>(resDetails,
@@ -133,6 +149,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     response.Message = "No Result Found";
                 }
                 return await Task.FromResult(response);
+
 
             }
             catch (Exception ex)
