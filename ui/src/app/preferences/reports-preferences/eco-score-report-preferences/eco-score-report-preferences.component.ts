@@ -125,7 +125,27 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
               }else{
                 _data.translatedName = this.getName(item.name, 27);   
               }
-              this.driverPerformanceColumnData.push(_data);
+
+              let index: any;
+              switch(item.name){
+                case 'EcoScore.DriverPerformance.EcoScore':{
+                  index = 0;
+                  break;
+                }
+                case 'EcoScore.DriverPerformance.FuelConsumption':{
+                  index = 1;
+                  break;
+                }
+                case 'EcoScore.DriverPerformance.BrakingScore':{
+                  index = 2;
+                  break;
+                }
+                case 'EcoScore.DriverPerformance.AnticipationScore':{
+                  index = 3;
+                  break;
+                }
+              }
+              this.driverPerformanceColumnData[index] = _data;
             }else if(item.name.includes('EcoScore.DriverPerformanceGraph.')){
               if(this.translationData[item.key]){
                 _data.translatedName = this.translationData[item.key];  

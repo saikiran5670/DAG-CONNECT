@@ -2,7 +2,7 @@ import { Inject } from '@angular/core';
 import { Input } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ElementRef } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -25,8 +25,12 @@ import { Router, NavigationExtras } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
+import { HereService } from '../../../services/here.service';
+import { ConfigService } from '@ngx-config/core';
+import { LandmarkCategoryService } from '../../../services/landmarkCategory.service'; 
+import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 
-
+declare var H: any;
 
 @Component({
   selector: 'app-detail-driver-report',
@@ -36,13 +40,192 @@ import { ViewChildren } from '@angular/core';
 
 export class DetailDriverReportComponent implements OnInit {
   @Input() translationData: any;
-  displayedColumns = ['startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
+  displayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
   'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
   'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
   'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
+  prefMapData: any = [
+    {
+      key: 'rp_tr_report_fleetfueldetails_startDate',
+      value: 'startDate'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_endDate',
+      value: 'endDate'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_driverName',
+      value: 'driverName'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_driverID',
+      value: 'driverID'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_vehicleName',
+      value: 'vehicleName'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_vin',
+      value: 'vin'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_vehicleRegistrationNo',
+      value: 'vehicleRegistrationNo'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_distance',
+      value: 'distance'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_averageDistancePerDay',
+      value: 'averageDistancePerDay'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_maxSpeed',
+      value: 'maxSpeed'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_numberOfTrips',
+      value: 'numberOfTrips'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_averageGrossWeightComb',
+      value: 'averageGrossWeightComb'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_fuelConsumed',
+      value: 'fuelConsumed'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_fuelConsumption',
+      value: 'fuelConsumption'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_cO2Emission',
+      value: 'cO2Emission'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_idleDuration',
+      value: 'idleDuration'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_ptoDuration',
+      value: 'ptoDuration'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_harshBrakeDuration',
+      value: 'harshBrakeDuration'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_heavyThrottleDuration',
+      value: 'heavyThrottleDuration'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_cruiseControlDistance3050',
+      value: 'cruiseControlDistance3050'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_cruiseControlDistance5075',
+      value: 'cruiseControlDistance5075'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_cruiseControlDistance75',
+      value: 'cruiseControlDistance75'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_averageTrafficClassification',
+      value: 'averageTrafficClassification'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_ccFuelConsumption',
+      value: 'ccFuelConsumption'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_fuelconsumptionCCnonactive',
+      value: 'fuelconsumptionCCnonactive'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_idlingConsumption',
+      value: 'idlingConsumption'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_dpaScore',
+      value: 'dpaScore'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_dpaAnticipationScore',
+      value: 'dpaAnticipationScore'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_dpaBrakingScore',
+      value: 'dpaBrakingScore'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_idlingPTOScore',
+      value: 'idlingPTOScore'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_idlingPTO',
+      value: 'idlingPTO'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_idlingWithoutPTOpercent',
+      value: 'idlingWithoutPTOpercent'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_footBrake',
+      value: 'footBrake'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_cO2Emmision',
+      value: 'cO2Emmision'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_averageTrafficClassificationValue',
+      value: 'averageTrafficClassificationValue'
+    },
+    {
+      key: 'rp_tr_report_fleetfueldetails_idlingConsumptionValue',
+      value: 'idlingConsumptionValue'
+    }
+  ];
+
+searchStr: string = "";
+trackType: any = 'snail';
+displayRouteView: any = 'C';
+mapFilterForm: FormGroup;
+suggestionData: any;
+selectedMarker: any;
+map: any;
+lat: any = '37.7397';
+lng: any = '-121.4252';
+query: any;
+searchMarker: any = {};
+showMap: boolean = false;
+showBack: boolean = false;
+showMapPanel: boolean = false;
+dataSource: any = new MatTableDataSource([]);
+selectedTrip = new SelectionModel(true, []);
+selectedPOI = new SelectionModel(true, []);
+selectedHerePOI = new SelectionModel(true, []);
+advanceFilterOpen: boolean = false;
+showField: any = {
+  vehicleName: true,
+  vin: true,
+  regNo: true
+};
+userPOIList: any = [];
+herePOIList: any = [];
+displayPOIList: any = [];
+internalSelection: boolean = false;
+herePOIArr: any = [];
+@ViewChild("map")
+public mapElement: ElementRef;
+tripTraceArray: any = [];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
@@ -50,11 +233,7 @@ export class DetailDriverReportComponent implements OnInit {
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
-  selectedTrip = new SelectionModel(true, []);
-  dataSource: any = new MatTableDataSource([]);
   dataSource2: any = new MatTableDataSource([]);
-  showMap: boolean = false;
-  showMapPanel: boolean = false;
   tableExpandPanel: boolean = true;
   rankingExpandPanel: boolean = false;
   isSummaryOpen: boolean = false;
@@ -70,7 +249,6 @@ export class DetailDriverReportComponent implements OnInit {
   accountOrganizationId: any;
   wholeTripData: any = [];
   accountId: any;
-  internalSelection: boolean = false;
   accountPrefObj: any;
   prefTimeFormat: any; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
@@ -331,15 +509,26 @@ export class DetailDriverReportComponent implements OnInit {
   fromTripPageBack: boolean = false;
   displayData : any = [];
   showDetailedReport : boolean = false;
-  _state : any;
+  _state: any ;
+  map_key: any = '';
+  platform: any = '';
   
   constructor(private _formBuilder: FormBuilder, 
+              private landmarkCategoryService: LandmarkCategoryService,
               private translationService: TranslationService,
               private organizationService: OrganizationService,
               private reportService: ReportService,
               private router: Router,
+              private completerService: CompleterService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
-              private reportMapService: ReportMapService) {
+              private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService) {
+                this.map_key =  _configService.getSettings("hereMap").api_key;
+                //Add for Search Fucntionality with Zoom
+                this.query = "starbucks";
+                this.platform = new H.service.Platform({
+                "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+                  });
+               this.configureAutoSuggest();
                 const navigation = this.router.getCurrentNavigation();
                 this._state = navigation.extras.state as {
                   fromFleetfuelReport: boolean,
@@ -362,6 +551,10 @@ export class DetailDriverReportComponent implements OnInit {
       startTime: ['', []],
       endTime: ['', []]
     });
+    this.mapFilterForm = this._formBuilder.group({
+      routeType: ['', []],
+      trackType: ['', []]
+    });
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -373,6 +566,9 @@ export class DetailDriverReportComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
+      this.mapFilterForm.get('trackType').setValue('snail');
+      this.mapFilterForm.get('routeType').setValue('C');
+      this.makeHerePOIList();
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
@@ -389,6 +585,132 @@ export class DetailDriverReportComponent implements OnInit {
 
 
   }
+  resetTripPrefData(){
+    this.tripPrefData = [];
+  }
+
+  tripPrefData: any = [];
+  getTranslatedColumnName(prefData: any){
+    if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
+      prefData.subReportUserPreferences.forEach(element => {
+        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+          element.subReportUserPreferences.forEach(item => {
+            if(item.key.includes('rp_tr_report_fleetfueldetails_')){
+              this.tripPrefData.push(item);
+            }
+          });
+        }
+      });
+    }
+  }
+
+  setDisplayColumnBaseOnPref(){
+    let filterPref = this.tripPrefData.filter(i => i.state == 'I'); // removed unchecked
+    if(filterPref.length > 0){
+      filterPref.forEach(element => {
+        let search = this.prefMapData.filter(i => i.key == element.key); // present or not
+        if(search.length > 0){
+          let index = this.displayedColumns.indexOf(search[0].value); // find index
+          if (index > -1) {
+            this.displayedColumns.splice(index, 1); // removed
+          }
+        }
+
+        if(element.key == 'rp_tr_report_tripreportdetails_vehiclename'){
+          this.showField.vehicleName = false;
+        }else if(element.key == 'rp_tr_report_tripreportdetails_vin'){
+          this.showField.vin = false;
+        }else if(element.key == 'rp_tr_report_tripreportdetails_vehicleRegistrationNo'){
+          this.showField.regNo = false;
+        }
+      });
+    }
+  }
+
+  
+  changeHerePOISelection(event: any, hereData: any){
+    this.herePOIArr = [];
+    this.selectedHerePOI.selected.forEach(item => {
+      this.herePOIArr.push(item.key);
+    });
+    //this.searchPlaces();
+  }
+
+ // searchPlaces() {
+ //   let _ui = this.reportMapService.getUI();
+ //   this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr); 
+ // }
+
+  makeHerePOIList(){
+    this.herePOIList = [{
+      key: 'Hotel',
+      translatedName: this.translationData.lblHotel || 'Hotel'
+    },
+    {
+      key: 'Parking',
+      translatedName: this.translationData.lblParking || 'Parking'
+    },
+    {
+      key: 'Petrol Station',
+      translatedName: this.translationData.lblPetrolStation || 'Petrol Station'
+    },
+    {
+      key: 'Railway Station',
+      translatedName: this.translationData.lblRailwayStation || 'Railway Station'
+    }];
+  }
+  loadUserPOI(){
+    this.landmarkCategoryService.getCategoryWisePOI(this.accountOrganizationId).subscribe((poiData: any) => {
+      this.userPOIList = this.makeUserCategoryPOIList(poiData);
+    }, (error) => {
+      this.userPOIList = [];
+    });
+  }
+
+  makeUserCategoryPOIList(poiData: any){
+    let categoryArr: any = [];
+    let _arr: any = poiData.map(item => item.categoryId).filter((value, index, self) => self.indexOf(value) === index);
+    _arr.forEach(element => {
+      let _data = poiData.filter(i => i.categoryId == element);
+      if (_data.length > 0) {
+        let subCatUniq = _data.map(i => i.subCategoryId).filter((value, index, self) => self.indexOf(value) === index);
+        let _subCatArr = [];
+        if(subCatUniq.length > 0){
+          subCatUniq.forEach(elem => {
+            let _subData = _data.filter(i => i.subCategoryId == elem && i.subCategoryId != 0);
+            if (_subData.length > 0) { 
+            _subCatArr.push({ 
+              poiList: _subData, 
+              subCategoryName: _subData[0].subCategoryName, 
+              subCategoryId: _subData[0].subCategoryId,
+              checked: false
+            }); 
+            }
+          });
+        }
+
+        _data.forEach(data => {
+          data.checked = false;
+        });
+
+        categoryArr.push({
+          categoryId: _data[0].categoryId,
+          categoryName: _data[0].categoryName,
+          poiList: _data,
+          subCategoryPOIList: _subCatArr,
+          open: false,
+          parentChecked: false
+        });
+      } 
+    });
+
+    return categoryArr;
+  }
+
+ 
+
+  public ngAfterViewInit() { }
+
   loadfleetFuelDetails(vin: any){
     let getFleetFuelObj = {
       "startDateTime": 1521843915459,
@@ -406,25 +728,7 @@ export class DetailDriverReportComponent implements OnInit {
     })
   }
 
-  tripCheckboxClicked(event: any, row: any){
-
-  }
-  isAllSelectedForTrip() {
-    const numSelected = this.selectedTrip.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
-  }
-  masterToggleForTrip(){
-    
-  }
-
-  checkboxLabelForTrip(row?: any): string {
-    if (row)
-      return `${this.isAllSelectedForTrip() ? 'select' : 'deselect'} all`;
-    else
-      return `${this.selectedTrip.isSelected(row) ? 'deselect' : 'select'
-        } row`;
-  }
+ 
   getFleetPreferences(){
     this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       
@@ -446,11 +750,12 @@ export class DetailDriverReportComponent implements OnInit {
       this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
+      this.loadUserPOI();
     }, (error)=>{
       this.hideloader();
       this.wholeTripData.vinTripList = [];
       this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
-      //this.loadUserPOI();
+      this.loadUserPOI();
     });
   }
 
@@ -463,7 +768,241 @@ export class DetailDriverReportComponent implements OnInit {
 
   }
 
+  masterToggleForTrip() {
+    this.tripTraceArray = [];
+    let _ui = this.reportMapService.getUI();
+    if(this.isAllSelectedForTrip()){
+      this.selectedTrip.clear();
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+      this.showMap = false;
+    }
+    else{
+      this.dataSource.data.forEach((row) => {
+        this.selectedTrip.select(row);
+        this.tripTraceArray.push(row);
+      });
+      this.showMap = true;
+      //this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    }
+  }
+
+  isAllSelectedForTrip() {
+    const numSelected = this.selectedTrip.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForTrip(row?: any): string {
+    if (row)
+      return `${this.isAllSelectedForTrip() ? 'select' : 'deselect'} all`;
+    else
+      return `${this.selectedTrip.isSelected(row) ? 'deselect' : 'select'
+        } row`;
+  }
+
+ 
+  tripCheckboxClicked(event: any, row: any) {
+    this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
+    if(event.checked){ //-- add new marker
+      //this.tripTraceArray.push(row);
+      let _ui = this.reportMapService.getUI();
+     // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    }
+    else{ //-- remove existing marker
+     // let arr = this.tripTraceArray.filter(item => item.id != row.id);
+    //  this.tripTraceArray = arr;
+    //  let _ui = this.reportMapService.getUI();
+    //  this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    }
+  }
+
+  onAdvanceFilterOpen(){
+    this.advanceFilterOpen = !this.advanceFilterOpen;
+  }
+
+  onDisplayChange(event: any){
+    this.displayRouteView = event.value;
+    let _ui = this.reportMapService.getUI();
+  //  this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+  }
+
+  changeUserPOISelection(event: any, poiData: any, index: any){
+    if (event.checked){ // checked
+      this.userPOIList[index].subCategoryPOIList.forEach(element => {
+        element.checked = true;
+      });
+      this.userPOIList[index].poiList.forEach(_elem => {
+        _elem.checked = true;
+      });
+      this.userPOIList[index].parentChecked = true;
+      // if(this.selectedPOI.selected.length > 0){
+      //   let _s: any = this.selectedPOI.selected.filter(i => i.categoryId == this.userPOIList[index].categoryId);
+      //   if(_s.length > 0){
+
+      //   }
+      // }else{
+
+      // }
+    }else{ // unchecked
+      this.userPOIList[index].subCategoryPOIList.forEach(element => {
+        element.checked = false;
+      });
+      this.userPOIList[index].poiList.forEach(_elem => {
+        _elem.checked = false;
+      });
+      this.userPOIList[index].parentChecked = false;
+    }
+    this.displayPOIList = [];
+    this.selectedPOI.selected.forEach(item => {
+      if(item.poiList && item.poiList.length > 0){
+        item.poiList.forEach(element => {
+          if(element.checked){ // only checked
+            this.displayPOIList.push(element);
+          }
+        });
+      }
+    });
+    let _ui = this.reportMapService.getUI();
+   // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+  }
+
+  onMapModeChange(event: any){
+
+  }
+
+  onMapRepresentationChange(event: any){
+    this.trackType = event.value;
+    let _ui = this.reportMapService.getUI();
+   // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+  }
+
+  backToFleetUtilReport(){
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromTripReport: true
+      }
+    };
+    this.router.navigate(['report/fleetutilisation'], navigationExtras);
+  }
+
+  dataService: any;
+  private configureAutoSuggest(){
+    let searchParam = this.searchStr != null ? this.searchStr : '';
+    let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?'+'apiKey='+this.map_key +'&limit=5'+'&q='+searchParam ;
+  // let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
+    this.suggestionData = this.completerService.remote(
+    URL,'title','title');
+    this.suggestionData.dataField("items");
+    this.dataService = this.suggestionData;
+  }
+
+  onSearchFocus(){
+    this.searchStr = null;
+  }
+
+  onSearchSelected(selectedAddress: CompleterItem){
+    if(selectedAddress){
+      let id = selectedAddress["originalObject"]["id"];
+      let qParam = 'apiKey='+this.map_key + '&id='+ id;
+      this.hereService.lookUpSuggestion(qParam).subscribe((data: any) => {
+        this.searchMarker = {};
+        if(data && data.position && data.position.lat && data.position.lng){
+          this.searchMarker = {
+            lat: data.position.lat,
+            lng: data.position.lng,
+            from: 'search'
+          }
+          let _ui = this.reportMapService.getUI();
+         // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+        }
+      });
+    }
+  }
+
+  changeSubCategory(event: any, subCatPOI: any, _index: any){
+    let _uncheckedCount: any = 0;
+    this.userPOIList[_index].subCategoryPOIList.forEach(element => {
+      if(element.subCategoryId == subCatPOI.subCategoryId){
+        element.checked = event.checked ? true : false;
+      }
+      
+      if(!element.checked){ // unchecked count
+        _uncheckedCount += element.poiList.length;
+      }
+    });
+
+    if(this.userPOIList[_index].poiList.length == _uncheckedCount){
+      this.userPOIList[_index].parentChecked = false; // parent POI - unchecked
+      let _s: any = this.selectedPOI.selected;
+      if(_s.length > 0){
+        this.selectedPOI.clear(); // clear parent category data
+        _s.forEach(element => {
+          if(element.categoryId != this.userPOIList[_index].categoryId){ // exclude parent category data
+            this.selectedPOI.select(element);
+          }
+        });
+      }
+    }else{
+      this.userPOIList[_index].parentChecked = true; // parent POI - checked
+      let _check: any = this.selectedPOI.selected.filter(k => k.categoryId == this.userPOIList[_index].categoryId); // already present
+      if(_check.length == 0){ // not present, add it
+        let _s: any = this.selectedPOI.selected;
+        if(_s.length > 0){ // other element present
+          this.selectedPOI.clear(); // clear all
+          _s.forEach(element => {
+            this.selectedPOI.select(element);  
+          });
+        }
+        this.userPOIList[_index].poiList.forEach(_el => {
+          if(_el.subCategoryId == 0){
+            _el.checked = true;
+          }
+        });
+        this.selectedPOI.select(this.userPOIList[_index]); // add parent element
+      }
+    }
+
+    this.displayPOIList = [];
+    //if(this.selectedPOI.selected.length > 0){
+      this.selectedPOI.selected.forEach(item => {
+        if(item.poiList && item.poiList.length > 0){
+          item.poiList.forEach(element => {
+            if(element.subCategoryId == subCatPOI.subCategoryId){ // element match
+              if(event.checked){ // event checked
+                element.checked = true;
+                this.displayPOIList.push(element);
+              }else{ // event unchecked
+                element.checked = false;
+              }
+            }else{
+              if(element.checked){ // element checked
+                this.displayPOIList.push(element);
+              }
+            }
+          });
+        }
+      });
+      let _ui = this.reportMapService.getUI();
+     // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    //}
+  }
+
+  openClosedUserPOI(index: any){
+    this.userPOIList[index].open = !this.userPOIList[index].open;
+  }
+
   onSearch(){
+   // this.tripTraceArray = [];
+    this.displayPOIList = [];
+    this.herePOIArr = [];
+    this.selectedPOI.clear();
+    this.selectedHerePOI.clear();
+    this.trackType = 'snail';
+    this.displayRouteView = 'C';
+    this.mapFilterForm.get('routeType').setValue('C');
+    this.mapFilterForm.get('trackType').setValue('snail');
+    this.advanceFilterOpen = false;
+    this.searchMarker = {};
     this.isChartsOpen = true;
     this.ConsumedChartType = 'Line';
     this.TripsChartType= 'Bar';
@@ -532,6 +1071,19 @@ export class DetailDriverReportComponent implements OnInit {
     this.initData = tableData;
     this.showMap = false;
     this.selectedTrip.clear();
+    if(this.initData.length > 0){
+      if(!this.showMapPanel){ //- map panel not shown already
+        this.showMapPanel = true;
+        setTimeout(() => {
+          this.reportMapService.initMap(this.mapElement);
+        }, 0);
+      }else{
+        this.reportMapService.clearRoutesFromMap();
+      }
+    }
+    else{
+      this.showMapPanel = false;
+    }
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
@@ -1459,9 +2011,7 @@ setVehicleGroupAndVehiclePreSelection() {
     displayHeader.style.display ="block";
   }
 
-  onDriverSelected(_row){
-  this.router.navigate(['/report/detaildriverreport'])
-  }
+ 
 
   sumOfColumns(columnName : any){
     let sum: any = 0;
