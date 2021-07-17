@@ -394,7 +394,7 @@
         <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
             translationData.lblReset || 'Reset' }}</button>
         <button
-            [disabled]='reqField || selectionForSummaryColumns.selected.length == 0 || selectionForDetailsColumns.selected.length == 0 || selectionForChartsColumns.selected.length == 0'
+            [disabled]='reqField || (selectionForSummaryColumns.selected.length == 0 && summaryColumnData.length > 0) || (selectionForDetailsColumns.selected.length == 0 && detailColumnData.length > 0) || (selectionForChartsColumns.selected.length == 0 && chartsColumnData.length > 0)'
             class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
             'Confirm') }}</button>
     </div>
