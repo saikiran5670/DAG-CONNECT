@@ -26,6 +26,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
 import { HereService } from '../../../services/here.service';
+import { ConfigService } from '@ngx-config/core';
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 
 
@@ -38,7 +39,7 @@ import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteDat
 
 export class DetailVehicleReportComponent implements OnInit {
   @Input() translationData: any;
-  displayedColumns = ['startDate','endDate','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
+  displayedColumns = ['All','startDate','endDate','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
   'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
@@ -367,7 +368,7 @@ selectedMarker: any;
               private reportMapService: ReportMapService) { 
                 const navigation = this.router.getCurrentNavigation();
                 this._state = navigation.extras.state as {
-                  fromFleetUtilReport: boolean,
+                  fromFleetfuelReport: boolean,
                   vehicleData: any
                 };
               }
@@ -419,6 +420,7 @@ selectedMarker: any;
 
 
   }
+  
   searchPlaces() {
     let _ui = this.reportMapService.getUI();
     this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr); 
@@ -1302,7 +1304,17 @@ getLast3MonthDate(){
 
   resetTripFormControlValue(){
     if(!this.internalSelection && this.fleetFuelSearchData.modifiedFrom !== ""){
+      if(this._state){
+        if(this.vehicleDD.length > 0){
+            let _v = this.vehicleDD.filter(i => i.vin == this._state.vehicleData.vin);
+            if(_v.length > 0){
+              let id =_v[0].vehicleId;
+              this.tripForm.get('vehicle').setValue(id);
+            }
+        }
+        }else{
       this.tripForm.get('vehicle').setValue(this.fleetFuelSearchData.vehicleDropDownValue);
+        }
       this.tripForm.get('vehicleGroup').setValue(this.fleetFuelSearchData.vehicleGroupDropDownValue);
     }else{
       this.tripForm.get('vehicle').setValue(0);
