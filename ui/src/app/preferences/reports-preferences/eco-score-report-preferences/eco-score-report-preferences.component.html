@@ -102,6 +102,182 @@
     <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left"></div>  
 </div>
 
+<!-- Driver Performance Tab -->
+<div *ngIf='driverPerformanceColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 margin-top-20'
+    fxLayoutAlign="left center" style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForDriverPerformanceColumns() : null'
+            [checked]='selectionForDriverPerformanceColumns.hasValue() && isAllSelectedForDriverPerformanceColumns()'
+            [indeterminate]='selectionForDriverPerformanceColumns.hasValue() && !isAllSelectedForDriverPerformanceColumns()'
+            [aria-label]='checkboxLabelForDriverPerformanceColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
+                translationData.lblDriverPerformance || 'Driver Performance'
+                }}</span>
+        </mat-checkbox>
+    </div>
+</div>
+<!-- Eco-Score -->
+<div *ngIf='driverPerformanceColumnData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+    <div fxLayout="column" class="areaWidth" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDriverPerformanceColumns.toggle(driverPerformanceColumnData[0]) : null; driverPerformanceCheckboxClicked($event, driverPerformanceColumnData[0])'
+                [checked]="selectionForDriverPerformanceColumns.isSelected(driverPerformanceColumnData[0])"
+                [aria-label]='checkboxLabelForDriverPerformanceColumns(driverPerformanceColumnData[0])' class='custom-checkbox'><span class="headerFont">{{
+                    driverPerformanceColumnData.length > 0 ? driverPerformanceColumnData[0].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+</div>
+<!-- Fuel Consumption -->
+<div *ngIf='driverPerformanceColumnData.length > 0' fxLayout="row" class='areaWidth full-width oddColumnColor' fxLayoutAlign="left">
+    <div fxLayout="column" class="areaWidth" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDriverPerformanceColumns.toggle(driverPerformanceColumnData[1]) : null; driverPerformanceCheckboxClicked($event, driverPerformanceColumnData[1])'
+                [checked]="selectionForDriverPerformanceColumns.isSelected(driverPerformanceColumnData[1])"
+                [aria-label]='checkboxLabelForDriverPerformanceColumns(driverPerformanceColumnData[1])' class='custom-checkbox'><span class="headerFont">{{
+                    driverPerformanceColumnData.length > 0 ? driverPerformanceColumnData[1].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+</div>
+<!-- Fuel Consumption child start -->
+<!-- Cruise Usage -->
+<div *ngIf='driverPerformanceColumnData && driverPerformanceColumnData.length > 0 && driverPerformanceColumnData[1].subReportUserPreferences && driverPerformanceColumnData[1].subReportUserPreferences.length > 0' fxLayout="row" fxLayoutAlign="left">
+    <div fxLayout="column" class="areaWidth min-width-33-3-per adjust-padding" fxLayoutGap="0px" fxLayoutAlign="left">
+        <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+            <span>{{ driverPerformanceColumnData[1].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[1].subReportUserPreferences[0].translatedName : '' }}</span>
+        </mat-checkbox>
+    </div>
+</div>
+<!-- Cruise Usage child start -->
+<div *ngIf='driverPerformanceColumnData && driverPerformanceColumnData.length > 0 && driverPerformanceColumnData[1].subReportUserPreferences && driverPerformanceColumnData[1].subReportUserPreferences.length > 0 && driverPerformanceColumnData[1].subReportUserPreferences[0].subReportUserPreferences && driverPerformanceColumnData[1].subReportUserPreferences[0].subReportUserPreferences.length > 0' fxLayout="row" fxLayoutAlign="left" class='oddColumnColor'>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per adjust-padding" fxLayoutGap="0px" fxLayoutAlign="left">
+        <mat-checkbox style="padding-left: 20%;" [disabled]='!editFlag' class='custom-checkbox'>
+            <span>{{ driverPerformanceColumnData[1].subReportUserPreferences[0].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[1].subReportUserPreferences[0].subReportUserPreferences[0].translatedName : '' }}</span>
+        </mat-checkbox>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per adjust-padding" fxLayoutGap="0px" fxLayoutAlign="left">
+        <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+            <span>{{ driverPerformanceColumnData[1].subReportUserPreferences[0].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[1].subReportUserPreferences[0].subReportUserPreferences[1].translatedName : '' }}</span>
+        </mat-checkbox>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per adjust-padding" fxLayoutGap="0px" fxLayoutAlign="left">
+        <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+            <span>{{ driverPerformanceColumnData[1].subReportUserPreferences[0].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[1].subReportUserPreferences[0].subReportUserPreferences[2].translatedName : '' }}</span>
+        </mat-checkbox>
+    </div>
+</div>
+<!-- Cruise Usage child end -->
+<div *ngIf='driverPerformanceColumnData && driverPerformanceColumnData.length > 0 && driverPerformanceColumnData[1].subReportUserPreferences && driverPerformanceColumnData[1].subReportUserPreferences.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+                <span>{{ driverPerformanceColumnData[1].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[1].subReportUserPreferences[1].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+                <span>{{ driverPerformanceColumnData[1].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[1].subReportUserPreferences[2].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+                <span>{{ driverPerformanceColumnData[1].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[1].subReportUserPreferences[3].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+                <span>{{ driverPerformanceColumnData[1].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[1].subReportUserPreferences[4].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+                <span>{{ driverPerformanceColumnData[1].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[1].subReportUserPreferences[5].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+                <span>{{ driverPerformanceColumnData[1].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[1].subReportUserPreferences[6].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+                <span>{{ driverPerformanceColumnData[1].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[1].subReportUserPreferences[7].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+                <span>{{ driverPerformanceColumnData[1].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[1].subReportUserPreferences[8].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div style='height: 44px;' fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left"></div>
+    </div>
+</div>
+<!-- Fuel Consumption child end -->
+<!-- Braking Score -->
+<div *ngIf='driverPerformanceColumnData.length > 0' fxLayout="row" class='areaWidth full-width oddColumnColor' fxLayoutAlign="left">
+    <div fxLayout="column" class="areaWidth" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDriverPerformanceColumns.toggle(driverPerformanceColumnData[2]) : null; driverPerformanceCheckboxClicked($event, driverPerformanceColumnData[2])'
+                [checked]="selectionForDriverPerformanceColumns.isSelected(driverPerformanceColumnData[2])"
+                [aria-label]='checkboxLabelForDriverPerformanceColumns(driverPerformanceColumnData[2])' class='custom-checkbox'><span class="headerFont">{{
+                    driverPerformanceColumnData.length > 0 ? driverPerformanceColumnData[2].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+</div>
+<!-- Braking Score child start -->
+<div *ngIf='driverPerformanceColumnData && driverPerformanceColumnData.length > 0 && driverPerformanceColumnData[2].subReportUserPreferences && driverPerformanceColumnData[2].subReportUserPreferences.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+                <span>{{ driverPerformanceColumnData[2].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[2].subReportUserPreferences[0].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+                <span>{{ driverPerformanceColumnData[2].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[2].subReportUserPreferences[1].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+                <span>{{ driverPerformanceColumnData[2].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[2].subReportUserPreferences[2].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox style="padding-left: 10%;" [disabled]='!editFlag' class='custom-checkbox'>
+                <span>{{ driverPerformanceColumnData[2].subReportUserPreferences.length > 0 ? driverPerformanceColumnData[2].subReportUserPreferences[3].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div style='height: 44px;' fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left"></div>
+        <div style='height: 44px;' fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left"></div>
+    </div>
+</div>
+<!-- Braking Score child end -->
+<!-- Anticipation score -->
+<div *ngIf='driverPerformanceColumnData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+    <div fxLayout="column" class="areaWidth" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDriverPerformanceColumns.toggle(driverPerformanceColumnData[3]) : null; driverPerformanceCheckboxClicked($event, driverPerformanceColumnData[3])'
+                [checked]="selectionForDriverPerformanceColumns.isSelected(driverPerformanceColumnData[3])"
+                [aria-label]='checkboxLabelForDriverPerformanceColumns(driverPerformanceColumnData[3])' class='custom-checkbox'><span class="headerFont">{{
+                    driverPerformanceColumnData.length > 0 ? driverPerformanceColumnData[3].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+</div>
+
 <!-- Driver Performance Graph Tab -->
 <div *ngIf='driverPerformanceGraphColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 margin-top-20'
     fxLayoutAlign="left center" style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>

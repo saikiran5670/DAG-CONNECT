@@ -158,7 +158,73 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
         }
       });
     }
+    this.makeNestedDesign();
     this.setColumnCheckbox();
+  }
+
+  makeNestedDesign(){
+    if(this.driverPerformanceColumnData && this.driverPerformanceColumnData.length > 0){
+      this.driverPerformanceColumnData.forEach((element, index) => {
+        if(element.state == 'A'){
+          element.isChecked = true;
+        }else{
+          element.isChecked = false;
+        }
+        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+         if(index == 1){ // fuel consumption
+          let childArr: any = [];
+          element.subReportUserPreferences.forEach(_elem => {
+            if(_elem && _elem.subReportUserPreferences && _elem.subReportUserPreferences.length > 0){ // Cruise child
+              _elem.subReportUserPreferences.forEach(_item => {
+                if(_item.state == 'A'){
+                  _item.isChecked = true;
+                }else{
+                  _item.isChecked = false;
+                }
+                if(this.translationData[_item.key]){
+                  _item.translatedName = this.translationData[_item.key];  
+                }else{
+                  _item.translatedName = this.getName(_item.name, 62);   
+                }
+              });
+            }
+
+            if(_elem.state == 'A'){
+              _elem.isChecked = true;
+            }else{
+              _elem.isChecked = false;
+            }
+            if(this.translationData[_elem.key]){
+              _elem.translatedName = this.translationData[_elem.key];  
+            }else{
+              _elem.translatedName = this.getName(_elem.name, 40);   
+            }
+            
+            if(_elem.name.includes('EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage')){ // "0" position always
+              childArr.unshift(_elem); // cruise
+            }else{
+              childArr.push(_elem); // others
+            }
+          });
+          element.subReportUserPreferences = childArr;
+         }
+          if(index == 2){ // Braking Score
+          element.subReportUserPreferences.forEach(_elem => {
+            if(_elem.state == 'A'){
+              _elem.isChecked = true;
+            }else{
+              _elem.isChecked = false;
+            }
+            if(this.translationData[_elem.key]){
+              _elem.translatedName = this.translationData[_elem.key];  
+            }else{
+              _elem.translatedName = this.getName(_elem.name, 40);   
+            }
+          });
+         } 
+        }
+      }); 
+    }
   }
 
   setColumnCheckbox(){
@@ -176,6 +242,12 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
     this.generalGraphColumnData.forEach(element => {
       if(element.state == 'A'){
         this.selectionForGeneralGraphColumns.select(element);
+      }
+    });
+
+    this.driverPerformanceColumnData.forEach(element => {
+      if(element.state == 'A'){
+        this.selectionForDriverPerformanceColumns.select(element);
       }
     });
 
@@ -227,6 +299,24 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
 
   }
 
+  masterToggleForDriverPerformanceColumns(){
+    if(this.isAllSelectedForDriverPerformanceColumns()){
+      this.selectionForDriverPerformanceColumns.clear();
+    }else{
+      this.driverPerformanceColumnData.forEach(row => { this.selectionForDriverPerformanceColumns.select(row) });
+    }
+  }
+
+  isAllSelectedForDriverPerformanceColumns(){
+    const numSelected = this.selectionForDriverPerformanceColumns.selected.length;
+    const numRows = this.driverPerformanceColumnData.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForDriverPerformanceColumns(row?: any){
+
+  }
+
   masterToggleForDriverPerformanceGraphColumns(){
     if(this.isAllSelectedForDriverPerformanceGraphColumns()){
       this.selectionForDriverPerformanceGraphColumns.clear();
@@ -247,6 +337,10 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
 
   checkboxClicked(event: any, rowData: any){
     
+  }
+
+  driverPerformanceCheckboxClicked(event: any, rowData: any){
+
   }
 
   onCancel(){
