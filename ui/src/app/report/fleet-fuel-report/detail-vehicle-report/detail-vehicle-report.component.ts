@@ -103,6 +103,7 @@ export class DetailVehicleReportComponent implements OnInit {
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
   bufferValue = 75;
+
   showField: any = {
     vehicleName: true,
     vin: true,
@@ -347,14 +348,25 @@ export class DetailVehicleReportComponent implements OnInit {
   displayData : any = [];
   showDetailedReport : boolean = false;
   trackType: any = 'snail';
-  
+  _state : any;
   constructor(private _formBuilder: FormBuilder, 
               private translationService: TranslationService,
               private organizationService: OrganizationService,
               private reportService: ReportService,
               private router: Router,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
-              private reportMapService: ReportMapService) { }
+              private reportMapService: ReportMapService) {
+                const navigation = this.router.getCurrentNavigation();
+                this._state = navigation.extras.state as {
+                fromFleetfuelReport: boolean,
+                vehicleData: any
+                };
+                if(this._state){
+                  this.showBack = true;
+                }else{
+                  this.showBack = false;
+                }
+               }
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
@@ -396,6 +408,15 @@ export class DetailVehicleReportComponent implements OnInit {
     });
 
 
+  }
+
+  detailvehiclereport(){
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromFleetfuelReport: true
+      }
+    };
+    this.router.navigate(['report/fleetfuelvehicle'], navigationExtras);
   }
 
   masterToggleForTrip() {
@@ -1579,16 +1600,7 @@ doc.addPage();
     displayHeader.style.display ="block";
   }
 
-  gotoTrip(vehData:any){
-    const navigationExtras: NavigationExtras = {
-      state: {
-        fromFleetfuelReport: true,
-        vehicleData: vehData
-      }
-    };
-    this.router.navigate(['report/detailvehiclereport'], navigationExtras);
-  }
-
+ 
 
 
   
