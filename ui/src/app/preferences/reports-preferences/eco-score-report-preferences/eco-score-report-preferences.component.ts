@@ -27,6 +27,9 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
   selectionForGeneralGraphColumns = new SelectionModel(true, []);
   selectionForDriverPerformanceColumns = new SelectionModel(true, []);
   selectionForDriverPerformanceGraphColumns = new SelectionModel(true, []);
+  mainParent: any = {
+    isChecked: false
+  }
 
   constructor(private reportService: ReportService, private router: Router) { }
 
@@ -159,7 +162,6 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
       });
     }
     this.makeNestedDesign();
-    this.setColumnCheckbox();
   }
 
   makeNestedDesign(){
@@ -225,6 +227,7 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
         }
       }); 
     }
+    this.setColumnCheckbox();
   }
 
   setColumnCheckbox(){
@@ -245,12 +248,16 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
       }
     });
 
+    let _count: any = 0;
     this.driverPerformanceColumnData.forEach(element => {
       if(element.state == 'A'){
+        _count++;
         this.selectionForDriverPerformanceColumns.select(element);
       }
     });
 
+    this.mainParent.isChecked = (this.driverPerformanceColumnData.length == _count) ? true : false;
+    
     this.driverPerformanceGraphColumnData.forEach(element => {
       if(element.state == 'A'){
         this.selectionForDriverPerformanceGraphColumns.select(element);
@@ -299,12 +306,31 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
 
   }
 
-  masterToggleForDriverPerformanceColumns(){
-    if(this.isAllSelectedForDriverPerformanceColumns()){
-      this.selectionForDriverPerformanceColumns.clear();
-    }else{
+  masterToggleForDriverPerformanceColumns(event: any){
+    if(event.checked){
       this.driverPerformanceColumnData.forEach(row => { this.selectionForDriverPerformanceColumns.select(row) });
+      this.selectDeselectAllChild(true);
+    }else{
+      this.selectionForDriverPerformanceColumns.clear();
+      this.selectDeselectAllChild(false);
     }
+  }
+
+  selectDeselectAllChild(_flag: any){
+    this.mainParent.isChecked = _flag;
+    this.driverPerformanceColumnData.forEach(element => {
+      element.isChecked = _flag;
+      if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+        element.subReportUserPreferences.forEach(_elem => {
+          _elem.isChecked = _flag;
+          if(_elem.subReportUserPreferences && _elem.subReportUserPreferences.length > 0){
+            _elem.subReportUserPreferences.forEach(_item => {
+              _item.isChecked = _flag;
+            });
+          }
+        });
+      }
+    });
   }
 
   isAllSelectedForDriverPerformanceColumns(){
@@ -339,17 +365,39 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
     
   }
 
-  driverPerformanceCheckboxClicked(event: any, rowData: any){
+  driverPerformanceCheckboxClicked(event: any, rowData: any, index: any){
+    this.driverPerformanceColumnData[index].isChecked = event.checked ? true : false;;
+    if(this.driverPerformanceColumnData[index].subReportUserPreferences && this.driverPerformanceColumnData[index].subReportUserPreferences.length > 0){
+      this.driverPerformanceColumnData[index].subReportUserPreferences.forEach(element => {
+        element.isChecked = event.checked ? true : false;
+        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+          element.subReportUserPreferences.forEach(_elem => {
+            _elem.isChecked = event.checked ? true : false;
+          });  
+        }
+      });
+    }
 
+    let _mainParentCount: any = 0;
+    this.driverPerformanceColumnData.forEach(element => {
+      if(element.isChecked){
+        _mainParentCount++;
+      }
+    });
+    if(this.driverPerformanceColumnData.length == _mainParentCount){ // main parent checked
+      this.mainParent.isChecked = true;
+    }else{
+      this.mainParent.isChecked = false;
+    }
   }
 
   onCancel(){
     this.setEcoScoreFlag.emit({flag: false, msg: ''});
-    this.setColumnCheckbox();
+    this.makeNestedDesign();
   }
 
   onReset(){
-    this.setColumnCheckbox();
+    this.makeNestedDesign();
   }
 
   onConfirm(){
@@ -361,6 +409,88 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
       return this.translationData.lblDetailssavesuccessfully;
     else
       return ("Details save successfully");
+  }
+
+  changeSubChildChecked(event: any, rowData: any, parentIndex: any, childIndex: any){
+    if(this.driverPerformanceColumnData[parentIndex].subReportUserPreferences[childIndex]){
+      this.driverPerformanceColumnData[parentIndex].subReportUserPreferences[childIndex].isChecked = event.checked ? true : false; 
+      if(this.driverPerformanceColumnData[parentIndex].subReportUserPreferences[childIndex].subReportUserPreferences && this.driverPerformanceColumnData[parentIndex].subReportUserPreferences[childIndex].subReportUserPreferences.length > 0){
+        // sub-child select/unselect
+        this.driverPerformanceColumnData[parentIndex].subReportUserPreferences[childIndex].subReportUserPreferences.forEach(_index => {
+          _index.isChecked = event.checked ? true : false;
+        });
+      }
+
+      let _checkCount: any = 0;
+      this.driverPerformanceColumnData[parentIndex].subReportUserPreferences.forEach(element => {
+        if(element.isChecked){
+          _checkCount++;
+        }
+      });
+      if(this.driverPerformanceColumnData[parentIndex].subReportUserPreferences.length == _checkCount){ // parent checked
+        this.driverPerformanceColumnData[parentIndex].isChecked = true;
+      }else{
+        this.driverPerformanceColumnData[parentIndex].isChecked = false;
+      }
+
+      // main parent
+      let _mainParentCount: any = 0;
+      this.driverPerformanceColumnData.forEach(_el => {
+        if(_el.isChecked){
+          _mainParentCount++;
+        }
+      });
+      if(this.driverPerformanceColumnData.length == _mainParentCount){ // main parent selected
+        this.mainParent.isChecked = true;
+      }else{
+        this.mainParent.isChecked = false;
+      }
+    }
+  }
+
+  changeLastSubChildChecked(event: any, rowData: any, parentIndex: any, childIndex: any, lastSubChild: any){
+    if(this.driverPerformanceColumnData[parentIndex].subReportUserPreferences[childIndex].subReportUserPreferences[lastSubChild]){
+      this.driverPerformanceColumnData[parentIndex].subReportUserPreferences[childIndex].subReportUserPreferences[lastSubChild].isChecked = event.checked ? true : false;
+      
+      // child
+      let _checkCount: any = 0;
+      this.driverPerformanceColumnData[parentIndex].subReportUserPreferences[childIndex].subReportUserPreferences.forEach(element => {
+        if(element.isChecked){
+          _checkCount++;
+        }
+      });
+      if(this.driverPerformanceColumnData[parentIndex].subReportUserPreferences[childIndex].subReportUserPreferences.length == _checkCount){ // child->parent selected
+        this.driverPerformanceColumnData[parentIndex].subReportUserPreferences[childIndex].isChecked = true;
+      }else{
+        this.driverPerformanceColumnData[parentIndex].subReportUserPreferences[childIndex].isChecked = false;
+      }
+
+      // parent
+      let _parentCheckCount: any = 0;
+      this.driverPerformanceColumnData[parentIndex].subReportUserPreferences.forEach(element => {
+        if(element.isChecked){
+          _parentCheckCount++;
+        }
+      });
+      if(this.driverPerformanceColumnData[parentIndex].subReportUserPreferences.length == _parentCheckCount){ // child->parent selected
+        this.driverPerformanceColumnData[parentIndex].isChecked = true;
+      }else{
+        this.driverPerformanceColumnData[parentIndex].isChecked = false;
+      }
+
+      // main parent
+      let _mainParentCount: any = 0;
+      this.driverPerformanceColumnData.forEach(_el => {
+        if(_el.isChecked){
+          _mainParentCount++;
+        }
+      });
+      if(this.driverPerformanceColumnData.length == _mainParentCount){ // main parent selected
+        this.mainParent.isChecked = true;
+      }else{
+        this.mainParent.isChecked = false;
+      }
+    }
   }
 
 }
