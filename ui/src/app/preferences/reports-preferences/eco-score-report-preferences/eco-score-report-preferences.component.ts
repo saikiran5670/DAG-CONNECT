@@ -401,7 +401,116 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
   }
 
   onConfirm(){
+    let _generalArr: any = [];
+    let _generalGraphArr: any = [];
+    let _driverPerformArr: any = [];
+    let _driverPerformGraphArr: any = [];
+    let parentDataAttr: any = [];
     
+    this.generalColumnData.forEach(element => {
+      let sSearch = this.selectionForGeneralColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+      if(sSearch.length > 0){
+        _generalArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }else{
+        _generalArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }
+    });
+
+    this.generalGraphColumnData.forEach(element => {
+      let sSearch = this.selectionForGeneralGraphColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+      if(sSearch.length > 0){
+        _generalGraphArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }else{
+        _generalGraphArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }
+    });
+
+    this.driverPerformanceGraphColumnData.forEach(element => {
+      let sSearch = this.selectionForDriverPerformanceGraphColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+      if(sSearch.length > 0){
+        _driverPerformGraphArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }else{
+        _driverPerformGraphArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }
+    });
+
+    this.driverPerformanceColumnData.forEach(element => {
+      if(element.isChecked){ // parent
+        _driverPerformArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }else{
+        _driverPerformArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }
+
+      if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){ // sub-child
+        element.subReportUserPreferences.forEach(elem => {
+          if(elem.isChecked){
+            _driverPerformArr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }else{
+            _driverPerformArr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }
+          
+          if(elem.subReportUserPreferences && elem.subReportUserPreferences.length > 0){ // last child
+            elem.subReportUserPreferences.forEach(_item => {
+              if(_item.isChecked){
+                _driverPerformArr.push({ dataAttributeId: _item.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+              }else{
+                _driverPerformArr.push({ dataAttributeId: _item.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+              }
+            });
+          }
+        });
+      }
+    });
+
+    if(this.initData && this.initData.subReportUserPreferences && this.initData.subReportUserPreferences.length > 0){
+      parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      this.initData.subReportUserPreferences.forEach(elem => {
+        if(elem.name.includes('EcoScore.General')){
+          if(this.selectionForGeneralColumns.selected.length == this.generalColumnData.length){ // parent selected
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }else{
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }
+        }else if(elem.name.includes('EcoScore.GeneralGraph')){
+          if(this.selectionForGeneralGraphColumns.selected.length == this.generalGraphColumnData.length){ // parent selected
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }else{
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }
+        }else if(elem.name.includes('EcoScore.DriverPerformanceGraph')){
+          if(this.selectionForDriverPerformanceGraphColumns.selected.length == this.driverPerformanceGraphColumnData.length){ // parent selected
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }else{
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }
+        }else if(elem.name.includes('EcoScore.DriverPerformance')){
+          if(this.mainParent.isChecked){ // main parent selected
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }else{
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }
+        }
+      });
+    }
+
+    let objData: any = {
+      reportId: this.reportId,
+      attributes: [..._generalArr, ..._generalGraphArr, ..._driverPerformGraphArr, ..._driverPerformArr, ...parentDataAttr] //-- merge data
+    }
+    
+    this.reportService.updateReportUserPreference(objData).subscribe((_prefData: any) => {
+      this.loadEcoScoreReportPreferences();
+      this.setEcoScoreFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+      if((this.router.url).includes("ecoscorereport")){
+        this.reloadCurrentComponent();
+      }
+    }, (error) => {
+      console.log(error)
+    });
+  }
+
+  reloadCurrentComponent(){
+    window.location.reload(); //-- reload screen
   }
 
   getSuccessMsg(){
