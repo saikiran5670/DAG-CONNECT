@@ -57,9 +57,12 @@ namespace net.atos.daf.ct2.notificationengine.repository
 	                                    ,nottim.start_date as Aletimenoti_start_date
 	                                    ,nottim.end_date as Aletimenoti_end_date
 	                                    ,nottim.state as Aletimenoti_state
+                                        ,ale.organization_id as Ale_organization_id
                                     from master.notificationrecipientref notref
                                     inner join master.notificationrecipient notrec
                                     on notref.recipient_id=notrec.id
+                                    inner join master.alert ale
+                                    on notref.alert_id=ale.id
                                     inner join master.notification noti
                                     on notref.notification_id=noti.id
                                     inner join master.notificationlimit notlim
@@ -133,6 +136,52 @@ namespace net.atos.daf.ct2.notificationengine.repository
             parameter.Add("@vin", tripAlert.Vin);
             List<TripAlert> generatedAlertOutput = (List<TripAlert>)await _dataMartdataAccess.QueryAsync<TripAlert>(queryStatement, parameter);
             return generatedAlertOutput;
+        }
+
+        public async Task<NotificationHistory> InsertNotificationSentHistory(NotificationHistory notificationHistory)
+        {
+            string queryStatement = @"INSERT INTO master.notificationhistory(
+	                                                      organization_id
+	                                                    , trip_id
+	                                                    , vehicle_id
+	                                                    , alert_id
+	                                                    , notification_id
+	                                                    , recipient_id
+	                                                    , notification_mode_type
+	                                                    , phone_no
+	                                                    , email_id
+	                                                    , ws_url
+	                                                    , notification_sent_date
+	                                                    , status)
+	                                                    VALUES (@organization_id
+			                                                    , @trip_id
+			                                                    , @vehicle_id
+			                                                    , @alert_id
+			                                                    , @notification_id
+			                                                    , @recipient_id
+			                                                    , @notification_mode_type
+			                                                    , @phone_no
+			                                                    , @email_id
+			                                                    , @ws_url
+			                                                    , @notification_sent_date
+			                                                    , @status) RETURNING id;";
+            var parameter = new DynamicParameters();
+            parameter.Add("@organization_id", notificationHistory.OrganizationId);
+            parameter.Add("@trip_id", notificationHistory.TripId);
+            parameter.Add("@vehicle_id", notificationHistory.VehicleId);
+            parameter.Add("@alert_id", notificationHistory.AlertId);
+            parameter.Add("@notification_id", notificationHistory.NotificationId);
+            parameter.Add("@recipient_id", notificationHistory.RecipientId);
+            parameter.Add("@notification_mode_type", notificationHistory.NotificationModeType);
+            parameter.Add("@phone_no", notificationHistory.PhoneNo);
+            parameter.Add("@email_id", notificationHistory.EmailId);
+            parameter.Add("@ws_url", notificationHistory.WsUrl);
+            parameter.Add("@notification_sent_date", notificationHistory.NotificationSendDate);
+            parameter.Add("@status", notificationHistory.Status);
+            int notificationSentId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+            notificationHistory.Id = notificationSentId;
+            return notificationHistory;
+
         }
     }
 }
