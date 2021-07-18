@@ -1,7 +1,7 @@
-import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ReportService } from '../../../services/report.service';
 import { Router } from '@angular/router';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-fuel-benchmark-preferences',
@@ -21,10 +21,19 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
   initData: any = [];
   fuelBenchmarkComponentPrefData: any = [];
   fuelBenchmarkChartsPrefData: any = [];
-  selectionForChartsColumns = new SelectionModel(true, []);
-  selectionForComponentColumns = new SelectionModel(true, []);
+  donutPieDD: any = [
+    {
+      type: 'D',
+      name: 'Donut Chart'
+    },
+    {
+      type: 'P',
+      name: 'Pie Chart'
+    }
+  ];
+  fuelBenchmarkForm: FormGroup;
 
-  constructor(private reportService: ReportService, private router: Router) { }
+  constructor(private reportService: ReportService, private _formBuilder: FormBuilder, private router: Router) { }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -32,6 +41,12 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     let repoId: any = this.reportListData.filter(i => i.name == 'Fuel Benchmarking');
+    this.fuelBenchmarkForm = this._formBuilder.group({
+      fuelBechmarkChart: [],
+      highFuelEfficencyField: [],
+      lowFuelEfficencyField: []
+    });
+
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
     }else{
@@ -93,7 +108,15 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
         }
       });
     }
-    this.setColumnCheckbox();
+    if(this.fuelBenchmarkComponentPrefData.length > 0 && this.fuelBenchmarkChartsPrefData.length > 0){
+      this.setDefaultFormValues();
+    }
+  }
+
+  setDefaultFormValues(){
+    this.fuelBenchmarkForm.get('fuelBechmarkChart').setValue(this.fuelBenchmarkChartsPrefData[0].chartType != '' ? this.fuelBenchmarkChartsPrefData[0].chartType : 'D');
+    this.fuelBenchmarkForm.get('highFuelEfficencyField').setValue(this.fuelBenchmarkComponentPrefData[0].thresholdValue != '' ? this.fuelBenchmarkChartsPrefData[0].thresholdValue : '0.00');
+    this.fuelBenchmarkForm.get('lowFuelEfficencyField').setValue(this.fuelBenchmarkChartsPrefData[0].thresholdValue != '' ? this.fuelBenchmarkChartsPrefData[0].thresholdValue : '0.00');
   }
 
   getName(name: any, _count: any) {
@@ -101,34 +124,39 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
     return updatedName;
   }
 
-  setColumnCheckbox(){
-    this.selectionForChartsColumns.clear();
-    this.selectionForComponentColumns.clear();
-
-    this.fuelBenchmarkChartsPrefData.forEach(element => {
-      if(element.state == 'A'){
-        this.selectionForChartsColumns.select(element);
-      }
-    });
-
-    this.fuelBenchmarkComponentPrefData.forEach(element => {
-      if(element.state == 'A'){
-        this.selectionForComponentColumns.select(element);
-      }
-    });
-  }
-
   onCancel(){
-    this.setFuelBenchmarkReportFlag.emit({flag: false, msg: ''});
-    this.setColumnCheckbox();
+    this.setFuelBenchmarkReportFlag.emit({ flag: false, msg: '' });
+    this.setDefaultFormValues();
   }
 
   onReset(){
-    this.setColumnCheckbox();
+    this.setDefaultFormValues();
   }
 
   onConfirm(){
-    
+    this.onCancel(); // TODO: Create API call
+  }
+
+  onDonutPieDDChange(event: any){
+
+  }
+
+  keyPressNumbers(event: any) {
+    // var charCode = (event.which) ? event.which : event.keyCode;
+    // // Only Numbers 0-9
+    // if ((charCode < 48 || charCode > 57)) {
+    //   event.preventDefault();
+    //   return false;
+    // } else {
+    //   return true;
+    // }
+  }
+
+  getSuccessMsg(){
+    if(this.translationData.lblDetailssavesuccessfully)
+      return this.translationData.lblDetailssavesuccessfully;
+    else
+      return ("Details save successfully");
   }
 
 }

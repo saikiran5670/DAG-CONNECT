@@ -1,58 +1,79 @@
-<!-- Component Tab -->
-<div *ngIf='fuelBenchmarkComponentPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 summaryPref'
-    fxLayoutAlign="left center" style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
-    <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
-        <span class='headerFont'>{{ translationData.lblCompoent || 'Component' }}</span>
+<form [formGroup]="fuelBenchmarkForm">
+    <!-- Component Tab -->
+    <div *ngIf='fuelBenchmarkComponentPrefData.length > 0' fxLayout="row"
+        class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+        style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+        <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
+            <span class='headerFont'>{{ translationData.lblCompoent || 'Component' }}</span>
+        </div>
+        <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
+            <span class='headerFont'>{{ translationData.lblThresholdType || 'Threshold Type' }}</span>
+        </div>
+        <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left"></div>
     </div>
-    <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
-        <span class='headerFont'>{{ translationData.lblThresholdType || 'Threshold Type' }}</span>
-    </div>
-    <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left"></div>
-</div>
-<div *ngIf='fuelBenchmarkComponentPrefData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
-    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
-        <div fxLayout="row" style="height: 44px;" class='areaWidth adjust-padding' fxLayoutAlign="left">
+    <div *ngIf='fuelBenchmarkComponentPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 componentPref' fxLayoutAlign="left center">
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
             <span>{{ fuelBenchmarkComponentPrefData.length > 0 ? fuelBenchmarkComponentPrefData[0].translatedName : '' }}</span>
         </div>
-        <div fxLayout="row" style="height: 44px;" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+            <mat-form-field appearance="outline" style='width: 80%'>
+                <input [readonly]='!editFlag' matInput type="text"
+                    placeholder="{{ translationData.lblHighFuelEfficency || 'High Fuel Efficency' }}" (keypress)="keyPressNumbers($event)" formControlName="highFuelEfficencyField">
+            </mat-form-field>
+        </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per"></div>
+    </div>
+    <div *ngIf='fuelBenchmarkComponentPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor componentPref' fxLayoutAlign="left center">
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
             <span>{{ fuelBenchmarkComponentPrefData.length > 0 ? fuelBenchmarkComponentPrefData[1].translatedName : '' }}</span>
         </div>
-    </div>
-    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
-        <div fxLayout="row" style="height: 44px;" class='areaWidth adjust-padding' fxLayoutAlign="left">
-            
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+            <mat-form-field appearance="outline" style='width: 80%'>
+                <input [readonly]='!editFlag' matInput type="text"
+                    placeholder="{{ translationData.lblLowFuelEfficency || 'Low Fuel Efficency' }}" (keypress)="keyPressNumbers($event)" formControlName="lowFuelEfficencyField">
+            </mat-form-field>
         </div>
-        <div fxLayout="row" style="height: 44px;" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
-            
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per"></div>
+    </div>
+    <!-- Charts Tab -->
+    <div *ngIf='fuelBenchmarkChartsPrefData.length > 0' fxLayout="row"
+        class='areaWidth full-width margin-top-20 padding-10 summaryPref' fxLayoutAlign="left center"
+        style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+        <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
+            <span class='headerFont'>{{ translationData.lblCharts || 'Charts' }}</span>
         </div>
+        <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
+            <span class='headerFont'>{{ translationData.lblChartType || 'Chart Type' }}</span>
+        </div>
+        <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left"></div>
     </div>
-    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
-        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left" style='height: 44px;'></div>
-        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left" style='height: 44px;'></div>
-    </div>
-</div>
-
-<!-- Charts Tab -->
-<div *ngIf='fuelBenchmarkChartsPrefData.length > 0' fxLayout="row" class='areaWidth full-width margin-top-20 padding-10 summaryPref'
-    fxLayoutAlign="left center" style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
-    <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
-        <span class='headerFont'>{{ translationData.lblCharts || 'Charts' }}</span>
-    </div>
-    <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
-        <span class='headerFont'>{{ translationData.lblChartType || 'Chart Type' }}</span>
-    </div>
-    <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left"></div>
-</div>
-<div *ngIf='fuelBenchmarkChartsPrefData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
-    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
-        <div fxLayout="row" style="height: 44px;" class='areaWidth adjust-padding' fxLayoutAlign="left">
+    <div *ngIf='fuelBenchmarkChartsPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left center">
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
             <span>{{ fuelBenchmarkChartsPrefData.length > 0 ? fuelBenchmarkChartsPrefData[0].translatedName : '' }}</span>
         </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+            <mat-form-field appearance="outline" style='width: 80%'>
+                <mat-select [disabled]='!editFlag || donutPieDD.length == 0'
+                    (selectionChange)="onDonutPieDDChange($event)"
+                    placeholder="{{ translationData.lblChartType || 'Chart Type' }}"
+                    formControlName="fuelBechmarkChart">
+                    <mat-option *ngFor="let rer of donutPieDD" [value]="rer.type">
+                        {{ rer.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per"></div>
     </div>
-    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
-        <div fxLayout="row" style="height: 44px;" class='areaWidth adjust-padding' fxLayoutAlign="left"></div>
+    <!-- Button -->
+    <div *ngIf='(fuelBenchmarkChartsPrefData.length > 0 || fuelBenchmarkComponentPrefData.length > 0) && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
+        <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
+            translationData.lblCancel || 'Cancel' }}</button>
+        <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
+            translationData.lblReset || 'Reset' }}</button>
+        <button
+            [disabled]='fuelBenchmarkChartsPrefData.length == 0 || fuelBenchmarkComponentPrefData.length == 0'
+            class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
+            'Confirm') }}</button>
     </div>
-    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
-        <div fxLayout="row" style="height: 44px;" class='areaWidth adjust-padding' fxLayoutAlign="left" style='height: 44px;'></div>
-    </div>
-</div>
+</form>

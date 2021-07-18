@@ -262,4 +262,11 @@ export class EcoScoreReportPreferencesComponent implements OnInit {
     
   }
 
+  getSuccessMsg(){
+    if(this.translationData.lblDetailssavesuccessfully)
+      return this.translationData.lblDetailssavesuccessfully;
+    else
+      return ("Details save successfully");
+  }
+
 }
