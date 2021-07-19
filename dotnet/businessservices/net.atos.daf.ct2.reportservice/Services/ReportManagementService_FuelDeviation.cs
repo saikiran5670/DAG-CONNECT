@@ -54,6 +54,44 @@ namespace net.atos.daf.ct2.reportservice.Services
         #endregion
 
         #region Fuel Deviation Report Chartss  
-        #endregion
+        public override async Task<FuelDeviationChartResponse> GetFuelDeviationCharts(FuelDeviationFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var result = await _reportManager
+                                            .GetFuelDeviationCharts(
+                                                                        new FuelDeviationFilter
+                                                                        {
+                                                                            StartDateTime = request.StartDateTime,
+                                                                            EndDateTime = request.EndDateTime,
+                                                                            VINs = request.VINs
+                                                                        }
+                                                                     );
+                var response = new FuelDeviationChartResponse();
+                if (result.Any())
+                {
+                    string res = JsonConvert.SerializeObject(result);
+                    response.FuelDeviationchart.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FuelDeviationCharts>>(res));
+                    response.Code = Responsecode.Success;
+                    response.Message = Responsecode.Success.ToString();
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = ReportConstants.NORESULTFOUND_MSG;
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new FuelDeviationChartResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetFilteredFuelDeviation get failed due to - " + ex.Message
+                });
+            }
+            #endregion
+        }
     }
 }

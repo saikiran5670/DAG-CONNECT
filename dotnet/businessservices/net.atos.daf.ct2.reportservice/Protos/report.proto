@@ -37,6 +37,7 @@ rpc GetVehicleHealthReport (VehicleHealthReportRequest) returns (VehicleHealthSt
 rpc GetFleetFuelTripDetailsByVehicle(FleetFuelFilterRequest) returns (FleetFuelDetailsResponse);
 rpc GetFleetFuelTripDetailsByDriver(FleetFuelFilterDriverRequest) returns (FleetFuelDetailsResponse);
 rpc GetFilteredFuelDeviation (FuelDeviationFilterRequest) returns (FuelDeviationResponse);
+rpc GetFuelDeviationCharts (FuelDeviationFilterRequest) returns (FuelDeviationChartResponse);
 rpc GetLogbookSearchParameter (LogbookFilterIdRequest) returns (LogbookFilterResponse);
 rpc GetLogbookDetails(LogbookDetailsRequest) returns (LogbookDetailsResponse);
 rpc GetFuelBenchmarkByVehicleGroup (FuelBenchmarkRequest) returns (FuelBenchmarkResponse);
@@ -980,15 +981,15 @@ message FuelDeviationDetails {
     string EndPosition=11;
     double FuelConsumed=12;
     int32 DrivingTime =13;
-    int32 Alert =14;      
+    int32 Alerts =14;      
     string FuelEventType=15;   
     string RegistrationNo =16;
     string VehicleName=17;
     string VehicleActivityType = 18;
     int64 EventTime=19;
     double FuelDiffernce = 20;
-    double Latitude = 21;
-    double Longitude = 22;
+    double EventLatitude = 21;
+    double EventLongitude = 22;
     int32 GeoLocationAddressId = 23;
     string GeoLocationAddress = 24;
     int32 FuelDeviationId = 25;
@@ -1000,6 +1001,16 @@ message FuelDeviationDetails {
     int32 EndPositionId = 31;
     string FuelEventTypeKey = 32;
     string VehicleActivityTypeKey = 33;
+    double EventHeading = 34;
+}
+
+message FuelDeviationCharts{
+    int64 EventCount = 1;
+    int64 TripCount = 2;
+    int64 VehicleCount = 3;
+    int64 IncreaseEvent = 4;
+    int64 DecreaseEvent = 5;
+    int64 Date = 6;
 }
 
 message FuelDeviationFilterRequest{
@@ -1014,6 +1025,12 @@ message FuelDeviationResponse{
     string message = 3;
 }
 
+message FuelDeviationChartResponse{
+    repeated FuelDeviationCharts FuelDeviationchart=1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+
 /// END: Fuel Deviation Report
 
 
@@ -1024,14 +1041,19 @@ message LogbookFilterIdRequest {
   int32 RoleId = 3;
 }
 message LogbookFilterResponse {
+  
+  LogbookSearchParameter LogbookSearchParameter =1; 
+  Responsecode code = 2;
+  string message = 3;
+
+}
+
+message LogbookSearchParameter {
   repeated AssociatedVehicleRequest AssociatedVehicleRequest = 1;
   repeated FilterResponse ALFilterResponse = 2;
   repeated AlertCategoryFilterResponse ACFilterResponse = 3;    
   repeated AlertCategoryFilterRequest AlertTypeFilterRequest=4;
-   repeated LogbookTripAlertDetailsRequest LogbookTripAlertDetailsRequest =5;
-   Responsecode code = 6;
-  string message = 7;
-
+  repeated LogbookTripAlertDetailsRequest LogbookTripAlertDetailsRequest =5;
 }
 message AlertCategoryFilterRequest {
 		 int32 VehicleGroupId =  1;
@@ -1087,19 +1109,13 @@ message LogbookDetailsResponse{
 
 message LogbookTripAlertDetailsRequest
     {
-         string Vin =1;
-         string TripId =2;
-         int32 AlertId =3;
+         int32 Id= 1;
+         string Vin =2;
+         string TripId =3;
          int64 AlertGeneratedTime =4;
          string AlertCategoryType =5;
-         string AlertType =6;
-         string AlertName =7;
-         string AlertLevel =8;     
-         double AlertLatitude =9;
-         double AlertLongitude =10;
-         int32 AlertGeolocationAddressId =11;
-         string AlertGeolocationAddress =12;
-        int64 ProcessedMessageTimestamp=13;
+         string AlertType =6;        
+         string AlertLevel =7;     
          
     }
 
