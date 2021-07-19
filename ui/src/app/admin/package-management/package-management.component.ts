@@ -13,7 +13,6 @@ import { Router } from '@angular/router';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { compareDates } from 'angular-slickgrid/app/modules/angular-slickgrid/sorters/dateUtilities';
 
 @Component({
   selector: 'app-package-management',
