@@ -847,8 +847,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 fleetOverviewFilterRequest.AccountId = _userDetails.AccountId;
                 fleetOverviewFilterRequest.OrganizationId = GetContextOrgId();
                 fleetOverviewFilterRequest.RoleId = _userDetails.RoleId;
-                // fleetOverviewFilterRequest.AccountId = 171;
-                //  fleetOverviewFilterRequest.OrganizationId = 36;
+                //  fleetOverviewFilterRequest.AccountId = 171;
+                // fleetOverviewFilterRequest.OrganizationId = 36;
                 //  fleetOverviewFilterRequest.RoleId = 61;
                 FleetOverviewFilterResponse response = await _reportServiceClient.GetFleetOverviewFilterAsync(fleetOverviewFilterRequest);
 
@@ -904,9 +904,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 fleetOverviewDetailsRequest.DriverIds.AddRange(fleetOverviewFilter.DriverId);
                 fleetOverviewDetailsRequest.Days = fleetOverviewFilter.Days;
                 /* Need to comment Start */
-                fleetOverviewDetailsRequest.AccountId = 171;
-                fleetOverviewDetailsRequest.OrganizationId = 36;
-                fleetOverviewDetailsRequest.RoleId = 61;
+                //  fleetOverviewDetailsRequest.AccountId = 171;
+                //  fleetOverviewDetailsRequest.OrganizationId = 36;
+                //   fleetOverviewDetailsRequest.RoleId = 61;
                 /* Need to comment End */
                 FleetOverviewDetailsResponse response = await _reportServiceClient.GetFleetOverviewDetailsAsync(fleetOverviewDetailsRequest);
                 if (response == null)
