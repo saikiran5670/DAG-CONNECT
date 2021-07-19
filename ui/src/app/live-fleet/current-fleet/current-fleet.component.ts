@@ -15,6 +15,7 @@ export class CurrentFleetComponent implements OnInit {
   localStLanguage: any;
   accountOrganizationId: any;
   translationData: any = {};
+  clickOpenClose:string;
   detailsData =[
     {
       "id": 8,
@@ -134,6 +135,7 @@ export class CurrentFleetComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
     });
+    this.clickOpenClose='Click to Open';
    }
 
    processTranslation(transData: any) {
@@ -145,12 +147,14 @@ export class CurrentFleetComponent implements OnInit {
     let sidenav = document.getElementById("sidenav");
 
     if(this.userPreferencesFlag){
-    summary.style.width = '65%';
-    sidenav.style.width = '34%';
+    summary.style.width = '67%';
+    sidenav.style.width = '32%';
+    this.clickOpenClose='Click to Hide';
     }
     else{
       summary.style.width = '100%';
       sidenav.style.width = '0%';
+      this.clickOpenClose='Click To Open';
     }
   
   } 

@@ -22,19 +22,35 @@ export class FleetOverviewFilterDriverComponent implements OnInit {
   isVehicleListOpen: boolean = true;
   dataSource: any = new MatTableDataSource([]);
   initData: any = [];
+  vehicleListData: any = [];
   
   constructor() { }
 
   ngOnInit(): void {
+    this.vehicleListData = this.detailsData;
     console.log("driver filter data" +this.filterData);
     this.loadVehicleData();
   }
 
   applyFilter(filterValue: string) {
+    this.vehicleListData = this.detailsData;
     filterValue = filterValue.trim();
     filterValue = filterValue.toLowerCase();
-    this.dataSource.filter = filterValue;
-  } 
+    // this.detailsData.filter = filterValue;
+    const filteredData = this.detailsData.filter(value => {​​​​​​​​
+      const searchStr = filterValue.toLowerCase();
+      const vin = value.vin.toLowerCase().toString().includes(searchStr);
+      const driver = value.driverFirstName.toLowerCase().toString().includes(searchStr);
+      const drivingStatus = value.vehicleDrivingStatusType.toLowerCase().toString().includes(searchStr);
+      const healthStatus = value.vehicleHealthStatusType.toLowerCase().toString().includes(searchStr);
+      return vin || driver || drivingStatus ||healthStatus;
+    }​​​​​​​​);
+  
+    console.log(filteredData);
+    this.vehicleListData = filteredData;
+    
+  }
+
   loadVehicleData(){  
     this.initData =this.detailsData;    
     console.log(this.initData);
