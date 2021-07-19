@@ -1283,6 +1283,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpGet]
+        [Route("fueldeviation/charts")]
+        public async Task<IActionResult> GetFuelDeviationChartData([FromQuery] FuelDeviationFilterRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) return BadRequest(ReportConstants.VALIDATION_STARTDATE_MSG);
+                if (!(request.EndDateTime > 0)) return BadRequest(ReportConstants.VALIDATION_ENDDATE_MSG);
+                if (request.VINs == null || request.VINs?.Count == 0) return BadRequest(ReportConstants.VALIDATION_VINREQUIRED_MSG);
+                if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.VALIDATION_DATEMISMATCH_MSG);
+
+                _logger.Info("GetFilteredFuelDeviationChart method in Report (Fuel Deviation charts) API called.");
+                var response = await _reportServiceClient.GetFuelDeviationChartsAsync(request);
+
+                if (response?.FuelDeviationchart?.Count > 0)
+                {
+                    return Ok(new { Data = response.FuelDeviationchart, Message = ReportConstants.GET_FUEL_DEVIATION_SUCCESS_MSG });
+                }
+                else
+                {
+                    return StatusCode((int)response.Code, response.Message);
+                }
+            }
+
+            catch (Exception ex)
+            {
+
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
 
         #region Logbook

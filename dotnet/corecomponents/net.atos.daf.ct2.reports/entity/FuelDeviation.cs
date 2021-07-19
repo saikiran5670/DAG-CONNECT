@@ -61,4 +61,13 @@ namespace net.atos.daf.ct2.reports.entity
         public IEnumerable<string> VINs { get; set; }
     }
 
+    public class FuelDeviationCharts
+    {
+        public int EventCount { get; set; }
+        public int TripCount { get; set; }
+        public int VehicleCount { get; set; }
+        public int IncreaseEvent { get; set; }
+        public int DecreaseEvent { get; set; }
+        public long Date { get; set; }
+    }
 }

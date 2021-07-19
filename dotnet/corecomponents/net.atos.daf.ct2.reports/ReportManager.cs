@@ -664,6 +664,11 @@ namespace net.atos.daf.ct2.reports
             return _reportRepository.GetFilteredFuelDeviation(fuelDeviationFilters);
         }
 
+        public Task<IEnumerable<FuelDeviationCharts>> GetFuelDeviationCharts(FuelDeviationFilter fuelDeviationFilters)
+        {
+            return _reportRepository.GetFuelDeviationCharts(fuelDeviationFilters);
+        }
+
         #endregion
 
         #region LogBook
