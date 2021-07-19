@@ -1,6 +1,7 @@
 import { Options } from '@angular-slider/ngx-slider';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { CustomValidators } from 'src/app/shared/custom.validators';
 
 @Component({
   selector: 'app-breaking-score',
@@ -28,17 +29,20 @@ export class BreakingScoreComponent implements OnInit {
         ceil: this.kpiData.upperValue,
         step: 4,  
         showTicks: true, 
+        showOuterSelectionBars: true,
   };  
 
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
-    this.ecoScoreProfileKPIForm = this._formBuilder.group({
-      lowerValue: [''],
-      upperValue: [''],
-      limitValue: [''],
-      targetValue: [''],
-  });
+    this.kpiData = this.selectedElementData;
+    this.value = this.kpiData.limitValue;
+    this.maxvalue =  this.kpiData.targetValue;
+    this.options.floor = this.kpiData.lowerValue;
+    this.options.ceil = this.kpiData.upperValue;
+    this.options.step = this.kpiData.upperValue/10,  
+    this.options.showTicks = true 
+   
   this.SliderData();
   // if(this.isCreate){
   //   this.sendData()
@@ -46,31 +50,33 @@ export class BreakingScoreComponent implements OnInit {
   }
 
   SliderData(){
-    this.kpiData = this.selectedElementData;
-    this.value = this.kpiData.limitValue;
-    this.maxvalue =  this.kpiData.targetValue;
-    this.options.floor = this.kpiData.lowerValue;
-    this.options.ceil = this.kpiData.upperValue;
-    this.options.step = this.kpiData.upperValue/10,  
-    this.options.showTicks = true  
-  
+    this.ecoScoreProfileKPIForm = this._formBuilder.group({
+      lowerValue: [''],
+      upperValue: [''],
+      limitValue: [''],
+      targetValue: [''],
+  }, {
+    validator: [
+      CustomValidators.numberFieldValidation('lowerValue', this.value),
+      CustomValidators.numberFieldValidation('upperValue',this.kpiData.maxUpperValue),
+      CustomValidators.numberFieldValidation('limitValue',this.maxvalue),
+      CustomValidators.numberFieldValidation('targetValue',this.options.ceil),
+      CustomValidators.numberMinFieldValidation('lowerValue', 0),
+      CustomValidators.numberMinFieldValidation('upperValue',this.maxvalue),
+      CustomValidators.numberMinFieldValidation('limitValue',this.options.floor),
+      CustomValidators.numberMinFieldValidation('targetValue',this.value),
+    ]
+  });
     this.isKPI = true;
     this.setDefaultValue();
+
   }
 
   setDefaultValue(){
-    if(this.actionType == 'manage'){
     this.ecoScoreProfileKPIForm.get("lowerValue").setValue(this.options.floor);
     this.ecoScoreProfileKPIForm.get("upperValue").setValue(this.options.ceil);
     this.ecoScoreProfileKPIForm.get("limitValue").setValue(this.value);
     this.ecoScoreProfileKPIForm.get("targetValue").setValue(this.maxvalue);
-    }
-    else {
-      this.ecoScoreProfileKPIForm.get("lowerValue").setValue('');
-    this.ecoScoreProfileKPIForm.get("upperValue").setValue('');
-    this.ecoScoreProfileKPIForm.get("limitValue").setValue('');
-    this.ecoScoreProfileKPIForm.get("targetValue").setValue('');
-    }
     this.sendData();
   }
 
@@ -90,21 +96,25 @@ export class BreakingScoreComponent implements OnInit {
   sliderEvent(value: any){
     this.ecoScoreProfileKPIForm.get("limitValue").setValue(value);
     this.sendData();
+    this.SliderData()
    }
  
    sliderEndEvent(endValue: any){
    this.ecoScoreProfileKPIForm.get("targetValue").setValue(endValue);
   this.sendData();
+  this.SliderData()
    }
  
    changeMin(changedVal: any){
     this.value = changedVal;
     this.sendData();
+    this.SliderData();
    }
  
    changeTarget(changedVal: any){
-   this.maxvalue = changedVal;
-  this.sendData();
+     this.maxvalue = changedVal;
+    this.sendData();
+    this.SliderData();
    }
  
    changeLower(changedVal: any){
@@ -113,6 +123,7 @@ export class BreakingScoreComponent implements OnInit {
      newOptions.floor = changedVal;
      this.options = newOptions;
     this.sendData();
+    this.SliderData();
    }
  
    changeUpper(changedVal: any){
@@ -120,6 +131,7 @@ export class BreakingScoreComponent implements OnInit {
      newOptions.ceil = changedVal;
      this.options = newOptions;
     this.sendData();
+    this.SliderData();
    }
 
 }

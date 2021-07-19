@@ -194,6 +194,7 @@ export class ReportService {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
     };
     return this.httpClient
       .post<any[]>(
@@ -206,6 +207,7 @@ export class ReportService {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
     };
     return this.httpClient
       .put<any[]>(
@@ -218,6 +220,7 @@ export class ReportService {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
     };
    return this.httpClient
       .delete<any>(`${this.reportServiceUrl}/ecoscore/deleteprofile?ProfileId=${profileId}`, headers)
@@ -267,7 +270,7 @@ export class ReportService {
     };
     return this.httpClient
       .post<any[]>(
-        `${this.reportServiceUrl}/fleetfuel/getdetails/vehicle/trip`, data, headers
+        `${this.reportServiceUrl}/fleetfuel/getdetails/trip`, data, headers
       )
       .pipe(catchError(this.handleError));
   }
@@ -311,6 +314,7 @@ export class ReportService {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
     };
     return this.httpClient
       .post<any[]>(
@@ -324,6 +328,19 @@ export class ReportService {
     return throwError(
       errResponse
     );
+}
+
+//for getfilterdetails for fleet overview
+getFilterDetails(): Observable<any[]> {
+  let headerObj = this.generateHeader();
+  const headers = {
+    headers: new HttpHeaders({ headerObj }),
+  };
+  return this.httpClient
+    .get<any[]>(
+      `${this.reportServiceUrl}/fleetoverview/getfilterdetails`, headers
+    )
+    .pipe(catchError(this.handleError));
 }
 
 }

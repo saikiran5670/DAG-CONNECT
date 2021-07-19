@@ -23,8 +23,12 @@ import { Ng2CompleterModule } from 'ng2-completer';
 import { EcoScoreReportComponent } from './eco-score-report/eco-score-report.component';
 import { EcoScoreDriverCompareComponent } from './eco-score-report/eco-score-driver-compare/eco-score-driver-compare.component';
 import { AngularSlickgridModule } from 'angular-slickgrid';
-import { FleetfueldetailsComponent } from './fleet-fuel-report/fleetfueldetails/fleetfueldetails.component';
+//import { FleetfueldetailsComponent } from './fleet-fuel-report/fleetfueldetails/fleetfueldetails.component';
 import { EcoScoreReportDriverComponent } from './eco-score-report/eco-score-report-driver/eco-score-report-driver.component';
+import { FuelBenchmarkingComponent } from './fuel-benchmarking/fuel-benchmarking.component';
+import { DetailVehicleReportComponent } from './fleet-fuel-report/detail-vehicle-report/detail-vehicle-report.component';
+import { DetailDriverReportComponent } from './fleet-fuel-report/detail-driver-report/detail-driver-report.component';
+import { FuelBenchmarkingTableComponent } from './fuel-benchmarking/fuel-benchmarking-table/fuel-benchmarking-table/fuel-benchmarking-table.component';
 
 // import interactionPlugin from '@fullcalendar/interaction';
 
@@ -42,7 +46,7 @@ export const MY_DATE_FORMAT = {
 }
 
 @NgModule({
-  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent, EcoScoreReportComponent, EcoScoreDriverCompareComponent, FleetfueldetailsComponent, EcoScoreReportDriverComponent],
+  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent, EcoScoreReportComponent, EcoScoreDriverCompareComponent, EcoScoreReportDriverComponent, FuelBenchmarkingComponent, DetailVehicleReportComponent, DetailDriverReportComponent, FuelBenchmarkingTableComponent],
   imports: [
     CommonModule,
     ReportRoutingModule,

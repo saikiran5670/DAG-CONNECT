@@ -41,6 +41,8 @@ import { CreateEditReportSchedulerComponent } from './report-scheduler/create-ed
 import { ViewReportSchedulerComponent } from './report-scheduler/view-report-scheduler/view-report-scheduler.component';
 import { BreakingScoreComponent } from './eco-score-profile-management/breaking-score/breaking-score.component';
 import { MaxTargetScoreComponent } from './eco-score-profile-management/max-target-score/max-target-score.component';
+import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 @NgModule({
   declarations: [
@@ -84,7 +86,9 @@ import { MaxTargetScoreComponent } from './eco-score-profile-management/max-targ
     MatTableExporterModule,
     Ng2CompleterModule,
     NgxMaterialTimepickerModule,
-    NgxSliderModule
+    NgxSliderModule,
+    BsDropdownModule.forRoot(),
+    NgxIntlTelInputModule
     ],
     providers: [ConfirmDialogService,VehicleService],
     schemas: [

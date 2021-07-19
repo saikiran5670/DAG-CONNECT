@@ -1,0 +1,54 @@
+<mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+  <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
+    <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Benchmark Between Time Periods</span>
+          </span>
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+
+        <div class='areaWidth margin-bottom-xlg' style="background-color: #BEE3F8">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Selected Group: <b>Default base</b></span>
+        </div>
+
+        <div style='display: flex;'>
+        <mat-table style="max-width: 20%;margin-right: 10px;" [dataSource]="dataSource">
+            
+            <ng-container matColumnDef="period">
+                <mat-header-cell *matHeaderCellDef >{{'Period' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                <b style="font-size: 16px;">{{ row.period }}</b>
+                </mat-cell>
+            </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;">
+                </mat-row>
+        </mat-table>
+      
+        <mat-table style="max-width: 20%; margin-right: 10px;"  [dataSource]="tabledataSource">
+
+            <ng-container matColumnDef="timerangeColumn">
+                <mat-header-cell *matHeaderCellDef >{{ startDateRange}} to {{endDateRange}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                {{ responseDataTP.ActiveVehicle }}
+                </mat-cell>
+                <mat-cell *matCellDef="let row">
+                {{ responseDataTP.TotalFuelConsumed }}
+                </mat-cell>
+                <mat-cell *matCellDef="let row">
+                {{ responseDataTP.TotalMileage }}
+                </mat-cell>
+                
+            </ng-container>
+
+
+                <mat-header-row *matHeaderRowDef="timerangeColumn"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: timerangeColumn;">
+                </mat-row>
+        </mat-table>
+    </div>
+      
+    </mat-expansion-panel>
+</mat-card>

@@ -106,10 +106,27 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 MinTripDistance = request.MinTripDistance,
                 MinDriverTotalDistance = request.MinDriverTotalDistance,
                 TargetProfileId = request.TargetProfileId,
-                ReportId = request.ReportId,
+                ReportId = request.ReportId
             };
             grpcRequest.VINs.AddRange(request.VINs);
             grpcRequest.DriverIds.AddRange(request.DriverIds);
+            return grpcRequest;
+        }
+
+        internal reportservice.GetEcoScoreReportSingleDriverRequest MapEcoScoreReportSingleDriver(EcoScoreReportSingleDriverRequest request)
+        {
+            var grpcRequest = new reportservice.GetEcoScoreReportSingleDriverRequest
+            {
+                StartDateTime = request.StartDateTime,
+                EndDateTime = request.EndDateTime,
+                DriverId = request.DriverId,
+                MinTripDistance = request.MinTripDistance,
+                MinDriverTotalDistance = request.MinDriverTotalDistance,
+                TargetProfileId = request.TargetProfileId,
+                ReportId = request.ReportId,
+                OrgId = request.OrgId
+            };
+            grpcRequest.VINs.AddRange(request.VINs);
             return grpcRequest;
         }
 
@@ -225,6 +242,27 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 driver.OrganizationId = item.OrganizationId;
                 reportFleetOverview.DriverList.Add(driver);
             }
+            reportFleetOverview.FleetOverviewAlerts = new List<FleetOverviewAlert>();
+            foreach (var item in fleetOverviewFilterResponse.LogbookTripAlertDetailsRequest)
+            {
+                FleetOverviewAlert fleetOverviewAlert = new FleetOverviewAlert()
+                {
+                    AlertId = item.AlertId,
+                    AlertName = item.AlertName,
+                    AlertType = item.AlertType,
+                    AlertLevel = item.AlertLevel,
+                    CategoryType = item.AlertCategoryType,
+                    AlertLatitude = item.AlertLatitude,
+                    AlertLongitude = item.AlertLongitude,
+                    AlertGeolocationAddressId = item.AlertGeolocationAddressId,
+                    AlertGeolocationAddress = item.AlertGeolocationAddress,
+                    AlertTime = item.AlertGeneratedTime,
+                    ProcessedMessageTimestamp = item.ProcessedMessageTimestamp
+                };
+            reportFleetOverview.FleetOverviewAlerts.Add(fleetOverviewAlert);
+
+            }
+
             return reportFleetOverview;
         }
 

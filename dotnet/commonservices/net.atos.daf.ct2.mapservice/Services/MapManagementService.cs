@@ -62,6 +62,7 @@ namespace net.atos.daf.ct2.mapservice
                 _logger.LogError(null, ex);
                 return await Task.FromResult(new GetMapResponse
                 {
+                    LookupAddresses = new GetMapRequest(),
                     Message = "Exception " + ex.Message,
                     Code = MapResponsecode.Failed
                 });

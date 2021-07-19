@@ -1,0 +1,177 @@
+
+<div class="fleet-filter-driver">
+
+    <div fxLayout="row" fxLayoutAlign="space-between" style="padding-top: 20px;">
+        <mat-form-field appearance="outline">
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+            <span matPrefix><mat-icon>search</mat-icon></span>
+        </mat-form-field>        
+   </div>
+   <div  fxLayout="column" fxLayoutAlign="left">
+    <mat-label style='display: flex; place-content: space-between;'>
+        {{ translationData.lbl || 'Select Driver' }}
+    </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-select placeholder="{{ translationData.lblSelectUserRole || 'Select Vehicle Group' }}" >
+            <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
+            <!-- <mat-option *ngFor="let vehGroupList of vehicleGroupList | removeDuplicates" [value]="vehGroupList"> {{vehGroupList.value}}
+            </mat-option> -->
+        </mat-select>
+    </mat-form-field>
+</div>     
+
+
+<!-- <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <mat-expansion-panel style="padding: 0px;" [(expanded)]="isVehicleListOpen" class="full-width" fxLayoutGap="10px" (opened)="isVehicleListOpen"
+    (closed)="!isVehicleListOpen">
+      <mat-expansion-panel-header class="full-width" style="padding-left: 10px;">
+        <mat-panel-title>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbl || 'Vehicle List' }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      
+      <mat-table matTableExporter class="table-items" matSort>
+      <ng-container matColumnDef="icon">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleIcon || 'Icon' }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <span>icon</span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="vin">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lbl || 'VIN' }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">vin </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="driverFirstName">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lbl || 'Driver Name' }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">driverFirstName + '' + row.driverLastName </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="vehicleDrivingStatusType">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lbl || 'Driving Status' }} 
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">vehicleDrivingStatusType </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="vehicleHealthStatusType">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lbl || 'Health Status' }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">vehicleHealthStatusType</mat-cell>
+      </ng-container>
+      
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;">
+      </mat-row>
+      </mat-table>
+     
+   
+  </mat-expansion-panel>
+  </mat-card> -->
+
+  <!-- <mat-card *ngIf='initData.length > 0'  class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <mat-expansion-panel style="padding: 0px;" [(expanded)]="isVehicleListOpen" class="full-width" fxLayoutGap="10px" (opened)="isVehicleListOpen"
+    (closed)="!isVehicleListOpen">
+      <mat-expansion-panel-header class="full-width" style="padding-left: 10px;">
+        <mat-panel-title>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbl || 'Vehicle List' }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>  
+     <div fxLayout="row" [dataSource]="dataSource" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
+        <div *ngIf="let row" class="full-width vehicleList-div">
+            <div class="vehicleList-icon">
+                <mat-icon style="font-size: 50px;padding: 26px 0px;"> person_pin_circle</mat-icon>
+            </div>
+            <div class="vehicleList-details">
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'VIN'}}: </span>
+                <span class="vehicle-details-data">{{row.vin}}</span>
+            </div>
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'Driver Name'}}:</span>
+                <span class="vehicle-details-data">{{ row.driverFirstName + '' + row.driverLastName  }}</span>
+            </div> 
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
+                <span class="vehicle-details-data">{{ row.vehicleDrivingStatusType }}</span>
+            </div> 
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
+                <span class="vehicle-details-data">{{ row.vehicleHealthStatusType}}</span>
+            </div>
+            </div>
+        </div>
+     </div>    
+  </mat-expansion-panel>
+  </mat-card> -->
+  
+<mat-card  class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <mat-expansion-panel style="padding: 0px;" [(expanded)]="isVehicleListOpen" class="full-width" fxLayoutGap="10px" (opened)="isVehicleListOpen"
+    (closed)="!isVehicleListOpen">
+      <mat-expansion-panel-header class="full-width" style="padding-left: 10px;">
+        <mat-panel-title>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbl || 'Vehicle List' }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      
+      <mat-table matTableExporter [dataSource]="dataSource"  matSort >
+      <ng-container matColumnDef="icon">
+        <mat-header-cell *matHeaderCellDef>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+        <span matPrefix><mat-icon>{{ row.icon}}</mat-icon></span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="vin">
+        <mat-header-cell *matHeaderCellDef>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.vin }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="driverName">
+        <mat-header-cell *matHeaderCellDef>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.driverFirstName + '' + row.driverLastName  }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="drivingStatus">
+         <mat-header-cell *matHeaderCellDef>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.vehicleDrivingStatusType }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="healthStatus">
+        <mat-header-cell *matHeaderCellDef>
+        </mat-header-cell>        
+        <mat-cell *matCellDef="let row">{{ row.vehicleHealthStatusType }}</mat-cell>
+      </ng-container>
+      
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;">
+      </mat-row>
+      </mat-table>     
+      <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+      <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
+        <div class="full-width vehicleList-div">
+            <div class="vehicleList-icon">
+                <mat-icon style="font-size: 50px;padding: 26px 0px;"> person_pin_circle</mat-icon>
+            </div>
+            <div class="vehicleList-details">
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'VIN'}}: </span>
+                <span class="vehicle-details-data">XLRT4100G01234</span>
+            </div>
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'Driver Name'}}:</span>
+                <span class="vehicle-details-data">Oslaw Nski</span>
+            </div> 
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
+                <span class="vehicle-details-data">Driving</span>
+            </div> 
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
+                <span class="vehicle-details-data">Service Now</span>
+            </div>
+            </div>
+        </div>
+     </div>     -->
+  </mat-expansion-panel>
+  </mat-card>
+  </div>

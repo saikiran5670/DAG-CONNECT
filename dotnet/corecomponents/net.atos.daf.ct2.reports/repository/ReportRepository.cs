@@ -281,6 +281,6 @@ namespace net.atos.daf.ct2.reports.repository
             }
             return query;
         }
-        #endregion
+        #endregion        
     }
 }

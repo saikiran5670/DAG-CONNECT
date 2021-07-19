@@ -1,0 +1,19 @@
+    <div class="dashboardMenu"  style="border: 1px solid black">
+      <!-- <span style="font-size: 15px;margin-top: 10px;">{{translationData.lblViewDetailsBy || 'View details by:'}}</span> -->
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
+        <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'> Filter by</span>
+                 <mat-tab-group class="[ tabVisibilityStatus ? '' : 'hideTabHeader']" [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
+                  <mat-tab label="Vehicle" class="tabLabels">
+                  </mat-tab>
+                  <mat-tab label="Driver" class="tabLabels">
+                  </mat-tab>
+                </mat-tab-group>
+             </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-fleet-overview-filter-vehicle *ngIf="selectedIndex == 0" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData' [detailsData] ="detailsData"></app-fleet-overview-filter-vehicle>
+        <app-fleet-overview-filter-driver *ngIf="selectedIndex == 1" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData' [detailsData] ="detailsData" [filterData]="filterData"></app-fleet-overview-filter-driver>
+
+    </mat-expansion-panel>
+</div>

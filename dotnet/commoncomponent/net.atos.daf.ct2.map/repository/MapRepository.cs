@@ -61,11 +61,11 @@ namespace net.atos.daf.ct2.map.repository
 
                 DynamicParameters parameter = new DynamicParameters();
                 parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                if (lookupAddress.Latitude > 0)
+                if (lookupAddress.Latitude != 0)
                 {
                     parameter.Add("@latitude", lookupAddress.Latitude);
                 }
-                if (lookupAddress.Longitude > 0)
+                if (lookupAddress.Longitude != 0)
                 {
                     parameter.Add("@longitude", lookupAddress.Longitude);
                 }

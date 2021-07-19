@@ -1,0 +1,59 @@
+.example-container {
+    width: 100%;
+    height: 300px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+  }
+  
+  @mobileToTablet: ~"only screen and (min-width: 320px) and (max-width: 949px)";
+  @mobile:~"only screen and (min-width: 320px) and (max-width: 949px)";
+  
+  .example-sidenav-content {
+    color: inherit;
+    transform: rotate(-90deg);
+    position: absolute;
+    right: 0px;
+    top: 350px;
+    // width: 50px;
+    width: 10px;
+    height: 35px;
+    background:white;
+    z-index: 3;
+    cursor: pointer;
+    border-radius: 10px;
+    &.pref-expand{
+      // right: 1000px;
+      right: 34%;
+      top: 350px;
+      @media @mobileToTablet {
+          left: 0px !important;
+          z-index: 9;
+      }
+    }
+    &.pref-collapse{
+      right: 0px;
+     }
+  
+  }
+
+@media @mobile {
+  display: none;
+}
+
+
+  .example-sidenav {
+    padding: 20px;
+  }
+
+  .max-width-30-per{
+    max-width: 34%;
+    float: right;
+}
+
+.max-width-70-per{
+  max-width: 65%;
+}
+
+.mat-button{
+  vertical-align: top;
+  font-size: 1.25em;
+}

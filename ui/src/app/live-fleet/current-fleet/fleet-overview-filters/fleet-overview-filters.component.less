@@ -1,0 +1,99 @@
+@mobileToTablet: ~"only screen and (min-width: 320px) and (max-width: 949px)";
+@mobile:~"only screen and (min-width: 320px) and (max-width: 949px)";
+
+.dashboardMenu {
+    position: absolute !important;
+    display: block !important;
+    // top: 45px;
+    height: calc(100vh - 45px);
+    // background-color: #00529C;
+    overflow: auto;
+    width: 34%;
+    z-index: 3; //2
+    right: 0px;
+  
+    &.menuCollapsed {
+        width: 100px;
+        text-align: center;
+        overflow-y: auto;
+        overflow-x: visible;
+        @media @mobile {
+            width: 0px;
+        }
+        .menuToggler {
+            float: none;
+        }
+        ul {
+            &.subMenuItems {
+                position: fixed;
+                left: 100px;
+                width: 240px;
+                margin-top: -57px;
+                background: #0a3175;
+                
+                li{
+                    a{
+                        justify-content: left;
+                        margin-bottom: 5px;
+                        flex-direction: initial;
+                        padding: 5px 3px 0px 10px; //10px 10px
+                    }
+                }
+                
+            }
+            li{
+                position: relative;
+                a {
+                    padding-left: 0;
+                    padding-right: 0;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                    flex-direction: column;
+                    
+  
+                    .mat-icon {
+                        margin: 0;
+                    }
+                    .navigationArrow {
+                        display: none;
+                    }
+                }
+  
+            }
+        }
+        .menuItemDivider {
+            margin: 10px 10px 10px 10px;
+        }
+        .userBgImg{
+            padding: 10px 10px 10px 5px;
+  
+            .userImageContainer{
+                display: flex !important;
+                flex-flow: column wrap;
+                place-content: stretch center !important;
+                align-items: center !important;
+            }
+  
+            .logoutbtnContainer{
+                place-content: stretch center !important;
+                align-items: center !important;
+                display: flex !important;
+                margin: 2px 0px 0px 7px !important;
+            }
+        }
+        .display-flex .align-items-center{
+            .mat-icon{
+                cursor: pointer;
+            }
+        }
+        
+    }
+  }
+
+  .max-width-90-per{
+    max-width: 90%;
+  }
+
+  .mat-form-field {
+    width: 100%;
+}
