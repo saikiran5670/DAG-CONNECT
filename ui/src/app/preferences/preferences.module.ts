@@ -15,9 +15,11 @@ import { TripReportPreferenceComponent } from './reports-preferences/trip-report
 import { DriverTimePreferencesComponent } from './reports-preferences/driver-time-preferences/driver-time-preferences.component';
 import { EcoScoreReportPreferencesComponent } from './reports-preferences/eco-score-report-preferences/eco-score-report-preferences.component';
 import { FuelBenchmarkPreferencesComponent } from './reports-preferences/fuel-benchmark-preferences/fuel-benchmark-preferences.component';
+import { FleetFuelPreferencesComponent } from './reports-preferences/fleet-fuel-preferences/fleet-fuel-preferences.component';
+
 
 @NgModule({
-  declarations: [ AccountInfoSettingsComponent, ChangePasswordComponent, DashboardPreferencesComponent, FleetOverviewPreferencesComponent, ReportsPreferencesComponent, FleetUtilisationPreferenceComponent, TripReportPreferenceComponent, DriverTimePreferencesComponent, EcoScoreReportPreferencesComponent, FuelBenchmarkPreferencesComponent ],
+  declarations: [ AccountInfoSettingsComponent, ChangePasswordComponent, DashboardPreferencesComponent, FleetOverviewPreferencesComponent, ReportsPreferencesComponent, FleetUtilisationPreferenceComponent, TripReportPreferenceComponent, DriverTimePreferencesComponent, EcoScoreReportPreferencesComponent, FuelBenchmarkPreferencesComponent, FleetFuelPreferencesComponent ],
   imports: [
     CommonModule,
     SharedModule,
