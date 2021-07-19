@@ -53,6 +53,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.CustomAttributes
                 {
                     var httpContext = _httpContextAccessor.HttpContext;
                     httpContext.Items["AuthorizedFeature"] = requirement.FeatureName;
+                    httpContext.Items["AuthorizedPaths"] = GetAuthorizedPaths(emailAddress, requirement.FeatureName);
                     context.Succeed(requirement);
                 }
                 else
@@ -66,5 +67,39 @@ namespace net.atos.daf.ct2.rfmsdataservice.CustomAttributes
                 return;
             }
         }
+
+        private List<string> GetAuthorizedPaths(string email, string authorizedFeature)
+        {
+            List<string> authorizedPaths = new List<string>();
+            List<string> lstFeatures = new List<string> { AccessPolicies.RFMS_VEHICLE_DATA_ACCESS_POLICY,
+                                                          AccessPolicies.RFMS_VEHICLE_POSITION_ACCESS_POLICY,
+                                                          AccessPolicies.RFMS_VEHICLE_STATUS_ACCESS_POLICY };
+            foreach (var feature in lstFeatures)
+            {
+                if (feature != authorizedFeature)
+                {
+                    switch (feature)
+                    {
+                        case AccessPolicies.RFMS_VEHICLE_DATA_ACCESS_POLICY:
+                            Task<bool> hasVehicleApiAccess = Task.Run<bool>(async () => await _accountManager.CheckForFeatureAccessByEmailId(email, AccessPolicies.RFMS_VEHICLE_DATA_ACCESS_POLICY));
+                            if (hasVehicleApiAccess.Result)
+                                authorizedPaths.Add("/vehicles");
+                            break;
+                        case AccessPolicies.RFMS_VEHICLE_POSITION_ACCESS_POLICY:
+                            Task<bool> hasVehiclePositionApiAccess = Task.Run<bool>(async () => await _accountManager.CheckForFeatureAccessByEmailId(email, AccessPolicies.RFMS_VEHICLE_POSITION_ACCESS_POLICY));
+                            if (hasVehiclePositionApiAccess.Result)
+                                authorizedPaths.Add("/vehiclepositions");
+                            break;
+                        case AccessPolicies.RFMS_VEHICLE_STATUS_ACCESS_POLICY:
+                            Task<bool> hasVehicleStatusApiAccess = Task.Run<bool>(async () => await _accountManager.CheckForFeatureAccessByEmailId(email, AccessPolicies.RFMS_VEHICLE_STATUS_ACCESS_POLICY));
+                            if (hasVehicleStatusApiAccess.Result)
+                                authorizedPaths.Add("/vehiclestatuses");
+                            break;
+                    }
+                }
+            }
+            return authorizedPaths;
+        }
+
     }
 }
