@@ -205,7 +205,7 @@
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ anticipationKpiData.kpiName }}</span>
-                <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblAnticipationScoreInfoLable || 'The Eco-Score is the rounded down average of the Eco score' }}">info</mat-icon>
+                <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblAnticipationScoreInfoLable || 'The Eco-Score is the rounded down average of the Anticipation score' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
         <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='anticipationKpiData' [kpiId] = 20 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>

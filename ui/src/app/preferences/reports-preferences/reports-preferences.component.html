@@ -31,6 +31,7 @@
         </app-trip-report-preference>
       </div>
     </mat-expansion-panel>
+    
     <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px"
       [(expanded)]="showFleetUtilisationReport" (opened)="showFleetUtilisationReport == true"
       (closed)="showFleetUtilisationReport == false">
@@ -53,13 +54,14 @@
           (setFleetUtilFlag)="updateEditFleetUtilFlag($event)"></app-fleet-utilisation-preference>
       </div>
     </mat-expansion-panel>
-    <mat-expansion-panel class="full-width  margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showDriverTimePerferences"
+
+    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showDriverTimePerferences"
       (opened)="showDriverTimePerferences == true" (closed)="showDriverTimePerferences == false">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
           <span>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-              translationData.lblDriverTimeManagementReportComponent || 'Driver Time Management Report Component' }}</span>
+              translationData.lblDriveTimeManagement || 'Drive Time Management' }}</span>
             <span style='margin-left: 10px; vertical-align: middle;'>
               <mat-icon *ngIf='!editDriverTimePerferencesFlag' (click)="editDriverTimePerferences()"
                 style="cursor: pointer; font-size: 20px;">
@@ -74,7 +76,8 @@
           (setDriverTimeFlag)="updateEditDriverTimeFlag($event)"></app-driver-time-preferences>
       </div>
     </mat-expansion-panel>
-    <mat-expansion-panel class="full-width" fxLayoutGap="10px" [(expanded)]="showEcoScorePerferences"
+
+    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showEcoScorePerferences"
       (opened)="showEcoScorePerferences == true" (closed)="showEcoScorePerferences == false">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -87,12 +90,69 @@
                 edit</mat-icon>
             </span>
           </span>
+
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div>
         <app-eco-score-report-preferences *ngIf='showEcoScorePerferences' [editFlag]='editEcoScorePerferencesFlag'
           [reportListData]='reportListData' [translationData]='translationData'
           (setEcoScoreFlag)="updateEcoScoreReportFlag($event)"></app-eco-score-report-preferences>
+      </div>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showFuelBenchmarkPerferences"
+      (opened)="showFuelBenchmarkPerferences == true" (closed)="showFuelBenchmarkPerferences == false">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+              translationData.lblFuelBenchmarking || 'Fuel Benchmarking' }}</span>
+            <span style='margin-left: 10px; vertical-align: middle;'>
+              <mat-icon *ngIf='!editFuelBenchmarkPerferencesFlag' (click)="editFuelBenchmarkPerferences()"
+                style="cursor: pointer; font-size: 20px;">
+                edit</mat-icon>
+            </span>
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <app-fuel-benchmark-preferences *ngIf='showFuelBenchmarkPerferences'
+          [editFlag]='editFuelBenchmarkPerferencesFlag' [reportListData]='reportListData'
+          [translationData]='translationData' (setFuelBenchmarkReportFlag)="updateFuelBenchmarkReportFlag($event)">
+        </app-fuel-benchmark-preferences>
+      </div>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px" [(expanded)]="showFleetFuelPerferences"
+      (opened)="showFleetFuelPerferences == true" (closed)="showFleetFuelPerferences == false">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFleetFuelReport
+              || 'Fleet Fuel Report' }}</span>
+            <span style='margin-left: 10px; vertical-align: middle;'>
+              <mat-icon *ngIf='!editFleetFuelPerferencesFlag' (click)="editFleetFuelPerferences()"
+                style="cursor: pointer; font-size: 20px;">
+                edit</mat-icon>
+            </span>
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <mat-tab-group (selectedTabChange)="onTabChanged($event);">
+          <mat-tab label="{{ translationData.lblVehicle || 'Vehicle' }}">
+            <app-fleet-fuel-preferences *ngIf='showFleetFuelPerferences' tabName='Vehicle'
+              [editFlag]='editFleetFuelPerferencesFlag' [reportListData]='reportListData'
+              [translationData]='translationData' (setDriverTimeFlag)="updateEditDriverTimeFlag($event)">
+            </app-fleet-fuel-preferences>
+          </mat-tab>
+          <mat-tab label="{{ translationData.lblDriver || 'Driver' }}">
+            <app-fleet-fuel-preferences *ngIf='showFleetFuelPerferences' tabName='Driver'
+              [editFlag]='editFleetFuelPerferencesFlag' [reportListData]='reportListData'
+              [translationData]='translationData' (setDriverTimeFlag)="updateEditDriverTimeFlag($event)">
+            </app-fleet-fuel-preferences>
+          </mat-tab>
+        </mat-tab-group>
       </div>
     </mat-expansion-panel>
   </div>

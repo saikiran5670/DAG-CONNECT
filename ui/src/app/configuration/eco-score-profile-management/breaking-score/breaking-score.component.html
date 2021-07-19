@@ -14,10 +14,13 @@
                     </mat-label>
                     <mat-form-field appearance="outline" class="half-width">
                         <input maxlength="50" matInput formControlName="limitValue"
-                            (keyup.enter)="changeMin($event.target.value)">
+                            (focusout)="changeMin(ecoScoreProfileKPIForm.valid ? $event.target.value : value)">
                     </mat-form-field>
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('limitValue').hasError('cannotExceedMaxValue')">
                         Min Value cannot be greater than target value
+                     </mat-error>
+                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('limitValue').hasError('cannotExceedMinValue')">
+                        Min Value cannot be lesser than lower value
                      </mat-error>
                      <mat-error *ngIf="ecoScoreProfileKPIForm.get('limitValue').hasError('noNegativeValueAllowed')">
                         Min Value cannot be negative
@@ -29,10 +32,13 @@
                     </mat-label>
                     <mat-form-field appearance="outline" class="half-width">
                         <input maxlength="50" matInput formControlName="targetValue"
-                            (keyup.enter)="changeTarget($event.target.value)">
+                            (focusout)="changeTarget(ecoScoreProfileKPIForm.valid ? $event.target.value : maxvalue)">
                     </mat-form-field>
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('targetValue').hasError('cannotExceedMaxValue')">
                         Target Value cannot be greater than upper value
+                     </mat-error>
+                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('targetValue').hasError('cannotExceedMinValue')">
+                        Target Value cannot be less than min value
                      </mat-error>
                      <mat-error *ngIf="ecoScoreProfileKPIForm.get('targetValue').hasError('noNegativeValueAllowed')">
                         Target Value cannot be negative
@@ -50,10 +56,13 @@
                     </mat-label>
                     <mat-form-field appearance="outline" class="half-width">
                         <input maxlength="50" matInput formControlName="lowerValue"
-                            (keyup.enter)="changeLower($event.target.value)">
+                            (focusout)="changeLower(ecoScoreProfileKPIForm.valid ? $event.target.value : options.floor)">
                     </mat-form-field>
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('lowerValue').hasError('cannotExceedMaxValue')">
-                        Lower Value cannot be greater than limit value
+                        Lower Value cannot be greater than Min value
+                     </mat-error>
+                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('lowerValue').hasError('cannotExceedMinValue')">
+                        Lower Value cannot be negative
                      </mat-error>
                      <mat-error *ngIf="ecoScoreProfileKPIForm.get('lowerValue').hasError('noNegativeValueAllowed')">
                         Lower Value cannot be negative
@@ -65,11 +74,14 @@
                     </mat-label>
                     <mat-form-field appearance="outline" class="half-width">
                         <input maxlength="50" matInput formControlName="upperValue"
-                            (keyup.enter)="changeUpper($event.target.value)">
+                            (focusout)="changeUpper(ecoScoreProfileKPIForm.valid ? $event.target.value : options.ceil)">
                     </mat-form-field>
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('upperValue').hasError('cannotExceedMaxValue')">
                        Upper Value cannot be greater than Max upper value
                     </mat-error>
+                    <mat-error *ngIf="ecoScoreProfileKPIForm.get('upperValue').hasError('cannotExceedMinValue')">
+                        Upper Value cannot be lesser than Target upper value
+                     </mat-error>
                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('upperValue').hasError('noNegativeValueAllowed')">
                         Upper Value cannot be negative
                      </mat-error>

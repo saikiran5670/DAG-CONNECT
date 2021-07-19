@@ -15,8 +15,9 @@ import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple10;
+import org.apache.flink.api.java.tuple.Tuple11;
+import org.apache.flink.api.java.tuple.Tuple12;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple8;
 import org.apache.flink.api.java.tuple.Tuple9;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -27,6 +28,7 @@ import org.apache.flink.types.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.etl.common.bo.TripAggregatedData;
 import net.atos.daf.ct2.etl.common.bo.TripStatusAggregation;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
@@ -36,7 +38,6 @@ import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.ETLQueries;
 import net.atos.daf.postgre.bo.EcoScore;
 import net.atos.daf.postgre.bo.Trip;
-import net.atos.daf.common.ct2.utc.TimeFormatter;
 
 public class TripAggregations implements Serializable{
 
@@ -47,10 +48,10 @@ public class TripAggregations implements Serializable{
 	private static Logger logger = LoggerFactory.getLogger(TripAggregations.class);
 
 	
-	public SingleOutputStreamOperator<Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>> getTripIndexData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv , ParameterTool envParams)
+	public SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> getTripIndexData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv , ParameterTool envParams)
 	{
 		Map<String, List<String>> tripIndxClmns = getTripIndexColumns();
-		SingleOutputStreamOperator<Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>> indxData = hbaseStsData
+		SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> indxData = hbaseStsData
 				.keyBy(value -> value.getTripId())
 				.flatMap(new TripIndexData(envParams.get(ETLConstants.INDEX_TABLE_NM), tripIndxClmns, null));
 
@@ -70,6 +71,7 @@ public class TripAggregations implements Serializable{
 		indxClmns.add(ETLConstants.INDEX_MSG_V_TACHOGRAPH_SPEED);
 		indxClmns.add(ETLConstants.INDEX_MSG_V_GROSSWEIGHT_COMBINATION);
 		indxClmns.add(ETLConstants.INDEX_MSG_DRIVER2_ID);
+		indxClmns.add(ETLConstants.INDEX_MSG_DRIVER_ID);
 		indxClmns.add(ETLConstants.INDEX_MSG_JOBNAME);
 		indxClmns.add(ETLConstants.INDEX_MSG_INCREMENT);
 		indxClmns.add(ETLConstants.INDEX_MSG_VDIST);
@@ -79,7 +81,7 @@ public class TripAggregations implements Serializable{
 		return tripIndxClmns;
 	}
 	
-	private DataStream<Tuple8<String, String, String, Integer, Double, Double, Double, Integer>> getTripIndexAggregatedData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv, SingleOutputStreamOperator<Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>> indxData, Long timeInMilli)
+	private DataStream<Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long>> getTripIndexAggregatedData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv, SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> indxData, Long timeInMilli)
 	{
 
 		tableEnv.createTemporaryView("indexData", indxData);
@@ -88,11 +90,11 @@ public class TripAggregations implements Serializable{
 		Table indxTblResult = tableEnv.sqlQuery(ETLQueries.TRIP_INDEX_DUPLICATE_QRY);
 
 		//tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination,evtDateTime, vDist, increment
-		DataStream<Tuple9<String, String, String, Integer, Double, Long, Long, Long, Integer>> firstLevelAggrData = tableEnv
-				.toRetractStream(indxTblResult, Row.class).map(new MapRowToTuple9());
+		DataStream<Tuple10<String, String, String, Integer, Double, Long, Long, Long, Integer, String>> firstLevelAggrData = tableEnv
+				.toRetractStream(indxTblResult, Row.class).map(new MapRowToTuple10());
 
 		//tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination,vDist, previousVdist, increment, formula for avgWt
-		DataStream<Tuple10<String, String, String, Integer, Double, Long, Long, Long, Double, Integer>> grossWtCombData = getGrossWtCombData(firstLevelAggrData, timeInMilli);
+		DataStream<Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long>> grossWtCombData = getGrossWtCombData(firstLevelAggrData, timeInMilli);
 		
 		tableEnv.createTemporaryView("grossWtCombData", grossWtCombData);
 		
@@ -101,9 +103,9 @@ public class TripAggregations implements Serializable{
 		return tableEnv.toRetractStream(indxTblAggrResult, Row.class).map(new MapRowToTuple());
 	}
 		
-	public DataStream<TripAggregatedData> getConsolidatedTripData(SingleOutputStreamOperator<TripStatusData> stsData, SingleOutputStreamOperator<Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>> indxData, Long timeInMilli, StreamTableEnvironment tableEnv)
+	public DataStream<TripAggregatedData> getConsolidatedTripData(SingleOutputStreamOperator<TripStatusData> stsData, SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> indxData, Long timeInMilli, StreamTableEnvironment tableEnv)
 	{
-		DataStream<Tuple8<String, String, String, Integer, Double, Double, Double, Integer>> secondLevelAggrData = getTripIndexAggregatedData(stsData, tableEnv, indxData, timeInMilli);
+		DataStream<Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long>> secondLevelAggrData = getTripIndexAggregatedData(stsData, tableEnv, indxData, timeInMilli);
 		
 		tableEnv.createTemporaryView("tripStsData", stsData);
 		
@@ -140,25 +142,25 @@ public class TripAggregations implements Serializable{
 				.flatMap(new TripCo2Emission());
 	}
 
-	private DataStream<Tuple10<String, String, String, Integer, Double, Long, Long, Long, Double, Integer>> getGrossWtCombData(
-			DataStream<Tuple9<String, String, String, Integer, Double, Long, Long, Long, Integer>> firstLevelAggrData,
+	private DataStream<Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long>> getGrossWtCombData(
+			DataStream<Tuple10<String, String, String, Integer, Double, Long, Long, Long, Integer, String>> firstLevelAggrData,
 			Long timeInMilli) {
 
 		return firstLevelAggrData
 					//keyBy(value -> value.f0)
-					.keyBy(new KeySelector<Tuple9<String, String, String, Integer, Double, Long, Long, Long, Integer>, String>() {
+					.keyBy(new KeySelector<Tuple10<String, String, String, Integer, Double, Long, Long, Long, Integer, String>, String>() {
 						/**
 						 * 
 						 */
 						private static final long serialVersionUID = 1L;
 
 						@Override
-						public String getKey(Tuple9<String, String, String, Integer, Double, Long, Long, Long, Integer> value)
+						public String getKey(Tuple10<String, String, String, Integer, Double, Long, Long, Long, Integer, String> value)
 							throws Exception {
 						return value.f0;
 						}
 					})
-					.map(new RichMapFunction<Tuple9<String, String, String, Integer, Double, Long, Long, Long, Integer>,Tuple10<String, String, String, Integer, Double, Long, Long, Long, Double, Integer>> (){
+					.map(new RichMapFunction<Tuple10<String, String, String, Integer, Double, Long, Long, Long, Integer, String>,Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long>> (){
 
 						/**
 						 * 
@@ -168,8 +170,8 @@ public class TripAggregations implements Serializable{
 
 						
 						@Override
-						public Tuple10<String, String, String, Integer, Double, Long, Long, Long, Double, Integer> map(
-								Tuple9<String, String, String, Integer, Double, Long, Long, Long, Integer> row)
+						public Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long> map(
+								Tuple10<String, String, String, Integer, Double, Long, Long, Long, Integer, String> row)
 								throws Exception {
 							Tuple2<String, Long> currentTripVDist = prevVDistState.value();
 							long vDistDiff = 0;
@@ -190,22 +192,22 @@ public class TripAggregations implements Serializable{
 							currentTripVDist.f1 = (Long) (row.getField(6));
 							prevVDistState.update(currentTripVDist);
 							
-							logger.info(" GrossWt Info :: "+new Tuple10<String, String, String, Integer, Double, Long, Long, Long, Double, Integer>(
+							logger.info(" GrossWt Info :: "+new Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long>(
 									(String) (row.getField(0)), (String) (row.getField(1)),
 									(String) (row.getField(2)), (Integer) (row.getField(3)),
 									(Double) (row.getField(4)), (Long) (row.getField(6)), prevVDist,
 									(Long) (row.getField(7)), ((Double) (row.getField(4)) * vDistDiff),
-									(Integer) (row.getField(8))));
+									(Integer) (row.getField(8)), (String) (row.getField(9)), vDistDiff));
 							
 							logger.info(" vDistDiff :"+vDistDiff +" row.getField(4): "+((Double) (row.getField(4))) );
 							
-							//tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination,vDist, previousVdist, increment, formula for avgWt, grossWtRecCnt
-							return new Tuple10<String, String, String, Integer, Double, Long, Long, Long, Double, Integer>(
+							//tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination,vDist, previousVdist, increment, formula for avgWt, grossWtRecCnt, driverId, grossWtCnt(sum of tripDist)
+							return new Tuple12<String, String, String, Integer, Double, Long, Long, Long, Double, Integer, String, Long>(
 									(String) (row.getField(0)), (String) (row.getField(1)),
 									(String) (row.getField(2)), (Integer) (row.getField(3)),
 									(Double) (row.getField(4)), (Long) (row.getField(6)), prevVDist,
 									(Long) (row.getField(7)), ((Double) (row.getField(4)) * vDistDiff),
-									(Integer) (row.getField(8)));
+									(Integer) (row.getField(8)), (String) (row.getField(9)), vDistDiff);
 						}
 						
 						@Override
@@ -219,34 +221,34 @@ public class TripAggregations implements Serializable{
 	}
 		
 	private class MapRowToTuple
-			implements MapFunction<Tuple2<Boolean, Row>, Tuple8<String, String, String, Integer, Double, Double, Double, Integer>> {
+			implements MapFunction<Tuple2<Boolean, Row>, Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long>> {
 
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public Tuple8<String, String, String, Integer, Double, Double, Double, Integer> map(Tuple2<Boolean, Row> tuple2) throws Exception {
+		public Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long> map(Tuple2<Boolean, Row> tuple2) throws Exception {
 
 			Row row = tuple2.f1;
-			return new Tuple8<String, String, String, Integer, Double, Double, Double, Integer>((String) (row.getField(0)),
+			return new Tuple10<String, String, String, Integer, Double, Double, Double, Integer, String, Long>((String) (row.getField(0)),
 					(String) (row.getField(1)), (String) (row.getField(2)), (Integer) (row.getField(3)),
-					(Double) (row.getField(4)), (Double) (row.getField(5)), (Double) (row.getField(6)), (Integer) (row.getField(7)));
+					(Double) (row.getField(4)), (Double) (row.getField(5)), (Double) (row.getField(6)), (Integer) (row.getField(7)), (String) (row.getField(8)), (Long) (row.getField(9)));
 		}
 	}
 
-	private class MapRowToTuple9 implements
-			MapFunction<Tuple2<Boolean, Row>, Tuple9<String, String, String, Integer, Double, Long, Long, Long, Integer>> {
+	private class MapRowToTuple10 implements
+			MapFunction<Tuple2<Boolean, Row>, Tuple10<String, String, String, Integer, Double, Long, Long, Long, Integer, String>> {
 
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public Tuple9<String, String, String, Integer, Double, Long, Long, Long, Integer> map(Tuple2<Boolean, Row> tuple2)
+		public Tuple10<String, String, String, Integer, Double, Long, Long, Long, Integer, String> map(Tuple2<Boolean, Row> tuple2)
 				throws Exception {
 
 			Row row = tuple2.f1;
-			return new Tuple9<String, String, String, Integer, Double, Long, Long, Long, Integer>((String) (row.getField(0)),
+			return new Tuple10<String, String, String, Integer, Double, Long, Long, Long, Integer, String>((String) (row.getField(0)),
 					(String) (row.getField(1)), (String) (row.getField(2)), (Integer) (row.getField(3)),
 					(Double) (row.getField(4)), (Long) (row.getField(5)), (Long) (row.getField(6)),
-					(Long) (row.getField(7)), (Integer) (row.getField(8)));
+					(Long) (row.getField(7)), (Integer) (row.getField(8)), (String) (row.getField(9)));
 		}
 	 }
 	

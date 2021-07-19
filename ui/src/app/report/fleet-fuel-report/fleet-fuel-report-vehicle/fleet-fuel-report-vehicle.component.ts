@@ -388,9 +388,11 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
   }
   loadfleetFuelDetails(_vinData: any){
+    let _startTime = Util.convertDateToUtc(this.startDateValue);
+    let _endTime = Util.convertDateToUtc(this.endDateValue);
     let getFleetFuelObj = {
-      "startDateTime": 1521843915459,
-      "endDateTime": 1721843915459,
+      "startDateTime": _startTime,
+      "endDateTime": _endTime,
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
     }
@@ -516,13 +518,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     this.reportService.getGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
     });
-    if(_vinData.length === 1){
-      this.showDetailedReport = true;
-    }
-    else{
-      this.showDetailedReport = false;
-
-    }
   }
   
   updateDataSource(tableData: any) {
@@ -595,18 +590,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       vehGroupName: vehGrpName,
       vehicleName: vehName
     }    
-    this.detailSummaryObj={
-      fromDate: this.formStartDate(this.startDateValue),
-      endDate: this.formStartDate(this.endDateValue),
-      vehGroupName: vehGrpName,
-      vehicleName: vehName,
-      noOfTrips: this.FuelData[0].numberOfTrips,
-      distance:  this.FuelData[0].convertedDistance,
-      fuelconsumed:  this.FuelData[0].convertedFuelConsumed100Km,
-      idleDuration: this.FuelData[0].convertedIdleDuration,
-      fuelConsumption: this.FuelData[0].fuelConsumption,
-      co2emission: this.FuelData[0].cO2Emission,
-    }  
   }
 
   formStartDate(date: any){
@@ -1524,13 +1507,19 @@ doc.addPage();
     displayHeader.style.display ="block";
   }
 
-  gotoTrip(_row){
-    this.isRankingOpen= false;
-    this.isChartsOpen = true;
-    this.summaryColumnData = true;
-    this.isDetailsOpen =true;
-
+  gotoTrip(vehData:any){
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromFleetfuelReport: true,
+        vehicleData: vehData
+      }
+    };
+    this.router.navigate(['report/detailvehiclereport'], navigationExtras);
   }
+
+
+
+  
 
   sumOfColumns(columnName : any){
     let sum: any = 0;

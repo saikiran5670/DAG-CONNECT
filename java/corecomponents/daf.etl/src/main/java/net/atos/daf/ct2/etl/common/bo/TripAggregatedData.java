@@ -76,4 +76,5 @@ public class TripAggregatedData implements Serializable {
 	private Integer vPTODuration;
 	private Integer vMaxThrottlePaddleDuration;
 	private Integer vTripAccelerationTime;
+	private Long vGrossWtCmbCount; 
 }

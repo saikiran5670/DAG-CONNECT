@@ -1455,11 +1455,16 @@ setVehicleGroupAndVehiclePreSelection() {
     displayHeader.style.display ="block";
   }
 
-  onDriverSelected(_row){
-    this.isChartsOpen = true;
-    this.isSummaryOpen = true; 
-    this.isDetailsOpen = true;
+  onDriverSelected(vehData:any){
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromFleetFuelReport: true,
+        vehicleData:vehData
+      }
+    };
+    this.router.navigate(['report/detaildriverreport'], navigationExtras);
   }
+  
 
   sumOfColumns(columnName : any){
     let sum: any = 0;

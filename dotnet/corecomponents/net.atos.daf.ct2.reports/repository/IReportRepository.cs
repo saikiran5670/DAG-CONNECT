@@ -71,12 +71,14 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<DriverDetails>> GetDriverDetails(List<string> driverIds, int organizationId);
         #region Fuel Deviation Report
         Task<IEnumerable<FuelDeviation>> GetFilteredFuelDeviation(FuelDeviationFilter fuelDeviationFilters);
+        Task<IEnumerable<FuelDeviationCharts>> GetFuelDeviationCharts(FuelDeviationFilter fuelDeviationFilters);
         #endregion
         #region LogBook
-        Task<IEnumerable<LogbookSearchFilter>> GetLogbookSearchParameter(List<string> vins);
+        Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins);
         Task<List<FilterProperty>> GetAlertLevelList(List<string> enums);
         Task<List<AlertCategory>> GetAlertCategoryList(List<string> enums);
-        Task<List<LogbookDetailsFilter>> GetLogbookDetails(LogbookFilter logbookFilter);
+        Task<List<LogbookDetails>> GetLogbookDetails(LogbookDetailsFilter logbookFilter);
+        Task<List<AlertThresholdDetails>> GetThresholdDetails(List<int> alertId, List<string> alertLevel);
         #endregion
 
         #region Fuel Benchmark Report

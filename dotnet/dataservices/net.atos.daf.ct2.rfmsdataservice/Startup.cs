@@ -51,7 +51,10 @@ namespace net.atos.daf.ct2.rfmsdataservice
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // needed to store rate limit counters
+            services.AddMemoryCache();
             services.AddControllers();
+            services.AddHttpContextAccessor();
             services.AddMvc()
             .ConfigureApiBehaviorOptions(options =>
             {
@@ -166,6 +169,7 @@ namespace net.atos.daf.ct2.rfmsdataservice
 
             services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();
 
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "rFMS 3.0 Data Service", Version = "v1" });
@@ -189,6 +193,8 @@ namespace net.atos.daf.ct2.rfmsdataservice
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.UseRateLimitation();
 
             app.UseEndpoints(endpoints =>
             {

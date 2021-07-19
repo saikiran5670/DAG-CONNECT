@@ -847,9 +847,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 fleetOverviewFilterRequest.AccountId = _userDetails.AccountId;
                 fleetOverviewFilterRequest.OrganizationId = GetContextOrgId();
                 fleetOverviewFilterRequest.RoleId = _userDetails.RoleId;
-                //fleetOverviewFilterRequest.AccountId = 171;
-                //fleetOverviewFilterRequest.OrganizationId = 36;
-                //fleetOverviewFilterRequest.RoleId = 61;
+                // fleetOverviewFilterRequest.AccountId = 171;
+                //  fleetOverviewFilterRequest.OrganizationId = 36;
+                //  fleetOverviewFilterRequest.RoleId = 61;
                 FleetOverviewFilterResponse response = await _reportServiceClient.GetFleetOverviewFilterAsync(fleetOverviewFilterRequest);
 
                 reportFleetOverviewFilter = _mapper.ToFleetOverviewEntity(response);
@@ -933,13 +933,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             fleetoverviewItem.StartGeolocationAddressId = getMapRequestStart.Id;
                             fleetoverviewItem.StartGeolocationAddress = getMapRequestStart.Address;
                         }
-                        if (fleetoverviewItem.FleetOverviewAlert != null && fleetoverviewItem.FleetOverviewAlert.Count > 0)
+                        for (int i = 0; i < fleetoverviewItem.FleetOverviewAlert.Count; i++)
                         {
-                            foreach (var addressesult in fleetoverviewItem.FleetOverviewAlert)
+                            if (string.IsNullOrEmpty(fleetoverviewItem.FleetOverviewAlert[i].GeolocationAddress) && fleetoverviewItem.FleetOverviewAlert[i].Latitude != 0 && fleetoverviewItem.FleetOverviewAlert[i].Longitude != 0)
                             {
-                                GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(Convert.ToDouble(addressesult.AlertLatitude), Convert.ToDouble(addressesult.AlertLongitude));
-                                addressesult.AlertGeolocationAddressId = getMapRequestStart.Id;
-                                addressesult.AlertGeolocationAddress = getMapRequestStart.Address;
+                                GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(fleetoverviewItem.FleetOverviewAlert[i].Latitude, fleetoverviewItem.FleetOverviewAlert[i].Longitude);
+                                fleetoverviewItem.FleetOverviewAlert[i].GeolocationAddressId = getMapRequestStart.Id;
+                                fleetoverviewItem.FleetOverviewAlert[i].GeolocationAddress = getMapRequestStart.Address;
                             }
                         }
                     }
@@ -1230,7 +1230,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Fuel Deviation Report Table Details 
         #endregion
         [HttpGet]
-        [Route("getfueldeviationfilterdata")]
+        [Route("fueldeviation/getdetails")]
         public async Task<IActionResult> GetFuelDeviationFilterData([FromQuery] FuelDeviationFilterRequest request)
         {
             try
@@ -1245,11 +1245,23 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 foreach (var item in response.FuelDeviationDetails)
                 {
-                    if (item.GeoLocationAddressId == 0 && item.Latitude != 0 && item.Longitude != 0)
+                    if (item.GeoLocationAddressId == 0 && item.EventLatitude != 0 && item.EventLongitude != 0)
                     {
-                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.Latitude, item.Longitude);
+                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.EventLatitude, item.EventLongitude);
                         item.GeoLocationAddress = getMapRequestLatest.Address;
                         item.GeoLocationAddressId = getMapRequestLatest.Id;
+                    }
+                    if (item.StartPositionId == 0 && item.StartPositionLattitude != 0 && item.StartPositionLongitude != 0)
+                    {
+                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.StartPositionLattitude, item.StartPositionLongitude);
+                        item.StartPosition = getMapRequestLatest.Address;
+                        item.StartPositionId = getMapRequestLatest.Id;
+                    }
+                    if (item.EndPositionId == 0 && item.EndPositionLattitude != 0 && item.EndPositionLongitude != 0)
+                    {
+                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.EndPositionLattitude, item.EndPositionLongitude);
+                        item.EndPosition = getMapRequestLatest.Address;
+                        item.EndPositionId = getMapRequestLatest.Id;
                     }
                 }
                 if (response?.FuelDeviationDetails?.Count > 0)
@@ -1271,6 +1283,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpGet]
+        [Route("fueldeviation/charts")]
+        public async Task<IActionResult> GetFuelDeviationChartData([FromQuery] FuelDeviationFilterRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) return BadRequest(ReportConstants.VALIDATION_STARTDATE_MSG);
+                if (!(request.EndDateTime > 0)) return BadRequest(ReportConstants.VALIDATION_ENDDATE_MSG);
+                if (request.VINs == null || request.VINs?.Count == 0) return BadRequest(ReportConstants.VALIDATION_VINREQUIRED_MSG);
+                if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.VALIDATION_DATEMISMATCH_MSG);
+
+                _logger.Info("GetFilteredFuelDeviationChart method in Report (Fuel Deviation charts) API called.");
+                var response = await _reportServiceClient.GetFuelDeviationChartsAsync(request);
+
+                if (response?.FuelDeviationchart?.Count > 0)
+                {
+                    return Ok(new { Data = response.FuelDeviationchart, Message = ReportConstants.GET_FUEL_DEVIATION_SUCCESS_MSG });
+                }
+                else
+                {
+                    return StatusCode((int)response.Code, response.Message);
+                }
+            }
+
+            catch (Exception ex)
+            {
+
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
 
         #region Logbook
@@ -1281,14 +1325,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                LogBookFilter logBookFilter = new LogBookFilter();
+
                 var logBookFilterRequest = new LogbookFilterIdRequest();
                 logBookFilterRequest.AccountId = _userDetails.AccountId;
                 logBookFilterRequest.OrganizationId = GetContextOrgId();
                 logBookFilterRequest.RoleId = _userDetails.RoleId;
-                logBookFilterRequest.AccountId = 171;
-                logBookFilterRequest.OrganizationId = 36;
-                logBookFilterRequest.RoleId = 61;
+                //   logBookFilterRequest.AccountId = 171;
+                //  logBookFilterRequest.OrganizationId = 36;
+                //   logBookFilterRequest.RoleId = 61;
                 LogbookFilterResponse response = await _reportServiceClient.GetLogbookSearchParameterAsync(logBookFilterRequest);
 
                 // reportFleetOverviewFilter = _mapper.ToFleetOverviewEntity(response);
@@ -1298,7 +1342,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
                 if (response.Code == Responsecode.Success)
-                    return Ok(response);
+                    return Ok(response.LogbookSearchParameter);
                 if (response.Code == Responsecode.InternalServerError)
                     return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
                 return StatusCode((int)response.Code, response.Message);
@@ -1314,9 +1358,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("fleetoverview/getlogbookdetails")]
-        public async Task<IActionResult> GetLogbookDetails(LogbookFilter logbookFilter)
+        public async Task<IActionResult> GetLogbookDetails([FromBody] LogbookDetailsFilter logbookFilter)
         {
             try
             {
@@ -1335,16 +1379,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 logbookDetailsRequest.StartTime = logbookFilter.Start_Time;
                 logbookDetailsRequest.EndTime = logbookFilter.End_time;
                 /* Need to comment Start */
-                logbookDetailsRequest.AccountId = 171;
-                logbookDetailsRequest.OrganizationId = 36;
-                logbookDetailsRequest.RoleId = 61;
+                //logbookDetailsRequest.AccountId = 171;
+                //logbookDetailsRequest.OrganizationId = 36;
+                //logbookDetailsRequest.RoleId = 61;
                 /* Need to comment End */
 
                 LogbookDetailsResponse response = await _reportServiceClient.GetLogbookDetailsAsync(logbookDetailsRequest);
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
                 if (response.Code == Responsecode.Success)
-                    return Ok(response);
+                    return Ok(response.LogbookDetails);
                 if (response.Code == Responsecode.InternalServerError)
                     return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
                 return StatusCode((int)response.Code, response.Message);
@@ -1383,11 +1427,37 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var data = await _reportServiceClient.GetFuelBenchmarkByVehicleGroupAsync(objFleetFilter);
                 if (data?.FuelBenchmarkDetails != null)
                 {
-                    VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
-                    vehicleRequest.VehicleGroupId = request.VehicleGroupId;
-                    vehicleRequest.OrgnizationId = GetContextOrgId();
-                    VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
-                    data.FuelBenchmarkDetails.NumberOfTotalVehicles = vehicleResponse.VehicleCount;
+                    if (request.VehicleGroupId > 0)
+                    {
+                        data.FuelBenchmarkDetails.VehicleGroupId = request.VehicleGroupId;
+                        VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
+                        vehicleRequest.VehicleGroupId = request.VehicleGroupId;
+                        vehicleRequest.OrgnizationId = GetContextOrgId();
+                        VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
+                        data.FuelBenchmarkDetails.NumberOfTotalVehicles = vehicleResponse.VehicleCount;
+                    }
+                    else
+                    {
+                        AssociatedVehicleResponse vehicleGroupResponse = await _reportServiceClient.GetAssociatedVehiclGroupAsync(new VehicleListRequest { AccountId = _userDetails.AccountId, OrganizationId = GetUserSelectedOrgId() });
+                        if (vehicleGroupResponse.Code == Responsecode.Success)
+                        {
+                            int vehicleCount = 0;
+                            foreach (var item in vehicleGroupResponse.AssociatedVehicle)
+                            {
+                                if (item.VehicleGroupId > 0)
+                                {
+                                    VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
+                                    vehicleRequest.VehicleGroupId = item.VehicleGroupId;
+                                    vehicleRequest.OrgnizationId = GetContextOrgId();
+                                    VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
+                                    vehicleCount = vehicleCount + vehicleResponse.VehicleCount;
+                                }
+                            }
+
+                            data.FuelBenchmarkDetails.NumberOfTotalVehicles = vehicleCount;
+                        }
+                    }
+
                     data.Message = ReportConstants.GET_FUEL_BENCHMARK_SUCCESS_MSG;
                     return Ok(data);
                 }
@@ -1405,7 +1475,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("fuelbenchmark/timeperiod")]
-        public async Task<IActionResult> GetFuelBenchmarkByTimePeriod([FromBody] Entity.Report.ReportFuelBenchmarkFilter request)
+        public async Task<IActionResult> GetFuelBenchmarkByTimePeriod([FromBody] Entity.Report.ReportFuelBenchmarkTimePeriodFilter request)
         {
             try
             {
@@ -1417,10 +1487,45 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 { return BadRequest(ReportConstants.GET_FUEL_BENCHMARK_VALIDATION_DATEMISMATCH_MSG); }
 
                 string filters = JsonConvert.SerializeObject(request);
-                FuelBenchmarkRequest objFleetFilter = JsonConvert.DeserializeObject<FuelBenchmarkRequest>(filters);
-                var data = await _reportServiceClient.GetFuelBenchmarkByTimePeriodAsync(objFleetFilter);
+                FuelBenchmarkTimePeriodRequest objFluelBenchMarkFilter = JsonConvert.DeserializeObject<FuelBenchmarkTimePeriodRequest>(filters);
+                objFluelBenchMarkFilter.AccountId = _userDetails.AccountId;
+                objFluelBenchMarkFilter.OrganizationId = GetContextOrgId();
+                var data = await _reportServiceClient.GetFuelBenchmarkByTimePeriodAsync(objFluelBenchMarkFilter);
                 if (data?.FuelBenchmarkDetails != null)
                 {
+                    //Vehicle Group
+                    if (request.VehicleGroupId > 0)
+                    {
+                        data.FuelBenchmarkDetails.VehicleGroupId = request.VehicleGroupId;
+                        VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
+                        vehicleRequest.VehicleGroupId = request.VehicleGroupId;
+                        vehicleRequest.OrgnizationId = GetContextOrgId();
+                        VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
+                        data.FuelBenchmarkDetails.NumberOfTotalVehicles = vehicleResponse.VehicleCount;
+                    }
+                    //Find vehicle group according to time period 
+                    else
+                    {
+                        AssociatedVehicleResponse vehicleGroupResponse = await _reportServiceClient.GetAssociatedVehiclGroupAsync(new VehicleListRequest { AccountId = _userDetails.AccountId, OrganizationId = GetUserSelectedOrgId() });
+                        if (vehicleGroupResponse.Code == Responsecode.Success)
+                        {
+                            int vehicleCount = 0;
+                            foreach (var item in vehicleGroupResponse.AssociatedVehicle)
+                            {
+                                if (item.VehicleGroupId > 0)
+                                {
+                                    VehicleCountFilterRequest vehicleRequest = new VehicleCountFilterRequest();
+                                    vehicleRequest.VehicleGroupId = item.VehicleGroupId;
+                                    vehicleRequest.OrgnizationId = GetContextOrgId();
+                                    VehicleCountFilterResponse vehicleResponse = await _vehicleClient.GetVehicleAssociatedGroupCountAsync(vehicleRequest);
+                                    vehicleCount = vehicleCount + vehicleResponse.VehicleCount;
+                                }
+                            }
+
+                            data.FuelBenchmarkDetails.NumberOfTotalVehicles = vehicleCount;
+                        }
+                    }
+
                     data.Message = ReportConstants.GET_FUEL_BENCHMARK_SUCCESS_MSG;
                     return Ok(data);
                 }

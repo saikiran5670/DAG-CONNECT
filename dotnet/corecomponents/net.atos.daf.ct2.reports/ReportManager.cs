@@ -664,10 +664,15 @@ namespace net.atos.daf.ct2.reports
             return _reportRepository.GetFilteredFuelDeviation(fuelDeviationFilters);
         }
 
+        public Task<IEnumerable<FuelDeviationCharts>> GetFuelDeviationCharts(FuelDeviationFilter fuelDeviationFilters)
+        {
+            return _reportRepository.GetFuelDeviationCharts(fuelDeviationFilters);
+        }
+
         #endregion
 
         #region LogBook
-        public async Task<IEnumerable<LogbookSearchFilter>> GetLogbookSearchParameter(List<string> vins)
+        public async Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins)
         {
             return await _reportRepository.GetLogbookSearchParameter(vins);
         }
@@ -680,9 +685,14 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetAlertCategoryList(enums);
         }
-        public async Task<List<LogbookDetailsFilter>> GetLogbookDetails(LogbookFilter logbookFilter)
+        public async Task<List<LogbookDetails>> GetLogbookDetails(LogbookDetailsFilter logbookFilter)
         {
             return await _reportRepository.GetLogbookDetails(logbookFilter);
+        }
+
+        public async Task<List<AlertThresholdDetails>> GetThresholdDetails(List<int> alertId, List<string> alertLevel)
+        {
+            return await _reportRepository.GetThresholdDetails(alertId, alertLevel);
         }
         #endregion
 

@@ -14,8 +14,16 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public long EndDateTime { get; set; }
         [Required]
         public List<string> VINs { get; set; }
-
         public int VehicleGroupId { get; set; }
+    }
 
+    public class ReportFuelBenchmarkTimePeriodFilter
+    {
+        [Required]
+        public long StartDateTime { get; set; }
+        [Required]
+        public long EndDateTime { get; set; }
+        public List<string> VINs { get; set; }
+        public int VehicleGroupId { get; set; }
     }
 }

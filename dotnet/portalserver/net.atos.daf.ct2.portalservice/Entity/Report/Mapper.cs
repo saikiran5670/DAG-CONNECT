@@ -123,8 +123,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 MinTripDistance = request.MinTripDistance,
                 MinDriverTotalDistance = request.MinDriverTotalDistance,
                 TargetProfileId = request.TargetProfileId,
-                ReportId = request.ReportId,
-                OrgId = request.OrgId
+                ReportId = request.ReportId
             };
             grpcRequest.VINs.AddRange(request.VINs);
             return grpcRequest;
@@ -242,7 +241,25 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 driver.OrganizationId = item.OrganizationId;
                 reportFleetOverview.DriverList.Add(driver);
             }
+            reportFleetOverview.FleetOverviewAlerts = new List<FleetOverviewFilterAlert>();
+            foreach (var item in fleetOverviewFilterResponse.LogbookTripAlertDetailsRequest)
+            {
+                FleetOverviewFilterAlert fleetOverviewFilterAlert = new FleetOverviewFilterAlert()
+                {
+                    Id = item.Id,
+                    Vin = item.Vin,
+                    AlertLevel = item.AlertLevel,
+                    CategoryType = item.AlertCategoryType,
+
+
+                };
+                reportFleetOverview.FleetOverviewAlerts.Add(fleetOverviewFilterAlert);
+
+            }
+
             return reportFleetOverview;
+
+
         }
 
     }

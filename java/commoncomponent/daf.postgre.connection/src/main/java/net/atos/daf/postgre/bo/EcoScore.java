@@ -26,21 +26,23 @@ public class EcoScore implements Serializable {
 	private Integer vTripDPAAnticipationCount;
 	private Integer vSumTripDPABrakingScore;
 	private Integer vSumTripDPAAnticipationScore;
-	private Double vGrossWeightCombination;
+	private Double tripCalAvgGrossWtComb;
 	private Long tripCalUsedFuel;
-	private Double tripCalPtoDuration;
+	private Integer vPTODuration;
 	private Integer vIdleDuration;
 	/*
 	private Double vGrossWtSum;
 	private Long numberOfIndexMessage;
 	private Double tripCalAvgGrossWtComb;*/
 	
-	private Double tripCalHeavyThrottleDuration;
-	private Double tripCalCrsCntrlUsage;
+	private Integer vMaxThrottlePaddleDuration;
+	private Integer vCruiseControlDist;
 	private Integer tripCalCrsCntrlDist25To50;
 	private Integer tripCalCrsCntrlDist50To75;
 	private Integer tripCalCrsCntrlDistAbv75;
 	private Double tachoVGrossWtCmbSum; 
+	private Long vGrossWtCmbCount; 
+	private Integer vTripAccelerationTime;
 	private Integer vHarshBrakeDuration;
 	private Integer vBrakeDuration;
 	

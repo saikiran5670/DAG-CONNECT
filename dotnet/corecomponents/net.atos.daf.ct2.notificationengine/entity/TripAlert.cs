@@ -22,5 +22,7 @@ namespace net.atos.daf.ct2.notificationengine.entity
         public long MessageTimestamp { get; set; }
         public long CreatedAt { get; set; }
         public long ModifiedAt { get; set; }
+        public string UrgencyLevelType { get; set; }
+        public int VehicleId { get; set; }
     }
 }

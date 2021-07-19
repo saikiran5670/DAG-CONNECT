@@ -7,10 +7,14 @@ import { Component, OnInit } from '@angular/core';
 })
 
 export class LogBookComponent implements OnInit {  
-  
+  isVehicleHealthOpen: boolean = false;
   constructor() {}
 
   ngOnInit(): void {
+  }
+
+  openVehicleHealth(){
+    this.isVehicleHealthOpen = true;
   }
 
 }

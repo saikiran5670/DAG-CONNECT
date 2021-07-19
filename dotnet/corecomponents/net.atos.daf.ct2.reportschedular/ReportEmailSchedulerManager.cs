@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.reportscheduler
             var emailDetails = await _reportSchedulerRepository.GetReportEmailDetails();
 
             var reportEmailResults = from p in emailDetails
-                                     group p by new { p.ReportCreatedBy, p.LanguageCode } into g
+                                     group p by new { p.ReportCreatedBy, p.LanguageCode, p.EmailId } into g
                                      select new { CreatedBy = g.Key, ReportSchedulerEmailResult = g.ToList() };
             if (reportEmailResults.Any())
             {

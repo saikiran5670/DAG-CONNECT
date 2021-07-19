@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.api.java.tuple.Tuple10;
-import org.apache.flink.api.java.tuple.Tuple9;
+import org.apache.flink.api.java.tuple.Tuple11;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.util.Collector;
 import org.apache.hadoop.hbase.Cell;
@@ -26,15 +25,15 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.hbase.connection.HbaseAdapter;
 import net.atos.daf.hbase.connection.HbaseConnection;
 import net.atos.daf.hbase.connection.HbaseConnectionPool;
-import net.atos.daf.common.ct2.utc.TimeFormatter;
 
 public class TripIndexData
-		extends RichFlatMapFunction<TripStatusData, Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>> {
+		extends RichFlatMapFunction<TripStatusData, Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> {
 	private static final Logger logger = LoggerFactory.getLogger(TripIndexData.class);
 
 	private static final long serialVersionUID = 1L;
@@ -112,7 +111,7 @@ public class TripIndexData
 
 	@Override
 	public void flatMap(TripStatusData stsData,
-			Collector<Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>> out) throws Exception {
+			Collector<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> out) throws Exception {
 
 		PrefixFilter rowPrefixFilter = new PrefixFilter(
 				Bytes.toBytes(ETLConstants.INDEX_MSG_TRANSID + "_" + stsData.getTripId()));
@@ -123,12 +122,13 @@ public class TripIndexData
 		ResultScanner rs = table.getScanner(scan);
 		Iterator<Result> iterator = rs.iterator();
 
-		List<Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long,Integer>> indexDataList = new ArrayList<>();
+		List<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long,Integer, String>> indexDataList = new ArrayList<>();
 		while (iterator.hasNext()) {
 
 			Result result = iterator.next();
 			
 			String driver2Id = null;
+			String driverId = null;
 			String tripId = null;
 			String vid = null;
 			Integer vTachographSpeed = ETLConstants.ZERO;
@@ -166,6 +166,10 @@ public class TripIndexData
 							&& ETLConstants.INDEX_MSG_DRIVER2_ID.equals(column) && null != Bytes.toString(value)
 							&& !"null".equals(Bytes.toString(value)))
 						driver2Id = Bytes.toString(value);
+					else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
+							&& ETLConstants.INDEX_MSG_DRIVER_ID.equals(column) && null != Bytes.toString(value)
+							&& !"null".equals(Bytes.toString(value)))
+						driverId = Bytes.toString(value);
 					else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
 							&& ETLConstants.INDEX_MSG_JOBNAME.equals(column) && null != Bytes.toString(value)
 							&& !"null".equals(Bytes.toString(value)))
@@ -208,26 +212,26 @@ public class TripIndexData
 				logger.info("Ignored index record increment: "+increment + " vGrossWeightCombination : "+vGrossWeightCombination);
 			}
 			
-			Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer> tuple10 = new Tuple10<>();
-			tuple10.setFields(tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination, jobNm, evtDateTime,
-					vDist, increment, grossWtRec);
+			Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String> tuple11 = new Tuple11<>();
+			tuple11.setFields(tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination, jobNm, evtDateTime,
+					vDist, increment, grossWtRec, driverId);
 
 			logger.info("increment: " + increment + " vGrossWeightCombination : " + vGrossWeightCombination);
-			indexDataList.add(tuple10);
+			indexDataList.add(tuple11);
 		}
 		
 		Collections.sort(indexDataList,
-				new Comparator<Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>>() {
+				new Comparator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>>() {
 					@Override
 					public int compare(
-							Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer> tuple1,
-							Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer> tuple2) {
-						return Long.compare(tuple1.f8, tuple2.f8);
+							Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String> tuple1,
+							Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String> tuple2) {
+						return Long.compare(tuple1.f6, tuple2.f6);
 					}
 				});
 		
-		for(Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer> tuple10 : indexDataList){
-			out.collect(tuple10);
+		for(Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String> tuple11 : indexDataList){
+			out.collect(tuple11);
 		}
 
 	}

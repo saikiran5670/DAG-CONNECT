@@ -216,15 +216,17 @@ namespace net.atos.daf.ct2.reports.repository
                     coalesce(wangeoadd.address,'') as wangeoadd_LatestWarningGeolocationAddress,
                     alertgeoadd.id as alertgeoadd_LatestAlertGeolocationAddressId,
                     coalesce(alertgeoadd.address,'') as alertgeoadd_LatestAlertGeolocationAddress,
-                    tripal.id,
+                    tripal.id as tripal_Id,
+					tripal.alert_id as tripal_AlertId,
+					coalesce(tripal.vin,'') as tripal_Vin,
                     coalesce(tripal.trip_id,'') as tripal_TripId,
-                    tripal.name as alertname,
-                    tripal.type as alerttype,
-                    tripal.alert_generated_time as alert_generated_time,
-                    tripal.alertlevel as alert_level,
-                    tripal.category_type as category_type,
-                    tripal.latitude as alert_latitude,
-                    tripal.longitude as alert_longitude
+                    coalesce(tripal.name,'') as alertname,
+                    coalesce(tripal.type,'') as alerttype,
+                    tripal.alert_generated_time as AlertTime,
+                    coalesce(tripal.urgency_level_type,'') as AlertLevel,
+                    coalesce(tripal.category_type,'') as CategoryType,
+                    tripal.latitude as AlertLatitude,
+                    tripal.longitude as AlertLongitude
                     from CTE_Unique_latest_trip lcts
                     left join 
                     livefleet.livefleet_position_statistics lps
@@ -234,10 +236,10 @@ namespace net.atos.daf.ct2.reports.repository
                     left join master.driver dri
                     on lcts.driver1_id=dri.driver_id
                     left join tripdetail.tripalert tripal
-                    on lcts.vin=tripal.vin
+                    on lcts.vin=tripal.vin 
                     left join master.geolocationaddress alertgeoadd
-                    on TRUNC(CAST(tripal.latitude as numeric),4)= TRUNC(CAST(latgeoadd.latitude as numeric),4) 
-                    and TRUNC(CAST(tripal.longitude as numeric),4) = TRUNC(CAST(latgeoadd.longitude as numeric),4)
+                    on TRUNC(CAST(tripal.latitude as numeric),4)= TRUNC(CAST(alertgeoadd.latitude as numeric),4) 
+                    and TRUNC(CAST(tripal.longitude as numeric),4) = TRUNC(CAST(alertgeoadd.longitude as numeric),4)
                     left join master.geolocationaddress latgeoadd
                     on TRUNC(CAST(lcts.latest_received_position_lattitude as numeric),4)= TRUNC(CAST(latgeoadd.latitude as numeric),4) 
                     and TRUNC(CAST(lcts.latest_received_position_longitude as numeric),4) = TRUNC(CAST(latgeoadd.longitude as numeric),4)
@@ -269,7 +271,7 @@ namespace net.atos.daf.ct2.reports.repository
                 {
                     //need to be implement in upcomming sprint 
                     parameterFleetOverview.Add("@alertlevel", fleetOverviewFilter.AlertLevel);
-                    queryFleetOverview += " and tripal.alert_level = Any(@alertlevel) ";
+                    queryFleetOverview += " and tripal.urgency_level_type = Any(@alertlevel) ";
                 }
                 IEnumerable<FleetOverviewResult> alertResult = await _dataMartdataAccess.QueryAsync<FleetOverviewResult>(queryFleetOverview, parameterFleetOverview);
                 return repositoryMapper.GetFleetOverviewDetails(alertResult);

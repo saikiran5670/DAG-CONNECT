@@ -147,6 +147,7 @@ public class ETLConstants {
 	public static final String INDEX_MSG_V_TACHOGRAPH_SPEED = "VTachographSpeed";
 	public static final String INDEX_MSG_V_GROSSWEIGHT_COMBINATION = "VGrossWeightCombination";
 	public static final String INDEX_MSG_DRIVER2_ID = "Driver2ID";
+	public static final String INDEX_MSG_DRIVER_ID = "DriverID";
 	public static final String INDEX_MSG_JOBNAME = "Jobname";
 	public static final String INDEX_MSG_INCREMENT = "Increment";
 	public static final String INDEX_MSG_VDIST = "VDist";

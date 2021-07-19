@@ -43,34 +43,6 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                     {
                         return StatusCode(400, string.Empty);
                     }
-                    //Validate Grant Type Header
-                    var grantType = Request.Headers["grant_type"].ToString();
-                    try
-                    {
-                        if (grantType.ToLower() != RFMSGrantTypeDefaults.CLIENT_CREDENTIALS &&
-                            grantType.ToLower() != RFMSGrantTypeDefaults.REFRESH_TOKEN)
-                        {
-                            throw new Exception();
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        return StatusCode(400, string.Empty);
-                    }
-
-                    //Validate Scope Header
-                    var scope = Request.Headers["scope"].ToString();
-                    try
-                    {
-                        if (scope.ToLower() != RFMSScopeDefaults.RFMS_SCOPE)
-                        {
-                            throw new Exception();
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        return StatusCode(400, string.Empty);
-                    }
                     var arrUsernamePassword = identity.Split(':');
                     if (string.IsNullOrEmpty(arrUsernamePassword[0].Trim()))
                     {
