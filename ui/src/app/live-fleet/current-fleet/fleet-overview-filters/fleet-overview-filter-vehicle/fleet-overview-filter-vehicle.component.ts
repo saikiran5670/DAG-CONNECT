@@ -7,6 +7,7 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ViewChild } from '@angular/core';
+import { validateBasis } from '@angular/flex-layout';
 
 @Component({
   selector: 'app-fleet-overview-filter-vehicle',
@@ -14,14 +15,17 @@ import { ViewChild } from '@angular/core';
   styleUrls: ['./fleet-overview-filter-vehicle.component.less']
 })
 export class FleetOverviewFilterVehicleComponent implements OnInit {
-  @Input() translationData: any;
-  @Input() detailsData: any;
-  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
- filterData: any;
-  filterVehicle:FormGroup;
-  isVehicleListOpen: boolean = true;
+@Input() translationData: any;
+@Input() detailsData: any;
+@ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
+@ViewChild(MatPaginator) paginator: MatPaginator;
+@ViewChild(MatSort) sort: MatSort;
+filterData: any;
+filterValue: any;
+filterVehicleForm:FormGroup;
+todayFlagClicked: boolean = false;
+isVehicleListOpen: boolean = true;
+noRecordFlag: boolean = false;
 groupList : any= [];
 categoryList : any= [];
 vehicleListData: any = [];
@@ -31,23 +35,24 @@ otherList : any= [];
 showLoadingIndicator: any = false;
 dataSource: any = new MatTableDataSource([]);
 initData: any = [];
+objData: any;
 displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthStatus'];
  
   constructor(private _formBuilder: FormBuilder, private reportService: ReportService) { }
 
   ngOnInit(): void {
+    console.log(this.todayFlagClicked );
     this.vehicleListData = this.detailsData;
-    console.log("details dat for vehicle" +this.detailsData );
-    this.filterVehicle = this._formBuilder.group({
-      group: [''],
-      level: [''],
-      category: [''],
-      status: [''],
-      otherFilter: ['']
+
+    this.filterVehicleForm = this._formBuilder.group({
+      group: ['all'],
+      level: ['all'],
+      category: ['all'],
+      status: ['all'],
+      otherFilter: ['all']
     })
 
     this.reportService.getFilterDetails().subscribe((data: any) => {
-console.log("service data=" +data);
 this.filterData = data;
 this.filterData["vehicleGroups"].forEach(item=>
 this.groupList.push(item) );
@@ -68,8 +73,6 @@ this.otherList.push(item) );
     this.vehicleListData = this.detailsData;
     filterValue = filterValue.trim();
     filterValue = filterValue.toLowerCase();
-    // this.detailsData.filter = filterValue;
-
 
     const filteredData = this.detailsData.filter(value => {​​​​​​​​
       const searchStr = filterValue.toLowerCase();
@@ -85,51 +88,81 @@ this.otherList.push(item) );
     
   }
 
-  onChangeGroup(event: any){
-    // filterValue = filterValue.trim();
-    // filterValue = filterValue.toLowerCase();
-    // this.dataSource.filter = filterValue;
+  onChangeGroup(id: any){
+    this.filterVehicleForm.get("group").setValue(id);
+    this.loadVehicleData();
   }
 
-  onChangeLevel(event: any){
-    // filterValue = filterValue.trim();
-    // filterValue = filterValue.toLowerCase();
-    // this.dataSource.filter = filterValue;
+  onChangeLevel(id: any){
+    this.filterVehicleForm.get("level").setValue(id);
+    this.loadVehicleData();
   }
 
-  onChangeCategory(event: any){
-    // filterValue = filterValue.trim();
-    // filterValue = filterValue.toLowerCase();
-    // this.dataSource.filter = filterValue;
+  onChangeCategory(id: any){
+    this.filterVehicleForm.get("category").setValue(id);
+    this.loadVehicleData();
   }
 
-  onChangHealthStatus(event: any){
-    // filterValue = filterValue.trim();
-    // filterValue = filterValue.toLowerCase();
-    // this.dataSource.filter = filterValue;
+  onChangHealthStatus(id: any){
+    this.filterVehicleForm.get("status").setValue(id);
+    this.loadVehicleData();
   }
 
-  onChangeOtherFilter(event: any){
-        // filterValue = filterValue.trim();
-    // filterValue = filterValue.toLowerCase();
-    // this.dataSource.filter = filterValue;
+  onChangeOtherFilter(id: any){
+    this.filterVehicleForm.get("otherFilter").setValue(id);
+    this.loadVehicleData();
   }
   
   loadVehicleData(){  
     this.initData =this.detailsData;    
     console.log(this.initData);
-    this.updateDataSource(this.initData);
+    if(!this.todayFlagClicked)
+    {
+      this.objData = {
+        "groupId": [this.filterVehicleForm.controls.group.value.toString()],
+        "alertLevel": [this.filterVehicleForm.controls.level.value.toString()],
+        "alertCategory": [this.filterVehicleForm.controls.category.value.toString()],
+        "healthStatus": [this.filterVehicleForm.controls.status.value.toString()],
+        "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
+        "driverId": ["all"],
+        "days": 90,
+        "languagecode":"cs-CZ"
+    }}
+    if(this.todayFlagClicked)
+    {
+      this.objData = {
+        "groupId": [this.filterVehicleForm.controls.group.value.toString()],
+        "alertLevel": [this.filterVehicleForm.controls.level.value.toString()],
+        "alertCategory": [this.filterVehicleForm.controls.category.value.toString()],
+        "healthStatus": [this.filterVehicleForm.controls.status.value.toString()],
+        "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
+        "driverId": ["all"],
+        "days": 1,
+        "languagecode":"cs-CZ"
+      }
+    }
+    this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
+      this.vehicleListData = data;
+    }, (error) => {
+
+      if (error.status == 404) {
+        this.noRecordFlag = true;
+      }
+
+    });
+    this.noRecordFlag = false;
  } 
 
- updateDataSource(tableData: any) {
-  this.initData = tableData;
-  //this.showMap = false;
-  //this.selectedTrip.clear();
-  this.dataSource = new MatTableDataSource(tableData);
-  setTimeout(() => {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  });
-}
+ onChangetodayCheckbox(event){
+   if(event.checked){
+  this.todayFlagClicked = true;
+  this.loadVehicleData();
+   }
+   else{
+    this.todayFlagClicked = false;
+    this.loadVehicleData();
+   }
+
+ }
 
 }

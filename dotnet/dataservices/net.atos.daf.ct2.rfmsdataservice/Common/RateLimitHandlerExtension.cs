@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 
-namespace net.atos.daf.ct2.rfmsdataservice.CustomAttributes
+namespace net.atos.daf.ct2.rfmsdataservice.Common
 {
     public static class RateLimitHandlerExtension
     {

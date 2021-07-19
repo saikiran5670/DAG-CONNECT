@@ -12,10 +12,11 @@
         {{ translationData.lbl || 'Select Driver' }}
     </mat-label>
     <mat-form-field appearance="outline" class="full-width">
-        <mat-select placeholder="{{ translationData.lblSelectUserRole || 'Select Vehicle Group' }}" >
+        <mat-select (selectionChange)="onChangeGroup($event.value)" placeholder="{{ translationData.lblSelectUserRole || 'Select Vehicle Group' }}" >
             <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
-            <!-- <mat-option *ngFor="let vehGroupList of vehicleGroupList | removeDuplicates" [value]="vehGroupList"> {{vehGroupList.value}}
-            </mat-option> -->
+            <mat-option *ngFor="let item of groupList" [value]="item.vehicleId">
+                {{item.vehicleGroupName}}
+            </mat-option>
         </mat-select>
     </mat-form-field>
 </div>     
@@ -26,9 +27,13 @@
       <mat-expansion-panel-header class="full-width" style="padding-left: 10px;height: 45px;">
         <mat-panel-title>
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbl || 'Vehicle List' }}</span>
+          <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class="checkbox">
+            <mat-checkbox [checked]="todayFlagClicked" (change)="onChangetodayCheckbox($event)" >{{ translationData.lblToday || 'Today'}}
+            </mat-checkbox>
+              </div>
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <div>
+      <div *ngIf="!noRecordFlag">
         <div class="full-width vehicleList-div" *ngFor="let item of vehicleListData">
             <div class="vehicleList-icon">
                 <mat-icon style="font-size: 50px;padding: 26px 0px;"> person_pin_circle</mat-icon>
@@ -52,7 +57,10 @@
             </div>
             </div>
         </div>
-     </div>    
+     </div>  
+     <div *ngIf="noRecordFlag">
+        <p>{{translationData.lblNoRecordFound || 'NoRecordFound'}}</p>
+    </div>  
   </mat-expansion-panel>
   </mat-card>
   </div>
