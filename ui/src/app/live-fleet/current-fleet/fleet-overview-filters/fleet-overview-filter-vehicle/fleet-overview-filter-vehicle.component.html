@@ -1,4 +1,4 @@
-<form [formGroup]="filterVehicle">
+<form [formGroup]="filterVehicleForm">
 <div fxLayout="row" fxLayoutAlign="space-between">
       <mat-form-field appearance="outline" class="dropdown-filters">
           <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
@@ -9,7 +9,7 @@
     <mat-label>{{ translationData.lblSelectGroup || 'Select Group' }} </mat-label>
     <mat-form-field appearance="outline" class="full-width dropdown-filters">
         <mat-select placeholder="All" (selectionChange)="onChangeGroup($event.value)" formControlName="group">
-            <mat-option value="all">All</mat-option>
+            <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
             <mat-option *ngFor="let item of groupList" [value]="item.vehicleId">
                 {{item.vehicleGroupName}}
             </mat-option>
@@ -20,7 +20,7 @@
     <mat-label>{{ translationData.lblAlertLevel || 'Alert Level' }} </mat-label>
     <mat-form-field appearance="outline" class="full-width dropdown-filters">
         <mat-select placeholder="All" (selectionChange)="onChangeLevel($event.value)" formControlName="level">
-            <mat-option value="all">All</mat-option>
+            <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
             <mat-option *ngFor="let item of levelList" [value]="item.value">
                 {{item.name}}
             </mat-option>
@@ -31,7 +31,7 @@
     <mat-label>{{ translationData.lblAlertCategory || 'Alert Category' }} </mat-label>
     <mat-form-field appearance="outline" class="full-width dropdown-filters">
         <mat-select placeholder="All" (selectionChange)="onChangeCategory($event.value)" formControlName="category">
-            <mat-option value="all">All</mat-option>
+            <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
             <mat-option *ngFor="let item of categoryList" [value]="item.value">
                 {{item.name}}
             </mat-option>
@@ -41,8 +41,8 @@
 <div fxLayout="column" fxLayoutAlign="space-between" >
     <mat-label>{{ translationData.lblHealthStatus|| 'Health Status' }} </mat-label>
     <mat-form-field appearance="outline" class="full-width dropdown-filters">
-        <mat-select placeholder="All" (selectionChange)="onChangHealthStatus($event.value)" formControlName="status">
-            <mat-option value="all">All</mat-option>
+        <mat-select placeholder="All" multiple (selectionChange)="onChangHealthStatus($event.value)" formControlName="status">
+            <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
             <mat-option *ngFor="let item of healthList" [value]="item.value">
                 {{item.name}}
             </mat-option>
@@ -53,7 +53,7 @@
     <mat-label>{{ translationData.lblOtherFilter || 'Other Filter' }} </mat-label>
     <mat-form-field appearance="outline" class="full-width dropdown-filters">
         <mat-select placeholder="All" (selectionChange)="onChangeOtherFilter($event.value)" formControlName="otherFilter">
-            <mat-option value="all">All</mat-option>
+            <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
             <mat-option *ngFor="let item of otherList" [value]="item.value">
                 {{item.name}}
             </mat-option>
@@ -67,9 +67,14 @@
       <mat-expansion-panel-header class="full-width" style="padding-left: 10px;height: 45px;">
         <mat-panel-title>
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbl || 'Vehicle List' }}</span>
+          <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class="checkbox">
+            <mat-checkbox [checked]="todayFlagClicked" (change)="onChangetodayCheckbox($event)" >{{ translationData.lblToday || 'Today'}}
+
+            </mat-checkbox>
+              </div>
         </mat-panel-title>
       </mat-expansion-panel-header>
-     <div>
+     <div  *ngIf="!noRecordFlag">
         <div class="full-width vehicleList-div" *ngFor="let item of vehicleListData">
             <div class="vehicleList-icon">
                 <mat-icon style="font-size: 50px;padding: 26px 0px;"> person_pin_circle</mat-icon>
@@ -94,8 +99,12 @@
             </div>
         </div>
      </div>    
+     <div *ngIf="noRecordFlag">
+         <p>{{translationData.lblNoRecordFound || 'NoRecordFound'}}</p>
+     </div>
   </mat-expansion-panel>
   </mat-card>
+
 
   <!-- <mat-card  class='mat-elevation-z no-padding margin-bottom-xlg'>
     <mat-expansion-panel style="padding: 0px;" [(expanded)]="isVehicleListOpen" class="full-width" fxLayoutGap="10px" (opened)="isVehicleListOpen"
