@@ -981,15 +981,15 @@ message FuelDeviationDetails {
     string EndPosition=11;
     double FuelConsumed=12;
     int32 DrivingTime =13;
-    int32 Alert =14;      
+    int32 Alerts =14;      
     string FuelEventType=15;   
     string RegistrationNo =16;
     string VehicleName=17;
     string VehicleActivityType = 18;
     int64 EventTime=19;
     double FuelDiffernce = 20;
-    double Latitude = 21;
-    double Longitude = 22;
+    double EventLatitude = 21;
+    double EventLongitude = 22;
     int32 GeoLocationAddressId = 23;
     string GeoLocationAddress = 24;
     int32 FuelDeviationId = 25;
@@ -1001,6 +1001,7 @@ message FuelDeviationDetails {
     int32 EndPositionId = 31;
     string FuelEventTypeKey = 32;
     string VehicleActivityTypeKey = 33;
+    double EventHeading = 34;
 }
 
 

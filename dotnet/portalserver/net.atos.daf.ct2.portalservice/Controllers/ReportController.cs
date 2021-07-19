@@ -1230,7 +1230,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Fuel Deviation Report Table Details 
         #endregion
         [HttpGet]
-        [Route("getfueldeviationfilterdata")]
+        [Route("fueldeviation/getdetails")]
         public async Task<IActionResult> GetFuelDeviationFilterData([FromQuery] FuelDeviationFilterRequest request)
         {
             try
@@ -1245,9 +1245,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 foreach (var item in response.FuelDeviationDetails)
                 {
-                    if (item.GeoLocationAddressId == 0 && item.Latitude != 0 && item.Longitude != 0)
+                    if (item.GeoLocationAddressId == 0 && item.EventLatitude != 0 && item.EventLongitude != 0)
                     {
-                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.Latitude, item.Longitude);
+                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.EventLatitude, item.EventLongitude);
                         item.GeoLocationAddress = getMapRequestLatest.Address;
                         item.GeoLocationAddressId = getMapRequestLatest.Id;
                     }
