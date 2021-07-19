@@ -26,6 +26,8 @@ namespace net.atos.daf.ct2.reports.entity
         public string ThresholdUnit { get; set; }
         public long AlertGeneratedTime { get; set; }
         public int AlertGeolocationAddressId { get; set; }
+        public long ProcessedMessageTimestamp { get; set; }
+
 
 
     }

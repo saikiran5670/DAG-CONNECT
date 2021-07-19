@@ -22,8 +22,7 @@ public class KafkaMessageSerializeSchema<T> implements KafkaSerializationSchema<
 
   @Override
   public ProducerRecord<byte[], byte[]> serialize(KafkaRecord<T> kafkaRecord, Long timeStamp) {
-
-    ProducerRecord<byte[], byte[]> producerRecord =
+	  ProducerRecord<byte[], byte[]> producerRecord =
         new ProducerRecord<byte[], byte[]>(
             topicName, kafkaRecord.getKey().getBytes(), getBytes(kafkaRecord.getValue()));
     return producerRecord;

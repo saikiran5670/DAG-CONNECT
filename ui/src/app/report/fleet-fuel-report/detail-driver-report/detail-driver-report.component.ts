@@ -534,6 +534,11 @@ tripTraceArray: any = [];
                   fromFleetfuelReport: boolean,
                   vehicleData: any
                 };
+                if(this._state){
+                  this.showBack = true;
+                }else{
+                  this.showBack = false;
+                }
                }
 
   ngOnInit(): void {
@@ -604,6 +609,14 @@ tripTraceArray: any = [];
     }
   }
 
+  detaildriverreport(){
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromFleetfuelReport: true
+      }
+    };
+    this.router.navigate(['report/fleetfueldriver'], navigationExtras);
+  }
   setDisplayColumnBaseOnPref(){
     let filterPref = this.tripPrefData.filter(i => i.state == 'I'); // removed unchecked
     if(filterPref.length > 0){

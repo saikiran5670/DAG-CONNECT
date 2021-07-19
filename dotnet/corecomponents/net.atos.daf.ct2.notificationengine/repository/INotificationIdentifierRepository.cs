@@ -11,5 +11,6 @@ namespace net.atos.daf.ct2.notificationengine.repository
         Task<List<Notification>> GetNotificationDetails(TripAlert tripAlert);
         Task<List<NotificationHistory>> GetNotificationHistory(TripAlert tripAlert);
         Task<List<TripAlert>> GetGeneratedTripAlert(TripAlert tripAlert);
+        Task<NotificationHistory> InsertNotificationSentHistory(NotificationHistory notificationHistory);
     }
 }

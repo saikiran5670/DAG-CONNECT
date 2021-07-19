@@ -1,30 +1,15 @@
 <div class="bgtrans">
-    <form [formGroup]="fuelBenchmarkingForm">
+    <form [formGroup]="vehicleHealthForm">
         <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
           <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
             <mat-expansion-panel-header class="full-width">
               <mat-panel-title>
                 <span>
                   <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
+                  <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
                 </span>
               </mat-panel-title>
-
             </mat-expansion-panel-header>
-
-              <div class='areaWidth margin-bottom-xlg' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
-                <span class='radioLabel'>{{ translationData.lblBenchmarkBetween || 'Benchmark Between' }}:</span>
-                <mat-radio-group (change)='onBenchmarkChange($event)'>
-                  <mat-radio-button style='margin-right: 20px;' value="timePeriods"
-                    [checked]="selectedBenchmarking ===  'timePeriods' ? true : false">{{ translationData.lblTimePeriods || 'Time Periods' }}
-                  </mat-radio-button>
-                  <mat-radio-button style='margin-right: 20px;' value="vehicleGroup"
-                    [checked]="selectedBenchmarking ===  'vehicleGroup' ? true : false">{{ translationData.lblVehicleGroups || 'Vehicle Groups ' }}
-                  </mat-radio-button>
-                </mat-radio-group>
-                <div>{{ translationData.lblSelectionText || 'Select *Time Periods* to compare several groups on the same period or *Vehicle Groups* to compare one group on different periods.' }}</div>
-              </div>
-
-
             <div>
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
@@ -38,19 +23,15 @@
                   </div>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span *ngIf="selectedBenchmarking == 'vehicleGroup'" class='mandatoryColor'>*</span></mat-label>
+                  <!-- <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label> -->
+                  <mat-label>{{ translationData.lblWarningsType || 'Warnings Type' }} </mat-label>
                   <mat-form-field appearance="outline">
-                    <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
-                      <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
+                    <mat-select (selectionChange)="onWarningTypeSelection($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Warnings Type' }}" >
+                      <!-- <mat-option *ngFor="let rer of Warnings" [value]="rer.vehicleGroupId">
                           {{ rer.vehicleGroupName }}
-                      </mat-option>
+                      </mat-option> -->
                     </mat-select>
                   </mat-form-field> 
-                  <div *ngIf="selectedBenchmarking == 'timePeriods'">{{translationData.lblBottomBenchmarkVehicleGroupText || 'Select the Target Vehicle Group' }}</div>
-                  <div *ngIf="selectedBenchmarking == 'vehicleGroup'">{{translationData.lblBottomBenchmarkVehicleGroupText || 'Add a group to compare in the benchmark (maximum 4)' }}</div>
-                  <mat-error *ngIf="fuelBenchmarkingForm.get('vehicleGroup').hasError('required') && vehicleGrpDD.length > 0">
-                    {{translationData.lblPleaseSelectvehicleGroup || 'Please Select Vehicle Group' }}
-                  </mat-error>
                 </div>
               </div>
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
@@ -98,58 +79,15 @@
                     </div>
                   </div>
                 </div>
-                <div style="visibility: hidden;" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
-                  <mat-form-field appearance="outline">
-                    <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
-                      <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
-                        {{ rer.vehicleName }}
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                  <!-- <mat-error *ngIf="fuelBenchmarkingForm.get('vehicle').hasError('required') && vehicleDD.length > 0">
-                    {{translationData.lblPleaseSelectVehicle || 'Please Select Vehicle' }}
-                  </mat-error> -->
-                </div>
               </div>
-              <div *ngIf="selectedBenchmarking == 'timePeriods'" class="margin-bottom-xlg">{{ translationData.lblBottomBenchmarkText || 'Add a period to compare in the benchmark (maximum 4 )' }}</div>
               <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
                 <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
-                (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
-                  <button *ngIf="selectedBenchmarking == 'timePeriods'" [disabled]="!fuelBenchmarkingForm.valid" class='no-margin' mat-raised-button color="primary" (click)='onSearch("timePeriods")'>               
-                    <mat-icon>add_circle_outline</mat-icon>{{ translationData.lblAddPeriod || ' Add Period' }}
-                  </button>
-                  <button *ngIf="selectedBenchmarking == 'vehicleGroup'" [disabled]="!fuelBenchmarkingForm.valid" class='no-margin' mat-raised-button color="primary" (click)='onSearch("vehicleGroups")'>               
-                    <mat-icon>add_circle_outline</mat-icon>{{ translationData.lblAddPeriod || ' Add Group' }}
-                  </button>
+                  (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
+                <button [disabled]="!vehicleHealthForm.valid" class='no-margin' mat-raised-button color="primary"
+                  (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
               </div>
             </div>
           </mat-expansion-panel>
-        </mat-card>
+        </mat-card> 
       </form>
-
-      <app-fuel-benchmarking-table *ngIf="selectionValueBenchmarkBY"
-        [selectionValueBenchmarkBY]= "selectionValueBenchmarkBY"
-        [startDateRange]="startDateRange" 
-        [endDateRange]="endDateRange"></app-fuel-benchmarking-table>
-
-
-        <div *ngIf="!selectionValueBenchmarkBY">
-          <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-            <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
-              <mat-expansion-panel-header class="full-width">
-            <mat-panel-title>
-              <span>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{'Fuel Benchmarking Details' }}</span>
-              </span>
-            </mat-panel-title>
-            </mat-expansion-panel-header>
-
-            <div>
-              <span>{{'Please select and search required fields from top to view the details' }}</span>
-            </div>
-            </mat-expansion-panel>          
-          </mat-card>
-        </div>
 </div>
-

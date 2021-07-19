@@ -67,6 +67,7 @@ namespace net.atos.daf.ct2.notificationengine.entity
         public string Notref_state { get; set; }
         public long Notref_created_at { get; set; }
         public long Notref_modified_at { get; set; }
+        public int Ale_organization_id { get; set; }
     }
 
 }

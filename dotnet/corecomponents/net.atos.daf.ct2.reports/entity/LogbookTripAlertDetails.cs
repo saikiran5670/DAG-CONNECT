@@ -18,6 +18,7 @@ namespace net.atos.daf.ct2.reports.entity
         public double AlertLongitude { get; set; }
         public int AlertGeolocationAddressId { get; set; }
         public string AlertGeolocationAddress { get; set; }
+        public long ProcessedMessageTimestamp { get; set; }
 
     }
 

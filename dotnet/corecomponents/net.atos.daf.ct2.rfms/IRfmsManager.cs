@@ -6,7 +6,8 @@ namespace net.atos.daf.ct2.rfms
 {
     public interface IRfmsManager
     {
-        Task<RfmsVehicles> GetVehicles(string lastVin, bool moreData, int accountId, int orgId);
+        Task<RfmsVehicles> GetVehicles(string lastVin, int threshold, int accountId, int orgId);
         Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest);
+        Task<string> GetRFMSFeatureRate(string emailId, string featureName);
     }
 }

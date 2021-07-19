@@ -21,7 +21,9 @@ export class ReportsPreferencesComponent implements OnInit {
   editDriverTimePerferencesFlag:boolean = false;
   showEcoScorePerferences: boolean = false;
   editEcoScorePerferencesFlag:boolean = false;
-
+  showFuelBenchmarkPerferences: boolean = false;
+  editFuelBenchmarkPerferencesFlag:boolean = false;
+  
   constructor( private reportService: ReportService ) { }
 
   ngOnInit() {
@@ -99,6 +101,11 @@ export class ReportsPreferencesComponent implements OnInit {
     this.showEcoScorePerferences = false;
   }
 
+  editFuelBenchmarkPerferences(){
+    this.editFuelBenchmarkPerferencesFlag = true;
+    this.showFuelBenchmarkPerferences = false;
+  }
+
   updateEditDriverTimeFlag(retObj: any){
     if(retObj){
       this.editDriverTimePerferencesFlag = retObj.flag;
@@ -118,6 +125,17 @@ export class ReportsPreferencesComponent implements OnInit {
       }
     }else{
       this.editEcoScorePerferencesFlag = false; // hard coded
+    }
+  }
+
+  updateFuelBenchmarkReportFlag(retObj: any){
+    if(retObj){
+      this.editFuelBenchmarkPerferencesFlag = retObj.flag;
+      if(retObj.msg && retObj.msg != ''){
+        this.successMsgBlink(retObj.msg);
+      }
+    }else{
+      this.editFuelBenchmarkPerferencesFlag = false; // hard coded
     }
   }
 

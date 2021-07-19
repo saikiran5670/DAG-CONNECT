@@ -27,6 +27,7 @@ namespace net.atos.daf.ct2.reports.repository
                             ,tripalert.trip_id as TripId
                             ,tripalert.alert_id as AlertId
                             ,tripalert.alert_generated_time as AlertGeneratedTime
+                            ,processed_message_time_stamp as ProcessedMessageTimestamp
                             ,tripalert.latitude as AlertLatitude
                             ,tripalert.longitude as AlertLongitude
                             ,tripalert.category_type as AlertCategoryType
@@ -36,7 +37,7 @@ namespace net.atos.daf.ct2.reports.repository
                             , alertgeoadd.id as AlertGeolocationAddressId
                             ,coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
                             from tripdetail.tripalert tripalert   
-                            left join tripdetail.trip_statistics lcts on lcts.vin=tripalert.vin and lcts.trip_id=tripalert.trip_id
+                           -- left join tripdetail.trip_statistics lcts on lcts.vin=tripalert.vin and lcts.trip_id=tripalert.trip_id
                             left join master.geolocationaddress alertgeoadd
                             on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(tripalert.latitude as numeric),4) 
                             and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
@@ -69,6 +70,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ta.longitude as Longitude,
                                 ta.urgency_level_type as AlertLevel,
                                 ta.alert_generated_time as AlertGeneratedTime,
+                                processed_message_time_stamp as ProcessedMessageTimestamp,
                                 ts.start_time_stamp as TripStartTime,
                                 ts.end_time_stamp as TripEndTime,
                                 alertgeoadd.id as AlertGeolocationAddressId,
