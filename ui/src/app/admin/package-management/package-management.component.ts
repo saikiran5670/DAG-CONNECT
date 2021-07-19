@@ -134,13 +134,30 @@ export class PackageManagementComponent implements OnInit {
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort)=>{
+        const isAsc = sort.direction === 'asc';
+        let columnName = this.sort.active;
+        return data.sort((a: any, b: any)=>{
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+      }
     });
+
+    
     this.dataSource.filterPredicate = function(data, filter: any){
       return data.code.toLowerCase().includes(filter) ||
              data.name.toLowerCase().includes(filter) ||
              data.type.toLowerCase().includes(filter) ||
              data.state.toLowerCase().includes(filter)
     }
+  }
+
+  compare(a: Number | String, b: Number | String, isAsc : boolean, columnName : any){
+    if(columnName == "code" || columnName == "name" ){
+      if(!(a instanceof Number)) a = a.toString().toUpperCase();
+      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    }
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
   getNewTagData(data: any){

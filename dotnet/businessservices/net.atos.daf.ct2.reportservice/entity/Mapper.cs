@@ -244,11 +244,13 @@ namespace net.atos.daf.ct2.reportservice.entity
                             DataAttributeId = item.DataAttributeId,
                             Name = item.Name ?? string.Empty,
                             Key = item.Key ?? string.Empty,
-                            Target = item.TargetValue,
+                            LimitType = item.LimitType ?? string.Empty,
+                            LimitValue = item.TargetValue,
+                            TargetValue = item.TargetValue,
                             RangeValueType = item.RangeValueType ?? string.Empty
                         };
                         if (!string.IsNullOrEmpty(item.DBColumnName))
-                            preference.Score.AddRange(GetEcoScoreCompareReportAttributeValues(item.DBColumnName, item.LimitType, item.LimitValue, item.TargetValue, compareResult));
+                            preference.Score.AddRange(GetEcoScoreCompareReportAttributeValues(item.DBColumnName, compareResult));
                         preference.SubCompareDrivers.AddRange(FillRecursiveEcoScoreCompareReport(flatObjects, item.SubDataAttributes, compareResult));
 
                         recursiveObjects.Add(preference);
@@ -262,7 +264,7 @@ namespace net.atos.daf.ct2.reportservice.entity
             return recursiveObjects;
         }
 
-        private static List<EcoScoreReportAttribute> GetEcoScoreCompareReportAttributeValues(string attributeName, string limitType, double limitValue, double targetValue, IEnumerable<reports.entity.EcoScoreReportCompareDrivers> compareResult)
+        private static List<EcoScoreReportAttribute> GetEcoScoreCompareReportAttributeValues(string attributeName, IEnumerable<reports.entity.EcoScoreReportCompareDrivers> compareResult)
         {
             var lstAttributes = new List<EcoScoreReportAttribute>();
             try
@@ -272,9 +274,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 {
                     obj = new EcoScoreReportAttribute();
                     obj.DriverId = item.DriverId;
-                    obj.Value = Convert.ToDouble(String.Format("{0:0.0}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault())));
-                    if (!string.IsNullOrEmpty(limitType))
-                        obj.Color = Convert.ToString(GetEcoScoreAttributeColor(limitType, limitValue, targetValue, obj.Value));
+                    obj.Value = String.Format("{0:0.0}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault()));
                     lstAttributes.Add(obj);
                 }
             }
@@ -437,6 +437,39 @@ namespace net.atos.daf.ct2.reportservice.entity
             return objRequest;
         }
 
+        internal EcoScoreReportSingleDriverOverallPerformance MapEcoScoreReportSingleDriverOverallPerformance(IEnumerable<reports.entity.EcoScoreReportSingleDriver> result, IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> reportAttributes)
+        {
+            var objOverall = new EcoScoreReportSingleDriverOverallPerformance();
+            var dataMartOverall = result.Where(x => x.HeaderType == "Overall_Driver").FirstOrDefault();
+            if (dataMartOverall != null)
+            {
+                objOverall.EcoScore = MapEcoScoreReportOverallPerformanceKPI(OverallPerformance.EcoScore.ToString(), dataMartOverall, reportAttributes);
+                objOverall.FuelConsumption = MapEcoScoreReportOverallPerformanceKPI(OverallPerformance.FuelConsumption.ToString(), dataMartOverall, reportAttributes);
+                objOverall.AnticipationScore = MapEcoScoreReportOverallPerformanceKPI(OverallPerformance.AnticipationScore.ToString(), dataMartOverall, reportAttributes);
+                objOverall.BrakingScore = MapEcoScoreReportOverallPerformanceKPI(OverallPerformance.BrakingScore.ToString(), dataMartOverall, reportAttributes);
+            }
+            return objOverall;
+        }
+
+        private static EcoScoreReportOverallPerformanceKPI MapEcoScoreReportOverallPerformanceKPI(string kpiName, reports.entity.EcoScoreReportSingleDriver dataMartOverall, IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> reportAttributes)
+        {
+            var objKPI = new EcoScoreReportOverallPerformanceKPI();
+            var dataAttribute = new EcoScoreCompareReportAtttributes();
+            if (dataMartOverall != null)
+            {
+                dataAttribute = reportAttributes.Where(x => x.DBColumnName == kpiName).FirstOrDefault();
+                objKPI.DataAttributeId = dataAttribute.DataAttributeId;
+                objKPI.LimitType = dataAttribute.LimitType;
+                objKPI.LimitValue = dataAttribute.LimitValue;
+                objKPI.TargetValue = dataAttribute.TargetValue;
+                if (kpiName == OverallPerformance.EcoScore.ToString())
+                    objKPI.Score = String.Format("{0:0}", Convert.ToDecimal(dataMartOverall.GetType().GetProperties().Where(y => y.Name.Equals(kpiName)).Select(x => x.GetValue(dataMartOverall)).FirstOrDefault()));
+                else
+                    objKPI.Score = String.Format("{0:0.0}", Convert.ToDecimal(dataMartOverall.GetType().GetProperties().Where(y => y.Name.Equals(kpiName)).Select(x => x.GetValue(dataMartOverall)).FirstOrDefault()));
+            }
+            return objKPI;
+        }
+
         internal IEnumerable<EcoScoreReportSingleDriverHeader> MapEcoScoreReportSingleDriverHeader(IEnumerable<reports.entity.EcoScoreReportSingleDriver> result)
         {
             var lstDriver = new List<EcoScoreReportSingleDriverHeader>();
@@ -506,7 +539,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                     obj = new EcoScoreReportSingleDriverAttribute();
                     obj.HeaderType = item.HeaderType;
                     obj.VIN = item.VIN ?? string.Empty;
-                    obj.Value = Convert.ToDouble(String.Format("{0:0.0}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault())));
+                    obj.Value = String.Format("{0:0.0}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault()));
                     lstAttributes.Add(obj);
                 }
             }

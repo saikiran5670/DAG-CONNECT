@@ -130,8 +130,9 @@
 
       <app-fuel-benchmarking-table *ngIf="selectionValueBenchmarkBY"
         [selectionValueBenchmarkBY]= "selectionValueBenchmarkBY"
+        [test]="test"
         [startDateRange]="startDateRange" 
-        [endDateRange]="endDateRange"></app-fuel-benchmarking-table>
+        [endDateRange]="endDateRange" #fuelBenchmarking></app-fuel-benchmarking-table>
 
 
         <div *ngIf="!selectionValueBenchmarkBY">

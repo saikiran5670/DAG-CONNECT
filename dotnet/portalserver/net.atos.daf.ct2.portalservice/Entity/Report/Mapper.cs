@@ -123,8 +123,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 MinTripDistance = request.MinTripDistance,
                 MinDriverTotalDistance = request.MinDriverTotalDistance,
                 TargetProfileId = request.TargetProfileId,
-                ReportId = request.ReportId,
-                OrgId = request.OrgId
+                ReportId = request.ReportId
             };
             grpcRequest.VINs.AddRange(request.VINs);
             return grpcRequest;
@@ -192,6 +191,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
             foreach (var item in fleetOverviewFilterResponse.FleetOverviewVGFilterResponse)
             {
                 VehicleGroup vehicleGroup = new VehicleGroup();
+                vehicleGroup.Vin = fleetOverviewFilterResponse.AssociatedVehicleRequest.Where(x => x.VehicleId == item.VehicleId).Select(x => x.Vin).FirstOrDefault();
                 vehicleGroup.VehicleGroupId = item.VehicleGroupId;
                 vehicleGroup.VehicleGroupName = fleetOverviewFilterResponse.AssociatedVehicleRequest.Where(x => x.VehicleGroupId == item.VehicleGroupId).Select(x => x.VehicleGroupName).FirstOrDefault();
                 vehicleGroup.VehicleId = item.VehicleId;
@@ -242,28 +242,26 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 driver.OrganizationId = item.OrganizationId;
                 reportFleetOverview.DriverList.Add(driver);
             }
-            reportFleetOverview.FleetOverviewAlerts = new List<FleetOverviewAlert>();
+            reportFleetOverview.FleetOverviewAlerts = new List<FleetOverviewFilterAlert>();
             foreach (var item in fleetOverviewFilterResponse.LogbookTripAlertDetailsRequest)
             {
-                FleetOverviewAlert fleetOverviewAlert = new FleetOverviewAlert()
+                FleetOverviewFilterAlert fleetOverviewFilterAlert = new FleetOverviewFilterAlert()
                 {
-                    AlertId = item.AlertId,
-                    AlertName = item.AlertName,
-                    AlertType = item.AlertType,
+                    Id = item.Id,
+                    Vin = item.Vin,
                     AlertLevel = item.AlertLevel,
                     CategoryType = item.AlertCategoryType,
-                    AlertLatitude = item.AlertLatitude,
-                    AlertLongitude = item.AlertLongitude,
-                    AlertGeolocationAddressId = item.AlertGeolocationAddressId,
-                    AlertGeolocationAddress = item.AlertGeolocationAddress,
-                    AlertTime = item.AlertGeneratedTime,
-                    ProcessedMessageTimestamp = item.ProcessedMessageTimestamp
+                    AlertTime = item.AlertGeneratedTime
+
+
                 };
-            reportFleetOverview.FleetOverviewAlerts.Add(fleetOverviewAlert);
+                reportFleetOverview.FleetOverviewAlerts.Add(fleetOverviewFilterAlert);
 
             }
 
             return reportFleetOverview;
+
+
         }
 
     }

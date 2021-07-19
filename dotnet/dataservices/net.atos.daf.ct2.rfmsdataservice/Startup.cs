@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using net.atos.daf.ct2.account;
@@ -20,7 +19,6 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.organization.repository;
-using net.atos.daf.ct2.rfmsdataservice.Common;
 using net.atos.daf.ct2.rfmsdataservice.CustomAttributes;
 using net.atos.daf.ct2.subscription.repository;
 using net.atos.daf.ct2.translation;
@@ -34,7 +32,7 @@ using AccountPreference = net.atos.daf.ct2.accountpreference;
 using Identity = net.atos.daf.ct2.identity;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using Subscription = net.atos.daf.ct2.subscription;
-
+using net.atos.daf.ct2.rfmsdataservice.Common;
 
 namespace net.atos.daf.ct2.rfmsdataservice
 {
@@ -103,14 +101,6 @@ namespace net.atos.daf.ct2.rfmsdataservice
             services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ITranslationManager, TranslationManager>();
-
-            //services.AddSingleton<IPostConfigureOptions<BasicAuthenticationOptions>, BasicAuthenticationPostConfigureOptions>();
-            //services.AddTransient<IBasicAuthenticationService, BasicAuthenticationService>();
-
-            //services.AddMvc(options =>
-            //{
-            //    options.Filters.Add(new ProducesAttribute("application/json"));
-            //});
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(x =>
