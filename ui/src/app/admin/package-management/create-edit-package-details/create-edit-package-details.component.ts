@@ -91,6 +91,21 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         this.dataSource = selectedFeatureList;
         this.updatedTableData(selectedFeatureList);
         this.featureDisplayedColumns = ['name'] ;
+        setTimeout(()=>{
+          this.dataSource = new MatTableDataSource(data);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+          this.dataSource.sortData = (data: String[], sort: MatSort) => {
+            const isAsc = sort.direction === 'asc';
+            return data.sort((a: any, b: any) => {
+              return this.compare(a[sort.active], b[sort.active], isAsc);
+            });
+           }
+          if(!this.createStatus || this.duplicateMsg || this.viewFlag){
+            this.onReset();
+          }
+        });
+
       } else if (this.actionType == "edit" || this.actionType == "create") {
         setTimeout(()=>{
           this.dataSource = new MatTableDataSource(data);
