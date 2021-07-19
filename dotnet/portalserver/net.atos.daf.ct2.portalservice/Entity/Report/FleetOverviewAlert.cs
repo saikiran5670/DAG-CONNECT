@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
     {
         public int Id { get; set; }
         public string Vin { get; set; }
-
+        public long AlertTime { get; set; }
         public string AlertLevel { get; set; }
         public string CategoryType { get; set; }
 

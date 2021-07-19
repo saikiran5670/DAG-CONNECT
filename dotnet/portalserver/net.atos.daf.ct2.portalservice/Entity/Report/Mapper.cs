@@ -191,6 +191,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
             foreach (var item in fleetOverviewFilterResponse.FleetOverviewVGFilterResponse)
             {
                 VehicleGroup vehicleGroup = new VehicleGroup();
+                vehicleGroup.Vin = fleetOverviewFilterResponse.AssociatedVehicleRequest.Where(x => x.VehicleGroupId == item.VehicleGroupId).Select(x => x.Vin).FirstOrDefault();
                 vehicleGroup.VehicleGroupId = item.VehicleGroupId;
                 vehicleGroup.VehicleGroupName = fleetOverviewFilterResponse.AssociatedVehicleRequest.Where(x => x.VehicleGroupId == item.VehicleGroupId).Select(x => x.VehicleGroupName).FirstOrDefault();
                 vehicleGroup.VehicleId = item.VehicleId;
@@ -250,6 +251,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                     Vin = item.Vin,
                     AlertLevel = item.AlertLevel,
                     CategoryType = item.AlertCategoryType,
+                    AlertTime = item.AlertGeneratedTime
 
 
                 };
