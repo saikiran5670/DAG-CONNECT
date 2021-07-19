@@ -18,6 +18,7 @@ namespace net.atos.daf.ct2.notificationengine
         }
         public async Task<List<Notification>> GetNotificationDetails(TripAlert tripAlert)
         {
+            tripAlert = await _notificationIdentifierRepository.GetVehicleIdForTrip(tripAlert);
             List<Notification> notificationOutput = new List<Notification>();
             List<Notification> notificationDetails = await _notificationIdentifierRepository.GetNotificationDetails(tripAlert);
             List<NotificationHistory> notificatinFrequencyCheck = await _notificationIdentifierRepository.GetNotificationHistory(tripAlert);
@@ -37,19 +38,20 @@ namespace net.atos.daf.ct2.notificationengine
                 }
                 else if (item.Noti_frequency_type == "E")
                 {
-                    List<TripAlert> nGenAlertDetails = (List<TripAlert>)generatedAlertForVehicle.GroupBy(e => new { e.Alertid, e.Vin });//.Where(e => e.Count() == item.Noti_frequency_threshhold_value);
+                    List<TripAlert> nGenAlertDetails = (List<TripAlert>)generatedAlertForVehicle.GroupBy(e => new { e.Alertid, e.Vin }); //order by alert generated time  //.Where(e => e.Count() == item.Noti_frequency_threshhold_value);
                     for (int i = 0; i < nGenAlertDetails.Count(); i++)
                     {
                         if (i / item.Noti_frequency_threshhold_value == 0)
                         {
+                            //trip alert message id column
                             notificationOutput = notificationDetails.Where(p => p.Noti_alert_id == nGenAlertDetails[i].Alertid).ToList();
                         }
                     }
                 }
-                if (item.Noti_validity_type.ToLower() == "c")
+                if (item.Noti_validity_type.ToUpper() == "C")
                 {
-                    notificationTimingDetails = notificationOutput.Where(t => t.Aletimenoti_period_type == "A").ToList();
-                    var customeTimingDetails = notificationOutput.Where(t => t.Aletimenoti_period_type == "C");
+                    notificationTimingDetails = notificationOutput.Where(t => t.Aletimenoti_period_type.ToUpper() == "A").ToList();
+                    var customeTimingDetails = notificationOutput.Where(t => t.Aletimenoti_period_type.ToUpper() == "C");
                     foreach (Notification customeTimingItem in customeTimingDetails)
                     {
                         var bitsWithIndex = customeTimingItem.Aletimenoti_day_type.Cast<bool>() // we need to use Cast because BitArray does not provide generic IEnumerable
@@ -72,22 +74,22 @@ namespace net.atos.daf.ct2.notificationengine
 
             foreach (var item in notificationTimingDetails)
             {
-                if (item.Notlim_notification_period_type.ToLower() == "y")
+                if (item.Notlim_notification_period_type.ToUpper() == "Y")
                 {
                     item.Notlim_period_limit = item.Notlim_period_limit * 60;
                 }
                 NotificationHistory notificationHistory = new NotificationHistory();
                 notificationHistory.OrganizationId = item.Ale_organization_id;
-                notificationHistory.TripId = "";
+                notificationHistory.TripId = tripAlert.Tripid;
                 notificationHistory.NotificationId = item.Noti_id;
-                notificationHistory.VehicleId = 0;// item.Noti_id;
+                notificationHistory.VehicleId = tripAlert.VehicleId;
                 notificationHistory.RecipientId = item.Notrec_id;
                 notificationHistory.NotificationModeType = item.Notrec_notification_mode_type;
                 notificationHistory.PhoneNo = item.Notrec_phone_no;
                 notificationHistory.EmailId = item.Notrec_email_id;
                 notificationHistory.WsUrl = item.Notrec_ws_url;
                 notificationHistory.NotificationSendDate = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString());
-                notificationHistory.Status = "S";
+                notificationHistory.Status = NotificationSendType.Successful.ToString();
                 await _notificationIdentifierRepository.InsertNotificationSentHistory(notificationHistory);
             }
 

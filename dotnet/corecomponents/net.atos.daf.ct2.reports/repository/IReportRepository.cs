@@ -71,6 +71,7 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<DriverDetails>> GetDriverDetails(List<string> driverIds, int organizationId);
         #region Fuel Deviation Report
         Task<IEnumerable<FuelDeviation>> GetFilteredFuelDeviation(FuelDeviationFilter fuelDeviationFilters);
+        Task<IEnumerable<FuelDeviationCharts>> GetFuelDeviationCharts(FuelDeviationFilter fuelDeviationFilters);
         #endregion
         #region LogBook
         Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins);

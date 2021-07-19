@@ -19,6 +19,19 @@ namespace net.atos.daf.ct2.notificationengine.repository
 
         }
 
+        public async Task<TripAlert> GetVehicleIdForTrip(TripAlert tripAlert)
+        {
+            string queryStatement = @"SELECT id
+	                                            FROM  master.vehicle
+	                                            where vin=@vin";
+            var parameter = new DynamicParameters();
+            parameter.Add("@vin", tripAlert.Vin);
+
+            int vehicleId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+            tripAlert.VehicleId = vehicleId;
+            return tripAlert;
+        }
+
         public async Task<List<Notification>> GetNotificationDetails(TripAlert tripAlert)
         {
 
@@ -86,24 +99,22 @@ namespace net.atos.daf.ct2.notificationengine.repository
 
         public async Task<List<NotificationHistory>> GetNotificationHistory(TripAlert tripAlert)
         {
-            string queryStatement = @"SELECT nothis.id as Id
-                                            , nothis.organization_id as OrganizationId
-                                            , nothis.trip_id as TripId
-                                            , nothis.vehicle_id as VehicleId
-                                            , nothis.alert_id as AlertId
-                                            , nothis.notification_id as NotificationId
-                                            , nothis.recipient_id as RecipientId
-                                            , nothis.notification_mode_type as NotificationModeType
-                                            , nothis.phone_no as PhoneNo
+            string queryStatement = @"SELECT id as Id
+                                            , organization_id as OrganizationId
+                                            , trip_id as TripId
+                                            , vehicle_id as VehicleId
+                                            , alert_id as AlertId
+                                            , notification_id as NotificationId
+                                            , recipient_id as RecipientId
+                                            , notification_mode_type as NotificationModeType
+                                            , phone_no as PhoneNo
                                             , nothis.email_id as EmailId
-                                            , nothis.ws_url as WsUrl
-                                            , nothis.notification_sent_date as NotificationSendDate
-                                            , nothis.status as Status
-	                                            FROM master.notificationhistory nothis
-	                                            inner join master.vehicle veh
-	                                            on nothis.vehicle_id=veh.id
-	                                            where nothis.alert_id=@alert_id
-	                                            and veh.vin=@vin";
+                                            , ws_url as WsUrl
+                                            , notification_sent_date as NotificationSendDate
+                                            , status as Status
+	                                            FROM master.notificationhistory 	                                           
+	                                            where alert_id=@alert_id
+	                                            and vin=@vin";
             var parameter = new DynamicParameters();
             parameter.Add("@alert_id", tripAlert.Alertid);
             parameter.Add("@vin", tripAlert.Vin);

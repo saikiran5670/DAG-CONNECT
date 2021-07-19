@@ -4,6 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { ReportService } from 'src/app/services/report.service';
 
 @Component({
   selector: 'app-fleet-overview-filter-driver',
@@ -18,38 +19,80 @@ export class FleetOverviewFilterDriverComponent implements OnInit {
   @Input() translationData: any;
   @Input() detailsData: any;
   @Input() filterData: any;
+  groupList : any= [];
   showLoadingIndicator: any = false;
   isVehicleListOpen: boolean = true;
   dataSource: any = new MatTableDataSource([]);
   initData: any = [];
+  vehicleListData: any = [];
+  todayFlagClicked: boolean = false;
+  noRecordFlag: boolean = false;
   
-  constructor() { }
+  constructor(private reportService: ReportService) { }
 
   ngOnInit(): void {
+    this.vehicleListData = this.detailsData;
     console.log("driver filter data" +this.filterData);
-    this.loadVehicleData();
+    this.reportService.getFilterDetails().subscribe((data: any) => {
+      this.filterData = data;
+      this.filterData["vehicleGroups"].forEach(item=>
+      this.groupList.push(item) );
+    })
+    // this.loadVehicleData();
   }
 
   applyFilter(filterValue: string) {
+    this.vehicleListData = this.detailsData;
     filterValue = filterValue.trim();
     filterValue = filterValue.toLowerCase();
-    this.dataSource.filter = filterValue;
-  } 
-  loadVehicleData(){  
-    this.initData =this.detailsData;    
-    console.log(this.initData);
-    this.updateDataSource(this.initData);
- } 
+    // this.detailsData.filter = filterValue;
+    const filteredData = this.detailsData.filter(value => {​​​​​​​​
+      const searchStr = filterValue.toLowerCase();
+      const vin = value.vin.toLowerCase().toString().includes(searchStr);
+      const driver = value.driverFirstName.toLowerCase().toString().includes(searchStr);
+      const drivingStatus = value.vehicleDrivingStatusType.toLowerCase().toString().includes(searchStr);
+      const healthStatus = value.vehicleHealthStatusType.toLowerCase().toString().includes(searchStr);
+      return vin || driver || drivingStatus ||healthStatus;
+    }​​​​​​​​);
+  
+    console.log(filteredData);
+    this.vehicleListData = filteredData;
+    
+  }
 
- updateDataSource(tableData: any) {
-  this.initData = tableData;
-  //this.showMap = false;
-  //this.selectedTrip.clear();
-  this.dataSource = new MatTableDataSource(tableData);
-  setTimeout(() => {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+
+ onChangeGroup(groupId: any){  
+
+  let objData = {
+      "groupId": [groupId.toString()],
+      "alertLevel": ["all"],
+      "alertCategory": ["all"],
+      "healthStatus": ["all"],
+      "otherFilter": ["all"],
+      "driverId": ["all"],
+      "days": 90,
+      "languagecode":"cs-CZ"
+  }
+  this.reportService.getFleetOverviewDetails(objData).subscribe((data:any) => {
+    this.vehicleListData = data;
+  }, (error) => {
+
+    if (error.status == 404) {
+      this.noRecordFlag = true;
+    }
+
   });
+  this.noRecordFlag = false;
+} 
+
+onChangetodayCheckbox(event){
+  if(event.checked){
+ this.todayFlagClicked = true;
+  }
+  else{
+   this.todayFlagClicked = false;
+   }
+
 }
 
 }

@@ -96,6 +96,13 @@ export class CreateViewEditRelationshipComponent implements OnInit {
         }
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+        this.dataSource.sortData = (data: String[], sort: MatSort) =>{
+          const isAsc = sort.direction === 'asc';
+          let columnName = this.sort.active;
+          return data.sort((a: any, b: any) => {
+              return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+          });
+        }
         if(!this.createStatus){
         // if(this.editFlag){
           this.onReset();
@@ -109,6 +116,13 @@ export class CreateViewEditRelationshipComponent implements OnInit {
     this.breadcumMsg = this.getBreadcum();
   }
 
+  compare(a: Number | String, b:Number | String, isAsc: boolean, columnName){
+    if(columnName == "name"){
+      if(!(a instanceof Number)) a = a.toString().toUpperCase();
+      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    }
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
     backToOrgRelationPage= function () {
     // this.router.navigate(['/admin/organisationrelationship']);
     if(this.backToOrgRel){

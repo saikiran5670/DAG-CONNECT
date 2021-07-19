@@ -23,8 +23,9 @@ namespace net.atos.daf.ct2.reports.repository
 	                    , case when fueldev.fuel_event_type='I' then 'enumfueleventtype_increase' else 'enumfueleventtype_decrease' end as FuelEventTypeKey
 	                    , case when fueldev.vehicle_activity_type='S' then 'enumvehicleactivitytype_stop' else 'enumvehicleactivitytype_running' end as VehicleActivityTypeKey
 	                    , ROUND(fueldev.fuel_difference,2)  as FuelDiffernce
-                        , fueldev.latitude  as Latitude
-                        , fueldev.longitude  as Longitude
+                        , fueldev.latitude  as EventLatitude
+                        , fueldev.longitude  as EventLongitude
+                        , fueldev.heading  as EventHeading
 	                    , fueldev.event_time   as EventTime
 	                    , fueldev.odometer_val as Odometer
 	                    , trpst.start_time_stamp as StartTimeStamp
@@ -39,7 +40,7 @@ namespace net.atos.daf.ct2.reports.repository
                         , coalesce(endgeoaddr.address,'') AS EndPosition
 	                    , trpst.etl_gps_fuel_consumed as FuelConsumed
 	                    , trpst.etl_gps_driving_time as DrivingTime
-	                    , trpst.no_of_alerts as Alerts
+	                    , (select count(1) from tripdetail.tripalert where trip_id = trpst .trip_id and type in ('P','L','T') ) as Alerts
 	                    , trpst.vin as VIN
 	                    , CASE WHEN v.registration_no IS NULL THEN '' ELSE v.registration_no END as RegistrationNo
 	                    , CASE WHEN v.name IS NULL THEN '' ELSE v.name END as VehicleName
@@ -83,6 +84,41 @@ namespace net.atos.daf.ct2.reports.repository
         #endregion
 
         #region Fuel Deviation Report Chartss  
+        public Task<IEnumerable<FuelDeviationCharts>> GetFuelDeviationCharts(FuelDeviationFilter fuelDeviationFilters)
+        {
+            try
+            {
+                string query = @"SELECT count(distinct ld.id) as EventCount,
+                                count(distinct ld.trip_id) as TripCount,
+                                count(distinct ld.vin) as VehicleCount,
+                                --fuel_event_type,
+                                sum(case when fuel_event_type='I' then 1 else 0 END) as IncreaseEvent,
+                                sum(case when fuel_event_type='D' then 1 else 0 END) as DecreaseEvent,
+                                extract(epoch from (date_trunc('day', to_timestamp(event_time/1000)))) * 1000 as date 
+                                FROM livefleet.livefleet_trip_fuel_deviation ld
+                                join tripdetail.trip_statistics as trpst
+                                on trpst.trip_id=ld.trip_id
+                                --Join Master.vehicle v
+                                --on ld.vin=v.vin
+                                where (start_time_stamp >= @StartDateTime 
+	                                 and end_time_stamp<= @EndDateTime) and 
+	                                 trpst.vin = Any(@vins)
+                                Group by date_trunc('day', to_timestamp(event_time/1000))
+                                --,fuel_event_type";
+
+                var parameter = new DynamicParameters();
+                parameter.Add("@StartDateTime", fuelDeviationFilters.StartDateTime);
+                parameter.Add("@EndDateTime", fuelDeviationFilters.EndDateTime);
+                parameter.Add("@vins", fuelDeviationFilters.VINs.ToArray());
+                return _dataMartdataAccess.QueryAsync<FuelDeviationCharts>(query, parameter);
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         #endregion
     }
 }
