@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
 using net.atos.daf.ct2.vehicle;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 
 namespace net.atos.daf.ct2.rfmsdataservice.Controllers
 {
@@ -32,6 +33,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
         private readonly IAccountManager _accountManager;
         private readonly IVehicleManager _vehicleManager;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
 
         public RfmsDataServiceController(IAccountManager accountManager,
@@ -39,7 +41,8 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                                          IAuditTraillib auditTrail,
                                          IRfmsManager rfmsManager,
                                          IVehicleManager vehicleManager,
-                                         IConfiguration configuration)
+                                         IConfiguration configuration,
+                                         IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _auditTrail = auditTrail;
@@ -47,6 +50,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
             this._accountManager = accountManager;
             this._vehicleManager = vehicleManager;
             this._configuration = configuration;
+            this._httpContextAccessor = httpContextAccessor;
         }
 
 
@@ -65,16 +69,16 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 //Validation with respect to xCorrelationId needs to be considered in later stage
                 this.Request.Headers.TryGetValue("X-Correlation-ID", out StringValues xCorrelationId);
 
-                if (!this.Request.Headers.ContainsKey("Accept") ||
-                    (this.Request.Headers.ContainsKey("Accept") && acceptHeader.Count() == 0))
+                if (!this.Request.Headers.ContainsKey("Accept") || (this.Request.Headers.ContainsKey("Accept") && acceptHeader.Count() == 0))
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept");
 
-                await _auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "rFMS Vehicle Data Service", "rFMS Vehicle Data Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get Vehicles method rFMS vehicle data service", 1, 2, lastVin, 0, 0);
+                await _auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "rFMS Vehicle Data Service", "rFMS Vehicle Data Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get Vehicles method rFMS vehicle data service", 0, 0, lastVin, 0, 0);
 
                 if (acceptHeader.Any(x => x.Trim().Equals(RFMSResponseTypeConstants.JSON, StringComparison.CurrentCultureIgnoreCase)))
                     selectedType = RFMSResponseTypeConstants.JSON;
 
                 var isValid = ValidateParameter(ref lastVin, out bool moreData);
+
                 if (isValid)
                 {
                     var accountEmailId = User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
@@ -87,54 +91,11 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                     int thresholdValue = Convert.ToInt32(thresholdRate);
 
                     RfmsVehicles rfmsVehicles = new RfmsVehicles();
+
                     rfmsVehicles = await _rfmsManager.GetVehicles(lastVin, thresholdValue, account.Id, orgs.First().Id);
 
-                    ResponseObject responseObject = new ResponseObject();
-                    VehicleResponse vehicleResponseObject = new VehicleResponse();
-                    vehicleResponseObject.Vehicles = new List<Entity.Vehicle>();
-                    int vehicleCnt = 0;
+                    VehicleResponseObject responseObject = MapVehiclesRecord(rfmsVehicles);
 
-                    foreach (var item in rfmsVehicles.Vehicles)
-                    {
-                        Entity.Vehicle vehicleObj = new Entity.Vehicle();
-                        vehicleObj.Vin = item.Vin;
-                        vehicleObj.CustomerVehicleName = item.CustomerVehicleName;
-                        vehicleObj.Brand = item.Brand;
-
-                        if (item.ProductionDate != null)
-                        {
-                            Entity.ProductionDate prdDate = new Entity.ProductionDate();
-                            prdDate.Day = item.ProductionDate.Day;
-                            prdDate.Month = item.ProductionDate.Month;
-                            prdDate.Year = item.ProductionDate.Year;
-                            vehicleObj.ProductionDate = prdDate;
-                        }
-
-                        vehicleObj.Type = item.Type;
-                        vehicleObj.Model = item.Model;
-                        vehicleObj.PossibleFuelType = item.PossibleFuelType;
-                        vehicleObj.EmissionLevel = item.EmissionLevel;
-                        vehicleObj.TellTaleCode = item.TellTaleCode;
-                        vehicleObj.ChassisType = item.ChassisType;
-                        vehicleObj.NoOfAxles = item.NoOfAxles;
-                        vehicleObj.TotalFuelTankVolume = item.TotalFuelTankVolume;
-                        vehicleObj.TachographType = item.TachographType;
-                        vehicleObj.GearboxType = item.GearboxType;
-                        vehicleObj.BodyType = item.BodyType;
-                        vehicleObj.DoorConfiguration = item.DoorConfiguration;
-                        vehicleObj.HasRampOrLift = item.HasRampOrLift;
-                        vehicleObj.AuthorizedPaths = item.AuthorizedPaths;
-                        vehicleResponseObject.Vehicles.Add(vehicleObj);
-                        vehicleCnt++;
-                    }
-                    if (rfmsVehicles.MoreDataAvailable)
-                    {
-                        responseObject.MoreDataAvailable = true;
-                        responseObject.MoreDataAvailableLink = "/rfms/vehicles?lastVin='" + rfmsVehicles.Vehicles.Last().Vin + "'";
-                    }
-                    else
-                        responseObject.MoreDataAvailable = false;
-                    responseObject.VehicleResponse = vehicleResponseObject;
                     return Ok(responseObject);
                 }
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(lastVin));
@@ -200,6 +161,63 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
             }
         }
 
+        private VehicleResponseObject MapVehiclesRecord(RfmsVehicles rfmsVehicles)
+        {
+            VehicleResponseObject responseObject = new VehicleResponseObject();
+            VehicleResponse vehicleObject = new VehicleResponse();
+            vehicleObject.Vehicles = new List<Entity.Vehicle>();
+            int vehicleCnt = 0;
 
+            //validate authorize paths
+            List<string> lstAuthorizedPaths = new List<string>();
+            if (_httpContextAccessor.HttpContext.Items["AuthorizedPaths"] != null)
+            {
+                lstAuthorizedPaths = (List<string>)_httpContextAccessor.HttpContext.Items["AuthorizedPaths"];
+            }
+
+            foreach (var item in rfmsVehicles.Vehicles)
+            {
+                Entity.Vehicle vehicleObj = new Entity.Vehicle();
+                vehicleObj.Vin = item.Vin;
+                vehicleObj.CustomerVehicleName = item.CustomerVehicleName;
+                vehicleObj.Brand = item.Brand;
+
+                if (item.ProductionDate != null)
+                {
+                    Entity.ProductionDate prdDate = new Entity.ProductionDate();
+                    prdDate.Day = item.ProductionDate.Day;
+                    prdDate.Month = item.ProductionDate.Month;
+                    prdDate.Year = item.ProductionDate.Year;
+                    vehicleObj.ProductionDate = prdDate;
+                }
+                //Below commented fields as due to no db mapping provided by database team and is currently seeks clarification from DAF
+                vehicleObj.Type = item.Type;
+                vehicleObj.Model = item.Model;
+                vehicleObj.PossibleFuelType = item.PossibleFuelType;
+                vehicleObj.EmissionLevel = item.EmissionLevel;
+                //vehicleObj.TellTaleCode = item.TellTaleCode;
+                //vehicleObj.ChassisType = item.ChassisType;
+                vehicleObj.NoOfAxles = item.NoOfAxles;
+                vehicleObj.TotalFuelTankVolume = item.TotalFuelTankVolume;
+                //vehicleObj.TachographType = item.TachographType;
+                vehicleObj.GearboxType = item.GearboxType;
+                //vehicleObj.BodyType = item.BodyType;
+                //vehicleObj.DoorConfiguration = item.DoorConfiguration;
+                //vehicleObj.HasRampOrLift = item.HasRampOrLift;
+                vehicleObj.AuthorizedPaths = lstAuthorizedPaths;
+                vehicleObject.Vehicles.Add(vehicleObj);
+                vehicleCnt++;
+            }
+            if (rfmsVehicles.MoreDataAvailable)
+            {
+                responseObject.MoreDataAvailable = true;
+                responseObject.MoreDataAvailableLink = "/rfms/vehicles?lastVin='" + rfmsVehicles.Vehicles.Last().Vin + "'";
+            }
+            else
+                responseObject.MoreDataAvailable = false;
+            responseObject.VehicleResponse = vehicleObject;
+
+            return responseObject;
+        }
     }
 }
