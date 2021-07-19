@@ -14,11 +14,18 @@
 
         <div style='display: flex;'>
 
-        <mat-table style="max-width: 20%;margin-right: 10px;" [dataSource]="dataSource">
+        <mat-table  [dataSource]="dataSource">
+            <!-- <ng-container matColumnDef="period" class="text-truncate" style="max-width: 20%;margin-right: 10px;" >
+                <mat-header-cell style="margin-right: 10px;" *matHeaderCellDef> Period
+                </mat-header-cell>
+                <mat-cell style="margin-right: 10px;" *matCellDef="let row"> {{row}} </mat-cell>
+              </ng-container> -->
 
-            <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns; let index=index">
-                <th mat-header-cell *matHeaderCellDef> {{column}} <span (click)="removeColumn(index)">remove</span></th>
-                <td mat-cell *matCellDef="let row"> {{row[column]}} </td>
+            <ng-container [matColumnDef]="column" class="text-truncate" style="max-width: 20%;margin-right: 10px;" *ngFor="let column of displayedColumns; let index=index">
+                <mat-header-cell style="margin-right: 10px;min-width: 200px;" *matHeaderCellDef> {{column == "period" ? "Period" : tableHeadingwithRange}} 
+                    <mat-icon *ngIf="index !== 0" aria-hidden="false" aria-label="Example home icon" (click)="removeColumn(index)">close</mat-icon>
+                </mat-header-cell>
+                <mat-cell style="margin-right: 10px;" *matCellDef="let row"> {{row[column]}} </mat-cell>
               </ng-container>
 
 

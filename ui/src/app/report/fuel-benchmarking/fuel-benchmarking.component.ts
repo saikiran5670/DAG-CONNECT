@@ -43,6 +43,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   accountId: any;
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
+  selectedBenchmark:any = []
   dataSource: any = new MatTableDataSource([]);
   selectedTrip = new SelectionModel(true, []);
   selectedPOI = new SelectionModel(true, []);
@@ -644,31 +645,8 @@ fromTripPageBack: boolean = false;
   test =[];
 
   onSearch(selectedValue?:any){
-    this.selectionValueBenchmarkBY = selectedValue;
-    console.log("this.selectionValueBenchmarkBY parent",this.selectionValueBenchmarkBY)
-    let testData = {
-      VechileGroupID: "VehicleGroup1",
-        vehicleGroupName : "value",
-        ActiveVehicle : 4/4,
-        TotalFuelConsumed : "59.00 gal",
-        TotalMileage : "1360.70 km",
-        AverageFuelConumption: "1.60 mpg",
-        Ranking : [
-          {
-            "Vehicle Name": 18.09,
-            "VIN": "VIN1",
-            "FuelConsumption": "1.50",
-            
-          }
-        ]
-      }
-    this.test.push(testData);
-    
-    
-
 
     
-
     this.internalSelection = true;
     // this.resetChartData(); // reset chart data
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
@@ -677,6 +655,50 @@ fromTripPageBack: boolean = false;
     let _vinData: any = [];
     this.startDateRange = moment(_startTime).format("DD/MM/YYYY");
     this.endDateRange = moment(_endTime).format("DD/MM/YYYY");
+
+    console.log("-----time from parent search----",this.startDateRange,this.endDateRange)
+    this.selectionValueBenchmarkBY = selectedValue;
+    console.log("this.selectionValueBenchmarkBY parent",this.selectionValueBenchmarkBY)
+
+
+//call api for getFuelByTimePeriod
+
+
+let requestObj =  {
+  "startDateTime": _startTime,
+  "endDateTime": _endTime
+  } 
+this.reportService.getBenchmarkDataByTimePeriod(requestObj).subscribe((data : any) => {
+  this.showLoadingIndicator = true;
+console.log("---api hit and get data for time period range---", data)
+
+  this.test.push(data);
+
+}, (error) => {
+ 
+});
+
+    // this.selectedBenchmark = [];
+    // let testData = {
+    //   VechileGroupID: "VehicleGroup1",
+    //     vehicleGroupName : "value",
+    //     ActiveVehicle : 4/4,
+    //     TotalFuelConsumed : "59.00 gal",
+    //     TotalMileage : "1360.70 km",
+    //     AverageFuelConumption: "1.60 mpg",
+    //     Ranking : [
+    //       {
+    //         "Vehicle Name": 18.09,
+    //         "VIN": "VIN1",
+    //         "FuelConsumption": "1.50",
+            
+    //       }
+    //     ]
+    //   }
+    
+    
+
+
     if(this.fuelBenchmarking) {
       this.fuelBenchmarking.loadBenchmarkTable();
     }
