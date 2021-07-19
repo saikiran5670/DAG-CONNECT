@@ -105,10 +105,15 @@ export class LiveFleetMapComponent implements OnInit {
     let _ui = this.fleetMapService.getUI();
     //this.fleetMapService.setIconsOnMap();
     this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
-
+    
 
   }
 
+  changeAlertSelection(_event){
+    let alertsChecked = _event.checked
+    let _ui = this.fleetMapService.getUI();
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,alertsChecked);
+  }
   makeHerePOIList(){
     this.herePOIList = [{
       key: 'Hotel',

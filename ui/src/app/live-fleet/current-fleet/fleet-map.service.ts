@@ -35,6 +35,7 @@ export class FleetMapService {
   defaultLayers : any;
   herePOISearch: any = '';
   entryPoint: any = '';
+  prefTimeZone: any;
 
   constructor(private hereSerive : HereService, private _configService: ConfigService) {
     this.map_key =  _configService.getSettings("hereMap").api_key;
@@ -402,7 +403,7 @@ export class FleetMapService {
 		</g>`;
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any){
+  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any,alertsChecked?: boolean){
     this.clearRoutesFromMap();
     if(_herePOI){
       this.showHereMapPOI(_herePOI, _selectedRoutes, _ui);
@@ -494,6 +495,12 @@ export class FleetMapService {
             });
           }
         }
+        
+      if(alertsChecked){
+        if(elem.fleetOverviewAlert.length > 1){
+          this.drawAlerts(elem.fleetOverviewAlert,_ui);
+        }
+      }
         this.hereMap.addObject(this.group);
         this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
       });
@@ -505,6 +512,106 @@ export class FleetMapService {
     }
    }
 
+   drawAlerts(_alertDetails,_ui){
+    if(_alertDetails.length > 0){
+      let _fillColor = '#D50017';
+      let _level = 'Critical';
+      let _type = 'Logistics Alerts';
+      let alertList  = _alertDetails.map(data=>data.alertId);
+      let distinctAlert = alertList.filter((value, index, self) => self.indexOf(value) === index);
+      let finalAlerts = [];
+      distinctAlert.forEach(element => {
+        finalAlerts = _alertDetails.filter(item=> item.level === 'A' && item.alertId === element);
+      });
+      finalAlerts.forEach(element => {
+        switch (element.level) {
+          case 'C':{
+            _fillColor = '#D50017';
+            _level = 'Critical'
+          }
+          break;
+          case 'W':{
+            _fillColor = '#FC5F01';
+            _level = 'Warning'
+          }
+          break;
+          case 'A':{
+            _fillColor = '#FFD80D';
+            _level = 'Advisory'
+          }
+          break;
+          default:
+            break;
+        }
+        switch (element.type) {
+          case 'L':{
+            _type = 'Logistics Alerts'
+          }
+          break;
+          case 'F':{
+            _type='Fuel and Driver Performance'
+          }
+          break;
+          case 'R':{
+            _type='Repair and Maintenance'
+
+          }
+          break;
+          default:
+            break;
+        }
+        let _alertMarker = `<svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <mask id="path-1-outside-1" maskUnits="userSpaceOnUse" x="0.416748" y="0.666748" width="23" height="19" fill="black">
+        <rect fill="white" x="0.416748" y="0.666748" width="23" height="19"/>
+        <path d="M11.7501 4.66675L4.41675 17.3334H19.0834L11.7501 4.66675Z"/>
+        </mask>
+        <path d="M11.7501 4.66675L4.41675 17.3334H19.0834L11.7501 4.66675Z" fill="${_fillColor}"/>
+        <path d="M11.7501 4.66675L13.4809 3.66468L11.7501 0.675021L10.0192 3.66468L11.7501 4.66675ZM4.41675 17.3334L2.6859 16.3313L0.947853 19.3334H4.41675V17.3334ZM19.0834 17.3334V19.3334H22.5523L20.8143 16.3313L19.0834 17.3334ZM10.0192 3.66468L2.6859 16.3313L6.1476 18.3355L13.4809 5.66882L10.0192 3.66468ZM4.41675 19.3334H19.0834V15.3334H4.41675V19.3334ZM20.8143 16.3313L13.4809 3.66468L10.0192 5.66882L17.3526 18.3355L20.8143 16.3313Z" fill="white" mask="url(#path-1-outside-1)"/>
+        <path d="M12.4166 14H11.0833V15.3333H12.4166V14Z" fill="white"/>
+        <path d="M12.4166 10H11.0833V12.6667H12.4166V10Z" fill="white"/>
+        </svg>
+        `
+        let markerSize = { w: 23, h: 20 };
+        const icon = new H.map.Icon(_alertMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+        this.alertMarker = new H.map.Marker({ lat:element.latitude, lng: element.longitude },{ icon:icon });
+        this.group.addObject(this.alertMarker);
+        let _time = Util.convertUtcToDateFormat(element.time,'DD/MM/YYYY hh:mm:ss');
+        var startBubble;
+        this.alertMarker.addEventListener('pointerenter', function (evt) {
+          // event target is the marker itself, group is a parent event target
+          // for all objects that it contains
+          startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+            // read custom data
+            content:`<table style='width: 300px; font-size:12px;'>
+              <tr>
+                <td style='width: 100px;'>Alert Name:</td> <td><b>${element.name}</b></td>
+              </tr>
+              <tr>
+                <td style='width: 100px;'>Alert Type:</td> <td><b>${_type}</b></td>
+              </tr>
+              <tr>
+                <td style='width: 100px;'>Alert Level:</td> <td><b>${_level}</b></td>
+              </tr>
+              <tr>
+                <td style='width: 100px;'>Alert Location:</td> <td><b>${element.geolocationAddress}</b></td>
+              </tr>
+              <tr>
+                <td style='width: 100px;'>Alert Time:</td> <td><b>${_time}</b></td>
+              </tr>
+            </table>`
+          });
+          // show info bubble
+          _ui.addBubble(startBubble);
+        }, false);
+        this.alertMarker.addEventListener('pointerleave', function(evt) {
+          startBubble.close();
+        }, false);
+
+      });
+    }
+   }
+
+   alertMarker : any;
    makeCluster(_selectedRoutes: any, _ui: any){
     if(_selectedRoutes.length > 9){
       this.setInitialCluster(_selectedRoutes, _ui); 
