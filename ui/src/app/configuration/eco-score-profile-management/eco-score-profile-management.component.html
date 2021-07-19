@@ -5,7 +5,7 @@
     {{ profileCreatedMsg }}
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
-    <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+    <mat-icon (click)='onClose()' style='cursor: pointer;'>{{ translationData.lblClose || 'Close' }}</mat-icon>
     </div>
 </div>
 <div *ngIf='!titleVisible' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -58,7 +58,7 @@
                         <input maxlength="50" placeholder="{{ translationData.lblTestProfileName || 'Test Profile Name' }}" matInput
                             formControlName="profileName">
                     </mat-form-field>
-                    <span  *ngIf="actionType == 'create'" style='color: #000; text-align: right; font-size: 13px;'>({{ '30 profile max' }})</span>
+                    <span  *ngIf="actionType == 'create'" style='color: #000; text-align: right; font-size: 13px;'>({{ translationData.lbl30ProfileMax || '30 profile max' }})</span>
                     <mat-error *ngIf="ecoScoreProfileForm.get('profileName').hasError('required')">
                         {{ translationData.lblPleasenterprofilename || 'Please Enter Profile Name'}}
                     </mat-error>
@@ -109,9 +109,9 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
         <div  fxLayout="column" fxLayoutAlign="start"> 
-            <mat-checkbox *ngIf="actionType != 'manage'" [checked] = "isDAFStandard" (change)='onChange($event)'> DAF Standard </mat-checkbox>   
-            <span *ngIf="actionType == 'manage'">Last Update: {{ lastUpdated }}</span>
-            <span *ngIf="actionType == 'manage'">Updated By: {{ updatedBy }}</span>
+            <mat-checkbox *ngIf="actionType != 'manage'" [checked] = "isDAFStandard" (change)='onChange($event)'> {{ (translationData.lblDAFStandard || 'DAF Standard')}} </mat-checkbox>   
+            <span *ngIf="actionType == 'manage'">{{ translationData.lblLastUpdate || 'Last Update'}}: {{ lastUpdated }}</span>
+            <span *ngIf="actionType == 'manage'">{{ translationData.lblUpdatedBy || 'Updated By'}}: {{ updatedBy }}</span>
         </div>
         <div fxLayout="column" fxLayoutAlign="end">
             <div fxLayout="row" class='areaWidth'>
