@@ -148,6 +148,10 @@ spec:
           serviceName: ecoscoredataservice
           servicePort: 80
         path: /ecoscore/chartinfo
+      - backend:
+          serviceName: autenticationdataservice
+          servicePort: 80
+        path: /rfms3/token
   tls:
   - hosts:
     - #{IngressURL}#

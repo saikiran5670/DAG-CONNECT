@@ -847,8 +847,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 fleetOverviewFilterRequest.AccountId = _userDetails.AccountId;
                 fleetOverviewFilterRequest.OrganizationId = GetContextOrgId();
                 fleetOverviewFilterRequest.RoleId = _userDetails.RoleId;
-                // fleetOverviewFilterRequest.AccountId = 171;
-                //  fleetOverviewFilterRequest.OrganizationId = 36;
+                //  fleetOverviewFilterRequest.AccountId = 171;
+                // fleetOverviewFilterRequest.OrganizationId = 36;
                 //  fleetOverviewFilterRequest.RoleId = 61;
                 FleetOverviewFilterResponse response = await _reportServiceClient.GetFleetOverviewFilterAsync(fleetOverviewFilterRequest);
 
@@ -904,9 +904,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 fleetOverviewDetailsRequest.DriverIds.AddRange(fleetOverviewFilter.DriverId);
                 fleetOverviewDetailsRequest.Days = fleetOverviewFilter.Days;
                 /* Need to comment Start */
-                fleetOverviewDetailsRequest.AccountId = 171;
-                fleetOverviewDetailsRequest.OrganizationId = 36;
-                fleetOverviewDetailsRequest.RoleId = 61;
+                //  fleetOverviewDetailsRequest.AccountId = 171;
+                //  fleetOverviewDetailsRequest.OrganizationId = 36;
+                //   fleetOverviewDetailsRequest.RoleId = 61;
                 /* Need to comment End */
                 FleetOverviewDetailsResponse response = await _reportServiceClient.GetFleetOverviewDetailsAsync(fleetOverviewDetailsRequest);
                 if (response == null)
@@ -1230,7 +1230,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Fuel Deviation Report Table Details 
         #endregion
         [HttpGet]
-        [Route("getfueldeviationfilterdata")]
+        [Route("fueldeviation/getdetails")]
         public async Task<IActionResult> GetFuelDeviationFilterData([FromQuery] FuelDeviationFilterRequest request)
         {
             try
@@ -1245,9 +1245,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 foreach (var item in response.FuelDeviationDetails)
                 {
-                    if (item.GeoLocationAddressId == 0 && item.Latitude != 0 && item.Longitude != 0)
+                    if (item.GeoLocationAddressId == 0 && item.EventLatitude != 0 && item.EventLongitude != 0)
                     {
-                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.Latitude, item.Longitude);
+                        var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.EventLatitude, item.EventLongitude);
                         item.GeoLocationAddress = getMapRequestLatest.Address;
                         item.GeoLocationAddressId = getMapRequestLatest.Id;
                     }
@@ -1283,6 +1283,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpGet]
+        [Route("fueldeviation/charts")]
+        public async Task<IActionResult> GetFuelDeviationChartData([FromQuery] FuelDeviationFilterRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) return BadRequest(ReportConstants.VALIDATION_STARTDATE_MSG);
+                if (!(request.EndDateTime > 0)) return BadRequest(ReportConstants.VALIDATION_ENDDATE_MSG);
+                if (request.VINs == null || request.VINs?.Count == 0) return BadRequest(ReportConstants.VALIDATION_VINREQUIRED_MSG);
+                if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.VALIDATION_DATEMISMATCH_MSG);
+
+                _logger.Info("GetFilteredFuelDeviationChart method in Report (Fuel Deviation charts) API called.");
+                var response = await _reportServiceClient.GetFuelDeviationChartsAsync(request);
+
+                if (response?.FuelDeviationchart?.Count > 0)
+                {
+                    return Ok(new { Data = response.FuelDeviationchart, Message = ReportConstants.GET_FUEL_DEVIATION_SUCCESS_MSG });
+                }
+                else
+                {
+                    return StatusCode((int)response.Code, response.Message);
+                }
+            }
+
+            catch (Exception ex)
+            {
+
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
 
         #region Logbook
@@ -1310,7 +1342,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
                 if (response.Code == Responsecode.Success)
-                    return Ok(response);
+                    return Ok(response.LogbookSearchParameter);
                 if (response.Code == Responsecode.InternalServerError)
                     return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
                 return StatusCode((int)response.Code, response.Message);
@@ -1356,7 +1388,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
                 if (response.Code == Responsecode.Success)
-                    return Ok(response);
+                    return Ok(response.LogbookDetails);
                 if (response.Code == Responsecode.InternalServerError)
                     return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
                 return StatusCode((int)response.Code, response.Message);

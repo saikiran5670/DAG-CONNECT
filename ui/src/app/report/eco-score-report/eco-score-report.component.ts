@@ -25,6 +25,10 @@ import * as fs from 'file-saver';
   styleUrls: ['./eco-score-report.component.less']
 })
 export class EcoScoreReportComponent implements OnInit, OnDestroy {
+  generalColumnData: any = [];
+  generalGraphColumnData: any = [];
+  driverPerformanceColumnData: any = [];
+  driverPerformanceGraphColumnData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   selectionTab: any;
   selectedStartTime: any = '00:00';
@@ -83,7 +87,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   driverDetails : any= [];
   detailConvertedData : any;
   reportPrefData: any = [];
-  reportId:number = 9;
+  reportId:number = 10;
   minTripCheck: any;
   minTripValue: any;
   minDriverCheck: any;
@@ -341,16 +345,62 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       }
     }
   }
+  
   getReportPreferences(){
-    this.reportService.getUserPreferenceReport(this.reportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
+    this.reportService.getReportUserPreference(this.reportId).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
-      this.setDisplayColumnBaseOnPref();
+      this.resetColumnData();
+      this.preparePrefData(this.reportPrefData);
+      //this.setDisplayColumnBaseOnPref();
       this.getOnLoadData();
     }, (error) => {
       this.reportPrefData = [];
-      this.setDisplayColumnBaseOnPref();
+      this.resetColumnData();
+      this.preparePrefData(this.reportPrefData);
+      (this.reportPrefData);
+      //this.setDisplayColumnBaseOnPref();
       this.getOnLoadData();
     });
+  }
+
+  preparePrefData(prefData: any){
+    if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
+      prefData.subReportUserPreferences.forEach(element => {
+        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+          element.subReportUserPreferences.forEach(item => {
+            let _data: any = item;
+            if(item.name.includes('EcoScore.General.')){
+              this.generalColumnData.push(_data);
+            }else if(item.name.includes('EcoScore.GeneralGraph.')){
+              this.generalGraphColumnData.push(_data);
+            }else if(item.name.includes('EcoScore.DriverPerformance.')){
+              let index: any;
+              switch(item.name){
+                case 'EcoScore.DriverPerformance.EcoScore':{
+                  index = 0;
+                  break;
+                }
+                case 'EcoScore.DriverPerformance.FuelConsumption':{
+                  index = 1;
+                  break;
+                }
+                case 'EcoScore.DriverPerformance.BrakingScore':{
+                  index = 2;
+                  break;
+                }
+                case 'EcoScore.DriverPerformance.AnticipationScore':{
+                  index = 3;
+                  break;
+                }
+              }
+              this.driverPerformanceColumnData[index] = _data;
+            }else if(item.name.includes('EcoScore.DriverPerformanceGraph.')){
+              this.driverPerformanceGraphColumnData.push(_data);
+            }
+          });
+        }
+      });
+    }
   }
 
   setDisplayColumnBaseOnPref(){
@@ -622,6 +672,13 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.initData = [];
     this.tableInfoObj = {};
     this.onSearch();
+  }
+
+  resetColumnData(){
+    this.generalColumnData = [];
+    this.generalGraphColumnData = [];
+    this.driverPerformanceColumnData = [];
+    this.driverPerformanceGraphColumnData = [];
   }
 
   resetEcoScoreFormControlValue(){
