@@ -6,6 +6,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using log4net;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using net.atos.daf.ct2.account;
 
 namespace net.atos.daf.ct2.rfmsdataservice.CustomAttributes
@@ -15,11 +17,15 @@ namespace net.atos.daf.ct2.rfmsdataservice.CustomAttributes
     {
         private readonly IAccountManager _accountManager;
         private readonly ILog _logger;
+        private readonly IMemoryCache _cache;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthorizeHandler(IAccountManager accountManager)
+        public AuthorizeHandler(IAccountManager accountManager, IMemoryCache memoryCache, IHttpContextAccessor httpContextAccessor)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._accountManager = accountManager;
+            _cache = memoryCache;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         protected override async Task HandleRequirementAsync(
@@ -44,7 +50,11 @@ namespace net.atos.daf.ct2.rfmsdataservice.CustomAttributes
                 var isExists = await _accountManager.CheckForFeatureAccessByEmailId(emailAddress, requirement.FeatureName);
                 _logger.Info($"[rFMSDataService] Is user authorized: {isExists}");
                 if (isExists)
+                {
+                    var httpContext = _httpContextAccessor.HttpContext;
+                    httpContext.Items["AuthorizedFeature"] = requirement.FeatureName;
                     context.Succeed(requirement);
+                }
                 else
                     context.Fail();
                 return;
