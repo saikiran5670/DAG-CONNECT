@@ -356,4 +356,35 @@ getFilterDetails(): Observable<any[]> {
 }
 
 
+//Fuel Benchmarking API's
+
+getBenchmarkDataByTimePeriod(data:any ): Observable<any[]> {
+
+  let headerObj = this.generateHeader();
+  const headers = {
+    headers: new HttpHeaders({ headerObj }),
+    responseType: 'text' as 'json'
+  };
+  return this.httpClient
+    .post<any[]>(
+      `${this.reportServiceUrl}/fuelbenchmark/timeperiod`, data, headers
+    )
+    .pipe(catchError(this.handleError));
+}
+
+getBenchmarkDataByVehicleGroup(data:any ): Observable<any[]> {
+
+  let headerObj = this.generateHeader();
+  const headers = {
+    headers: new HttpHeaders({ headerObj }),
+    responseType: 'text' as 'json'
+  };
+  return this.httpClient
+    .post<any[]>(
+      `${this.reportServiceUrl}fuelbenchmark/vehiclegroup`, data, headers
+    )
+    .pipe(catchError(this.handleError));
+}
+
+
 }
