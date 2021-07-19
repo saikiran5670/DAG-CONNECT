@@ -25,6 +25,13 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
+                    var vinIds = vehicleDetailsAccountVisibilty.Select(x => x.Vin).Distinct().ToList();
+                    var tripAlertdData = await _reportManager.GetLogbookSearchParameter(vinIds);
+                    var tripAlertResult = JsonConvert.SerializeObject(tripAlertdData);
+                    response.LogbookTripAlertDetailsRequest.AddRange(
+                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<LogbookTripAlertDetailsRequest>>(tripAlertResult,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+
 
                     var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);
                     response.AssociatedVehicleRequest.AddRange(

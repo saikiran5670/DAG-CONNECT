@@ -7,7 +7,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
 {
     public class FleetOverviewAlert
     {
-        public int Id { get; set; }
+        // public int Id { get; set; }
         public int AlertId { get; set; }
         public string AlertName { get; set; }
         public string AlertType { get; set; }
@@ -18,5 +18,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public double AlertLongitude { get; set; }
         public int AlertGeolocationAddressId { get; set; }
         public string AlertGeolocationAddress { get; set; }
+        public long ProcessedMessageTimestamp { get; set; }
+
     }
 }

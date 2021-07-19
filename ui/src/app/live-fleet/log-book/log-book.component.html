@@ -3,7 +3,9 @@
     <mat-card-content class="full-width">
       <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
         <p style="color: darkgray; font-size: 2em">This screen is part of services feature</p>
+        <button  *ngIf ='!isVehicleHealthOpen' (click) ='openVehicleHealth()'>open vehicle health</button>
       </div>
+      <app-vehicle-health *ngIf ='isVehicleHealthOpen'></app-vehicle-health>
     </mat-card-content>
   </mat-card>
 </div>

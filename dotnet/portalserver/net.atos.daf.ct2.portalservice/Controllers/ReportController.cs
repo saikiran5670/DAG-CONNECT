@@ -847,9 +847,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 fleetOverviewFilterRequest.AccountId = _userDetails.AccountId;
                 fleetOverviewFilterRequest.OrganizationId = GetContextOrgId();
                 fleetOverviewFilterRequest.RoleId = _userDetails.RoleId;
-                //fleetOverviewFilterRequest.AccountId = 171;
-                //fleetOverviewFilterRequest.OrganizationId = 36;
-                //fleetOverviewFilterRequest.RoleId = 61;
+                // fleetOverviewFilterRequest.AccountId = 171;
+                //  fleetOverviewFilterRequest.OrganizationId = 36;
+                //  fleetOverviewFilterRequest.RoleId = 61;
                 FleetOverviewFilterResponse response = await _reportServiceClient.GetFleetOverviewFilterAsync(fleetOverviewFilterRequest);
 
                 reportFleetOverviewFilter = _mapper.ToFleetOverviewEntity(response);
@@ -1300,7 +1300,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 logBookFilterRequest.RoleId = _userDetails.RoleId;
                 //   logBookFilterRequest.AccountId = 171;
                 //  logBookFilterRequest.OrganizationId = 36;
-                //  logBookFilterRequest.RoleId = 61;
+                //   logBookFilterRequest.RoleId = 61;
                 LogbookFilterResponse response = await _reportServiceClient.GetLogbookSearchParameterAsync(logBookFilterRequest);
 
                 // reportFleetOverviewFilter = _mapper.ToFleetOverviewEntity(response);
@@ -1347,9 +1347,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 logbookDetailsRequest.StartTime = logbookFilter.Start_Time;
                 logbookDetailsRequest.EndTime = logbookFilter.End_time;
                 /* Need to comment Start */
-                logbookDetailsRequest.AccountId = 171;
-                logbookDetailsRequest.OrganizationId = 36;
-                logbookDetailsRequest.RoleId = 61;
+                //logbookDetailsRequest.AccountId = 171;
+                //logbookDetailsRequest.OrganizationId = 36;
+                //logbookDetailsRequest.RoleId = 61;
                 /* Need to comment End */
 
                 LogbookDetailsResponse response = await _reportServiceClient.GetLogbookDetailsAsync(logbookDetailsRequest);

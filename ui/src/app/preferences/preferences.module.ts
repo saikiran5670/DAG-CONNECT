@@ -14,9 +14,10 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { TripReportPreferenceComponent } from './reports-preferences/trip-report-preference/trip-report-preference.component';
 import { DriverTimePreferencesComponent } from './reports-preferences/driver-time-preferences/driver-time-preferences.component';
 import { EcoScoreReportPreferencesComponent } from './reports-preferences/eco-score-report-preferences/eco-score-report-preferences.component';
+import { FuelBenchmarkPreferencesComponent } from './reports-preferences/fuel-benchmark-preferences/fuel-benchmark-preferences.component';
 
 @NgModule({
-  declarations: [ AccountInfoSettingsComponent, ChangePasswordComponent, DashboardPreferencesComponent, FleetOverviewPreferencesComponent, ReportsPreferencesComponent, FleetUtilisationPreferenceComponent, TripReportPreferenceComponent, DriverTimePreferencesComponent, EcoScoreReportPreferencesComponent ],
+  declarations: [ AccountInfoSettingsComponent, ChangePasswordComponent, DashboardPreferencesComponent, FleetOverviewPreferencesComponent, ReportsPreferencesComponent, FleetUtilisationPreferenceComponent, TripReportPreferenceComponent, DriverTimePreferencesComponent, EcoScoreReportPreferencesComponent, FuelBenchmarkPreferencesComponent ],
   imports: [
     CommonModule,
     SharedModule,

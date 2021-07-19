@@ -9,15 +9,9 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
   templateUrl: './fuel-benchmarking-table.component.html',
   styleUrls: ['./fuel-benchmarking-table.component.less']
 })
-
-// export interface Employee {
-//   period : number,	
-//   fromDate :string,	
-//   toDate :string
-// }
-
-
 export class FuelBenchmarkingTableComponent implements OnInit {
+
+  searchExpandPanel: boolean = true;
 
   @Input() startDateRange: any;
   @Input() endDateRange: any;
@@ -36,12 +30,13 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   // firstPeriodColumn: string[] = ['Number of Active Vehicles','Total Fuel Consumed','Total Mileage',
   // 'Total Mileage','Average Fuel Consumption','Ranking','Fuel Consumption'];
 
+
   constructor() { }
 
   ngOnInit(): void {
 
   this.loadBenchmarkTable();
-    
+  
   }
 
   loadBenchmarkTable() {

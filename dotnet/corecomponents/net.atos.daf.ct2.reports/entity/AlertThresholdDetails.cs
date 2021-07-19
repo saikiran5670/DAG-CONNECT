@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.reports.entity
     {
         public int AlertId { get; set; }
         public string AlertLevel { get; set; }
-        public string ThresholdValue { get; set; }
+        public int ThresholdValue { get; set; }
         public string ThresholdUnit { get; set; }
 
     }

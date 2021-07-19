@@ -132,5 +132,24 @@
         [selectionValueBenchmarkBY]= "selectionValueBenchmarkBY"
         [startDateRange]="startDateRange" 
         [endDateRange]="endDateRange"></app-fuel-benchmarking-table>
+
+
+        <div *ngIf="!selectionValueBenchmarkBY">
+          <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+            <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
+              <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+              <span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{'Fuel Benchmarking Details' }}</span>
+              </span>
+            </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div>
+              <span>{{'Please select and search required fields from top to view the details' }}</span>
+            </div>
+            </mat-expansion-panel>          
+          </mat-card>
+        </div>
 </div>
 

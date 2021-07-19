@@ -14,22 +14,35 @@ namespace net.atos.daf.ct2.reports.repository
 
         public async Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins)
         {
+
+
+            // public int AlertGeolocationAddressId { get; set; }
+            //  public string AlertGeolocationAddress { get; set; }
+
             var parameter = new DynamicParameters();
             parameter.Add("@vins", vins);
             parameter.Add("@days", 90); // return last 3 month of data
             IEnumerable<LogbookTripAlertDetails> tripAlertList;
-            string query = @"select tripalert.vin as Vin
+            string query = @"select distinct tripalert.vin as Vin
                             ,tripalert.trip_id as TripId
                             ,tripalert.alert_id as AlertId
                             ,tripalert.alert_generated_time as AlertGeneratedTime
+                            ,processed_message_time_stamp as ProcessedMessageTimestamp
+                            ,tripalert.latitude as AlertLatitude
+                            ,tripalert.longitude as AlertLongitude
                             ,tripalert.category_type as AlertCategoryType
                             ,tripalert.type as AlertType
                             ,tripalert.urgency_level_type as AlertLevel
                             ,tripalert.name as AlertName
+                            , alertgeoadd.id as AlertGeolocationAddressId
+                            ,coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
                             from tripdetail.tripalert tripalert   
-                            left join tripdetail.trip_statistics lcts on lcts.vin=tripalert.vin and lcts.trip_id=tripalert.trip_id
+                           -- left join tripdetail.trip_statistics lcts on lcts.vin=tripalert.vin and lcts.trip_id=tripalert.trip_id
+                            left join master.geolocationaddress alertgeoadd
+                            on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(tripalert.latitude as numeric),4) 
+                            and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
                             where tripalert.vin= ANY(@vins)
-                           and (to_timestamp(tripalert.alert_generated_time)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time)::date) >= (now()::date - @days) ";
+                           and ((to_timestamp(tripalert.alert_generated_time)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time)::date) >= (now()::date - @days)) ";
 
             tripAlertList = await _dataMartdataAccess.QueryAsync<LogbookTripAlertDetails>(query, parameter);
             return tripAlertList.AsList<LogbookTripAlertDetails>();
@@ -45,24 +58,32 @@ namespace net.atos.daf.ct2.reports.repository
 
                 parameter.Add("@start_time_stamp", logbookFilter.Start_Time, System.Data.DbType.Int32);
                 parameter.Add("@end_time_stamp", logbookFilter.End_time, System.Data.DbType.Int32);
-                string queryLogBookPull = @"select ta.vin as VIN,
-                                v.registration_no,
-                                v.name as Vehicle_Name,
-                                ta.trip_id,category_type as Alert_Category,
-                                ta.type as Alert_Type,
-                                ta.name as Alert_name,
-                                alert_id AlertId,
-                              --  param_filter_distance_threshold_value as Threshold_Value,
-                             --   param_filter_distance_threshold_value_unit_type as Threshold_unit,
-                                latitude,
-                                longitude,
-                                alert_generated_time,
-                                start_time_stamp as Trip_Start,
-                                end_time_stamp as Trip_End
-                                from tripdetail.tripalert ta left join master.vehicle v on ta.vin = v.vin inner join tripdetail.trip_statistics ts
-                                on ta.vin = ts.vin where 1=1 
-                                and (to_timestamp(ta.alert_generated_time)::date) >= (to_timestamp(@start_time_stamp)::date)
-                                and (to_timestamp(ta.alert_generated_time)::date) <= (to_timestamp(@end_time_stamp )::date) ";
+                string queryLogBookPull = @"select distinct ta.vin as VIN,
+                                v.registration_no as VehicleRegNo,
+                                v.name as VehicleName,
+                                ta.trip_id as TripId,
+                                ta.category_type as AlertCategory,
+                                ta.type as AlertType,
+                                ta.name as Alertname,
+                                ta.alert_id as AlertId,                             
+                                ta.latitude as Latitude,
+                                ta.longitude as Longitude,
+                                ta.urgency_level_type as AlertLevel,
+                                ta.alert_generated_time as AlertGeneratedTime,
+                                processed_message_time_stamp as ProcessedMessageTimestamp,
+                                ts.start_time_stamp as TripStartTime,
+                                ts.end_time_stamp as TripEndTime,
+                                alertgeoadd.id as AlertGeolocationAddressId,
+                                coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
+                                from tripdetail.tripalert ta inner join master.vehicle v on ta.vin = v.vin 
+                                left join tripdetail.trip_statistics ts
+                                on ta.vin = ts.vin  --and ta.trip_id=ts.trip_id 
+                                left join master.geolocationaddress alertgeoadd
+                                on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
+                                and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)
+                                where 1=1 
+                                and ((to_timestamp(ta.alert_generated_time)::date) >= (to_timestamp(@start_time_stamp)::date)
+                                and (to_timestamp(ta.alert_generated_time)::date) <= (to_timestamp(@end_time_stamp )::date))";
 
 
 
@@ -149,6 +170,7 @@ namespace net.atos.daf.ct2.reports.repository
         }
 
 
+
         public async Task<List<AlertThresholdDetails>> GetThresholdDetails(List<int> alertId, List<string> alertLevel)
         {
             IEnumerable<AlertThresholdDetails> thresholdList;
@@ -157,11 +179,11 @@ namespace net.atos.daf.ct2.reports.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@alert_id", alertId);
                 parameter.Add("@urgency_level_type", alertLevel);
-                string query = @" SELECT id, alert_id, urgency_level_type, threshold_value, unit_type from master.alerturgencylevelref
-                                where alert_id = any(@AlertId) and urgency_level_type = any(@AlertLevel) and state ='A' ";
+                string query = @" SELECT id, alert_id as AlertId, urgency_level_type as AlertLevel, threshold_value as ThresholdValue, unit_type as ThresholdUnit from master.alerturgencylevelref
+                                where alert_id = any(@alert_id) and urgency_level_type = any(@urgency_level_type) and state ='A' ";
                 thresholdList = await _dataAccess.QueryAsync<AlertThresholdDetails>(query, parameter);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple10;
-import org.apache.flink.api.java.tuple.Tuple9;
+import org.apache.flink.api.java.tuple.Tuple11;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -21,13 +21,16 @@ import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.etl.common.audittrail.TripAuditTrail;
 import net.atos.daf.ct2.etl.common.bo.TripAggregatedData;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.kafka.FlinkKafkaStatusMsgConsumer;
-import net.atos.daf.ct2.etl.common.postgre.TripSink;
 import net.atos.daf.ct2.etl.common.postgre.EcoScoreSink;
+import net.atos.daf.ct2.etl.common.postgre.TripSink;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.FlinkUtil;
 import net.atos.daf.ct2.pojo.KafkaRecord;
@@ -71,7 +74,7 @@ public class TripStreamingJob {
 			
 			logger.info(" completed reading the streaming data !!!!!!!!!!!!!! ");
 
-			SingleOutputStreamOperator<Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>> indxData = tripAggregation
+			SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> indxData = tripAggregation
 					.getTripIndexData(statusDataStream, tableEnv, envParams);
 			
 			SingleOutputStreamOperator<TripStatusData> tripStsWithCo2Emission = tripAggregation.getTripStsWithCo2Emission(statusDataStream);
@@ -89,9 +92,11 @@ public class TripStreamingJob {
 			finalTripData.addSink(new TripSink());
 			
 			if ("true".equals(envParams.get(ETLConstants.EGRESS_TRIP_AGGR_DATA))){
+				ObjectMapper mapper = new ObjectMapper();
+			      
 				tripStreamingJob.egressTripData(getSinkProperties(envParams), finalTripData,
 						envParams.get(ETLConstants.EGRESS_TRIP_AGGR_TOPIC_NAME),
-						Long.valueOf(envParams.get(ETLConstants.TRIP_TIME_WINDOW_MILLISEC)));
+						Long.valueOf(envParams.get(ETLConstants.TRIP_TIME_WINDOW_MILLISEC)), mapper);
 			}
 				
 			env.execute("Trip Streaming Job");
@@ -109,7 +114,7 @@ public class TripStreamingJob {
 	}
 	
 	public void egressTripData(Properties properties, DataStream<Trip> finalTripData, String sinkTopicNm,
-			long timeInMilli) {
+			long timeInMilli, ObjectMapper mapper) {
 		try {
 			finalTripData.keyBy(rec -> rec.getTripId())
 					.window(TumblingProcessingTimeWindows.of(Time.milliseconds(timeInMilli)))
@@ -130,7 +135,13 @@ public class TripStreamingJob {
 								logger.info(" final trip record  for egress :: " + entry.getValue());
 								KafkaRecord<String> kafkaRec = new KafkaRecord<>();
 								kafkaRec.setKey(entry.getValue().getTripId());
-								kafkaRec.setValue(entry.getValue().toString());
+								//kafkaRec.setValue(entry.getValue().toString());
+								try {
+									logger.info("Json trip structure :: "+mapper.writeValueAsString(entry.getValue()));
+									kafkaRec.setValue(mapper.writeValueAsString(entry.getValue()));
+								} catch (JsonProcessingException e) {
+									logger.error("Issue while parsing Trip into JSON: " + e.getMessage());
+								}
 								out.collect(kafkaRec);
 							}
 						}
