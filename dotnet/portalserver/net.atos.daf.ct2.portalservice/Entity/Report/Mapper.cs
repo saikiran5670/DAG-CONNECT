@@ -123,8 +123,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 MinTripDistance = request.MinTripDistance,
                 MinDriverTotalDistance = request.MinDriverTotalDistance,
                 TargetProfileId = request.TargetProfileId,
-                ReportId = request.ReportId,
-                OrgId = request.OrgId
+                ReportId = request.ReportId
             };
             grpcRequest.VINs.AddRange(request.VINs);
             return grpcRequest;
@@ -259,7 +258,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                     AlertTime = item.AlertGeneratedTime,
                     ProcessedMessageTimestamp = item.ProcessedMessageTimestamp
                 };
-            reportFleetOverview.FleetOverviewAlerts.Add(fleetOverviewAlert);
+                reportFleetOverview.FleetOverviewAlerts.Add(fleetOverviewAlert);
 
             }
 
