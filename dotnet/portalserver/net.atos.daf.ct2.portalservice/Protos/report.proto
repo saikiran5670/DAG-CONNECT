@@ -943,18 +943,19 @@ message GetEcoScoreReportCompareDriversRequest {
 
  message EcoScoreReportAttribute {
   string DriverId = 1;
-  double Value = 2; 
-  string Color = 3;
+  string Value = 2; 
   }
 
  message EcoScoreReportCompareDrivers {
   int32 DataAttributeId = 1;
   string Name = 2;
   string Key = 3;
-  double Target = 4;
-  string RangeValueType = 5; 
-  repeated EcoScoreReportAttribute Score = 6;
-  repeated EcoScoreReportCompareDrivers SubCompareDrivers = 7;
+  string LimitType = 4;
+  double LimitValue = 5;
+  double TargetValue = 6;
+  string RangeValueType = 7; 
+  repeated EcoScoreReportAttribute Score = 8;
+  repeated EcoScoreReportCompareDrivers SubCompareDrivers = 9;
   }
   
  message GetEcoScoreReportCompareDriversResponse {
@@ -1040,14 +1041,19 @@ message LogbookFilterIdRequest {
   int32 RoleId = 3;
 }
 message LogbookFilterResponse {
-   repeated AssociatedVehicleRequest AssociatedVehicleRequest = 1;
+  
+  LogbookSearchParameter LogbookSearchParameter =1; 
+  Responsecode code = 2;
+  string message = 3;
+
+}
+
+message LogbookSearchParameter {
+  repeated AssociatedVehicleRequest AssociatedVehicleRequest = 1;
   repeated FilterResponse ALFilterResponse = 2;
   repeated AlertCategoryFilterResponse ACFilterResponse = 3;    
   repeated AlertCategoryFilterRequest AlertTypeFilterRequest=4;
-   repeated LogbookTripAlertDetailsRequest LogbookTripAlertDetailsRequest =5;
-   Responsecode code = 6;
-  string message = 7;
-
+  repeated LogbookTripAlertDetailsRequest LogbookTripAlertDetailsRequest =5;
 }
 message AlertCategoryFilterRequest {
 		 int32 VehicleGroupId =  1;
@@ -1103,19 +1109,14 @@ message LogbookDetailsResponse{
 
 message LogbookTripAlertDetailsRequest
     {
-         string Vin =1;
-         string TripId =2;
-         int32 AlertId =3;
+         int32 Id= 1;
+         string Vin =2;
+         string TripId =3;
          int64 AlertGeneratedTime =4;
          string AlertCategoryType =5;
          string AlertType =6;
          string AlertName =7;
          string AlertLevel =8;     
-         double AlertLatitude =9;
-         double AlertLongitude =10;
-         int32 AlertGeolocationAddressId =11;
-         string AlertGeolocationAddress =12;
-         int64 ProcessedMessageTimestamp=13;
      
     }
 
@@ -1195,7 +1196,7 @@ message GetEcoScoreReportSingleDriverRequest {
  message EcoScoreReportSingleDriverAttribute {
   string HeaderType = 1;
   string VIN = 2;
-  double Value = 3; 
+  string Value = 3; 
   }
 
  message EcoScoreReportSingleDriver {
@@ -1210,10 +1211,28 @@ message GetEcoScoreReportSingleDriverRequest {
   repeated EcoScoreReportSingleDriver SubSingleDriver = 9;
   }
   
+ message EcoScoreReportOverallPerformanceKPI {
+  int32 DataAttributeId = 1;
+  string Name = 2;
+  string Key = 3;
+  string LimitType = 4;
+  double LimitValue = 5;
+  double TargetValue = 6;
+  string Score = 7;
+ }
+
+ message EcoScoreReportSingleDriverOverallPerformance {
+  EcoScoreReportOverallPerformanceKPI EcoScore = 1;
+  EcoScoreReportOverallPerformanceKPI FuelConsumption = 2;
+  EcoScoreReportOverallPerformanceKPI AnticipationScore = 3;
+  EcoScoreReportOverallPerformanceKPI BrakingScore = 4;
+ }
+
  message GetEcoScoreReportSingleDriverResponse {
   Responsecode Code = 1;
   string Message = 2;
-  repeated EcoScoreReportSingleDriverHeader SingleDriver = 3;
-  EcoScoreReportSingleDriver SingleDriverKPIInfo = 4;
+  EcoScoreReportSingleDriverOverallPerformance OverallPerformance = 3;
+  repeated EcoScoreReportSingleDriverHeader SingleDriver = 4;
+  EcoScoreReportSingleDriver SingleDriverKPIInfo = 5;
   }
 /// END: Eco Score Report Single Driver

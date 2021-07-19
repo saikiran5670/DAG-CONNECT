@@ -1852,7 +1852,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     GROUP BY eco.vin
                                 )
                                 select eco.driver1_id as DriverId,eco.vin as VIN
-                                ,eco.DriverName, eco.registration_no as RegistrationNo,eco.name as VehicleName, 'Vin_Driver' as HeaderType
+                                ,eco.DriverName, eco.registration_no as RegistrationNo,eco.name as VehicleName, 'VIN_Driver' as HeaderType
                                 
                                 ,CAST(avrg.averagegrossweight/1000 AS DOUBLE PRECISION) as AverageGrossweight -- convert kg weight to tonnes by /1000
                                 ,CAST(dis.distance/1000 AS DOUBLE PRECISION) as Distance  -- convert meter to km by /1000
@@ -2139,7 +2139,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     GROUP BY eco.organization_id ,eco.vin
                                 )
 								select eco.driver1_id as DriverId, eco.vin as VIN,eco.organization_id
-                                ,eco.DriverName,  eco.registration_no as RegistrationNo ,eco.name as VehicleName, 'Vin_Company' as HeaderType
+                                ,eco.DriverName,  eco.registration_no as RegistrationNo ,eco.name as VehicleName, 'VIN_Company' as HeaderType
                                 
                                  ,CAST(avrg.averagegrossweight/1000 AS DOUBLE PRECISION) as AverageGrossweight -- convert kg weight to tonnes by /1000
                                 ,CAST(dis.distance/1000 AS DOUBLE PRECISION) as Distance  -- convert meter to km by /1000

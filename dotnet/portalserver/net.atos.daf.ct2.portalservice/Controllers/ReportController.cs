@@ -1342,7 +1342,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
                 if (response.Code == Responsecode.Success)
-                    return Ok(response);
+                    return Ok(response.LogbookSearchParameter);
                 if (response.Code == Responsecode.InternalServerError)
                     return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
                 return StatusCode((int)response.Code, response.Message);
@@ -1388,7 +1388,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
                 if (response.Code == Responsecode.Success)
-                    return Ok(response);
+                    return Ok(response.LogbookDetails);
                 if (response.Code == Responsecode.InternalServerError)
                     return StatusCode((int)response.Code, String.Format(ReportConstants.FLEETOVERVIEW_FILTER_FAILURE_MSG, response.Message));
                 return StatusCode((int)response.Code, response.Message);

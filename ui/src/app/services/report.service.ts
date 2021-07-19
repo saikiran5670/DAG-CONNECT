@@ -330,6 +330,18 @@ export class ReportService {
     );
 }
 
+getFleetOverviewDetails(data: any): Observable<any[]> {
+  let headerObj = this.generateHeader();
+  const headers = {
+    headers: new HttpHeaders({ headerObj }),
+  };
+  return this.httpClient
+    .post<any[]>(
+      `${this.reportServiceUrl}/fleetoverview/getfleetoverviewdetails`, data, headers
+    )
+    .pipe(catchError(this.handleError));
+}
+
 //for getfilterdetails for fleet overview
 getFilterDetails(): Observable<any[]> {
   let headerObj = this.generateHeader();
@@ -342,5 +354,6 @@ getFilterDetails(): Observable<any[]> {
     )
     .pipe(catchError(this.handleError));
 }
+
 
 }
