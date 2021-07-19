@@ -494,6 +494,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 var response = new GetEcoScoreReportSingleDriverResponse();
                 if (resultDataMart?.Count > 0)
                 {
+                    response.OverallPerformance = _mapper.MapEcoScoreReportSingleDriverOverallPerformance(resultDataMart, reportAttributes);
                     response.SingleDriver.AddRange(_mapper.MapEcoScoreReportSingleDriverHeader(resultDataMart));
                     try
                     {

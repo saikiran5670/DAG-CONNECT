@@ -187,4 +187,11 @@ namespace net.atos.daf.ct2.reports.entity
         Max = 'X',
         None = 'O'
     }
+    public enum OverallPerformance
+    {
+        EcoScore,
+        FuelConsumption,
+        AnticipationScore,
+        BrakingScore
+    }
 }
