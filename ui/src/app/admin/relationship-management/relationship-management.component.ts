@@ -142,7 +142,7 @@ export class RelationshipManagementComponent implements OnInit {
   }
 
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
-    if("name"){
+    if(columnName == "name" || columnName =="description"){
       if(!(a instanceof Number)) a = a.toString().toUpperCase();
       if(!(b instanceof Number)) b = b.toString().toUpperCase();
     }
