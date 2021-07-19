@@ -28,6 +28,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public string FeatureName { get; set; }
         public string FeatureKey { get; set; }
         public bool Subscribe { get; set; }
+        public string Vin { get; set; }
     }
 
     public class FilterProperty

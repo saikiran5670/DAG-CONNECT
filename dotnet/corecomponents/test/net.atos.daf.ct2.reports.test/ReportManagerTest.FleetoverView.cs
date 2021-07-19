@@ -42,5 +42,35 @@ namespace net.atos.daf.ct2.reports.test
             var result = await _reportRepository.GetFleetOverviewDetails(fleetOverviewFilter);
             Assert.IsNotNull(result);
         }
+
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetLogbookDetails()
+        {
+            var logbookDetailsFilter = new LogbookDetailsFilter
+            {
+                Start_Time = 1593561600,
+                End_time = 1593561600,
+                VIN = new List<string> { "All" },
+                AlertLevel = new List<string> { "All" },
+                AlertCategory = new List<string> { "All" },
+                AlertType = new List<string> { "All" }
+
+
+
+            };
+            var result = await _reportManager.GetLogbookDetails(logbookDetailsFilter);
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetLogbookSearchParameter()
+        {
+            var logbookTripAlertDetails = new LogbookTripAlertDetails();
+            List<string> objvin = new List<string> { "XLR0998HGFFT76657", "XLR0998HGFFT80000", "PLOI098OO1", "XLR0998HGFFT74611", "XLR0998HGFFT74600", "XLR0998HGFFT76657", "BLRAE75PC0E272200" };
+            var result = await _reportManager.GetLogbookSearchParameter(objvin);
+            Assert.IsNotNull(result);
+        }
     }
 }
