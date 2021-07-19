@@ -1097,9 +1097,8 @@ message LogbookTripAlertDetailsRequest
          string TripId =3;
          int64 AlertGeneratedTime =4;
          string AlertCategoryType =5;
-         string AlertType =6;
-         string AlertName =7;
-         string AlertLevel =8;     
+         string AlertType =6;        
+         string AlertLevel =7;     
          
     }
 

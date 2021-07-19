@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
-                var response = new LogbookFilterResponse();
+                var response = new LogbookFilterResponse() { LogbookSearchParameter = new LogbookSearchParameter() };
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
                                                  .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
