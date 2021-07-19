@@ -49,7 +49,14 @@ namespace net.atos.daf.ct2.ecoscoredataservice.CustomAttributes
             {
                 string token = Convert.ToString(headerValue);
                 token = token.Replace(AUTHORIZATION_HEADER_TYPE, "");
-                email = await _authenticationService.ValidateTokenGuid(token);
+                if (Guid.TryParse(token, out Guid result))
+                {
+                    email = await _authenticationService.ValidateTokenGuid(token);
+                }
+                else
+                {
+                    return AuthenticateResult.NoResult();
+                }
             }
             catch (Exception ex)
             {
