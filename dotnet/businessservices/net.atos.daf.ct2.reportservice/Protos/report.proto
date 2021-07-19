@@ -1023,14 +1023,19 @@ message LogbookFilterIdRequest {
   int32 RoleId = 3;
 }
 message LogbookFilterResponse {
+  
+  LogbookSearchParameter LogbookSearchParameter =1; 
+  Responsecode code = 2;
+  string message = 3;
+
+}
+
+message LogbookSearchParameter {
   repeated AssociatedVehicleRequest AssociatedVehicleRequest = 1;
   repeated FilterResponse ALFilterResponse = 2;
   repeated AlertCategoryFilterResponse ACFilterResponse = 3;    
   repeated AlertCategoryFilterRequest AlertTypeFilterRequest=4;
-   repeated LogbookTripAlertDetailsRequest LogbookTripAlertDetailsRequest =5;
-   Responsecode code = 6;
-  string message = 7;
-
+  repeated LogbookTripAlertDetailsRequest LogbookTripAlertDetailsRequest =5;
 }
 message AlertCategoryFilterRequest {
 		 int32 VehicleGroupId =  1;
@@ -1086,19 +1091,14 @@ message LogbookDetailsResponse{
 
 message LogbookTripAlertDetailsRequest
     {
-         string Vin =1;
-         string TripId =2;
-         int32 AlertId =3;
+         int32 Id= 1;
+         string Vin =2;
+         string TripId =3;
          int64 AlertGeneratedTime =4;
          string AlertCategoryType =5;
          string AlertType =6;
          string AlertName =7;
          string AlertLevel =8;     
-         double AlertLatitude =9;
-         double AlertLongitude =10;
-         int32 AlertGeolocationAddressId =11;
-         string AlertGeolocationAddress =12;
-        int64 ProcessedMessageTimestamp=13;
          
     }
 

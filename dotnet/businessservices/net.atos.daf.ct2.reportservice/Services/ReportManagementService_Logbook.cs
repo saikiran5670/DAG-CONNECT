@@ -28,13 +28,13 @@ namespace net.atos.daf.ct2.reportservice.Services
                     var vinIds = vehicleDetailsAccountVisibilty.Select(x => x.Vin).Distinct().ToList();
                     var tripAlertdData = await _reportManager.GetLogbookSearchParameter(vinIds);
                     var tripAlertResult = JsonConvert.SerializeObject(tripAlertdData);//.Where(x => tripAlertdData.Any(y => y.Vin == x.Vin)));
-                    response.LogbookTripAlertDetailsRequest.AddRange(
+                    response.LogbookSearchParameter.LogbookTripAlertDetailsRequest.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<LogbookTripAlertDetailsRequest>>(tripAlertResult,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
 
 
                     var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);//.Where(x => tripAlertdData.Any(y => y.Vin == x.Vin)));
-                    response.AssociatedVehicleRequest.AddRange(
+                    response.LogbookSearchParameter.AssociatedVehicleRequest.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AssociatedVehicleRequest>>(res,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
 
@@ -54,20 +54,20 @@ namespace net.atos.daf.ct2.reportservice.Services
                     var result = vehicleByVisibilityAndAlertFeature.Where(x => intersectedData.Contains(x.Vin));
                     result = result.Where(x => vehicleDetailsAccountVisibilty.Any(y => y.Vin == x.Vin));
                     res = JsonConvert.SerializeObject(result);
-                    response.AlertTypeFilterRequest.AddRange(
+                    response.LogbookSearchParameter.AlertTypeFilterRequest.AddRange(
                          JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterRequest>>(res,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
                 }
                 var alertLevel = await _reportManager.GetAlertLevelList();// tripAlertdData.Select(x => x.AlertLevel).Distinct().ToList());
                 var resalertLevel = JsonConvert.SerializeObject(alertLevel);
-                response.ALFilterResponse.AddRange(
+                response.LogbookSearchParameter.ALFilterResponse.AddRange(
                     JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resalertLevel)
                     );
 
 
                 var alertCategory = await _reportManager.GetAlertCategoryList();// tripAlertdData.Select(x => x.AlertCategoryType).Distinct().ToList());
                 var resAlertCategory = JsonConvert.SerializeObject(alertCategory);
-                response.ACFilterResponse.AddRange(
+                response.LogbookSearchParameter.ACFilterResponse.AddRange(
                     JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterResponse>>(resAlertCategory,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
 
@@ -80,9 +80,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
+
                 return await Task.FromResult(new LogbookFilterResponse
                 {
                     Code = Responsecode.InternalServerError,
+                    LogbookSearchParameter = new LogbookSearchParameter(),
                     Message = ex.Message
                 });
             }

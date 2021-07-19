@@ -242,28 +242,25 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 driver.OrganizationId = item.OrganizationId;
                 reportFleetOverview.DriverList.Add(driver);
             }
-            reportFleetOverview.FleetOverviewAlerts = new List<FleetOverviewAlert>();
+            reportFleetOverview.FleetOverviewAlerts = new List<FleetOverviewFilterAlert>();
             foreach (var item in fleetOverviewFilterResponse.LogbookTripAlertDetailsRequest)
             {
-                FleetOverviewAlert fleetOverviewAlert = new FleetOverviewAlert()
+                FleetOverviewFilterAlert fleetOverviewFilterAlert = new FleetOverviewFilterAlert()
                 {
-                    AlertId = item.AlertId,
-                    AlertName = item.AlertName,
-                    AlertType = item.AlertType,
+                    Id = item.Id,
+                    Vin = item.Vin,
                     AlertLevel = item.AlertLevel,
                     CategoryType = item.AlertCategoryType,
-                    AlertLatitude = item.AlertLatitude,
-                    AlertLongitude = item.AlertLongitude,
-                    AlertGeolocationAddressId = item.AlertGeolocationAddressId,
-                    AlertGeolocationAddress = item.AlertGeolocationAddress,
-                    AlertTime = item.AlertGeneratedTime,
-                    ProcessedMessageTimestamp = item.ProcessedMessageTimestamp
+
+
                 };
-            reportFleetOverview.FleetOverviewAlerts.Add(fleetOverviewAlert);
+                reportFleetOverview.FleetOverviewAlerts.Add(fleetOverviewFilterAlert);
 
             }
 
             return reportFleetOverview;
+
+
         }
 
     }
