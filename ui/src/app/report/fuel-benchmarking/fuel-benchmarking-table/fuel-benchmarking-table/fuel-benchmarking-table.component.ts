@@ -12,113 +12,53 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 export class FuelBenchmarkingTableComponent implements OnInit {
 
   searchExpandPanel: boolean = true;
-
   @Input() test;
   @Input() startDateRange: any;
   @Input() endDateRange: any;
   @Input() selectionValueBenchmarkBY: any;
   initData: any = [];
   responseDataTP: any = {}
-  // displayedColumns: string[] = ['period','range1','range2','range3'];
+  headerArray: any = ["Period"];
   dataSource: any = new MatTableDataSource([]);
   tabledataSource: any = new MatTableDataSource([]);
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
-@ViewChild(MatPaginator) paginator: MatPaginator;
-@ViewChild(MatSort) sort: MatSort;
-  displayedColumns: string[] = ['period', 'range1'];
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  tableHeadingwithRange: any = "";
+  displayedColumns: string[] = ['period'];
   timerangeColumn: string[] = ['timerangeColumn'];
-  firstColumn: string[] = ['ActiveVehicle','TotalFuelConsumed','TotalMileage','AverageFuelConumption','Ranking','TotalFuelConsumed'];
-  // firstPeriodColumn: string[] = ['Number of Active Vehicles','Total Fuel Consumed','Total Mileage',
-  // 'Total Mileage','Average Fuel Consumption','Ranking','Fuel Consumption'];
-
+  firstColumn: string[] = ['numberOfActiveVehicles', 'totalFuelConsumed', 'totalMileage', 'averageFuelConsumption', 'ranking', 'totalFuelConsumed'];
 
   constructor() { }
 
   ngOnInit(): void {
-
-  this.loadBenchmarkTable();
-  
+    this.dataSource = [{
+      "period": "Number of Active Vehicles",
+    }, {
+      "period": "Total Fuel Consumed",
+    }, {
+      "period": "Total Mileage",
+    }, {
+      "period": "Average Fuel Consumption",
+    }, {
+      "period": "Ranking",
+    }, {
+      "period": "Fuel Consumption",
+    }];
+    this.loadBenchmarkTable();
   }
 
   loadBenchmarkTable() {
-    
-    console.log("this.selectionValueBenchmarkBY",this.selectionValueBenchmarkBY)
-    if(this.selectionValueBenchmarkBY == "timePeriods") {
-       
-      // console.log("---from TP selection")
-      // // console.log("---selectedVehicleGroup",selectedVehicleGroup)
-      //   //Response payload for time period
-    
-      //   this.responseDataTP = 
-      //   {
-      //   VechileGroupID: "VehicleGroup1",
-      //     vehicleGroupName : "value",
-      //     ActiveVehicle : 4/4,
-      //     TotalFuelConsumed : "59.00 gal",
-      //     TotalMileage : "1360.70 km",
-      //     AverageFuelConumption: "1.60 mpg",
-      //     Ranking : [
-      //       {
-      //         "Vehicle Name": 18.09,
-      //         "VIN": "VIN1",
-      //         "FuelConsumption": "1.50",
-              
-      //       }
-      //     ]
-      //   }
-
-    // console.log("---responseDataTP--",this.responseDataTP)
-    
-          this.dataSource =  [{
-            "period": "Number of Active Vehicles",
-            // "range1": "4/4",
-            // "range2": "4/7",
-            // "range3": "4/7"
-           
-          }, {
-            "period": "Total Fuel Consumed",
-            // "range1": "59.00 gal",
-            // "range2": "60.70 gal",
-            // "range3": "61.10 gal"
-          }, {
-            "period": "Total Mileage",
-            // "range1": "1360.70 km",
-            // "range2": "1319.33 km",
-            // "range3": "X232.15 km"
-           
-          }, {
-            "period": "Average Fuel Consumption",
-            // "range1": "1.60 mpg",
-            // "range2": "6.00 mpg",
-            // "range3": "3.73 mpg"
-           
-          }, {
-            "period": "Ranking",
-            // "range1": "Consumption (Ltrs/ 100 km)",
-            // "range2": "Consumption (Ltrs/ 100 km)",
-            // "range3": "Consumption (Ltrs/ 100 km)"
-           
-          }, {
-            "period": "Fuel Consumption",
-            // "range1": "Xyzzz",
-            // "range2": "Xyzzz",
-            // "range3": "Xyzzz"
-          }
-        ];
-
-
-        
-        console.log("this.test",this.test)
-        let index = 1;
-        for(let row of this.test) {
-          this.addColumn(row, 'range'+index);
-          index++;
-        }
-    }else if(this.selectionValueBenchmarkBY == "vehicleGroup"){
+    this.tableHeadingwithRange = this.startDateRange + " to " + this.endDateRange;
+    if (this.selectionValueBenchmarkBY == "timePeriods") {
+      for (let row of this.test) {
+        this.addColumn(JSON.parse(row), this.tableHeadingwithRange);
+      }
+    } else if (this.selectionValueBenchmarkBY == "vehicleGroup") {
       console.log("---from VG selection")
     }
-
   }
+
   updateDataSource(tableData: any) {
     this.initData = tableData;
     this.tabledataSource = new MatTableDataSource(tableData);
@@ -129,19 +69,27 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   }
 
   removeColumn(index) {
-    for(let row of this.dataSource) {
-      delete row[this.displayedColumns[index]];
+    for (let row of this.dataSource) {
+      let removingColumn = this.displayedColumns[index];
+      if (removingColumn !== "period") {
+        delete row[this.displayedColumns[index]];
+        this.test.pop(row)
+      }
     }
-    this.displayedColumns.splice(index, 1)
+    if (this.displayedColumns.length > 1) {
+      this.displayedColumns.splice(index, 1)
+    }
   }
 
   addColumn(data, column) {
-    if(!this.displayedColumns.includes(column)) {
-      this.displayedColumns.push(column)
-    }
-    for(let colIndx in this.firstColumn) {
-      this.dataSource[colIndx][column] = data[this.firstColumn[colIndx]];
+    if (this.displayedColumns.length < 5) {
+      if (!this.displayedColumns.includes(column)) {
+        this.headerArray.push(column);
+        this.displayedColumns.push(column);
+      }
+      for (let colIndx in this.firstColumn) {
+        this.dataSource[colIndx][column] = data.fuelBenchmarkDetails[this.firstColumn[colIndx]];
+      }
     }
   }
-
 }
