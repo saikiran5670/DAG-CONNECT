@@ -1,5 +1,5 @@
     <div fxLayout="row" class="full-width margin-bottom-sm">
-    <div id="summary" style="border: 1px solid black" class="full-width">
+    <div id="summary" class="full-width">
         <app-fleet-overview-summary></app-fleet-overview-summary>
         <app-live-fleet-map [translationData]='translationData'></app-live-fleet-map>
 
@@ -8,9 +8,9 @@
         <div class="example-sidenav-content"
         [ngClass]="userPreferencesFlag ? 'pref-expand' : 'pref-collapse' " >
             <button type="button" mat-button (click)='userPreferencesSetting($event)'>
-                Click to Hide </button>
+                {{clickOpenClose}} </button>
         </div>
-        <div style="padding-top: 5%;">
+        <div>
         <app-fleet-overview-filters *ngIf="userPreferencesFlag" [translationData]='translationData' [detailsData] ="detailsData"></app-fleet-overview-filters>
         </div>
     </div>

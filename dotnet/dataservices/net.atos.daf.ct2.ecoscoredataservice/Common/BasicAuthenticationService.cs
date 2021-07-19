@@ -18,9 +18,9 @@ namespace net.atos.daf.ct2.ecoscoredataservice
 
         public async Task<string> ValidateTokenGuid(string token)
         {
-            _logger.Info($"[VehicleDataService] Token received with request: {token}");
+            _logger.Info($"[EcoScoreDataService] Token received with request: {token}");
             ValidTokenResponse response = await _accountIdentityManager.ValidateTokenGuid(token);
-            _logger.Info($"[VehicleDataService] Is received token valid: {response.Valid}");
+            _logger.Info($"[EcoScoreDataService] Is received token valid: {response.Valid}");
             if (response != null && !string.IsNullOrEmpty(response.Email))
                 return response.Email;
             else

@@ -1,6 +1,31 @@
 @mobileToTablet: ~"only screen and (min-width: 320px) and (max-width: 949px)";
 @mobile:~"only screen and (min-width: 320px) and (max-width: 949px)";
 
+
+::ng-deep.mat-tab-link,  ::ng-deep.mat-tab-label, ::ng-deep.mat-tab-label-active{
+    min-width: 90px!important;
+    padding: 0px !important;
+     border: 1px solid #cacaca;
+    height: 35px !important;  
+    font-size: 14px;
+    z-index: 999;
+}
+::ng-deep.mat-tab-header
+{
+    border-radius: 0px;
+    //border-radius: 15px;
+   // border: 1px solid #cacaca;
+}
+// .filtersTab .header-less-tabs {
+
+// }
+::ng-deep.mat-tab-header{
+margin-bottom: 0px;
+}
+.filtersTab{
+    position: absolute;
+    margin: -51px 0px 0px 80px;
+}
 .dashboardMenu {
     position: absolute !important;
     display: block !important;
@@ -8,7 +33,7 @@
     height: calc(100vh - 45px);
     // background-color: #00529C;
     overflow: auto;
-    width: 34%;
+    width: 32%;
     z-index: 3; //2
     right: 0px;
   
@@ -96,4 +121,8 @@
 
   .mat-form-field {
     width: 100%;
+}
+.filtersTab-label
+{
+    border: 1px solid #bab5b5;
 }

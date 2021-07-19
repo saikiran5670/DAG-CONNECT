@@ -30,7 +30,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.CustomAttributes
             if (emailClaim != null && !string.IsNullOrEmpty(emailClaim.Value))
             {
                 emailAddress = emailClaim.Value;
-                _logger.Info($"[VehicleDataService] Email claim received: {emailAddress}");
+                _logger.Info($"[EcoScoreDataService] Email claim received: {emailAddress}");
             }
             else
             {
@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.CustomAttributes
             try
             {
                 var isExists = await _accountManager.CheckForFeatureAccessByEmailId(emailAddress, requirement.FeatureName);
-                _logger.Info($"[VehicleDataService] Is user authorized: {isExists}");
+                _logger.Info($"[EcoScoreDataService] Is user authorized: {isExists}");
                 if (isExists)
                     context.Succeed(requirement);
                 else
@@ -50,7 +50,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.CustomAttributes
             }
             catch (Exception ex)
             {
-                _logger.Error("[VehicleDataService] Error occurred while authorizing the request", ex);
+                _logger.Error("[EcoScoreDataService] Error occurred while authorizing the request", ex);
                 context.Fail();
                 return;
             }

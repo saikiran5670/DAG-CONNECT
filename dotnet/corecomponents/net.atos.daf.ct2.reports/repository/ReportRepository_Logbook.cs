@@ -23,24 +23,24 @@ namespace net.atos.daf.ct2.reports.repository
             parameter.Add("@vins", vins);
             parameter.Add("@days", 90); // return last 3 month of data
             IEnumerable<LogbookTripAlertDetails> tripAlertList;
-            string query = @"select distinct tripalert.vin as Vin
-                            ,tripalert.trip_id as TripId
-                            ,tripalert.alert_id as AlertId
+            string query = @"select distinct id, tripalert.vin as Vin
+                              ,tripalert.trip_id as TripId
+                         --   ,tripalert.alert_id as AlertId
                             ,tripalert.alert_generated_time as AlertGeneratedTime
-                            ,processed_message_time_stamp as ProcessedMessageTimestamp
-                            ,tripalert.latitude as AlertLatitude
-                            ,tripalert.longitude as AlertLongitude
+                         --   ,processed_message_time_stamp as ProcessedMessageTimestamp
+                         --   ,tripalert.latitude as AlertLatitude
+                          --  ,tripalert.longitude as AlertLongitude
                             ,tripalert.category_type as AlertCategoryType
                             ,tripalert.type as AlertType
                             ,tripalert.urgency_level_type as AlertLevel
-                            ,tripalert.name as AlertName
-                            , alertgeoadd.id as AlertGeolocationAddressId
-                            ,coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
-                            from tripdetail.tripalert tripalert   
+                        --    ,tripalert.name as AlertName
+                          --  , alertgeoadd.id as AlertGeolocationAddressId
+                          --  ,coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
+                            from tripdetail.tripalert tripalert  
                            -- left join tripdetail.trip_statistics lcts on lcts.vin=tripalert.vin and lcts.trip_id=tripalert.trip_id
-                            left join master.geolocationaddress alertgeoadd
-                            on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(tripalert.latitude as numeric),4) 
-                            and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
+                          --  left join master.geolocationaddress alertgeoadd
+                           -- on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(tripalert.latitude as numeric),4)
+                         --   and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
                             where tripalert.vin= ANY(@vins)
                            and ((to_timestamp(tripalert.alert_generated_time)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time)::date) >= (now()::date - @days)) ";
 

@@ -19,6 +19,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import * as moment from 'moment';
+import { FuelBenchmarkingTableComponent } from './fuel-benchmarking-table/fuel-benchmarking-table/fuel-benchmarking-table.component';
 
 @Component({
   selector: 'app-fuel-benchmarking',
@@ -31,6 +32,8 @@ export class FuelBenchmarkingComponent implements OnInit {
   fuelBenchmarkingSearchData: any = {};
   selectionTab: any;
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
+
+  @ViewChild('fuelBenchmarking') fuelBenchmarking :FuelBenchmarkingTableComponent
   
   tableExpandPanel: boolean = true;
   initData: any = [];
@@ -638,9 +641,33 @@ fromTripPageBack: boolean = false;
     }
   }
 
+  test =[];
+
   onSearch(selectedValue?:any){
     this.selectionValueBenchmarkBY = selectedValue;
     console.log("this.selectionValueBenchmarkBY parent",this.selectionValueBenchmarkBY)
+    let testData = {
+      VechileGroupID: "VehicleGroup1",
+        vehicleGroupName : "value",
+        ActiveVehicle : 4/4,
+        TotalFuelConsumed : "59.00 gal",
+        TotalMileage : "1360.70 km",
+        AverageFuelConumption: "1.60 mpg",
+        Ranking : [
+          {
+            "Vehicle Name": 18.09,
+            "VIN": "VIN1",
+            "FuelConsumption": "1.50",
+            
+          }
+        ]
+      }
+    this.test.push(testData);
+    
+    
+
+
+    
 
     this.internalSelection = true;
     // this.resetChartData(); // reset chart data
@@ -650,7 +677,9 @@ fromTripPageBack: boolean = false;
     let _vinData: any = [];
     this.startDateRange = moment(_startTime).format("DD/MM/YYYY");
     this.endDateRange = moment(_endTime).format("DD/MM/YYYY");
-    
+    if(this.fuelBenchmarking) {
+      this.fuelBenchmarking.loadBenchmarkTable();
+    }
  
     if(selectedVehicleGroup){
       this.showLoadingIndicator = true;
@@ -667,7 +696,7 @@ fromTripPageBack: boolean = false;
         ]
       }
 
-
+      
 
 if( parseInt(this.fuelBenchmarkingForm.controls.vehicle.value ) == 0){
   _vinData = this.vehicleDD.filter(i => i.vehicleId != 0).map(item => item.vin);

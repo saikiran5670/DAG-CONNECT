@@ -46,8 +46,9 @@ namespace net.atos.daf.ct2.reports.entity
         public string VehicleActivityTypeKey { get; set; }
         public long EventTime { get; set; }
         public double FuelDiffernce { get; set; }
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+        public double EventLatitude { get; set; }
+        public double EventLongitude { get; set; }
+        public double EventHeading { get; set; }
         public long Odometer { get; set; }
         public int GeoLocationAddressId { get; set; }
         public string GeoLocationAddress { get; set; }
@@ -61,4 +62,13 @@ namespace net.atos.daf.ct2.reports.entity
         public IEnumerable<string> VINs { get; set; }
     }
 
+    public class FuelDeviationCharts
+    {
+        public int EventCount { get; set; }
+        public int TripCount { get; set; }
+        public int VehicleCount { get; set; }
+        public int IncreaseEvent { get; set; }
+        public int DecreaseEvent { get; set; }
+        public long Date { get; set; }
+    }
 }
