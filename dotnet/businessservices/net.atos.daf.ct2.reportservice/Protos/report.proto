@@ -714,18 +714,16 @@ message FleetOverviewDetails
 	double LatestWarningPositionLongitude=26;
 	string Vid=27;
 	string RegistrationNo=28;
-	string DriverFirstName=29;
-	string DriverLastName=30;
-	int32 LatestGeolocationAddressId=31;
-	string LatestGeolocationAddress=32;
-	int32 StartGeolocationAddressId=33;
-	string StartGeolocationAddress=34;
-	int32 LatestWarningGeolocationAddressId=35;
-	string LatestWarningGeolocationAddress=36;
-	string LatestWarningName=37;
-    repeated LiveFleetPosition LiveFleetPosition=38;
-    repeated FleetOverviewAlert FleetOverviewAlert=39;
-   
+	string DriverName=29;	
+	int32 LatestGeolocationAddressId=30;
+	string LatestGeolocationAddress=31;
+	int32 StartGeolocationAddressId=32;
+	string StartGeolocationAddress=33;
+	int32 LatestWarningGeolocationAddressId=34;
+	string LatestWarningGeolocationAddress=35;
+	string LatestWarningName=36;
+    repeated LiveFleetPosition LiveFleetPosition=37;
+    repeated FleetOverviewAlert FleetOverviewAlert=38;
 }
 
 message FleetOverviewDetailsResponse {

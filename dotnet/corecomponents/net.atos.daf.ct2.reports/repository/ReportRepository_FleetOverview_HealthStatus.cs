@@ -77,8 +77,6 @@ namespace net.atos.daf.ct2.reports.repository
                         WarningData as (
                          SELECT hs.*, 
 						  lws.id as WarningId
-                        , dri.first_name  || ' ' || dri.last_name as DriverName
-                             
                         , lws.trip_id as WarningTripId        
                         , lws.vin as WarningVin          
                         , lws.warning_time_stamp as WarningTimetamp
@@ -105,7 +103,7 @@ namespace net.atos.daf.ct2.reports.repository
                         ,lws.lastest_processed_message_time_stamp as WarningLatestProcessedMessageTimestamp
                            FROM  HealthSummary hs  inner join livefleet.livefleet_warning_statistics lws
                            on hs.LctsVin= lws.vin
-                          inner join master.driver dri on lws.driver1_id=dri.driver_id 
+                        
                           where lws.vin =@vin  and ((@tripId <> '' and lws.trip_id=@tripId) OR (@tripId=''))  
                           and (hs.LctsTripStartTime > (extract(epoch from (now()::date - @days ))*1000) or hs.LctsTripEndTime is null)";
             //   )
