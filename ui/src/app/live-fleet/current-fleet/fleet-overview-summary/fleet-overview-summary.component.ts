@@ -67,7 +67,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   };
 
   barChartData: ChartDataSets[] = [
-    { data: [10, 25], label: '' }
+    { data: [10, 25], label: '', barThickness: 16, barPercentage: 0.5 }
   ];
 
   // events
