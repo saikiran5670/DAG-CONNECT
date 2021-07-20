@@ -1227,11 +1227,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Fuel Deviation Report
 
-        #region Fuel Deviation Report Table Details 
-        #endregion
-        [HttpGet]
+        #region Fuel Deviation Report Table Details         
+        [HttpPost]
         [Route("fueldeviation/getdetails")]
-        public async Task<IActionResult> GetFuelDeviationFilterData([FromQuery] FuelDeviationFilterRequest request)
+        public async Task<IActionResult> GetFuelDeviationFilterData(FuelDeviationFilter request)
         {
             try
             {
@@ -1241,7 +1240,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.VALIDATION_DATEMISMATCH_MSG);
 
                 _logger.Info("GetFilteredFuelDeviationAsync method in Report (Fuel Deviation Report) API called.");
-                var response = await _reportServiceClient.GetFilteredFuelDeviationAsync(request);
+                string filters = JsonConvert.SerializeObject(request);
+                var response = await _reportServiceClient.GetFilteredFuelDeviationAsync(JsonConvert.DeserializeObject<FuelDeviationFilterRequest>(filters));
 
                 foreach (var item in response.FuelDeviationDetails)
                 {
@@ -1283,10 +1283,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        #endregion
 
-        [HttpGet]
+        [HttpPost]
         [Route("fueldeviation/charts")]
-        public async Task<IActionResult> GetFuelDeviationChartData([FromQuery] FuelDeviationFilterRequest request)
+        public async Task<IActionResult> GetFuelDeviationChartData(FuelDeviationFilter request)
         {
             try
             {
@@ -1296,7 +1297,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.VALIDATION_DATEMISMATCH_MSG);
 
                 _logger.Info("GetFilteredFuelDeviationChart method in Report (Fuel Deviation charts) API called.");
-                var response = await _reportServiceClient.GetFuelDeviationChartsAsync(request);
+                string filters = JsonConvert.SerializeObject(request);
+                var response = await _reportServiceClient.GetFuelDeviationChartsAsync(JsonConvert.DeserializeObject<FuelDeviationFilterRequest>(filters));
 
                 if (response?.FuelDeviationchart?.Count > 0)
                 {

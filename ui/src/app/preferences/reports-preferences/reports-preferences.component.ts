@@ -18,14 +18,15 @@ export class ReportsPreferencesComponent implements OnInit {
   editFleetUtilisationFlag: boolean = false;
   reportListData: any = [];
   showDriverTimePerferences: boolean = false;
-  editDriverTimePerferencesFlag:boolean = false;
+  editDriverTimePerferencesFlag: boolean = false;
   showEcoScorePerferences: boolean = false;
-  editEcoScorePerferencesFlag:boolean = false;
+  editEcoScorePerferencesFlag: boolean = false;
   showFuelBenchmarkPerferences: boolean = false;
-  editFuelBenchmarkPerferencesFlag:boolean = false;
-  
-  showFleetFuelPerferences:boolean = false;
-  editFleetFuelPerferencesFlag:boolean = false;
+  editFuelBenchmarkPerferencesFlag: boolean = false;
+  showFuelDeviationPerferences: boolean = false;
+  editFuelDeviationPerferencesFlag: boolean = false;
+  showFleetFuelPerferences: boolean = false;
+  editFleetFuelPerferencesFlag: boolean = false;
 
   constructor( private reportService: ReportService ) { }
 
@@ -99,6 +100,16 @@ export class ReportsPreferencesComponent implements OnInit {
     this.showFleetFuelPerferences = false;
   }
 
+  updateFleetFuelPerferencesFlag(retObj: any) {
+    if (retObj) {
+      if (retObj.msg && retObj.msg != '') {
+        this.successMsgBlink(retObj.msg);
+      }
+    }
+    this.editFleetFuelPerferencesFlag = false;
+    this.showFleetFuelPerferences = false;
+  }
+
   editDriverTimePerferences(){
     this.editDriverTimePerferencesFlag = true;
     this.showDriverTimePerferences = false;
@@ -112,6 +123,11 @@ export class ReportsPreferencesComponent implements OnInit {
   editFuelBenchmarkPerferences(){
     this.editFuelBenchmarkPerferencesFlag = true;
     this.showFuelBenchmarkPerferences = false;
+  }
+
+  editFuelDeviationPerferences(){
+    this.editFuelDeviationPerferencesFlag = true;
+    this.showFuelDeviationPerferences = false;
   }
 
   updateEditDriverTimeFlag(retObj: any){
@@ -144,6 +160,17 @@ export class ReportsPreferencesComponent implements OnInit {
       }
     }else{
       this.editFuelBenchmarkPerferencesFlag = false; // hard coded
+    }
+  }
+
+  updateFuelDeviationReportFlag(retObj: any){
+    if(retObj){
+      this.editFuelDeviationPerferencesFlag = retObj.flag;
+      if(retObj.msg && retObj.msg != ''){
+        this.successMsgBlink(retObj.msg);
+      }
+    }else{
+      this.editFuelDeviationPerferencesFlag = false; // hard coded
     }
   }
   

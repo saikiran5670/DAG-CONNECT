@@ -1,5 +1,6 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ReportService } from 'src/app/services/report.service';
 
 @Component({
@@ -12,33 +13,43 @@ export class FleetFuelPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
   @Input() translationData: any;
-  @Output() setDriverTimeFlag = new EventEmitter<any>();
+  @Output() setFuelFleetFlag = new EventEmitter<any>();
+  reportId;
   initData;
   summaryColumnData = [];
   vehicleRankingColumnData = [];
   chartsColumnData = [];
-  vehicleDetialsColumnData = [];
-  singleVehicleDetialsColumnData = [];
+  vehicleDetailsColumnData = [];
+  singleVehicleDetailsColumnData = [];
   chartIndex: any = {};
   selectionForSummaryColumns = new SelectionModel(true, []);
   selectionForVehicleRankingColumns = new SelectionModel(true, []);
   selectionForChartsColumns = new SelectionModel(true, []);
-  selectionForVehicleDetialsColumns = new SelectionModel(true, []);
-  selectionForSingleVehicleDetialsColumns = new SelectionModel(true, []);
+  selectionForVehicleDetailsColumns = new SelectionModel(true, []);
+  selectionForSingleVehicleDetailsColumns = new SelectionModel(true, []);
+  fleetFuelForm = new FormGroup({});
 
-  constructor(private resportService: ReportService) { }
+  lineBarDD: any = [{
+    type: 'L',
+    name: 'Line Chart'
+  }, {
+    type: 'B',
+    name: 'Bar Chart'
+  }];
+
+  constructor(private reportService: ReportService) { }
 
   ngOnInit(): void {
     this.loadFleetFuelPreferences();
   }
 
   loadFleetFuelPreferences() {
-    let reportId: any = this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id;
-    this.resportService.getReportUserPreference(reportId).subscribe((res) => {
+    this.reportId = this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id;
+    this.reportService.getReportUserPreference(this.reportId).subscribe((res) => {
       if (this.tabName == 'Vehicle') {
-        this.initData = res['userPreferences']['subReportUserPreferences'][1];
-      } else {
         this.initData = res['userPreferences']['subReportUserPreferences'][0];
+      } else {
+        this.initData = res['userPreferences']['subReportUserPreferences'][1];
       }
       console.log("Fleet Fuel Report ", this.initData)
       this.resetColumnData();
@@ -50,16 +61,16 @@ export class FleetFuelPreferencesComponent implements OnInit {
     this.summaryColumnData = [];
     this.vehicleRankingColumnData = [];
     this.chartsColumnData = [];
-    this.vehicleDetialsColumnData = [];
-    this.singleVehicleDetialsColumnData = [];
+    this.vehicleDetailsColumnData = [];
+    this.singleVehicleDetailsColumnData = [];
   }
 
   setColumnCheckbox() {
     this.selectionForSummaryColumns.clear();
     this.selectionForVehicleRankingColumns.clear();
     this.selectionForChartsColumns.clear();
-    this.selectionForVehicleDetialsColumns.clear();
-    this.selectionForSingleVehicleDetialsColumns.clear();
+    this.selectionForVehicleDetailsColumns.clear();
+    this.selectionForSingleVehicleDetailsColumns.clear();
 
     this.summaryColumnData.forEach(element => {
       if (element.state == 'A') {
@@ -79,21 +90,17 @@ export class FleetFuelPreferencesComponent implements OnInit {
       }
     });
     
-    this.vehicleRankingColumnData.forEach(element => {
+    this.vehicleDetailsColumnData.forEach(element => {
       if (element.state == 'A') {
-        this.selectionForVehicleDetialsColumns.select(element);
+        this.selectionForVehicleDetailsColumns.select(element);
       }
     });
     
-    this.singleVehicleDetialsColumnData.forEach(element => {
+    this.singleVehicleDetailsColumnData.forEach(element => {
       if (element.state == 'A') {
-        this.selectionForSingleVehicleDetialsColumns.select(element);
+        this.selectionForSingleVehicleDetailsColumns.select(element);
       }
     });
-    // if (this.summaryColumnData.length > 0 && this.chartsColumnData.length > 0 && this.calenderColumnData.length > 0 && this.detailColumnData.length > 0) {
-    //   this.setDefaultFormValues();
-    // }
-    // this.validateRequiredField();
   }
 
   preparePrefData(prefData: any) {
@@ -115,34 +122,36 @@ export class FleetFuelPreferencesComponent implements OnInit {
           } else {
             _data.translatedName = this.getName(element.name, 14);
           }
-          let index: any;
-          switch (element.key) {
-            case 'da_report_charts_distanceperday': {
-              index = this.chartIndex.distanceIndex = 0;
-              break;
-            }
-            case 'da_report_charts_numberofvehiclesperday': {
-              index = this.chartIndex.vehicleIndex = 1;
-              break;
-            }
-            case 'da_report_charts_mileagebasedutilization': {
-              index = this.chartIndex.mileageIndex = 2;
-              break;
-            }
-            case 'da_report_charts_timebasedutilization': {
-              index = this.chartIndex.timeIndex = 3;
-              break;
-            }
-          }
-          this.chartsColumnData[index] = _data;
+          this.chartsColumnData.push(_data);
+          this.fleetFuelForm.addControl(element.key, new FormControl(element.chartType != '' ? element.chartType : 'B', Validators.required));
+          // let index: any;
+          // switch (element.key) {
+          //   case 'da_report_charts_distanceperday': {
+          //     index = this.chartIndex.distanceIndex = 0;
+          //     break;
+          //   }
+          //   case 'da_report_charts_numberofvehiclesperday': {
+          //     index = this.chartIndex.vehicleIndex = 1;
+          //     break;
+          //   }
+          //   case 'da_report_charts_mileagebasedutilization': {
+          //     index = this.chartIndex.mileageIndex = 2;
+          //     break;
+          //   }
+          //   case 'da_report_charts_timebasedutilization': {
+          //     index = this.chartIndex.timeIndex = 3;
+          //     break;
+          //   }
+          // }
+          // this.chartsColumnData[index] = _data;
         } else if (element.name.includes('Driver.VehicleDetails') || element.name.includes('Vehicle.VehicleDetails')) {
-          _data = element;
+          _data = element; debugger;
           if (this.translationData[element.key]) {
             _data.translatedName = this.translationData[element.key];
           } else {
             _data.translatedName = this.getName(element.name, 20);
           }
-          this.vehicleDetialsColumnData.push(_data);
+          this.vehicleDetailsColumnData.push(_data);
         } else if (element.name.includes('Driver.SingleVehicleDetails') || element.name.includes('Vehicle.SingleVehicleDetails')) {
           _data = element;
           if (this.translationData[element.key]) {
@@ -150,7 +159,7 @@ export class FleetFuelPreferencesComponent implements OnInit {
           } else {
             _data.translatedName = this.getName(element.name, 15);
           }
-          this.singleVehicleDetialsColumnData.push(_data);
+          this.singleVehicleDetailsColumnData.push(_data);
         } else if (element.name.includes('Vehicle.VehicleRanking')) {
           _data = element;
           if (this.translationData[element.key]) {
@@ -170,8 +179,85 @@ export class FleetFuelPreferencesComponent implements OnInit {
     return updatedName;
   }
 
-  masterToggle(event, section) {
+  masterToggle(section){
+    if(this.isAllSelected(section)){
+      this["selectionFor"+section+"Columns"].clear();
+    }else{
+      let lowerCaseSection = section.charAt(0).toLowerCase() + section.substring(1);
+      this[lowerCaseSection+"ColumnData"].forEach(row => { this["selectionFor"+section+"Columns"].select(row) });
+    }
+  }
 
+  isAllSelected(section){
+    const numSelected = this["selectionFor"+section+"Columns"].selected.length;
+    let lowerCaseSection = section.charAt(0).toLowerCase() + section.substring(1);
+    const numRows = this[lowerCaseSection+"ColumnData"].length;
+    return numSelected === numRows;
+  }
+
+  onlineBarDDChange(event) {
+
+  }
+
+  onCancel(){
+    this.setFuelFleetFlag.emit({flag: false, msg: ''});
+    this.setColumnCheckbox();
+  }
+
+  onReset(){
+    this.setColumnCheckbox();
+  }
+
+  getSaveObject(columnData, selectionData) {
+    let saveArr = [];
+    this[columnData].forEach(element => {
+      let sSearch = this[selectionData].selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+      if(sSearch.length > 0){
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }else{
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }
+    });
+    return saveArr;
+  }
+
+  onConfirm() {
+    let _summaryArr: any = [];
+    let _vehicleRankingArr: any = [];
+    let _chartsArr: any = [];
+    let _vehicleDetailsArr: any = [];
+    let _singleVehicleDetailsArr: any = [];
+
+    _summaryArr = this.getSaveObject('summaryColumnData', 'selectionForSummaryColumns');
+    _vehicleRankingArr = this.getSaveObject('vehicleRankingColumnData', 'selectionForVehicleRankingColumns');
+    _vehicleDetailsArr = this.getSaveObject('vehicleDetailsColumnData', 'selectionForVehicleDetailsColumns');
+    _singleVehicleDetailsArr = this.getSaveObject('singleVehicleDetailsColumnData', 'selectionForSingleVehicleDetailsColumns');
+
+    this.chartsColumnData.forEach((element, index) => {
+      let cSearch = this.selectionForChartsColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+      if(cSearch.length > 0){
+        _chartsArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "C", chartType: this.fleetFuelForm.get([element.key]).value, thresholdType: "", thresholdValue: 0 });
+      }else{
+        _chartsArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "C", chartType: this.fleetFuelForm.get([element.key]).value, thresholdType: "", thresholdValue: 0 });
+      }
+    });
+
+    let objData: any = {
+      reportId: this.reportId,
+      attributes: [..._summaryArr, ..._vehicleRankingArr, ..._vehicleDetailsArr, ..._singleVehicleDetailsArr, ..._chartsArr]
+    };
+    console.log("save Object", objData)
+    this.reportService.updateReportUserPreference(objData).subscribe((res: any) => {
+      console.log("save res", res)
+      this.setFuelFleetFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+    });
+  }
+
+  getSuccessMsg() {
+    if (this.translationData.lblDetailssavesuccessfully)
+      return this.translationData.lblDetailssavesuccessfully;
+    else
+      return ("Details save successfully");
   }
 
 }

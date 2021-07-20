@@ -134,6 +134,8 @@ namespace net.atos.daf.ct2.reportservice.Services
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);
                 if (result?.Count > 0)
                 {
+                    List<DriverDetails> driverDetails = _reportManager.GetDriverDetails(result.Where(p => !string.IsNullOrEmpty(p.Driver1Id))
+                                                                                             .Select(x => x.Driver1Id).Distinct().ToList(), request.OrganizationId).Result;
                     List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.LatestWarningClass > 0).Select(x => x.LatestWarningClass).Distinct().ToList(), result.Where(p => p.LatestWarningNumber > 0).Select(x => x.LatestWarningNumber).Distinct().ToList(), request.LanguageCode);
                     foreach (var fleetOverviewDetails in result)
                     {
@@ -143,6 +145,16 @@ namespace net.atos.daf.ct2.reportservice.Services
                             {
                                 fleetOverviewDetails.LatestWarningName = warning.WarningName;
                             }
+
+                        }
+                        //opt-in and no driver card- Unknown - Implemented by UI 
+                        // Opt-out and no driver card- Unknown-Implemented by UI 
+                        //opt-in with driver card- Driver Id
+                        //opt-out with driver card- *
+
+                        if (driverDetails != null && driverDetails.Count > 0)
+                        {
+                            fleetOverviewDetails.DriverName = driverDetails.FirstOrDefault(d => d.DriverId == fleetOverviewDetails.Driver1Id).DriverName; ;
                         }
                         response.FleetOverviewDetailList.Add(_mapper.ToFleetOverviewDetailsResponse(fleetOverviewDetails));
                     }

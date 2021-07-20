@@ -92,27 +92,33 @@ export class LiveFleetMapComponent implements OnInit {
     this.mapFilterForm.get('routeType').setValue('C');
     setTimeout(() => {
       this.fleetMapService.initMap(this.mapElement);
-      
+      this.tripTraceArray = this.detailsData;
     this.makeHerePOIList();
     this.loadUserPOI();
     this.mapIconData();
     }, 0);
   }
 
+  showIcons = true;
+  alertsChecked : boolean = false;
   mapIconData(){
-    console.log(this.detailsData)
-    this.tripTraceArray = this.detailsData;
+   // console.log(this.detailsData)
+    //this.tripTraceArray = this.detailsData;
     let _ui = this.fleetMapService.getUI();
+   // this.fleetMapService.setIconsOnMap(this.detailsData);
+    this.showIcons = true;
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons);
+
     //this.fleetMapService.setIconsOnMap();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    //this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
     
 
   }
 
   changeAlertSelection(_event){
-    let alertsChecked = _event.checked
+    this.alertsChecked = _event.checked
     let _ui = this.fleetMapService.getUI();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,alertsChecked);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons);
   }
   makeHerePOIList(){
     this.herePOIList = [{
@@ -218,7 +224,7 @@ export class LiveFleetMapComponent implements OnInit {
       }
     });
     let _ui = this.fleetMapService.getUI();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons);
 
     //this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
   }
@@ -291,7 +297,7 @@ export class LiveFleetMapComponent implements OnInit {
     });
     let _ui = this.fleetMapService.getUI();
     //this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons);
     //}
   }
 
@@ -305,7 +311,7 @@ export class LiveFleetMapComponent implements OnInit {
 
   searchPlaces() {
     let _ui = this.fleetMapService.getUI();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr); 
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons); 
   }
 
   onMapRepresentationChange(event: any) {
@@ -321,7 +327,7 @@ export class LiveFleetMapComponent implements OnInit {
   onDisplayChange(event: any) {
     this.displayRouteView = event.value;
     let _ui = this.fleetMapService.getUI();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons);
   }
 
 }

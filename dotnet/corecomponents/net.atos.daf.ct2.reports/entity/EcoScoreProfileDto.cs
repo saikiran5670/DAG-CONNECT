@@ -140,6 +140,7 @@ namespace net.atos.daf.ct2.reports.entity
         public int OrgId { get; set; }
         public int AccountId { get; set; }
         public int TargetProfileId { get; set; }
+        public string UoM { get; set; }
     }
     public class EcoScoreReportSingleDriver
     {
@@ -175,6 +176,15 @@ namespace net.atos.daf.ct2.reports.entity
         public double AnticipationScore { get; set; }
     }
 
+    public class EcoScoreSingleDriverBarPieChart
+    {
+        public string VIN { get; set; }
+        public string VehicleName { get; set; }
+        public string X_Axis { get; set; }
+        public double Y_Axis { get; set; }
+        public double Distance { get; set; }
+    }
+
     public enum RankingColor
     {
         Red,
@@ -193,5 +203,10 @@ namespace net.atos.daf.ct2.reports.entity
         FuelConsumption,
         AnticipationScore,
         BrakingScore
+    }
+    public enum UoM
+    {
+        Metric,
+        Imperial
     }
 }

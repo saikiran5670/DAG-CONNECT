@@ -30,7 +30,7 @@
 <div fxLayout="column" fxLayoutAlign="space-between" >
     <mat-label>{{ translationData.lblAlertCategory || 'Alert Category' }} </mat-label>
     <mat-form-field appearance="outline" class="full-width dropdown-filters">
-        <mat-select placeholder="All" (selectionChange)="onChangeCategory($event.value)" formControlName="category">
+        <mat-select placeholder="All" multiple [(ngModel)]="selection1" (selectionChange)="onChangeCategory($event.value)" formControlName="category">
             <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
             <mat-option *ngFor="let item of categoryList" [value]="item.value">
                 {{item.name}}
@@ -41,7 +41,7 @@
 <div fxLayout="column" fxLayoutAlign="space-between" >
     <mat-label>{{ translationData.lblHealthStatus|| 'Health Status' }} </mat-label>
     <mat-form-field appearance="outline" class="full-width dropdown-filters">
-        <mat-select placeholder="All" multiple (selectionChange)="onChangHealthStatus($event.value)" formControlName="status">
+        <mat-select placeholder="All" multiple [(ngModel)]="selection2"(selectionChange)="onChangHealthStatus($event.value)" formControlName="status">
             <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
             <mat-option *ngFor="let item of healthList" [value]="item.value">
                 {{item.name}}
@@ -84,9 +84,13 @@
                 <span class="vehicle-details-head">{{ translationData.lbl || 'VIN'}}: </span>
                 <span class="vehicle-details-data">{{item.vin}}</span>
             </div>
-            <div>
-                <span class="vehicle-details-head">{{ translationData.lbl || 'Driver Name'}}:</span>
-                <span class="vehicle-details-data">{{item.driverFirstName}}</span>
+            <div>               
+            <span class="vehicle-details-head" >           
+                {{ item.driverName == '' ?  'Driver Id' :  'Driver Name'}} 
+            </span>
+            <span class="vehicle-details-data">
+                  {{ (item.driverName == '' ? item.driverId : item.driverName) || ((item.driverName == '' && item.driverId == '') ? 'Unknown' : item.driverName)}} 
+           </span>
             </div> 
             <div>
                 <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>

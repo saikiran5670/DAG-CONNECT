@@ -43,9 +43,10 @@
         [options]="doughnutChartOptionsMileage"
         [colors]="doughnutColors">
       </canvas>
+      <div class="text-center"><span><b>{{ translationData.lblFleetMileageRate || 'Fleet Mileage Rate' }}</b></span></div>
     </div>
-    <div><span>{{ translationData.lblFleetMileageRate || 'Fleet Mileage Rate' }}</span></div>
-    <div style="display: block">
+    <!-- <div><span>{{ translationData.lblFleetMileageRate || 'Fleet Mileage Rate' }}</span></div> -->
+    <div style="display: block" class="relative">
       <canvas baseChart
         [data]="doughnutChartDataUtil"
         [labels]="doughnutChartLabelsUtil"
@@ -53,8 +54,10 @@
         [options]="doughnutChartOptionsUtil"
         [colors]="doughnutColors">
       </canvas>
+      <div class="text-center">
+        <span><b>{{ translationData.lblFleetUtilizationRate || 'Fleet Utilization Rate' }}</b></span>
+      </div>
     </div>
-    <span>{{ translationData.lblFleetUtilizationRate || 'Fleet Utilization Rate' }}</span>
   </div>
   </mat-expansion-panel><br><br>
 </mat-card>
