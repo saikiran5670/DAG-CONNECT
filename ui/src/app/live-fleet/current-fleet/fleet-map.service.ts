@@ -497,7 +497,7 @@ export class FleetMapService {
         }
         
       if(alertsChecked){
-        if(elem.fleetOverviewAlert.length > 1){
+        if(elem.fleetOverviewAlert.length > 0){
           this.drawAlerts(elem.fleetOverviewAlert,_ui);
         }
       }
@@ -521,7 +521,13 @@ export class FleetMapService {
       let distinctAlert = alertList.filter((value, index, self) => self.indexOf(value) === index);
       let finalAlerts = [];
       distinctAlert.forEach(element => {
-        finalAlerts = _alertDetails.filter(item=> item.level === 'A' && item.alertId === element);
+        let _currentElem = _alertDetails.find(item=> item.level === 'C' && item.alertId === element);
+        if(_currentElem == undefined){
+         _currentElem = _alertDetails.find(item=> item.alertId === element);
+
+        }
+        finalAlerts.push(_currentElem);
+
       });
       finalAlerts.forEach(element => {
         switch (element.level) {

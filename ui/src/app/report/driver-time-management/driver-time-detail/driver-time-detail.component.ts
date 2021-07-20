@@ -13,7 +13,6 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { ChartOptions, ChartType, ChartDataSets ,ChartColor,Chart} from 'chart.js';
 import { color } from 'html2canvas/dist/types/css/types/color';
-import * as crosshair from 'chartjs-plugin-crosshair';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 
@@ -66,7 +65,7 @@ export class DriverTimeDetailComponent implements OnInit {
 
   canvas: any;
   ctx: any;
-  chartPlugins = [crosshair];
+  //chartPlugins = [crosshair];
   zoomMsg : boolean = true;
   summaryObj:any=[];
 
