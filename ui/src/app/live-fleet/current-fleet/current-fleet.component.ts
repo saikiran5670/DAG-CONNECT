@@ -133,10 +133,10 @@ export class CurrentFleetComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 18 
+      menuId: 2 
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+      this.processTranslation(data);    
     });
     this.clickOpenClose='Click to Open';
     let objData = {

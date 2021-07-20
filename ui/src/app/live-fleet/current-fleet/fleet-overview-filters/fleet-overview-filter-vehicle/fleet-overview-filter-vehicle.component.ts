@@ -8,7 +8,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ViewChild } from '@angular/core';
 import { validateBasis } from '@angular/flex-layout';
-
+import { TranslationService } from '../../../../services/translation.service';
 @Component({
   selector: 'app-fleet-overview-filter-vehicle',
   templateUrl: './fleet-overview-filter-vehicle.component.html',
@@ -38,11 +38,29 @@ showLoadingIndicator: any = false;
 dataSource: any = new MatTableDataSource([]);
 initData: any = [];
 objData: any;
+localStLanguage: any;
+accountOrganizationId: any;
+translationAlertData: any = {};
 displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthStatus'];
  
-  constructor(private _formBuilder: FormBuilder, private reportService: ReportService) { }
+constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService) { }
+
 
   ngOnInit(): void {
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    let translationObj = {
+      id: 0,
+      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 17 
+    }
+    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+      this.processTranslation(data);    
+    });
     console.log(this.todayFlagClicked );
     this.vehicleListData = this.detailsData;
     this.selection1 = ['all'];
@@ -56,7 +74,9 @@ displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthS
     })
     this.getFilterData();
   }
-
+  processTranslation(transData: any) {
+    this.translationAlertData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+  }
 
 getFilterData(){
   this.reportService.getFilterDetails().subscribe((data: any) => {
@@ -67,16 +87,26 @@ getFilterData(){
       this.levelList = [];
       this.healthList = [];
       this.otherList = [];
-    this.filterData["vehicleGroups"].forEach(item=>
-    this.groupList.push(item) );
-    this.filterData["alertCategory"].forEach(item=>
-    this.categoryList.push(item) );
-    this.filterData["alertLevel"].forEach(item=>
-    this.levelList.push(item) );
-    this.filterData["healthStatus"].forEach(item=>
-    this.healthList.push(item) );
-    this.otherList.push(this.filterData["otherFilter"][0]);
-    this.loadVehicleData();
+      this.filterData["vehicleGroups"].forEach(item=>{
+        this.groupList.push(item) });
+    
+        this.filterData["alertCategory"].forEach(item=>{
+        let catName =  this.translationAlertData[item.name];
+        this.categoryList.push({'name':catName, 'value': item.value})});     
+       
+        this.filterData["alertLevel"].forEach(item=>{
+        let levelName =  this.translationAlertData[item.name];
+        this.levelList.push({'name':levelName, 'value': item.value})}); 
+      
+        this.filterData["healthStatus"].forEach(item=>{
+        let statusName = this.translationData[item.name];
+        this.healthList.push({'name':statusName, 'value': item.value})});
+        // this.filterData["otherFilter"].forEach(item=>{
+        // let statusName = this.translationData[item[0].name];
+        // this.otherList.push({'name':statusName, 'value': item[0].value}) });
+        this.otherList.push(this.filterData["otherFilter"][0]);
+         
+        this.loadVehicleData();
     }
     if(this.todayFlagClicked){
       this.groupList = [];
@@ -108,9 +138,9 @@ getFilterData(){
           }
         });
  
-
-    this.filterData["healthStatus"].forEach(item=>
-      this.healthList.push(item) );
+        this.filterData["healthStatus"].forEach(item=>{
+          let statusName = this.translationData[item.name];
+          this.healthList.push({'name':statusName, 'value': item.value})});
 
       this.otherList.push(this.filterData["otherFilter"][0]);
 
@@ -191,7 +221,21 @@ getFilterData(){
       }
     }
     this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
-      this.vehicleListData = data;
+      data.forEach(item => {
+        this.filterData["healthStatus"].forEach(e => {
+         if(item.vehicleHealthStatusType==e.value)
+         {         
+          item.vehicleHealthStatusType = this.translationData[e.name];
+         }
+        });
+        this.filterData["otherFilter"].forEach(element => {
+          if(item.vehicleDrivingStatusType==element.value)
+          {         
+           item.vehicleDrivingStatusType = this.translationData[element.name];
+          }
+         });        
+      });      
+      this.vehicleListData = data;   
     }, (error) => {
 
       if (error.status == 404) {
