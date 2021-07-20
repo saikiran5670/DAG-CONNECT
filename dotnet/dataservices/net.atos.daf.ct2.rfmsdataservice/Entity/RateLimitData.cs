@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace net.atos.daf.ct2.rfmsdataservice.CustomAttributes
+namespace net.atos.daf.ct2.rfmsdataservice.Entity
 {
     public class RateLimitData
     {
@@ -17,6 +17,8 @@ namespace net.atos.daf.ct2.rfmsdataservice.CustomAttributes
         public int RemainingRateCount { get; set; }
 
         public DateTime FirstRequestTime { get; set; }
+
+        public long ResetTime { get; set; }
     }
 
     public class RateLimitConstants

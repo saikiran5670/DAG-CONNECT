@@ -634,15 +634,19 @@ namespace net.atos.daf.ct2.reports
             var startDate = new DateTime(1970, 1, 1).AddMilliseconds(startTimestamp);
             var endDate = new DateTime(1970, 1, 1).AddMilliseconds(endTimestamp);
             var noOfDays = Math.Ceiling((endDate - startDate).TotalDays);
+            int result;
 
             switch (aggregateType)
             {
                 case AggregateType.DAY:
-                    return (int)noOfDays;
+                    result = (int)noOfDays;
+                    return result > 365 ? 365 : result;
                 case AggregateType.WEEK:
-                    return (int)(noOfDays / 7);
+                    result = (int)noOfDays / 7;
+                    return result > 52 ? 52 : result;
                 case AggregateType.MONTH:
-                    return (int)(noOfDays / 30);
+                    result = (int)noOfDays / 30;
+                    return result > 12 ? 12 : result;
             }
             return 0;
         }

@@ -49,6 +49,7 @@ export class LiveFleetMapComponent implements OnInit {
   trackType: any = 'snail';
   displayRouteView: any = 'C';
   @Input() translationData:any;
+  @Input()  detailsData : any;
   @ViewChild("map") public mapElement: ElementRef;
   accountId:any;
   accountPrefObj : any;
@@ -90,14 +91,29 @@ export class LiveFleetMapComponent implements OnInit {
     this.mapFilterForm.get('trackType').setValue('snail');
     this.mapFilterForm.get('routeType').setValue('C');
     setTimeout(() => {
-      this.reportMapService.initMap(this.mapElement);
-    }, 0);
+      this.fleetMapService.initMap(this.mapElement);
+      
     this.makeHerePOIList();
     this.loadUserPOI();
+    this.mapIconData();
+    }, 0);
+  }
+
+  mapIconData(){
+    console.log(this.detailsData)
+    this.tripTraceArray = this.detailsData;
+    let _ui = this.fleetMapService.getUI();
+    //this.fleetMapService.setIconsOnMap();
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    
 
   }
 
-
+  changeAlertSelection(_event){
+    let alertsChecked = _event.checked
+    let _ui = this.fleetMapService.getUI();
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,alertsChecked);
+  }
   makeHerePOIList(){
     this.herePOIList = [{
       key: 'Hotel',
@@ -201,10 +217,10 @@ export class LiveFleetMapComponent implements OnInit {
         });
       }
     });
-    let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    let _ui = this.fleetMapService.getUI();
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
 
-    //this.reportMapService.showCategoryPOI(this.displayPOIList,_ui);
+    //this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
   }
 
   openClosedUserPOI(index: any) {
@@ -273,9 +289,9 @@ export class LiveFleetMapComponent implements OnInit {
         });
       }
     });
-    let _ui = this.reportMapService.getUI();
+    let _ui = this.fleetMapService.getUI();
     //this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
     //}
   }
 
@@ -288,14 +304,14 @@ export class LiveFleetMapComponent implements OnInit {
   }
 
   searchPlaces() {
-    let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr); 
+    let _ui = this.fleetMapService.getUI();
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr); 
   }
 
   onMapRepresentationChange(event: any) {
     this.trackType = event.value;
-    let _ui = this.reportMapService.getUI();
-    //this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    let _ui = this.fleetMapService.getUI();
+    //this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
   }
   onAdvanceFilterOpen() {
     this.advanceFilterOpen = !this.advanceFilterOpen;
@@ -304,8 +320,8 @@ export class LiveFleetMapComponent implements OnInit {
 
   onDisplayChange(event: any) {
     this.displayRouteView = event.value;
-    let _ui = this.reportMapService.getUI();
-    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+    let _ui = this.fleetMapService.getUI();
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
   }
 
 }

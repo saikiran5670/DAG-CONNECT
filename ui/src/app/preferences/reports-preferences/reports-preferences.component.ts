@@ -99,6 +99,16 @@ export class ReportsPreferencesComponent implements OnInit {
     this.showFleetFuelPerferences = false;
   }
 
+  updateFleetFuelPerferencesFlag(retObj: any) {
+    if (retObj) {
+      if (retObj.msg && retObj.msg != '') {
+        this.successMsgBlink(retObj.msg);
+      }
+    }
+    this.editFleetFuelPerferencesFlag = false;
+    this.showFleetFuelPerferences = false;
+  }
+
   editDriverTimePerferences(){
     this.editDriverTimePerferencesFlag = true;
     this.showDriverTimePerferences = false;

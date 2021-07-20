@@ -25,6 +25,7 @@ export class FleetOverviewFilterDriverComponent implements OnInit {
   dataSource: any = new MatTableDataSource([]);
   initData: any = [];
   vehicleListData: any = [];
+  todayFlagClicked: boolean = false;
   noRecordFlag: boolean = false;
   
   constructor(private reportService: ReportService) { }
@@ -83,5 +84,15 @@ export class FleetOverviewFilterDriverComponent implements OnInit {
   });
   this.noRecordFlag = false;
 } 
+
+onChangetodayCheckbox(event){
+  if(event.checked){
+ this.todayFlagClicked = true;
+  }
+  else{
+   this.todayFlagClicked = false;
+   }
+
+}
 
 }

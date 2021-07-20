@@ -150,7 +150,7 @@ export class CurrentFleetComponent implements OnInit {
       "languagecode":"cs-CZ"
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data:any) => {
-        this.detailsData = data;
+       this.detailsData = data;
     });
    }
 
