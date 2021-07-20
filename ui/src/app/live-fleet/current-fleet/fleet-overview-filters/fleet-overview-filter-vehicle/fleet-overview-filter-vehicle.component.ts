@@ -22,6 +22,8 @@ export class FleetOverviewFilterVehicleComponent implements OnInit {
 @ViewChild(MatSort) sort: MatSort;
 filterData: any;
 filterValue: any;
+selection1: any;
+selection2: any;
 filterVehicleForm:FormGroup;
 todayFlagClicked: boolean = false;
 isVehicleListOpen: boolean = true;
@@ -43,7 +45,8 @@ displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthS
   ngOnInit(): void {
     console.log(this.todayFlagClicked );
     this.vehicleListData = this.detailsData;
-
+    this.selection1 = ['all'];
+    this.selection2 = ['all'];
     this.filterVehicleForm = this._formBuilder.group({
       group: ['all'],
       level: ['all'],
@@ -52,7 +55,7 @@ displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthS
       otherFilter: ['all']
     })
 
-    this.reportService.getFilterDetails().subscribe((data: any) => {
+this.reportService.getFilterDetails().subscribe((data: any) => {
 this.filterData = data;
 this.filterData["vehicleGroups"].forEach(item=>
 this.groupList.push(item) );
@@ -62,11 +65,11 @@ this.filterData["alertLevel"].forEach(item=>
 this.levelList.push(item) );
 this.filterData["healthStatus"].forEach(item=>
 this.healthList.push(item) );
-this.filterData["otherFilter"].forEach(item=>
-this.otherList.push(item) );
-
-    });
+// this.filterData["otherFilter"].forEach(item=>
+// this.otherList.push(item) );});
+this.otherList.push(this.filterData["otherFilter"][0]);
     this.loadVehicleData();
+});
   }
 
   applyFilter(filterValue: string) {
@@ -121,8 +124,8 @@ this.otherList.push(item) );
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
         "alertLevel": [this.filterVehicleForm.controls.level.value.toString()],
-        "alertCategory": [this.filterVehicleForm.controls.category.value.toString()],
-        "healthStatus": [this.filterVehicleForm.controls.status.value.toString()],
+        "alertCategory": this.filterVehicleForm.controls.category.value,
+        "healthStatus": this.filterVehicleForm.controls.status.value,
         "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
         "driverId": ["all"],
         "days": 90,
@@ -133,8 +136,8 @@ this.otherList.push(item) );
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
         "alertLevel": [this.filterVehicleForm.controls.level.value.toString()],
-        "alertCategory": [this.filterVehicleForm.controls.category.value.toString()],
-        "healthStatus": [this.filterVehicleForm.controls.status.value.toString()],
+        "alertCategory": this.filterVehicleForm.controls.category.value,
+        "healthStatus": this.filterVehicleForm.controls.status.value,
         "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
         "driverId": ["all"],
         "days": 1,
