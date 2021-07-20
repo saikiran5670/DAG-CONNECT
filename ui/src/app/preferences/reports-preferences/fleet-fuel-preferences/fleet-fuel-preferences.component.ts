@@ -47,9 +47,9 @@ export class FleetFuelPreferencesComponent implements OnInit {
     this.reportId = this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id;
     this.reportService.getReportUserPreference(this.reportId).subscribe((res) => {
       if (this.tabName == 'Vehicle') {
-        this.initData = res['userPreferences']['subReportUserPreferences'][1];
-      } else {
         this.initData = res['userPreferences']['subReportUserPreferences'][0];
+      } else {
+        this.initData = res['userPreferences']['subReportUserPreferences'][1];
       }
       console.log("Fleet Fuel Report ", this.initData)
       this.resetColumnData();
