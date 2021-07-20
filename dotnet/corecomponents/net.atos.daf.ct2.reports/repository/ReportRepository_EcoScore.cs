@@ -2321,8 +2321,103 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinTripDistance);
                 parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
                 parameters.Add("@OrgId", request.OrgId);
+                parameters.Add("@Unit", request.UoM.ToLower());
 
-                string query = string.Empty;
+                string query = @"with drivingspeed as (
+                                  select eco.driver1_id, eco.vin, eco.trip_id,  CASE WHEN ((( (SUM (eco.end_time)) - (SUM (eco.start_time)))/1000)- (CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION))) <> 0 
+								   THEN
+								   ((CAST(SUM(eco.trip_distance)AS DOUBLE PRECISION) )/((( (SUM (eco.end_time)) - (SUM (eco.start_time)))/1000)-(CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))
+								   ) ELSE null END as averagedrivingspeed,
+                                  eco.trip_distance as Distance,
+	                              CASE WHEN 'metric' = @Unit THEN 3.6 ELSE 2.237 END as unit
+                                  from tripdetail.ecoscoredata eco
+                                  JOIN master.driver dr 
+                                  ON dr.driver_id = eco.driver1_id
+                                  WHERE eco.start_time >= @FromDate --1204336888377
+                                  AND eco.end_time <= @ToDate --1820818919744
+                                  AND eco.vin = ANY (@Vins)  --ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
+                                  AND eco.driver1_id = @DriverId
+                                  AND (eco.trip_distance >= @MinTripDistance OR eco.trip_distance IS NULL)
+                                  AND dr.organization_id = @OrgId
+	                              group by eco.trip_id,eco.driver1_id,eco.trip_distance ,eco.vin
+                                ),
+								unittypeconversion as 
+								(
+								  select driver1_id,vin, trip_id,Distance 
+									,CAST(averagedrivingspeed * unit As DOUBLE PRECISION) as averagedrivingspeed
+									from drivingspeed
+									
+								), 
+                                avgdrivingspeed_overall as (
+                                select driver1_id, CASE WHEN 'metric' = @Unit THEN 
+								 CASE WHEN averagedrivingspeed >=0 AND averagedrivingspeed<= 30  then '0-30 kmph'  
+								 WHEN averagedrivingspeed >30 AND averagedrivingspeed<= 50  then '30-50 kmph' 
+								 WHEN averagedrivingspeed >50 AND averagedrivingspeed<= 75  then '50-75 kmph' 
+								 WHEN averagedrivingspeed >75 AND averagedrivingspeed<= 85  then '75-85 kmph' 
+								 WHEN averagedrivingspeed >85   then '>85kmph'END
+							ELSE 
+								 CASE WHEN averagedrivingspeed >=0 AND averagedrivingspeed<= 15  then '0-15 mph'  
+								 WHEN averagedrivingspeed >15 AND averagedrivingspeed<= 30  then '15-30 mph' 
+								 WHEN averagedrivingspeed >30 AND averagedrivingspeed<= 45  then '30-45 mph' 
+								 WHEN averagedrivingspeed >45 AND averagedrivingspeed<= 50  then '45-50 mph' 
+								 WHEN averagedrivingspeed >50   then '>50 mph'END
+							END
+                                  as x_axis, averagedrivingspeed , distance
+                                  from unittypeconversion 
+                                ) ,
+                                total_overall as (
+                                  select x_axis, sum(distance) as dist 
+                                  from avgdrivingspeed_overall
+                                  group by x_axis
+                                ),
+                                overall as (
+                                  select 'Overall Driver' as vin, x_axis, dist as distance, (select sum(dist) from total_overall) as total, 
+                                  cast((dist/(select sum(dist) from total_overall))*100 as decimal(18,2)) as y_axis
+                                  from total_overall
+                                ) ,
+                                ads_vin as (
+                                 select driver1_id,vin, CASE WHEN 'metric' = @Unit THEN 
+								 CASE WHEN averagedrivingspeed >=0 AND averagedrivingspeed<= 30  then '0-30 kmph'  
+								 WHEN averagedrivingspeed >30 AND averagedrivingspeed<= 50  then '30-50 kmph' 
+								 WHEN averagedrivingspeed >50 AND averagedrivingspeed<= 75  then '50-75 kmph' 
+								 WHEN averagedrivingspeed >75 AND averagedrivingspeed<= 85  then '75-85 kmph' 
+								 WHEN averagedrivingspeed >85   then '>85kmph'END
+							ELSE 
+								 CASE WHEN averagedrivingspeed >=0 AND averagedrivingspeed<= 15  then '0-15 mph'  
+								 WHEN averagedrivingspeed >15 AND averagedrivingspeed<= 30  then '15-30 mph' 
+								 WHEN averagedrivingspeed >30 AND averagedrivingspeed<= 45  then '30-45 mph' 
+								 WHEN averagedrivingspeed >45 AND averagedrivingspeed<= 50  then '45-50 mph' 
+								 WHEN averagedrivingspeed >50   then '>50 mph'END
+							END
+						         as x_axis, averagedrivingspeed, distance
+                                  from unittypeconversion 
+                                ),
+                                ads_dist as (
+                                  select vin, x_axis, sum(distance) as dist 
+                                  from ads_vin
+                                  group by x_axis, vin
+                                ),
+                                total_vin as(
+                                  select vin, sum(dist) as total
+                                  from ads_dist group by vin
+                                ),
+                                overallvin as (
+                                  select a.vin, a.x_axis, a.dist as distance, b.total, cast((a.dist/b.total)*100 as decimal(18,2)) as y_axis
+                                  from ads_dist a
+                                  join total_vin b
+                                  on a.vin=b.vin
+                                  UNION
+                                  select vin, x_axis, distance, total, y_axis 
+                                  from overall
+                                )
+                                
+                                select ov.vin, CASE WHEN ov.vin='Overall Driver' then 'Overall Driver' else v.name END as vehiclename, ov.x_axis, ov.distance, ov.y_axis  
+                                from overallvin ov
+                                left join master.vehicle v
+                                on ov.vin=v.vin
+                                where 1 = 1 AND (total >= @MinDriverTotalDistance OR @MinDriverTotalDistance IS NULL)
+                                order by vin, x_axis
+";
 
                 List<EcoScoreSingleDriverBarPieChart> lstADSChart = (List<EcoScoreSingleDriverBarPieChart>)await _dataMartdataAccess.QueryAsync<EcoScoreSingleDriverBarPieChart>(query, parameters);
                 return lstADSChart?.Count > 0 ? lstADSChart : new List<EcoScoreSingleDriverBarPieChart>();
