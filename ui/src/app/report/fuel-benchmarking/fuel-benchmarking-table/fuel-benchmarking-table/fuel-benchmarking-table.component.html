@@ -25,7 +25,18 @@
                 <mat-header-cell style="margin-right: 10px;min-width: 200px;" *matHeaderCellDef> {{column == "period" ? "Period" : column}} 
                     <mat-icon *ngIf="index !== 0" aria-hidden="false" aria-label="Example home icon" (click)="removeColumn(index)">close</mat-icon>
                 </mat-header-cell>
-                <mat-cell style="margin-right: 10px;" *matCellDef="let row"> {{row[column]}} </mat-cell>
+                <mat-cell style="margin-right: 10px;" *matCellDef="let row; let i=index">
+                    <div>{{row[column]}}</div> 
+                   <div  *ngIf="index !== 0 && i == 4"><mat-progress-bar class="example-margin" [color]="color" [mode]="mode" [bufferValue]="bufferValue"
+                    value="40"></mat-progress-bar></div>
+                    <div *ngIf="index !== 0 && i == 5">  
+                    <canvas baseChart 
+                    [data]="doughnutChartData"
+                    [labels]="doughnutChartLabels"
+                    [chartType]="doughnutChartType">                   
+                  </canvas>
+                </div>                 
+               </mat-cell>
               </ng-container>
 
 

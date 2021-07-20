@@ -3,6 +3,10 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableExporterDirective } from 'mat-table-exporter';
+import { ChartType } from 'chart.js';
+import { Label, MultiDataSet } from 'ng2-charts';
+import {ProgressBarMode} from '@angular/material/progress-bar';
+import { ThemePalette } from '@angular/material/core';
 
 @Component({
   selector: 'app-fuel-benchmarking-table',
@@ -12,6 +16,9 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 export class FuelBenchmarkingTableComponent implements OnInit {
 
   searchExpandPanel: boolean = true;
+  mode: ProgressBarMode = 'determinate';
+  color: ThemePalette = 'primary';
+  bufferValue = 75;
   @Input() test;
   @Input() startDateRange: any;
   @Input() endDateRange: any;
@@ -31,6 +38,12 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   timerangeColumn: string[] = ['timerangeColumn'];
   firstColumn: string[] = ['numberOfActiveVehicles', 'totalFuelConsumed', 'totalMileage', 'averageFuelConsumption', 'ranking', 'totalFuelConsumed'];
 
+  doughnutChartLabels: Label[] = ['High', 'Medium', 'Low'];
+  doughnutChartData: MultiDataSet = [
+    [55, 25, 20]
+  ];
+  doughnutChartType: ChartType = 'doughnut';
+  
   constructor() { }
 
   ngOnInit(): void {
