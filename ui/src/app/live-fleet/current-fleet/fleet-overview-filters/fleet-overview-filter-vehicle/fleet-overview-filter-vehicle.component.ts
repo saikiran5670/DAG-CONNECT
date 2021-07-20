@@ -81,12 +81,12 @@ constructor(private translationService: TranslationService, private _formBuilder
 getFilterData(){
   this.reportService.getFilterDetails().subscribe((data: any) => {
     this.filterData = data;
+    this.groupList = [];
+    this.categoryList = [];
+    this.levelList = [];
+    this.healthList = [];
+    this.otherList = [];
     if(!this.todayFlagClicked){
-      this.groupList = [];
-      this.categoryList = [];
-      this.levelList = [];
-      this.healthList = [];
-      this.otherList = [];
       this.filterData["vehicleGroups"].forEach(item=>{
         this.groupList.push(item) });
     
@@ -109,11 +109,6 @@ getFilterData(){
         this.loadVehicleData();
     }
     if(this.todayFlagClicked){
-      this.groupList = [];
-      this.categoryList = [];
-      this.levelList = [];
-      this.healthList = [];
-      this.otherList = [];
       this.loadVehicleData(); 
       this.detailsData.forEach(element => {
 
@@ -249,6 +244,7 @@ getFilterData(){
  onChangetodayCheckbox(event){
    if(event.checked){
   this.todayFlagClicked = true;
+  this.getFilterData();
   this.loadVehicleData();
    }
    else{
