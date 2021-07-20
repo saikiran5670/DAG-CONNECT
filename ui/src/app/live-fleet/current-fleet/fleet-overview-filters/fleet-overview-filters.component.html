@@ -14,8 +14,92 @@
            </mat-tab>               
          </mat-tab-group>
        </div>           
-        <app-fleet-overview-filter-vehicle *ngIf="selectedIndex == 0" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData' [detailsData] ="detailsData"></app-fleet-overview-filter-vehicle>
-        <app-fleet-overview-filter-driver *ngIf="selectedIndex == 1" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData' [detailsData] ="detailsData" [filterData]="filterData"></app-fleet-overview-filter-driver>
+   <!-- </mat-expansion-panel> -->
 
-    </mat-expansion-panel>
+
+<div *ngIf="selectedIndex == 0" >
+  <form [formGroup]="filterVehicleForm">
+    <div fxLayout="row" fxLayoutAlign="space-between">
+          <mat-form-field appearance="outline" class="dropdown-filters">
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+              <span matPrefix><mat-icon>search</mat-icon></span>
+          </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="space-between" >
+        <mat-label>{{ translationData.lblSelectGroup || 'Select Group' }} </mat-label>
+        <mat-form-field appearance="outline" class="full-width dropdown-filters">
+            <mat-select placeholder="All" (selectionChange)="onChangeGroup($event.value)" formControlName="group">
+                <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
+                <mat-option *ngFor="let item of groupList" [value]="item.vehicleId">
+                    {{item.vehicleGroupName}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="space-between">
+        <mat-label>{{ translationData.lblAlertLevel || 'Alert Level' }} </mat-label>
+        <mat-form-field appearance="outline" class="full-width dropdown-filters">
+            <mat-select placeholder="All" (selectionChange)="onChangeLevel($event.value)" formControlName="level">
+                <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
+                <mat-option *ngFor="let item of levelList" [value]="item.value">
+                    {{item.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="space-between" >
+        <mat-label>{{ translationData.lblAlertCategory || 'Alert Category' }} </mat-label>
+        <mat-form-field appearance="outline" class="full-width dropdown-filters">
+            <mat-select placeholder="All" multiple [(ngModel)]="selection1" (selectionChange)="onChangeCategory($event.value)" formControlName="category">
+                <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
+                <mat-option *ngFor="let item of categoryList" [value]="item.value">
+                    {{item.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="space-between" >
+        <mat-label>{{ translationData.lblHealthStatus|| 'Health Status' }} </mat-label>
+        <mat-form-field appearance="outline" class="full-width dropdown-filters">
+            <mat-select placeholder="All" multiple [(ngModel)]="selection2"(selectionChange)="onChangHealthStatus($event.value)" formControlName="status">
+                <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
+                <mat-option *ngFor="let item of healthList" [value]="item.value">
+                    {{item.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="space-between" >
+        <mat-label>{{ translationData.lblOtherFilter || 'Other Filter' }} </mat-label>
+        <mat-form-field appearance="outline" class="full-width dropdown-filters">
+            <mat-select placeholder="All" (selectionChange)="onChangeOtherFilter($event.value)" formControlName="otherFilter">
+                <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
+                <mat-option *ngFor="let item of otherList" [value]="item.value">
+                    {{item.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+  </form>
+</div>
+</mat-expansion-panel>
+<mat-card *ngIf="selectedIndex == 0" >
+    <app-fleet-overview-filter-vehicle 
+    (tabVisibility)="tabVisibilityHandler($event)" 
+    [translationData]='translationData' 
+    [detailsData] ="detailsData"
+    [groupList] = "groupList"
+    [categoryList] = "categoryList"
+    [levelList] = "levelList"
+    [healthList] = "healthList"
+    [otherList] = "otherList"
+    [noRecordFlag] ="noRecordFlag"
+    [vehicleListData] ="vehicleListData"
+    (vehicleFilterComponentEmit)='checkCreationForVehicle($event)'>
+</app-fleet-overview-filter-vehicle>
+    <app-fleet-overview-filter-driver *ngIf="selectedIndex == 1" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData' [detailsData] ="detailsData" [filterData]="filterData"></app-fleet-overview-filter-driver>
+
+
 </mat-card>
+</mat-card>
+
