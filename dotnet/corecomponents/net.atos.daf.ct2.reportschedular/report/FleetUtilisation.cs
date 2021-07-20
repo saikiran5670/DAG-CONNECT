@@ -146,7 +146,7 @@ namespace net.atos.daf.ct2.account.report
             var timeSpanUnit = await _unitManager.GetTimeSpanUnit(UnitToConvert);
             var distanceUnit = await _unitManager.GetDistanceUnit(UnitToConvert);
 
-            html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE
+            html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE_FLEET_UTILISATION
             //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
                               , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()

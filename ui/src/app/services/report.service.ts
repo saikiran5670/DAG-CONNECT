@@ -381,7 +381,7 @@ getBenchmarkDataByVehicleGroup(data:any ): Observable<any[]> {
   };
   return this.httpClient
     .post<any[]>(
-      `${this.reportServiceUrl}fuelbenchmark/vehiclegroup`, data, headers
+      `${this.reportServiceUrl}/fuelbenchmark/vehiclegroup`, data, headers
     )
     .pipe(catchError(this.handleError));
 }
