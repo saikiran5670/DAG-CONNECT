@@ -41,6 +41,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.CustomAttributes
             }
             else
             {
+                _logger.Info($"[rFMSDataService] Email claim FAILED: {emailAddress}");
                 context.Fail();
                 return;
             }
@@ -57,7 +58,10 @@ namespace net.atos.daf.ct2.rfmsdataservice.CustomAttributes
                     context.Succeed(requirement);
                 }
                 else
+                {
+                    _logger.Info($"[rFMSDataService] Email claim FAILED 1");
                     context.Fail();
+                }
                 return;
             }
             catch (Exception ex)

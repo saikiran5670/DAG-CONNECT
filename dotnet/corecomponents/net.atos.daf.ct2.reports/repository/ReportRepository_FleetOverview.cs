@@ -195,9 +195,7 @@ namespace net.atos.daf.ct2.reports.repository
                     lcts.latest_warning_position_latitude as lcts_LatestWarningPositionLatitude,
                     lcts.latest_warning_position_longitude as lcts_LatestWarningPositionLongitude,
                     coalesce(veh.vid,'') as veh_Vid,
-                    coalesce(veh.registration_no,'') as veh_RegistrationNo,
-                    coalesce(dri.first_name,'') as dri_FirstName,
-                    coalesce(dri.last_name,'') as dri_LastName,
+                    coalesce(veh.registration_no,'') as veh_RegistrationNo,                   
                     lps.id as lps_Id,
                     coalesce(lps.trip_id,'') as lps_TripId,
                     coalesce(lps.vin,'') as lps_Vin,
@@ -232,9 +230,7 @@ namespace net.atos.daf.ct2.reports.repository
                     livefleet.livefleet_position_statistics lps
                     on lcts.trip_id = lps.trip_id and lcts.vin = lps.vin
                     left join master.vehicle veh
-                    on lcts.vin=veh.vin
-                    left join master.driver dri
-                    on lcts.driver1_id=dri.driver_id
+                    on lcts.vin=veh.vin                   
                     left join tripdetail.tripalert tripal
                     on lcts.vin=tripal.vin 
                     left join master.geolocationaddress alertgeoadd

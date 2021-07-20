@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.vehiclealertaggregator.entity;
+using net.atos.daf.ct2.alertcdc.entity;
 using Dapper;
 using System;
 
-namespace net.atos.daf.ct2.vehiclealertaggregator.repository
+namespace net.atos.daf.ct2.alertcdc.repository
 {
     public class VehicleAlertRepository : IVehicleAlertRepository
     {
