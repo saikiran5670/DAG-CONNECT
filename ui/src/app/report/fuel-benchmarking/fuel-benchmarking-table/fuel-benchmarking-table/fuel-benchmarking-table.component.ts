@@ -16,6 +16,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   @Input() startDateRange: any;
   @Input() endDateRange: any;
   @Input() selectionValueBenchmarkBY: any;
+  @Input() benchmarkSelectionChange: any;
   vehicleHeaderCount :any = 0;
   initData: any = [];
   responseDataTP: any = {}
@@ -50,6 +51,13 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   }
 
   loadBenchmarkTable() {
+    //to check if benchmark selection chage
+    if(this.benchmarkSelectionChange && this.displayedColumns.length > 1){
+      this.displayedColumns = this.displayedColumns.splice(0,1)
+      this.benchmarkSelectionChange = false;
+    }
+
+    //Building Headings and Data for benchmark Selections
     if (this.selectionValueBenchmarkBY == "timePeriods") {
       this.tableHeadingwithRange = this.startDateRange + " to " + this.endDateRange;
 
@@ -58,19 +66,21 @@ export class FuelBenchmarkingTableComponent implements OnInit {
       console.log("---from VG selection")
       
     }
-    for (let row of this.test) {
-      this.addColumn(JSON.parse(row), this.tableHeadingwithRange);
-    }
+   
+      
+      for (let row of this.test) {
+        this.addColumn(JSON.parse(row), this.tableHeadingwithRange);
+      }
   }
 
-  updateDataSource(tableData: any) {
-    this.initData = tableData;
-    this.tabledataSource = new MatTableDataSource(tableData);
-    setTimeout(() => {
-      this.tabledataSource.paginator = this.paginator;
-      this.tabledataSource.sort = this.sort;
-    });
-  }
+  // updateDataSource(tableData: any) {
+  //   this.initData = tableData;
+  //   this.tabledataSource = new MatTableDataSource(tableData);
+  //   setTimeout(() => {
+  //     this.tabledataSource.paginator = this.paginator;
+  //     this.tabledataSource.sort = this.sort;
+  //   });
+  // }
 
   removeColumn(index) {
     for (let row of this.dataSource) {
