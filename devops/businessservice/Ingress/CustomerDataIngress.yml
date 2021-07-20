@@ -152,6 +152,10 @@ spec:
           serviceName: autenticationdataservice
           servicePort: 80
         path: /rfms3/token
+      - backend:
+          serviceName: rfmsdataservice
+          servicePort: 80
+        path: /rfms/vehicles
   tls:
   - hosts:
     - #{IngressURL}#
