@@ -412,7 +412,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
 
   checkForPreference(fieldKey) {
     if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes(fieldKey));
+      let filterData = this.reportPrefData.filter(item => item.key.includes('driver_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
           return true;
@@ -425,8 +425,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   }
 
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
-      
+    this.reportService.getUserPreferenceReport(4, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
       // this.preparePrefData(this.reportPrefData);
@@ -464,12 +463,27 @@ export class FleetFuelReportDriverComponent implements OnInit {
 
   onSearch(){
     this.isChartsOpen = true;
-    this.ConsumedChartType = 'Line';
-    this.TripsChartType= 'Bar';
-    this.Co2ChartType= 'Line';
-    this.DistanceChartType= 'Line';
-    this.ConsumptionChartType= 'Line';
-    this.DurationChartType= 'Line';
+    if (this.reportPrefData.length != 0) {
+      let filterData = this.reportPrefData.filter(item => item.key.includes('chart_fuelconsumed'));
+      this.ConsumedChartType = filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('chart_numberoftrips'));
+      this.TripsChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('chart_co2emission'));
+      this.Co2ChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('chart_distance'));
+      this.DistanceChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('chart_fuelconsumption'));
+      this.ConsumptionChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('chart_idledurationtotaltime'));
+      this.DurationChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+    } else {
+      this.ConsumedChartType = 'Line';
+      this.TripsChartType= 'Bar';
+      this.Co2ChartType= 'Line';
+      this.DistanceChartType= 'Line';
+      this.ConsumptionChartType= 'Line';
+      this.DurationChartType= 'Line';
+    }
     // this.resetChartData(); // reset chart data
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
@@ -976,18 +990,20 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
 
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
-    if(this.prefTimeFormat == 12){
-      if(_y.split(' ')[1] == 'AM' && _x == 12) {
-        date.setHours(0);
+    if(date) {
+      if(this.prefTimeFormat == 12){
+        if(_y.split(' ')[1] == 'AM' && _x == 12) {
+          date.setHours(0);
+        }else{
+          date.setHours(_x);
+        }
+        date.setMinutes(_y.split(' ')[0]);
       }else{
         date.setHours(_x);
+        date.setMinutes(_y);
       }
-      date.setMinutes(_y.split(' ')[0]);
-    }else{
-      date.setHours(_x);
-      date.setMinutes(_y);
+      date.setSeconds(type == 'start' ? '00' : '59');
     }
-    date.setSeconds(type == 'start' ? '00' : '59');
     return date;
   }
 
@@ -1003,11 +1019,13 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
     // let dt = moment(todayDate).toDate();
   }
 
-getLast3MonthDate(){
+  getLast3MonthDate() {
     // let date = new Date();
-    var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-3);
-    return date;
+    if (this.prefTimeZone) {
+      var date = Util.getUTCDate(this.prefTimeZone);
+      date.setMonth(date.getMonth() - 3);
+      return date;
+    }
   }
 
   onReset(){
@@ -1060,7 +1078,7 @@ getLast3MonthDate(){
 
     let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
-    if(this.wholeTripData.vinTripList.length > 0){
+    if(this.wholeTripData && this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if(filterVIN.length > 0){
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);

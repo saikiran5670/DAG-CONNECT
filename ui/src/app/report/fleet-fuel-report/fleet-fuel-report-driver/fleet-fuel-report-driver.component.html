@@ -340,11 +340,12 @@
   
         </mat-expansion-panel-header>
   
-        <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+        <div fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="15px" fxLayoutAlign="flex-start">
   
-          <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+          <div *ngIf="checkForPreference('chart_fuelconsumed')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+          fxFlex.lt-sm="100%">
   
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
   
             <div *ngIf="ConsumedChartType =='Line'" class="chart-wrapper">
   
@@ -366,9 +367,10 @@
   
           </div>
   
-          <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+          <div *ngIf="checkForPreference('chart_numberoftrips')" class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+          fxFlex.lt-sm="100%">
   
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
   
             <div *ngIf="TripsChartType =='Bar'" class="chart-wrapper">
   
@@ -390,13 +392,14 @@
   
           </div>
   
-        </div>
+        <!-- </div>
   
   
   
-        <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+        <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px"> -->
   
-          <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+          <div *ngIf="checkForPreference('chart_co2emission')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+          fxFlex.lt-sm="100%">
   
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblCo2Emission || 'Co2Emission' }}</span>
   
@@ -420,7 +423,8 @@
   
           </div>
   
-          <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+          <div *ngIf="checkForPreference('chart_distance')" class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+          fxFlex.lt-sm="100%">
   
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblDistance || 'Distance' }}</span>
   
@@ -444,13 +448,14 @@
   
           </div>
   
-        </div>
+        <!-- </div>
   
   
   
-        <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+        <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px"> -->
   
-          <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+          <div *ngIf="checkForPreference('chart_fuelconsumption')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+          fxFlex.lt-sm="100%">
   
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px;'>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
   
@@ -474,7 +479,8 @@
   
           </div>
   
-          <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+          <div *ngIf="checkForPreference('chart_idledurationtotaltime')" class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+          fxFlex.lt-sm="100%">
   
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
   
@@ -1015,7 +1021,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="dpaBrakingScore" *ngIf="checkForPreference('')">
+            <ng-container matColumnDef="dpaBrakingScore" *ngIf="checkForPreference('dpaBrakingScore')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDPABrakingscore || 'DPA Braking score' }}
   
@@ -1105,7 +1111,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="averageTrafficClassificationValue" *ngIf="checkForPreference('')">
+            <ng-container matColumnDef="averageTrafficClassificationValue" *ngIf="checkForPreference('averageTrafficClassificationValue')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblaverageTrafficClassificationValue || 'average TrafficClassification Value' }}
   
