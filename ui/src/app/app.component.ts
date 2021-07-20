@@ -926,8 +926,11 @@ export class AppComponent {
   showSpinner(){
     if((this.router.url).indexOf("/livefleet") !== -1)
       this.isFleetOverview = true;
-    else
+    else{
       this.isFleetOverview = false;
+      if(this.sub)
+        this.sub.unsubscribe();
+    }
   }
 
 }
