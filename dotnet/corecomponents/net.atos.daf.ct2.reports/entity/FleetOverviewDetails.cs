@@ -35,8 +35,9 @@ namespace net.atos.daf.ct2.reports.entity
         public double LatestWarningPositionLongitude { get; set; }
         public string Vid { get; set; }
         public string RegistrationNo { get; set; }
-        public string DriverFirstName { get; set; }
-        public string DriverLastName { get; set; }
+       // public string DriverFirstName { get; set; }
+       // public string DriverLastName { get; set; }
+        public string DriverName { get; set; }
         public int LatestGeolocationAddressId { get; set; }
         public string LatestGeolocationAddress { get; set; }
         public int StartGeolocationAddressId { get; set; }

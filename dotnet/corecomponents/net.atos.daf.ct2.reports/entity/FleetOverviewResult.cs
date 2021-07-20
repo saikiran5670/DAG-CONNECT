@@ -34,8 +34,7 @@ namespace net.atos.daf.ct2.reports.entity
         public double Lcts_LatestWarningPositionLongitude { get; set; }
         public string Veh_Vid { get; set; }
         public string Veh_RegistrationNo { get; set; }
-        public string Dri_FirstName { get; set; }
-        public string Dri_LastName { get; set; }
+        public string DriverName { get; set; }
         public int Geoadd_Id { get; set; }
         public string Geoadd_Address { get; set; }
         public int Lps_Id { get; set; }
