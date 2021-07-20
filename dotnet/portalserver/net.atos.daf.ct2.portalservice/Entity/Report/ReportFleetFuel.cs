@@ -29,4 +29,14 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         [Required]
         public string DriverId { get; set; }
     }
+
+    public class FuelDeviationFilter
+    {
+        [Required]
+        public long StartDateTime { get; set; }
+        [Required]
+        public long EndDateTime { get; set; }
+        [Required]
+        public List<string> VINs { get; set; }
+    }
 }
