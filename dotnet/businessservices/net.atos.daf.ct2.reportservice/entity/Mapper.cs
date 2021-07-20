@@ -583,7 +583,7 @@ namespace net.atos.daf.ct2.reportservice.entity
         {
             var avgDrivingSpeed = new EcoScoreSingleDriverBarPieChart();
             string[] labels;
-            if (unit == "Imperial")
+            if (unit == UoM.Imperial.ToString())
                 labels = new string[5] { "0-15 mph", "15-30 mph", "30-45 mph", "45-50 mph", ">50 mph" };
             else
                 labels = new string[5] { "0-30 kmph", "30-50 kmph", "50-75 kmph", "75-85 kmph", ">85 kmph" };
