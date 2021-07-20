@@ -348,7 +348,7 @@
     <app-eco-score-report-driver (backToMainPage)='backToMainPage()' [ecoScoreDriverDetails]="selectedDriverData" [ecoScoreForm]="ecoScoreForm" [translationData]="translationData"></app-eco-score-report-driver>
   </div>
   <div *ngIf="compareEcoScore">
-    <app-eco-score-driver-compare (backToMainPage)='backToMainPage()' [compareEcoScore]="compareDriverEcoScoreSearchParam"></app-eco-score-driver-compare>
+    <app-eco-score-driver-compare (backToMainPage)='backToMainPage()' [compareEcoScore]="compareDriverEcoScoreSearchParam" [generalColumnData]='generalColumnData' [driverPerformanceColumnData]='driverPerformanceColumnData'></app-eco-score-driver-compare>
   </div>
   </form>
 </div>

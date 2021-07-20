@@ -208,13 +208,13 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   getUserCreatedMessage(type: any, name: any) {
     if (type == 'create') {
       this.toBack();
-      if (this.translationData.lblUserAccountCreatedSuccessfully)
-        return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', name);
+      if (this.translationData.lblNewProfileCreatedSuccessfully)
+        return this.translationData.lblNewProfileCreatedSuccessfully.replace('$', name);
       else
         return ("New Profile '$' Created Successfully").replace('$',name);
     } else {
-      if (this.translationData.lblUserAccountUpdatedSuccessfully)
-        return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', name);
+      if (this.translationData.lblProfileUpdatedSuccessfully)
+        return this.translationData.lblProfileUpdatedSuccessfully.replace('$', name);
       else
         return ("Profile '$' Updated Successfully").replace('$',name);
     }
@@ -294,8 +294,8 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   }
 
   getDeletMsg(name: any){
-    if(this.translationData.lblPackagewassuccessfullydeleted)
-      return this.translationData.lblPackagewassuccessfullydeleted.replace('$', name);
+    if(this.translationData.lblProfilewassuccessfullydeleted)
+      return this.translationData.lblProfilewassuccessfullydeleted.replace('$', name);
     else
       return ("Profile '$' was successfully deleted").replace('$', name);
  

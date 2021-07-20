@@ -16,6 +16,8 @@ import { ReportService } from '../../../services/report.service';
   encapsulation: ViewEncapsulation.None
 })
 export class EcoScoreDriverCompareComponent implements OnInit {
+  @Input() generalColumnData: any;
+  @Input() driverPerformanceColumnData: any;
   @Input() translationData: any=[];
   @Input() compareEcoScore: any;
   @Output() backToMainPage = new EventEmitter<any>();
@@ -59,10 +61,78 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   ngOnInit() {
     this.translationUpdate();
     this.showTable = true;
+    this.checkPrefData();
     this.driverDetails = this.compareEcoScore.drivers;
     this.tableColumns();
     this.defineGrid();
     this.loadData();
+  }
+
+  checkPrefData(){
+    if(this.compareEcoScore.compareDrivers && this.compareEcoScore.compareDrivers.subCompareDrivers && this.compareEcoScore.compareDrivers.subCompareDrivers.length > 0){
+      this.compareEcoScore.compareDrivers.subCompareDrivers.forEach(element => {
+        if(element.subCompareDrivers && element.subCompareDrivers.length > 0){
+          let _arr: any = [];
+          element.subCompareDrivers.forEach(_elem => {
+            if(element.name == 'EcoScore.General'){ // general
+              if(_elem.dataAttributeId){
+                let _s = this.generalColumnData.filter(i => i.dataAttributeId == _elem.dataAttributeId && i.state == 'A');
+                if(_s.length > 0){ // filter only active from pref
+                  _arr.push(_elem);
+                }
+              }
+            }else if(element.name == 'EcoScore.DriverPerformance'){ // Driver Performance 
+              // single
+              if(_elem.subCompareDrivers && _elem.subCompareDrivers.length == 0){ // single -> (eco-score & anticipation score)
+                let _q = this.driverPerformanceColumnData.filter(o => o.dataAttributeId == _elem.dataAttributeId && o.state == 'A');
+                if(_q.length > 0){ // filter only active from pref
+                  _arr.push(_elem);
+                }
+              }else{ // nested -> (fuel consume & braking score)
+                let _nestedArr: any = [];
+                _elem.subCompareDrivers.forEach(el => {
+                  if(el.subCompareDrivers && el.subCompareDrivers.length == 0){ // no child -> (others)
+                    if(_elem.name == 'EcoScore.DriverPerformance.FuelConsumption'){
+                      let _p = this.driverPerformanceColumnData[1].subReportUserPreferences.filter(j => j.dataAttributeId == el.dataAttributeId && j.state == 'A');
+                      if(_p.length > 0){ // filter only active from pref
+                        _nestedArr.push(el);
+                      }
+                    }else if(_elem.name == 'EcoScore.DriverPerformance.BrakingScore'){
+                      let _p = this.driverPerformanceColumnData[2].subReportUserPreferences.filter(j => j.dataAttributeId == el.dataAttributeId && j.state == 'A');
+                      if(_p.length > 0){ // filter only active from pref
+                        _nestedArr.push(el);
+                      }
+                    }
+                  }else{ // child -> (cruise usage)
+                    if(_elem.name == 'EcoScore.DriverPerformance.FuelConsumption'){
+                      let _lastArr: any = [];
+                      el.subCompareDrivers.forEach(_data => {
+                        let _x: any = this.driverPerformanceColumnData[1].subReportUserPreferences.filter(_w => _w.name == 'EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage');
+                        if(_x.length > 0 && _x[0].subReportUserPreferences){ // child checker
+                          let _v = _x[0].subReportUserPreferences.filter(i => i.dataAttributeId == _data.dataAttributeId && i.state == 'A');
+                          if(_v.length > 0){ // filter only active from pref
+                            _lastArr.push(_data);
+                          }
+                        }
+                      });
+                      el.subCompareDrivers = _lastArr;
+                      if(_lastArr.length > 0){
+                        _nestedArr.push(el);
+                      }
+                    }
+                  }
+                });
+                _elem.subCompareDrivers = _nestedArr;
+                if(_nestedArr.length > 0){
+                  _arr.push(_elem);
+                }
+              }
+            }
+          });
+          element.subCompareDrivers = _arr;
+        }
+      });
+    }
   }
 
   translationUpdate(){
