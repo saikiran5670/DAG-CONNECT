@@ -1227,8 +1227,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Fuel Deviation Report
 
-        #region Fuel Deviation Report Table Details 
-        #endregion
+        #region Fuel Deviation Report Table Details         
         [HttpGet]
         [Route("fueldeviation/getdetails")]
         public async Task<IActionResult> GetFuelDeviationFilterData([FromQuery] FuelDeviationFilterRequest request)
@@ -1283,6 +1282,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        #endregion
 
         [HttpGet]
         [Route("fueldeviation/charts")]
