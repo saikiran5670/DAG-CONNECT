@@ -158,7 +158,7 @@ namespace net.atos.daf.ct2.reports.repository
                     RANK() Over ( Partition By lcts.vin Order by  lcts.start_time_stamp desc ) Veh_trip_rank
                     from livefleet.livefleet_current_trip_statistics lcts
                     where lcts.vin = Any(@vins) 
-                    and (lcts.start_time_stamp > (extract(epoch from (now()::date - @days ))*1000) or lcts.end_time_stamp is null)
+                    and to_timestamp(lcts.latest_processed_message_time_stamp/1000)::date >= (now()::date -  @days )
                     )
                     ,CTE_Unique_latest_trip as (
                      select 
