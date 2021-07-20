@@ -842,7 +842,7 @@ export class FleetMapService {
         default:
           break;
       }
-      switch (_currentAlert.type) {
+      switch (_currentAlert.categoryType) {
         case 'L':{
           _type = 'Logistics Alerts'
         }
