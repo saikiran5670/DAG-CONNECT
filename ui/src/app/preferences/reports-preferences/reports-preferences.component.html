@@ -123,7 +123,7 @@
       </div>
     </mat-expansion-panel>
 
-    <mat-expansion-panel class="full-width" fxLayoutGap="10px" [(expanded)]="showFleetFuelPerferences"
+    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showFleetFuelPerferences"
       (opened)="showFleetFuelPerferences == true" (closed)="showFleetFuelPerferences == false">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -153,6 +153,29 @@
             </app-fleet-fuel-preferences>
           </mat-tab>
         </mat-tab-group>
+      </div>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showFuelDeviationPerferences"
+      (opened)="showFuelDeviationPerferences == true" (closed)="showFuelDeviationPerferences == false">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+              translationData.lblFuelDeviationReport || 'Fuel Deviation Report' }}</span>
+            <span style='margin-left: 10px; vertical-align: middle;'>
+              <mat-icon *ngIf='!editFuelDeviationPerferencesFlag' (click)="editFuelDeviationPerferences()"
+                style="cursor: pointer; font-size: 20px;">
+                edit</mat-icon>
+            </span>
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <app-fuel-deviation-preferences *ngIf='showFuelDeviationPerferences'
+          [editFlag]='editFuelDeviationPerferencesFlag' [reportListData]='reportListData'
+          [translationData]='translationData' (setFuelDeviationReportFlag)="updateFuelDeviationReportFlag($event)">
+        </app-fuel-deviation-preferences>
       </div>
     </mat-expansion-panel>
   </div>
