@@ -3,6 +3,10 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableExporterDirective } from 'mat-table-exporter';
+import { ChartType } from 'chart.js';
+import { Label, MultiDataSet } from 'ng2-charts';
+import {ProgressBarMode} from '@angular/material/progress-bar';
+import { ThemePalette } from '@angular/material/core';
 
 @Component({
   selector: 'app-fuel-benchmarking-table',
@@ -12,10 +16,14 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 export class FuelBenchmarkingTableComponent implements OnInit {
 
   searchExpandPanel: boolean = true;
+  mode: ProgressBarMode = 'determinate';
+  color: ThemePalette = 'primary';
+  bufferValue = 75;
   @Input() test;
   @Input() startDateRange: any;
   @Input() endDateRange: any;
   @Input() selectionValueBenchmarkBY: any;
+  @Input() benchmarkSelectionChange: any;
   vehicleHeaderCount :any = 0;
   initData: any = [];
   responseDataTP: any = {}
@@ -30,6 +38,12 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   timerangeColumn: string[] = ['timerangeColumn'];
   firstColumn: string[] = ['numberOfActiveVehicles', 'totalFuelConsumed', 'totalMileage', 'averageFuelConsumption', 'ranking', 'totalFuelConsumed'];
 
+  doughnutChartLabels: Label[] = ['High', 'Medium', 'Low'];
+  doughnutChartData: MultiDataSet = [
+    [55, 25, 20]
+  ];
+  doughnutChartType: ChartType = 'doughnut';
+  
   constructor() { }
 
   ngOnInit(): void {
@@ -50,6 +64,13 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   }
 
   loadBenchmarkTable() {
+    //to check if benchmark selection chage
+    if(this.benchmarkSelectionChange && this.displayedColumns.length > 1){
+      this.displayedColumns = this.displayedColumns.splice(0,1)
+      this.benchmarkSelectionChange = false;
+    }
+
+    //Building Headings and Data for benchmark Selections
     if (this.selectionValueBenchmarkBY == "timePeriods") {
       this.tableHeadingwithRange = this.startDateRange + " to " + this.endDateRange;
 
@@ -58,19 +79,21 @@ export class FuelBenchmarkingTableComponent implements OnInit {
       console.log("---from VG selection")
       
     }
-    for (let row of this.test) {
-      this.addColumn(JSON.parse(row), this.tableHeadingwithRange);
-    }
+   
+      
+      for (let row of this.test) {
+        this.addColumn(JSON.parse(row), this.tableHeadingwithRange);
+      }
   }
 
-  updateDataSource(tableData: any) {
-    this.initData = tableData;
-    this.tabledataSource = new MatTableDataSource(tableData);
-    setTimeout(() => {
-      this.tabledataSource.paginator = this.paginator;
-      this.tabledataSource.sort = this.sort;
-    });
-  }
+  // updateDataSource(tableData: any) {
+  //   this.initData = tableData;
+  //   this.tabledataSource = new MatTableDataSource(tableData);
+  //   setTimeout(() => {
+  //     this.tabledataSource.paginator = this.paginator;
+  //     this.tabledataSource.sort = this.sort;
+  //   });
+  // }
 
   removeColumn(index) {
     for (let row of this.dataSource) {

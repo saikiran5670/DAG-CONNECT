@@ -215,14 +215,5 @@
         </div>
     </ng-container>
 
-    <!-- Button -->
-    <div *ngIf='(summaryColumnData.length > 0 || chartsColumnData.length > 0 || vehicleRankingColumnData.length > 0 || vehicleDetailsColumnData.length > 0  || singleVehicleDetailsColumnData.length > 0) && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
-        <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
-            translationData.lblCancel || 'Cancel' }}</button>
-        <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
-            translationData.lblReset || 'Reset' }}</button>
-        <button
-            class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
-            'Confirm') }}</button>
-    </div>
+    
 </form>

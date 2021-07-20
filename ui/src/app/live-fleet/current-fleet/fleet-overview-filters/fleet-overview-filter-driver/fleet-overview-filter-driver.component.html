@@ -1,6 +1,6 @@
 
 <div class="fleet-filter-driver">
-
+    <form [formGroup]="driverVehicleForm">
     <div fxLayout="row" fxLayoutAlign="space-between" style="padding-top: 20px;">
         <mat-form-field appearance="outline">
             <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
@@ -12,7 +12,7 @@
         {{ translationData.lbl || 'Select Driver' }}
     </mat-label>
     <mat-form-field appearance="outline" class="full-width">
-        <mat-select (selectionChange)="onChangeGroup($event.value)" placeholder="{{ translationData.lblSelectUserRole || 'Select Vehicle Group' }}" >
+        <mat-select (selectionChange)="onChangeGroup($event.value)" formControlName="group" placeholder="{{ translationData.lblSelectUserRole || 'Select Vehicle Group' }}" >
             <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
             <mat-option *ngFor="let item of groupList" [value]="item.vehicleId">
                 {{item.vehicleGroupName}}
@@ -43,9 +43,13 @@
                 <span class="vehicle-details-head">{{ translationData.lbl || 'VIN'}}: </span>
                 <span class="vehicle-details-data">{{item.vin}}</span>
             </div>
-            <div>
-                <span class="vehicle-details-head">{{ translationData.lbl || 'Driver Name'}}:</span>
-                <span class="vehicle-details-data">{{item.driverFirstName + " " + item.driverLastName}}</span>
+            <div>               
+                <span class="vehicle-details-head" >           
+                    {{ item.driverName == '' ?  'Driver Id' :  'Driver Name'}} 
+                </span>
+                <span class="vehicle-details-data">
+                      {{ (item.driverName == '' ? item.driverId : item.driverName) || ((item.driverName == '' && item.driverId == '') ? 'Unknown' : item.driverName)}} 
+               </span>
             </div> 
             <div>
                 <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
@@ -63,4 +67,5 @@
     </div>  
   </mat-expansion-panel>
   </mat-card>
+  </form>
   </div>

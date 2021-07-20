@@ -67,21 +67,21 @@ export class FuelDeviationPreferencesComponent implements OnInit {
               if(this.translationData[item.key]){
                 _data.translatedName = this.translationData[item.key];  
               }else{
-                _data.translatedName = this.getName(item.name, 13);   
+                _data.translatedName = this.getName(item.name, 15);   
               }
               this.summaryData.push(_data);
             }else if(item.key.includes('rp_fd_chart_')){
               if(this.translationData[item.key]){
                 _data.translatedName = this.translationData[item.key];  
               }else{
-                _data.translatedName = this.getName(item.name, 18);   
+                _data.translatedName = this.getName(item.name, 13);   
               }
               this.chartsData.push(_data);
             }else if(item.key.includes('rp_fd_details_')){
               if(this.translationData[item.key]){
                 _data.translatedName = this.translationData[item.key];  
               }else{
-                _data.translatedName = this.getName(item.name, 16);   
+                _data.translatedName = this.getName(item.name, 15);   
               }
               this.detailsData.push(_data);
             }
@@ -143,6 +143,28 @@ export class FuelDeviationPreferencesComponent implements OnInit {
 
   reloadCurrentComponent(){
     window.location.reload(); //-- reload screen
+  }
+
+  masterToggleForSummaryColumns(){
+    if(this.isAllSelectedForSummaryColumns()){
+      this.selectionForSummary.clear();
+    }else{
+      this.summaryData.forEach(row => { this.selectionForSummary.select(row) });
+    }
+  }
+
+  isAllSelectedForSummaryColumns(){
+    const numSelected = this.selectionForSummary.selected.length;
+    const numRows = this.summaryData.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForColumns(rowData?: any){
+
+  }
+
+  summaryCheckboxClicked(event: any, rowData: any){
+
   }
 
 }

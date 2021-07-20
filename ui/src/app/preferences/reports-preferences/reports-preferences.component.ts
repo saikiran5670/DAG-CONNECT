@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { ReportService } from 'src/app/services/report.service';
+import { FleetFuelPreferencesComponent } from './fleet-fuel-preferences/fleet-fuel-preferences.component';
 
 @Component({
   selector: 'app-reports-preferences',
@@ -9,6 +10,8 @@ import { ReportService } from 'src/app/services/report.service';
 
 export class ReportsPreferencesComponent implements OnInit {
   @Input() translationData: any = {};
+  @ViewChild('fleetFuelPerferencesVehicle') fleetFuelPerferencesVehicle: FleetFuelPreferencesComponent;
+  @ViewChild('fleetFuelPerferencesDriver') fleetFuelPerferencesDriver: FleetFuelPreferencesComponent;
   displayMessage: any = '';
   updateMsgVisible: boolean = false;
   showLoadingIndicator: any = false;
@@ -108,6 +111,37 @@ export class ReportsPreferencesComponent implements OnInit {
     }
     this.editFleetFuelPerferencesFlag = false;
     this.showFleetFuelPerferences = false;
+  }
+
+  onCancel(){
+    this.updateFleetFuelPerferencesFlag({flag: false, msg: ''});
+    this.onReset();
+  }
+
+  onReset(){
+    this.fleetFuelPerferencesVehicle.setColumnCheckbox();
+    this.fleetFuelPerferencesDriver.setColumnCheckbox();
+  }
+
+  onConfirm() {
+    let vehicleObj = this.fleetFuelPerferencesVehicle.onConfirm();
+    let driverObj = this.fleetFuelPerferencesDriver.onConfirm();
+    let objData: any = {
+      reportId: this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id,
+      attributes: [...vehicleObj, ...driverObj]
+    };
+    console.log("full object", objData)
+    this.reportService.updateReportUserPreference(objData).subscribe((res: any) => {
+      console.log("save res", res)
+      this.updateFleetFuelPerferencesFlag({ flag: false, msg: this.getSuccessMsg() });
+    });
+  }
+
+  getSuccessMsg() {
+    if (this.translationData.lblDetailssavesuccessfully)
+      return this.translationData.lblDetailssavesuccessfully;
+    else
+      return ("Details save successfully");
   }
 
   editDriverTimePerferences(){
