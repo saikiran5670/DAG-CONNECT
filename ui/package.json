@@ -4,7 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "export NODE_OPTIONS=--max_old_space_size=8192 && ng build --prod",
+    //"build": "export NODE_OPTIONS=--max_old_space_size=8192 && ng build --prod",
+    "build": "export NODE_OPTIONS=--max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
