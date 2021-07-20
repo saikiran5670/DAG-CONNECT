@@ -138,18 +138,18 @@
           </span>
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <div>
+      <div class="tabs fleetFuelPerferences">
         <mat-tab-group (selectedTabChange)="onTabChanged($event);">
           <mat-tab label="{{ translationData.lblVehicle || 'Vehicle' }}">
             <app-fleet-fuel-preferences *ngIf='showFleetFuelPerferences' tabName='Vehicle'
               [editFlag]='editFleetFuelPerferencesFlag' [reportListData]='reportListData'
-              [translationData]='translationData' (setDriverTimeFlag)="updateEditDriverTimeFlag($event)">
+              [translationData]='translationData' (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)">
             </app-fleet-fuel-preferences>
           </mat-tab>
           <mat-tab label="{{ translationData.lblDriver || 'Driver' }}">
             <app-fleet-fuel-preferences *ngIf='showFleetFuelPerferences' tabName='Driver'
               [editFlag]='editFleetFuelPerferencesFlag' [reportListData]='reportListData'
-              [translationData]='translationData' (setDriverTimeFlag)="updateEditDriverTimeFlag($event)">
+              [translationData]='translationData' (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)">
             </app-fleet-fuel-preferences>
           </mat-tab>
         </mat-tab-group>
