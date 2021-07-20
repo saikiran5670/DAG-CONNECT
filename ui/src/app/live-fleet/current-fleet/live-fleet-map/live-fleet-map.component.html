@@ -22,7 +22,7 @@
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
                  'Display View(s)'}}</div>
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-                <mat-checkbox>{{  'Alerts' }}</mat-checkbox>
+                <mat-checkbox (change)='changeAlertSelection($event)'>{{  'Alerts' }}</mat-checkbox>
               </div>
               <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <mat-checkbox>{{ translationData.lblEvents || 'Events' }}</mat-checkbox>

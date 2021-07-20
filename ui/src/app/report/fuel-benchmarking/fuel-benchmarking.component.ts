@@ -668,40 +668,16 @@ let requestObj =  {
   "startDateTime": _startTime,
   "endDateTime": _endTime
   } 
-this.reportService.getBenchmarkDataByTimePeriod(requestObj).subscribe((data : any) => {
-  this.showLoadingIndicator = true;
-console.log("---api hit and get data for time period range---", data)
+    this.reportService.getBenchmarkDataByTimePeriod(requestObj).subscribe((data: any) => {
+      this.showLoadingIndicator = true;
+      console.log("---api hit and get data for time period range---", data)
+      this.test.push(data);
+      if (this.fuelBenchmarking) {
+        this.fuelBenchmarking.loadBenchmarkTable();
+      }
+    });
 
-  this.test.push(data);
-
-}, (error) => {
- 
-});
-
-    // this.selectedBenchmark = [];
-    // let testData = {
-    //   VechileGroupID: "VehicleGroup1",
-    //     vehicleGroupName : "value",
-    //     ActiveVehicle : 4/4,
-    //     TotalFuelConsumed : "59.00 gal",
-    //     TotalMileage : "1360.70 km",
-    //     AverageFuelConumption: "1.60 mpg",
-    //     Ranking : [
-    //       {
-    //         "Vehicle Name": 18.09,
-    //         "VIN": "VIN1",
-    //         "FuelConsumption": "1.50",
-            
-    //       }
-    //     ]
-    //   }
     
-    
-
-
-    if(this.fuelBenchmarking) {
-      this.fuelBenchmarking.loadBenchmarkTable();
-    }
  
     if(selectedVehicleGroup){
       this.showLoadingIndicator = true;

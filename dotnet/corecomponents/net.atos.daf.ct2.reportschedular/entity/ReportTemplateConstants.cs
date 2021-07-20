@@ -6,7 +6,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 {
     public static class ReportTemplateContants
     {
-        public const string REPORT_TEMPLATE = @"
+        public const string REPORT_TEMPLATE_FLEET_UTILISATION = @"
 <!doctype html>
 <html>
 <head>
