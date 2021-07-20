@@ -52,20 +52,17 @@
                 <button [disabled]="selectionTab == 'last3month'" (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Last 3 Months' || 'Last 3 Months' }}</button>
               </div>
             </div>
-            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ 'Select Vehicle Group' || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
                   <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
-                      {{ 'Vehicle Group'}
+                      {{ rer.vehicleGroupName }}
                   </mat-option>
                 </mat-select>
-              </mat-form-field> 
-              <!-- <mat-error *ngIf="logForm.get('vehicleGroup').hasError('required') && vehicleGrpDD.length > 0">
-                {{'Please Select Vehicle Group' || 'Please Select Vehicle Group' }}
-              </mat-error> -->
+              </mat-form-field>
             </div>
-            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ 'Vehicle Name' || 'Vehicle Name' }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
@@ -74,16 +71,13 @@
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-              <!-- <mat-error *ngIf="logForm.get('vehicle').hasError('required') && vehicleDD.length > 0">
-                {{'Please Select Vehicle' || 'Please Select Vehicle' }}
-              </mat-error> -->
             </div>
           </div>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
             <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-                <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ 'From' || 'From' }} <span class='mandatoryColor'>*</span></mat-label>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span></mat-label>
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                       <mat-form-field appearance="outline">
@@ -95,15 +89,14 @@
                     <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
                       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
                         <span class='timeAdjustSpan'>{{ startTimeDisplay }}</span> 
-                        <!-- <input [max]='selectedEndTime' [(ngModel)]="selectedStartTime" class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="startTime" readonly> -->
-                        <!-- <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
+                        <input [max]='selectedEndTime' [(ngModel)]="selectedStartTime" class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="startTime" readonly>
+                        <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
                         <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker></ngx-material-timepicker>
-                      -->
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ 'To' || 'To' }} <span class='mandatoryColor'>*</span></mat-label>
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
@@ -116,17 +109,16 @@
                     <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
                       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
                         <span class='timeAdjustSpan'>{{ endTimeDisplay }}</span>
-                        <!-- <input [min]='selectedStartTime' [(ngModel)]="selectedEndTime"  class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true" formControlName="endTime" readonly> -->
-                        <!-- <ngx-material-timepicker-toggle [for]="toggleEndTimepicker"></ngx-material-timepicker-toggle>
+                        <input [min]='selectedStartTime' [(ngModel)]="selectedEndTime"  class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true" formControlName="endTime" readonly>
+                        <ngx-material-timepicker-toggle [for]="toggleEndTimepicker"></ngx-material-timepicker-toggle>
                         <ngx-material-timepicker (timeChanged)="endTimeChanged($event)" #toggleEndTimepicker></ngx-material-timepicker>
-                       -->
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ 'Alert Lavel' || 'Alert Lavel' }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
@@ -135,11 +127,8 @@
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-              <!-- <mat-error *ngIf="logForm.get('vehicle').hasError('required') && vehicleDD.length > 0">
-                {{'Please Select Vehicle' || 'Please Select Vehicle' }}
-              </mat-error> -->
             </div>
-            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ 'Alert Type' || 'Alert Type' }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
@@ -148,9 +137,6 @@
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-              <!-- <mat-error *ngIf="logForm.get('vehicle').hasError('required') && vehicleDD.length > 0">
-                {{'Please Select Vehicle' || 'Please Select Vehicle' }}
-              </mat-error> -->
               <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ 'Alert Category' || 'Alert Category' }} <span class='mandatoryColor'>*</span></mat-label>
                 <mat-form-field appearance="outline">
