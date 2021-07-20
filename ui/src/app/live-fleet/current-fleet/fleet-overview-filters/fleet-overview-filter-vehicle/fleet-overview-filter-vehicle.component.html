@@ -84,9 +84,13 @@
                 <span class="vehicle-details-head">{{ translationData.lbl || 'VIN'}}: </span>
                 <span class="vehicle-details-data">{{item.vin}}</span>
             </div>
-            <div>
-                <span class="vehicle-details-head">{{ translationData.lbl || 'Driver Name'}}:</span>
-                <span class="vehicle-details-data">{{item.driverFirstName}}</span>
+            <div>               
+            <span class="vehicle-details-head" >           
+                {{ item.driverName == '' ?  'Driver Id' :  'Driver Name'}} 
+            </span>
+            <span class="vehicle-details-data">
+                  {{ (item.driverName == '' ? item.driverId : item.driverName) || ((item.driverName == '' && item.driverId == '') ? 'Unknown' : item.driverName)}} 
+           </span>
             </div> 
             <div>
                 <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>

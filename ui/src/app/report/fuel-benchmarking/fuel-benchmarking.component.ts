@@ -43,6 +43,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   accountId: any;
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
+  benchmarkSelectionChange: any = false;
   selectedBenchmark: any = []
   dataSource: any = new MatTableDataSource([]);
   selectedTrip = new SelectionModel(true, []);
@@ -737,13 +738,29 @@ export class FuelBenchmarkingComponent implements OnInit {
     // if (parseInt(this.fuelBenchmarkingForm.controls.vehicleGroup.value) == 0) {
 
     // }
+    this.vehicleDD.forEach(item => {
+      if (item.vin !== undefined) {
+        this.vinList.push(item.vin);
+      }
+    });
 
     if (this.selectionValueBenchmarkBY == "timePeriods") {
       console.log("---time period fuel benchmark api  will be call here")
       //call api for getFuelByTimePeriod
-      let requestObj = {
-        "startDateTime": _startTime,
-        "endDateTime": _endTime
+      let requestObj = {};
+      if(!selectedVehicleGroup) {
+
+         requestObj = {
+          "startDateTime": _startTime,
+          "endDateTime": _endTime
+        }
+      }else {
+        requestObj = {
+          "startDateTime": _startTime,
+          "endDateTime": _endTime,
+          "viNs": this.vinList,
+          "vehicleGroupId": selectedVehicleGroup,
+        }
       }
       this.reportService.getBenchmarkDataByTimePeriod(requestObj).subscribe((data: any) => {
         this.showLoadingIndicator = true;
@@ -756,11 +773,7 @@ export class FuelBenchmarkingComponent implements OnInit {
 
     } else if (this.selectedBenchmarking == "vehicleGroup") {
       // if (selectedVehicleGroup) {
-        this.vehicleDD.forEach(item => {
-          if (item.vin !== undefined) {
-            this.vinList.push(item.vin);
-          }
-        });
+
         console.log("---all VIN's--", this.vinList)
       // }
       console.log("---vehicle group benchmark api will be call here")
@@ -1001,6 +1014,13 @@ export class FuelBenchmarkingComponent implements OnInit {
   onBenchmarkChange(event: any) {
     this.selectedBenchmarking = event.value;
     console.log("---option choosen--", this.selectedBenchmarking);
+    if(this.test.length > 0){
+      this.test = [];
+      this.benchmarkSelectionChange = true;
+    }
+    // if (this.fuelBenchmarking) {
+    //   this.fuelBenchmarking.loadBenchmarkTable();
+    // }
     // this.changeGridOnVehicleList(event.value);
   }
 

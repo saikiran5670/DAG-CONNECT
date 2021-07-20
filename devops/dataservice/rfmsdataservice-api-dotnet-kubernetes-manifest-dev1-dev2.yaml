@@ -112,6 +112,8 @@ metadata:
     svc.kubernetes.io/type: dataservice
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
+    traefik.ingress.kubernetes.io/service.sticky.cookie.secure: "true"
 spec:
   type: LoadBalancer
   ports:

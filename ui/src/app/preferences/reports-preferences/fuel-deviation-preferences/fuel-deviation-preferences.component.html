@@ -1,0 +1,39 @@
+<!-- summary tab -->
+<div *ngIf='summaryData.length > 0' fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+    style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForSummaryColumns() : null'
+            [checked]='selectionForSummary.hasValue() && isAllSelectedForSummaryColumns()'
+            [indeterminate]='selectionForSummary.hasValue() && !isAllSelectedForSummaryColumns()'
+            [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'>
+            <span class='headerFont'>{{
+                translationData.lblSummary || 'Summary' }}</span>
+        </mat-checkbox>
+    </div>
+</div>
+<div *ngIf='summaryData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+    <div fxLayout="column" class="areaWidth min-width-33-3-per padding-10" fxLayoutGap="0px" fxLayoutAlign="left">
+        <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+            (change)='$event ? selectionForSummary.toggle(summaryData[0]) : null; summaryCheckboxClicked($event, summaryData[0])'
+            [checked]="selectionForSummary.isSelected(summaryData[0])"
+            [aria-label]='checkboxLabelForColumns(summaryData[0])' class='custom-checkbox'><span>{{
+                summaryData.length > 0 ? summaryData[0].translatedName : '' }}</span>
+        </mat-checkbox>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per padding-10" fxLayoutGap="0px" fxLayoutAlign="left">
+        <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+            (change)='$event ? selectionForSummary.toggle(summaryData[1]) : null; summaryCheckboxClicked($event, summaryData[1])'
+            [checked]="selectionForSummary.isSelected(summaryData[1])"
+            [aria-label]='checkboxLabelForColumns(summaryData[1])' class='custom-checkbox'><span>{{
+                summaryData.length > 0 ? summaryData[1].translatedName : '' }}</span>
+        </mat-checkbox>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per padding-10" fxLayoutGap="0px" fxLayoutAlign="left">
+        <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+            (change)='$event ? selectionForSummary.toggle(summaryData[2]) : null; summaryCheckboxClicked($event, summaryData[2])'
+            [checked]="selectionForSummary.isSelected(summaryData[2])"
+            [aria-label]='checkboxLabelForColumns(summaryData[2])' class='custom-checkbox'><span>{{
+                summaryData.length > 0 ? summaryData[2].translatedName : '' }}</span>
+        </mat-checkbox>
+    </div>
+</div>
