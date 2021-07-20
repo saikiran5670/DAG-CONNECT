@@ -1177,6 +1177,7 @@ message GetEcoScoreReportSingleDriverRequest {
   int32 ReportId = 8;
   int32 OrgId = 9;
   int32 AccountId = 10;
+  string UoM = 11;
   }
 
  message EcoScoreReportSingleDriverHeader {
@@ -1221,11 +1222,25 @@ message GetEcoScoreReportSingleDriverRequest {
   EcoScoreReportOverallPerformanceKPI BrakingScore = 4;
  }
 
+ message EcoScoreSingleDriverBarPieChart
+ {
+  repeated string XAxisLabel = 1;
+  repeated EcoScoreSingleDriverChartDataSet ChartDataSet = 2;
+ }
+
+ message EcoScoreSingleDriverChartDataSet
+ {
+  repeated double Data = 1;
+  string Label = 2;
+ }
+
  message GetEcoScoreReportSingleDriverResponse {
   Responsecode Code = 1;
   string Message = 2;
   EcoScoreReportSingleDriverOverallPerformance OverallPerformance = 3;
   repeated EcoScoreReportSingleDriverHeader SingleDriver = 4;
   EcoScoreReportSingleDriver SingleDriverKPIInfo = 5;
+  EcoScoreSingleDriverBarPieChart AverageGrossWeightChart = 6;
+  EcoScoreSingleDriverBarPieChart AverageDrivingSpeedChart = 7;
   }
 /// END: Eco Score Report Single Driver

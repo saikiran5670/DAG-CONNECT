@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using net.atos.daf.ct2.vehiclealertaggregator.entity;
-using net.atos.daf.ct2.vehiclealertaggregator.repository;
+using net.atos.daf.ct2.alertcdc.entity;
+using net.atos.daf.ct2.alertcdc.repository;
 
-namespace net.atos.daf.ct2.vehiclealertaggregator
+namespace net.atos.daf.ct2.alertcdc
 {
     public class VehicleAlertRefIntegrator : IVehicleAlertRefIntegrator
     {

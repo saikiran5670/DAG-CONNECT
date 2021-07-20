@@ -17,23 +17,22 @@ namespace net.atos.daf.ct2.rfmsdataservice.Common
         private readonly RequestDelegate _next;
         private readonly IRfmsManager _rfmsManager;
         private readonly ILog _logger;
-        private readonly IMemoryCache _cache;
         private readonly IConfiguration _configuration;
+        private IMemoryCacheProvider _cache;
 
         public RateLimitHandler(RequestDelegate next,
                                 IRfmsManager rfmsManager,
-                                IMemoryCache memoryCache,
                                 IConfiguration configuration)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _rfmsManager = rfmsManager;
             _next = next;
-            _cache = memoryCache;
             _configuration = configuration;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IMemoryCacheProvider cache)
         {
+            _cache = cache;
             await this.ProcessRequestAsync(context).ConfigureAwait(false);
         }
         private async Task ProcessRequestAsync(HttpContext context)
@@ -63,8 +62,8 @@ namespace net.atos.daf.ct2.rfmsdataservice.Common
                         var period = _configuration.GetSection(featureRateName).GetSection(RateLimitConstants.RATE_LIMIT_CONFIGURATION_PERIOD).Value;
 
                         string cacheKey = emailAddress + "_" + authorizedfeature;
-                        // Look for cache key.
-                        if (!_cache.TryGetValue(cacheKey, out RateLimitData rateLimitCacheEntry))
+                        RateLimitData rateLimitCacheEntry = _cache.GetFromCache<RateLimitData>(cacheKey);
+                        if (rateLimitCacheEntry == null)
                         {
                             // Key not in cache, so get data.
                             // Set cache options.
@@ -75,18 +74,15 @@ namespace net.atos.daf.ct2.rfmsdataservice.Common
                             //Fill Rate Limit Object to store in cache
                             RateLimitData rateLimitData = Map(Convert.ToInt32(maxRate), Convert.ToInt32(period), authorizedfeature);
 
-                            //Calculate the reet time for the request in UTC
-                            long resetTime = utilities.UTCHandling.GetUTCFromDateTime(DateTime.Now.AddSeconds(rateLimitData.Period));
-
                             // Save data in cache.
-                            _cache.Set(cacheKey, rateLimitData, cacheEntryOptions);
+                            _cache.SetCache(cacheKey, rateLimitData, cacheEntryOptions);
                             _logger.Info($"[rFMSDataService - Rate Limiter] Cache Key saved for Rate Limit Management: {cacheKey}");
 
                             //Generate Response with expected response headers
                             WriteResponseHeader(context,
                                                 rateLimitData.MaxRateLimit,
                                                 rateLimitData.RemainingRateCount,
-                                                resetTime,
+                                                rateLimitData.ResetTime,
                                                 cacheKey,
                                                 false);
                         }
@@ -94,7 +90,10 @@ namespace net.atos.daf.ct2.rfmsdataservice.Common
                         {
                             if (rateLimitCacheEntry.ElapsedRateCount < rateLimitCacheEntry.MaxRateLimit)
                             {
+                                //Increment Elapsed Count
                                 rateLimitCacheEntry.ElapsedRateCount++;
+
+                                //Decrement Remaining Count
                                 rateLimitCacheEntry.RemainingRateCount--;
 
                                 //Generate Response with expected response headers

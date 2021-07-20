@@ -144,6 +144,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public int TargetProfileId { get; set; }
         [Required]
         public int ReportId { get; set; }
+        [Required]
+        public string UoM { get; set; }
     }
 }
 
