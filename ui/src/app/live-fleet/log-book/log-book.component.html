@@ -45,10 +45,10 @@
             <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ 'Time Range' || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
               <div style='margin-top: 5px;'>
-                <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Today' || 'Today' }}</button>
-                <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Yesterday' || 'Yesterday' }}</button>
-                <button [disabled]="selectionTab == 'lastweek'" (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Last Week' || 'Last Week' }}</button>
-                <button [disabled]="selectionTab == 'lastmonth'" (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Last Month'|| 'Last Month' }}</button>
+                <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Today' || 'Today' }}</button>
+                <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Yesterday' || 'Yesterday' }}</button>
+                <button [disabled]="selectionTab == 'lastweek'" (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Last Week' || 'Last Week' }}</button>
+                <button [disabled]="selectionTab == 'lastmonth'" (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Last Month'|| 'Last Month' }}</button>
                 <button [disabled]="selectionTab == 'last3month'" (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Last 3 Months' || 'Last 3 Months' }}</button>
               </div>
             </div>
