@@ -419,20 +419,8 @@ export class FleetMapService {
       this.showCategoryPOI(_displayPOIList, _ui); //-- show category POi
     }
     if(showIcons && _selectedRoutes && _selectedRoutes.length > 0){
-      _selectedRoutes.forEach(elem => {
-        this.startAddressPositionLat = elem.startPositionLattitude;
-        this.startAddressPositionLong = elem.startPositionLongitude;
-        this.endAddressPositionLat= elem.latestReceivedPositionLattitude;
-        this.endAddressPositionLong= elem.latestReceivedPositionLongitude;
-        let _vehicleMarker = this.setIconsOnMap(elem);
-        let markerSize = { w: 40, h: 49 };
-        let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-        this.vehicleIconMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:icon });
-      
-        this.group.addObject(this.vehicleIconMarker);
-      });
-      
-        
+      this.drawIcons(_selectedRoutes,_ui);
+    
       this.hereMap.addObject(this.group);
       //this.makeCluster(_selectedRoutes, _ui);
     }
@@ -604,6 +592,8 @@ export class FleetMapService {
         this.alertMarker = new H.map.Marker({ lat:element.latitude, lng: element.longitude },{ icon:icon });
         this.group.addObject(this.alertMarker);
         let _time = Util.convertUtcToDateFormat(element.time,'DD/MM/YYYY hh:mm:ss');
+
+        //alert tooltip
         var startBubble;
         this.alertMarker.addEventListener('pointerenter', function (evt) {
           // event target is the marker itself, group is a parent event target
@@ -639,7 +629,99 @@ export class FleetMapService {
     }
    }
 
-  setIconsOnMap(element) {
+   drawIcons(_selectedRoutes,_ui){
+    _selectedRoutes.forEach(elem => {
+      this.startAddressPositionLat = elem.startPositionLattitude;
+      this.startAddressPositionLong = elem.startPositionLongitude;
+      this.endAddressPositionLat= elem.latestReceivedPositionLattitude;
+      this.endAddressPositionLong= elem.latestReceivedPositionLongitude;
+      let _vehicleMarker = this.setIconsOnMap(elem,_ui);
+      let markerSize = { w: 40, h: 49 };
+      let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+      this.vehicleIconMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:icon });
+    
+      this.group.addObject(this.vehicleIconMarker);
+      let _healthStatus = '',_drivingStatus = '';
+      // icon tooltip
+      switch (elem.vehicleHealthStatusType) {
+        case 'T': // stop now;
+          _healthStatus = 'Stop Now';
+          break;
+        case 'V': // service now;
+          _healthStatus = 'Service Now';
+          break;
+        case 'N': // no action;
+          _healthStatus = 'No Action';
+          break
+        default:
+          break;
+      }
+      switch (elem.vehicleDrivingStatusType) {
+        case 'N': 
+          _drivingStatus = 'Never Moved';
+          break;
+        case 'D':
+          _drivingStatus = 'Driving';
+          break;
+        case 'I': // no action;
+          _drivingStatus = 'Idle';
+          break;
+        case 'U': // no action;
+          _drivingStatus = 'Unknown';
+          break;
+        case 'S': // no action;
+          _drivingStatus = 'Stopped';
+          break
+        
+        default:
+          break;
+      }
+      let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp,'DD/MM/YYYY hh:mm:ss');
+      let iconBubble;
+      this.vehicleIconMarker.addEventListener('pointerenter', function (evt) {
+        // event target is the marker itself, group is a parent event target
+        // for all objects that it contains
+        iconBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+          // read custom data
+          content:`<table style='width: 300px; font-size:12px;'>
+            <tr>
+              <td style='width: 100px;'>Vehicle:</td> <td><b>${elem.vid}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>Driving Status:</td> <td><b>${_drivingStatus}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>Current Mileage:</td> <td><b>${elem.odometerVal}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>Next Service in:</td> <td><b>-${elem.distanceUntilNextService} km</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>Health Status:</td> <td><b>${_healthStatus}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>Warning Name:</td> <td><b>${_healthStatus}</b></td>
+            </tr>
+            <tr>
+            <td style='width: 100px;'>Activated Time:</td> <td><b>${activatedTime}</b></td>
+            </tr>
+            <tr>
+            <td style='width: 100px;'>Driver Name:</td> <td><b>${elem.driverFirstName} ${elem.driverLastName}</b></td>
+            </tr>
+          </table>`
+        });
+        // show info bubble
+        _ui.addBubble(iconBubble);
+      }, false);
+      this.vehicleIconMarker.addEventListener('pointerleave', function(evt) {
+        iconBubble.close();
+      }, false);
+    });
+    
+      
+   }
+
+  setIconsOnMap(element,_ui) {
     let _drivingStatus = false;
     let healthColor = '#606060';
     if (element.vehicleDrivingStatusType === 'D') {
@@ -687,6 +769,7 @@ export class FleetMapService {
     </svg>`
     }
   
+   
 
     return _vehicleIcon;
   }
