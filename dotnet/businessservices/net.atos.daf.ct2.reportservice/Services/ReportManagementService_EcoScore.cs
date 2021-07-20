@@ -505,6 +505,14 @@ namespace net.atos.daf.ct2.reportservice.Services
                         _logger.Error(null, ex);
                         throw new Exception("Error occurred while parsing the EcoScore single driver.");
                     }
+                    var averageGrossWeight = await _reportManager.GetEcoScoreAverageGrossWeightChartData(_mapper.MapEcoScoreReportSingleDriverRequest(request));
+                    if (averageGrossWeight?.Count > 0)
+                        response.AverageGrossWeightChart = _mapper.MapEcoScoreAverageGrossWeightChartResponse(averageGrossWeight);
+
+                    var averageDrivingSpeed = await _reportManager.GetEcoScoreAverageDrivingSpeedChartData(_mapper.MapEcoScoreReportSingleDriverRequest(request));
+                    if (averageDrivingSpeed?.Count > 0)
+                        response.AverageDrivingSpeedChart = _mapper.MapEcoScoreAverageDrivingSpeedChartResponse(averageDrivingSpeed, request.UoM);
+
                     response.Code = Responsecode.Success;
                     response.Message = ReportConstants.GET_REPORT_DETAILS_SUCCESS_MSG;
                 }

@@ -339,8 +339,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 LatestWarningPositionLongitude = fleetOverviewEntity.LatestWarningPositionLongitude,
                 Vid = fleetOverviewEntity.Vid,
                 RegistrationNo = fleetOverviewEntity.RegistrationNo,
-                DriverFirstName = fleetOverviewEntity.DriverFirstName,
-                DriverLastName = fleetOverviewEntity.DriverLastName,
+                DriverName = fleetOverviewEntity.DriverName,
                 LatestGeolocationAddressId = fleetOverviewEntity.LatestGeolocationAddressId,
                 LatestGeolocationAddress = fleetOverviewEntity.LatestGeolocationAddress,
                 StartGeolocationAddressId = fleetOverviewEntity.StartGeolocationAddressId,
@@ -432,7 +431,8 @@ namespace net.atos.daf.ct2.reportservice.entity
                 TargetProfileId = request.TargetProfileId,
                 ReportId = request.ReportId,
                 OrgId = request.OrgId,
-                AccountId = request.AccountId
+                AccountId = request.AccountId,
+                UoM = request.UoM
             };
             return objRequest;
         }
@@ -550,6 +550,67 @@ namespace net.atos.daf.ct2.reportservice.entity
             return lstAttributes;
         }
 
+        internal EcoScoreSingleDriverBarPieChart MapEcoScoreAverageGrossWeightChartResponse(List<reports.entity.EcoScoreSingleDriverBarPieChart> result)
+        {
+            var avgGrossWeight = new EcoScoreSingleDriverBarPieChart();
+            string[] labels = new string[6] { "0-10 t", "10-20 t", "20-30 t", "30-40 t", "40-50 t", ">50 t" };
+            avgGrossWeight.XAxisLabel.AddRange(labels);
+
+            List<string> vehicleName = result.Select(x => x.VehicleName).Distinct().ToList();
+            if (vehicleName.Count > 0)
+            {
+                var lstChartData = new List<EcoScoreSingleDriverChartDataSet>();
+                foreach (var item in vehicleName)
+                {
+                    var obj = new EcoScoreSingleDriverChartDataSet();
+                    obj.Label = item;
+                    foreach (var lbl in labels)
+                    {
+                        var avg = result.Where(x => x.VehicleName == item && x.X_Axis == lbl).FirstOrDefault();
+                        if (avg != null)
+                            obj.Data.Add(avg.Y_Axis);
+                        else
+                            obj.Data.Add(new double());
+                    }
+                    lstChartData.Add(obj);
+                }
+                avgGrossWeight.ChartDataSet.AddRange(lstChartData);
+            }
+            return avgGrossWeight;
+        }
+
+        internal EcoScoreSingleDriverBarPieChart MapEcoScoreAverageDrivingSpeedChartResponse(List<reports.entity.EcoScoreSingleDriverBarPieChart> result, string unit)
+        {
+            var avgDrivingSpeed = new EcoScoreSingleDriverBarPieChart();
+            string[] labels;
+            if (unit == UoM.Imperial.ToString())
+                labels = new string[5] { "0-15 mph", "15-30 mph", "30-45 mph", "45-50 mph", ">50 mph" };
+            else
+                labels = new string[5] { "0-30 kmph", "30-50 kmph", "50-75 kmph", "75-85 kmph", ">85 kmph" };
+            avgDrivingSpeed.XAxisLabel.AddRange(labels);
+
+            List<string> vehicleName = result.Select(x => x.VehicleName).Distinct().ToList();
+            if (vehicleName.Count > 0)
+            {
+                var lstChartData = new List<EcoScoreSingleDriverChartDataSet>();
+                foreach (var item in vehicleName)
+                {
+                    var obj = new EcoScoreSingleDriverChartDataSet();
+                    obj.Label = item;
+                    foreach (var lbl in labels)
+                    {
+                        var avg = result.Where(x => x.VehicleName == item && x.X_Axis == lbl).FirstOrDefault();
+                        if (avg != null)
+                            obj.Data.Add(avg.Y_Axis);
+                        else
+                            obj.Data.Add(new double());
+                    }
+                    lstChartData.Add(obj);
+                }
+                avgDrivingSpeed.ChartDataSet.AddRange(lstChartData);
+            }
+            return avgDrivingSpeed;
+        }
     }
 
 }

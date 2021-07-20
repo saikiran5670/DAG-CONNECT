@@ -158,7 +158,7 @@ namespace net.atos.daf.ct2.reports.repository
                     RANK() Over ( Partition By lcts.vin Order by  lcts.start_time_stamp desc ) Veh_trip_rank
                     from livefleet.livefleet_current_trip_statistics lcts
                     where lcts.vin = Any(@vins) 
-                    and (lcts.start_time_stamp > (extract(epoch from (now()::date - @days ))*1000) or lcts.end_time_stamp is null)
+                    and to_timestamp(lcts.latest_processed_message_time_stamp/1000)::date >= (now()::date -  @days )
                     )
                     ,CTE_Unique_latest_trip as (
                      select 
@@ -195,9 +195,7 @@ namespace net.atos.daf.ct2.reports.repository
                     lcts.latest_warning_position_latitude as lcts_LatestWarningPositionLatitude,
                     lcts.latest_warning_position_longitude as lcts_LatestWarningPositionLongitude,
                     coalesce(veh.vid,'') as veh_Vid,
-                    coalesce(veh.registration_no,'') as veh_RegistrationNo,
-                    coalesce(dri.first_name,'') as dri_FirstName,
-                    coalesce(dri.last_name,'') as dri_LastName,
+                    coalesce(veh.registration_no,'') as veh_RegistrationNo,                   
                     lps.id as lps_Id,
                     coalesce(lps.trip_id,'') as lps_TripId,
                     coalesce(lps.vin,'') as lps_Vin,
@@ -232,9 +230,7 @@ namespace net.atos.daf.ct2.reports.repository
                     livefleet.livefleet_position_statistics lps
                     on lcts.trip_id = lps.trip_id and lcts.vin = lps.vin
                     left join master.vehicle veh
-                    on lcts.vin=veh.vin
-                    left join master.driver dri
-                    on lcts.driver1_id=dri.driver_id
+                    on lcts.vin=veh.vin                   
                     left join tripdetail.tripalert tripal
                     on lcts.vin=tripal.vin 
                     left join master.geolocationaddress alertgeoadd

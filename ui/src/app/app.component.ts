@@ -13,6 +13,8 @@ import { Variable } from '@angular/compiler/src/render3/r3_ast';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { OrganizationService } from './services/organization.service';
 import { AuthService } from './services/auth.service';
+import { MessageService } from './services/message.service';
+import { timer, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -241,8 +243,13 @@ export class AppComponent {
     timeRangeSelection: "",
     filterPrefTimeFormat: ""
   };
+  subscribeTimer: any;
+  timeLeft: number = 120;
+  messages: any[] = [];
+  subscription: Subscription;
+  isFleetOverview: boolean = false;
 
-  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService) {
+  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -323,6 +330,7 @@ export class AppComponent {
           this.dataInterchangeService.getSettingTabStatus(false);
         }
         this.setPageTitle();
+        this.showSpinner();
       }
 
     });
@@ -331,6 +339,12 @@ export class AppComponent {
     // this.isMobile();
     // this.isTablet();
     // this.isDesktop();
+    this.subscription = this.messageService.getMessage().subscribe(message => {
+      if (message.key.indexOf("refreshTimer") !== -1) {
+        this.refreshTimer();
+        this.isFleetOverview = true;
+      }
+    });
   }
 
   getNavigationMenu() {
@@ -879,6 +893,44 @@ export class AppComponent {
     }, (error) => {
       console.log(error)
     });
+  }
+
+  sendMessage(): void {
+    // send message to subscribers via observable subject
+    this.messageService.sendMessage('refreshData');
+  }
+
+  sub: Subscription;
+  startTimer() {
+    const source = timer(1000, 2000);
+    this.sub = source.subscribe(val => {
+      this.subscribeTimer = this.timeLeft - val;
+      if(this.timeLeft - val == 0){
+        this.sendMessage();
+        this.refreshTimer();
+      }
+    });
+  }
+
+  clearMessages(): void {
+      // clear messages
+      this.messageService.clearMessages();
+  }
+
+  refreshTimer(){
+    if(this.sub)
+      this.sub.unsubscribe();
+    this.startTimer();
+  }
+
+  showSpinner(){
+    if((this.router.url).indexOf("/livefleet") !== -1)
+      this.isFleetOverview = true;
+    else{
+      this.isFleetOverview = false;
+      if(this.sub)
+        this.sub.unsubscribe();
+    }
   }
 
 }

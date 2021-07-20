@@ -259,7 +259,7 @@
   
           <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="20px">
   
-            <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf="checkForPreference('summary_numberoftrips')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
   
               <span>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
   
@@ -267,7 +267,7 @@
   
             </div>
   
-            <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf="checkForPreference('summary_distance')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
   
               <span>{{ translationData.lblDistance || 'Distance' }}</span>
   
@@ -276,7 +276,7 @@
   
             </div>
   
-            <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf="checkForPreference('summary_fuelconsumed')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
   
               <span>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
   
@@ -284,7 +284,7 @@
   
             </div>
   
-            <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf="checkForPreference('summary_idledurationtotaltime')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
   
               <span>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
   
@@ -292,7 +292,7 @@
   
             </div>
   
-            <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf="checkForPreference('summary_fuelconsumption')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
   
               <span>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
   
@@ -302,7 +302,7 @@
   
             </div>
   
-            <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf="checkForPreference('summary_co2emission')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
   
               <span>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</span>
   
@@ -340,11 +340,12 @@
   
         </mat-expansion-panel-header>
   
-        <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+        <div fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="15px" fxLayoutAlign="flex-start">
   
-          <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+          <div *ngIf="checkForPreference('chart_fuelconsumed')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+          fxFlex.lt-sm="100%">
   
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
   
             <div *ngIf="ConsumedChartType =='Line'" class="chart-wrapper">
   
@@ -366,9 +367,10 @@
   
           </div>
   
-          <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+          <div *ngIf="checkForPreference('chart_numberoftrips')" class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+          fxFlex.lt-sm="100%">
   
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
   
             <div *ngIf="TripsChartType =='Bar'" class="chart-wrapper">
   
@@ -390,13 +392,14 @@
   
           </div>
   
-        </div>
+        <!-- </div>
   
   
   
-        <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+        <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px"> -->
   
-          <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+          <div *ngIf="checkForPreference('chart_co2emission')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+          fxFlex.lt-sm="100%">
   
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblCo2Emission || 'Co2Emission' }}</span>
   
@@ -420,7 +423,8 @@
   
           </div>
   
-          <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+          <div *ngIf="checkForPreference('chart_distance')" class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+          fxFlex.lt-sm="100%">
   
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblDistance || 'Distance' }}</span>
   
@@ -444,13 +448,14 @@
   
           </div>
   
-        </div>
+        <!-- </div>
   
   
   
-        <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+        <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px"> -->
   
-          <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+          <div *ngIf="checkForPreference('chart_fuelconsumption')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+          fxFlex.lt-sm="100%">
   
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px;'>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
   
@@ -474,7 +479,8 @@
   
           </div>
   
-          <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+          <div *ngIf="checkForPreference('chart_idledurationtotaltime')" class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+          fxFlex.lt-sm="100%">
   
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
   
@@ -568,7 +574,7 @@
   
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
   
-            <ng-container matColumnDef="driverName">
+            <ng-container matColumnDef="driverName" *ngIf="checkForPreference('vehicledetails_drivername')">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'driver Name' }}
               </mat-header-cell>
              <mat-cell *matCellDef="let row">
@@ -580,7 +586,7 @@
 
             </mat-cell>
           </ng-container>
-          <ng-container matColumnDef="driverID">
+          <ng-container matColumnDef="driverID" *ngIf="checkForPreference('vehicledetails_driverid')">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverID || 'driverID' }}
               </mat-header-cell>
               <!-- <mat-cell *matCellDef="let row">
@@ -591,7 +597,7 @@
               </mat-cell>
           </ng-container>
 
-            <ng-container matColumnDef="vehicleName">
+            <ng-container matColumnDef="vehicleName" *ngIf="checkForPreference('vehicledetails_vehiclename')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
   
@@ -612,7 +618,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="vin">
+            <ng-container matColumnDef="vin" *ngIf="checkForPreference('vehicledetails_vin')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
   
@@ -628,7 +634,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="vehicleRegistrationNo">
+            <ng-container matColumnDef="vehicleRegistrationNo" *ngIf="checkForPreference('vehicledetails_vehicleregistrationno')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPlateNo || 'Plate No' }}
   
@@ -644,7 +650,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="distance">
+            <ng-container matColumnDef="distance" *ngIf="checkForPreference('vehicledetails_distance')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }}
   
@@ -662,7 +668,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="averageDistancePerDay">
+            <ng-container matColumnDef="averageDistancePerDay" *ngIf="checkForPreference('vehicledetails_averagedistanceperday')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageDistancePerDay || 'Average Distance Per Day' }}
   
@@ -680,7 +686,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="averageSpeed">
+            <ng-container matColumnDef="averageSpeed" *ngIf="checkForPreference('vehicledetails_averagespeed')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed || 'Average Speed' }}
   
@@ -698,7 +704,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="maxSpeed">
+            <ng-container matColumnDef="maxSpeed" *ngIf="checkForPreference('vehicledetails_maxspeed')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblMaxSpeed || 'Max Speed' }}
   
@@ -716,7 +722,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="numberOfTrips">
+            <ng-container matColumnDef="numberOfTrips" *ngIf="checkForPreference('vehicledetails_numberoftrips')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblNoOfTrips || 'Number Of Trips' }}
   
@@ -732,7 +738,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="averageGrossWeightComb">
+            <ng-container matColumnDef="averageGrossWeightComb" *ngIf="checkForPreference('vehicledetails_averagegrossweightcomb')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageGrossWeightComb || 'Average Gross Weight Comb' }}
   
@@ -748,7 +754,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="fuelConsumed">
+            <ng-container matColumnDef="fuelConsumed" *ngIf="checkForPreference('vehicledetails_fuelconsumed')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}
   
@@ -770,7 +776,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="fuelConsumption">
+            <ng-container matColumnDef="fuelConsumption" *ngIf="checkForPreference('vehicledetails_fuelconsumption')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumption || ' Fuel Consumption' }}
   
@@ -792,7 +798,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="cO2Emission">
+            <ng-container matColumnDef="cO2Emission" *ngIf="checkForPreference('vehicledetails_co2emission')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCO2Emission || 'CO2 Emission' }}
   
@@ -814,7 +820,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="idleDuration">
+            <ng-container matColumnDef="idleDuration" *ngIf="checkForPreference('vehicledetails_idleduration')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdleDuration || 'Idle Duration' }}
   
@@ -838,7 +844,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="ptoDuration">
+            <ng-container matColumnDef="ptoDuration" *ngIf="checkForPreference('vehicledetails_ptoduration')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPTODuration || 'PTO Duration' }}
   
@@ -852,7 +858,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="harshBrakeDuration">
+            <ng-container matColumnDef="harshBrakeDuration" *ngIf="checkForPreference('vehicledetails_harshbrakeduration')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblHarshBrakeDuration || 'Harsh Brake Duration' }}
   
@@ -866,7 +872,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="heavyThrottleDuration">
+            <ng-container matColumnDef="heavyThrottleDuration" *ngIf="checkForPreference('vehicledetails_heavythrottleduration')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblHeavyThrottleDuration || 'Heavy Throttle Duration' }}
   
@@ -880,7 +886,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="cruiseControlDistance3050">
+            <ng-container matColumnDef="cruiseControlDistance3050" *ngIf="checkForPreference('vehicledetails_cruisecontroldistance3050')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCruiseControlDistance30-50 || 'Cruise Control Distance 30-50' }}
   
@@ -897,7 +903,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="cruiseControlDistance5075">
+            <ng-container matColumnDef="cruiseControlDistance5075" *ngIf="checkForPreference('vehicledetails_cruisecontroldistance5075')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCruiseControlDistance50-75 || 'Cruise Control Distance 50-75' }}
   
@@ -914,7 +920,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="cruiseControlDistance75">
+            <ng-container matColumnDef="cruiseControlDistance75" *ngIf="checkForPreference('vehicledetails_cruisecontroldistance75')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCruiseControlDistance>75 || 'Cruise Control Distance >75' }}
   
@@ -931,7 +937,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="averageTrafficClassification">
+            <ng-container matColumnDef="averageTrafficClassification" *ngIf="checkForPreference('vehicledetails_averagetrafficlassification')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageTrafficClassification || 'Average Traffic Classification' }}
   
@@ -945,7 +951,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="ccFuelConsumption">
+            <ng-container matColumnDef="ccFuelConsumption" *ngIf="checkForPreference('vehicledetails_ccfuelconsumption')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCCFuelConsumption || 'CC Fuel Consumption' }}
   
@@ -959,7 +965,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="fuelconsumptionCCnonactive">
+            <ng-container matColumnDef="fuelconsumptionCCnonactive" *ngIf="checkForPreference('vehicledetails_fuelconsumptionccnonactive')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelconsumptionCCnonactive || 'Fuel consumption CC non active' }}
   
@@ -973,7 +979,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="idlingConsumption">
+            <ng-container matColumnDef="idlingConsumption" *ngIf="checkForPreference('vehicledetails_idlingconsumption')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdlingConsumption || 'Idling Consumption' }}
   
@@ -987,7 +993,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="dpaScore">
+            <ng-container matColumnDef="dpaScore" *ngIf="checkForPreference('vehicledetails_dpascore')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDPAScore || 'DPA Score' }}
   
@@ -1001,7 +1007,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="dpaAnticipationScore">
+            <ng-container matColumnDef="dpaAnticipationScore" *ngIf="checkForPreference('vehicleranking_vehiclename')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDPAAnticipationscore || 'DPA Anticipation score' }}
   
@@ -1015,7 +1021,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="dpaBrakingScore">
+            <ng-container matColumnDef="dpaBrakingScore" *ngIf="checkForPreference('dpaBrakingScore')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDPABrakingscore || 'DPA Braking score' }}
   
@@ -1029,7 +1035,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="idlingPTOScore">
+            <ng-container matColumnDef="idlingPTOScore" *ngIf="checkForPreference('vehicledetails_idlingwithpto')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdlingwithPTOscore || 'Idling with PTO(hh:mm:ss) score' }}
   
@@ -1043,7 +1049,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="idlingPTO">
+            <ng-container matColumnDef="idlingPTO" *ngIf="checkForPreference('vehicledetails_idlingwithoutpto')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdlingwithoutPTO || 'Idling without PTO (hh:mm:ss)' }}
   
@@ -1057,7 +1063,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="idlingWithoutPTOpercent">
+            <ng-container matColumnDef="idlingWithoutPTOpercent" *ngIf="checkForPreference('vehicledetails_idlingwithoutpto(%)')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdlingWithoutPTO || 'Idling without PTO' }}
   
@@ -1071,7 +1077,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="footBrake">
+            <ng-container matColumnDef="footBrake" *ngIf="checkForPreference('vehicledetails_footbrake')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFootBrake || 'Foot Brake' }}
   
@@ -1085,7 +1091,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="cO2Emmision">
+            <ng-container matColumnDef="cO2Emmision" *ngIf="checkForPreference('vehicledetails_co2emmision')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCO2emmisiongrkm || 'CO2 emmision gr/km' }}
   
@@ -1105,7 +1111,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="averageTrafficClassificationValue">
+            <ng-container matColumnDef="averageTrafficClassificationValue" *ngIf="checkForPreference('averageTrafficClassificationValue')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblaverageTrafficClassificationValue || 'average TrafficClassification Value' }}
   
@@ -1126,7 +1132,7 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="idlingConsumptionValue">
+            <ng-container matColumnDef="idlingConsumptionValue" *ngIf="checkForPreference('vehicledetails_idlingconsumptionwithpto')">
   
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblidlingConsumptionValue || 'idling Consumption Value' }}
   

@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "export NODE_OPTIONS=--max_old_space_size=8192 && ng build --prod",
+    "build": "export NODE_OPTIONS=--max_old_space_size=64384 && ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -33,7 +33,6 @@
     "angular-slickgrid": "^2.30.2",
     "bootstrap": "^4.5.2",
     "chart.js": "^2.9.3",
-    "chartjs-plugin-crosshair": "^1.1.6",
     "chartjs-plugin-zoom": "^0.7.7",
     "detect-passive-events": "^2.0.3",
     "exceljs": "^4.2.1",
