@@ -1,26 +1,3 @@
-
-<div class="fleet-filter-driver">
-    <form [formGroup]="driverVehicleForm">
-    <div fxLayout="row" fxLayoutAlign="space-between" style="padding-top: 20px;">
-        <mat-form-field appearance="outline">
-            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
-            <span matPrefix><mat-icon>search</mat-icon></span>
-        </mat-form-field>        
-   </div>
-   <div  fxLayout="column" fxLayoutAlign="left">
-    <mat-label style='display: flex; place-content: space-between;'>
-        {{ translationData.lbl || 'Select Driver' }}
-    </mat-label>
-    <mat-form-field appearance="outline" class="full-width">
-        <mat-select (selectionChange)="onChangeGroup($event.value)" formControlName="group" placeholder="{{ translationData.lblSelectUserRole || 'Select Vehicle Group' }}" >
-            <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
-            <mat-option *ngFor="let item of groupList" [value]="item.vehicleId">
-                {{item.vehicleGroupName}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-</div>     
-
 <mat-card class='mat-elevation-z no-padding margin-bottom-xlg vehicleList-card'>
     <mat-expansion-panel style="padding: 0px;" [(expanded)]="isVehicleListOpen" class="full-width" fxLayoutGap="10px" (opened)="isVehicleListOpen"
     (closed)="!isVehicleListOpen">
@@ -67,5 +44,3 @@
     </div>  
   </mat-expansion-panel>
   </mat-card>
-  </form>
-  </div>

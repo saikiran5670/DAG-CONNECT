@@ -33,6 +33,7 @@ vehicleListData: any = [];
 levelList : any= [];
 healthList : any= [];
 otherList : any= [];
+driverVehicleForm: FormGroup;
 showLoadingIndicator: any = false;
 dataSource: any = new MatTableDataSource([]);
 initData: any = [];
@@ -70,6 +71,9 @@ displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthS
       category: ['all'],
       status: ['all'],
       otherFilter: ['all']
+    })
+    this.driverVehicleForm = this._formBuilder.group({
+      group: ['all'],
     })
     this.getFilterData();
   }
@@ -265,8 +269,12 @@ getFilterData(){
 //  }
 
  checkCreationForVehicle(item: any){
-  // this.vehicleFilterComponentEmitFlag = true;
-  console.log("vehicle Filter="+item);
+  this.todayFlagClicked = item.todayFlagClicked;
+  this.getFilterData();
+  this.loadVehicleData();
+}
+
+checkCreationForDriver(item:any){
   this.todayFlagClicked = item.todayFlagClicked;
   this.getFilterData();
   this.loadVehicleData();
