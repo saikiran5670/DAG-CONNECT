@@ -31,13 +31,28 @@ export class FleetOverviewFilterDriverComponent implements OnInit {
   constructor(private reportService: ReportService) { }
 
   ngOnInit(): void {
-    this.vehicleListData = this.detailsData;
     console.log("driver filter data" +this.filterData);
     this.reportService.getFilterDetails().subscribe((data: any) => {
       this.filterData = data;
       this.filterData["vehicleGroups"].forEach(item=>
       this.groupList.push(item) );
     })
+    
+    this.detailsData.forEach(item => {
+      this.filterData["healthStatus"].forEach(e => {
+       if(item.vehicleHealthStatusType==e.value)
+       {         
+        item.vehicleHealthStatusType = this.translationData[e.name];
+       }
+      });
+      this.filterData["otherFilter"].forEach(element => {
+        if(item.vehicleDrivingStatusType==element.value)
+        {         
+         item.vehicleDrivingStatusType = this.translationData[element.name];
+        }
+       });        
+    });      
+    this.vehicleListData = this.detailsData;
     // this.loadVehicleData();
   }
 
