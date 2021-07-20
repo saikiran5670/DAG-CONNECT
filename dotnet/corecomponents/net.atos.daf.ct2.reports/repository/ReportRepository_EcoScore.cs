@@ -339,8 +339,9 @@ namespace net.atos.daf.ct2.reports.repository
 
 
         }
-        private async Task<bool> UpdateEcoscoreProfileKpi(List<EcoScoreProfileKPI> ecoScoreProfileKPI, int actionedBy, int id)
+        private async Task<bool> UpdateEcoscoreProfileKpi(List<EcoScoreProfileKPI> ecoScoreProfileKPI, int actionedBy, int profileId)
         {
+            int id = 0;
             foreach (var item in ecoScoreProfileKPI)
             {
                 var updateParameter = new DynamicParameters();
@@ -360,7 +361,7 @@ namespace net.atos.daf.ct2.reports.repository
                 updateParameter.Add("@KPIId", temp.KPIId);
                 updateParameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 updateParameter.Add("@modified_by", actionedBy);
-                updateParameter.Add("@Id", id);
+                updateParameter.Add("@Id", profileId);
 
                 query.Append("UPDATE master.ecoscoreprofilekpi Set modified_at =@modified_at");
 
