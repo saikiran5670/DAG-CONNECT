@@ -16,6 +16,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   @Input() startDateRange: any;
   @Input() endDateRange: any;
   @Input() selectionValueBenchmarkBY: any;
+  vehicleHeaderCount :any = 0;
   initData: any = [];
   responseDataTP: any = {}
   headerArray: any = ["Period"];
@@ -49,13 +50,16 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   }
 
   loadBenchmarkTable() {
-    this.tableHeadingwithRange = this.startDateRange + " to " + this.endDateRange;
     if (this.selectionValueBenchmarkBY == "timePeriods") {
-      for (let row of this.test) {
-        this.addColumn(JSON.parse(row), this.tableHeadingwithRange);
-      }
-    } else if (this.selectionValueBenchmarkBY == "vehicleGroup") {
+      this.tableHeadingwithRange = this.startDateRange + " to " + this.endDateRange;
+
+    } else if (this.selectionValueBenchmarkBY == "vehicleGroups") {
+      this.tableHeadingwithRange = `Vehicle Group ${this.vehicleHeaderCount}`;
       console.log("---from VG selection")
+      
+    }
+    for (let row of this.test) {
+      this.addColumn(JSON.parse(row), this.tableHeadingwithRange);
     }
   }
 
@@ -79,17 +83,19 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     if (this.displayedColumns.length > 1) {
       this.displayedColumns.splice(index, 1)
     }
+    this.vehicleHeaderCount--;
   }
 
   addColumn(data, column) {
     if (this.displayedColumns.length < 5) {
       if (!this.displayedColumns.includes(column)) {
-        this.headerArray.push(column);
+        // this.headerArray.push(column);
         this.displayedColumns.push(column);
       }
       for (let colIndx in this.firstColumn) {
         this.dataSource[colIndx][column] = data.fuelBenchmarkDetails[this.firstColumn[colIndx]];
       }
     }
+    this.vehicleHeaderCount++;
   }
 }

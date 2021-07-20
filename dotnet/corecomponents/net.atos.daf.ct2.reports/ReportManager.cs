@@ -327,7 +327,14 @@ namespace net.atos.daf.ct2.reports
 
             return lstSingleDriver;
         }
-
+        public async Task<List<EcoScoreSingleDriverBarPieChart>> GetEcoScoreAverageGrossWeightChartData(EcoScoreReportSingleDriverRequest request)
+        {
+            return await _reportRepository.GetEcoScoreAverageGrossWeightChartData(request);
+        }
+        public async Task<List<EcoScoreSingleDriverBarPieChart>> GetEcoScoreAverageDrivingSpeedChartData(EcoScoreReportSingleDriverRequest request)
+        {
+            return await _reportRepository.GetEcoScoreAverageDrivingSpeedChartData(request);
+        }
         #endregion
 
         #endregion

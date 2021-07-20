@@ -120,7 +120,7 @@ export class BreakingScoreComponent implements OnInit {
    changeLower(changedVal: any){
      // this.options.floor = changedVal;
      const newOptions: Options = Object.assign({}, this.options);
-     newOptions.floor = changedVal;
+     newOptions.floor = parseInt(changedVal);
      this.options = newOptions;
     this.sendData();
     this.SliderData();
@@ -128,7 +128,7 @@ export class BreakingScoreComponent implements OnInit {
  
    changeUpper(changedVal: any){
      const newOptions: Options = Object.assign({}, this.options);
-     newOptions.ceil = changedVal;
+     newOptions.ceil = parseInt(changedVal);
      this.options = newOptions;
     this.sendData();
     this.SliderData();

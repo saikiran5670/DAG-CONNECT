@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Report
         {
             int val = (int)value;
             bool valid = false;
-            if (val == 1 || val == 90)
+            if (val == 0 || val == 90)
             {
                 valid = true;
             }

@@ -44,6 +44,8 @@ namespace net.atos.daf.ct2.reports.repository
         Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallCompany(EcoScoreReportSingleDriverRequest request);
         Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportVINDriver(EcoScoreReportSingleDriverRequest request);
         Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportVINCompany(EcoScoreReportSingleDriverRequest request);
+        Task<List<EcoScoreSingleDriverBarPieChart>> GetEcoScoreAverageGrossWeightChartData(EcoScoreReportSingleDriverRequest request);
+        Task<List<EcoScoreSingleDriverBarPieChart>> GetEcoScoreAverageDrivingSpeedChartData(EcoScoreReportSingleDriverRequest request);
         Task<List<AlertCategory>> GetAlertCategoryList();
         #region FleetFuel
         Task<List<CO2Coefficient>> GetCO2CoEfficientData();

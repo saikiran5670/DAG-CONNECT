@@ -9,6 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 using net.atos.daf.ct2.rfms;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.rfmsdataservice.Entity;
+using System.Net;
 
 namespace net.atos.daf.ct2.rfmsdataservice.Common
 {
@@ -17,30 +18,29 @@ namespace net.atos.daf.ct2.rfmsdataservice.Common
         private readonly RequestDelegate _next;
         private readonly IRfmsManager _rfmsManager;
         private readonly ILog _logger;
-        private readonly IMemoryCache _cache;
         private readonly IConfiguration _configuration;
+        private IMemoryCacheProvider _cache;
 
         public RateLimitHandler(RequestDelegate next,
                                 IRfmsManager rfmsManager,
-                                IMemoryCache memoryCache,
                                 IConfiguration configuration)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _rfmsManager = rfmsManager;
             _next = next;
-            _cache = memoryCache;
             _configuration = configuration;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IMemoryCacheProvider cache)
         {
+            _cache = cache;
             await this.ProcessRequestAsync(context).ConfigureAwait(false);
         }
         private async Task ProcessRequestAsync(HttpContext context)
         {
             //Pull Authorized feature for this request fromt he context
             string authorizedfeature = Convert.ToString(context.Items["AuthorizedFeature"]);
-
+            _logger.Info($"[rFMSDataService - authorizedfeature {authorizedfeature}");
             //Null Check for authorized feature
             //Necessary check though this is mandatory and will never be null
             //Before it would come to this point if it is null a 403 unauthorized response would have been already sent
@@ -58,13 +58,14 @@ namespace net.atos.daf.ct2.rfmsdataservice.Common
                     var featureRateName = await _rfmsManager.GetRFMSFeatureRate(emailAddress, RateLimitConstants.RATE_LIMIT_FEATURE_NAME);
                     if (featureRateName != null)
                     {
+                        context.Response.Headers.Add("IsStikySession", Dns.GetHostName());
                         //Fetch Max Rate & Period from Configuration
                         var maxRate = _configuration.GetSection(featureRateName).GetSection(RateLimitConstants.RATE_LIMIT_CONFIGURATION_MAX_RATE).Value;
                         var period = _configuration.GetSection(featureRateName).GetSection(RateLimitConstants.RATE_LIMIT_CONFIGURATION_PERIOD).Value;
 
                         string cacheKey = emailAddress + "_" + authorizedfeature;
-                        // Look for cache key.
-                        if (!_cache.TryGetValue(cacheKey, out RateLimitData rateLimitCacheEntry))
+                        RateLimitData rateLimitCacheEntry = _cache.GetFromCache<RateLimitData>(cacheKey);
+                        if (rateLimitCacheEntry == null)
                         {
                             // Key not in cache, so get data.
                             // Set cache options.
@@ -75,18 +76,15 @@ namespace net.atos.daf.ct2.rfmsdataservice.Common
                             //Fill Rate Limit Object to store in cache
                             RateLimitData rateLimitData = Map(Convert.ToInt32(maxRate), Convert.ToInt32(period), authorizedfeature);
 
-                            //Calculate the reet time for the request in UTC
-                            long resetTime = utilities.UTCHandling.GetUTCFromDateTime(DateTime.Now.AddSeconds(rateLimitData.Period));
-
                             // Save data in cache.
-                            _cache.Set(cacheKey, rateLimitData, cacheEntryOptions);
+                            _cache.SetCache(cacheKey, rateLimitData, cacheEntryOptions);
                             _logger.Info($"[rFMSDataService - Rate Limiter] Cache Key saved for Rate Limit Management: {cacheKey}");
 
                             //Generate Response with expected response headers
                             WriteResponseHeader(context,
                                                 rateLimitData.MaxRateLimit,
                                                 rateLimitData.RemainingRateCount,
-                                                resetTime,
+                                                rateLimitData.ResetTime,
                                                 cacheKey,
                                                 false);
                         }
@@ -94,7 +92,10 @@ namespace net.atos.daf.ct2.rfmsdataservice.Common
                         {
                             if (rateLimitCacheEntry.ElapsedRateCount < rateLimitCacheEntry.MaxRateLimit)
                             {
+                                //Increment Elapsed Count
                                 rateLimitCacheEntry.ElapsedRateCount++;
+
+                                //Decrement Remaining Count
                                 rateLimitCacheEntry.RemainingRateCount--;
 
                                 //Generate Response with expected response headers
@@ -120,6 +121,10 @@ namespace net.atos.daf.ct2.rfmsdataservice.Common
                         }
                     }
                 }
+            }
+            else
+            {
+                _logger.Info($"[Process request failed] ");
             }
             await _next.Invoke(context);
         }
