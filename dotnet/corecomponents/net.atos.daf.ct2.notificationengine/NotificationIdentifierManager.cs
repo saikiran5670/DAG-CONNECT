@@ -26,6 +26,7 @@ namespace net.atos.daf.ct2.notificationengine
             int numberOfAlertForvehicle = notificatinFrequencyCheck.Count();
             List<Notification> notificationTimingDetails = new List<Notification>();
             List<Notification> notificationNotifyDetails = new List<Notification>();
+            // check frequency type of  notification
             foreach (var item in notificationDetails)
             {
                 if (item.Noti_frequency_type == "O")
@@ -38,16 +39,22 @@ namespace net.atos.daf.ct2.notificationengine
                 }
                 else if (item.Noti_frequency_type == "E")
                 {
-                    List<TripAlert> nGenAlertDetails = (List<TripAlert>)generatedAlertForVehicle.GroupBy(e => new { e.Alertid, e.Vin }); //order by alert generated time  //.Where(e => e.Count() == item.Noti_frequency_threshhold_value);
-                    for (int i = 0; i < nGenAlertDetails.Count(); i++)
+                    int index = 0;
+                    List<TripAlert> nGenAlertDetails = (List<TripAlert>)generatedAlertForVehicle.OrderBy(o => o.AlertGeneratedTime).GroupBy(e => new { e.Alertid, e.Vin }); //order by alert generated time  //.Where(e => e.Count() == item.Noti_frequency_threshhold_value);
+                    for (int i = 1; i <= nGenAlertDetails.Count(); i++)
                     {
                         if (i / item.Noti_frequency_threshhold_value == 0)
                         {
-                            //trip alert message id column
-                            notificationOutput = notificationDetails.Where(p => p.Noti_alert_id == nGenAlertDetails[i].Alertid).ToList();
+                            //index = 0;
+                            index = i;
                         }
                     }
+                    if (index == nGenAlertDetails.Count())
+                    {
+                        notificationOutput = notificationDetails.Where(f => f.Noti_frequency_type.ToUpper() == "E").ToList();
+                    }
                 }
+                // check notification filter custom
                 if (item.Noti_validity_type.ToUpper() == "C")
                 {
                     notificationTimingDetails = notificationOutput.Where(t => t.Aletimenoti_period_type.ToUpper() == "A").ToList();
@@ -74,10 +81,37 @@ namespace net.atos.daf.ct2.notificationengine
 
             foreach (var item in notificationTimingDetails)
             {
-                if (item.Notlim_notification_period_type.ToUpper() == "Y")
+                //always
+                int maxNotLim = 10;
+                if (item.Notlim_notification_mode_type.ToUpper() == "A")
                 {
-                    item.Notlim_period_limit = item.Notlim_period_limit * 60;
+                    item.Notlim_max_limit = maxNotLim;
                 }
+                //Custom
+                int sentNotificationCount = notificationTimingDetails.Count();
+                if (item.Notlim_notification_mode_type.ToUpper() == "C")
+                {
+                    if (item.Notlim_notification_period_type.ToUpper() == "Y")
+                    {
+                        item.Notlim_period_limit = item.Notlim_period_limit * 60;
+                    }
+
+                    if (item.Notlim_period_limit < sentNotificationCount)
+                    {
+                        if (item.Notrec_notification_mode_type.ToUpper() == "E")
+                        {
+                        }
+                        else if (item.Notrec_notification_mode_type.ToUpper() == "S")
+                        {
+                        }
+                        else if (item.Notrec_notification_mode_type.ToUpper() == "W")
+                        {
+                        }
+                    }
+                }
+
+
+
                 NotificationHistory notificationHistory = new NotificationHistory();
                 notificationHistory.OrganizationId = item.Ale_organization_id;
                 notificationHistory.TripId = tripAlert.Tripid;
