@@ -42,7 +42,7 @@
         </mat-expansion-panel-header>
         <div>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-            <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ 'Time Range' || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
               <div style='margin-top: 5px;'>
                 <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-5 no-margin margin-bottom-sm' mat-raised-button color="primary">{{'Today' || 'Today' }}</button>
@@ -53,9 +53,9 @@
               </div>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}</mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ 'Select Vehicle Group' || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
+                <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ 'Select Vehicle Group' || 'Select  Group' }}"  formControlName="vehicleGroup">
                   <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
                       {{ rer.vehicleGroupName }}
                   </mat-option>
@@ -63,9 +63,9 @@
               </mat-form-field>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ 'Vehicle Name' || 'Vehicle Name' }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label>{{ 'Vehicle Name' || 'Vehicle Name' }} </mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
+                <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select  Name' }}" formControlName="vehicle">
                   <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
                       {{ rer.vehicleName }}
                   </mat-option>
@@ -119,9 +119,9 @@
               </div>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ 'Alert Lavel' || 'Alert Lavel' }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label>{{ 'Alert Level' || 'Alert Level' }}</mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
+                <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Level' }}" formControlName="vehicle">
                   <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
                       {{ rer.vehicleName }}
                   </mat-option>
@@ -129,29 +129,35 @@
               </mat-form-field>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ 'Alert Type' || 'Alert Type' }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-label>{{ 'Alert Type' || 'Alert Type' }}</mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
+                <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Type' }}" formControlName="vehicle">
                   <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
                       {{ rer.vehicleName }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-              <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ 'Alert Category' || 'Alert Category' }} <span class='mandatoryColor'>*</span></mat-label>
+            </div> 
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+            <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
+            </div>
+            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label>{{ 'Alert Category' || 'Alert Category' }} </mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
+                  <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Category' }}" formControlName="vehicle">
                     <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
                         {{ rer.vehicleName }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-                <!-- <mat-error *ngIf="logForm.get('vehicle').hasError('required') && vehicleDD.length > 0">
-                  {{'Please Select Vehicle' || 'Please Select Vehicle' }}
-                </mat-error> -->
-              </div>
             </div>
-          </div>          
+            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+            </div>   
+          </div>
+        
+          
+          
           <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
             <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
               (click)='onReset()'>{{'Reset' || 'Reset' }}</button>
