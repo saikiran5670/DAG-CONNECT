@@ -101,7 +101,21 @@ loadVehicleData(){
       }
     }
 this.reportService.getFleetOverviewDetails(objData).subscribe((data:any) => {
-  this.vehicleListData = data;
+  data.forEach(item => {
+    this.filterData["healthStatus"].forEach(e => {
+     if(item.vehicleHealthStatusType==e.value)
+     {         
+      item.vehicleHealthStatusType = this.translationData[e.name];
+     }
+    });
+    this.filterData["otherFilter"].forEach(element => {
+      if(item.vehicleDrivingStatusType==element.value)
+      {         
+       item.vehicleDrivingStatusType = this.translationData[element.name];
+      }
+     });        
+  });      
+  this.vehicleListData = data;   
 }, (error) => {
 
   if (error.status == 404) {
