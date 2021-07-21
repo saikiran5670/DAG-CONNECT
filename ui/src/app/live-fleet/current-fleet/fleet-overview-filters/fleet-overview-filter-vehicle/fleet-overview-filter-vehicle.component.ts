@@ -17,8 +17,11 @@ export class FleetOverviewFilterVehicleComponent implements OnInit {
 @Input() noRecordFlag: any;
 @Input() vehicleListData: any;
 @Output() vehicleFilterComponentEmit =  new EventEmitter<object>();
+@Output() tabvisibility : EventEmitter<boolean> =  new EventEmitter<boolean>()
 vehicleFilterComponentEmitFlag: boolean =false;
 todayFlagClicked : boolean =true;
+isVehicleDetails : boolean = false;
+selectedElementData: any = [];
 
 constructor() { }
 
@@ -44,4 +47,14 @@ let emitObj = {
  this.vehicleFilterComponentEmit.emit(emitObj);
   }
 
+  openVehicleDetails(data: any){
+    this.isVehicleDetails = true;
+    this.selectedElementData = data;
+    this.tabvisibility.emit(false);
+  }
+
+  checkCreationForVehicleDetails(item: any){
+    this.tabvisibility.emit(false);
+    this.isVehicleDetails = item.stepFlag;
+  }
 }

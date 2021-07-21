@@ -16,6 +16,7 @@ import { FleetOverviewFilterVehicleComponent } from './current-fleet/fleet-overv
 import { FleetOverviewFilterDriverComponent } from './current-fleet/fleet-overview-filters/fleet-overview-filter-driver/fleet-overview-filter-driver.component';
 import { LiveFleetMapComponent } from './current-fleet/live-fleet-map/live-fleet-map.component';
 import { VehicleHealthComponent } from './log-book/vehicle-health/vehicle-health.component';
+import { VehicleDetailsComponent } from './current-fleet/fleet-overview-filters/fleet-overview-filter-vehicle/vehicle-details/vehicle-details.component';
 
 export const MY_DATE_FORMAT = {
   display: {
@@ -27,7 +28,7 @@ export const MY_DATE_FORMAT = {
 }
 
 @NgModule({
-  declarations: [LiveFleetComponent, CurrentFleetComponent, LogBookComponent, FleetOverviewSummaryComponent, FleetOverviewFiltersComponent, FleetOverviewFilterVehicleComponent, FleetOverviewFilterDriverComponent, LiveFleetMapComponent, VehicleHealthComponent],
+  declarations: [LiveFleetComponent, CurrentFleetComponent, LogBookComponent, FleetOverviewSummaryComponent, FleetOverviewFiltersComponent, FleetOverviewFilterVehicleComponent, FleetOverviewFilterDriverComponent, LiveFleetMapComponent, VehicleHealthComponent, VehicleDetailsComponent],
   imports: [
     CommonModule,
     LiveFleetRoutingModule,
