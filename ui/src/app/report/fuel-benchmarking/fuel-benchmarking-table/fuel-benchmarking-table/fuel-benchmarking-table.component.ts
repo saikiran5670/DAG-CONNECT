@@ -36,7 +36,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   tableHeadingwithRange: any = "";
   displayedColumns: string[] = ['period'];
   timerangeColumn: string[] = ['timerangeColumn'];
-  firstColumn: string[] = ['numberOfActiveVehicles', 'totalFuelConsumed', 'totalMileage', 'averageFuelConsumption', 'ranking', 'totalFuelConsumed'];
+  firstColumn: string[] = ['numberOfActiveVehicles', 'totalFuelConsumed', 'totalMileage', 'averageFuelConsumption', 'ranking', 'fuelConsumption'];
 
   doughnutChartLabels: Label[] = ['High', 'Medium', 'Low'];
   doughnutChartData: MultiDataSet = [
@@ -114,8 +114,10 @@ export class FuelBenchmarkingTableComponent implements OnInit {
             row["ltrVal"] = row.fuelConsumption/1000;
           }
           this.dataSource[colIndx][column] = rakingSortedData;
-          this.updateDoughnutChartData(rakingSortedData)
-        } else {
+        } else if(this.firstColumn[colIndx] == 'fuelConsumption') {
+          let indCol = Number(colIndx) - 1;
+          this.dataSource[colIndx][column] = this.updateDoughnutChartData(this.dataSource[indCol][column]);
+        }else {
           this.dataSource[colIndx][column] = data.fuelBenchmarkDetails[this.firstColumn[colIndx]];
         }
       }
@@ -126,7 +128,6 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   getUserPreferenceReport() {
     this.reportService.getUserPreferenceReport(6, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
-      
       this.loadBenchmarkTable();
     });
   }
@@ -144,28 +145,32 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     let high = 0;
     let medium = 0;
     let low = 0;
-    for (let ranking of rakingData) {
-      if(highthresholdValue <= ranking.ltrVal) {
-        high++;
-      }else if(lowthresholdValue >= ranking.ltrVal) {
-        low++;
-      } else {
-        medium++;
+    if (rakingData && rakingData.length > 0) {
+      for (let ranking of rakingData) {
+        if (highthresholdValue <= ranking.ltrVal) {
+          high++;
+        } else if (lowthresholdValue >= ranking.ltrVal) {
+          low++;
+        } else {
+          medium++;
+        }
       }
     }
     let total = high + medium + low;
-    let totalparts = 100 / total;
+    let totalparts = 0;
+    if(total != 0) {
+      totalparts = 100 / total;
+    }
     let highVal = totalparts*high;
     let mediumVal = totalparts * medium;
-    let testArr = [];
     let lowVal = totalparts * low;
-    this.doughnutChartData = []
+    let testArr = [];
     testArr.push(highVal);
     testArr.push(mediumVal);
     testArr.push(lowVal);
-    this.doughnutChartData.push(testArr);
-    console.log("rakingData", rakingData)
-    console.log("this.doughnutChartData", this.doughnutChartData)
+    let test: MultiDataSet = [];
+    test.push(testArr);
+    return test;
   }
   
 }
