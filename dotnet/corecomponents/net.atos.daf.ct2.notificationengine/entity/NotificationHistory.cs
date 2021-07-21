@@ -19,5 +19,7 @@ namespace net.atos.daf.ct2.notificationengine.entity
         public string WsUrl { get; set; }
         public long NotificationSendDate { get; set; }
         public string Status { get; set; }
+        public string EmailSub { get; set; }
+        public string EmailText { get; set; }
     }
 }
