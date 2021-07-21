@@ -575,7 +575,7 @@
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
   
             <ng-container matColumnDef="driverName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_drivername')">{{ translationData.lblDriverName || 'driver Name' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_drivername')">{{ translationData.lblDriverName || 'Driver Name' }}
               </mat-header-cell>
              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_drivername')">
               <span class='navigatePoint' (click)='onDriverSelected(row)'>{{ row.driverName != '' ? row.driverName : '-' }}</span>
@@ -587,7 +587,7 @@
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="driverID">
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_driverid')">{{ translationData.lblDriverID || 'driverID' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_driverid')">{{ translationData.lblDriverID || 'Driver ID' }}
               </mat-header-cell>
               <!-- <mat-cell *matCellDef="let row">
               <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>

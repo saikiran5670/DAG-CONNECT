@@ -62,7 +62,7 @@ displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthS
       this.processTranslation(data);    
     });
     console.log(this.todayFlagClicked );
-    this.vehicleListData = this.detailsData;
+    //this.vehicleListData = this.detailsData;
     this.selection1 = ['all'];
     this.selection2 = ['all'];
     this.filterVehicleForm = this._formBuilder.group({
@@ -74,7 +74,7 @@ displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthS
     })
     this.driverVehicleForm = this._formBuilder.group({
       group: ['all'],
-    })
+    })    
     this.getFilterData();
   }
 
@@ -113,12 +113,29 @@ getFilterData(){
         this.filterData["healthStatus"].forEach(item=>{
         let statusName = this.translationData[item.name];
         this.healthList.push({'name':statusName, 'value': item.value})});
-        // this.filterData["otherFilter"].forEach(item=>{
-        // let statusName = this.translationData[item[0].name];
-        // this.otherList.push({'name':statusName, 'value': item[0].value}) });
-        this.otherList.push(this.filterData["otherFilter"][0]);
-         
-        this.loadVehicleData();
+
+        this.filterData["otherFilter"].forEach(item=>{
+        if(item.value=='N'){
+        let statusName = this.translationData[item.name];           
+        this.otherList.push({'name':statusName, 'value': item.value})
+        }});
+       //this.otherList.push(this.filterData["otherFilter"][0]);
+       this.detailsData.forEach(item => {
+       this.filterData["healthStatus"].forEach(e => {
+         if(item.vehicleHealthStatusType==e.value)
+         {         
+          item.vehicleHealthStatusType = this.translationData[e.name];
+         }
+        });
+        this.filterData["otherFilter"].forEach(element => {
+          if(item.vehicleDrivingStatusType==element.value)
+          {         
+           item.vehicleDrivingStatusType = this.translationData[element.name];
+          }
+         });        
+      }); 
+      this.vehicleListData = this.detailsData; 
+      this.loadVehicleData();
     }
     if(this.todayFlagClicked){
       this.loadVehicleData(); 
@@ -146,10 +163,14 @@ getFilterData(){
         });
  
         this.filterData["healthStatus"].forEach(item=>{
-          let statusName = this.translationData[item.name];
-          this.healthList.push({'name':statusName, 'value': item.value})});
+        let statusName = this.translationData[item.name];
+        this.healthList.push({'name':statusName, 'value': item.value})});
 
-      this.otherList.push(this.filterData["otherFilter"][0]);
+        this.filterData["otherFilter"].forEach(item=>{
+        if(item.value=='N'){
+        let statusName = this.translationData[item.name];           
+        this.otherList.push({'name':statusName, 'value': item.value})
+        }});
 
     }
   })
@@ -163,13 +184,13 @@ getFilterData(){
     const filteredData = this.detailsData.filter(value => {​​​​​​​​
       const searchStr = filterValue.toLowerCase();
       const vin = value.vin.toLowerCase().toString().includes(searchStr);
-      const driver = value.driverFirstName.toLowerCase().toString().includes(searchStr);
+      const driver = value.driverName.toLowerCase().toString().includes(searchStr);
       const drivingStatus = value.vehicleDrivingStatusType.toLowerCase().toString().includes(searchStr);
       const healthStatus = value.vehicleHealthStatusType.toLowerCase().toString().includes(searchStr);
       return vin || driver || drivingStatus ||healthStatus;
     }​​​​​​​​);
   
-    console.log(filteredData);
+    console.log(filteredData);    
     this.vehicleListData = filteredData;
     
   }
@@ -242,6 +263,7 @@ getFilterData(){
           }
          });        
       });      
+     // this.detailsData=data;
       this.vehicleListData = data;   
     }, (error) => {
 
