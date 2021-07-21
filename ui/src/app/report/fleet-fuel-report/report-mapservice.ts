@@ -15,6 +15,7 @@ export class MapService {
     platform: any;
     map: any;
     hereMap: any;
+    disableGroup = new H.map.Group();
     public mapElement: ElementRef;
     mapGroup;
     startAddressPositionLat: number = 0; // = {lat : 18.50424,long : 73.85286};
@@ -41,7 +42,7 @@ export class MapService {
         return data;
       }
       
-      viewselectedroutes(_selectedRoutes){
+      viewselectedroutes(_selectedRoutes:any, _displayRouteView?: any,trackType?: any, ){
 
         if(_selectedRoutes && _selectedRoutes.length > 0){
           _selectedRoutes.forEach(elem => {
@@ -57,10 +58,152 @@ export class MapService {
             const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
             this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
             this.group.addObjects([this.startMarker, this.endMarker]);
+            
+            if(elem.liveFleetPosition.length > 1){ // required 2 points atleast to draw polyline
+              let liveFleetPoints: any = elem.liveFleetPosition;
+              liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
+              if(_displayRouteView == 'C'){ // classic route
+                let blueColorCode: any = '#436ddc';
+                this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
+              }else if(_displayRouteView == 'F' || _displayRouteView == 'CO'){ // fuel consumption/CO2 emissiom route
+                let filterDataPoints: any = this.getFilterDataPoints(liveFleetPoints, _displayRouteView);
+                filterDataPoints.forEach((element) => {
+                  this.drawPolyline(element, trackType);
+              
+                });
+              }
+            }
             this.hereMap.addObject(this.group);
           })
         }
       }
+      
+      getFilterDataPoints(_dataPoints: any, _displayRouteView: any){
+        //-----------------------------------------------------------------//
+        // Fuel Consumption	Green	 	Orange	 	Red	 
+        // VehicleSerie	Min	Max	Min	Max	Min	Max
+        // LF	0	100	100	500	500	infinity
+        // CF	0	100	100	500	500	infinity
+        // XF	0	100	100	500	500	infinity
+        // XG	0	100	100	500	500	infinity
+        
+        // CO2	A	 	B	 	C	 	D	 	E	 	F	 
+        // VehicleSerie	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max
+        // LF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+        // CF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+        // XF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+        // XG	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+        //--------------------------------------------------------------------//
+      
+        let innerArray: any = [];
+        let outerArray: any = [];
+        let finalDataPoints: any = [];
+        _dataPoints.forEach((element) => { 
+          let elemChecker: any = 0;
+          if(_displayRouteView == 'F'){ //------ fuel consumption
+            elemChecker = element.fuelconsumtion;
+            if(elemChecker <= 100){
+              element.color = '#57A952'; // green
+            }else if(elemChecker > 100 && elemChecker <= 500){ 
+              element.color = '#FFA500'; // orange
+            }else{ 
+              element.color = '#FF010F';  // red 
+            }
+          }else{ //---- co2 emission
+            elemChecker = element.co2Emission;
+            if(elemChecker <= 270){
+              element.color = '#01FE75'; // light green
+            }else if(elemChecker > 270 && elemChecker <= 540){ // green
+              element.color = '#57A952'; 
+            }else if(elemChecker > 540 && elemChecker <= 810){ // green-brown
+              element.color = '#867B3F'; 
+            }else if(elemChecker > 810 && elemChecker <= 1080){ // red-brown
+              element.color = '#9C6236'; 
+            }else if(elemChecker > 1080 && elemChecker <= 1350){ // brown
+              element.color = '#C13F28'; 
+            }else{ // red
+              element.color = '#FF010F'; 
+            }
+          }
+          finalDataPoints.push(element);
+        });
+    
+        let curColor: any = '';
+        finalDataPoints.forEach((element, index) => {
+          innerArray.push(element);
+          if(index != 0){
+            if(curColor != element.color){
+              outerArray.push({dataPoints: innerArray, color: curColor});
+              innerArray = [];
+              curColor = element.color;
+              innerArray.push(element);
+            }else if(index == (finalDataPoints.length - 1)){ // last point
+              outerArray.push({dataPoints: innerArray, color: curColor}); 
+            }
+          }else{ // 0
+            curColor = element.color;
+          }
+        });
+    
+        return outerArray;
+      }
+    
+
+      selectionPolylineRoute(dataPoints: any, _index: any, checkStatus?: any){
+        let lineString: any = new H.geo.LineString();
+        dataPoints.map((element) => {
+          lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+        });
+    
+        let _style: any = {
+          lineWidth: 4, 
+          strokeColor: checkStatus ? 'blue' : 'grey'
+        }
+        let polyline = new H.map.Polyline(
+          lineString, { style: _style }
+        );
+        polyline.setData({id: _index});
+        
+        this.disableGroup.addObject(polyline);
+       }
+
+      drawPolyline(finalDatapoints: any, trackType?: any){
+        var lineString = new H.geo.LineString();
+        finalDatapoints.dataPoints.map((element) => {
+          lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+        });
+      
+        let _style: any = {
+          lineWidth: 4, 
+          strokeColor: finalDatapoints.color
+        }
+        if(trackType == 'dotted'){
+          _style.lineDash = [2,2];
+        }
+        let polyline = new H.map.Polyline(
+          lineString, { style: _style }
+        );
+        this.group.addObject(polyline);
+      }
+      showClassicRoute(dataPoints: any, _trackType: any, _colorCode: any){
+        let lineString: any = new H.geo.LineString();
+        dataPoints.map((element) => {
+          lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+        });
+    
+        let _style: any = {
+          lineWidth: 4, 
+          strokeColor: _colorCode
+        }
+        if(_trackType == 'dotted'){
+          _style.lineDash = [2,2];
+        }
+        let polyline = new H.map.Polyline(
+          lineString, { style: _style }
+        );
+        
+        this.group.addObject(polyline);
+       }
       viewSelectedRoutes(_selectedRoutes, accountOrganizationId?) {
         let corridorName = '';
         let startAddress = '';
