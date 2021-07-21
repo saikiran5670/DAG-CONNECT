@@ -498,20 +498,7 @@ ngOnDestroy(){
 
   loadWholeTripData(){
     this.showLoadingIndicator = true;
-    console.log("code adding here fo log book ----------------");
-    //  this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-    //   this.hideloader();
-    //   this.wholeTripData = tripData;
-    //   this.filterDateData();
-    //   this.loadUserPOI();
-    // }, (error)=>{
-    //   this.hideloader();
-    //   this.wholeTripData.vinTripList = [];
-    //   this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
-    //   this.filterDateData();
-    //   this.loadUserPOI();
-    // });
-
+    console.log("code adding here for log book ----------------");
     this.reportService.getLogBookfilterdetails().subscribe((logBookDataData: any) => {
       this.hideloader();
       this.wholeLogBookData = logBookDataData;
@@ -1118,24 +1105,19 @@ ngOnDestroy(){
     let finalVINDataList: any = [];
     this.vehicleListData = [];
     this.vehicleGrpDD = [];
-    /* --- comment code as per discus with Atul --- */
-    // let _last3m = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
-    // let _yesterday = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-    // let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
-    // let currentEndTime = Util.convertDateToUtc(_yesterday); // _yesterday.getTime();
-    /* --- comment code as per discus with Atul --- */
     let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     //console.log(currentStartTime + "<->" + currentEndTime);
+    console.log("this.wholeLogBookData", this.wholeLogBookData);
     console.log("this.wholeLogBookData.associatedVehicleRequest ---:: ", this.wholeLogBookData.associatedVehicleRequest);
     if(this.wholeLogBookData.logbookTripAlertDetailsRequest.length > 0){
-      let filterVIN: any = this.wholeLogBookData.logbookTripAlertDetailsRequest.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
+      let filterVIN: any = this.wholeLogBookData.logbookTripAlertDetailsRequest.filter(item => (parseInt(item.alertGeneratedTime.toString() + "000")>= currentStartTime) && ( (parseInt(item.alertGeneratedTime.toString() + "000")) <= currentEndTime)).map(data => data.vin);
       if(filterVIN.length > 0){
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
         console.log("distinctVIN:: ", distinctVIN);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
-            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
+            let _item = this.wholeLogBookData.associatedVehicleRequest.filter(i => i.vin === element); 
             if(_item.length > 0){
               this.vehicleListData.push(_item[0]); //-- unique VIN data added 
               _item.forEach(element => {
