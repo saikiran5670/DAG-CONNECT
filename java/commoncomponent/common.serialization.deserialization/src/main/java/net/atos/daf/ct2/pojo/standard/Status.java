@@ -25,7 +25,7 @@ public class Status implements Serializable {
   @JsonProperty(value = "EvtDateTime")
   private String evtDateTime;
   @JsonProperty(value = "Increment")
-  private Integer increment;
+  private Long increment;
   @JsonProperty(value = "ROProfil")
   private String roProfil;
   @JsonProperty(value = "TenantID")
@@ -46,9 +46,9 @@ public class Status implements Serializable {
   @JsonProperty(value = "Jobname")
   private String jobName;
   @JsonProperty(value = "NumberOfIndexMessage")
-  private Integer numberOfIndexMessage;
+  private Long numberOfIndexMessage;
   @JsonProperty(value = "NumSeq")
-  private Integer numSeq;
+  private Long numSeq;
   @JsonProperty(value = "VEvtID")
   private Integer vEvtID;
 
@@ -78,37 +78,37 @@ public class Status implements Serializable {
   @JsonProperty(value = "GPSEndLongitude")
   private Double gpsEndLongitude;
   @JsonProperty(value = "GPSStartVehDist")
-  private Integer gpsStartVehDist;
+  private Long gpsStartVehDist;
   @JsonProperty(value = "GPSStopVehDist")
-  private Integer gpsStopVehDist;
+  private Long gpsStopVehDist;
   @JsonProperty(value = "VBrakeDuration")
-  private Integer vBrakeDuration;
+  private Long vBrakeDuration;
   @JsonProperty(value = "VCruiseControlDist")
-  private Integer vCruiseControlDist;
+  private Long vCruiseControlDist;
   @JsonProperty(value = "VHarshBrakeDuration")
   private Integer vHarshBrakeDuration;
   @JsonProperty(value = "VIdleDuration")
-  private Integer vIdleDuration;
+  private Long vIdleDuration;
   @JsonProperty(value = "VPosAltitudeVariation")
-  private Integer vPosAltitudeVariation;
+  private Long vPosAltitudeVariation;
   @JsonProperty(value = "VNegAltitudeVariation")
-  private Integer vNegAltitudeVariation;
+  private Long vNegAltitudeVariation;
   @JsonProperty(value = "VPTOCnt")
-  private Integer vptoCnt;
+  private Long vptoCnt;
   @JsonProperty(value = "VPTODuration")
-  private Integer vptoDuration;
+  private Long vptoDuration;
   @JsonProperty(value = "VPTODist")
-  private Integer vptoDist;
+  private Long vptoDist;
   @JsonProperty(value = "VStartFuel")
-  private Integer vStartFuel;
+  private Long vStartFuel;
   @JsonProperty(value = "VStopFuel")
-  private Integer vStopFuel;
+  private Long vStopFuel;
   @JsonProperty(value = "VStartTankLevel")
   private Integer vStartTankLevel;
   @JsonProperty(value = "VStopTankLevel")
   private Integer vStopTankLevel;
   @JsonProperty(value = "VUsedFuel")
-  private Integer vUsedFuel;
+  private Long vUsedFuel;
 
   @JsonProperty(value = "VIdleDurationDistr")
   private Distribution vIdleDurationDistr;

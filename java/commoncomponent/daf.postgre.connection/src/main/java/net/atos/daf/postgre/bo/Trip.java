@@ -23,9 +23,9 @@ public class Trip implements Serializable {
 	private String vin;
 	private Long startDateTime;
 	private Long endDateTime;
-	private Integer gpsTripDist;
+	private Long gpsTripDist;
 	private Long tripCalDist;
-	private Integer vIdleDuration;
+	private Long vIdleDuration;
 	private Double vGrossWeightCombination;
 	private Double tripCalAvgSpeed;
 	private Long gpsStartVehDist;
@@ -34,9 +34,9 @@ public class Trip implements Serializable {
 	private Double gpsStartLongitude;
 	private Double gpsEndLatitude;
 	private Double gpsEndLongitude;
-	private Integer vUsedFuel;
+	private Long vUsedFuel;
 	private Long tripCalUsedFuel;
-	private Integer vTripMotionDuration;
+	private Long vTripMotionDuration;
 	private Long tripCalDrivingTm;
 	private Long receivedTimestamp;
 	private Double tripCalC02Emission;
@@ -51,9 +51,9 @@ public class Trip implements Serializable {
 	private Integer tripCalCrsCntrlDistAbv75;
 	private Double tripCalAvgTrafficClsfn;
 	private Double tripCalCCFuelConsumption;
-	private Integer vCruiseControlFuelConsumed;
-	private Integer vCruiseControlDist;
-	private Integer vIdleFuelConsumed;
+	private Long vCruiseControlFuelConsumed;
+	private Long vCruiseControlDist;
+	private Long vIdleFuelConsumed;
 	private Double tripCalfuelNonActiveCnsmpt;
 	private Double tripCalDpaScore;
 	private String driverId;
@@ -66,16 +66,16 @@ public class Trip implements Serializable {
 	private Double vGrossWtSum; 
 	private Long numberOfIndexMessage;
 	
-	private Integer vTripDPABrakingCount;
-	private Integer vTripDPAAnticipationCount;
-	private Integer vSumTripDPABrakingScore;
-	private Integer vSumTripDPAAnticipationScore;
+	private Long vTripDPABrakingCount;
+	private Long vTripDPAAnticipationCount;
+	private Long vSumTripDPABrakingScore;
+	private Long vSumTripDPAAnticipationScore;
 	
 	private Integer vHarshBrakeDuration;
-	private Integer vBrakeDuration; 
-	private Integer vTripIdlePTODuration;
-	private Integer vTripIdleWithoutPTODuration;
-	private Integer vPTODuration;
-	private Integer vMaxThrottlePaddleDuration;
-	private Integer vTripAccelerationTime;
+	private Long vBrakeDuration; 
+	private Long vTripIdlePTODuration;
+	private Long vTripIdleWithoutPTODuration;
+	private Long vPTODuration;
+	private Long vMaxThrottlePaddleDuration;
+	private Long vTripAccelerationTime;
 }

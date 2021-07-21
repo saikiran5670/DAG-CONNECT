@@ -15,11 +15,11 @@ public class Distribution implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @JsonProperty(value = "DistrMinRangeInt")
-  private Integer distrMinRangeInt;
+  private Long distrMinRangeInt;
   @JsonProperty(value = "DistrMaxRangeInt")
-  private Integer distrMaxRangeInt;
+  private Long distrMaxRangeInt;
   @JsonProperty(value = "DistrStep")
-  private Integer distrStep;
+  private Long distrStep;
   @JsonProperty(value = "DistrArrayInt")
   private Integer[] distrArrayInt;
 }
