@@ -724,6 +724,7 @@ message FleetOverviewDetails
 	string LatestWarningName=36;
     repeated LiveFleetPosition LiveFleetPosition=37;
     repeated FleetOverviewAlert FleetOverviewAlert=38;
+    string VehicleName =39;
     
 }
 
