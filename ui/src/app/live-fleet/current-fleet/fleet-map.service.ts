@@ -24,6 +24,7 @@ export class FleetMapService {
   startAddressPositionLong :number = 0; // = {lat : 18.50424,long : 73.85286};
   startMarker : any;
   endMarker :any;
+  rippleMarker:any;
   routeCorridorMarker : any;
   routeOutlineMarker : any;
   endAddressPositionLat : number = 0;
@@ -296,9 +297,10 @@ export class FleetMapService {
     return homeMarker;
   }
 
-  private createSVGMarker(_value) {
+  private createSVGMarker(_value,_health) {
+    let healthColor = this.getHealthUpdateForDriving(_health);
     let direction = this.getDirectionIconByBearings(_value);
-    let markerSvg = this.createDrivingMarkerSVG(direction);
+    let markerSvg = this.createDrivingMarkerSVG(direction,healthColor);
     return `<svg width="34" height="41" viewBox="0 0 34 41" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
 		${markerSvg}
@@ -306,16 +308,19 @@ export class FleetMapService {
   }
   private getDirectionIconByBearings = function (brng) {
     //var brng= 317.888;
+    //brng = 180;
     let iconWd = 34;
     let iconCenter = iconWd / 2;
     let outerRotation = `rotate(0 ${iconCenter} ${iconCenter})`;
 
     let innerRotation = `translate(0 0) scale(1  1) rotate(0 ${iconCenter} ${iconCenter})`;
     let image = "";
-    let bearings = ["NE", "E", "SE", "S", "SW", "W", "NW", "N"];
+    //let bearings = ["NE", "E", "SE", "S", "SW", "W", "NW", "N"];
+    let bearings = ["S","SE","E","NE","N","SW","W","NW"];
+
     let index = -1;
     if (!isNaN(brng))
-      index = brng - 22.5;
+      index = brng;
     else
       return { outer: outerRotation, inner: innerRotation };
     if (index < 0)
@@ -324,43 +329,47 @@ export class FleetMapService {
     index = parseInt(index.toString());
 
     let direction = (bearings[index]);
+    let degree = 360 - brng;
+    outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(1)`; // translate(0 8) scale(1.2)
     switch (direction) {
       case "N":
-        outerRotation = `rotate(270 ${iconCenter} ${iconCenter}) scale(1)`; // translate(0 8) scale(1.2)
-        innerRotation = `translate(11 22) scale(1)`;
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.8)`;
+        innerRotation = `translate(12 12) scale(0.8)`;
+
         break;
       case "NE":
-        outerRotation = `rotate(315 ${iconCenter} ${iconCenter}) scale(1)`; //translate(3 17) scale(1.2)
-        innerRotation = `translate(8 19) scale(1)`;
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(1)`; // translate(0 8) scale(1.2)
+        innerRotation = `translate(7 7) scale(1)`;
         break;
       case "E":
-        outerRotation = `rotate(0 ${iconCenter} ${iconCenter}) scale(1)`; // translate(10 23) scale(1.2)
-        innerRotation = `translate(10 13) scale(1)`;
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(1)`; 
+        innerRotation = `translate(7 7) scale(1)`;
 
         break;
       case "SE":
-        outerRotation = `rotate(45 ${iconCenter} ${iconCenter}) scale(1)`; // translate(20 25) scale(1.2)
-        innerRotation = `translate(13 10) scale(1)`;
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(1)`; // translate(0 8) scale(1.2)
+        innerRotation = `translate(6 7) scale(1)`;
 
         break;
       case "S":
-        outerRotation = `rotate(90 ${iconCenter} ${iconCenter}) scale(1)`; //translate(25 18) scale(1.2)
-        innerRotation = `translate(22 15) scale(1)`;
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(1)`; 
+        innerRotation = `translate(7 7) scale(1)`;
         break;
       case "SW":
-        outerRotation = `rotate(135 ${iconCenter} ${iconCenter}) scale(1)`; //translate(25 10) scale(1.2)
-        innerRotation = `translate(22 15) scale(1)`;
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(1)`; // translate(0 8) scale(1.2)
+        innerRotation = `translate(6 7) scale(1)`;
 
         break;
       case "W":
-        outerRotation = `rotate(180 ${iconCenter} ${iconCenter}) scale(1)`; //translate(20 4) scale(1.2)
-        innerRotation = `translate(21 20) scale(1)`;
+       // outerRotation = `rotate(180 ${iconCenter} ${iconCenter}) scale(1)`; //translate(20 4) scale(1.2)
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.8)`;
+        innerRotation = `translate(12 6) scale(0.8)`;
 
         break;
       case "NW":
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(1)`; // translate(0 8) scale(1.2)
 
-        outerRotation = `rotate(225 ${iconCenter} ${iconCenter}) scale(1)`; //translate(10 3) scale(1.2)
-        innerRotation = `translate(16 24) scale(1)`;
+        innerRotation = `translate(7 7) scale(1)`;
 
         break;
       default:
@@ -369,8 +378,18 @@ export class FleetMapService {
     return { outer: outerRotation, inner: innerRotation };
   }
 
-  private createDrivingMarkerSVG(direction: any): string {
-    return `<g id="svg_15">
+  private createRippleMarker(){
+    
+    let rippleIcon = `<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path opacity="0.2" d="M60 30C60 46.5685 46.5685 60 30 60C13.4315 60 3.37665e-07 46.5685 2.17528e-07 30C9.73905e-08 13.4315 13.4315 -9.73905e-08 30 -2.17528e-07C46.5685 -3.37665e-07 60 13.4315 60 30Z" fill="#364D9D"/>
+    <path opacity="0.5" d="M53.2258 30C53.2258 42.8272 42.8272 53.2258 30 53.2258C17.1727 53.2258 6.77417 42.8272 6.77417 30C6.77417 17.1727 17.1727 6.77417 30 6.77417C42.8272 6.77417 53.2258 17.1727 53.2258 30Z" fill="white"/>
+    <path opacity="0.8" d="M46.4516 30.0002C46.4516 39.0862 39.0859 46.4518 30 46.4518C20.914 46.4518 13.5483 39.0862 13.5483 30.0002C13.5483 20.9142 20.914 13.5486 30 13.5486C39.0859 13.5486 46.4516 20.9142 46.4516 30.0002Z" fill="white"/>
+    </svg>`
+    return rippleIcon
+  }
+  private createDrivingMarkerSVG(direction: any,healthColor:any): string {
+    return `
+      <g id="svg_15">
 			<g id="svg_1" transform="${direction.outer}">
       <path d="M32.5 16.75C32.5 29 16.75 39.5 16.75 39.5C16.75 39.5 1 29 1 16.75C1 12.5728 2.65937 8.56677 5.61307 5.61307C8.56677 2.65937 12.5728 1 16.75 1C20.9272 1 24.9332 2.65937 27.8869 5.61307C30.8406 8.56677 32.5 12.5728 32.5 16.75Z" stroke="#00529C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M16.75 38.625C24.1875 32.5 31.625 24.9652 31.625 16.75C31.625 8.53477 24.9652 1.875 16.75 1.875C8.53477 1.875 1.875 8.53477 1.875 16.75C1.875 24.9652 9.75 32.9375 16.75 38.625Z" fill="#00529C"/>
@@ -384,23 +403,23 @@ export class FleetMapService {
       <path d="M19.6206 21.0445H13.8795C13.6569 21.0445 13.4766 20.8642 13.4766 20.6417C13.4766 20.4191 13.6569 20.2388 13.8795 20.2388H19.6206C19.8431 20.2388 20.0235 20.4191 20.0235 20.6417C20.0235 20.8642 19.8431 21.0445 19.6206 21.0445Z" fill="#00529C"/>
       <path d="M25.5346 14.0678H23.552C23.2742 14.0678 23.0491 14.2929 23.0491 14.5707V15.6681L22.7635 15.9697V10.1753C22.7635 9.20234 21.9722 8.41099 20.9993 8.41099H12.5009C11.528 8.41099 10.7365 9.20233 10.7365 10.1753V15.9696L10.451 15.6681V14.5707C10.451 14.2929 10.2259 14.0678 9.94814 14.0678H7.96539C7.68767 14.0678 7.4625 14.2929 7.4625 14.5707V15.8683C7.4625 16.1461 7.68767 16.3712 7.96539 16.3712H9.73176L10.1695 16.8335C9.49853 17.0833 9.01905 17.73 9.01905 18.4873V23.7339C9.01905 24.0117 9.24416 24.2368 9.52194 24.2368H10.1291V25.4026C10.1291 26.1947 10.7734 26.839 11.5655 26.839C12.3575 26.839 13.0018 26.1947 13.0018 25.4026V24.2368H20.4981V25.4026C20.4981 26.1947 21.1424 26.839 21.9345 26.839C22.7266 26.839 23.3709 26.1947 23.3709 25.4026V24.2368H23.9781C24.2558 24.2368 24.481 24.0117 24.481 23.7339V18.4873C24.481 17.73 24.0015 17.0834 23.3306 16.8336L23.7683 16.3712H25.5346C25.8124 16.3712 26.0375 16.1461 26.0375 15.8683V14.5707C26.0375 14.2929 25.8123 14.0678 25.5346 14.0678ZM9.4452 15.3655H8.46828V15.0736H9.4452V15.3655ZM11.7422 10.1753C11.7422 9.75712 12.0826 9.41677 12.5009 9.41677H20.9992C21.4173 9.41677 21.7576 9.75715 21.7576 10.1753V10.9469H11.7422V10.1753ZM21.7577 11.9526V16.723H17.2529V11.9526H21.7577ZM11.7422 11.9526H16.2471V16.723H11.7422V11.9526ZM11.996 25.4025C11.996 25.6399 11.8027 25.8331 11.5655 25.8331C11.3281 25.8331 11.1349 25.6399 11.1349 25.4025V24.2368H11.996V25.4025ZM22.3651 25.4025C22.3651 25.6399 22.1718 25.8331 21.9345 25.8331C21.6972 25.8331 21.5039 25.6399 21.5039 25.4025V24.2368H22.3651V25.4025ZM23.4752 18.4873V23.231H10.0248V18.4873C10.0248 18.0692 10.3652 17.7288 10.7834 17.7288H22.7166C23.1348 17.7288 23.4752 18.0692 23.4752 18.4873ZM25.0317 15.3655H24.0549V15.0736H25.0317V15.3655Z" fill="#00529C" stroke="#00529C" stroke-width="0.2"/>
       </g>
-      <path d="M32.5 16.75C32.5 29 16.75 39.5 16.75 39.5C16.75 39.5 1 29 1 16.75C1 12.5728 2.65937 8.56677 5.61307 5.61307C8.56677 2.65937 12.5728 1 16.75 1C20.9272 1 24.9332 2.65937 27.8869 5.61307C30.8406 8.56677 32.5 12.5728 32.5 16.75Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M16.75 38.625C24.1875 32.5 31.625 24.9652 31.625 16.75C31.625 8.53477 24.9652 1.875 16.75 1.875C8.53477 1.875 1.875 8.53477 1.875 16.75C1.875 24.9652 9.75 32.9375 16.75 38.625Z" fill="#D50017"/>
+      <path d="M32.5 16.75C32.5 29 16.75 39.5 16.75 39.5C16.75 39.5 1 29 1 16.75C1 12.5728 2.65937 8.56677 5.61307 5.61307C8.56677 2.65937 12.5728 1 16.75 1C20.9272 1 24.9332 2.65937 27.8869 5.61307C30.8406 8.56677 32.5 12.5728 32.5 16.75Z" stroke="${healthColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M16.75 38.625C24.1875 32.5 31.625 24.9652 31.625 16.75C31.625 8.53477 24.9652 1.875 16.75 1.875C8.53477 1.875 1.875 8.53477 1.875 16.75C1.875 24.9652 9.75 32.9375 16.75 38.625Z" fill="${healthColor}"/>
       <path d="M16.75 29.4375C23.9987 29.4375 29.875 23.8551 29.875 16.9688C29.875 10.0824 23.9987 4.5 16.75 4.5C9.50126 4.5 3.625 10.0824 3.625 16.9688C3.625 23.8551 9.50126 29.4375 16.75 29.4375Z" fill="white"/>
       </g>
       <defs>
-<clipPath id="clip0">
-<rect width="18.375" height="18.375" fill="white" transform="translate(7.5625 8.4375)"/>
-</clipPath>
-</defs>
+      <clipPath id="clip0">
+      <rect width="18.375" height="18.375" fill="white" transform="translate(7.5625 8.4375)"/>
+      </clipPath>
+      </defs>
       <g  transform="${direction.inner}">
-      <path d="M4.70411 14.1148C3.89167 14.1148 3.23071 13.4539 3.23071 12.6415C3.23071 11.8291 3.89167 11.1682 4.70411 11.1682C5.51639 11.1682 6.17729 11.8291 6.17729 12.6415C6.17729 13.4539 5.51639 14.1148 4.70411 14.1148ZM4.70411 11.974C4.33592 11.974 4.03649 12.2735 4.03649 12.6416C4.03649 13.0096 4.33592 13.3091 4.70411 13.3091C5.07214 13.3091 5.37151 13.0096 5.37151 12.6416C5.37151 12.2735 5.07208 11.974 4.70411 11.974Z" fill="#D50017"/>
-      <path d="M14.7961 14.1148C13.9838 14.1148 13.3228 13.4539 13.3228 12.6415C13.3228 11.8291 13.9838 11.1682 14.7961 11.1682C15.6085 11.1682 16.2694 11.8291 16.2694 12.6415C16.2694 13.4539 15.6085 14.1148 14.7961 14.1148ZM14.7961 11.974C14.4281 11.974 14.1285 12.2735 14.1285 12.6416C14.1285 13.0096 14.4281 13.3091 14.7961 13.3091C15.1642 13.3091 15.4637 13.0096 15.4637 12.6416C15.4637 12.2735 15.1642 11.974 14.7961 11.974Z" fill="#D50017"/>
-      <path d="M11.819 2.58459H7.68121C7.45865 2.58459 7.27832 2.40425 7.27832 2.1817C7.27832 1.9592 7.45865 1.77881 7.68121 1.77881H11.819C12.0415 1.77881 12.2219 1.9592 12.2219 2.1817C12.2219 2.4042 12.0415 2.58459 11.819 2.58459Z" fill="#D50017"/>
-      <path d="M12.6206 14.2772H6.87945C6.6569 14.2772 6.47656 14.0969 6.47656 13.8743C6.47656 13.6518 6.6569 13.4714 6.87945 13.4714H12.6206C12.8431 13.4714 13.0235 13.6518 13.0235 13.8743C13.0235 14.0968 12.8431 14.2772 12.6206 14.2772Z" fill="#D50017"/>
-      <path d="M12.6206 11.8119H6.87945C6.6569 11.8119 6.47656 11.6315 6.47656 11.409C6.47656 11.1864 6.6569 11.0061 6.87945 11.0061H12.6206C12.8431 11.0061 13.0235 11.1864 13.0235 11.409C13.0235 11.6315 12.8431 11.8119 12.6206 11.8119Z" fill="#D50017"/>
-      <path d="M12.6206 13.0445H6.87945C6.6569 13.0445 6.47656 12.8642 6.47656 12.6417C6.47656 12.4191 6.6569 12.2388 6.87945 12.2388H12.6206C12.8431 12.2388 13.0235 12.4191 13.0235 12.6417C13.0235 12.8642 12.8431 13.0445 12.6206 13.0445Z" fill="#D50017"/>
-      <path d="M18.5346 6.06783H16.552C16.2742 6.06783 16.0491 6.29293 16.0491 6.57072V7.66811L15.7635 7.96969V2.1753C15.7635 1.20234 14.9722 0.410986 13.9993 0.410986H5.50091C4.52796 0.410986 3.73649 1.20233 3.73649 2.1753V7.96961L3.45103 7.66811V6.57072C3.45103 6.29293 3.22593 6.06783 2.94814 6.06783H0.96539C0.687667 6.06783 0.4625 6.29292 0.4625 6.57072V7.86835C0.4625 8.14614 0.687667 8.37124 0.96539 8.37124H2.73176L3.16945 8.83351C2.49853 9.08331 2.01905 9.73 2.01905 10.4873V15.7339C2.01905 16.0117 2.24416 16.2368 2.52194 16.2368H3.12909V17.4026C3.12909 18.1947 3.77337 18.839 4.56545 18.839C5.35754 18.839 6.00181 18.1947 6.00181 17.4026V16.2368H13.4981V17.4026C13.4981 18.1947 14.1424 18.839 14.9345 18.839C15.7266 18.839 16.3709 18.1947 16.3709 17.4026V16.2368H16.9781C17.2558 16.2368 17.481 16.0117 17.481 15.7339V10.4873C17.481 9.72999 17.0015 9.08335 16.3306 8.83356L16.7683 8.37124H18.5346C18.8124 8.37124 19.0375 8.14613 19.0375 7.86835V6.57072C19.0375 6.29292 18.8123 6.06783 18.5346 6.06783ZM2.4452 7.36546H1.46828V7.07361H2.4452V7.36546ZM4.74222 2.1753C4.74222 1.75712 5.08264 1.41677 5.50085 1.41677H13.9992C14.4173 1.41677 14.7576 1.75715 14.7576 2.1753V2.94688H4.74222V2.1753ZM14.7577 3.95261V8.72298H10.2529V3.95261H14.7577ZM4.74222 3.95261H9.24711V8.72298H4.74222V3.95261ZM4.99603 17.4025C4.99603 17.6399 4.80273 17.8331 4.56545 17.8331C4.32813 17.8331 4.13487 17.6399 4.13487 17.4025V16.2368H4.99603V17.4025ZM15.3651 17.4025C15.3651 17.6399 15.1718 17.8331 14.9345 17.8331C14.6972 17.8331 14.5039 17.6399 14.5039 17.4025V16.2368H15.3651V17.4025ZM16.4752 10.4873V15.231H3.02483V10.4873C3.02483 10.0692 3.36522 9.72881 3.78336 9.72881H15.7166C16.1348 9.72881 16.4752 10.0692 16.4752 10.4873ZM18.0317 7.36546H17.0549V7.07361H18.0317V7.36546Z" fill="#D50017" stroke="#D50017" stroke-width="0.2"/>
+      <path d="M4.70411 14.1148C3.89167 14.1148 3.23071 13.4539 3.23071 12.6415C3.23071 11.8291 3.89167 11.1682 4.70411 11.1682C5.51639 11.1682 6.17729 11.8291 6.17729 12.6415C6.17729 13.4539 5.51639 14.1148 4.70411 14.1148ZM4.70411 11.974C4.33592 11.974 4.03649 12.2735 4.03649 12.6416C4.03649 13.0096 4.33592 13.3091 4.70411 13.3091C5.07214 13.3091 5.37151 13.0096 5.37151 12.6416C5.37151 12.2735 5.07208 11.974 4.70411 11.974Z" fill="${healthColor}"/>
+      <path d="M14.7961 14.1148C13.9838 14.1148 13.3228 13.4539 13.3228 12.6415C13.3228 11.8291 13.9838 11.1682 14.7961 11.1682C15.6085 11.1682 16.2694 11.8291 16.2694 12.6415C16.2694 13.4539 15.6085 14.1148 14.7961 14.1148ZM14.7961 11.974C14.4281 11.974 14.1285 12.2735 14.1285 12.6416C14.1285 13.0096 14.4281 13.3091 14.7961 13.3091C15.1642 13.3091 15.4637 13.0096 15.4637 12.6416C15.4637 12.2735 15.1642 11.974 14.7961 11.974Z" fill="${healthColor}"/>
+      <path d="M11.819 2.58459H7.68121C7.45865 2.58459 7.27832 2.40425 7.27832 2.1817C7.27832 1.9592 7.45865 1.77881 7.68121 1.77881H11.819C12.0415 1.77881 12.2219 1.9592 12.2219 2.1817C12.2219 2.4042 12.0415 2.58459 11.819 2.58459Z" fill="${healthColor}"/>
+      <path d="M12.6206 14.2772H6.87945C6.6569 14.2772 6.47656 14.0969 6.47656 13.8743C6.47656 13.6518 6.6569 13.4714 6.87945 13.4714H12.6206C12.8431 13.4714 13.0235 13.6518 13.0235 13.8743C13.0235 14.0968 12.8431 14.2772 12.6206 14.2772Z" fill="${healthColor}"/>
+      <path d="M12.6206 11.8119H6.87945C6.6569 11.8119 6.47656 11.6315 6.47656 11.409C6.47656 11.1864 6.6569 11.0061 6.87945 11.0061H12.6206C12.8431 11.0061 13.0235 11.1864 13.0235 11.409C13.0235 11.6315 12.8431 11.8119 12.6206 11.8119Z" fill="${healthColor}"/>
+      <path d="M12.6206 13.0445H6.87945C6.6569 13.0445 6.47656 12.8642 6.47656 12.6417C6.47656 12.4191 6.6569 12.2388 6.87945 12.2388H12.6206C12.8431 12.2388 13.0235 12.4191 13.0235 12.6417C13.0235 12.8642 12.8431 13.0445 12.6206 13.0445Z" fill="${healthColor}"/>
+      <path d="M18.5346 6.06783H16.552C16.2742 6.06783 16.0491 6.29293 16.0491 6.57072V7.66811L15.7635 7.96969V2.1753C15.7635 1.20234 14.9722 0.410986 13.9993 0.410986H5.50091C4.52796 0.410986 3.73649 1.20233 3.73649 2.1753V7.96961L3.45103 7.66811V6.57072C3.45103 6.29293 3.22593 6.06783 2.94814 6.06783H0.96539C0.687667 6.06783 0.4625 6.29292 0.4625 6.57072V7.86835C0.4625 8.14614 0.687667 8.37124 0.96539 8.37124H2.73176L3.16945 8.83351C2.49853 9.08331 2.01905 9.73 2.01905 10.4873V15.7339C2.01905 16.0117 2.24416 16.2368 2.52194 16.2368H3.12909V17.4026C3.12909 18.1947 3.77337 18.839 4.56545 18.839C5.35754 18.839 6.00181 18.1947 6.00181 17.4026V16.2368H13.4981V17.4026C13.4981 18.1947 14.1424 18.839 14.9345 18.839C15.7266 18.839 16.3709 18.1947 16.3709 17.4026V16.2368H16.9781C17.2558 16.2368 17.481 16.0117 17.481 15.7339V10.4873C17.481 9.72999 17.0015 9.08335 16.3306 8.83356L16.7683 8.37124H18.5346C18.8124 8.37124 19.0375 8.14613 19.0375 7.86835V6.57072C19.0375 6.29292 18.8123 6.06783 18.5346 6.06783ZM2.4452 7.36546H1.46828V7.07361H2.4452V7.36546ZM4.74222 2.1753C4.74222 1.75712 5.08264 1.41677 5.50085 1.41677H13.9992C14.4173 1.41677 14.7576 1.75715 14.7576 2.1753V2.94688H4.74222V2.1753ZM14.7577 3.95261V8.72298H10.2529V3.95261H14.7577ZM4.74222 3.95261H9.24711V8.72298H4.74222V3.95261ZM4.99603 17.4025C4.99603 17.6399 4.80273 17.8331 4.56545 17.8331C4.32813 17.8331 4.13487 17.6399 4.13487 17.4025V16.2368H4.99603V17.4025ZM15.3651 17.4025C15.3651 17.6399 15.1718 17.8331 14.9345 17.8331C14.6972 17.8331 14.5039 17.6399 14.5039 17.4025V16.2368H15.3651V17.4025ZM16.4752 10.4873V15.231H3.02483V10.4873C3.02483 10.0692 3.36522 9.72881 3.78336 9.72881H15.7166C16.1348 9.72881 16.4752 10.0692 16.4752 10.4873ZM18.0317 7.36546H17.0549V7.07361H18.0317V7.36546Z" fill="${healthColor}" stroke="${healthColor}" stroke-width="0.2"/>
       
     </g>
 		
@@ -436,10 +455,17 @@ export class FleetMapService {
         let markerSize = { w: 26, h: 32 };
         const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
         this.startMarker = new H.map.Marker({ lat:this.startAddressPositionLat, lng:this.startAddressPositionLong },{ icon:icon });
-        let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading);
-        const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+         
+        let rippleSize = { w: 60, h: 60 };
+        let rippleMarker = this.createRippleMarker();
+        const iconRipple = new H.map.Icon(rippleMarker, { size: rippleSize, anchor: { x: Math.round(rippleSize.w / 2), y: Math.round(rippleSize.h / 2) } });
+        this.rippleMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconRipple });
+
+        let endMarkerSize = { w: 34, h: 40 };;
+        let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading,elem.vehicleHealthStatusType);
+        const iconEnd = new H.map.Icon(endMarker, { size: endMarkerSize, anchor: { x: Math.round(endMarkerSize.w / 2), y: Math.round(endMarkerSize.h / 2) } });
         this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
-        this.group.addObjects([this.startMarker, this.endMarker]);
+        this.group.addObjects([this.startMarker,this.rippleMarker, this.endMarker]);
         // end start marker
         // var startBubble;
         // this.startMarker.addEventListener('pointerenter', function (evt) {
@@ -642,7 +668,16 @@ export class FleetMapService {
       if(_alertConfig){
         _type = _alertConfig.type;
       }
-      let markerSize = { w: 40, h: 49 };
+      if(elem.vehicleDrivingStatusType === 'D'){
+        
+      let rippleSize = { w: 60, h: 60 };
+      let rippleMarker = this.createRippleMarker();
+      const iconRipple = new H.map.Icon(rippleMarker, { size: rippleSize, anchor: { x: Math.round(rippleSize.w / 2), y: Math.round(rippleSize.h / 2) } });
+      this.rippleMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconRipple });
+      this.group.addObject(this.rippleMarker);
+
+      }
+      let markerSize = { w: 34, h: 40 };
       let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
       this.vehicleIconMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:icon });
     
@@ -753,6 +788,14 @@ export class FleetMapService {
     let _vehicleIcon : any;
     if(_drivingStatus){
 
+      let direction = this.getDirectionIconByBearings(element.latestReceivedPositionHeading);
+      let markerSvg = this.createDrivingMarkerSVG(direction,healthColor);
+      _vehicleIcon =  `<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
+      ${markerSvg}
+      </svg>`;
+
+    
     }
     else{
       let _alertFound = undefined ;
@@ -765,16 +808,16 @@ export class FleetMapService {
       if(_alertFound){
         _alertConfig = this.getAlertConfig(_alertFound);
         _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M32.5 24.75C32.5 37 16.75 47.5 16.75 47.5C16.75 47.5 1 37 1 24.75C1 20.5728 2.65937 16.5668 5.61307 13.6131C8.56677 10.6594 12.5728 9 16.75 9C20.9272 9 24.9332 10.6594 27.8869 13.6131C30.8406 16.5668 32.5 20.5728 32.5 24.75Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M16.75 46.625C24.1875 40.5 31.625 32.9652 31.625 24.75C31.625 16.5348 24.9652 9.875 16.75 9.875C8.53477 9.875 1.875 16.5348 1.875 24.75C1.875 32.9652 9.75 40.9375 16.75 46.625Z" fill="#D50017"/>
+        <path d="M32.5 24.75C32.5 37 16.75 47.5 16.75 47.5C16.75 47.5 1 37 1 24.75C1 20.5728 2.65937 16.5668 5.61307 13.6131C8.56677 10.6594 12.5728 9 16.75 9C20.9272 9 24.9332 10.6594 27.8869 13.6131C30.8406 16.5668 32.5 20.5728 32.5 24.75Z" stroke="${healthColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M16.75 46.625C24.1875 40.5 31.625 32.9652 31.625 24.75C31.625 16.5348 24.9652 9.875 16.75 9.875C8.53477 9.875 1.875 16.5348 1.875 24.75C1.875 32.9652 9.75 40.9375 16.75 46.625Z" fill="${healthColor}"/>
         <path d="M16.75 37.4375C23.9987 37.4375 29.875 31.8551 29.875 24.9688C29.875 18.0824 23.9987 12.5 16.75 12.5C9.50126 12.5 3.625 18.0824 3.625 24.9688C3.625 31.8551 9.50126 37.4375 16.75 37.4375Z" fill="white"/>
         <g clip-path="url(#clip0)">
-        <path d="M11.7041 30.1148C10.8917 30.1148 10.2307 29.4539 10.2307 28.6415C10.2307 27.8291 10.8917 27.1682 11.7041 27.1682C12.5164 27.1682 13.1773 27.8291 13.1773 28.6415C13.1773 29.4539 12.5164 30.1148 11.7041 30.1148ZM11.7041 27.974C11.3359 27.974 11.0365 28.2735 11.0365 28.6416C11.0365 29.0096 11.3359 29.3091 11.7041 29.3091C12.0721 29.3091 12.3715 29.0096 12.3715 28.6416C12.3715 28.2735 12.0721 27.974 11.7041 27.974Z" fill="#D50017"/>
-        <path d="M21.7961 30.1148C20.9838 30.1148 20.3228 29.4539 20.3228 28.6415C20.3228 27.8291 20.9838 27.1682 21.7961 27.1682C22.6085 27.1682 23.2694 27.8291 23.2694 28.6415C23.2694 29.4539 22.6085 30.1148 21.7961 30.1148ZM21.7961 27.974C21.4281 27.974 21.1285 28.2735 21.1285 28.6416C21.1285 29.0096 21.4281 29.3091 21.7961 29.3091C22.1642 29.3091 22.4637 29.0096 22.4637 28.6416C22.4637 28.2735 22.1642 27.974 21.7961 27.974Z" fill="#D50017"/>
-        <path d="M18.819 18.5846H14.6812C14.4587 18.5846 14.2783 18.4043 14.2783 18.1817C14.2783 17.9592 14.4587 17.7788 14.6812 17.7788H18.819C19.0415 17.7788 19.2219 17.9592 19.2219 18.1817C19.2219 18.4042 19.0415 18.5846 18.819 18.5846Z" fill="#D50017"/>
-        <path d="M19.6206 30.2772H13.8795C13.6569 30.2772 13.4766 30.0969 13.4766 29.8743C13.4766 29.6518 13.6569 29.4714 13.8795 29.4714H19.6206C19.8431 29.4714 20.0235 29.6518 20.0235 29.8743C20.0235 30.0968 19.8431 30.2772 19.6206 30.2772Z" fill="#D50017"/>
-        <path d="M19.6206 27.8119H13.8795C13.6569 27.8119 13.4766 27.6315 13.4766 27.409C13.4766 27.1864 13.6569 27.0061 13.8795 27.0061H19.6206C19.8431 27.0061 20.0235 27.1864 20.0235 27.409C20.0235 27.6315 19.8431 27.8119 19.6206 27.8119Z" fill="#D50017"/>
-        <path d="M19.6206 29.0445H13.8795C13.6569 29.0445 13.4766 28.8642 13.4766 28.6417C13.4766 28.4191 13.6569 28.2388 13.8795 28.2388H19.6206C19.8431 28.2388 20.0235 28.4191 20.0235 28.6417C20.0235 28.8642 19.8431 29.0445 19.6206 29.0445Z" fill="#D50017"/>
+        <path d="M11.7041 30.1148C10.8917 30.1148 10.2307 29.4539 10.2307 28.6415C10.2307 27.8291 10.8917 27.1682 11.7041 27.1682C12.5164 27.1682 13.1773 27.8291 13.1773 28.6415C13.1773 29.4539 12.5164 30.1148 11.7041 30.1148ZM11.7041 27.974C11.3359 27.974 11.0365 28.2735 11.0365 28.6416C11.0365 29.0096 11.3359 29.3091 11.7041 29.3091C12.0721 29.3091 12.3715 29.0096 12.3715 28.6416C12.3715 28.2735 12.0721 27.974 11.7041 27.974Z" fill="${healthColor}"/>
+        <path d="M21.7961 30.1148C20.9838 30.1148 20.3228 29.4539 20.3228 28.6415C20.3228 27.8291 20.9838 27.1682 21.7961 27.1682C22.6085 27.1682 23.2694 27.8291 23.2694 28.6415C23.2694 29.4539 22.6085 30.1148 21.7961 30.1148ZM21.7961 27.974C21.4281 27.974 21.1285 28.2735 21.1285 28.6416C21.1285 29.0096 21.4281 29.3091 21.7961 29.3091C22.1642 29.3091 22.4637 29.0096 22.4637 28.6416C22.4637 28.2735 22.1642 27.974 21.7961 27.974Z" fill="${healthColor}"/>
+        <path d="M18.819 18.5846H14.6812C14.4587 18.5846 14.2783 18.4043 14.2783 18.1817C14.2783 17.9592 14.4587 17.7788 14.6812 17.7788H18.819C19.0415 17.7788 19.2219 17.9592 19.2219 18.1817C19.2219 18.4042 19.0415 18.5846 18.819 18.5846Z" fill="${healthColor}"/>
+        <path d="M19.6206 30.2772H13.8795C13.6569 30.2772 13.4766 30.0969 13.4766 29.8743C13.4766 29.6518 13.6569 29.4714 13.8795 29.4714H19.6206C19.8431 29.4714 20.0235 29.6518 20.0235 29.8743C20.0235 30.0968 19.8431 30.2772 19.6206 30.2772Z" fill="${healthColor}"/>
+        <path d="M19.6206 27.8119H13.8795C13.6569 27.8119 13.4766 27.6315 13.4766 27.409C13.4766 27.1864 13.6569 27.0061 13.8795 27.0061H19.6206C19.8431 27.0061 20.0235 27.1864 20.0235 27.409C20.0235 27.6315 19.8431 27.8119 19.6206 27.8119Z" fill="${healthColor}"/>
+        <path d="M19.6206 29.0445H13.8795C13.6569 29.0445 13.4766 28.8642 13.4766 28.6417C13.4766 28.4191 13.6569 28.2388 13.8795 28.2388H19.6206C19.8431 28.2388 20.0235 28.4191 20.0235 28.6417C20.0235 28.8642 19.8431 29.0445 19.6206 29.0445Z" fill="${healthColor}"/>
         <path d="M25.5346 22.0678H23.552C23.2742 22.0678 23.0491 22.2929 23.0491 22.5707V23.6681L22.7635 23.9697V18.1753C22.7635 17.2023 21.9722 16.411 20.9993 16.411H12.5009C11.528 16.411 10.7365 17.2023 10.7365 18.1753V23.9696L10.451 23.6681V22.5707C10.451 22.2929 10.2259 22.0678 9.94814 22.0678H7.96539C7.68767 22.0678 7.4625 22.2929 7.4625 22.5707V23.8683C7.4625 24.1461 7.68767 24.3712 7.96539 24.3712H9.73176L10.1695 24.8335C9.49853 25.0833 9.01905 25.73 9.01905 26.4873V31.7339C9.01905 32.0117 9.24416 32.2368 9.52194 32.2368H10.1291V33.4026C10.1291 34.1947 10.7734 34.839 11.5655 34.839C12.3575 34.839 13.0018 34.1947 13.0018 33.4026V32.2368H20.4981V33.4026C20.4981 34.1947 21.1424 34.839 21.9345 34.839C22.7266 34.839 23.3709 34.1947 23.3709 33.4026V32.2368H23.9781C24.2558 32.2368 24.481 32.0117 24.481 31.7339V26.4873C24.481 25.73 24.0015 25.0834 23.3306 24.8336L23.7683 24.3712H25.5346C25.8124 24.3712 26.0375 24.1461 26.0375 23.8683V22.5707C26.0375 22.2929 25.8123 22.0678 25.5346 22.0678ZM9.4452 23.3655H8.46828V23.0736H9.4452V23.3655ZM11.7422 18.1753C11.7422 17.7571 12.0826 17.4168 12.5009 17.4168H20.9992C21.4173 17.4168 21.7576 17.7571 21.7576 18.1753V18.9469H11.7422V18.1753ZM21.7577 19.9526V24.723H17.2529V19.9526H21.7577ZM11.7422 19.9526H16.2471V24.723H11.7422V19.9526ZM11.996 33.4025C11.996 33.6399 11.8027 33.8331 11.5655 33.8331C11.3281 33.8331 11.1349 33.6399 11.1349 33.4025V32.2368H11.996V33.4025ZM22.3651 33.4025C22.3651 33.6399 22.1718 33.8331 21.9345 33.8331C21.6972 33.8331 21.5039 33.6399 21.5039 33.4025V32.2368H22.3651V33.4025ZM23.4752 26.4873V31.231H10.0248V26.4873C10.0248 26.0692 10.3652 25.7288 10.7834 25.7288H22.7166C23.1348 25.7288 23.4752 26.0692 23.4752 26.4873ZM25.0317 23.3655H24.0549V23.0736H25.0317V23.3655Z" fill="#D50017" stroke="#D50017" stroke-width="0.2"/>
         </g>
         <mask id="path-11-outside-1" maskUnits="userSpaceOnUse" x="17.6667" y="0.666748" width="23" height="19" fill="black">
@@ -862,6 +905,23 @@ export class FleetMapService {
       return {color : _fillColor , level : _level, type : _type};
   }
 
+  getHealthUpdateForDriving(_health){
+    let  healthColor = '#D50017';
+    switch (_health) {
+      case 'T': // stop now;
+        healthColor = '#D50017'; //red
+        break;
+      case 'V': // service now;
+        healthColor = '#FC5F01'; //orange
+        break;
+      case 'N': // no action;
+          healthColor = '#00AE10'; //green
+        break
+      default:
+        break;
+    }
+    return healthColor;
+  }
    makeCluster(_selectedRoutes: any, _ui: any){
     if(_selectedRoutes.length > 9){
       this.setInitialCluster(_selectedRoutes, _ui); 
