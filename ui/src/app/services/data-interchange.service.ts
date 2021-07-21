@@ -15,6 +15,8 @@ export class DataInterchangeService {
     generalSettingInterface$ = this.generalSettingInterfaceSource.asObservable();
     private profilePictureInterfaceSource= new Subject<any>();
     profilePictureInterface$= this.profilePictureInterfaceSource.asObservable();
+    private detailDataSource = new Subject<any>();
+    detailDataInterface$= this.detailDataSource.asObservable();
     
     constructor(){ }
 
@@ -40,6 +42,10 @@ export class DataInterchangeService {
 
     getProfilePicture(data: any){
         this.profilePictureInterfaceSource.next(data);
+    }
+
+    getVehicleData(data: any){
+        this.detailDataSource.next(data);
     }
 
 }   

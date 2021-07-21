@@ -23,35 +23,35 @@ public class TripStatusData implements Serializable {
 	private Long startDateTime;
 	// data type changed
 	private Long endDateTime;
-	private Integer gpsTripDist;
+	private Long gpsTripDist;
 	// data type changed
 	private Long gpsStopVehDist;
 	// data type changed
 	private Long gpsStartVehDist;
-	private Integer vIdleDuration;
+	private Long vIdleDuration;
 	private Double gpsStartLatitude;
 	private Double gpsStartLongitude;
 	private Double gpsEndLatitude;
 	private Double gpsEndLongitude;
-	private Integer vUsedFuel;
+	private Long vUsedFuel;
 	// data type changed
 	private Long vStopFuel;
 	// data type changed
 	private Long vStartFuel;
-	private Integer vTripMotionDuration;
+	private Long vTripMotionDuration;
 	private Long receivedTimestamp;
-	private Integer vPTODuration;
+	private Long vPTODuration;
 	private Integer vHarshBrakeDuration;
-	private Integer vBrakeDuration;
-	private Integer vMaxThrottlePaddleDuration;
-	private Integer vTripAccelerationTime;
-	private Integer vCruiseControlDist;
-	private Integer vTripDPABrakingCount;
-	private Integer vTripDPAAnticipationCount;
-	private Integer vCruiseControlFuelConsumed;
-	private Integer vIdleFuelConsumed;
-	private Integer vSumTripDPABrakingScore;
-	private Integer vSumTripDPAAnticipationScore;
+	private Long vBrakeDuration;
+	private Long vMaxThrottlePaddleDuration;
+	private Long vTripAccelerationTime;
+	private Long vCruiseControlDist;
+	private Long vTripDPABrakingCount;
+	private Long vTripDPAAnticipationCount;
+	private Long vCruiseControlFuelConsumed;
+	private Long vIdleFuelConsumed;
+	private Long vSumTripDPABrakingScore;
+	private Long vSumTripDPAAnticipationScore;
 	private String driverId;
 	// data type changed
 	// private String eventDateTimeFirstIndex;
@@ -72,9 +72,9 @@ public class TripStatusData implements Serializable {
 	private String evtDateTime;
 	private String evtDateTimeFirstIndex;
 	private Double co2Emission;
-	private Integer numberOfIndexMessage;
-	private Integer vTripIdlePTODuration;
-	private Integer vTripIdleWithoutPTODuration;
+	private Long numberOfIndexMessage;
+	private Long vTripIdlePTODuration;
+	private Long vTripIdleWithoutPTODuration;
 	private Integer tripCalCrsCntrlDist25To50;
 	private Integer tripCalCrsCntrlDist50To75;
 	private Integer tripCalCrsCntrlDistAbv75;

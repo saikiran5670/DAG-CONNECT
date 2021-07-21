@@ -21,9 +21,9 @@ public class TripStatusAggregation implements Serializable {
 	private String vin;
 	private Long startDateTime;
 	private Long endDateTime;
-	private Integer gpsTripDist;
+	private Long gpsTripDist;
 	private Long tripCalDist;
-	private Integer vIdleDuration;
+	private Long vIdleDuration;
 	private Double tripCalAvgSpeed;
 	private Long gpsStartVehDist;
 	private Long gpsStopVehDist;
@@ -31,9 +31,9 @@ public class TripStatusAggregation implements Serializable {
 	private Double gpsStartLongitude;
 	private Double gpsEndLatitude;
 	private Double gpsEndLongitude;
-	private Integer vUsedFuel;
+	private Long vUsedFuel;
 	private Long tripCalUsedFuel;
-	private Integer vTripMotionDuration;
+	private Long vTripMotionDuration;
 	private Long tripCalDrivingTm;
 	private Long receivedTimestamp;
 	private Double tripCalC02Emission;
@@ -46,9 +46,9 @@ public class TripStatusAggregation implements Serializable {
 	private Integer tripCalCrsCntrlDistAbv75;
 	private Double tripCalAvgTrafficClsfn;
 	private Double tripCalCCFuelConsumption;
-	private Integer vCruiseControlFuelConsumed;
-	private Integer vCruiseControlDist;
-	private Integer vIdleFuelConsumed;
+	private Long vCruiseControlFuelConsumed;
+	private Long vCruiseControlDist;
+	private Long vIdleFuelConsumed;
 	private Double tripCalfuelNonActiveCnsmpt;
 	private Double tripCalDpaScore;
 	private String driverId;
@@ -57,22 +57,22 @@ public class TripStatusAggregation implements Serializable {
 	private Long tripProcessingTS;
 	private Long etlProcessingTS;
 	private Long kafkaProcessingTS;
-	private Integer numberOfIndexMessage;
+	private Long numberOfIndexMessage;
 	
 	//new fields
-	private Integer vTripDPABrakingCount;
-	private Integer vTripDPAAnticipationCount;
-	private Integer vSumTripDPABrakingScore;
-	private Integer vSumTripDPAAnticipationScore;
+	private Long vTripDPABrakingCount;
+	private Long vTripDPAAnticipationCount;
+	private Long vSumTripDPABrakingScore;
+	private Long vSumTripDPAAnticipationScore;
 	private Long vStopFuel;
 	private Long vStartFuel;
 	
 	private Integer vHarshBrakeDuration;
-	private Integer vBrakeDuration; 
-	private Integer vTripIdlePTODuration;
-	private Integer vTripIdleWithoutPTODuration;
-	private Integer vPTODuration;
-	private Integer vMaxThrottlePaddleDuration;
-	private Integer vTripAccelerationTime;
+	private Long vBrakeDuration; 
+	private Long vTripIdlePTODuration;
+	private Long vTripIdleWithoutPTODuration;
+	private Long vPTODuration;
+	private Long vMaxThrottlePaddleDuration;
+	private Long vTripAccelerationTime;
 		
 }

@@ -18,7 +18,7 @@ import { OrganizationService } from '../../../services/organization.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FleetMapService } from '../fleet-map.service'
-
+import { DataInterchangeService } from '../../../services/data-interchange.service';
 declare var H: any;
 
 @Component({
@@ -65,7 +65,8 @@ export class LiveFleetMapComponent implements OnInit {
     private organizationService: OrganizationService,
     private _configService: ConfigService,
     private hereService: HereService,
-    private fleetMapService:FleetMapService) {
+    private fleetMapService:FleetMapService,
+    private dataInterchangeService:DataInterchangeService) {
     this.map_key = _configService.getSettings("hereMap").api_key;
     //Add for Search Fucntionality with Zoom
     ///this.query = "starbucks";
@@ -75,7 +76,27 @@ export class LiveFleetMapComponent implements OnInit {
     //this.configureAutoSuggest();
     //this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
+    this.dataInterchangeService.detailDataInterface$.subscribe(data => {
+    this.tripTraceArray = [];
 
+      if (data) {
+        if(data.length){
+          this.tripTraceArray = data;
+          this.showIcons = true;
+
+        }
+        else{
+          this.tripTraceArray.push(data);
+          this.showIcons = false;
+
+        }
+      }
+      else {
+        this.showIcons = true;
+      }
+      
+      this.mapIconData();
+    })
   }
 
   ngOnInit(): void {
@@ -106,7 +127,7 @@ export class LiveFleetMapComponent implements OnInit {
     //this.tripTraceArray = this.detailsData;
     let _ui = this.fleetMapService.getUI();
    // this.fleetMapService.setIconsOnMap(this.detailsData);
-    this.showIcons = true;
+ 
     this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons);
 
     //this.fleetMapService.setIconsOnMap();
