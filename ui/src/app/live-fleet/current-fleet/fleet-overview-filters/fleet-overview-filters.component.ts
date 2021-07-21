@@ -251,6 +251,7 @@ getFilterData(){
       }
     }
     this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
+      this.drawIcons(data);
       data.forEach(item => {
         this.filterData["healthStatus"].forEach(e => {
          if(item.vehicleHealthStatusType==e.value)
@@ -266,8 +267,7 @@ getFilterData(){
          });              
       });      
      // this.detailsData=data;     
-      this.vehicleListData = data;   
-      this.drawIcons(this.vehicleListData); 
+      this.vehicleListData = data;         
     }, (error) => {
 
       if (error.status == 404) {
@@ -432,18 +432,31 @@ setIconsOnMap(element) {
     default:
       break;
   }
-  let _vehicleIcon : any;
+  let _vehicleIcon : any; 
   if(_drivingStatus){
 
   }
   else{
-    let _alertFound = undefined ;
-    
-    if(element.fleetOverviewAlert.length > 0){
-      _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
+    let _alertFound = undefined ;    
+    // if(element.fleetOverviewAlert.length > 0){
+    //   _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
 
+    // } 
+    if(element.fleetOverviewAlert.length > 0){      
+      let critical  = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'C');
+      let warning   = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'W');
+      let advisory   = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'A');
+     
+      if(critical.length > 0){
+      _alertFound = critical[0];
+     } 
+     else if(warning.length > 0){
+      _alertFound = warning[0];
+     } else{
+      _alertFound = advisory[0];
+     }
     }
-    
+       
     if(_alertFound){
       _alertConfig = this.getAlertConfig(_alertFound);     
       _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
