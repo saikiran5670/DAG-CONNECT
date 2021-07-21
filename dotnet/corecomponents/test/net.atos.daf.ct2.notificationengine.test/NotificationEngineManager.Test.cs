@@ -36,10 +36,10 @@ namespace net.atos.daf.ct2.notificationengine.test
             TripAlert tripAlert = new TripAlert();
             tripAlert.Id = 1;
             tripAlert.Tripid = "a801403e-ae4c-42cf-bf2d-ae39009c61fc";
-            tripAlert.Vin = "NBVGF1254KLJ55";
+            tripAlert.Vin = "XLR0998HGFFT76657";
             tripAlert.CategoryType = "L";
             tripAlert.Type = "N";
-            tripAlert.Alertid = 274;
+            tripAlert.Alertid = 307;
             tripAlert.Latitude = 51.12768173;
             tripAlert.Longitude = 4.935644627;
             tripAlert.AlertGeneratedTime = 1623325980000;

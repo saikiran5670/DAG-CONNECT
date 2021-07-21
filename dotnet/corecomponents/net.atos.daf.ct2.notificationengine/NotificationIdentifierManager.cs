@@ -120,6 +120,10 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.Status = "";
                         notificationHistory.EmailSub = item.Notrec_email_sub;
                         notificationHistory.EmailText = item.Notrec_email_text;
+                        notificationHistory.WsAuthType = item.Notrec_ws_type;
+                        notificationHistory.WsLogin = item.Notrec_ws_login;
+                        notificationHistory.WsPassword = item.Notrec_ws_password;
+                        notificationHistory.WsText = item.Notrec_ws_text;
                         identifiedNotificationRec.Add(notificationHistory);
                     }
                 }
