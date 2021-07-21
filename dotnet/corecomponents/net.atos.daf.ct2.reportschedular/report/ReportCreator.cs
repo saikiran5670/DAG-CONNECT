@@ -68,7 +68,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
         reportKey switch
         {
             ReportNameConstants.REPORT_TRIP => new TripReport(_reportManager, _reportSchedulerRepository, _visibilityManager,
-                                                              _templateManager, _unitConversionManager, EmailEventType.TripReport, EmailContentType.Html),
+                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.TripReport, EmailContentType.Html),
             ReportNameConstants.REPORT_FLEET_UTILISATION => new FleetUtilisation(_reportManager, _reportSchedulerRepository, _visibilityManager,
                                                               _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetUtilisation, EmailContentType.Html),
             _ => throw new ArgumentException(message: "invalid Report Key value", paramName: nameof(reportKey)),

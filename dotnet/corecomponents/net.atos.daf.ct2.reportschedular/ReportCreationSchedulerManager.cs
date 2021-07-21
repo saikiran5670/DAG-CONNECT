@@ -78,7 +78,7 @@ namespace net.atos.daf.ct2.reportscheduler
                 Created_at = DateTime.Now,
                 Performed_at = DateTime.Now,
                 Performed_by = 2,
-                Component_name = "Report Creation Scheduler",
+                Component_name = "Report_Creation_Scheduler",
                 Service_name = "reportscheduler.CoreComponent",
                 Event_type = AuditTrailEnum.Event_type.CREATE,
                 Event_status = eventStatus,

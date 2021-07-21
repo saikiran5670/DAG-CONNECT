@@ -53,7 +53,8 @@ namespace net.atos.daf.ct2.account.report
         public FleetUtilisation(IReportManager reportManager,
                           IReportSchedulerRepository reportSchedularRepository,
                           IVisibilityManager visibilityManager, ITemplateManager templateManager,
-                          IUnitConversionManager unitConversionManager, IUnitManager unitManager, EmailEventType evenType, EmailContentType contentType)
+                          IUnitConversionManager unitConversionManager, IUnitManager unitManager,
+                          EmailEventType evenType, EmailContentType contentType)
         {
             ReportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
