@@ -531,13 +531,6 @@ tripTraceArray: any = [];
               private completerService: CompleterService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService) {
-                this.map_key =  _configService.getSettings("hereMap").api_key;
-                //Add for Search Fucntionality with Zoom
-                this.query = "starbucks";
-                this.platform = new H.service.Platform({
-                "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-                  });
-               this.configureAutoSuggest();
                 const navigation = this.router.getCurrentNavigation();
                 this._state = navigation.extras.state as {
                   fromFleetfuelReport: boolean,
@@ -548,6 +541,13 @@ tripTraceArray: any = [];
                 }else{
                   this.showBack = false;
                 }
+                this.map_key =  _configService.getSettings("hereMap").api_key;
+                //Add for Search Fucntionality with Zoom
+                this.query = "starbucks";
+                this.platform = new H.service.Platform({
+                "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+                  });
+               this.configureAutoSuggest();
                }
 
                
@@ -1234,10 +1234,11 @@ createEndMarker(){
         "startDateTime":_startTime,
         "endDateTime":_endTime,
         "viNs":  _vinData,
+        "driverId": "NL B000384974000000"
       }
       this.loadfleetFuelDetails(_vinData);
-       //this.setTableInfo();
-      //  this.updateDataSource(this.FuelData);
+       this.setTableInfo();
+      // this.updateDataSource(this.FuelData);
       this.hideloader();
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
@@ -1258,7 +1259,8 @@ createEndMarker(){
       "startDateTime": _startTime,
       "endDateTime": _endTime,
       "viNs": _vinData,
-      "LanguageCode": "EN-GB"
+      "LanguageCode": "EN-GB",
+      "driverId": "NL B000384974000000"
     }
     this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
