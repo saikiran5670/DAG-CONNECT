@@ -21,5 +21,9 @@ namespace net.atos.daf.ct2.notificationengine.entity
         public string Status { get; set; }
         public string EmailSub { get; set; }
         public string EmailText { get; set; }
+        public string WsAuthType { get; set; }
+        public string WsText { get; set; }
+        public string WsLogin { get; set; }
+        public string WsPassword { get; set; }
     }
 }
