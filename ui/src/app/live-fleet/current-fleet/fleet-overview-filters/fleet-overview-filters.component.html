@@ -1,5 +1,5 @@
-<div class="dashboardMenu" style="padding: 0px !important;">
-    <mat-expansion-panel class="full-width" fxLayoutGap="10px" style="padding-top: 20px;">
+<div  class="dashboardMenu" style="padding: 0px !important;">
+    <mat-expansion-panel *ngIf ='!isVehicleDetails' class="full-width" fxLayoutGap="10px" style="padding-top: 20px;">
         <mat-expansion-panel-header class="full-width">
           <mat-panel-title>              
           <span style="font-size:15px;margin-top:0px;letter-spacing: 0.3px;padding-right: 15px;">{{translationData.lblViewDetailsBy || 'Filter by:'}}</span>

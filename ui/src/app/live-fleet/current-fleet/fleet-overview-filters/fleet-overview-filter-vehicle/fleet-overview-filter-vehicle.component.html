@@ -1,5 +1,5 @@
-<div *ngIf='!isVehicleDetails' class='mat-elevation-z no-padding margin-bottom-xlg' style="margin-top: 10px;">
-    <mat-expansion-panel style="padding: 0px;height: calc(100vh - 45px);" [expanded]="true"  class="full-width" fxLayoutGap="10px">
+<div  class='mat-elevation-z no-padding margin-bottom-xlg' style="margin-top: 10px;">
+    <mat-expansion-panel *ngIf='!isVehicleDetails' style="padding: 0px;height: calc(100vh - 45px);" [expanded]="true"  class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width" style="height: 45px;">
         <mat-panel-title>
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbl || 'Vehicle List' }}({{vehicleListData.length}})</span>

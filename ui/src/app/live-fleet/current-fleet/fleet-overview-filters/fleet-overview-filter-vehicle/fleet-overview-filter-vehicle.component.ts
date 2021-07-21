@@ -42,7 +42,7 @@ constructor() { }
     //  this.loadVehicleData();
     
 let emitObj = {
-  todayFlagClicked  : event.checked
+  todayFlagClicked  : event.checked,
 }
  this.vehicleFilterComponentEmit.emit(emitObj);
   }
@@ -51,10 +51,18 @@ let emitObj = {
     this.isVehicleDetails = true;
     this.selectedElementData = data;
     this.tabvisibility.emit(false);
+    let obj ={
+      vehicleDetailsFlag : this.isVehicleDetails
+    }
+    this.vehicleFilterComponentEmit.emit(obj);
   }
 
   checkCreationForVehicleDetails(item: any){
     this.tabvisibility.emit(false);
     this.isVehicleDetails = item.stepFlag;
+    let obj ={
+      vehicleDetailsFlag : this.isVehicleDetails
+    }
+    this.vehicleFilterComponentEmit.emit(obj);
   }
 }

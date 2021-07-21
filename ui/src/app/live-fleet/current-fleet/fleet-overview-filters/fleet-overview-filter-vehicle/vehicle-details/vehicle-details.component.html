@@ -1,4 +1,8 @@
+<!-- <mat-card> -->
 <div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehicleDetails || 'Vehicle Details' }}</span>
+        </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
         <span class='custom-font' (click)="toBack()">
             <span>
@@ -9,11 +13,6 @@
 </div>
 
 <div>
-    <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehicleDetails || 'Vehicle Details' }}</span>
-        </div>
-    </div>
     <div class="full-width vehicleList-div">
         <div class="vehicleList-icon">
             <mat-icon style="font-size: 50px;padding: 26px 0px;"> person_pin_circle</mat-icon>
@@ -42,4 +41,5 @@
         </div>
     </div>
  </div>  
+<!-- </mat-card> -->
  
