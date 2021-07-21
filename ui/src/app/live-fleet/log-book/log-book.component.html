@@ -122,21 +122,21 @@
               </div>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ 'Alert Level' || 'Alert Level' }}</mat-label>
+              <mat-label>{{ translationData.lblAlertLevel || 'Alert Level' }}</mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Level' }}" formControlName="vehicle">
-                  <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
-                      {{ rer.vehicleName }}
+                <mat-select [disabled]="alertLvl.length == 0" (selectionChange)="onAlertLevelChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Level' }}" formControlName="alertLevel">
+                  <mat-option *ngFor="let rer of alertLvl" [value]="rer.value">
+                      {{ rer.name}}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ 'Alert Type' || 'Alert Type' }}</mat-label>
+              <mat-label>{{ translationData.lblAlertType || 'Alert Type' }}</mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Type' }}" formControlName="vehicle">
-                  <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
-                      {{ rer.vehicleName }}
+                <mat-select [disabled]="alertTyp.length == 0" (selectionChange)="onAlertTypeChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Type' }}" formControlName="alertType">
+                  <mat-option *ngFor="let rer of alertTyp" [value]="rer.featureKey">
+                      {{ rer.featureName }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -146,11 +146,11 @@
             <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
             </div>
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ 'Alert Category' || 'Alert Category' }} </mat-label>
+              <mat-label>{{ translationData.lblAlertCategory || 'Alert Category' }} </mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Category' }}" formControlName="vehicle">
-                    <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
-                        {{ rer.vehicleName }}
+                  <mat-select [disabled]="alertCtgry.length == 0" (selectionChange)="onAlertCategoryChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Category' }}" formControlName="alertCategory">
+                    <mat-option *ngFor="let rer of alertCtgry" [value]="rer.value">
+                        {{ rer.name }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>

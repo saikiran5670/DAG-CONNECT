@@ -21,23 +21,33 @@
                 <mat-cell style="margin-right: 10px;" *matCellDef="let row"> {{row}} </mat-cell>
               </ng-container> -->
 
-            <ng-container [matColumnDef]="column" class="text-truncate" style="max-width: 20%;margin-right: 10px;" *ngFor="let column of displayedColumns; let index=index">
-                <mat-header-cell style="margin-right: 10px;min-width: 200px;" *matHeaderCellDef> {{column == "period" ? "Period" : column}} 
-                    <mat-icon *ngIf="index !== 0" aria-hidden="false" aria-label="Example home icon" (click)="removeColumn(index)">close</mat-icon>
-                </mat-header-cell>
-                <mat-cell style="margin-right: 10px;" *matCellDef="let row; let i=index">
-                    <div>{{row[column]}}</div> 
-                   <div  *ngIf="index !== 0 && i == 4"><mat-progress-bar class="example-margin" [color]="color" [mode]="mode" [bufferValue]="bufferValue"
-                    value="40"></mat-progress-bar></div>
-                    <div *ngIf="index !== 0 && i == 5">  
-                    <canvas baseChart 
-                    [data]="doughnutChartData"
-                    [labels]="doughnutChartLabels"
-                    [chartType]="doughnutChartType">                   
+            <ng-container [matColumnDef]="column" class="text-truncate" style="max-width: 20%;margin-right: 10px;"
+              *ngFor="let column of displayedColumns; let index=index">
+              <mat-header-cell style="margin-right: 10px;min-width: 200px;" *matHeaderCellDef> {{column == "period" ? "Period" :
+                column}}
+                <mat-icon *ngIf="index !== 0" aria-hidden="false" aria-label="Example home icon" (click)="removeColumn(index)">close
+                </mat-icon>
+              </mat-header-cell>
+              <mat-cell style="margin-right: 10px;" *matCellDef="let row; let i=index">
+                <div *ngIf="(i !== 4 && i !== 5) || column == 'period'" >{{row[column]}}</div>
+
+                <div *ngIf="index !== 0 && i == 4">
+                  Consumption (Ltrs/100km)
+                  <div *ngFor="let ranking of row[column]; let index=index">
+                    <span class="vehice-name">{{index + 1}}. {{ranking.vehicleName==""?ranking.vin:ranking.vehicleName}} </span>
+                    <mat-progress-bar class="example-margin" [color]="color" [mode]="mode" [bufferValue]="100 - ranking.ltrVal" [value]='ranking.ltrVal'>
+                    </mat-progress-bar>
+                  </div>
+                  
+                </div>
+
+                <div *ngIf="index !== 0 && i == 5">
+                  <canvas baseChart [data]="doughnutChartData" [labels]="doughnutChartLabels" [chartType]="doughnutChartType">
                   </canvas>
-                </div>                 
-               </mat-cell>
-              </ng-container>
+                </div>
+
+              </mat-cell>
+            </ng-container>
 
 
 
