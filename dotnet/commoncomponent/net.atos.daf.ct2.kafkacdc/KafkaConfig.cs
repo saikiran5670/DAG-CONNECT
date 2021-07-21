@@ -1,6 +1,6 @@
 ﻿using Confluent.Kafka;
 
-namespace net.atos.daf.ct2.alertcdc
+namespace net.atos.daf.ct2.kafkacdc
 {
     public class KafkaConfig
     {

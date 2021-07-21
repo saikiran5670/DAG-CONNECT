@@ -77,6 +77,7 @@ displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthS
       group: ['all'],
     })   
     this.getFilterData();
+    this.drawIcons(this.detailsData);
   }
 
   tabVisibilityHandler(tabVisibility: boolean){

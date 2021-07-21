@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace net.atos.daf.ct2.alertcdc.entity
+namespace net.atos.daf.ct2.kafkacdc.entity
 {
     public class VehicleAlertRef
     {

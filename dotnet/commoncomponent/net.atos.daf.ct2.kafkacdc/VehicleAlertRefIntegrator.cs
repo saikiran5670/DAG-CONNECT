@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using net.atos.daf.ct2.alertcdc.entity;
-using net.atos.daf.ct2.alertcdc.repository;
+using net.atos.daf.ct2.kafkacdc.entity;
+using net.atos.daf.ct2.kafkacdc.repository;
 
-namespace net.atos.daf.ct2.alertcdc
+namespace net.atos.daf.ct2.kafkacdc
 {
     public class VehicleAlertRefIntegrator : IVehicleAlertRefIntegrator
     {
@@ -24,11 +24,9 @@ namespace net.atos.daf.ct2.alertcdc
         internal async Task<List<VehicleAlertRef>> ExtractAndSyncVehicleAlertRefByAlertIds(List<int> alertIds)
         {
             List<VehicleAlertRef> masterVehicleAlerts = await _vehicleAlertRepository.GetVehiclesFromAlertConfiguration(alertIds);
-            List<VehicleAlertRef> datamartVehicleAlerts = await _vehicleAlertRepository.GetVehicleAlertRefByAlertIds(alertIds);
-            await _vehicleAlertRepository.InsertVehicleAlertRef(datamartVehicleAlerts);
-            await _vehicleAlertRepository.UpdateVehicleAlertRef(datamartVehicleAlerts);
-            await _vehicleAlertRepository.DeleteVehicleAlertRef(datamartVehicleAlerts);
-            return datamartVehicleAlerts;
+            await _vehicleAlertRepository.DeleteVehicleAlertRef(alertIds);
+            await _vehicleAlertRepository.InsertVehicleAlertRef(masterVehicleAlerts);
+            return masterVehicleAlerts;
         }
     }
 }
