@@ -210,6 +210,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.ecoscoreda
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.alertcdc", "commoncomponent\net.atos.daf.ct2.alertcdc\net.atos.daf.ct2.alertcdc.csproj", "{D1C1287E-9FF0-4D0C-AE5F-A86367458F19}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.notificationengine.test", "corecomponents\test\net.atos.daf.ct2.notificationengine.test\net.atos.daf.ct2.notificationengine.test.csproj", "{30F8C94C-450D-4F2E-93D7-24D1E530D650}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1242,6 +1244,18 @@ Global
 		{D1C1287E-9FF0-4D0C-AE5F-A86367458F19}.Release|x64.Build.0 = Release|Any CPU
 		{D1C1287E-9FF0-4D0C-AE5F-A86367458F19}.Release|x86.ActiveCfg = Release|Any CPU
 		{D1C1287E-9FF0-4D0C-AE5F-A86367458F19}.Release|x86.Build.0 = Release|Any CPU
+		{30F8C94C-450D-4F2E-93D7-24D1E530D650}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30F8C94C-450D-4F2E-93D7-24D1E530D650}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30F8C94C-450D-4F2E-93D7-24D1E530D650}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{30F8C94C-450D-4F2E-93D7-24D1E530D650}.Debug|x64.Build.0 = Debug|Any CPU
+		{30F8C94C-450D-4F2E-93D7-24D1E530D650}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{30F8C94C-450D-4F2E-93D7-24D1E530D650}.Debug|x86.Build.0 = Debug|Any CPU
+		{30F8C94C-450D-4F2E-93D7-24D1E530D650}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30F8C94C-450D-4F2E-93D7-24D1E530D650}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30F8C94C-450D-4F2E-93D7-24D1E530D650}.Release|x64.ActiveCfg = Release|Any CPU
+		{30F8C94C-450D-4F2E-93D7-24D1E530D650}.Release|x64.Build.0 = Release|Any CPU
+		{30F8C94C-450D-4F2E-93D7-24D1E530D650}.Release|x86.ActiveCfg = Release|Any CPU
+		{30F8C94C-450D-4F2E-93D7-24D1E530D650}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1339,6 +1353,7 @@ Global
 		{41D35981-C18D-4453-B385-672D1CA0A367} = {6DC783E9-2608-4485-8BD7-DC423EC6FFB8}
 		{0621FEF4-8E42-4554-B85B-5C7746087866} = {C93E4ACE-B462-4601-AD70-594B9B6634BD}
 		{D1C1287E-9FF0-4D0C-AE5F-A86367458F19} = {824A4D14-F8BE-4618-AEDC-A34C9FD2261E}
+		{30F8C94C-450D-4F2E-93D7-24D1E530D650} = {A8B3E117-26FF-4FC1-A381-ED115B3104D5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD5CC07A-2F4F-48DF-AB1C-BE925A46D5B7}
