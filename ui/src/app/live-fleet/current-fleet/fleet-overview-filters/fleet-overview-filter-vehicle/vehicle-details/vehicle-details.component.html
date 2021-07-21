@@ -1,0 +1,45 @@
+<!-- <mat-card> -->
+<div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehicleDetails || 'Vehicle Details' }}</span>
+        </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+        <span class='custom-font' (click)="toBack()">
+            <span>
+                <&nbsp;</span>
+                    <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+        </span>
+    </div>
+</div>
+
+<div>
+    <div class="full-width vehicleList-div">
+        <div class="vehicleList-icon">
+            <mat-icon style="font-size: 50px;padding: 26px 0px;"> person_pin_circle</mat-icon>
+        </div>
+        <div class="vehicleList-details">
+        <div>
+            <span class="vehicle-details-head">{{ translationData.lbl || 'VIN'}}: </span>
+            <span class="vehicle-details-data">{{gridData.vin}}</span>
+        </div>
+        <div>
+            <span class="vehicle-details-head">{{ translationData.lbl || 'Vehicle Reg No'}}:</span>
+            <span class="vehicle-details-data">{{gridData.registrationNo}}</span>
+        </div> 
+        <div>
+            <span class="vehicle-details-head">{{ translationData.lbl || 'Driver ID'}}:</span>
+            <span class="vehicle-details-data">{{gridData.driver1Id}}</span>
+        </div> 
+        <div>
+            <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
+            <span class="vehicle-details-data">{{gridData.vehicleDrivingStatusType}}</span>
+        </div> 
+        <div>
+            <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
+            <span class="vehicle-details-data" (click)='gotoHealthStatus(gridData)'>{{gridData.vehicleHealthStatusType}}</span>
+        </div>
+        </div>
+    </div>
+ </div>  
+<!-- </mat-card> -->
+ 
