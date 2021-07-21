@@ -5,7 +5,6 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.java.tuple.Tuple10;
 import org.apache.flink.api.java.tuple.Tuple11;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -70,7 +69,10 @@ public class TripStreamingJob {
 						public TripStatusData map(KafkaRecord<Status> kafkaRec) {
 							return fetchStatusData(kafkaRec.getValue());
 						}
-					});//.filter(rec -> null != rec);
+					}).filter(rec -> { if(rec.getTripId() == null){
+							logger.info("Data Issue TripId is null, ignoring :: "+ rec); 
+							System.out.println("Data Issue TripId is null, ignoring :: "+ rec);}
+						return null !=  rec.getTripId();});
 			
 			logger.info(" completed reading the streaming data !!!!!!!!!!!!!! ");
 

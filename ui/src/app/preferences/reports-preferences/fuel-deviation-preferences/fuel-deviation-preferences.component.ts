@@ -2,6 +2,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ReportService } from '../../../services/report.service';
 import { Router } from '@angular/router';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-fuel-deviation-preferences',
@@ -16,16 +17,42 @@ export class FuelDeviationPreferencesComponent implements OnInit {
   reportId: any;
   initData: any = [];
   summaryData:any = [];
+  reqField: boolean = false;
+  fuelDeviationReportForm: FormGroup;
   chartsData:any = [];
   detailsData:any = [];
   selectionForSummary = new SelectionModel(true, []);
   selectionForCharts = new SelectionModel(true, []);
   selectionForDetails = new SelectionModel(true, []);
+  chartIndex: any = {};
+  lineBarDD: any = [{
+    type: 'L',
+    name: 'Line Chart'
+  },
+  {
+    type: 'B',
+    name: 'Bar Chart'
+  }];
+  
+  donutPieDD: any = [{
+    type: 'D',
+    name: 'Donut Chart'
+  },
+  {
+    type: 'P',
+    name: 'Pie Chart'
+  }];
 
-  constructor(private reportService: ReportService, private router: Router) { }
+  constructor(private reportService: ReportService, private router: Router, private _formBuilder: FormBuilder) { }
 
   ngOnInit() {
     let repoId: any = this.reportListData.filter(i => i.name == 'Fuel Deviation Report');
+    this.fuelDeviationReportForm = this._formBuilder.group({
+      increaseEventChart: [],
+      decreaseEventChart: [],
+      deviationEventChart: []
+    });
+    
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
     }else{
@@ -37,7 +64,33 @@ export class FuelDeviationPreferencesComponent implements OnInit {
 
   translationUpdate(){
     this.translationData = {
-
+      rp_fd_reportsummary: 'Summary',
+      rp_fd_summary_fuelincreaseevents: 'Fuel Increase Events',
+      rp_fd_summary_fueldecreaseevents: 'Fuel Decrease Events',
+      rp_fd_summary_vehiclewithfuelevents: 'Vehicle With Fuel Events',
+      rp_fd_reportchart: 'Charts',
+      rp_fd_chart_fuelincreaseevents: 'Fuel Increase Events',
+      rp_fd_chart_fueldecreaseevents: 'Fuel Decrease Events',
+      rp_fd_chart_fueldeviationevent: 'Fuel Deviation Event',
+      rp_fd_report_details: 'Details',
+      rp_fd_details_averageweight: 'Average Weight',
+      rp_fd_details_enddate: 'End Date',
+      rp_fd_details_fuelconsumed: 'Fuel Consumed',
+      rp_fd_details_startdate: 'Start Date',
+      rp_fd_details_drivingtime: 'Driving Time',
+      rp_fd_details_startposition: 'Start Position',
+      rp_fd_details_odometer: 'Odometer',
+      rp_fd_details_vehiclename: 'Vehicle Name',
+      rp_fd_details_vin: 'VIN',
+      rp_fd_details_type: 'Type',
+      rp_fd_details_date: 'Date',
+      rp_fd_details_distance: 'Distance',
+      rp_fd_details_averagespeed: 'Average Speed',
+      rp_fd_details_regplatenumber: 'Reg. Plate Number',
+      rp_fd_details_endposition: 'End Position',
+      rp_fd_details_idleduration: 'Idle Duration',
+      rp_fd_details_alerts: 'Alerts',
+      rp_fd_details_difference: 'Difference'
     }
   }
 
@@ -76,7 +129,22 @@ export class FuelDeviationPreferencesComponent implements OnInit {
               }else{
                 _data.translatedName = this.getName(item.name, 13);   
               }
-              this.chartsData.push(_data);
+              let index: any;
+              switch(item.key){
+                case 'rp_fd_chart_fuelincreaseevents':{
+                  index = this.chartIndex.increaseEventIndex = 0;
+                  break;
+                }
+                case 'rp_fd_chart_fueldecreaseevents':{
+                  index = this.chartIndex.decreaseEventIndex = 1;
+                  break;
+                }
+                case 'rp_fd_chart_fueldeviationevent':{
+                  index = this.chartIndex.deviationEventIndex = 2;
+                  break;
+                }
+              }
+              this.chartsData[index] = _data;
             }else if(item.key.includes('rp_fd_details_')){
               if(this.translationData[item.key]){
                 _data.translatedName = this.translationData[item.key];  
@@ -119,6 +187,17 @@ export class FuelDeviationPreferencesComponent implements OnInit {
         this.selectionForDetails.select(element);
       }
     });
+
+    if(this.chartsData.length > 0){
+      this.setDefaultFormValues();
+    }
+    this.validateRequiredField();
+  }
+
+  setDefaultFormValues(){
+    this.fuelDeviationReportForm.get('increaseEventChart').setValue(this.chartsData[0].chartType != '' ? this.chartsData[0].chartType : 'L');
+    this.fuelDeviationReportForm.get('decreaseEventChart').setValue(this.chartsData[1].chartType != '' ? this.chartsData[1].chartType : 'L');
+    this.fuelDeviationReportForm.get('deviationEventChart').setValue(this.chartsData[2].chartType != '' ? this.chartsData[2].chartType : 'D');
   }
 
   onCancel(){
@@ -131,6 +210,10 @@ export class FuelDeviationPreferencesComponent implements OnInit {
   }
 
   onConfirm(){
+    let _summaryArr: any = [];
+    let _chartArr: any = [];
+    let _detailArr: any = [];
+
 
   }
 
@@ -143,6 +226,17 @@ export class FuelDeviationPreferencesComponent implements OnInit {
 
   reloadCurrentComponent(){
     window.location.reload(); //-- reload screen
+  }
+
+  validateRequiredField(){
+    let _flag = true;
+    if(this.selectionForDetails.selected.length > 0){
+      let _search = this.selectionForDetails.selected.filter(i => (i.key == 'rp_fd_details_vehiclename' || i.key == 'rp_fd_details_vin' || i.key == 'rp_fd_details_regplatenumber'));
+      if(_search.length){
+        _flag = false;
+      }
+    }
+    this.reqField = _flag;
   }
 
   masterToggleForSummaryColumns(){
@@ -159,11 +253,53 @@ export class FuelDeviationPreferencesComponent implements OnInit {
     return numSelected === numRows;
   }
 
+  masterToggleForDetailColumns(){
+    if(this.isAllSelectedForDetailColumns()){
+      this.selectionForDetails.clear();
+      this.validateRequiredField();
+    }else{
+      this.detailsData.forEach(row => { this.selectionForDetails.select(row) });
+      this.validateRequiredField();
+    }
+  }
+
+  isAllSelectedForDetailColumns(){
+    const numSelected = this.selectionForDetails.selected.length;
+    const numRows = this.detailsData.length;
+    return numSelected === numRows;
+  }
+
+  masterToggleForChartsColumns(){
+    if(this.isAllSelectedForChartsColumns()){
+      this.selectionForCharts.clear();
+    }else{
+      this.chartsData.forEach(row => { this.selectionForCharts.select(row) });
+    }
+  }
+
+  isAllSelectedForChartsColumns(){
+    const numSelected = this.selectionForCharts.selected.length;
+    const numRows = this.chartsData.length;
+    return numSelected === numRows;
+  }
+
   checkboxLabelForColumns(rowData?: any){
 
   }
 
   summaryCheckboxClicked(event: any, rowData: any){
+
+  }
+
+  detailsCheckboxClicked(event: any, rowData: any){
+    this.validateRequiredField();
+  }
+
+  onlineBarDDChange(event: any){
+
+  }
+
+  onDonutPieDDChange(event: any){
 
   }
 

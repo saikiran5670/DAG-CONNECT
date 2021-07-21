@@ -616,7 +616,9 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       fromDate: this.formStartDate(this.startDateValue),
       endDate: this.formStartDate(this.endDateValue),
       vehGroupName: vehGrpName,
-      vehicleName: vehName
+      vehicleName: vehName,
+      vin : vin,
+      plateNo : plateNo,
     }    
   }
 

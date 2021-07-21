@@ -1,4 +1,4 @@
-import { Input, ViewChild } from '@angular/core';
+import { EventEmitter, Input, ViewChild } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatTableExporterDirective } from 'mat-table-exporter';
@@ -6,6 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ReportService } from 'src/app/services/report.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Output } from '@angular/core';
 
 @Component({
   selector: 'app-fleet-overview-filter-driver',
@@ -30,6 +31,7 @@ export class FleetOverviewFilterDriverComponent implements OnInit {
   noRecordFlag: boolean = false;
   driverVehicleForm: FormGroup;
   panelOpenState: boolean = false;
+  @Output() driverFilterComponentEmit =  new EventEmitter<object>();
 
   constructor(private reportService: ReportService,private _formBuilder: FormBuilder) { }
 
@@ -126,18 +128,35 @@ this.reportService.getFleetOverviewDetails(objData).subscribe((data:any) => {
 this.noRecordFlag = false;
 }
 
-onChangetodayCheckbox(event){
-  if(event.checked){
-    this.todayFlagClicked = true;
-    this.loadVehicleData();
-     }
-     else{
-      this.todayFlagClicked = false;
-      this.getFilterData();
-      this.loadVehicleData();
+// onChangetodayCheckbox(event){
+//   if(event.checked){
+//     this.todayFlagClicked = true;
+//     this.loadVehicleData();
+//      }
+//      else{
+//       this.todayFlagClicked = false;
+//       this.getFilterData();
+//       this.loadVehicleData();
   
-     }
+//      }
+// }
+
+onChangetodayCheckbox(event){
+  //   if(event.checked){
+  //  this.todayFlagClicked = true;
+  //  this.getFilterData();
+  //  this.loadVehicleData();
+    // }
+    // else{
+    //  this.todayFlagClicked = false;
+    //  this.getFilterData();
+    //  this.loadVehicleData();
+    
+let emitObj = {
+  todayFlagClicked  : event.checked
 }
+ this.driverFilterComponentEmit.emit(emitObj);
+  }
 
 getFilterData(){
   this.reportService.getFilterDetails().subscribe((data: any) => {
