@@ -685,8 +685,8 @@
                 </mat-cell>
               </ng-container>
   
-              <ng-container matColumnDef="heavyThrottleDuration" [hidden]="!checkForPreference('vehicledetails_heavythrottleduration')">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblHeavyThrottleDuration || 'Heavy
+              <ng-container matColumnDef="heavyThrottleDuration">
+                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_heavythrottleduration')">{{ translationData.lblHeavyThrottleDuration || 'Heavy
                   Throttle Duration' }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_heavythrottleduration')">
