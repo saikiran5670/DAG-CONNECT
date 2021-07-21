@@ -17,6 +17,7 @@ export class FuelDeviationPreferencesComponent implements OnInit {
   reportId: any;
   initData: any = [];
   summaryData:any = [];
+  reqField: boolean = false;
   fuelDeviationReportForm: FormGroup;
   chartsData:any = [];
   detailsData:any = [];
@@ -190,6 +191,7 @@ export class FuelDeviationPreferencesComponent implements OnInit {
     if(this.chartsData.length > 0){
       this.setDefaultFormValues();
     }
+    this.validateRequiredField();
   }
 
   setDefaultFormValues(){
@@ -208,6 +210,10 @@ export class FuelDeviationPreferencesComponent implements OnInit {
   }
 
   onConfirm(){
+    let _summaryArr: any = [];
+    let _chartArr: any = [];
+    let _detailArr: any = [];
+
 
   }
 
@@ -220,6 +226,17 @@ export class FuelDeviationPreferencesComponent implements OnInit {
 
   reloadCurrentComponent(){
     window.location.reload(); //-- reload screen
+  }
+
+  validateRequiredField(){
+    let _flag = true;
+    if(this.selectionForDetails.selected.length > 0){
+      let _search = this.selectionForDetails.selected.filter(i => (i.key == 'rp_fd_details_vehiclename' || i.key == 'rp_fd_details_vin' || i.key == 'rp_fd_details_regplatenumber'));
+      if(_search.length){
+        _flag = false;
+      }
+    }
+    this.reqField = _flag;
   }
 
   masterToggleForSummaryColumns(){
@@ -237,10 +254,12 @@ export class FuelDeviationPreferencesComponent implements OnInit {
   }
 
   masterToggleForDetailColumns(){
-    if(this.isAllSelectedForSummaryColumns()){
+    if(this.isAllSelectedForDetailColumns()){
       this.selectionForDetails.clear();
+      this.validateRequiredField();
     }else{
       this.detailsData.forEach(row => { this.selectionForDetails.select(row) });
+      this.validateRequiredField();
     }
   }
 
@@ -273,7 +292,7 @@ export class FuelDeviationPreferencesComponent implements OnInit {
   }
 
   detailsCheckboxClicked(event: any, rowData: any){
-
+    this.validateRequiredField();
   }
 
   onlineBarDDChange(event: any){

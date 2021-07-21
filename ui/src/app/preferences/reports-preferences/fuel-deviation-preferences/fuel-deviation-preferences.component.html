@@ -100,7 +100,7 @@
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per"></div>
 </div>
-<div *ngIf='chartsData.length > 0 && chartIndex && chartIndex.deviationEventIndex == 0' fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left center">
+<div *ngIf='chartsData.length > 0 && chartIndex && chartIndex.deviationEventIndex == 2' fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left center">
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
         <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
             (change)='$event ? selectionForCharts.toggle(chartsData[2]) : null;'
@@ -287,6 +287,25 @@
             </mat-checkbox>
         </div>
     </div>
+</div>
+
+<!-- Error msg -->
+<div fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start"
+*ngIf='editFlag && reqField && detailsData.length > 0'>
+<span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN,
+    Registration Number' }}</span>
+</div>
+
+<!-- Button -->
+<div *ngIf='(summaryData.length > 0 || chartsData.length > 0 || detailsData.length > 0) && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
+    <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
+        translationData.lblCancel || 'Cancel' }}</button>
+    <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
+        translationData.lblReset || 'Reset' }}</button>
+    <button
+        [disabled]='reqField || (selectionForSummary.selected.length == 0 && summaryData.length > 0) || (selectionForCharts.selected.length == 0 && chartsData.length > 0) || (selectionForDetails.selected.length == 0 && detailsData.length > 0)'
+        class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
+        'Confirm') }}</button>
 </div>
 
 </form>
