@@ -1,4 +1,4 @@
-<!-- <mat-card> -->
+<mat-card>
 <div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehicleDetails || 'Vehicle Details' }}</span>
@@ -11,11 +11,11 @@
         </span>
     </div>
 </div>
-
 <div>
     <div class="full-width vehicleList-div">
         <div class="vehicleList-icon">
-            <mat-icon style="font-size: 50px;padding: 26px 0px;"> person_pin_circle</mat-icon>
+            <span id="steps" class="step-image" [innerHTML]="gridData.icon"  matTooltip="Health Status: {{gridData.vehicleHealthStatusType}} 
+            &#13; Alert: {{gridData.alertName}}"> </span>
         </div>
         <div class="vehicleList-details">
         <div>
@@ -23,12 +23,16 @@
             <span class="vehicle-details-data">{{gridData.vin}}</span>
         </div>
         <div>
+            <span class="vehicle-details-head">{{ translationData.lbl || 'Vehicle Name'}}: </span>
+            <span class="vehicle-details-data">{{gridData.vid}}</span>
+        </div>
+        <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Vehicle Reg No'}}:</span>
             <span class="vehicle-details-data">{{gridData.registrationNo}}</span>
         </div> 
         <div>
-            <span class="vehicle-details-head">{{ translationData.lbl || 'Driver ID'}}:</span>
-            <span class="vehicle-details-data">{{gridData.driver1Id}}</span>
+            <span class="vehicle-details-head">{{gridData.driverName ? translationData.lbl || 'Driver Name' : translationData.lbl || 'Driver ID'}}:</span>
+            <span class="vehicle-details-data">{{gridData.driverName ? gridData.driverName : gridData.driver1Id}}</span>
         </div> 
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
@@ -36,10 +40,49 @@
         </div> 
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
-            <span class="vehicle-details-data" (click)='gotoHealthStatus(gridData)'>{{gridData.vehicleHealthStatusType}}</span>
+            <span class="vehicle-details-data" class='navigatePoint' (click)='gotoHealthStatus(gridData)' matTooltip="{{ translationData.lbl || 'Click for health details'}}">Stop Now</span>
         </div>
+        <div>
+            <span class="vehicle-details-head">{{ translationData.lbl || 'Alert'}}:</span>
+            <span class="vehicle-details-data">{{gridData.fleetOverviewAlert.length}}</span>
+        </div> 
+        <div>
+            <span class="vehicle-details-head">{{ translationData.lbl || 'Last Message Received'}}:</span>
+            <span class="vehicle-details-data">{{gridData.latestProcessedMessageTimeStamp}}</span>
+        </div> 
+        <div>
+            <span class="vehicle-details-head">{{ translationData.lbl || 'Address'}}:</span>
+            <span class="vehicle-details-data">{{gridData.latestGeolocationAddress}}</span>
+        </div> 
         </div>
     </div>
  </div>  
+
+ <div fxLayout="row" fxLayoutAlign="start" class="full-width vehicleInfo" fxLayoutGap="10px">
+    <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+        <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+            <span>{{ translationData.lbl || 'Current Mileage' }} </span>
+        </div>
+        <div class="areaWidth min-width-35-per vehicleInfo" fxLayout="column" fxLayoutAlign="left">
+            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{gridData.odometerVal}}km</span>
+        </div>
+    </div>
+    <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+        <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+            <span>{{ translationData.lbl || 'Next Service In' }} </span>
+        </div>
+        <div class="areaWidth min-width-35-per vehicleInfo" fxLayout="column" fxLayoutAlign="left">
+            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{gridData.distanceUntilNextService}}km</span>
+        </div>
+    </div>
+    <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+        <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
+            <span>{{ translationData.lbl || 'Health Status' }} </span>
+        </div>
+        <div class="areaWidth min-width-35-per vehicleInfo" fxLayout="column" fxLayoutAlign="right">
+            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{gridData.vehicleHealthStatusType}}</span>
+        </div>
+    </div>
+     </div>
 <!-- </mat-card> -->
  
