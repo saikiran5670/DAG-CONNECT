@@ -511,7 +511,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                     var averageDrivingSpeed = await _reportManager.GetEcoScoreAverageDrivingSpeedChartData(_mapper.MapEcoScoreReportSingleDriverRequest(request));
                     if (averageDrivingSpeed?.Count > 0)
-                        response.AverageDrivingSpeedChart = _mapper.MapEcoScoreAverageDrivingSpeedChartResponse(averageGrossWeight, request.UoM);
+                        response.AverageDrivingSpeedChart = _mapper.MapEcoScoreAverageDrivingSpeedChartResponse(averageDrivingSpeed, request.UoM);
 
                     response.Code = Responsecode.Success;
                     response.Message = ReportConstants.GET_REPORT_DETAILS_SUCCESS_MSG;

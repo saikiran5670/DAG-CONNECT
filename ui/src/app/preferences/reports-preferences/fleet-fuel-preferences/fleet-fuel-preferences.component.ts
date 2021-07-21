@@ -47,9 +47,9 @@ export class FleetFuelPreferencesComponent implements OnInit {
     this.reportId = this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id;
     this.reportService.getReportUserPreference(this.reportId).subscribe((res) => {
       if (this.tabName == 'Vehicle') {
-        this.initData = res['userPreferences']['subReportUserPreferences'][1];
-      } else {
         this.initData = res['userPreferences']['subReportUserPreferences'][0];
+      } else {
+        this.initData = res['userPreferences']['subReportUserPreferences'][1];
       }
       console.log("Fleet Fuel Report ", this.initData)
       this.resetColumnData();
@@ -199,15 +199,6 @@ export class FleetFuelPreferencesComponent implements OnInit {
 
   }
 
-  onCancel(){
-    this.setFuelFleetFlag.emit({flag: false, msg: ''});
-    this.setColumnCheckbox();
-  }
-
-  onReset(){
-    this.setColumnCheckbox();
-  }
-
   getSaveObject(columnData, selectionData) {
     let saveArr = [];
     this[columnData].forEach(element => {
@@ -241,23 +232,8 @@ export class FleetFuelPreferencesComponent implements OnInit {
         _chartsArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "C", chartType: this.fleetFuelForm.get([element.key]).value, thresholdType: "", thresholdValue: 0 });
       }
     });
-
-    let objData: any = {
-      reportId: this.reportId,
-      attributes: [..._summaryArr, ..._vehicleRankingArr, ..._vehicleDetailsArr, ..._singleVehicleDetailsArr, ..._chartsArr]
-    };
-    console.log("save Object", objData)
-    this.reportService.updateReportUserPreference(objData).subscribe((res: any) => {
-      console.log("save res", res)
-      this.setFuelFleetFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-    });
-  }
-
-  getSuccessMsg() {
-    if (this.translationData.lblDetailssavesuccessfully)
-      return this.translationData.lblDetailssavesuccessfully;
-    else
-      return ("Details save successfully");
+    console.log("save Object", [..._summaryArr, ..._vehicleRankingArr, ..._vehicleDetailsArr, ..._singleVehicleDetailsArr, ..._chartsArr])
+    return [..._summaryArr, ..._vehicleRankingArr, ..._vehicleDetailsArr, ..._singleVehicleDetailsArr, ..._chartsArr];
   }
 
 }

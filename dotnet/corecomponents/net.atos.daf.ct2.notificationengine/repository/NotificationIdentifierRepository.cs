@@ -15,21 +15,22 @@ namespace net.atos.daf.ct2.notificationengine.repository
         public NotificationIdentifierRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             _dataMartdataAccess = dataMartdataAccess;
-            this._dataAccess = dataAccess;
+            _dataAccess = dataAccess;
 
         }
 
         public async Task<TripAlert> GetVehicleIdForTrip(TripAlert tripAlert)
         {
-            string queryStatement = @"SELECT id
-	                                            FROM  master.vehicle
-	                                            where vin=@vin";
-            var parameter = new DynamicParameters();
-            parameter.Add("@vin", tripAlert.Vin);
-
-            int vehicleId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
-            tripAlert.VehicleId = vehicleId;
-            return tripAlert;
+            try
+            {
+                int vehicleId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = tripAlert.Vin });
+                tripAlert.VehicleId = vehicleId;
+                return tripAlert;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<List<Notification>> GetNotificationDetails(TripAlert tripAlert)
@@ -108,16 +109,15 @@ namespace net.atos.daf.ct2.notificationengine.repository
                                             , recipient_id as RecipientId
                                             , notification_mode_type as NotificationModeType
                                             , phone_no as PhoneNo
-                                            , nothis.email_id as EmailId
+                                            , email_id as EmailId
                                             , ws_url as WsUrl
                                             , notification_sent_date as NotificationSendDate
                                             , status as Status
 	                                            FROM master.notificationhistory 	                                           
-	                                            where alert_id=@alert_id
-	                                            and vin=@vin";
+	                                            where alert_id=@alert_id;";
+
             var parameter = new DynamicParameters();
             parameter.Add("@alert_id", tripAlert.Alertid);
-            parameter.Add("@vin", tripAlert.Vin);
 
             List<NotificationHistory> notificationHistoryOutput = (List<NotificationHistory>)await _dataAccess.QueryAsync<NotificationHistory>(queryStatement, parameter);
             return notificationHistoryOutput;

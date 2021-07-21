@@ -24,6 +24,8 @@ import { CalendarOptions } from '@fullcalendar/angular';
 import { OrganizationService } from 'src/app/services/organization.service';
 // import { CalendarOptions } from '@fullcalendar/angular';
 
+declare var H: any;
+
 @Component({
   selector: 'app-vehicle-health',
   templateUrl: './vehicle-health.component.html',
@@ -75,10 +77,22 @@ export class VehicleHealthComponent implements OnInit {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
-  translationData: any;
+  translationData: any = [];
+  isSummaryOpen: boolean = false;
+  isWarningOpen: boolean = false;
+  isMapOpen: boolean = false;
+  isCurrent: boolean = true;
+  selectedIndex: number = 0;
+  tabVisibilityStatus: boolean = true;
+  map:any;
+  platform:any;
+  ui: any;
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService) {
     this.defaultTranslation();
+    this.platform = new H.service.Platform({
+      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+    });
    }
 
   defaultTranslation(){
@@ -125,6 +139,29 @@ export class VehicleHealthComponent implements OnInit {
     });
   }
 
+  public ngAfterViewInit() {
+    setTimeout(() => {
+    this.initMap();
+    }, 0);
+  }
+
+  initMap(){
+    let defaultLayers = this.platform.createDefaultLayers();
+    this.map = new H.Map(this.mapElement.nativeElement,
+      defaultLayers.vector.normal.map, {
+      center: { lat: 51.43175839453286, lng: 5.519981221425336 },
+      zoom: 4,
+      pixelRatio: window.devicePixelRatio || 1
+    });
+    window.addEventListener('resize', () => this.map.getViewPort().resize());
+    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
+    this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
+  }
+
+  tabVisibilityHandler(tabVisibility: boolean){
+    this.tabVisibilityStatus = tabVisibility;
+  }
+
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     setTimeout(() =>{
@@ -139,7 +176,56 @@ export class VehicleHealthComponent implements OnInit {
   }
 
   onReset(){
+    this.internalSelection = false;
+    this.setDefaultStartEndTime();
+    this.setDefaultTodayDate();
+    // this.tripData = [];
+    // this.vehicleListData = [];
+    // this.vehicleGroupListData = this.vehicleGroupListData;
+    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+    // this.updateDataSource(this.tripData);
+    // this.tableInfoObj = {};
+    // this.selectedPOI.clear();
+  }
 
+  sumOfColumns(columnName : any){
+    let sum: any = 0;
+    switch(columnName){
+      case 'distance': { 
+        let s = this.tripData.forEach(element => {
+         sum += parseFloat(element.convertedDistance);
+
+        });
+        break;
+      }case 'NumberOfVehicles': { 
+        sum = this.tripData.length;
+        break;
+      } case 'NumberOfTrips': { 
+        let s = this.tripData.forEach(element => {
+          sum += element.numberOfTrips;
+         });
+        break;
+      }  case 'AverageDistancePerDay': { 
+        let s = this.tripData.forEach(element => {
+         sum += parseFloat(element.convertedAverageDistance);
+        });
+        break;
+      } case 'idleDuration': { 
+        let s = this.tripData.forEach(element => {
+          let time: any = 0;
+          time += (element.idleDuration);
+          let data: any = "00:00";
+          let hours = Math.floor(time / 3600);
+          time %= 3600;
+          let minutes = Math.floor(time / 60);
+          let seconds = time % 60;
+          data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
+          sum = data;
+        });
+        break;
+      }
+    }
+    return sum; 
   }
 
   onWarningTypeSelection(warning: any){
@@ -164,13 +250,41 @@ export class VehicleHealthComponent implements OnInit {
     this.setDefaultTodayDate();
   }
 
-  setDefaultStartEndTime(){
-    this.setPrefFormatTime();
-    // if(this.internalSelection && this.vehicleHealthSearchData.modifiedFrom == ""){
-    //   this.selectedStartTime = "00:00";
-    //   this.selectedEndTime = "23:59";
-    // }
+  setDefaultStartEndTime()
+  {
+  if(!this.internalSelection && this.vehicleHealthSearchData.modifiedFrom !== "" &&  ((this.vehicleHealthSearchData.startTimeStamp || this.vehicleHealthSearchData.endTimeStamp) !== "") ) {
+    if(this.prefTimeFormat == this.vehicleHealthSearchData.filterPrefTimeFormat){ // same format
+      this.selectedStartTime = this.vehicleHealthSearchData.startTimeStamp;
+      this.selectedEndTime = this.vehicleHealthSearchData.endTimeStamp;
+      this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.vehicleHealthSearchData.startTimeStamp}:00` : this.vehicleHealthSearchData.startTimeStamp;
+      this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.vehicleHealthSearchData.endTimeStamp}:59` : this.vehicleHealthSearchData.endTimeStamp;  
+    }else{ // different format
+      if(this.prefTimeFormat == 12){ // 12
+        this.selectedStartTime = this._get12Time(this.vehicleHealthSearchData.startTimeStamp);
+        this.selectedEndTime = this._get12Time(this.vehicleHealthSearchData.endTimeStamp);
+        this.startTimeDisplay = this.selectedStartTime; 
+        this.endTimeDisplay = this.selectedEndTime;
+      }else{ // 24
+        this.selectedStartTime = this.get24Time(this.vehicleHealthSearchData.startTimeStamp);
+        this.selectedEndTime = this.get24Time(this.vehicleHealthSearchData.endTimeStamp);
+        this.startTimeDisplay = `${this.selectedStartTime}:00`; 
+        this.endTimeDisplay = `${this.selectedEndTime}:59`;
+      }
+    }
+  }else {
+    if(this.prefTimeFormat == 24){
+      this.startTimeDisplay = '00:00:00';
+      this.endTimeDisplay = '23:59:59';
+      this.selectedStartTime = "00:00";
+      this.selectedEndTime = "23:59";
+    } else{
+      this.startTimeDisplay = '12:00 AM';
+      this.endTimeDisplay = '11:59 PM';
+      this.selectedStartTime = "00:00";
+      this.selectedEndTime = "23:59";
+    }
   }
+}
 
   selectionTimeRange(selection: any){
     this.internalSelection = true;
@@ -454,5 +568,11 @@ export class VehicleHealthComponent implements OnInit {
     // this.filterDateData(); // extra addded as per discuss with Atul
   }
   
-
+  onTabChanged(event: any){
+    if(event == 0){
+      this.isCurrent = true;
+    } else
+    this.isCurrent = false;
+  }
+  
 }

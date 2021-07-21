@@ -204,4 +204,9 @@ namespace net.atos.daf.ct2.reports.entity
         AnticipationScore,
         BrakingScore
     }
+    public enum UoM
+    {
+        Metric,
+        Imperial
+    }
 }

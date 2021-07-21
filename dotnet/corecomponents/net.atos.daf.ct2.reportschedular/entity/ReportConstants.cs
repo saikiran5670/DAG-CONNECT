@@ -9,8 +9,9 @@ namespace net.atos.daf.ct2.reportscheduler.entity
     {
         public const string REPORT_TRIP = "lblTripReport";
         public const string REPORT_SCHEDULE = "lblScheduleReport";
-        public const string REPORT_TRIP_TRACING = "lblTripTracing";
         public const string REPORT_FLEET_UTILISATION = "lblFleetUtilisation";
+        public const string REPORT_FUEL_DEVIATION = "lblFuelDeviationReport";
+        public const string REPORT_FLEET_FUEL = "lblFleetFuelReport";
     }
 
     public static class FormatConstants

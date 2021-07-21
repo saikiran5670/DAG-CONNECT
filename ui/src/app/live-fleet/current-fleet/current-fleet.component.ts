@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, NgZone } from '@angular/core';
 import { TranslationService } from '../../services/translation.service';
 import { ReportService } from 'src/app/services/report.service';
+import { MessageService } from 'src/app/services/message.service';
+import { Subscription } from 'rxjs';
 
 declare var H: any;
 
@@ -18,6 +20,8 @@ export class CurrentFleetComponent implements OnInit {
   translationData: any = {};
   clickOpenClose:string;
   detailsData =[];
+  messages: any[] = [];
+  subscription: Subscription;
   // detailsData =[
   //   {
   //     "id": 8,
@@ -121,8 +125,15 @@ export class CurrentFleetComponent implements OnInit {
   // ];
   
   constructor(private translationService: TranslationService,
-    private reportService: ReportService) { }
-
+    private reportService: ReportService,
+    private messageService: MessageService) { 
+      this.subscription = this.messageService.getMessage().subscribe(message => {
+        if (message.key.indexOf("refreshData") !== -1) {
+          this.refreshData();
+        }
+      });
+      this.sendMessage();
+    }
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -133,7 +144,7 @@ export class CurrentFleetComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 18 
+      menuId: 2 
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
@@ -175,5 +186,12 @@ export class CurrentFleetComponent implements OnInit {
   
   } 
 
-
+  sendMessage(): void {
+    // send message to subscribers via observable subject
+    this.messageService.sendMessage('refreshTimer');
+  }
+  
+  refreshData(){
+    console.log("current fleet refresh data");
+  }
 }
