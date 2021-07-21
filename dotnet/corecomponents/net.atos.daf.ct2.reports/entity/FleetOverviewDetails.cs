@@ -47,5 +47,6 @@ namespace net.atos.daf.ct2.reports.entity
         public string LatestWarningName { get; set; }
         public List<LiveFleetPosition> LiveFleetPositions { get; set; }
         public List<FleetOverviewAlert> FleetOverviewAlert { get; set; }
+        public string VehicleName { get; set; }
     }
 }

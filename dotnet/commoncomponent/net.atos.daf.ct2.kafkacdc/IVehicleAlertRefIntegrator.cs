@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using net.atos.daf.ct2.alertcdc.entity;
+using net.atos.daf.ct2.kafkacdc.entity;
 
-namespace net.atos.daf.ct2.alertcdc
+namespace net.atos.daf.ct2.kafkacdc
 {
     public interface IVehicleAlertRefIntegrator
     {

@@ -347,6 +347,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 LatestWarningGeolocationAddressId = fleetOverviewEntity.LatestWarningGeolocationAddressId,
                 LatestWarningGeolocationAddress = fleetOverviewEntity.LatestWarningGeolocationAddress,
                 LatestWarningName = fleetOverviewEntity.LatestWarningName,
+                VehicleName = fleetOverviewEntity.VehicleName
             };
             if (fleetOverviewEntity.LiveFleetPositions != null && fleetOverviewEntity.LiveFleetPositions.Count > 0)
             {

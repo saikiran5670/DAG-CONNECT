@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 
-namespace net.atos.daf.ct2.alertcdc
+namespace net.atos.daf.ct2.kafkacdc
 {
     public class Worker
     {
