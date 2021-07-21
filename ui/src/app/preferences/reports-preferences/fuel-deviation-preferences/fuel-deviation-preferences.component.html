@@ -51,7 +51,7 @@
                 translationData.lblChartsComponent || 'Charts-Component' }}</span>
         </mat-checkbox>
     </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
         <span class='headerFont'>{{ translationData.lblChartType || 'Chart Type' }}</span>
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per"></div>
@@ -65,7 +65,7 @@
                 chartsData.length > 0 ? chartsData[0].translatedName : '' }}</span>
         </mat-checkbox>
     </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
         <mat-form-field appearance="outline" style='width: 80%'>
             <mat-select [disabled]='!editFlag || lineBarDD.length == 0'
                 (selectionChange)="onlineBarDDChange($event)"
@@ -87,7 +87,7 @@
                 chartsData.length > 0 ? chartsData[1].translatedName : '' }}</span>
         </mat-checkbox>
     </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
         <mat-form-field appearance="outline" style='width: 80%'>
             <mat-select [disabled]='!editFlag || lineBarDD.length == 0'
                 (selectionChange)="onlineBarDDChange($event)"
@@ -109,7 +109,7 @@
                 chartsData.length > 0 ? chartsData[2].translatedName : '' }}</span>
         </mat-checkbox>
     </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
         <mat-form-field appearance="outline" style='width: 80%'>
             <mat-select [disabled]='!editFlag || donutPieDD.length == 0'
                 (selectionChange)="onDonutPieDDChange($event)"

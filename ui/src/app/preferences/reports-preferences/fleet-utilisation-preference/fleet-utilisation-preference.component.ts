@@ -137,6 +137,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       this.resetColumnData();
       this.preparePrefData(this.initData);
     }, (error)=>{
+      this.resetColumnData();
       this.initData = [];
     });
   }

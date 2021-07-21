@@ -40,7 +40,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Common
         {
             //Pull Authorized feature for this request fromt he context
             string authorizedfeature = Convert.ToString(context.Items["AuthorizedFeature"]);
-            _logger.Info($"[rFMSDataService - authorizedfeature {authorizedfeature}");
+
             //Null Check for authorized feature
             //Necessary check though this is mandatory and will never be null
             //Before it would come to this point if it is null a 403 unauthorized response would have been already sent
@@ -58,7 +58,6 @@ namespace net.atos.daf.ct2.rfmsdataservice.Common
                     var featureRateName = await _rfmsManager.GetRFMSFeatureRate(emailAddress, RateLimitConstants.RATE_LIMIT_FEATURE_NAME);
                     if (featureRateName != null)
                     {
-                        context.Response.Headers.Add("IsStikySession", Dns.GetHostName());
                         //Fetch Max Rate & Period from Configuration
                         var maxRate = _configuration.GetSection(featureRateName).GetSection(RateLimitConstants.RATE_LIMIT_CONFIGURATION_MAX_RATE).Value;
                         var period = _configuration.GetSection(featureRateName).GetSection(RateLimitConstants.RATE_LIMIT_CONFIGURATION_PERIOD).Value;
@@ -124,7 +123,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Common
             }
             else
             {
-                _logger.Info($"[Process request failed] ");
+                _logger.Info($"[Rate Limit Process request failed - authorized feature is empty] ");
             }
             await _next.Invoke(context);
         }
@@ -156,7 +155,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Common
         private RateLimitData Map(int maxRate, int period, string authorizedFeature)
         {
             //Calculate the reet time for the request in UTC
-            long resetTime = utilities.UTCHandling.GetUTCFromDateTime(DateTime.Now.AddSeconds(period));
+            long resetTime = utilities.UTCHandling.GetUTCFromDateTime(DateTime.Now.AddSeconds(period))/ 1000;
 
             return new RateLimitData
             {

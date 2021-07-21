@@ -25,6 +25,7 @@ selection1: any;
 selection2: any;
 filterVehicleForm:FormGroup;
 todayFlagClicked: boolean = true;
+isVehicleDetails: boolean = false;
 isVehicleListOpen: boolean = true;
 noRecordFlag: boolean = false;
 groupList : any= [];
@@ -292,6 +293,7 @@ getFilterData(){
 
  checkCreationForVehicle(item: any){
   this.todayFlagClicked = item.todayFlagClicked;
+  this.isVehicleDetails  = item.vehicleDetailsFlag;
   this.getFilterData();
   this.loadVehicleData();
 }
@@ -300,6 +302,7 @@ checkCreationForDriver(item:any){
   this.todayFlagClicked = item.todayFlagClicked;
   this.getFilterData();
   this.loadVehicleData();
+
 }
 
 }
