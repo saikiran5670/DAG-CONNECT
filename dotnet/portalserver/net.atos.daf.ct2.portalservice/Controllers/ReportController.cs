@@ -904,9 +904,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 fleetOverviewDetailsRequest.DriverIds.AddRange(fleetOverviewFilter.DriverId);
                 fleetOverviewDetailsRequest.Days = fleetOverviewFilter.Days;
                 /* Need to comment Start */
-                //  fleetOverviewDetailsRequest.AccountId = 171;
-                //  fleetOverviewDetailsRequest.OrganizationId = 36;
-                //   fleetOverviewDetailsRequest.RoleId = 61;
+                fleetOverviewDetailsRequest.AccountId = 171;
+                fleetOverviewDetailsRequest.OrganizationId = 36;
+                fleetOverviewDetailsRequest.RoleId = 61;
                 /* Need to comment End */
                 FleetOverviewDetailsResponse response = await _reportServiceClient.GetFleetOverviewDetailsAsync(fleetOverviewDetailsRequest);
                 if (response == null)
@@ -1332,9 +1332,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 logBookFilterRequest.AccountId = _userDetails.AccountId;
                 logBookFilterRequest.OrganizationId = GetContextOrgId();
                 logBookFilterRequest.RoleId = _userDetails.RoleId;
-                //   logBookFilterRequest.AccountId = 171;
-                //  logBookFilterRequest.OrganizationId = 36;
-                //   logBookFilterRequest.RoleId = 61;
+                logBookFilterRequest.AccountId = 171;
+                logBookFilterRequest.OrganizationId = 36;
+                logBookFilterRequest.RoleId = 61;
                 LogbookFilterResponse response = await _reportServiceClient.GetLogbookSearchParameterAsync(logBookFilterRequest);
 
                 // reportFleetOverviewFilter = _mapper.ToFleetOverviewEntity(response);
@@ -1381,9 +1381,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 logbookDetailsRequest.StartTime = logbookFilter.Start_Time;
                 logbookDetailsRequest.EndTime = logbookFilter.End_time;
                 /* Need to comment Start */
-                //logbookDetailsRequest.AccountId = 171;
-                //logbookDetailsRequest.OrganizationId = 36;
-                //logbookDetailsRequest.RoleId = 61;
+                logbookDetailsRequest.AccountId = 171;
+                logbookDetailsRequest.OrganizationId = 36;
+                logbookDetailsRequest.RoleId = 61;
                 /* Need to comment End */
 
                 LogbookDetailsResponse response = await _reportServiceClient.GetLogbookDetailsAsync(logbookDetailsRequest);
