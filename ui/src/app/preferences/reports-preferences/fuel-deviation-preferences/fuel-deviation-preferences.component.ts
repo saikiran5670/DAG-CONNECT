@@ -100,6 +100,7 @@ export class FuelDeviationPreferencesComponent implements OnInit {
       this.resetColumnData();
       this.preparePrefData(this.initData);
     }, (error)=>{
+      this.resetColumnData();
       this.initData = [];
     });
   }
@@ -213,7 +214,73 @@ export class FuelDeviationPreferencesComponent implements OnInit {
     let _summaryArr: any = [];
     let _chartArr: any = [];
     let _detailArr: any = [];
+    let parentDataAttr: any = [];
 
+    this.summaryData.forEach(element => {
+      let sSearch = this.selectionForSummary.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+      if(sSearch.length > 0){
+        _summaryArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }else{
+        _summaryArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }
+    });
+
+    this.chartsData.forEach((element, index) => {
+      let cSearch = this.selectionForCharts.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+      if(index == 0){ // increaseEventChart
+        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fuelDeviationReportForm.controls.increaseEventChart.value, thresholdType: "", thresholdValue: 0 });
+      }else if(index == 1){ // decreaseEventChart
+        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fuelDeviationReportForm.controls.decreaseEventChart.value, thresholdType: "", thresholdValue: 0 });
+      }else{ // deviationEventChart
+        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fuelDeviationReportForm.controls.deviationEventChart.value, thresholdType: "", thresholdValue: 0 });
+      }
+    });
+
+    this.detailsData.forEach(element => {
+      let dSearch = this.selectionForDetails.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+      if(dSearch.length > 0){
+        _detailArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }else{
+        _detailArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }
+    });
+
+    if(this.initData && this.initData.subReportUserPreferences && this.initData.subReportUserPreferences.length > 0){
+      parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      this.initData.subReportUserPreferences.forEach(elem => {
+        if(elem.key.includes('rp_fd_reportsummary')){
+          if(this.selectionForSummary.selected.length == this.summaryData.length){ // parent selected
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }else{
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }
+        }else if(elem.key.includes('rp_fd_reportchart')){
+          if(this.selectionForCharts.selected.length == this.chartsData.length){ // parent selected
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }else{
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }
+        }else if(elem.key.includes('rp_fd_report_details')){
+          if(this.selectionForDetails.selected.length == this.detailsData.length){ // parent selected
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }else{
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }
+        }
+      });
+    }
+
+    let objData: any = {
+      reportId: this.reportId,
+      attributes: [..._summaryArr, ..._chartArr, ..._detailArr, ...parentDataAttr] //-- merge data
+    }
+    this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
+      this.loadFuelDeviationReportPreferences();
+      this.setFuelDeviationReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+      if((this.router.url).includes("fueldeviationreport")){
+        this.reloadCurrentComponent();
+      }
+    });
 
   }
 

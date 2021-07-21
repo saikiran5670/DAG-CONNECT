@@ -194,6 +194,7 @@ export class DetailDriverReportComponent implements OnInit {
       value: 'idlingConsumptionValue'
     }
   ];
+  disableGroup = new H.map.Group();
   group = new H.map.Group();
   endMarker:any;
   startMarker:any;
@@ -530,13 +531,6 @@ tripTraceArray: any = [];
               private completerService: CompleterService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService) {
-                this.map_key =  _configService.getSettings("hereMap").api_key;
-                //Add for Search Fucntionality with Zoom
-                this.query = "starbucks";
-                this.platform = new H.service.Platform({
-                "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-                  });
-               this.configureAutoSuggest();
                 const navigation = this.router.getCurrentNavigation();
                 this._state = navigation.extras.state as {
                   fromFleetfuelReport: boolean,
@@ -547,6 +541,13 @@ tripTraceArray: any = [];
                 }else{
                   this.showBack = false;
                 }
+                this.map_key =  _configService.getSettings("hereMap").api_key;
+                //Add for Search Fucntionality with Zoom
+                this.query = "starbucks";
+                this.platform = new H.service.Platform({
+                "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+                  });
+               this.configureAutoSuggest();
                }
 
                
@@ -624,7 +625,7 @@ tripTraceArray: any = [];
         fromFleetfuelReport: true
       }
     };
-    this.router.navigate(['report/fleetfueldriver'], navigationExtras);
+    this.router.navigate(['report/fleetfuelreport'], navigationExtras);
   }
   setDisplayColumnBaseOnPref(){
     let filterPref = this.tripPrefData.filter(i => i.state == 'I'); // removed unchecked
@@ -688,24 +689,165 @@ tripTraceArray: any = [];
       this.userPOIList = [];
     });
   }
-viewselectedroutes(_selectedRoutes){
-  if(_selectedRoutes && _selectedRoutes.length > 0){
-    _selectedRoutes.forEach(elem => {
-      this.startAddressPositionLat = elem.startpositionlattitude;
-      this.startAddressPositionLong = elem.startpositionlongitude;
-      this.endAddressPositionLat= elem.endpositionlattitude;
-      this.endAddressPositionLong= elem.endpositionlongitude;
-      let houseMarker = this.createHomeMarker();
-      let markerSize = { w: 26, h: 32 };
-      const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-      this.startMarker = new H.map.Marker({ lat:this.startAddressPositionLat, lng:this.startAddressPositionLong },{ icon:icon });
-      let endMarker = this.createEndMarker();
-      const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-      this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
-      this.group.addObjects([this.startMarker, this.endMarker]);
-    })
+
+  selectionPolylineRoute(dataPoints: any, _index: any, checkStatus?: any){
+    let lineString: any = new H.geo.LineString();
+    dataPoints.map((element) => {
+      lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+    });
+
+    let _style: any = {
+      lineWidth: 4, 
+      strokeColor: checkStatus ? 'blue' : 'grey'
+    }
+    let polyline = new H.map.Polyline(
+      lineString, { style: _style }
+    );
+    polyline.setData({id: _index});
+    
+    this.disableGroup.addObject(polyline);
+   }
+   viewselectedroutes(_selectedRoutes:any,_displayRouteView:any,trackType:any){
+    if(_selectedRoutes && _selectedRoutes.length > 0){
+      _selectedRoutes.forEach(elem => {
+        this.startAddressPositionLat = elem.startpositionlattitude;
+        this.startAddressPositionLong = elem.startpositionlongitude;
+        this.endAddressPositionLat= elem.endpositionlattitude;
+        this.endAddressPositionLong= elem.endpositionlongitude;
+        let houseMarker = this.createHomeMarker();
+        let markerSize = { w: 26, h: 32 };
+        const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+        this.startMarker = new H.map.Marker({ lat:this.startAddressPositionLat, lng:this.startAddressPositionLong },{ icon:icon });
+        let endMarker = this.createEndMarker();
+        const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+        this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
+        this.group.addObjects([this.startMarker, this.endMarker]);
+        if(elem.liveFleetPosition.length > 1){
+           // required 2 points atleast to draw polyline
+          let liveFleetPoints: any = elem.liveFleetPosition;
+          liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
+          if(_displayRouteView == 'C' || _displayRouteView == 'F' || _displayRouteView == 'CO'){ // classic route
+            let blueColorCode: any = '#436ddc';
+            this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
+            let filterDataPoints: any = this.getFilterDataPoints(liveFleetPoints, _displayRouteView);
+            filterDataPoints.forEach((element) => {
+              this.drawPolyline(element, trackType);
+            });
+          
+          }
+        }
+        
+      })
+    }
   }
+
+drawPolyline(finalDatapoints: any, trackType?: any){
+  var lineString = new H.geo.LineString();
+  finalDatapoints.dataPoints.map((element) => {
+    lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+  });
+
+  let _style: any = {
+    lineWidth: 4, 
+    strokeColor: finalDatapoints.color
+  }
+  if(trackType == 'dotted'){
+    _style.lineDash = [2,2];
+  }
+  let polyline = new H.map.Polyline(
+    lineString, { style: _style }
+  );
+  this.group.addObject(polyline);
 }
+
+getFilterDataPoints(_dataPoints: any, _displayRouteView: any){
+  //-----------------------------------------------------------------//
+  // Fuel Consumption	Green	 	Orange	 	Red	 
+  // VehicleSerie	Min	Max	Min	Max	Min	Max
+  // LF	0	100	100	500	500	infinity
+  // CF	0	100	100	500	500	infinity
+  // XF	0	100	100	500	500	infinity
+  // XG	0	100	100	500	500	infinity
+  
+  // CO2	A	 	B	 	C	 	D	 	E	 	F	 
+  // VehicleSerie	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max
+  // LF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+  // CF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+  // XF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+  // XG	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+  //--------------------------------------------------------------------//
+
+  let innerArray: any = [];
+  let outerArray: any = [];
+  let finalDataPoints: any = [];
+  _dataPoints.forEach((element) => { 
+    let elemChecker: any = 0;
+    if(_displayRouteView == 'F'){ //------ fuel consumption
+      elemChecker = element.fuelconsumtion;
+      if(elemChecker <= 100){
+        element.color = '#57A952'; // green
+      }else if(elemChecker > 100 && elemChecker <= 500){ 
+        element.color = '#FFA500'; // orange
+      }else{ 
+        element.color = '#FF010F';  // red 
+      }
+    }else{ //---- co2 emission
+      elemChecker = element.co2Emission;
+      if(elemChecker <= 270){
+        element.color = '#01FE75'; // light green
+      }else if(elemChecker > 270 && elemChecker <= 540){ // green
+        element.color = '#57A952'; 
+      }else if(elemChecker > 540 && elemChecker <= 810){ // green-brown
+        element.color = '#867B3F'; 
+      }else if(elemChecker > 810 && elemChecker <= 1080){ // red-brown
+        element.color = '#9C6236'; 
+      }else if(elemChecker > 1080 && elemChecker <= 1350){ // brown
+        element.color = '#C13F28'; 
+      }else{ // red
+        element.color = '#FF010F'; 
+      }
+    }
+    finalDataPoints.push(element);
+  });
+
+  let curColor: any = '';
+  finalDataPoints.forEach((element, index) => {
+    innerArray.push(element);
+    if(index != 0){
+      if(curColor != element.color){
+        outerArray.push({dataPoints: innerArray, color: curColor});
+        innerArray = [];
+        curColor = element.color;
+        innerArray.push(element);
+      }else if(index == (finalDataPoints.length - 1)){ // last point
+        outerArray.push({dataPoints: innerArray, color: curColor}); 
+      }
+    }else{ // 0
+      curColor = element.color;
+    }
+  });
+
+  return outerArray;
+}
+showClassicRoute(dataPoints: any, _trackType: any, _colorCode: any){
+  let lineString: any = new H.geo.LineString();
+  dataPoints.map((element) => {
+    lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+  });
+
+  let _style: any = {
+    lineWidth: 4, 
+    strokeColor: _colorCode
+  }
+  if(_trackType == 'dotted'){
+    _style.lineDash = [2,2];
+  }
+  let polyline = new H.map.Polyline(
+    lineString, { style: _style }
+  );
+  
+  this.group.addObject(polyline);
+ }
 createHomeMarker(){
   const homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M25 13.2979C25 22.6312 13 30.6312 13 30.6312C13 30.6312 1 22.6312 1 13.2979C1 10.1153 2.26428 7.06301 4.51472 4.81257C6.76516 2.56213 9.8174 1.29785 13 1.29785C16.1826 1.29785 19.2348 2.56213 21.4853 4.81257C23.7357 7.06301 25 10.1153 25 13.2979Z" stroke="#0D7EE7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -866,7 +1008,7 @@ createEndMarker(){
     if(event.checked){
       
       this.rowdata.push(row);
-      this.mapService.viewselectedroutes(this.rowdata);
+      this.mapService.viewselectedroutes(this.rowdata,this.displayRouteView,this.trackType);
 
       let _ui = this.reportMapService.getUI();
      // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
@@ -1092,10 +1234,11 @@ createEndMarker(){
         "startDateTime":_startTime,
         "endDateTime":_endTime,
         "viNs":  _vinData,
+        "driverId": "NL B000384974000000"
       }
       this.loadfleetFuelDetails(_vinData);
-       //this.setTableInfo();
-      //  this.updateDataSource(this.FuelData);
+       this.setTableInfo();
+      // this.updateDataSource(this.FuelData);
       this.hideloader();
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
@@ -1116,7 +1259,8 @@ createEndMarker(){
       "startDateTime": _startTime,
       "endDateTime": _endTime,
       "viNs": _vinData,
-      "LanguageCode": "EN-GB"
+      "LanguageCode": "EN-GB",
+      "driverId": "NL B000384974000000"
     }
     this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
@@ -1196,6 +1340,8 @@ createEndMarker(){
       endDate: this.formStartDate(this.endDateValue),
       vehGroupName: vehGrpName,
       vehicleName: vehName,
+      vin : vin,
+      plateNo : plateNo,
       driverName : driverName,
       driverID : driverID
 

@@ -9,5 +9,6 @@ namespace net.atos.daf.ct2.notificationengine
     public interface INotificationIdentifierManager
     {
         Task<List<Notification>> GetNotificationDetails(TripAlert tripAlert);
+        Task<NotificationHistory> InsertNotificationSentHistory(NotificationHistory notificationHistory);
     }
 }

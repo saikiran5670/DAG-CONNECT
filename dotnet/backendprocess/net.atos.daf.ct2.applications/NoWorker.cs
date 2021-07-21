@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.applications
                     Performed_at = DateTime.Now,
                     Performed_by = 2,
                     Component_name = "NoWorker",
-                    Service_name = "Backend Process",
+                    Service_name = "Backend_Process",
                     Event_type = AuditTrailEnum.Event_type.Mail,
                     Event_status = AuditTrailEnum.Event_status.SUCCESS,
                     Message = "NoWorker process got executed.",
