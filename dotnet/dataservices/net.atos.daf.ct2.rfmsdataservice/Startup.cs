@@ -51,7 +51,10 @@ namespace net.atos.daf.ct2.rfmsdataservice
         {
             // needed to store rate limit counters
             services.AddMemoryCache();
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.IgnoreNullValues = true;
+            });
             services.AddHttpContextAccessor();
             services.AddMvc()
             .ConfigureApiBehaviorOptions(options =>

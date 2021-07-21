@@ -29,6 +29,7 @@ import { HereService } from '../../../services/here.service';
 import { ConfigService } from '@ngx-config/core';
 import { LandmarkCategoryService } from '../../../services/landmarkCategory.service'; 
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
+import { MapService } from '../report-mapservice';
 
 declare var H: any;
 
@@ -193,7 +194,14 @@ export class DetailDriverReportComponent implements OnInit {
       value: 'idlingConsumptionValue'
     }
   ];
-
+  disableGroup = new H.map.Group();
+  group = new H.map.Group();
+  endMarker:any;
+  startMarker:any;
+  endAddressPositionLong:any;
+  startAddressPositionLat : any;
+  startAddressPositionLong: any;
+  endAddressPositionLat:any;
 searchStr: string = "";
 trackType: any = 'snail';
 displayRouteView: any = 'C';
@@ -518,17 +526,11 @@ tripTraceArray: any = [];
               private translationService: TranslationService,
               private organizationService: OrganizationService,
               private reportService: ReportService,
+              private mapService : MapService,
               private router: Router,
               private completerService: CompleterService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService) {
-                this.map_key =  _configService.getSettings("hereMap").api_key;
-                //Add for Search Fucntionality with Zoom
-                this.query = "starbucks";
-                this.platform = new H.service.Platform({
-                "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-                  });
-               this.configureAutoSuggest();
                 const navigation = this.router.getCurrentNavigation();
                 this._state = navigation.extras.state as {
                   fromFleetfuelReport: boolean,
@@ -539,8 +541,16 @@ tripTraceArray: any = [];
                 }else{
                   this.showBack = false;
                 }
+                this.map_key =  _configService.getSettings("hereMap").api_key;
+                //Add for Search Fucntionality with Zoom
+                this.query = "starbucks";
+                this.platform = new H.service.Platform({
+                "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+                  });
+               this.configureAutoSuggest();
                }
 
+               
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
     // console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
@@ -615,7 +625,7 @@ tripTraceArray: any = [];
         fromFleetfuelReport: true
       }
     };
-    this.router.navigate(['report/fleetfueldriver'], navigationExtras);
+    this.router.navigate(['report/fleetfuelreport'], navigationExtras);
   }
   setDisplayColumnBaseOnPref(){
     let filterPref = this.tripPrefData.filter(i => i.state == 'I'); // removed unchecked
@@ -679,6 +689,183 @@ tripTraceArray: any = [];
       this.userPOIList = [];
     });
   }
+
+  selectionPolylineRoute(dataPoints: any, _index: any, checkStatus?: any){
+    let lineString: any = new H.geo.LineString();
+    dataPoints.map((element) => {
+      lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+    });
+
+    let _style: any = {
+      lineWidth: 4, 
+      strokeColor: checkStatus ? 'blue' : 'grey'
+    }
+    let polyline = new H.map.Polyline(
+      lineString, { style: _style }
+    );
+    polyline.setData({id: _index});
+    
+    this.disableGroup.addObject(polyline);
+   }
+   viewselectedroutes(_selectedRoutes:any,_displayRouteView:any,trackType:any){
+    if(_selectedRoutes && _selectedRoutes.length > 0){
+      _selectedRoutes.forEach(elem => {
+        this.startAddressPositionLat = elem.startpositionlattitude;
+        this.startAddressPositionLong = elem.startpositionlongitude;
+        this.endAddressPositionLat= elem.endpositionlattitude;
+        this.endAddressPositionLong= elem.endpositionlongitude;
+        let houseMarker = this.createHomeMarker();
+        let markerSize = { w: 26, h: 32 };
+        const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+        this.startMarker = new H.map.Marker({ lat:this.startAddressPositionLat, lng:this.startAddressPositionLong },{ icon:icon });
+        let endMarker = this.createEndMarker();
+        const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+        this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
+        this.group.addObjects([this.startMarker, this.endMarker]);
+        if(elem.liveFleetPosition.length > 1){
+           // required 2 points atleast to draw polyline
+          let liveFleetPoints: any = elem.liveFleetPosition;
+          liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
+          if(_displayRouteView == 'C' || _displayRouteView == 'F' || _displayRouteView == 'CO'){ // classic route
+            let blueColorCode: any = '#436ddc';
+            this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
+            let filterDataPoints: any = this.getFilterDataPoints(liveFleetPoints, _displayRouteView);
+            filterDataPoints.forEach((element) => {
+              this.drawPolyline(element, trackType);
+            });
+          
+          }
+        }
+        
+      })
+    }
+  }
+
+drawPolyline(finalDatapoints: any, trackType?: any){
+  var lineString = new H.geo.LineString();
+  finalDatapoints.dataPoints.map((element) => {
+    lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+  });
+
+  let _style: any = {
+    lineWidth: 4, 
+    strokeColor: finalDatapoints.color
+  }
+  if(trackType == 'dotted'){
+    _style.lineDash = [2,2];
+  }
+  let polyline = new H.map.Polyline(
+    lineString, { style: _style }
+  );
+  this.group.addObject(polyline);
+}
+
+getFilterDataPoints(_dataPoints: any, _displayRouteView: any){
+  //-----------------------------------------------------------------//
+  // Fuel Consumption	Green	 	Orange	 	Red	 
+  // VehicleSerie	Min	Max	Min	Max	Min	Max
+  // LF	0	100	100	500	500	infinity
+  // CF	0	100	100	500	500	infinity
+  // XF	0	100	100	500	500	infinity
+  // XG	0	100	100	500	500	infinity
+  
+  // CO2	A	 	B	 	C	 	D	 	E	 	F	 
+  // VehicleSerie	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max	Min	Max
+  // LF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+  // CF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+  // XF	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+  // XG	0	270	270	540	540	810	810	1080	1080	1350	1350	infinity
+  //--------------------------------------------------------------------//
+
+  let innerArray: any = [];
+  let outerArray: any = [];
+  let finalDataPoints: any = [];
+  _dataPoints.forEach((element) => { 
+    let elemChecker: any = 0;
+    if(_displayRouteView == 'F'){ //------ fuel consumption
+      elemChecker = element.fuelconsumtion;
+      if(elemChecker <= 100){
+        element.color = '#57A952'; // green
+      }else if(elemChecker > 100 && elemChecker <= 500){ 
+        element.color = '#FFA500'; // orange
+      }else{ 
+        element.color = '#FF010F';  // red 
+      }
+    }else{ //---- co2 emission
+      elemChecker = element.co2Emission;
+      if(elemChecker <= 270){
+        element.color = '#01FE75'; // light green
+      }else if(elemChecker > 270 && elemChecker <= 540){ // green
+        element.color = '#57A952'; 
+      }else if(elemChecker > 540 && elemChecker <= 810){ // green-brown
+        element.color = '#867B3F'; 
+      }else if(elemChecker > 810 && elemChecker <= 1080){ // red-brown
+        element.color = '#9C6236'; 
+      }else if(elemChecker > 1080 && elemChecker <= 1350){ // brown
+        element.color = '#C13F28'; 
+      }else{ // red
+        element.color = '#FF010F'; 
+      }
+    }
+    finalDataPoints.push(element);
+  });
+
+  let curColor: any = '';
+  finalDataPoints.forEach((element, index) => {
+    innerArray.push(element);
+    if(index != 0){
+      if(curColor != element.color){
+        outerArray.push({dataPoints: innerArray, color: curColor});
+        innerArray = [];
+        curColor = element.color;
+        innerArray.push(element);
+      }else if(index == (finalDataPoints.length - 1)){ // last point
+        outerArray.push({dataPoints: innerArray, color: curColor}); 
+      }
+    }else{ // 0
+      curColor = element.color;
+    }
+  });
+
+  return outerArray;
+}
+showClassicRoute(dataPoints: any, _trackType: any, _colorCode: any){
+  let lineString: any = new H.geo.LineString();
+  dataPoints.map((element) => {
+    lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
+  });
+
+  let _style: any = {
+    lineWidth: 4, 
+    strokeColor: _colorCode
+  }
+  if(_trackType == 'dotted'){
+    _style.lineDash = [2,2];
+  }
+  let polyline = new H.map.Polyline(
+    lineString, { style: _style }
+  );
+  
+  this.group.addObject(polyline);
+ }
+createHomeMarker(){
+  const homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M25 13.2979C25 22.6312 13 30.6312 13 30.6312C13 30.6312 1 22.6312 1 13.2979C1 10.1153 2.26428 7.06301 4.51472 4.81257C6.76516 2.56213 9.8174 1.29785 13 1.29785C16.1826 1.29785 19.2348 2.56213 21.4853 4.81257C23.7357 7.06301 25 10.1153 25 13.2979Z" stroke="#0D7EE7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M12.9998 29.9644C18.6665 25.2977 24.3332 19.5569 24.3332 13.2977C24.3332 7.03846 19.2591 1.96436 12.9998 1.96436C6.74061 1.96436 1.6665 7.03846 1.6665 13.2977C1.6665 19.5569 7.6665 25.631 12.9998 29.9644Z" fill="#0D7EE7"/>
+  <path d="M13 22.9644C18.5228 22.9644 23 18.7111 23 13.4644C23 8.21765 18.5228 3.96436 13 3.96436C7.47715 3.96436 3 8.21765 3 13.4644C3 18.7111 7.47715 22.9644 13 22.9644Z" fill="white"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M7.75 13.3394H5.5L13 6.58936L20.5 13.3394H18.25V19.3394H13.75V14.8394H12.25V19.3394H7.75V13.3394ZM16.75 11.9819L13 8.60687L9.25 11.9819V17.8394H10.75V13.3394H15.25V17.8394H16.75V11.9819Z" fill="#436DDC"/>
+  </svg>`
+  return homeMarker;
+}
+createEndMarker(){
+  const endMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M25 13.2979C25 22.6312 13 30.6312 13 30.6312C13 30.6312 1 22.6312 1 13.2979C1 10.1153 2.26428 7.06301 4.51472 4.81257C6.76516 2.56213 9.8174 1.29785 13 1.29785C16.1826 1.29785 19.2348 2.56213 21.4853 4.81257C23.7357 7.06301 25 10.1153 25 13.2979Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M12.9998 29.9644C18.6665 25.2977 24.3332 19.5569 24.3332 13.2977C24.3332 7.03846 19.2591 1.96436 12.9998 1.96436C6.74061 1.96436 1.6665 7.03846 1.6665 13.2977C1.6665 19.5569 7.6665 25.631 12.9998 29.9644Z" fill="#D50017"/>
+  <path d="M13 22.9644C18.5228 22.9644 23 18.7111 23 13.4644C23 8.21765 18.5228 3.96436 13 3.96436C7.47715 3.96436 3 8.21765 3 13.4644C3 18.7111 7.47715 22.9644 13 22.9644Z" fill="white"/>
+  <path d="M13 18.9644C16.3137 18.9644 19 16.5019 19 13.4644C19 10.4268 16.3137 7.96436 13 7.96436C9.68629 7.96436 7 10.4268 7 13.4644C7 16.5019 9.68629 18.9644 13 18.9644Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`
+  return endMarker;
+}
 
   makeUserCategoryPOIList(poiData: any){
     let categoryArr: any = [];
@@ -813,11 +1000,16 @@ tripTraceArray: any = [];
         } row`;
   }
 
- 
+  rowdata =[];
   tripCheckboxClicked(event: any, row: any) {
+    
     this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
-    if(event.checked){ //-- add new marker
-      //this.tripTraceArray.push(row);
+    
+    if(event.checked){
+      
+      this.rowdata.push(row);
+      this.mapService.viewselectedroutes(this.rowdata,this.displayRouteView,this.trackType);
+
       let _ui = this.reportMapService.getUI();
      // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
     }
@@ -1042,10 +1234,11 @@ tripTraceArray: any = [];
         "startDateTime":_startTime,
         "endDateTime":_endTime,
         "viNs":  _vinData,
+        "driverId": "NL B000384974000000"
       }
       this.loadfleetFuelDetails(_vinData);
-       //this.setTableInfo();
-      //  this.updateDataSource(this.FuelData);
+       this.setTableInfo();
+      // this.updateDataSource(this.FuelData);
       this.hideloader();
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
@@ -1066,7 +1259,8 @@ tripTraceArray: any = [];
       "startDateTime": _startTime,
       "endDateTime": _endTime,
       "viNs": _vinData,
-      "LanguageCode": "EN-GB"
+      "LanguageCode": "EN-GB",
+      "driverId": "NL B000384974000000"
     }
     this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
@@ -1088,10 +1282,10 @@ tripTraceArray: any = [];
       if(!this.showMapPanel){ //- map panel not shown already
         this.showMapPanel = true;
         setTimeout(() => {
-          this.reportMapService.initMap(this.mapElement);
+          this.mapService.initMap(this.mapElement);
         }, 0);
       }else{
-        this.reportMapService.clearRoutesFromMap();
+        this.mapService.clearRoutesFromMap();
       }
     }
     else{
@@ -1146,6 +1340,8 @@ tripTraceArray: any = [];
       endDate: this.formStartDate(this.endDateValue),
       vehGroupName: vehGrpName,
       vehicleName: vehName,
+      vin : vin,
+      plateNo : plateNo,
       driverName : driverName,
       driverID : driverID
 

@@ -35,8 +35,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                             from master.reportscheduler rs
                                  inner join master.report r on 
                                             date_trunc('day', (to_timestamp(rs.next_schedule_run_date/1000) AT TIME ZONE 'UTC')) = date_trunc('day', NOW() AT TIME ZONE 'UTC') and 
-                                            date_trunc('hour', (to_timestamp(rs.end_date/1000) AT TIME ZONE 'UTC')) = date_trunc('hour', NOW() AT TIME ZONE 'UTC') and 
-                                            date_trunc('seconds', (to_timestamp(rs.end_date/1000) AT TIME ZONE 'UTC')) <= date_trunc('seconds', NOW() AT TIME ZONE 'UTC') and 
+                                            date_trunc('minute', (to_timestamp(rs.end_date/1000) AT TIME ZONE 'UTC')) <= date_trunc('minute', NOW() AT TIME ZONE 'UTC') and 
+                                            date_trunc('minute', (to_timestamp(rs.end_date/1000) AT TIME ZONE 'UTC')) >= date_trunc('minute', NOW() AT TIME ZONE 'UTC') - interval '30 minutes' and 
                                             rs.status = 'A' and r.id = rs.report_id
 								 left Join master.account ac on ac.id = rs.created_by and ac.state='A'
 	                             left join master.accountpreference ap on ap.id = ac.preference_id								 
