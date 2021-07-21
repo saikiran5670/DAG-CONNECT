@@ -1,5 +1,4 @@
 <div class="dashboardMenu" style="padding: 0px !important;">
-      <!-- <span style="font-size: 15px;margin-top: 10px;">{{translationData.lblViewDetailsBy || 'View details by:'}}</span> -->
     <mat-expansion-panel class="full-width" fxLayoutGap="10px" style="padding-top: 20px;">
         <mat-expansion-panel-header class="full-width">
           <mat-panel-title>              
@@ -14,10 +13,7 @@
            </mat-tab>               
          </mat-tab-group>
        </div>           
-   <!-- </mat-expansion-panel> -->
-
-
-<div *ngIf="selectedIndex == 0" >
+   <div *ngIf="selectedIndex == 0" >
   <form [formGroup]="filterVehicleForm">
     <div fxLayout="row" fxLayoutAlign="space-between">
           <mat-form-field appearance="outline" class="dropdown-filters">
@@ -130,6 +126,8 @@
     [translationData]='translationData' 
     [detailsData] ="detailsData" 
     [filterData]="filterData"
+    [noRecordFlag] ="noRecordFlag"
+    [vehicleListData] ="vehicleListData"
     (driverFilterComponentEmit)="checkCreationForDriver($event)">
 </app-fleet-overview-filter-driver>
 </div>
