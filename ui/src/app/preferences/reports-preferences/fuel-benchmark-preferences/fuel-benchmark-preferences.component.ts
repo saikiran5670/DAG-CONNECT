@@ -180,8 +180,6 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
       this.setFuelBenchmarkReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
     });
 
-    this.onCancel();
-
   }
 
   onDonutPieDDChange(event: any) {

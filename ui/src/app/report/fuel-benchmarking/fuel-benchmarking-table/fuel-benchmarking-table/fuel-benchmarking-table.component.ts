@@ -140,6 +140,12 @@ export class FuelBenchmarkingTableComponent implements OnInit {
         highthresholdValue = pref.thresholdValue;
       } else if (pref.key == "da_report_component_lowfuelefficiency") {
         lowthresholdValue = pref.thresholdValue;
+      } else if (pref.key == "rp_fb_chart_fuelconsumption") {
+        if(pref.chartType == "P") {
+          this.doughnutChartType = 'pie';
+         } else {
+          this.doughnutChartType = 'doughnut';
+         }
       }
     }
     let high = 0;
