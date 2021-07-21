@@ -178,6 +178,8 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
     this.reportService.updateReportUserPreference(benchmarkObject).subscribe((data: any) => {
     });
 
+    this.onCancel();
+
   }
 
   onDonutPieDDChange(event: any) {
