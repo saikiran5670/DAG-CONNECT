@@ -24,7 +24,7 @@
         </div>
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Vehicle Name'}}: </span>
-            <span class="vehicle-details-data">{{gridData.vid}}</span>
+            <span class="vehicle-details-data">{{gridData.vehicleName}}</span>
         </div>
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Vehicle Reg No'}}:</span>
@@ -32,7 +32,7 @@
         </div> 
         <div>
             <span class="vehicle-details-head">{{gridData.driverName ? translationData.lbl || 'Driver Name' : translationData.lbl || 'Driver ID'}}:</span>
-            <span class="vehicle-details-data">{{gridData.driverName ? gridData.driverName : gridData.driver1Id}}</span>
+            <span class="vehicle-details-data"> {{ (gridData.driverName == '' ? gridData.driver1Id : gridData.driverName) || ((gridData.driverName == '' && gridData.driver1Id == '') ? 'Unknown' : gridData.driverName)}} </span>
         </div> 
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
@@ -40,7 +40,7 @@
         </div> 
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
-            <span class="vehicle-details-data" class='navigatePoint' (click)='gotoHealthStatus(gridData)' matTooltip="{{ translationData.lbl || 'Click for health details'}}">Stop Now</span>
+            <span class="vehicle-details-data" class='navigatePoint' (click)='gotoHealthStatus(gridData)' matTooltip="{{ translationData.lbl || 'Click for health details'}}">{{gridData.vehicleHealthStatusType}}</span>
         </div>
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Alert'}}:</span>

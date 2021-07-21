@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
-import { InputEditor } from 'angular-slickgrid';
 
 @Component({
   selector: 'app-vehicle-details',
@@ -16,6 +15,8 @@ export class VehicleDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.gridData = this.selectedElementData;
+    var d = new Date(this.selectedElementData.latestProcessedMessageTimeStamp);
+    this.gridData.latestProcessedMessageTimeStamp = d.toLocaleString();
   }
 
   toBack() {
