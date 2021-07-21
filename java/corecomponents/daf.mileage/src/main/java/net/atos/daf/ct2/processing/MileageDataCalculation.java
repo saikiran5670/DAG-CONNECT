@@ -22,7 +22,6 @@ import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.bo.TripMileage;
 import net.atos.daf.ct2.bo.VehicleMileage;
 import net.atos.daf.ct2.util.MileageConstants;
-import net.atos.daf.ct2.postgre.MileageSink;
 
 /**
  * Class performs mileage calculation based on the VID

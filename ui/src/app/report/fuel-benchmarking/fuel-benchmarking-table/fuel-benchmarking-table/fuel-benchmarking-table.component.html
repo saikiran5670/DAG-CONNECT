@@ -42,7 +42,7 @@
                 </div>
 
                 <div *ngIf="index !== 0 && i == 5">
-                  <canvas baseChart [data]="doughnutChartData" [labels]="doughnutChartLabels" [chartType]="doughnutChartType">
+                  <canvas baseChart [data]="row[column]" [labels]="doughnutChartLabels" [chartType]="doughnutChartType">
                   </canvas>
                 </div>
 

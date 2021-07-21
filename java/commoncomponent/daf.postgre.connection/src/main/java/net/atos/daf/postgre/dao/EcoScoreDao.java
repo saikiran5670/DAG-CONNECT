@@ -119,9 +119,9 @@ public class EcoScoreDao implements Serializable {
 			statement.setDouble(13, 0);
 		
 		if (rec.getVIdleDuration() != null)
-			statement.setInt(14, rec.getVIdleDuration());
+			statement.setLong(14, rec.getVIdleDuration());
 		else
-			statement.setInt(14, 0);
+			statement.setLong(14, 0);
 		
 		if (rec.getVMaxThrottlePaddleDuration() != null)
 			statement.setDouble(15, rec.getVMaxThrottlePaddleDuration());
@@ -129,9 +129,9 @@ public class EcoScoreDao implements Serializable {
 			statement.setDouble(15, 0);
 
 		if (rec.getVCruiseControlDist() != null)
-			statement.setInt(16, rec.getVCruiseControlDist());
+			statement.setLong(16, rec.getVCruiseControlDist());
 		else
-			statement.setInt(16, 0);
+			statement.setLong(16, 0);
 
 		if (rec.getTripCalCrsCntrlDist25To50() != null)
 			statement.setDouble(17, rec.getTripCalCrsCntrlDist25To50());
@@ -159,9 +159,9 @@ public class EcoScoreDao implements Serializable {
 			statement.setDouble(21, 0);
 
 		if (rec.getVBrakeDuration() != null)
-			statement.setInt(22, rec.getVBrakeDuration());
+			statement.setLong(22, rec.getVBrakeDuration());
 		else
-			statement.setDouble(22, 0);
+			statement.setLong(22, 0);
 		
 		statement.setLong(23, TimeFormatter.getInstance().getCurrentUTCTime());
 		
@@ -179,9 +179,9 @@ public class EcoScoreDao implements Serializable {
 			statement.setLong(26, 0);
 		
 		if (rec.getVTripAccelerationTime() != null)
-			statement.setInt(27, rec.getVTripAccelerationTime());
+			statement.setLong(27, rec.getVTripAccelerationTime());
 		else
-			statement.setInt(27, 0);
+			statement.setLong(27, 0);
 		
 		statement.setBoolean(28, Boolean.FALSE);
 		
@@ -247,9 +247,9 @@ public class EcoScoreDao implements Serializable {
 			statement.setDouble(40, 0);
 		
 		if (rec.getVIdleDuration() != null)
-			statement.setInt(41, rec.getVIdleDuration());
+			statement.setLong(41, rec.getVIdleDuration());
 		else
-			statement.setInt(41, 0);
+			statement.setLong(41, 0);
 		
 		if (rec.getVMaxThrottlePaddleDuration() != null)
 			statement.setDouble(42, rec.getVMaxThrottlePaddleDuration());
@@ -284,12 +284,12 @@ public class EcoScoreDao implements Serializable {
 		if (rec.getVHarshBrakeDuration() != null)
 			statement.setInt(48, rec.getVHarshBrakeDuration());
 		else
-			statement.setDouble(48, 0);
+			statement.setInt(48, 0);
 
 		if (rec.getVBrakeDuration() != null)
-			statement.setInt(49, rec.getVBrakeDuration());
+			statement.setLong(49, rec.getVBrakeDuration());
 		else
-			statement.setDouble(49, 0);
+			statement.setLong(49, 0);
 		
 		statement.setLong(50, TimeFormatter.getInstance().getCurrentUTCTime());
 		
@@ -304,9 +304,9 @@ public class EcoScoreDao implements Serializable {
 			statement.setLong(52, 0);
 		
 		if (rec.getVTripAccelerationTime() != null)
-			statement.setInt(53, rec.getVTripAccelerationTime());
+			statement.setLong(53, rec.getVTripAccelerationTime());
 		else
-			statement.setInt(53, 0);
+			statement.setLong(53, 0);
 
 		return statement;
 

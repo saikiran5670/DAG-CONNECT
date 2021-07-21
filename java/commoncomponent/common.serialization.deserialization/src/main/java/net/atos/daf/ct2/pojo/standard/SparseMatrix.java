@@ -11,9 +11,9 @@ public class SparseMatrix  implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @JsonProperty(value = "abs")
-  private Integer abs;
+  private Long abs;
   @JsonProperty(value = "ord")
-  private Integer ord;
+  private Long ord;
   @JsonProperty(value = "A")
   private Integer[] a;
   @JsonProperty(value = "IA")
