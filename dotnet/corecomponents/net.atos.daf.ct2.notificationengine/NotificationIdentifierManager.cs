@@ -128,14 +128,16 @@ namespace net.atos.daf.ct2.notificationengine
                     }
                 }
 
-                if (identifiedNotificationRec.Where(x => x.NotificationModeType == "E").Count() > 0)
+                if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "E").Count() > 0)
                 {
 
                 }
-                else if (identifiedNotificationRec.Where(x => x.NotificationModeType == "S").Count() > 0)
+
+                if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
                 {
                 }
-                else if (identifiedNotificationRec.Where(x => x.NotificationModeType == "W").Count() > 0)
+
+                if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").Count() > 0)
                 {
                 }
 
