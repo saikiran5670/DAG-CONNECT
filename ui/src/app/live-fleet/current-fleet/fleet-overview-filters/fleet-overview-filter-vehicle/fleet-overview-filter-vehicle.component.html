@@ -13,7 +13,8 @@
      <div  *ngIf="!noRecordFlag">
         <div class="full-width vehicleList-div" *ngFor="let item of vehicleListData" (click) ='openVehicleDetails(item)'>
             <div class="vehicleList-icon">
-                <span id="steps" class="step-image" [innerHTML]="item.icon"> </span>
+                <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="Health Status: {{item.vehicleHealthStatusType}} 
+                &#13; Alert: {{item.alertName}}"> </span>
             </div>
             <div class="vehicleList-details">
             <div>

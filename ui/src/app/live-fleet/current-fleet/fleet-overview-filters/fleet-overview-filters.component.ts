@@ -63,8 +63,7 @@ displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthS
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);    
     });
-    console.log(this.todayFlagClicked );
-    //this.vehicleListData = this.detailsData;
+   
     this.selection1 = ['all'];
     this.selection2 = ['all'];
     this.filterVehicleForm = this._formBuilder.group({
@@ -121,7 +120,7 @@ getFilterData(){
         let statusName = this.translationData[item.name];           
         this.otherList.push({'name':statusName, 'value': item.value})
         }});
-       //this.otherList.push(this.filterData["otherFilter"][0]);
+       
        this.detailsData.forEach(item => {
        this.filterData["healthStatus"].forEach(e => {
          if(item.vehicleHealthStatusType==e.value)
@@ -148,7 +147,6 @@ getFilterData(){
           let nextDate = createdDate + 86400000;
           if(currentDate > createdDate && currentDate < nextDate){
           let vehicleData =this.filterData["vehicleGroups"].filter(item => item.vin == element.vin);
-          console.log("same vins ="+vehicleData);
           vehicleData.forEach(item=>
             this.groupList.push(item));
           }
@@ -192,7 +190,7 @@ getFilterData(){
       return vin || driver || drivingStatus ||healthStatus;
     }​​​​​​​​);
   
-    console.log(filteredData);    
+  
     this.vehicleListData = filteredData;
     
   }
@@ -224,7 +222,6 @@ getFilterData(){
   
   loadVehicleData(){  
     this.initData =this.detailsData;    
-    console.log(this.initData);
     if(!this.todayFlagClicked)
     {
       this.objData = {
@@ -251,6 +248,7 @@ getFilterData(){
       }
     }
     this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
+      this.drawIcons(data);
       data.forEach(item => {
         this.filterData["healthStatus"].forEach(e => {
          if(item.vehicleHealthStatusType==e.value)
@@ -266,8 +264,7 @@ getFilterData(){
          });              
       });      
      // this.detailsData=data;     
-      this.vehicleListData = data;   
-      this.drawIcons(this.vehicleListData); 
+      this.vehicleListData = data;         
     }, (error) => {
 
       if (error.status == 404) {
@@ -278,20 +275,6 @@ getFilterData(){
     this.noRecordFlag = false;
  } 
 
-//  onChangetodayCheckbox(event){
-//    if(event.checked){
-//   this.todayFlagClicked = true;
-//   this.getFilterData();
-//   this.loadVehicleData();
-//    }
-//    else{
-//     this.todayFlagClicked = false;
-//     this.getFilterData();
-//     this.loadVehicleData();
-
-//    }
-
-//  }
 
  checkCreationForVehicle(item: any){
   this.todayFlagClicked = item.todayFlagClicked;
@@ -319,12 +302,7 @@ drawIcons(_selectedRoutes){
       _type = _alertConfig.type;
     }
     let markerSize = { w: 40, h: 49 };
-    //let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-    // this.vehicleIconMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:icon });
-  
-    // this.group.addObject(this.vehicleIconMarker);
     let _healthStatus = '',_drivingStatus = '';
-    // icon tooltip
     switch (elem.vehicleHealthStatusType) {
       case 'T': // stop now;
         _healthStatus = 'Stop Now';
@@ -358,52 +336,11 @@ drawIcons(_selectedRoutes){
       default:
         break;
     }
-   // let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp,'DD/MM/YYYY hh:mm:ss');
-    let iconBubble;
-    // this.vehicleIconMarker.addEventListener('pointerenter', function (evt) {
-    //   // event target is the marker itself, group is a parent event target
-    //   // for all objects that it contains
-    //   iconBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-    //     // read custom data
-    //     content:`<table style='width: 300px; font-size:12px;'>
-    //       <tr>
-    //         <td style='width: 100px;'>Vehicle:</td> <td><b>${elem.vid}</b></td>
-    //       </tr>
-    //       <tr>
-    //         <td style='width: 100px;'>Driving Status:</td> <td><b>${_drivingStatus}</b></td>
-    //       </tr>
-    //       <tr>
-    //         <td style='width: 100px;'>Current Mileage:</td> <td><b>${elem.odometerVal}</b></td>
-    //       </tr>
-    //       <tr>
-    //         <td style='width: 100px;'>Next Service in:</td> <td><b>-${elem.distanceUntilNextService} km</b></td>
-    //       </tr>
-    //       <tr>
-    //         <td style='width: 100px;'>Health Status:</td> <td><b>${_healthStatus}</b></td>
-    //       </tr>
-    //       <tr class='warningClass'>
-    //         <td style='width: 100px;'>Warning Name:</td> <td><b>${_type}</b></td>
-    //       </tr>
-    //       <tr>
-    //       <td style='width: 100px;'>Activated Time:</td> <td><b>${activatedTime}</b></td>
-    //       </tr>
-    //       <tr>
-    //       <td style='width: 100px;'>Driver Name:</td> <td><b>${elem.driverFirstName} ${elem.driverLastName}</b></td>
-    //       </tr>
-    //     </table>`
-    //   });
-    //   // show info bubble
-    //   _ui.addBubble(iconBubble);
-    // }, false);
-    // this.vehicleIconMarker.addEventListener('pointerleave', function(evt) {
-    //   iconBubble.close();
-    // }, false);
 
-  
     this.svgIcon = this.sanitizer.bypassSecurityTrustHtml(_vehicleMarkerDetails.icon);
     elem =  Object.defineProperty(elem, "icon", {value : this.svgIcon,
     writable : true,enumerable : true, configurable : true});  
-  
+
   });
   
     
@@ -432,18 +369,45 @@ setIconsOnMap(element) {
     default:
       break;
   }
-  let _vehicleIcon : any;
+  let _vehicleIcon : any; 
   if(_drivingStatus){
 
   }
   else{
-    let _alertFound = undefined ;
-    
-    if(element.fleetOverviewAlert.length > 0){
-      _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
+    let _alertFound = undefined ;    
+    // if(element.fleetOverviewAlert.length > 0){
+    //   _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
 
+    // } 
+    if(element.fleetOverviewAlert.length > 0){      
+      let critical  = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'C');
+      let warning   = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'W');
+      let advisory   = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'A');
+     
+      if(critical.length > 0){
+      _alertFound = critical[0];
+     } 
+     else if(warning.length > 0){
+      _alertFound = warning[0];
+     } else{
+      _alertFound = advisory[0];
+     }
+     let alertName ='';
+     if(_alertFound.level == 'C')
+     {
+      alertName = 'Critical';
+     }
+     else if(_alertFound.level == 'W')
+     {
+      alertName = 'Warning';
+     }
+     else{
+      alertName = 'Advisory';
+     }
+     element =  Object.defineProperty(element, "alertName", {value : alertName,
+      writable : true,enumerable : true, configurable : true}); 
     }
-    
+       
     if(_alertFound){
       _alertConfig = this.getAlertConfig(_alertFound);     
       _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -51,8 +51,8 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
         //[DataMember(Name = "tellTaleCode")]
         //public string TellTaleCode { get; set; }
 
-        //[DataMember(Name = "chassisType")]
-        //public string ChassisType { get; set; }
+        [DataMember(Name = "chassisType")]
+        public string ChassisType { get; set; }
 
         [DataMember(Name = "noOfAxles")]
         public int? NoOfAxles { get; set; }

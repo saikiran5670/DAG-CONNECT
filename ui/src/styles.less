@@ -1184,3 +1184,41 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
         border: none;
     }
 }
+
+// ripple animation
+
+
+.circle {
+    background:#FF66CC;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    box-shadow: 0px 0px 1px 1px #0000001a;
+  }
+  
+  .rippleSVG {
+    background:transparent;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 100vh;
+    // left: -20px;
+    // top: -25px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0px 0px 2px 2px;
+    animation: pulse-animation 2s infinite;
+   
+  }
+
+  @keyframes pulse-animation {
+    0% {
+      box-shadow: 0 0 0 0px rgba(14, 16, 131, 0.2);
+    }
+    100% {
+      box-shadow: 0 0 0 20px rgba(14, 16, 131, 0.2);
+    }
+  }
+  
+ 

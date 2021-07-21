@@ -196,7 +196,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 vehicleObj.PossibleFuelType = item.PossibleFuelType;
                 vehicleObj.EmissionLevel = item.EmissionLevel;
                 //vehicleObj.TellTaleCode = item.TellTaleCode;
-                //vehicleObj.ChassisType = item.ChassisType;
+                vehicleObj.ChassisType = item.ChassisType;
                 vehicleObj.NoOfAxles = item.NoOfAxles;
                 vehicleObj.TotalFuelTankVolume = item.TotalFuelTankVolume;
                 //vehicleObj.TachographType = item.TachographType;
