@@ -7,6 +7,7 @@ import { ChartType } from 'chart.js';
 import { Label, MultiDataSet } from 'ng2-charts';
 import {ProgressBarMode} from '@angular/material/progress-bar';
 import { ThemePalette } from '@angular/material/core';
+import { ReportService } from 'src/app/services/report.service';
 
 @Component({
   selector: 'app-fuel-benchmarking-table',
@@ -18,7 +19,6 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   searchExpandPanel: boolean = true;
   mode: ProgressBarMode = 'determinate';
   color: ThemePalette = 'primary';
-  bufferValue = 75;
   @Input() test;
   @Input() startDateRange: any;
   @Input() endDateRange: any;
@@ -43,8 +43,11 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     [55, 25, 20]
   ];
   doughnutChartType: ChartType = 'doughnut';
-  
-  constructor() { }
+  reportPrefData;
+  accountOrganizationId;
+  accountId;
+
+  constructor(private reportService: ReportService) { }
 
   ngOnInit(): void {
     this.dataSource = [{
@@ -60,40 +63,30 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     }, {
       "period": "Fuel Consumption",
     }];
-    this.loadBenchmarkTable();
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    this.getUserPreferenceReport();
+    
   }
 
   loadBenchmarkTable() {
     //to check if benchmark selection chage
-    if(this.benchmarkSelectionChange && this.displayedColumns.length > 1){
-      this.displayedColumns = this.displayedColumns.splice(0,1)
+    if (this.benchmarkSelectionChange && this.displayedColumns.length > 1) {
+      this.displayedColumns = this.displayedColumns.splice(0, 1)
       this.benchmarkSelectionChange = false;
     }
 
     //Building Headings and Data for benchmark Selections
     if (this.selectionValueBenchmarkBY == "timePeriods") {
       this.tableHeadingwithRange = this.startDateRange + " to " + this.endDateRange;
-
     } else if (this.selectionValueBenchmarkBY == "vehicleGroups") {
       this.tableHeadingwithRange = `Vehicle Group ${this.vehicleHeaderCount}`;
-      console.log("---from VG selection")
-      
     }
-   
-      
-      for (let row of this.test) {
-        this.addColumn(JSON.parse(row), this.tableHeadingwithRange);
-      }
-  }
 
-  // updateDataSource(tableData: any) {
-  //   this.initData = tableData;
-  //   this.tabledataSource = new MatTableDataSource(tableData);
-  //   setTimeout(() => {
-  //     this.tabledataSource.paginator = this.paginator;
-  //     this.tabledataSource.sort = this.sort;
-  //   });
-  // }
+    for (let row of this.test) {
+      this.addColumn(JSON.parse(row), this.tableHeadingwithRange);
+    }
+  }
 
   removeColumn(index) {
     for (let row of this.dataSource) {
@@ -112,13 +105,67 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   addColumn(data, column) {
     if (this.displayedColumns.length < 5) {
       if (!this.displayedColumns.includes(column)) {
-        // this.headerArray.push(column);
         this.displayedColumns.push(column);
       }
       for (let colIndx in this.firstColumn) {
-        this.dataSource[colIndx][column] = data.fuelBenchmarkDetails[this.firstColumn[colIndx]];
+        if(this.firstColumn[colIndx] == 'ranking') {
+          let rakingSortedData = data.fuelBenchmarkDetails[this.firstColumn[colIndx]].sort((a,b) => (a.fuelConsumption > b.fuelConsumption) ? 1 : ((b.fuelConsumption > a.fuelConsumption) ? -1 : 0));
+          for(let row of rakingSortedData) {
+            row["ltrVal"] = row.fuelConsumption/1000;
+          }
+          this.dataSource[colIndx][column] = rakingSortedData;
+          this.updateDoughnutChartData(rakingSortedData)
+        } else {
+          this.dataSource[colIndx][column] = data.fuelBenchmarkDetails[this.firstColumn[colIndx]];
+        }
       }
     }
     this.vehicleHeaderCount++;
   }
+  
+  getUserPreferenceReport() {
+    this.reportService.getUserPreferenceReport(6, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+      this.reportPrefData = data["userPreferences"];
+      
+      this.loadBenchmarkTable();
+    });
+  }
+
+  updateDoughnutChartData(rakingData) {
+    let highthresholdValue;
+    let lowthresholdValue;
+    for (let pref of this.reportPrefData) {
+      if (pref.key == "da_report_component_highfuelefficiency") {
+        highthresholdValue = pref.thresholdValue;
+      } else if (pref.key == "da_report_component_lowfuelefficiency") {
+        lowthresholdValue = pref.thresholdValue;
+      }
+    }
+    let high = 0;
+    let medium = 0;
+    let low = 0;
+    for (let ranking of rakingData) {
+      if(highthresholdValue <= ranking.ltrVal) {
+        high++;
+      }else if(lowthresholdValue >= ranking.ltrVal) {
+        low++;
+      } else {
+        medium++;
+      }
+    }
+    let total = high + medium + low;
+    let totalparts = 100 / total;
+    let highVal = totalparts*high;
+    let mediumVal = totalparts * medium;
+    let testArr = [];
+    let lowVal = totalparts * low;
+    this.doughnutChartData = []
+    testArr.push(highVal);
+    testArr.push(mediumVal);
+    testArr.push(lowVal);
+    this.doughnutChartData.push(testArr);
+    console.log("rakingData", rakingData)
+    console.log("this.doughnutChartData", this.doughnutChartData)
+  }
+  
 }
