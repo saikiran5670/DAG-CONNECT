@@ -28,6 +28,7 @@ namespace net.atos.daf.ct2.notificationengine
                 int numberOfAlertForvehicle = notificatinFrequencyCheck.Count();
                 List<Notification> notificationTimingDetails = new List<Notification>();
                 List<Notification> notificationNotifyDetails = new List<Notification>();
+                List<NotificationHistory> identifiedNotificationRec = new List<NotificationHistory>();
                 // check frequency type of  notification
                 foreach (var item in notificationDetails)
                 {
@@ -102,23 +103,42 @@ namespace net.atos.daf.ct2.notificationengine
                             item.Notlim_period_limit = item.Notlim_period_limit * 60;
                         }
                     }
-
-
-
                     if (item.Notlim_max_limit > numberOfAlertForvehicle)
                     {
-                        if (item.Notrec_notification_mode_type.ToUpper() == "E")
-                        {
-
-                        }
-                        else if (item.Notrec_notification_mode_type.ToUpper() == "S")
-                        {
-                        }
-                        else if (item.Notrec_notification_mode_type.ToUpper() == "W")
-                        {
-                        }
+                        NotificationHistory notificationHistory = new NotificationHistory();
+                        notificationHistory.OrganizationId = item.Ale_organization_id;
+                        notificationHistory.AlertId = item.Noti_alert_id;
+                        notificationHistory.TripId = tripAlert.Tripid;
+                        notificationHistory.NotificationId = item.Noti_id;
+                        notificationHistory.VehicleId = tripAlert.VehicleId;
+                        notificationHistory.RecipientId = item.Notrec_id;
+                        notificationHistory.NotificationModeType = item.Notrec_notification_mode_type;
+                        notificationHistory.PhoneNo = item.Notrec_phone_no;
+                        notificationHistory.EmailId = item.Notrec_email_id;
+                        notificationHistory.WsUrl = item.Notrec_ws_url;
+                        notificationHistory.NotificationSendDate = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString());
+                        notificationHistory.Status = "";
+                        notificationHistory.EmailSub = item.Notrec_email_sub;
+                        notificationHistory.EmailText = item.Notrec_email_text;
+                        notificationHistory.WsAuthType = item.Notrec_ws_type;
+                        notificationHistory.WsLogin = item.Notrec_ws_login;
+                        notificationHistory.WsPassword = item.Notrec_ws_password;
+                        notificationHistory.WsText = item.Notrec_ws_text;
+                        identifiedNotificationRec.Add(notificationHistory);
                     }
                 }
+
+                if (identifiedNotificationRec.Where(x => x.NotificationModeType == "E").Count() > 0)
+                {
+
+                }
+                else if (identifiedNotificationRec.Where(x => x.NotificationModeType == "S").Count() > 0)
+                {
+                }
+                else if (identifiedNotificationRec.Where(x => x.NotificationModeType == "W").Count() > 0)
+                {
+                }
+
                 return notificationDetails;
             }
             catch (Exception ex)
@@ -131,19 +151,6 @@ namespace net.atos.daf.ct2.notificationengine
 
         public async Task<NotificationHistory> InsertNotificationSentHistory(NotificationHistory notificationHistory)
         {
-            //NotificationHistory notificationHistory = new NotificationHistory();
-            //notificationHistory.OrganizationId = item.Ale_organization_id;
-            //notificationHistory.AlertId = item.Noti_alert_id;
-            //notificationHistory.TripId = tripAlert.Tripid;
-            //notificationHistory.NotificationId = item.Noti_id;
-            //notificationHistory.VehicleId = tripAlert.VehicleId;
-            //notificationHistory.RecipientId = item.Notrec_id;
-            //notificationHistory.NotificationModeType = item.Notrec_notification_mode_type;
-            //notificationHistory.PhoneNo = item.Notrec_phone_no;
-            //notificationHistory.EmailId = item.Notrec_email_id;
-            //notificationHistory.WsUrl = item.Notrec_ws_url;
-            //notificationHistory.NotificationSendDate = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString());
-            //notificationHistory.Status = ((char)NotificationSendType.Successful).ToString();
             return await _notificationIdentifierRepository.InsertNotificationSentHistory(notificationHistory);
         }
     }

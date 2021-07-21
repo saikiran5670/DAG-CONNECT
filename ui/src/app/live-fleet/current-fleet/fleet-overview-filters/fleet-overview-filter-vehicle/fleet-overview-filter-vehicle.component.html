@@ -13,7 +13,7 @@
      <div  *ngIf="!noRecordFlag">
         <div class="full-width vehicleList-div" *ngFor="let item of vehicleListData" (click) ='openVehicleDetails(item)'>
             <div class="vehicleList-icon">
-                <mat-icon style="font-size: 50px;padding: 26px 0px;"> person_pin_circle</mat-icon>
+                <span id="steps" class="step-image" [innerHTML]="item.icon"> </span>
             </div>
             <div class="vehicleList-details">
             <div>
