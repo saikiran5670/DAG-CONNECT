@@ -166,12 +166,12 @@ export class LiveFleetMapComponent implements OnInit {
       this.hereService.lookUpSuggestion(qParam).subscribe((data: any) => {
         this.searchMarker = {};
         if(data && data.position && data.position.lat && data.position.lng){
-          this.searchMarker = {
+          let searchMarker = {
             lat: data.position.lat,
             lng: data.position.lng,
             from: 'search'
           }
-          this.fleetMapService.setMapToLocation(this.searchMarker);
+          this.fleetMapService.setMapToLocation(searchMarker);
           //let _ui = this.fleetMapService.getUI();
           //this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
         }
