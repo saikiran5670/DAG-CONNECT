@@ -195,7 +195,5 @@ export class CurrentFleetComponent implements OnInit {
     this.messageService.sendMessage('refreshTimer');
   }
   
-  refreshData(){
-    console.log("current fleet refresh data");
-  }
+  refreshData(){}
 }
