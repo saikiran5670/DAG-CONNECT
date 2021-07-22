@@ -574,17 +574,20 @@ export class FleetMapService {
       });
       finalAlerts.forEach(element => {
         switch (element.level) {
-          case 'C':{
+          case 'C':
+            case 'Critical':{
             _fillColor = '#D50017';
             _level = 'Critical'
           }
           break;
-          case 'W':{
+          case 'W':
+            case 'Warning':{
             _fillColor = '#FC5F01';
             _level = 'Warning'
           }
           break;
-          case 'A':{
+          case 'A':
+            case 'Advisory':{
             _fillColor = '#FFD80D';
             _level = 'Advisory'
           }
@@ -593,15 +596,18 @@ export class FleetMapService {
             break;
         }
         switch (element.type) {
-          case 'L':{
+          case 'L':
+            case 'Logistics Alerts':{
             _type = 'Logistics Alerts'
           }
           break;
-          case 'F':{
+          case 'F':
+            case 'Fuel and Driver Performance':{
             _type='Fuel and Driver Performance'
           }
           break;
-          case 'R':{
+          case 'R':
+            case 'Repair and Maintenance':{
             _type='Repair and Maintenance'
 
           }
@@ -684,12 +690,15 @@ export class FleetMapService {
       // icon tooltip
       switch (elem.vehicleHealthStatusType) {
         case 'T': // stop now;
+        case 'Stop Now':
           _healthStatus = 'Stop Now';
           break;
         case 'V': // service now;
+        case 'Service Now':
           _healthStatus = 'Service Now';
           break;
         case 'N': // no action;
+        case 'No Action':
           _healthStatus = 'No Action';
           break
         default:
@@ -697,18 +706,23 @@ export class FleetMapService {
       }
       switch (elem.vehicleDrivingStatusType) {
         case 'N': 
+        case 'Never Moved':
           _drivingStatus = 'Never Moved';
           break;
         case 'D':
+          case 'Driving':
           _drivingStatus = 'Driving';
           break;
         case 'I': // no action;
+        case 'Idle':
           _drivingStatus = 'Idle';
           break;
         case 'U': // no action;
+        case 'Unknown':
           _drivingStatus = 'Unknown';
           break;
         case 'S': // no action;
+        case 'Stopped':
           _drivingStatus = 'Stopped';
           break
         
@@ -716,6 +730,8 @@ export class FleetMapService {
           break;
       }
       let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp,'DD/MM/YYYY hh:mm:ss');
+      let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
+      let _vehicleName = elem.vid ? elem.vid : elem.vin;
       let iconBubble;
       this.vehicleIconMarker.addEventListener('pointerenter', function (evt) {
         // event target is the marker itself, group is a parent event target
@@ -724,7 +740,7 @@ export class FleetMapService {
           // read custom data
           content:`<table style='width: 300px; font-size:12px;'>
             <tr>
-              <td style='width: 100px;'>Vehicle:</td> <td><b>${elem.vid}</b></td>
+              <td style='width: 100px;'>Vehicle:</td> <td><b>${_vehicleName}</b></td>
             </tr>
             <tr>
               <td style='width: 100px;'>Driving Status:</td> <td><b>${_drivingStatus}</b></td>
@@ -745,7 +761,7 @@ export class FleetMapService {
             <td style='width: 100px;'>Activated Time:</td> <td><b>${activatedTime}</b></td>
             </tr>
             <tr>
-            <td style='width: 100px;'>Driver Name:</td> <td><b>${elem.driverFirstName} ${elem.driverLastName}</b></td>
+            <td style='width: 100px;'>Driver Name:</td> <td><b>${_driverName}</b></td>
             </tr>
           </table>`
         });
@@ -764,17 +780,20 @@ export class FleetMapService {
     let _drivingStatus = false;
     let healthColor = '#606060';
     let _alertConfig = undefined;
-    if (element.vehicleDrivingStatusType === 'D') {
+    if (element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving') {
       _drivingStatus = true
     }
     switch (element.vehicleHealthStatusType) {
       case 'T': // stop now;
+      case 'Stop Now':
         healthColor = '#D50017'; //red
         break;
       case 'V': // service now;
+      case 'Service Now':
         healthColor = '#FC5F01'; //orange
         break;
       case 'N': // no action;
+      case 'No Action':
         healthColor = '#606060'; //grey
         if (_drivingStatus) {
           healthColor = '#00AE10'; //green
@@ -789,7 +808,7 @@ export class FleetMapService {
       let direction = this.getDirectionIconByBearings(element.latestReceivedPositionHeading);
       let markerSvg = this.createDrivingMarkerSVG(direction,healthColor);
       
-      if(element.vehicleDrivingStatusType === 'D'){
+      if(element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving'){
         
         let rippleSize = { w: 50, h: 50 };
         let rippleMarker = this.createRippleMarker(direction);
@@ -809,8 +828,8 @@ export class FleetMapService {
       let _alertFound = undefined ;
       
       if(element.fleetOverviewAlert.length > 0){
-        _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
-
+        _alertFound = element.fleetOverviewAlert.find(item=>{
+          item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude})
       }
       
       if(_alertFound){
@@ -875,17 +894,20 @@ export class FleetMapService {
     let _level = 'Critical';
     let _type = '';
       switch (_currentAlert.level) {
-        case 'C':{
+        case 'C':
+          case 'Critical':{
           _fillColor = '#D50017';
           _level = 'Critical'
         }
         break;
-        case 'W':{
+        case 'W':
+          case 'Warning':{
           _fillColor = '#FC5F01';
           _level = 'Warning'
         }
         break;
-        case 'A':{
+        case 'A':
+          case 'Advisory':{
           _fillColor = '#FFD80D';
           _level = 'Advisory'
         }
@@ -894,15 +916,18 @@ export class FleetMapService {
           break;
       }
       switch (_currentAlert.categoryType) {
-        case 'L':{
+        case 'L':
+          case 'Logistics Alerts':{
           _type = 'Logistics Alerts'
         }
         break;
-        case 'F':{
+        case 'F':
+          case 'Fuel and Driver Performance':{
           _type='Fuel and Driver Performance'
         }
         break;
-        case 'R':{
+        case 'R':
+          case 'Repair and Maintenance':{
           _type='Repair and Maintenance'
 
         }
@@ -917,12 +942,15 @@ export class FleetMapService {
     let  healthColor = '#D50017';
     switch (_health) {
       case 'T': // stop now;
+      case 'Stop Now':
         healthColor = '#D50017'; //red
         break;
       case 'V': // service now;
+      case 'Service Now':
         healthColor = '#FC5F01'; //orange
         break;
       case 'N': // no action;
+      case 'No Action':
           healthColor = '#00AE10'; //green
         break
       default:
