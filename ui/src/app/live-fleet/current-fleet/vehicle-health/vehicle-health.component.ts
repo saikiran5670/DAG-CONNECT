@@ -23,6 +23,7 @@ import { Router, NavigationExtras } from '@angular/router';
 import { CalendarOptions } from '@fullcalendar/angular';
 import { OrganizationService } from 'src/app/services/organization.service';
 // import { CalendarOptions } from '@fullcalendar/angular';
+import { DataInterchangeService } from 'src/app/services/data-interchange.service';
 
 declare var H: any;
 
@@ -36,6 +37,7 @@ export class VehicleHealthComponent implements OnInit {
   selectionTab: any;
   reportPrefData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
+  @Input() healthData: any;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   vehicleHealthForm: FormGroup;
@@ -87,14 +89,17 @@ export class VehicleHealthComponent implements OnInit {
   map:any;
   platform:any;
   ui: any;
+ 
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService) {
-    this.defaultTranslation();
-    this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+
+  constructor(private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService) { 
+    
+      
+      this.defaultTranslation();
+      this.platform = new H.service.Platform({
+        "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
-   }
-
+  }
   defaultTranslation(){
     this.translationData = {
       lblSearchReportParameters: 'Search Report Parameters'
@@ -574,5 +579,5 @@ export class VehicleHealthComponent implements OnInit {
     } else
     this.isCurrent = false;
   }
-  
+
 }
