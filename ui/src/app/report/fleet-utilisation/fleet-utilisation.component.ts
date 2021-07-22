@@ -782,7 +782,7 @@ calendarOptions: CalendarOptions = {
       });
       this.reportService.getCalendarDetails(searchDataParam).subscribe((calendarData: any) => {
         this.setChartData(calendarData["calenderDetails"]);
-        this.calendarSelectedValues(calendarData["calenderDetails"]);
+        //this.calendarSelectedValues(calendarData["calenderDetails"]);
       })
     }
     this.calendarOptions.initialDate = this.startDateValue;
@@ -858,6 +858,7 @@ calendarOptions: CalendarOptions = {
   }
 
   setChartData(chartData: any){
+    this.calendarValue = [];
     chartData.forEach(e => {
       var date = new Date(e.calenderDate);
       let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
@@ -938,7 +939,7 @@ calendarOptions: CalendarOptions = {
     }    
     this.calendarValue.push(this.calendarOptions.events[0]); 
     this.calendarOptions.events = this.calendarValue;
-    return this.calendarOptions.events;    
+    //this.calendarOptions.events;    
   }
 
   resetTripFormControlValue(){
