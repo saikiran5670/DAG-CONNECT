@@ -37,6 +37,7 @@ export class VehicleHealthComponent implements OnInit {
   selectionTab: any;
   reportPrefData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
+  @Input() healthData: any;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   vehicleHealthForm: FormGroup;
