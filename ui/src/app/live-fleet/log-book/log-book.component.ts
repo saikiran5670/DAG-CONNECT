@@ -193,8 +193,8 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
   this.defaultTranslation();
   const navigation = this.router.getCurrentNavigation();
   this._state = navigation.extras.state as {
-    fromFleetUtilReport: boolean,
-    vehicleData: any
+    fromVehicleDetails: boolean,
+    data: any
   };
   if(this._state){
     this.showBack = true;
@@ -1309,14 +1309,16 @@ ngOnDestroy(){
     this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
   }
 
-  backToFleetUtilReport(){
-    console.log("calling here");
+  backToVehicleDetail(){
+    if(this._state && this._state.data){
     const navigationExtras: NavigationExtras = {
       state: {
-        fromTripReport: true
+        fromVehicleHealth : true,
+        data : this._state.data
       }
     };
-    this.router.navigate(['fleetoverview/logbook'], navigationExtras);
+    this.router.navigate(['fleetoverview/livefleet'], navigationExtras);
+  }
   }
 
   dataService: any;
