@@ -2590,7 +2590,7 @@ namespace net.atos.daf.ct2.reports.repository
                         -- No. of Vehicles
                         CAST(1 AS INTEGER) as NumberOfVehicles,
                         -- Average Gross Weight
-                        CAST(eco.tacho_gross_weight_combination as DOUBLE PRECISION) as AverageGrossweight_Total, CAST(SUM (eco.gross_weight_combination_count) as DOUBLE PRECISION) as AverageGrossweight_Count,
+                        CAST(eco.tacho_gross_weight_combination as DOUBLE PRECISION) as AverageGrossweight_Total, CAST(eco.gross_weight_combination_count as DOUBLE PRECISION) as AverageGrossweight_Count,
                         -- Distance
                         (CAST(eco.trip_distance as DOUBLE PRECISION)) as Distance_Total, 1 as Distance_Count,
                         -- Average Distance per day
@@ -2776,6 +2776,7 @@ namespace net.atos.daf.ct2.reports.repository
         {
             return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0, 0);
         }
+
         public static DateTime GetEndOfDay(DateTime dateTime)
         {
             return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 23, 59, 59, 999);

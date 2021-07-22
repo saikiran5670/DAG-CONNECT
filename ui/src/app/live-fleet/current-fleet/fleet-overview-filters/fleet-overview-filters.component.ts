@@ -283,7 +283,11 @@ getFilterData(){
       });      
      // this.detailsData=data;     
       this.vehicleListData = data;     
-      this.dataInterchangeService.getVehicleData(data); //change as per filter data
+      let _dataObj ={
+        vehicleDetailsFlag : this.isVehicleDetails,
+        data:data
+      }
+      this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
           
     }, (error) => {
       let val = [{vehicleGroup : vehicleGroupSel.vehicleGroupName, data : error}];
@@ -291,12 +295,19 @@ getFilterData(){
       this.messageService.sendMessage("refreshTimer");
       if (error.status == 404) {
         this.noRecordFlag = true;
-        this.dataInterchangeService.getVehicleData(null);
+        let _dataObj ={
+          vehicleDetailsFlag : this.isVehicleDetails,
+          data:null
+        }
+        this.dataInterchangeService.getVehicleData(_dataObj);
       }
     });
     this.noRecordFlag = false;
  } 
 
+  checkToHideFilter(item:any){
+    this.isVehicleDetails  = item.vehicleDetailsFlag;
+  }
 
  checkCreationForVehicle(item: any){
   this.todayFlagClicked = item.todayFlagClicked;

@@ -39,15 +39,16 @@ namespace net.atos.daf.ct2.notificationengine
                 // check frequency type of  notification
                 foreach (var item in notificationDetails)
                 {
-                    if (item.Noti_frequency_type == "O")
+                    if (item.Noti_frequency_type.ToUpper() == "O")
                     {
                         notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
                     }
-                    else if (item.Noti_frequency_type == "T")
+                    else if (item.Noti_frequency_type.ToUpper() == "T")
                     {
-                        notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
+                        //notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
+                        notificationOutput = notificationDetails.Where(p => p.Noti_frequency_type.ToUpper() == "T").ToList();
                     }
-                    else if (item.Noti_frequency_type == "E")
+                    else if (item.Noti_frequency_type.ToUpper() == "E")
                     {
                         int index = 0;
                         List<TripAlert> nGenAlertDetails = (List<TripAlert>)generatedAlertForVehicle.OrderBy(o => o.AlertGeneratedTime).GroupBy(e => new { e.Alertid, e.Vin }); //order by alert generated time  //.Where(e => e.Count() == item.Noti_frequency_threshhold_value);

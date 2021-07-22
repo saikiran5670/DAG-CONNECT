@@ -753,8 +753,10 @@ export class FuelBenchmarkingComponent implements OnInit {
 
     // }
     this.vehicleDD.forEach(item => {
-      if (item.vin !== undefined) {
+      if (item.vin !== undefined ) {
+        if(!this.vinList.includes(item.vin)){
         this.vinList.push(item.vin);
+        }
       }
     });
 
