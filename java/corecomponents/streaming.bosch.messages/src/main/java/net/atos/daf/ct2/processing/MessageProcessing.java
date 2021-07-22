@@ -35,7 +35,6 @@ public class MessageProcessing<U, T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(MessageProcessing.class);
 
-	
 	/* kafka topic data consuming as stream */
 	public void consumeBoschMessage(DataStream<KafkaRecord<U>> messageDataStream, String messageType, String key,
 			String sinkTopicName, Properties properties, Class<T> tClass) {
@@ -48,7 +47,7 @@ public class MessageProcessing<U, T> implements Serializable {
 				Index indexobj = new Index();
 				IndexDocument indexDocument = new IndexDocument();
 				/* json message parsing and store in jsonObject */
-				JSONObject jsonObject = transformMessages(value.getValue().toString());
+				JSONObject jsonObject = transformMessages(value.toString());
 
 				String vin = (String) getValueByAttributeKey("vin", jsonObject);
 
@@ -58,10 +57,11 @@ public class MessageProcessing<U, T> implements Serializable {
 				if (document != null) {
 					Object gpsobj = getValueByAttributeKey("GPS", document);
 					JSONObject gps = (JSONObject) gpsobj;
+
 					Double latitude = (Double) getValueByAttributeKey("latitude", gps);
 					Double longitude = (Double) getValueByAttributeKey("longitude", gps);
 					Double direction = (Double) getValueByAttributeKey("direction", gps);
-					Integer altitude = (Integer) getValueByAttributeKey("altitude", gps);
+					Long altitude = (Long) getValueByAttributeKey("altitude", gps);
 					Double gpsSpeed = (Double) getValueByAttributeKey("gpsSpeed", gps);
 					String tripid = (String) getValueByAttributeKey("tripId", gps);
 
@@ -85,10 +85,11 @@ public class MessageProcessing<U, T> implements Serializable {
 					indexobj.setDocument(indexDocument);
 					Double fuelused = (Double) getValueByAttributeKey("EngineTotalFuelUsed", document);
 					if (fuelused != null) {
-						indexobj.setVUsedFuel((int) Math.round(fuelused));
+						indexobj.setVUsedFuel(getValueAsLong(fuelused));
 					}
 
-					String driver1Identification = (String) getValueByAttributeKey("Driver1Identification", document);
+					String driver1Identification = getStringAsValue(
+							(Double) getValueByAttributeKey("Driver1Identification", document));
 					Double driver1WorkingState = (Double) getValueByAttributeKey("Driver1WorkingState", document);
 					Integer driver2WorkingState = getValueAsInteger(
 							(Double) getValueByAttributeKey("Driver2WorkingState", document));
@@ -96,9 +97,10 @@ public class MessageProcessing<U, T> implements Serializable {
 					Double driver1CardInserted = (Double) getValueByAttributeKey("DriverCardDriver1", document);
 
 					Integer[] engineOilPressure = getIntResult(
-							(Double) getValueByAttributeKey("EngineOilPressure", document));
+							(Double) getValueByAttributeKey("EngineOilPressure1", document));
 
-					String driver2Identification = (String) getValueByAttributeKey("Driver2Identification", document);
+					String driver2Identification = getStringAsValue(
+							(Double) getValueByAttributeKey("Driver2Identification", document));
 					Double[] engineCoolantLevel = getDoubleResult(
 							(Double) getValueByAttributeKey("EngineCoolantLevel1", document));
 					Integer[] engineCoolantTemperature = getIntResult(
@@ -116,18 +118,23 @@ public class MessageProcessing<U, T> implements Serializable {
 					Integer[] engineLoad = getIntResult(
 							(Double) getValueByAttributeKey("ActualEnginePercentTorque", document));
 
-					Integer ambientAirTemperature = (Integer) getValueByAttributeKey("AmbientAirTemperature", document);
-					Integer[] airPressure = getIntResult(
+					Long ambientAirTemperature = getValueAsLong(
+							(Double) getValueByAttributeKey("AmbientAirTemperature", document));
+					Long[] airPressure = getLongResult(
 							(Double) getValueByAttributeKey("ServiceBrakeCircuit2AirPressure", document));
-					Integer[] tachoVehicleSpeed = getIntResult(
+					// TODO
+					// Integer[] airPressure = null;
+
+					Long[] tachoVehicleSpeed = getLongResult(
 							(Double) getValueByAttributeKey("TachographVehicleSpeed", document));
 
-					Integer vDEFTankLevel = (Integer) getValueByAttributeKey(
-							"Aftertreatment1DieselExhaustFluidTankVolume", document);
-					Long vEngineTotalHours = (Long) getValueByAttributeKey("EngineTotalHoursOfOperation", document);
+					Integer vDEFTankLevel = getValueAsInteger(
+							(Double) getValueByAttributeKey("Aftertreatment1DieselExhaustFluidTankVolume", document));
+					Long vEngineTotalHours = getValueAsLong(
+							(Double) getValueByAttributeKey("EngineTotalHoursOfOperation", document));
 
-					Integer[] engineSpeed = getIntResult((Double) getValueByAttributeKey("EngineSpeed", document));
-					Double vFuelLevel1 = (Double) getValueByAttributeKey("EngineTotalFuelUsed", document);
+					Long[] engineSpeed = getLongResult((Double) getValueByAttributeKey("EngineSpeed", document));
+					Double vFuelLevel1 = (Double) getValueByAttributeKey("FuelLevel1", document);
 
 					indexDocument.setDriver2ID(driver2Identification);
 
@@ -152,31 +159,56 @@ public class MessageProcessing<U, T> implements Serializable {
 
 					indexDocument.setEngineSpeed(engineSpeed);
 					if (gpsSpeed != null) {
-						indexDocument.setGpsSpeed((int) Math.round(gpsSpeed));
+						indexDocument.setGpsSpeed(getValueAsLong(gpsSpeed));
 					}
 
 					indexDocument.setVPowerBatteryChargeLevel(slIBatteryPackStateOfCharge);
 					indexDocument.setVPowerBatteryVoltage(batteryPotentialPowerInput);
+					// TODO
+					Double vRetarderTorqueActual = (Double) getValueByAttributeKey("ActualRetarderPercentTorque",
+							document);
+					indexDocument.setVRetarderTorqueActual(vRetarderTorqueActual);
+					Integer vRetarderTorqueMode = (Integer) getValueByAttributeKey("RetarderTorqueMode", document);
 					;
-
-					Integer gpsHdop = null;
-					Integer gpsSegmentDist = null;
+					indexDocument.setVRetarderTorqueMode(vRetarderTorqueMode);
+					Double gpsHdop = null;
+					Long gpsSegmentDist = null;// getValueAsInteger((Double)
+													// getValueByAttributeKey("RemDurationOfCurrentBreakRest",
+													// document));;
 					Double[] adBlueLevel = null;
-					Integer driver1RemainingDrivingTime = null;
-
-					Integer period = null;
-					Integer[] inletAirPressureInInletManifold = null;
-					Integer segmentHaversineDistance = null;
-					Integer startEltsTime = null;
-
+					Long driver1RemainingDrivingTime = getValueAsLong(
+							(Double) getValueByAttributeKey("RemDurationOfCurrentBreakRest", document));
+					// TODO
+					Long period = null;
+					Long[] inletAirPressureInInletManifold = getLongResult(
+							(Double) getValueByAttributeKey("EngineIntakeAirPressure", document));
+					Long segmentHaversineDistance = null;
+					Long startEltsTime = null;
+					// TODO
+					String driver2ID = (String) getValueByAttributeKey("Driver2identification", document);
+					;
+					Long vEngineTotalHoursIdle = (Long) getValueByAttributeKey("EngineTotalIdleHours", document);
+					Long vFuelCumulatedIdle = (Long) getValueByAttributeKey("EngineTotalIdleFuelUsed", document);
+					Long vFuelCumulated = getValueAsLong(
+							(Double) getValueByAttributeKey("EngineTotalFuelUsedHighResolution", document));
+					Long vFuelCumulatedLR = getValueAsLong(
+							(Double) getValueByAttributeKey("EngineTotalFuelUsed", document));
+					indexDocument.setDriver2ID(driver2ID);
+					indexDocument.setVEngineTotalHoursIdle(vEngineTotalHoursIdle);
 					indexDocument.setDriver2WorkingState(driver2WorkingState);
+					// TODO
+					indexDocument.setVFuelCumulated(vFuelCumulated);
+					indexDocument.setVFuelCumulatedIdle(vFuelCumulatedIdle);
+					indexDocument.setVFuelCumulatedLR(vFuelCumulatedLR);
 					if (driverCardDriver2insert != null) {
 						indexDocument.setDriver2CardInserted(true);
 					} else {
 						indexDocument.setDriver2CardInserted(false);
-					}
-
-					Double[] ambientPressure = null;
+					} // TODO
+					Long driver1RemainingRestTime = getValueAsLong((Double) getValueByAttributeKey("RemDurationOfCurrentBreakRest",
+							document));
+					Double[] ambientPressure = getDoubleResult(
+							(Double) getValueByAttributeKey("BarometricPressure", document));
 					indexDocument.setGpsHdop(gpsHdop);
 					indexDocument.setGpsSegmentDist(gpsSegmentDist);
 					indexDocument.setAdBlueLevel(adBlueLevel);
@@ -189,7 +221,7 @@ public class MessageProcessing<U, T> implements Serializable {
 					} else {
 						indexDocument.setDriver1CardInserted(false);
 					}
-
+					indexDocument.setDriver1RemainingRestTime(driver1RemainingRestTime);
 					indexDocument.setDriver1RemainingDrivingTime(driver1RemainingDrivingTime);
 					indexDocument.setInletAirPressureInInletManifold(inletAirPressureInInletManifold);
 					// start time - end time
@@ -197,7 +229,7 @@ public class MessageProcessing<U, T> implements Serializable {
 					indexDocument.setSegmentHaversineDistance(segmentHaversineDistance);
 					indexDocument.setStartEltsTime(startEltsTime);
 
-					Integer[] totalTachoMileage = null;
+					Long[] totalTachoMileage = null;
 					Double vAcceleration = null;
 					indexDocument.setTachoVehicleSpeed(tachoVehicleSpeed);
 					indexDocument.setTripID(tripid);
@@ -209,13 +241,47 @@ public class MessageProcessing<U, T> implements Serializable {
 
 					indexDocument.setVDEFTankLevel(vDEFTankLevel);
 					Integer vengineCoolantTemperature = null;
+					Integer vGearCurrent = null;
 					indexDocument.setVEngineCoolantTemperature(vengineCoolantTemperature);
 					indexDocument.setEngineLoad(engineLoad);
 
 					indexDocument.setVEngineTotalHours(vEngineTotalHours);
-
+					// TODO
 					indexDocument.setVFuelLevel1(vFuelLevel1);
+					indexDocument.setVGearCurrent(vGearCurrent);
+					Long vGrossWeightCombination = getValueAsLong(
+							(Double) getValueByAttributeKey("GrossCombinationVehicleWeight", document));
+					Double vPedalAcceleratorPosition1 = (Double) getValueByAttributeKey("AcceleratorPedalPosition1",
+							document);
+					// TODO
+					indexDocument.setVGrossWeightCombination(vGrossWeightCombination);
+					indexDocument.setVPedalAcceleratorPosition1(vPedalAcceleratorPosition1);
+					Long vServiceBrakeAirPressure1 = getValueAsLong(
+							(Double) getValueByAttributeKey("ServiceBrakeCircuit1AirPressure", document));
+					indexDocument.setVServiceBrakeAirPressure1(vServiceBrakeAirPressure1);
+					Long vserviceBrakeAirPressure2 = getValueAsLong(
+							(Double) getValueByAttributeKey("ServiceBrakeCircuit2AirPressure", document));
+					Integer transmissionCurrentGear = getValueAsInteger(
+							(Double) getValueByAttributeKey("TransmissionCurrentGear", document));
 
+					indexDocument.setVGearCurrent(transmissionCurrentGear);
+
+					indexDocument.setVServiceBrakeAirPressure1(vserviceBrakeAirPressure2);
+					Long vWheelBasedSpeed = getValueAsLong(
+							(Double) getValueByAttributeKey("WheelBasedVehicleSpeed", document));
+
+					indexDocument.setVWheelBasedSpeed(vWheelBasedSpeed);
+					Double[] fuelTemperature = getDoubleResult(
+							(Double) getValueByAttributeKey("EngineFuelTemperature1", document));
+					indexDocument.setFuelTemperature(fuelTemperature);
+					Double vTankDiff = null;
+					indexDocument.setVTankDiff(vTankDiff);
+					Double vSegmentFuelLevel1 = null;
+					indexDocument.setVSegmentFuelLevel1(vSegmentFuelLevel1);
+					Integer[] tt_ListValue = null;
+					indexDocument.setTt_ListValue(tt_ListValue);
+					String tt_Norm = null;
+					indexDocument.setTt_Norm(tt_Norm);
 				}
 				indexobj.setDocument(indexDocument);
 
@@ -234,13 +300,11 @@ public class MessageProcessing<U, T> implements Serializable {
 						properties, FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
 	}
 
+	
 	public DataStream<Tuple2<Integer, KafkaRecord<String>>> boschSourceStreamStatus(
 			DataStream<KafkaRecord<String>> boschInputStream) {
 		return boschInputStream.map(new MapFunction<KafkaRecord<String>, Tuple2<Integer, KafkaRecord<String>>>() {
 
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 			String rowKey = null;
 
@@ -317,6 +381,15 @@ public class MessageProcessing<U, T> implements Serializable {
 		}
 	}
 
+	protected Long[] getLongResult(Double value) {
+		if (value != null) {
+			return null;
+		} else {
+			return null;
+		}
+	}
+
+	
 	public static Double[] getDoubleResult(Double value) {
 		if (value != null) {
 			Set<Double> setOfInteger = new HashSet<>(Arrays.asList(value));
@@ -358,7 +431,7 @@ public class MessageProcessing<U, T> implements Serializable {
 			String end = (String) getValueByAttributeKey("end", resultData);
 			String start = (String) getValueByAttributeKey("start", resultData);
 			String testStepId = (String) getValueByAttributeKey("testStepId", resultData);
-			
+
 			result.put("manufacturerName", manufacturerName);
 			result.put("vehicleName", vehicleName);
 			result.put("vehicleId", vehicleId);
@@ -375,7 +448,7 @@ public class MessageProcessing<U, T> implements Serializable {
 				JSONObject seriesParts1 = (JSONObject) seriesPartsList.get(i);
 				JSONArray dataPoints1 = (JSONArray) getValueByAttributeKey("dataPoints", seriesParts1);//// seriesParts1.get("dataPoints");
 
-				if (dataPoints1.size() > 1) {
+				if (dataPoints1.size() >= 1) {
 					JSONObject dataPoint1 = (JSONObject) dataPoints1.get(dataPoints1.size() - 1);
 					JSONObject series = (JSONObject) getValueByAttributeKey("series", seriesParts1);// seriesParts1.get("series");
 					String seriesName = (String) getValueByAttributeKey("seriesName", series);
@@ -396,4 +469,21 @@ public class MessageProcessing<U, T> implements Serializable {
 		return result;
 	}
 
+	private static String getStringAsValue(Double value) {
+		if (value != null) {
+			return value.toString();
+		} else {
+			return null;
+		}
+	}
+	
+	
+
+	private static Long getValueAsLong(Double value) {
+		if(value != null ){
+			return value.longValue();
+		} else {
+			return null;
+		}
+	}
 }
