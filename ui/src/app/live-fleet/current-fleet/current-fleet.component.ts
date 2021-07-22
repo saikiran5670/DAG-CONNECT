@@ -166,18 +166,18 @@ export class CurrentFleetComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
-          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-        }else{ // org pref
-          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
-            this.proceedStep(prefData, orgPref);
-          }, (error) => { // failed org API
-            let pref: any = {};
-            this.proceedStep(prefData, pref);
-          });
-        }
-      });
+      // this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      //   if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+      //     this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+      //   }else{ // org pref
+      //     this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+      //       this.proceedStep(prefData, orgPref);
+      //     }, (error) => { // failed org API
+      //       let pref: any = {};
+      //       this.proceedStep(prefData, pref);
+      //     });
+      //   }
+      // });
     });
     this.clickOpenClose='Click to Open';
     let objData = {
@@ -219,26 +219,26 @@ export class CurrentFleetComponent implements OnInit {
   } 
 
   
-  proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
-    if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
-    }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
-    }
-    this.preferenceObject = {
-      prefTimeFormat : this.prefTimeFormat,
-      prefTimeZone : this.prefTimeZone,
-      prefDateFormat : this.prefDateFormat,
-      prefUnitFormat : this.prefUnitFormat
-    }
-  }
+  // proceedStep(prefData: any, preference: any){
+  //   let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  //   if(_search.length > 0){
+  //     this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+  //     this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+  //     this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+  //     this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+  //   }else{
+  //     this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+  //     this.prefTimeZone = prefData.timezone[0].value;
+  //     this.prefDateFormat = prefData.dateformat[0].name;
+  //     this.prefUnitFormat = prefData.unit[0].name;
+  //   }
+  //   this.preferenceObject = {
+  //     prefTimeFormat : this.prefTimeFormat,
+  //     prefTimeZone : this.prefTimeZone,
+  //     prefDateFormat : this.prefDateFormat,
+  //     prefUnitFormat : this.prefUnitFormat
+  //   }
+  // }
 
   sendMessage(): void {
     // send message to subscribers via observable subject

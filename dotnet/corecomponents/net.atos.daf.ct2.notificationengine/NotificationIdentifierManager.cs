@@ -29,6 +29,7 @@ namespace net.atos.daf.ct2.notificationengine
                 tripAlert = await _notificationIdentifierRepository.GetVehicleIdForTrip(tripAlert);
                 List<Notification> notificationOutput = new List<Notification>();
                 List<Notification> notificationDetails = await _notificationIdentifierRepository.GetNotificationDetails(tripAlert);
+                // Condition added to check for trip base alert and need to condition for non trip based alert type
                 List<NotificationHistory> notificatinFrequencyCheck = await _notificationIdentifierRepository.GetNotificationHistory(tripAlert);
                 List<TripAlert> generatedAlertForVehicle = await _notificationIdentifierRepository.GetGeneratedTripAlert(tripAlert);
                 int numberOfAlertForvehicle = notificatinFrequencyCheck.Count();
@@ -38,15 +39,16 @@ namespace net.atos.daf.ct2.notificationengine
                 // check frequency type of  notification
                 foreach (var item in notificationDetails)
                 {
-                    if (item.Noti_frequency_type == "O")
+                    if (item.Noti_frequency_type.ToUpper() == "O")
                     {
                         notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
                     }
-                    else if (item.Noti_frequency_type == "T")
+                    else if (item.Noti_frequency_type.ToUpper() == "T")
                     {
-                        notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
+                        //notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
+                        notificationOutput = notificationDetails.Where(p => p.Noti_frequency_type.ToUpper() == "T").ToList();
                     }
-                    else if (item.Noti_frequency_type == "E")
+                    else if (item.Noti_frequency_type.ToUpper() == "E")
                     {
                         int index = 0;
                         List<TripAlert> nGenAlertDetails = (List<TripAlert>)generatedAlertForVehicle.OrderBy(o => o.AlertGeneratedTime).GroupBy(e => new { e.Alertid, e.Vin }); //order by alert generated time  //.Where(e => e.Count() == item.Noti_frequency_threshhold_value);
@@ -136,30 +138,7 @@ namespace net.atos.daf.ct2.notificationengine
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "E").Count() > 0)
                 {
-                    foreach (var item in identifiedNotificationRec)
-                    {
-                        Dictionary<string, string> addAddress = new Dictionary<string, string>();
-                        if (!addAddress.ContainsKey(item.EmailId))
-                        {
-                            addAddress.Add(item.EmailId, null);
-                        }
-                        var mailNotification = new MailNotificationRequest()
-                        {
-                            MessageRequest = new MessageRequest()
-                            {
-                                AccountInfo = new AccountInfo() { EmailId = item.EmailId, Organization_Id = item.OrganizationId },
-                                ToAddressList = addAddress,
-                                Subject = item.EmailSub,
-                                Description = item.EmailText
-                            },
-                            ContentType = EmailContentType.Html,
-                            EventType = EmailEventType.AlertNotificationEmail
-                        };
-
-                        var isSuccess = await _emailNotificationManager.TriggerSendEmail(mailNotification);
-                        item.Status = isSuccess ? NotificationSendType.Successful.ToString() : NotificationSendType.Failed.ToString();
-                        await InsertNotificationSentHistory(item);
-                    }
+                    await SendEmailNotification(identifiedNotificationRec);
                 }
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
@@ -183,6 +162,42 @@ namespace net.atos.daf.ct2.notificationengine
         public async Task<NotificationHistory> InsertNotificationSentHistory(NotificationHistory notificationHistory)
         {
             return await _notificationIdentifierRepository.InsertNotificationSentHistory(notificationHistory);
+        }
+        public async Task<bool> SendEmailNotification(List<NotificationHistory> notificationHistoryEmail)
+        {
+            try
+            {
+                bool isResult = false;
+                foreach (var item in notificationHistoryEmail)
+                {
+                    Dictionary<string, string> addAddress = new Dictionary<string, string>();
+                    if (!addAddress.ContainsKey(item.EmailId))
+                    {
+                        addAddress.Add(item.EmailId, null);
+                    }
+                    var mailNotification = new MailNotificationRequest()
+                    {
+                        MessageRequest = new MessageRequest()
+                        {
+                            AccountInfo = new AccountInfo() { EmailId = item.EmailId, Organization_Id = item.OrganizationId },
+                            ToAddressList = addAddress,
+                            Subject = item.EmailSub,
+                            Description = item.EmailText
+                        },
+                        ContentType = EmailContentType.Html,
+                        EventType = EmailEventType.AlertNotificationEmail
+                    };
+
+                    isResult = await _emailNotificationManager.TriggerSendEmail(mailNotification);
+                    item.Status = isResult ? ((char)NotificationSendType.Successful).ToString() : ((char)NotificationSendType.Failed).ToString();
+                    await InsertNotificationSentHistory(item);
+                }
+                return isResult;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

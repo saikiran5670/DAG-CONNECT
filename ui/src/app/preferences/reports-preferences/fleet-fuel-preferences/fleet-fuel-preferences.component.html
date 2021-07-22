@@ -93,8 +93,9 @@
                         field.name.replace(initData.name, '').replace('.', '')
                         }}</span> -->
                         <span>
-                            {{field.translatedName}}
+                            {{ field.translatedName }}
                         </span>
+                        <span *ngIf="field.key == 'rp_ff_report_vehicle_vehicleranking_consumption'">{{ getUnits() }}</span>
                     </mat-checkbox>
                 </div>
             </ng-container>
