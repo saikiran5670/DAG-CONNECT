@@ -48,7 +48,7 @@
         </div> 
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Last Message Received'}}:</span>
-            <span class="vehicle-details-data">{{gridData.latestProcessedMessageTimeStamp}}</span>
+            <span class="vehicle-details-data">{{timeConversion(gridData.latestProcessedMessageTimeStamp)}}</span>
         </div> 
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Address'}}:</span>
@@ -84,5 +84,38 @@
         </div>
     </div>
      </div>
-<!-- </mat-card> -->
- 
+</mat-card>
+<mat-card>
+     <div>
+        <div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlerts || 'Alerts' }} ({{gridData.fleetOverviewAlert.length}})</span>
+            </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+            <span class='custom-font' (click)="toBack()">
+                <span class='backBtnCss'>{{ translationData.lblLogBook || 'Log Book' }} ></span>
+            </span>
+        </div>
+    </div>
+     
+
+     <div class="full-width vehicleList-div" *ngFor="let item of gridData.fleetOverviewAlert">
+        <div class="alertList-icon">
+            <!-- <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="Health Status: {{item.vehicleHealthStatusType}} 
+            &#13; Alert: {{item.alertName}}"> </span> -->
+        </div>
+        <div class="alertList-details">
+        <div>
+            <span class="vehicle-details-data">{{item.type}}</span>
+        </div>
+        <div>
+            <span class="vehicle-details-data">{{timeConversion(item.time)}}</span>
+        </div> 
+        <div fxLayoutAlign="right">
+            <span class="vehicle-details-data">{{item.level}}</span>
+        </div>
+        </div>
+    </div>
+</div>
+
+</mat-card>
