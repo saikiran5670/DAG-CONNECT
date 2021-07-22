@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.notificationengine
                     {
                         notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
                     }
-                    else if (item.Noti_frequency_type == "T" && item.Notlim_max_limit > numberOfAlertForvehicle)
+                    else if (item.Noti_frequency_type == "T")
                     {
                         notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
                     }
@@ -91,11 +91,11 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationTimingDetails = notificationOutput.Where(t => t.Noti_validity_type.ToUpper() == "A").ToList();
                     }
                 }
+                //always
+                int maxNotLim = 10;
 
                 foreach (var item in notificationTimingDetails)
                 {
-                    //always
-                    int maxNotLim = 10;
                     if (item.Notlim_notification_mode_type.ToUpper() == "A")
                     {
                         item.Notlim_max_limit = maxNotLim;
