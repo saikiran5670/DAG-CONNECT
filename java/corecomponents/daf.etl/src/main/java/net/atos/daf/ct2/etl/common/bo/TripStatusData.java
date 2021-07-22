@@ -41,7 +41,7 @@ public class TripStatusData implements Serializable {
 	private Long vTripMotionDuration;
 	private Long receivedTimestamp;
 	private Long vPTODuration;
-	private Integer vHarshBrakeDuration;
+	private Long vHarshBrakeDuration;
 	private Long vBrakeDuration;
 	private Long vMaxThrottlePaddleDuration;
 	private Long vTripAccelerationTime;
@@ -75,7 +75,7 @@ public class TripStatusData implements Serializable {
 	private Long numberOfIndexMessage;
 	private Long vTripIdlePTODuration;
 	private Long vTripIdleWithoutPTODuration;
-	private Integer tripCalCrsCntrlDist25To50;
-	private Integer tripCalCrsCntrlDist50To75;
-	private Integer tripCalCrsCntrlDistAbv75;
+	private Long tripCalCrsCntrlDist25To50;
+	private Long tripCalCrsCntrlDist50To75;
+	private Long tripCalCrsCntrlDistAbv75;
 }
