@@ -389,6 +389,7 @@ getFilterData(){
 
       if (error.status == 404) {
         this.noRecordFlag = true;
+        this.dataInterchangeService.getVehicleData(null);
       }
 
     });

@@ -70,12 +70,14 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
                 this.Request.Headers.TryGetValue("X-Correlation-ID", out StringValues xCorrelationId);
 
                 if (!this.Request.Headers.ContainsKey("Accept") || (this.Request.Headers.ContainsKey("Accept") && acceptHeader.Count() == 0))
-                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept");
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept", "INVALID_PARAMETER");
 
                 await _auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "rFMS Vehicle Data Service", "rFMS Vehicle Data Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get Vehicles method rFMS vehicle data service", 0, 0, lastVin, 0, 0);
 
-                if (acceptHeader.Any(x => x.Trim().Equals(RFMSResponseTypeConstants.JSON, StringComparison.CurrentCultureIgnoreCase)))
-                    selectedType = RFMSResponseTypeConstants.JSON;
+                if (acceptHeader.Any(x => x.Trim().Equals(RFMSResponseTypeConstants.ACCPET_TYPE_VEHICLE_JSON, StringComparison.CurrentCultureIgnoreCase)))
+                    selectedType = RFMSResponseTypeConstants.ACCPET_TYPE_VEHICLE_JSON;
+                else
+                    return GenerateErrorResponse(HttpStatusCode.NotAcceptable, "Accept", "NOT_ACCEPTABLE value in accept - " + acceptHeader);
 
                 var isValid = ValidateParameter(ref lastVin, out bool moreData);
 
@@ -98,7 +100,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
 
                     return Ok(responseObject);
                 }
-                return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(lastVin));
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(lastVin), "INVALID_PARAMETER");
 
             }
             catch (Exception ex)
@@ -129,12 +131,12 @@ namespace net.atos.daf.ct2.rfmsdataservice.Controllers
             return true;
         }
 
-        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string value)
+        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string value, string message)
         {
             return StatusCode((int)statusCode, new ErrorResponse()
             {
                 ResponseCode = ((int)statusCode).ToString(),
-                Message = "INVALID_PARAMETER",
+                Message = message,
                 Value = value
             });
         }

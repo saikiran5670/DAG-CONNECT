@@ -1,8 +1,9 @@
     <div *ngIf = '!isOpen' fxLayout="row" class="full-width margin-bottom-sm">
     <div id="summary" class="full-width">
+        <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
         <app-fleet-overview-summary></app-fleet-overview-summary>
         <app-live-fleet-map [translationData]='translationData' [detailsData]='detailsData'></app-live-fleet-map>
-
+        </mat-card>
     </div>
     
     <div id="sidenav">
@@ -26,7 +27,7 @@
             </span>
         </div>
     </div> 
-        <app-vehicle-health ></app-vehicle-health>
+        <app-vehicle-health [healthData]='healthData'></app-vehicle-health>
     </div>
         <!-- <mat-drawer-container class="example-container" autosize>
             <mat-drawer #filters class="example-sidenav" mode="side" position="end">
