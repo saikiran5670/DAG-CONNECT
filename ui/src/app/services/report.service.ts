@@ -396,6 +396,15 @@ getLogBookfilterdetails(): Observable<any[]> {
          .pipe(catchError(this.handleError));
  }
 
+ getvehiclehealthstatus(vin,languagecode): Observable<any[]> {
+  let headerObj = this.generateHeader();
+ const headers = {
+   headers: new HttpHeaders({ headerObj }),
+ };
+     return this.httpClient
+         .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getvehiclehealthstatus?VIN=${vin}&LngCode=${languagecode}`,  headers)
+         .pipe(catchError(this.handleError));
+ }
  getLogbookDetails(data:any){
   let headerObj = this.generateHeader();
   const headers = {

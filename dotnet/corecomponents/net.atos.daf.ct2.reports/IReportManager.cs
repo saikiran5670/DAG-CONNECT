@@ -67,6 +67,7 @@ namespace net.atos.daf.ct2.reports
         Task<List<AlertThresholdDetails>> GetThresholdDetails(List<int> alertId, List<string> alertLevel);
         Task<List<FilterProperty>> GetAlertLevelList(List<string> enums);
         Task<List<AlertCategory>> GetAlertCategoryList(List<string> enums);
+        Task<IEnumerable<EnumTranslation>> GetAlertCategory();
 
         #region Fuel Benchmark Report
         // Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter);
