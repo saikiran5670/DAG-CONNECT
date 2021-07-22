@@ -668,6 +668,11 @@ export class FleetMapService {
     }
    }
 
+   setMapToLocation(_position){
+    this.hereMap.setCenter({lat: _position.lat, lng: _position.lng}, 'default');
+
+   }
+   
    drawIcons(_selectedRoutes,_ui){
     _selectedRoutes.forEach(elem => {
       this.startAddressPositionLat = elem.startPositionLattitude;
