@@ -61,6 +61,8 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   updatedBy: any;
   defaultProfile: any
   profileFlag: boolean = false;
+  isSelected: boolean= false;
+  userType: any = "Admin#Platform";
   
 
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportService: ReportService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,) { }
@@ -68,6 +70,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   ngOnInit(): void {
     this.breadcumMsg = this.getBreadcum(this.actionType);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.userType = localStorage.getItem("userType");
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -104,6 +107,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       this.deleteSelection = this.profileList[0].isDeleteAllowed;
       if(this.actionType == 'manage'){
         this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile);  
+        this.isSelected = this.selectedElementData[0].organizationId == 0 ? true : false;
         this.loadProfileKpis(this.selectedProfile);
         this.setDefaultValue()
       }
@@ -330,6 +334,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.isKPI = false;
     this.selectedProfile = filterValue;
     this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile); 
+    this.isSelected = this.selectedElementData[0].organizationId == 0 ? true : false;
     this.deleteSelection = this.selectedElementData[0].isDeleteAllowed;
     this.setDefaultValue();
     this.loadProfileKpis(this.selectedProfile);

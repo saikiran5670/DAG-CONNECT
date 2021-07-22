@@ -18,11 +18,12 @@ export class FleetOverviewFilterVehicleComponent implements OnInit {
 @Input() otherList: any;
 @Input() noRecordFlag: any;
 @Input() vehicleListData: any;
+@Input() fromVehicleHealth: any;
 @Output() vehicleFilterComponentEmit =  new EventEmitter<object>();
 @Output() vehicleDetailsInfoEmit =  new EventEmitter<object>();
 @Output() tabvisibility : EventEmitter<boolean> =  new EventEmitter<boolean>()
 vehicleFilterComponentEmitFlag: boolean =false;
-todayFlagClicked : boolean =true;
+todayFlagClicked : boolean = true;
 isVehicleDetails : boolean = false;
 selectedElementData: any = [];
 
@@ -31,6 +32,10 @@ constructor(private dataInterchangeService: DataInterchangeService) { }
 
   ngOnInit(): void {
     this.vehicleFilterComponentEmitFlag= true;
+    if(this.fromVehicleHealth && this.fromVehicleHealth.fromVehicleHealth && this.fromVehicleHealth.selectedElementData){
+      this.onChangetodayCheckbox(!this.fromVehicleHealth.fromVehicleHealth);
+      this.openVehicleDetails(this.fromVehicleHealth.selectedElementData);
+    }
   }
 
   onChangetodayCheckbox(event){
@@ -43,10 +48,10 @@ constructor(private dataInterchangeService: DataInterchangeService) { }
     //  this.todayFlagClicked = false;
     //  this.getFilterData();
     //  this.loadVehicleData();
-    
-let emitObj = {
-  todayFlagClicked  : event.checked,
-}
+    this.todayFlagClicked = event
+  let emitObj = {
+  todayFlagClicked  : event,
+ }
  this.vehicleFilterComponentEmit.emit(emitObj);
   }
 
