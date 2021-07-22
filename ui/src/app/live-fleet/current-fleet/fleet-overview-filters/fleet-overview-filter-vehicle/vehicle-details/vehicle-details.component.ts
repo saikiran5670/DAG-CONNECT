@@ -39,7 +39,7 @@ export class VehicleDetailsComponent implements OnInit {
     //   }
     // };
     // this.router.navigate(['fleetoverview/livefleet'], navigationExtras);
-    this.dataInterchangeService.gethealthDetails(true);
+    this.dataInterchangeService.gethealthDetails(this.selectedElementData);
   }
 
 }

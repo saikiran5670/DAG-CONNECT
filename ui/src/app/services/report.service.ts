@@ -396,4 +396,18 @@ getLogBookfilterdetails(): Observable<any[]> {
          .pipe(catchError(this.handleError));
  }
 
+ getLogbookDetails(data:any){
+  let headerObj = this.generateHeader();
+  const headers = {
+    headers: new HttpHeaders({ headerObj }),
+  };
+  return this.httpClient
+   .post<any[]>(`${this.reportServiceUrl}/fleetoverview/getlogbookdetails`, data, headers)
+    .pipe(catchError(this.handleError));
 }
+
+}
+
+
+
+
