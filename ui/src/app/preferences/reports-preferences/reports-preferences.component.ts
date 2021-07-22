@@ -188,13 +188,12 @@ export class ReportsPreferencesComponent implements OnInit {
 
   updateFuelBenchmarkReportFlag(retObj: any){
     if(retObj){
-      this.editFuelBenchmarkPerferencesFlag = retObj.flag;
       if(retObj.msg && retObj.msg != ''){
         this.successMsgBlink(retObj.msg);
       }
-    }else{
-      this.editFuelBenchmarkPerferencesFlag = false; // hard coded
     }
+    this.editFuelBenchmarkPerferencesFlag = false; // hard coded
+    this.showFuelBenchmarkPerferences = false;
   }
 
   updateFuelDeviationReportFlag(retObj: any){

@@ -29,7 +29,7 @@ public class MonitorDocument implements Serializable {
     @JsonProperty(value = "GPSHdop")
     private Integer gpsHdop;
     @JsonProperty(value = "GPSSpeed")
-    private Integer gpsSpeed;
+    private Long gpsSpeed;
 
     @JsonProperty(value = "DriverID")
     private String driverID;
@@ -45,35 +45,35 @@ public class MonitorDocument implements Serializable {
     private Integer driver2WorkingState;
 
     @JsonProperty(value = "VAmbiantAirTemperature")
-    private Integer vAmbiantAirTemperature;
+    private Long vAmbiantAirTemperature;
     // @JsonProperty(value = "")
-    // private Integer VAmbientAirTemperature;
+    // private Long VAmbientAirTemperature;
     @JsonProperty(value = "VCruiseControl")
     private Integer vCruiseControl;
     @JsonProperty(value = "VCumulatedFuel")
-    private Integer vCumulatedFuel;
+    private Long vCumulatedFuel;
     @JsonProperty(value = "VDEFTankLevel")
     private Integer vDEFTankLevel;
     @JsonProperty(value = "VDist")
-    private Integer vDist;
+    private Long vDist;
     @JsonProperty(value = "VDistanceUntilService")
-    private Integer vDistanceUntilService;
+    private Long vDistanceUntilService;
     @JsonProperty(value = "VEngineCoolantTemperature")
     private Integer vEngineCoolantTemperature;
     @JsonProperty(value = "VEngineLoad")
     private Integer vEngineLoad;
     @JsonProperty(value = "VEngineSpeed")
-    private Integer vEngineSpeed;
+    private Long vEngineSpeed;
     @JsonProperty(value = "VEngineTotalHours")
-    private Integer vEngineTotalHours;
+    private Long vEngineTotalHours;
     @JsonProperty(value = "VEngineTotalHoursIdle")
     private Long vEngineTotalHoursIdle;
     @JsonProperty(value = "VFuelCumulated")
-    private Integer vFuelCumulated;
+    private Long vFuelCumulated;
     @JsonProperty(value = "VFuelCumulatedIdle")
     private Integer vFuelCumulatedIdle;
     @JsonProperty(value = "VFuelCumulatedLR")
-    private Integer vFuelCumulatedLR;
+    private Long vFuelCumulatedLR;
     @JsonProperty(value = "VFuelLevel1")
     private Double vFuelLevel1;
     @JsonProperty(value = "VGearCurrent")
@@ -81,7 +81,7 @@ public class MonitorDocument implements Serializable {
     @JsonProperty(value = "VGearSelected")
     private Integer vGearSelected;
     @JsonProperty(value = "VGrossWeightCombination")
-    private Integer vGrossWeightCombination;
+    private Long vGrossWeightCombination;
     @JsonProperty(value = "VIgnitionState")
     private Integer vIgnitionState;
     @JsonProperty(value = "VPedalBreakPosition1")
@@ -97,13 +97,13 @@ public class MonitorDocument implements Serializable {
     @JsonProperty(value = "VRetarderTorqueMode")
     private Integer vRetarderTorqueMode;
     @JsonProperty(value = "VServiceBrakeAirPressure1")
-    private Integer vServiceBrakeAirPressure1;
+    private Long vServiceBrakeAirPressure1;
     @JsonProperty(value = "VServiceBrakeAirPressure2")
-    private Integer vServiceBrakeAirPressure2;
+    private Long vServiceBrakeAirPressure2;
     @JsonProperty(value = "VTachographSpeed")
     private Integer vTachographSpeed;
     @JsonProperty(value = "VWheelBasedSpeed")
-    private Integer vWheelBasedSpeed;
+    private Long vWheelBasedSpeed;
 
     @JsonProperty(value = "DM1_active")
     private Boolean dm1Active;

@@ -92,7 +92,7 @@ public class MileageStreamingJob {
 			if (stsMsg.getDocument() != null) {
 				vMileageObj.setGpsDistance(stsMsg.getDocument().getGpsTripDist());
 			} else
-				vMileageObj.setGpsDistance(MileageConstants.ZERO);
+				vMileageObj.setGpsDistance(MileageConstants.ZERO_VAL);
 
 			if (stsMsg.getEvtDateTime() != null) {
 				vMileageObj.setEvtDateTime(TimeFormatter.getInstance()

@@ -8,6 +8,7 @@ import { MatSort } from '@angular/material/sort';
 import { validateBasis } from '@angular/flex-layout';
 import { TranslationService } from '../../../services/translation.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DataInterchangeService } from '../../../services/data-interchange.service';
 
 @Component({
   selector: 'app-fleet-overview-filters',
@@ -45,7 +46,8 @@ translationAlertData: any = {};
 svgIcon:any;
 displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthStatus'];
 @ViewChild('dataContainer') dataContainer: ElementRef;
-  constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer) { }
+  constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer,
+    private dataInterchangeService: DataInterchangeService) { }
 
   ngOnInit(): void {
     
@@ -77,6 +79,7 @@ displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthS
       group: ['all'],
     })   
     this.getFilterData();
+    this.drawIcons(this.detailsData);
   }
 
   tabVisibilityHandler(tabVisibility: boolean){
@@ -264,7 +267,9 @@ getFilterData(){
          });              
       });      
      // this.detailsData=data;     
-      this.vehicleListData = data;         
+      this.vehicleListData = data;     
+      this.dataInterchangeService.getVehicleData(data); //change as per filter data
+          
     }, (error) => {
 
       if (error.status == 404) {

@@ -22,6 +22,6 @@ public class VehicleMileage implements Serializable{
 	private String vin;
 	private String vid;
 	//cross check it shld be long
-	private Integer gpsDistance;
+	private Long gpsDistance;
 	
 }
