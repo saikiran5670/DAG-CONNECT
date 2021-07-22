@@ -1,0 +1,258 @@
+<div >
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <span>Vehicle Health</span>
+      </div>
+    </div>
+    <div class="tabs">
+      <mat-tab-group [ngClass]="[ tabVisibilityStatus ? '' : 'hideTabHeader']" [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged(selectedIndex);">
+        <mat-tab label="{{ translationData.lblCurrent || 'Current' }}">
+        </mat-tab>
+        <mat-tab label="{{ translationData.lblHistory || 'History' }}">
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  
+    <form [formGroup]="vehicleHealthForm">
+        <mat-card *ngIf='!isCurrent' class='mat-elevation-z no-padding margin-bottom-xlg'>
+          <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
+            <mat-expansion-panel-header class="full-width">
+              <mat-panel-title>
+                <span>
+                  <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
+                  <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
+                </span>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div>
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+                <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
+                  <div style='margin-top: 5px;'>
+                    <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday || 'Today' }}</button>
+                    <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday || 'Yesterday' }}</button>
+                    <button [disabled]="selectionTab == 'lastweek'" (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastWeek || 'Last Week' }}</button>
+                    <button [disabled]="selectionTab == 'lastmonth'" (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastMonth|| 'Last Month' }}</button>
+                    <button [disabled]="selectionTab == 'last3month'" (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
+                  </div>
+                </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <!-- <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label> -->
+                  <mat-label>{{ translationData.lblWarningsType || 'Warnings Type' }} </mat-label>
+                  <mat-form-field appearance="outline">
+                    <mat-select (selectionChange)="onWarningTypeSelection($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Warnings Type' }}" >
+                      <mat-option></mat-option>
+                      <mat-option value="All Warnings">All Warnings</mat-option>
+                      <mat-option value="Active">Active</mat-option>
+                      <mat-option value="Deactive">Deactive</mat-option>
+  
+                      <!-- <mat-option *ngFor="let rer of Warnings" [value]="rer.vehicleGroupId">
+                          {{ rer.vehicleGroupName }}
+                      </mat-option> -->
+                    </mat-select>
+                  </mat-form-field> 
+                </div>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+                <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+                  <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                    <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
+                      <mat-label>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span></mat-label>
+                      <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+                        <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                          <mat-form-field appearance="outline">
+                            <input matInput [(ngModel)]="startDateValue" (dateChange)="changeStartDateEvent($event)" [min]='last3MonthDate' [max]='endDateValue' [matDatepicker]="startPicker" formControlName="startDate">
+                            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                            <mat-datepicker #startPicker></mat-datepicker>
+                          </mat-form-field>
+                        </div>
+                        <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
+                            <span class='timeAdjustSpan'>{{ startTimeDisplay }}</span> 
+                            <input [max]='selectedEndTime' [(ngModel)]="selectedStartTime" class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="startTime" readonly>
+                            <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
+                            <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker></ngx-material-timepicker>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
+                      <mat-label>{{ translationData.lblTo || 'To' }} <span class='mandatoryColor'>*</span></mat-label>
+                      <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+                        <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                          <mat-form-field appearance="outline">
+                            <input matInput [(ngModel)]="endDateValue" (dateChange)="changeEndDateEvent($event)" [min]='startDateValue' [max]='todayDate' [matDatepicker]="endPicker" formControlName="endDate">
+                            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                            <mat-datepicker #endPicker></mat-datepicker>
+                          </mat-form-field>
+                        </div>
+                        <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
+                            <span class='timeAdjustSpan'>{{ endTimeDisplay }}</span>
+                            <input [min]='selectedStartTime' [(ngModel)]="selectedEndTime"  class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true" formControlName="endTime" readonly>
+                            <ngx-material-timepicker-toggle [for]="toggleEndTimepicker"></ngx-material-timepicker-toggle>
+                            <ngx-material-timepicker (timeChanged)="endTimeChanged($event)" #toggleEndTimepicker></ngx-material-timepicker>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
+                <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
+                  (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
+                <button [disabled]="!vehicleHealthForm.valid" class='no-margin' mat-raised-button color="primary"
+                  (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-card> 
+    </form>
+    <!-- Summary Section -->
+    <div id ="charts">
+      <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' id ="summary">
+        <mat-expansion-panel [(expanded)]="isSummaryOpen" class="full-width" fxLayoutGap="10px" (opened)="isSummaryOpen == true"
+        (closed)="isSummaryOpen == false">
+          <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary || 'Summary' }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div>
+            <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+              <div *ngIf='!isCurrent' fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblFrom || 'From' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>19/07/2021 00:00:00</span>
+                  </span>
+                </div>
+                <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblVehicleGroup || 'Warning Type' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>All Warnings</span>
+                  </span>
+                </div>
+              </div>
+              <div *ngIf='!isCurrent' fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblTo || 'To' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>19/07/2021 23:59:59</span>
+                  </span>
+                </div>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblFrom || 'VIN' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>XLRTEM4100G041857</span>
+                  </span>
+                </div>
+                <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblVehicleGroup || 'Vehicle Name' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
+                  </span>
+                </div>
+                <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblTo || 'Vehicle Reg No' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>NL J-229-FV</span>
+                  </span>
+                </div>
+                <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblTo || 'Driving Status' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>Stopped</span>
+                  </span>
+                </div>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblFrom || 'Alert' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>3</span>
+                  </span>
+                </div>
+                <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblVehicleGroup || 'Address' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>DAF, 5643 Eindhoven, Netherlands</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </mat-expansion-panel>
+      </mat-card>
+  
+      <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' id ="map">
+        <mat-expansion-panel [(expanded)]="isMapOpen" class="full-width" fxLayoutGap="10px" (opened)="isMapOpen == true"
+        (closed)="isMapOpen == false">
+          <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView || 'Map View' }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px"> </div>
+        </mat-expansion-panel>
+      </mat-card>
+  
+      <!-- Warning Details -->
+      <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' id ="warning">
+        <mat-expansion-panel [(expanded)]="isWarningOpen" class="full-width" fxLayoutGap="10px" (opened)="isWarningOpen == true"
+        (closed)="isWarningOpen == false">
+          <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (!isCurrent) && (translationData.lblWarning || 'Warning History') || (translationData.lblWarning || 'Current Warning') }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+              <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+                <mat-label>Sort By</mat-label>
+                <mat-form-field appearance="outline">
+                  <mat-select (selectionChange)="onWarningTypeSelection($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Severity' }}" >
+                    <mat-option></mat-option>
+                    <mat-option value="All Warnings">Severity 1</mat-option>
+                    <mat-option value="Active">Severity 2</mat-option>
+                  </mat-select>
+                </mat-form-field> 
+              </div>
+            </div>
+            <div style="font: 500 16px/32px Roboto, 'Helvetica Neue', sans-serif;" fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+              <div class="areaWidth min-width-30-per warning_history" fxLayout="column" fxLayoutAlign="left">
+                <div>Oil pressure too low</div>
+              </div>
+              <div class="areaWidth min-width-30-per warning_history" fxLayout="column" fxLayoutAlign="left">
+                <div>Oil pressure too low</div>
+              </div>
+              <div class="areaWidth min-width-30-per warning_history" fxLayout="column" fxLayoutAlign="left">
+                <div>
+                  <span style="font-weight: bold;">Oil pressure too low</span>
+                </div>
+                <div fxLayout="row">
+                  <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
+                    <span style="font-size: small;">Activated Time</span>
+                    <span>04/01/2021 02:33:21</span>
+                  </div>
+                  <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
+                    <span style="font-size: small;">Deactivated Time</span>
+                    <span>04/01/2021 02:55:21</span>
+                  </div>
+                </div>
+                <div fxLayout="row">
+                  <span>Driver Name: </span>
+                  <span style="font-weight:bold">Jhon Doe</span>
+                </div>
+                <div style="glyph-orientation-horizontal: 0deg;"></div>
+              </div>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-card>
+    </div>
+  </div>
