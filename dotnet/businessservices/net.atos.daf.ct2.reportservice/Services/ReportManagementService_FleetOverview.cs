@@ -139,6 +139,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.LatestWarningClass > 0).Select(x => x.LatestWarningClass).Distinct().ToList(), result.Where(p => p.LatestWarningNumber > 0).Select(x => x.LatestWarningNumber).Distinct().ToList(), request.LanguageCode);
                     foreach (var fleetOverviewDetails in result)
                     {
+                        fleetOverviewDetails.VehicleName = vehicleDeatilsWithAccountVisibility?.FirstOrDefault(d => d.Vin == fleetOverviewDetails.Vin)?.VehicleName ?? string.Empty;
                         foreach (WarningDetails warning in warningDetails)
                         {
                             if (fleetOverviewDetails.LatestWarningClass == warning.WarningClass && fleetOverviewDetails.LatestWarningNumber == warning.WarningNumber)
@@ -154,7 +155,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                         if (driverDetails != null && driverDetails.Count > 0)
                         {
-                            fleetOverviewDetails.DriverName = driverDetails.FirstOrDefault(d => d.DriverId == fleetOverviewDetails.Driver1Id).DriverName; ;
+                            fleetOverviewDetails.DriverName = driverDetails.FirstOrDefault(d => d.DriverId == fleetOverviewDetails.Driver1Id).DriverName;
                         }
                         response.FleetOverviewDetailList.Add(_mapper.ToFleetOverviewDetailsResponse(fleetOverviewDetails));
                     }

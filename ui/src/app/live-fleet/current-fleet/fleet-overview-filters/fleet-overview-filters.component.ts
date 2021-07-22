@@ -8,6 +8,9 @@ import { MatSort } from '@angular/material/sort';
 import { validateBasis } from '@angular/flex-layout';
 import { TranslationService } from '../../../services/translation.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DataInterchangeService } from '../../../services/data-interchange.service';
+import { MessageService } from 'src/app/services/message.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-fleet-overview-filters',
@@ -45,7 +48,17 @@ translationAlertData: any = {};
 svgIcon:any;
 displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthStatus'];
 @ViewChild('dataContainer') dataContainer: ElementRef;
-  constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer) { }
+messages: any[] = [];
+subscription: Subscription;
+
+  constructor(private messageService: MessageService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer,
+    private dataInterchangeService: DataInterchangeService) { 
+      this.subscription = this.messageService.getMessage().subscribe(message => {
+        if (message.key.indexOf("refreshData") !== -1) {
+          this.loadVehicleData();
+        }
+      });
+    }
 
   ngOnInit(): void {
     
@@ -63,8 +76,7 @@ displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthS
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);    
     });
-    console.log(this.todayFlagClicked );
-    //this.vehicleListData = this.detailsData;
+   
     this.selection1 = ['all'];
     this.selection2 = ['all'];
     this.filterVehicleForm = this._formBuilder.group({
@@ -78,6 +90,7 @@ displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthS
       group: ['all'],
     })   
     this.getFilterData();
+    this.drawIcons(this.detailsData);
   }
 
   tabVisibilityHandler(tabVisibility: boolean){
@@ -121,7 +134,7 @@ getFilterData(){
         let statusName = this.translationData[item.name];           
         this.otherList.push({'name':statusName, 'value': item.value})
         }});
-       //this.otherList.push(this.filterData["otherFilter"][0]);
+       
        this.detailsData.forEach(item => {
        this.filterData["healthStatus"].forEach(e => {
          if(item.vehicleHealthStatusType==e.value)
@@ -148,7 +161,6 @@ getFilterData(){
           let nextDate = createdDate + 86400000;
           if(currentDate > createdDate && currentDate < nextDate){
           let vehicleData =this.filterData["vehicleGroups"].filter(item => item.vin == element.vin);
-          console.log("same vins ="+vehicleData);
           vehicleData.forEach(item=>
             this.groupList.push(item));
           }
@@ -192,7 +204,7 @@ getFilterData(){
       return vin || driver || drivingStatus ||healthStatus;
     }​​​​​​​​);
   
-    console.log(filteredData);    
+  
     this.vehicleListData = filteredData;
     
   }
@@ -223,8 +235,109 @@ getFilterData(){
   }
   
   loadVehicleData(){  
-    this.initData =this.detailsData;    
-    console.log(this.initData);
+    this.initData =this.detailsData;
+    // this.messageService.sendMessage([
+    //   {
+    //     "id": 8,
+    //     "tripId": "52a0f631-4077-42f9-b999-cb21c6309c71",
+    //     "vin": "XLR0998HGFFT76657",
+    //     "startTimeStamp": 1623330691000,
+    //     "endTimeStamp": 1623340800000,
+    //     "driver1Id": "SK 2236526558846039",
+    //     "tripDistance": 100,
+    //     "drivingTime": 180,
+    //     "fuelConsumption": 12,
+    //     "vehicleDrivingStatusType": "D",
+    //     "odometerVal": 555,
+    //     "distanceUntilNextService": 3000,
+    //     "latestReceivedPositionLattitude": 51.43042755,
+    //     "latestReceivedPositionLongitude": 5.51616478,
+    //     "latestReceivedPositionHeading": 306.552612012591,
+    //     "startPositionLattitude": 51.43042755,
+    //     "startPositionLongitude": 5.51616478,
+    //     "startPositionHeading": 306.552612012591,
+    //     "latestProcessedMessageTimeStamp": 1623340800000,
+    //     "vehicleHealthStatusType": "T",
+    //     "latestWarningClass": 11,
+    //     "latestWarningNumber": 2,
+    //     "latestWarningType": "A",
+    //     "latestWarningTimestamp": 1623340800000,
+    //     "latestWarningPositionLatitude": 51.43042755,
+    //     "latestWarningPositionLongitude": 5.51616478,
+    //     "vid": "M4A1117",
+    //     "registrationNo": "PLOI098OOO",
+    //     "driverFirstName": "Sid",
+    //     "driverLastName": "U",
+    //     "latestGeolocationAddressId": 36,
+    //     "latestGeolocationAddress": "DAF, 5645 Eindhoven, Nederland",
+    //     "startGeolocationAddressId": 36,
+    //     "startGeolocationAddress": "DAF, 5645 Eindhoven, Nederland",
+    //     "latestWarningGeolocationAddressId": 36,
+    //     "latestWarningGeolocationAddress": "DAF, 5645 Eindhoven, Nederland",
+    //     "latestWarningName": "Opotřebení brzdového obložení nákladního vozidla",
+    //     "liveFleetPosition": [
+    //       {
+    //         "gpsAltitude": 17,
+    //         "gpsHeading": 306.55261201259134,
+    //         "gpsLatitude": 51.43042755,
+    //         "gpsLongitude": 5.51616478,
+    //         "fuelconsumtion": 0,
+    //         "co2Emission": 0,
+    //         "id": 37578
+    //       },
+    //       {
+    //         "gpsAltitude": 21,
+    //         "gpsHeading": 182.3779089956144,
+    //         "gpsLatitude": 51.43199539,
+    //         "gpsLongitude": 5.508029461,
+    //         "fuelconsumtion": 342,
+    //         "co2Emission": 0.9918,
+    //         "id": 37581
+    //       }
+    //     ]
+    //   },
+    //   {
+    //     "id": 4,
+    //     "tripId": "tripid1",
+    //     "vin": "BLRAE75PC0E272200",
+    //     "startTimeStamp": 1620039161392,
+    //     "endTimeStamp": 1720039161392,
+    //     "driver1Id": "SK 1116526558846037",
+    //     "tripDistance": 0,
+    //     "drivingTime": 0,
+    //     "fuelConsumption": 0,
+    //     "vehicleDrivingStatusType": "N",
+    //     "odometerVal": 0,
+    //     "distanceUntilNextService": 0,
+    //     "latestReceivedPositionLattitude": 51.32424545,
+    //     "latestReceivedPositionLongitude": 5.2228899,
+    //     "latestReceivedPositionHeading": 0,
+    //     "startPositionLattitude": 0,
+    //     "startPositionLongitude": 0,
+    //     "startPositionHeading": 0,
+    //     "latestProcessedMessageTimeStamp": 1720039161392,
+    //     "vehicleHealthStatusType": "S",
+    //     "latestWarningClass": 11,
+    //     "latestWarningNumber": 2,
+    //     "latestWarningType": "A",
+    //     "latestWarningTimestamp": 1620039161392,
+    //     "latestWarningPositionLatitude": 0,
+    //     "latestWarningPositionLongitude": 0,
+    //     "vid": "",
+    //     "registrationNo": "PLOI098OJJ",
+    //     "driverFirstName": "Neeraj",
+    //     "driverLastName": "Lohumi",
+    //     "latestGeolocationAddressId": 2,
+    //     "latestGeolocationAddress": "5531 Bladel, Nederland",
+    //     "startGeolocationAddressId": 0,
+    //     "startGeolocationAddress": "",
+    //     "latestWarningGeolocationAddressId": 0,
+    //     "latestWarningGeolocationAddress": "",
+    //     "latestWarningName": "Opotřebení brzdového obložení nákladního vozidla",
+    //     "liveFleetPosition": []
+    //   }
+    // ]);
+    // return;    
     if(!this.todayFlagClicked)
     {
       this.objData = {
@@ -251,6 +364,9 @@ getFilterData(){
       }
     }
     this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
+      this.messageService.sendMessage(data);
+      this.messageService.sendMessage("refreshTimer");
+      this.drawIcons(data);
       data.forEach(item => {
         this.filterData["healthStatus"].forEach(e => {
          if(item.vehicleHealthStatusType==e.value)
@@ -266,8 +382,9 @@ getFilterData(){
          });              
       });      
      // this.detailsData=data;     
-      this.vehicleListData = data;   
-      this.drawIcons(this.vehicleListData); 
+      this.vehicleListData = data;     
+      this.dataInterchangeService.getVehicleData(data); //change as per filter data
+          
     }, (error) => {
 
       if (error.status == 404) {
@@ -278,20 +395,6 @@ getFilterData(){
     this.noRecordFlag = false;
  } 
 
-//  onChangetodayCheckbox(event){
-//    if(event.checked){
-//   this.todayFlagClicked = true;
-//   this.getFilterData();
-//   this.loadVehicleData();
-//    }
-//    else{
-//     this.todayFlagClicked = false;
-//     this.getFilterData();
-//     this.loadVehicleData();
-
-//    }
-
-//  }
 
  checkCreationForVehicle(item: any){
   this.todayFlagClicked = item.todayFlagClicked;
@@ -319,12 +422,7 @@ drawIcons(_selectedRoutes){
       _type = _alertConfig.type;
     }
     let markerSize = { w: 40, h: 49 };
-    //let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-    // this.vehicleIconMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:icon });
-  
-    // this.group.addObject(this.vehicleIconMarker);
     let _healthStatus = '',_drivingStatus = '';
-    // icon tooltip
     switch (elem.vehicleHealthStatusType) {
       case 'T': // stop now;
         _healthStatus = 'Stop Now';
@@ -358,52 +456,11 @@ drawIcons(_selectedRoutes){
       default:
         break;
     }
-   // let activatedTime = Util.convertUtcToDateFormat(elem.startTimeStamp,'DD/MM/YYYY hh:mm:ss');
-    let iconBubble;
-    // this.vehicleIconMarker.addEventListener('pointerenter', function (evt) {
-    //   // event target is the marker itself, group is a parent event target
-    //   // for all objects that it contains
-    //   iconBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-    //     // read custom data
-    //     content:`<table style='width: 300px; font-size:12px;'>
-    //       <tr>
-    //         <td style='width: 100px;'>Vehicle:</td> <td><b>${elem.vid}</b></td>
-    //       </tr>
-    //       <tr>
-    //         <td style='width: 100px;'>Driving Status:</td> <td><b>${_drivingStatus}</b></td>
-    //       </tr>
-    //       <tr>
-    //         <td style='width: 100px;'>Current Mileage:</td> <td><b>${elem.odometerVal}</b></td>
-    //       </tr>
-    //       <tr>
-    //         <td style='width: 100px;'>Next Service in:</td> <td><b>-${elem.distanceUntilNextService} km</b></td>
-    //       </tr>
-    //       <tr>
-    //         <td style='width: 100px;'>Health Status:</td> <td><b>${_healthStatus}</b></td>
-    //       </tr>
-    //       <tr class='warningClass'>
-    //         <td style='width: 100px;'>Warning Name:</td> <td><b>${_type}</b></td>
-    //       </tr>
-    //       <tr>
-    //       <td style='width: 100px;'>Activated Time:</td> <td><b>${activatedTime}</b></td>
-    //       </tr>
-    //       <tr>
-    //       <td style='width: 100px;'>Driver Name:</td> <td><b>${elem.driverFirstName} ${elem.driverLastName}</b></td>
-    //       </tr>
-    //     </table>`
-    //   });
-    //   // show info bubble
-    //   _ui.addBubble(iconBubble);
-    // }, false);
-    // this.vehicleIconMarker.addEventListener('pointerleave', function(evt) {
-    //   iconBubble.close();
-    // }, false);
 
-  
     this.svgIcon = this.sanitizer.bypassSecurityTrustHtml(_vehicleMarkerDetails.icon);
     elem =  Object.defineProperty(elem, "icon", {value : this.svgIcon,
     writable : true,enumerable : true, configurable : true});  
-  
+
   });
   
     
@@ -432,18 +489,45 @@ setIconsOnMap(element) {
     default:
       break;
   }
-  let _vehicleIcon : any;
+  let _vehicleIcon : any; 
   if(_drivingStatus){
 
   }
   else{
-    let _alertFound = undefined ;
-    
-    if(element.fleetOverviewAlert.length > 0){
-      _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
+    let _alertFound = undefined ;    
+    // if(element.fleetOverviewAlert.length > 0){
+    //   _alertFound = element.fleetOverviewAlert.find(item=>item.latitude == element.latestReceivedPositionLattitude && item.longitude == element.latestReceivedPositionLongitude)
 
+    // } 
+    if(element.fleetOverviewAlert.length > 0){      
+      let critical  = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'C');
+      let warning   = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'W');
+      let advisory   = element.fleetOverviewAlert.filter(lvl=> lvl.level == 'A');
+     
+      if(critical.length > 0){
+      _alertFound = critical[0];
+     } 
+     else if(warning.length > 0){
+      _alertFound = warning[0];
+     } else{
+      _alertFound = advisory[0];
+     }
+     let alertName ='';
+     if(_alertFound.level == 'C')
+     {
+      alertName = 'Critical';
+     }
+     else if(_alertFound.level == 'W')
+     {
+      alertName = 'Warning';
+     }
+     else{
+      alertName = 'Advisory';
+     }
+     element =  Object.defineProperty(element, "alertName", {value : alertName,
+      writable : true,enumerable : true, configurable : true}); 
     }
-    
+       
     if(_alertFound){
       _alertConfig = this.getAlertConfig(_alertFound);     
       _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">

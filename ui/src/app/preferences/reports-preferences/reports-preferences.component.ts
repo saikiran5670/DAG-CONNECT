@@ -130,10 +130,11 @@ export class ReportsPreferencesComponent implements OnInit {
       reportId: this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id,
       attributes: [...vehicleObj, ...driverObj]
     };
-    console.log("full object", objData)
     this.reportService.updateReportUserPreference(objData).subscribe((res: any) => {
-      console.log("save res", res)
       this.updateFleetFuelPerferencesFlag({ flag: false, msg: this.getSuccessMsg() });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     });
   }
 
@@ -188,13 +189,12 @@ export class ReportsPreferencesComponent implements OnInit {
 
   updateFuelBenchmarkReportFlag(retObj: any){
     if(retObj){
-      this.editFuelBenchmarkPerferencesFlag = retObj.flag;
       if(retObj.msg && retObj.msg != ''){
         this.successMsgBlink(retObj.msg);
       }
-    }else{
-      this.editFuelBenchmarkPerferencesFlag = false; // hard coded
     }
+    this.editFuelBenchmarkPerferencesFlag = false; // hard coded
+    this.showFuelBenchmarkPerferences = false;
   }
 
   updateFuelDeviationReportFlag(retObj: any){

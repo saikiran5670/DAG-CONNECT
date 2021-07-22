@@ -13,14 +13,16 @@
 }
 
 .vehicleList-icon{
-width: 30%;
+width: 25%;
 border: 1px solid #ddd;
 height: 100px;
 float: left;
 border-radius: 5px 0px 0px 5px;
+text-align: center;
+padding: 20px 0px;
 }
 .vehicleList-details{
-    width: 70%;
+    width: 75%;
     background: #e9e9e9;
     border:1px solid #ddd;
     height: 100px;
@@ -36,13 +38,10 @@ font-weight: 500;
     padding-right: 5px;  
     color: #575656;
 } 
-.vehicleList-icon
-{
-    color:green;
-}
 .vehicleList-div{
 margin-bottom: 10px;
 float: left;
+cursor: pointer;
 }
 .mat-form-field-wrapper {
     padding-bottom: 0.5em;
@@ -61,4 +60,12 @@ float: left;
     position: absolute;
     right: 50px;
     margin-top: -38px;
+}
+
+::ng-deep .mat-tooltip  {
+    white-space: pre-line    !important;
+    line-height: 8px;
+    // color: black;
+    // background-color:white;
+    // border: 1 px solid black;
 }

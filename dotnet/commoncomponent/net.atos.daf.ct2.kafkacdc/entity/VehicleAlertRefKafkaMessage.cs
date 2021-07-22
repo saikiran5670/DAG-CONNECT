@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace net.atos.daf.ct2.alertcdc.entity
+namespace net.atos.daf.ct2.kafkacdc.entity
 {
     //{"schema":[],"payload":{"data":"{ \"vid\":\"M4A1117\",\"alertid\":\"yes\",\"state\":\"A\" }","op":"I","namespace":"master.vehiclealertref","ts_ms":1625681684823}}
     // VehicleAlertRefKafkaMessage myDeserializedClass = JsonConvert.DeserializeObject<VehicleAlertRefKafkaMessage>(myJsonResponse); 

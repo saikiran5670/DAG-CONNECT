@@ -301,6 +301,11 @@ export class FleetMapService {
     let healthColor = this.getHealthUpdateForDriving(_health);
     let direction = this.getDirectionIconByBearings(_value);
     let markerSvg = this.createDrivingMarkerSVG(direction,healthColor);
+    let rippleSize = { w: 50, h: 50 };
+    let rippleMarker = this.createRippleMarker(direction);
+    const iconRipple = new H.map.DomIcon(rippleMarker, { size: rippleSize, anchor: { x:-(Math.round(rippleSize.w / 2)), y: -(Math.round(rippleSize.h / 2) )} });
+    this.rippleMarker = new H.map.DomMarker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconRipple });
+ 
     return `<svg width="34" height="41" viewBox="0 0 34 41" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
 		${markerSvg}
@@ -308,15 +313,17 @@ export class FleetMapService {
   }
   private getDirectionIconByBearings = function (brng) {
     //var brng= 317.888;
-    //brng = 180;
+    brng = 315;
     let iconWd = 34;
     let iconCenter = iconWd / 2;
+    let iconCentery = 41 / 2;
+    let rippleX = -20 ,rippleY = -25;
     let outerRotation = `rotate(0 ${iconCenter} ${iconCenter})`;
 
     let innerRotation = `translate(0 0) scale(1  1) rotate(0 ${iconCenter} ${iconCenter})`;
     let image = "";
     //let bearings = ["NE", "E", "SE", "S", "SW", "W", "NW", "N"];
-    let bearings = ["S","SE","E","NE","N","SW","W","NW"];
+    let bearings = ["S","SE","E","NE","N","NW","W","SW"];
 
     let index = -1;
     if (!isNaN(brng))
@@ -334,58 +341,59 @@ export class FleetMapService {
     switch (direction) {
       case "N":
         outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.8)`;
-        innerRotation = `translate(12 12) scale(0.8)`;
+        innerRotation = `translate(13 13) scale(0.8)`;
 
         break;
       case "NE":
-        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(1)`; // translate(0 8) scale(1.2)
-        innerRotation = `translate(7 7) scale(1)`;
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.8)`; // translate(0 8) scale(1.2)
+        innerRotation = `translate(9 14) scale(0.8)`;
         break;
       case "E":
-        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(1)`; 
-        innerRotation = `translate(7 7) scale(1)`;
-
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.)`; 
+        innerRotation = `translate(6 12) scale(0.8)`;
+        rippleX =  -25;
+        rippleY = -25;
         break;
       case "SE":
-        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(1)`; // translate(0 8) scale(1.2)
-        innerRotation = `translate(6 7) scale(1)`;
-
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.9)`; // translate(0 8) scale(1.2)
+        innerRotation = `translate(6 7) scale(0.9)`;
+        rippleX =  -26;
+        rippleY = -25;
         break;
       case "S":
-        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(1)`; 
-        innerRotation = `translate(7 7) scale(1)`;
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.8)`; 
+        innerRotation = `translate(6 7) scale(0.8)`;
+        rippleX  = -27;
+        rippleY = -30;
         break;
       case "SW":
-        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(1)`; // translate(0 8) scale(1.2)
-        innerRotation = `translate(6 7) scale(1)`;
+        outerRotation = `translate(4,4) rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.8)`; // translate(0 8) scale(1.2)
+        innerRotation = `translate(13 8) scale(0.8)`;
 
         break;
       case "W":
        // outerRotation = `rotate(180 ${iconCenter} ${iconCenter}) scale(1)`; //translate(20 4) scale(1.2)
         outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.8)`;
         innerRotation = `translate(12 6) scale(0.8)`;
-
+        rippleX  = -21;
+        rippleY = -31;
         break;
       case "NW":
-        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(1)`; // translate(0 8) scale(1.2)
-
-        innerRotation = `translate(7 7) scale(1)`;
-
+        outerRotation = `rotate(${degree} ${iconCenter} ${iconCenter}) scale(0.9)`; // translate(0 8) scale(1.2)
+        innerRotation = `translate(10 8) scale(0.9)`;
+        rippleX  = -24;
+        rippleY = -28;
         break;
       default:
         break;
     }
-    return { outer: outerRotation, inner: innerRotation };
+    return { outer: outerRotation, inner: innerRotation,rippleX : rippleX,rippleY:rippleY };
   }
 
-  private createRippleMarker(){
-    
-    let rippleIcon = `<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path opacity="0.2" d="M60 30C60 46.5685 46.5685 60 30 60C13.4315 60 3.37665e-07 46.5685 2.17528e-07 30C9.73905e-08 13.4315 13.4315 -9.73905e-08 30 -2.17528e-07C46.5685 -3.37665e-07 60 13.4315 60 30Z" fill="#364D9D"/>
-    <path opacity="0.5" d="M53.2258 30C53.2258 42.8272 42.8272 53.2258 30 53.2258C17.1727 53.2258 6.77417 42.8272 6.77417 30C6.77417 17.1727 17.1727 6.77417 30 6.77417C42.8272 6.77417 53.2258 17.1727 53.2258 30Z" fill="white"/>
-    <path opacity="0.8" d="M46.4516 30.0002C46.4516 39.0862 39.0859 46.4518 30 46.4518C20.914 46.4518 13.5483 39.0862 13.5483 30.0002C13.5483 20.9142 20.914 13.5486 30 13.5486C39.0859 13.5486 46.4516 20.9142 46.4516 30.0002Z" fill="white"/>
-    </svg>`
-    return rippleIcon
+  private createRippleMarker(direction?){
+    let rippleIcon = `<div class='rippleSVG' style='left:${direction.rippleX}px;top:${direction.rippleY}px'></div>`
+   
+    return rippleIcon;
   }
   private createDrivingMarkerSVG(direction: any,healthColor:any): string {
     return `
@@ -441,6 +449,7 @@ export class FleetMapService {
       this.drawIcons(_selectedRoutes,_ui);
     
       this.hereMap.addObject(this.group);
+      
       //this.makeCluster(_selectedRoutes, _ui);
     }
     else if(!showIcons && _selectedRoutes && _selectedRoutes.length > 0){
@@ -456,11 +465,7 @@ export class FleetMapService {
         const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
         this.startMarker = new H.map.Marker({ lat:this.startAddressPositionLat, lng:this.startAddressPositionLong },{ icon:icon });
          
-        let rippleSize = { w: 60, h: 60 };
-        let rippleMarker = this.createRippleMarker();
-        const iconRipple = new H.map.Icon(rippleMarker, { size: rippleSize, anchor: { x: Math.round(rippleSize.w / 2), y: Math.round(rippleSize.h / 2) } });
-        this.rippleMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconRipple });
-
+      
         let endMarkerSize = { w: 34, h: 40 };;
         let endMarker = this.createSVGMarker(elem.latestReceivedPositionHeading,elem.vehicleHealthStatusType);
         const iconEnd = new H.map.Icon(endMarker, { size: endMarkerSize, anchor: { x: Math.round(endMarkerSize.w / 2), y: Math.round(endMarkerSize.h / 2) } });
@@ -539,7 +544,9 @@ export class FleetMapService {
       }
         this.hereMap.addObject(this.group);
         this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
+        
       });
+   
       this.makeCluster(_selectedRoutes, _ui);
     }else{
       if(_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)){
@@ -668,15 +675,6 @@ export class FleetMapService {
       if(_alertConfig){
         _type = _alertConfig.type;
       }
-      if(elem.vehicleDrivingStatusType === 'D'){
-        
-      let rippleSize = { w: 60, h: 60 };
-      let rippleMarker = this.createRippleMarker();
-      const iconRipple = new H.map.Icon(rippleMarker, { size: rippleSize, anchor: { x: Math.round(rippleSize.w / 2), y: Math.round(rippleSize.h / 2) } });
-      this.rippleMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconRipple });
-      this.group.addObject(this.rippleMarker);
-
-      }
       let markerSize = { w: 34, h: 40 };
       let icon = new H.map.Icon(_vehicleMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
       this.vehicleIconMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:icon });
@@ -790,7 +788,17 @@ export class FleetMapService {
 
       let direction = this.getDirectionIconByBearings(element.latestReceivedPositionHeading);
       let markerSvg = this.createDrivingMarkerSVG(direction,healthColor);
-      _vehicleIcon =  `<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      
+      if(element.vehicleDrivingStatusType === 'D'){
+        
+        let rippleSize = { w: 50, h: 50 };
+        let rippleMarker = this.createRippleMarker(direction);
+        const iconRipple = new H.map.DomIcon(rippleMarker, { size: rippleSize, anchor: { x:(Math.round(rippleSize.w / 2)), y: (Math.round(rippleSize.h / 2) )} });
+        this.rippleMarker = new H.map.DomMarker({ lat:element.latestReceivedPositionLattitude, lng:element.latestReceivedPositionLongitude },{ icon:iconRipple });
+        this.group.addObject(this.rippleMarker);
+  
+        }
+      _vehicleIcon =  `<svg width="34" height="40" viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
       <style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
       ${markerSvg}
       </svg>`;

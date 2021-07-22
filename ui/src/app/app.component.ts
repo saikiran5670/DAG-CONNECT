@@ -244,7 +244,7 @@ export class AppComponent {
     filterPrefTimeFormat: ""
   };
   subscribeTimer: any;
-  timeLeft: number = 120;
+  timeLeft: number = 0;
   messages: any[] = [];
   subscription: Subscription;
   isFleetOverview: boolean = false;
@@ -265,6 +265,9 @@ export class AppComponent {
       //this.getAccountInfo();
       // this.getNavigationMenu();
     });
+
+    localStorage.setItem("liveFleetTimer", "10");
+    this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
 
     this.dataInterchangeService.userNameInterface$.subscribe(data => {
       if (data) {
