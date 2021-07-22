@@ -192,7 +192,11 @@ export class CurrentFleetComponent implements OnInit {
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data:any) => {
        this.detailsData = data;
-        this.dataInterchangeService.getVehicleData(data);
+       let _dataObj ={
+        vehicleDetailsFlag : false,
+        data:data
+      }
+      this.dataInterchangeService.getVehicleData(_dataObj);
 
     });
    }

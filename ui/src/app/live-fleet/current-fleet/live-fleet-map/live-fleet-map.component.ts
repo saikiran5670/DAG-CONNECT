@@ -84,25 +84,25 @@ export class LiveFleetMapComponent implements OnInit {
     this.configureAutoSuggest();
     //this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
-    this.dataInterchangeService.detailDataInterface$.subscribe(data => {
+    this.dataInterchangeService.detailDataInterface$.subscribe(vehicleResponse => {
     this.tripTraceArray = [];
 
-      if (data) {
-        if(data.length){
-          this.tripTraceArray = data;
-          this.showIcons = true;
-
-        }
-        else{
-          this.tripTraceArray.push(data);
-          this.showIcons = false;
-
-        }
-      }
-      else {
+    if (vehicleResponse) {
+      if(!vehicleResponse.vehicleDetailsFlag){
+        this.tripTraceArray = vehicleResponse.data;
         this.showIcons = true;
+
       }
-      
+      else{
+        this.tripTraceArray.push(vehicleResponse.data);
+        this.showIcons = false;
+
+      }
+    }
+    else {
+      this.showIcons = true;
+    }
+    
       this.mapIconData();
     })
   }
