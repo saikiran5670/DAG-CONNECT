@@ -202,19 +202,19 @@ public class TripSinkDao implements Serializable {
 			statement.setDouble(30, 0);
 
 		if (rec.getTripCalCrsCntrlDist25To50() != null)
-			statement.setDouble(31, rec.getTripCalCrsCntrlDist25To50());
+			statement.setLong(31, rec.getTripCalCrsCntrlDist25To50());
 		else
-			statement.setDouble(31, 0);
+			statement.setLong(31, 0);
 
 		if (rec.getTripCalCrsCntrlDist50To75() != null)
-			statement.setDouble(32, rec.getTripCalCrsCntrlDist50To75());
+			statement.setLong(32, rec.getTripCalCrsCntrlDist50To75());
 		else
-			statement.setDouble(32, 0);
+			statement.setLong(32, 0);
 
 		if (rec.getTripCalCrsCntrlDistAbv75() != null)
-			statement.setDouble(33, rec.getTripCalCrsCntrlDistAbv75());
+			statement.setLong(33, rec.getTripCalCrsCntrlDistAbv75());
 		else
-			statement.setDouble(33, 0);
+			statement.setLong(33, 0);
 
 		if (rec.getTripCalAvgTrafficClsfn() != null)
 			statement.setDouble(34, rec.getTripCalAvgTrafficClsfn());
@@ -283,9 +283,9 @@ public class TripSinkDao implements Serializable {
 		
 
 		if (rec.getVHarshBrakeDuration() != null)
-			statement.setInt(48, rec.getVHarshBrakeDuration());
+			statement.setLong(48, rec.getVHarshBrakeDuration());
 		else
-			statement.setInt(48, 0);
+			statement.setLong(48, 0);
 		
 
 		if (rec.getVBrakeDuration() != null)
@@ -483,19 +483,19 @@ public class TripSinkDao implements Serializable {
 			statement.setDouble(86, 0);
 
 		if (rec.getTripCalCrsCntrlDist25To50() != null)
-			statement.setDouble(87, rec.getTripCalCrsCntrlDist25To50());
+			statement.setLong(87, rec.getTripCalCrsCntrlDist25To50());
 		else
-			statement.setDouble(87, 0);
+			statement.setLong(87, 0);
 
 		if (rec.getTripCalCrsCntrlDist50To75() != null)
-			statement.setDouble(88, rec.getTripCalCrsCntrlDist50To75());
+			statement.setLong(88, rec.getTripCalCrsCntrlDist50To75());
 		else
-			statement.setDouble(88, 0);
+			statement.setLong(88, 0);
 
 		if (rec.getTripCalCrsCntrlDistAbv75() != null)
-			statement.setDouble(89, rec.getTripCalCrsCntrlDistAbv75());
+			statement.setLong(89, rec.getTripCalCrsCntrlDistAbv75());
 		else
-			statement.setDouble(89, 0);
+			statement.setLong(89, 0);
 
 		if (rec.getTripCalAvgTrafficClsfn() != null)
 			statement.setDouble(90, rec.getTripCalAvgTrafficClsfn());
@@ -562,9 +562,9 @@ public class TripSinkDao implements Serializable {
 			statement.setLong(103, 0);
 	
 		if (rec.getVHarshBrakeDuration() != null)
-			statement.setInt(104, rec.getVHarshBrakeDuration());
+			statement.setLong(104, rec.getVHarshBrakeDuration());
 		else
-			statement.setInt(104, 0);
+			statement.setLong(104, 0);
 	
 		if (rec.getVBrakeDuration() != null)
 			statement.setLong(105, rec.getVBrakeDuration());

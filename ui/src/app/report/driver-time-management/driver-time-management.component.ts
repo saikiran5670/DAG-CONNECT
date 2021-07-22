@@ -60,7 +60,6 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   tableInfoObj: any = {};
   tableDetailsInfoObj: any = {};
   totalDriverCount : number = 0;
-
   tripTraceArray: any = [];
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';

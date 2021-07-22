@@ -67,12 +67,14 @@
                           </mat-form-field>
                         </div>
                         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                          <div [ngClass]="[ makeDisableTimePeriod ? 'makeDisableTimePeriod':'']">
                           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
                             <span class='timeAdjustSpan'>{{ startTimeDisplay }}</span> 
                             <input [disabled]="makeDisableTimePeriod" [max]='selectedEndTime' [(ngModel)]="selectedStartTime" class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="startTime" readonly>
                             <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
                             <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker></ngx-material-timepicker>
                           </div>
+                        </div>
                         </div>
                       </div>
                     </div>
@@ -87,11 +89,13 @@
                           </mat-form-field>
                         </div>
                         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                          <div [ngClass]="[ makeDisableTimePeriod ? 'makeDisableTimePeriod':'']">
                           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
                             <span class='timeAdjustSpan'>{{ endTimeDisplay }}</span>
                             <input [disabled]="makeDisableTimePeriod" [min]='selectedStartTime' [(ngModel)]="selectedEndTime"  class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true" formControlName="endTime" readonly>
                             <ngx-material-timepicker-toggle [for]="toggleEndTimepicker"></ngx-material-timepicker-toggle>
                             <ngx-material-timepicker (timeChanged)="endTimeChanged($event)" #toggleEndTimepicker></ngx-material-timepicker>
+                          </div>
                           </div>
                         </div>
                       </div>

@@ -138,8 +138,8 @@ namespace net.atos.daf.ct2.reportservice.Services
                         if (alertThresholdDetails != null && alertThresholdDetails.Count > 0)
                         {
                             var alertThreshold = alertThresholdDetails.FirstOrDefault(w => w.AlertId == logbookDetail.AlertId && w.AlertLevel == logbookDetail.AlertLevel);
-                            logbookDetail.ThresholdValue = alertThreshold.ThresholdValue;
-                            logbookDetail.ThresholdUnit = alertThreshold.ThresholdUnit ?? string.Empty;
+                            logbookDetail.ThresholdValue = alertThreshold?.ThresholdValue ?? 0;
+                            logbookDetail.ThresholdUnit = alertThreshold?.ThresholdUnit ?? string.Empty;
 
                         }
 
