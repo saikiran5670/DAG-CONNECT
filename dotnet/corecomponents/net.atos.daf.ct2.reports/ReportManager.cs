@@ -696,6 +696,17 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetAlertCategoryList(enums);
         }
+        public async Task<IEnumerable<EnumTranslation>> GetAlertCategory()
+        {
+            try
+            {
+                return await _reportRepository.GetAlertCategory();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         public async Task<List<LogbookDetails>> GetLogbookDetails(LogbookDetailsFilter logbookFilter)
         {
             return await _reportRepository.GetLogbookDetails(logbookFilter);
