@@ -39,6 +39,7 @@ export class VehicleHealthComponent implements OnInit {
   reportPrefData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Input() healthData: any;
+  @Input() tripId: any;
   @Input() historyHealthData: any;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
@@ -114,6 +115,7 @@ export class VehicleHealthComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.getHistoryData(this.healthData.tripId);
     this.vehicleHealthForm = this._formBuilder.group({
       warningType: ['', [Validators.required]],
       startDate: ['', []],
@@ -579,16 +581,16 @@ export class VehicleHealthComponent implements OnInit {
   onTabChanged(event: any){
     if(event == 0){
       this.isCurrent = true;
-      // tripId = this.healthData.tripId;
+      this.tripId = this.healthData.tripId;
     } else {
       this.isCurrent = false;
-      // tripId = '';
+      this.tripId = null;
     }
-    this.getHistoryData();
+    this.getHistoryData(this.tripId);
   }
 
-  getHistoryData(){
-    this.reportService.getvehiclehealthstatus(this.healthData.vin,this.localStLanguage.code).subscribe((res) => {
+  getHistoryData(tripId: any){
+    this.reportService.getvehiclehealthstatus(this.healthData.vin,this.localStLanguage.code,tripId).subscribe((res) => {
       console.log('history',res);
       this.historyHealthData = res;
     });

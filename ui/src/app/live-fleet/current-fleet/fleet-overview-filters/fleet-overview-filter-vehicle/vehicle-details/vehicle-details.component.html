@@ -40,7 +40,7 @@
         </div> 
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
-            <span class="vehicle-details-data" class='navigatePoint' (click)='gotoHealthStatus(gridData)' matTooltip="{{ translationData.lbl || 'Click for health details'}}">{{gridData.vehicleHealthStatusType}}</span>
+            <span class="vehicle-details-data" class='navigatePoint' (click)='gotoHealthStatus()' matTooltip="{{ translationData.lbl || 'Click for health details'}}">{{gridData.vehicleHealthStatusType}}</span>
         </div>
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Alert'}}:</span>
@@ -64,7 +64,7 @@
             <span>{{ translationData.lbl || 'Current Mileage' }} </span>
         </div>
         <div class="areaWidth min-width-35-per vehicleInfo" fxLayout="column" fxLayoutAlign="left">
-            <span><b>{{gridData.odometerVal}}km</b></span>
+            <span><b>{{mileagewithUnit}}{{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</b></span>
         </div>
     </div>
     <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
@@ -72,7 +72,7 @@
             <span>{{ translationData.lbl || 'Next Service In' }} </span>
         </div>
         <div class="areaWidth min-width-35-per vehicleInfo" fxLayout="column" fxLayoutAlign="left">
-            <span><b>{{gridData.distanceUntilNextService}}km</b></span>
+            <span><b>{{nextservicing}}{{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</b></span>
         </div>
     </div>
     <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
@@ -90,9 +90,9 @@
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlerts || 'Alerts' }} ({{gridData.fleetOverviewAlert.length}})</span>
             </div>
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
             <span class='custom-font' (click)="gotoLogBook()">
-                <span class='backBtnCss'>{{ translationData.lblLogBook || 'Log Book' }} ></span>
+                <span class='backBtnCss'>{{ translationData.lblLogBook || 'Log Book' }} </span><span>></span>
             </span>
         </div>
         </div>

@@ -3,14 +3,16 @@
     <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
           <span>
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Benchmark Between Time Periods</span>
+            <span *ngIf= "selectionValueBenchmarkBY == 'timePeriods'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Benchmark Between Time Periods</span>
+            <span *ngIf= "selectionValueBenchmarkBY == 'vehicleGroups'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Benchmark Between Groups</span>
           </span>
         </mat-panel-title>
     </mat-expansion-panel-header>
 
         <div class='areaWidth margin-bottom-xlg' style="background-color: #BEE3F8">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Selected Group: <b>Default base</b></span>
-        </div>
+            <span *ngIf= "selectionValueBenchmarkBY == 'timePeriods'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Selected Group: <b>{{vehicleGroupSelected}}</b></span>
+            <span *ngIf= "selectionValueBenchmarkBY == 'vehicleGroups'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Selected Time Periods: <b>{{startDateRange}} - {{endDateRange}}</b></span>
+          </div>
 
         <div style='display: flex;'>
 
@@ -23,9 +25,9 @@
 
             <ng-container [matColumnDef]="column" class="text-truncate" style="max-width: 40%;margin-right: 10px;"
               *ngFor="let column of displayedColumns; let index=index">
-              <mat-header-cell style="margin-right: 10px;min-width: 300px;" *matHeaderCellDef> {{column == "period" ? "Period" :
+              <mat-header-cell style="cursor: default; margin-right: 10px;min-width: 300px;" *matHeaderCellDef> {{column == "period" ? "Period" :
                 column}}
-                <mat-icon *ngIf="index !== 0" aria-hidden="false" aria-label="Example home icon" (click)="removeColumn(index)">close
+                <mat-icon style="cursor: pointer;" *ngIf="index !== 0" aria-hidden="false" aria-label="Example home icon" (click)="removeColumn(index)">close
                 </mat-icon>
               </mat-header-cell>
               <mat-cell style="margin-right: 10px;" *matCellDef="let row; let i=index">

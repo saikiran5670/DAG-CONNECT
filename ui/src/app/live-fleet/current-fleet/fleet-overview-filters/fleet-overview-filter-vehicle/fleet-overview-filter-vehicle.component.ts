@@ -57,8 +57,12 @@ let emitObj = {
     let obj ={
       vehicleDetailsFlag : this.isVehicleDetails
     }
+    let _dataObj ={
+      vehicleDetailsFlag : this.isVehicleDetails,
+      data:data
+    }
     this.vehicleDetailsInfoEmit.emit(obj);
-    this.dataInterchangeService.getVehicleData(data); //change as per selected vehicle
+    this.dataInterchangeService.getVehicleData(_dataObj); //change as per selected vehicle
   }
 
   checkCreationForVehicleDetails(item: any){
@@ -67,7 +71,11 @@ let emitObj = {
     let obj ={
       vehicleDetailsFlag : this.isVehicleDetails
     }
-    this.dataInterchangeService.getVehicleData(null); // when back clicked 
+    let _dataObj ={
+      vehicleDetailsFlag : this.isVehicleDetails,
+      data:null
+    }
+   // this.dataInterchangeService.getVehicleData(_dataObj); // when back clicked 
 
     this.vehicleFilterComponentEmit.emit(obj);
   }
