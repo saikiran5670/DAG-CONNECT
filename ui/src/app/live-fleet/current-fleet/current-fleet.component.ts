@@ -23,6 +23,7 @@ export class CurrentFleetComponent implements OnInit {
   detailsData =[];
   messages: any[] = [];
   subscription: Subscription;
+  isOpen: boolean = false;
   // detailsData =[
   //   {
   //     "id": 8,
@@ -135,7 +136,11 @@ export class CurrentFleetComponent implements OnInit {
         }
       });
       this.sendMessage();
+      this.dataInterchangeService.healthData$.subscribe(data => {
+        this.isOpen = data;
+      });
     }
+
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -196,4 +201,8 @@ export class CurrentFleetComponent implements OnInit {
   }
   
   refreshData(){}
+
+  toBack(){
+    this.isOpen = false;
+ }
 }
