@@ -6,7 +6,7 @@ using Confluent.Kafka;
 
 namespace net.atos.daf.ct2.confluentkafka
 {
-    class KafkaConfluentWorker
+   public class KafkaConfluentWorker
     {
         //{"schema":[],"payload":{"data":"{ \"vid\":\"M4A1117\",\"alertid\":\"yes\",\"state\":\"A\" }","op":"I","namespace":"master.vehiclealertref","ts_ms":1625681684823}}
         public static async Task Producer(string brokerList, string connStr, string topic, string cacertlocation, string producerMessage)

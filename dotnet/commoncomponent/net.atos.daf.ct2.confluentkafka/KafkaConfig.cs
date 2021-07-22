@@ -2,7 +2,7 @@
 
 namespace net.atos.daf.ct2.confluentkafka
 {
-    public class KafkaConfig
+    internal class KafkaConfig
     {
         private const string SASLUSERNAME = "$ConnectionString";
         private const string BROKERVERSION = "1.0.0";
