@@ -139,8 +139,10 @@ namespace net.atos.daf.ct2.notificationengine
                     foreach (var item in identifiedNotificationRec)
                     {
                         Dictionary<string, string> addAddress = new Dictionary<string, string>();
-                        item.EmailId = "harneetsinghrekhi@yahoo.co.in";
-                        addAddress.Add(item.EmailId, null);
+                        if (!addAddress.ContainsKey(item.EmailId))
+                        {
+                            addAddress.Add(item.EmailId, null);
+                        }
                         var mailNotification = new MailNotificationRequest()
                         {
                             MessageRequest = new MessageRequest()
