@@ -106,6 +106,8 @@ export class AlertsComponent implements OnInit {
       });
       this.alertCategoryList= filterData.filter(item => item.type == 'C');
       this.alertTypeList= filterData.filter(item => item.type == 'T');
+      console.log("alertTypeList=" +this.alertTypeList);
+      console.log("filterData=" +filterData);
       this.alertCriticalityList= filterData.filter(item => item.type == 'U');
       this.vehicleList= data["vehicleGroup"].filter(item => item.vehicleName != '');
       this.vehicleList = this.removeDuplicates(this.vehicleList, "vehicleName");

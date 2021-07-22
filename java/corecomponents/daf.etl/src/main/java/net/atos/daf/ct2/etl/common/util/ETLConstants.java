@@ -4,14 +4,14 @@ public class ETLConstants {
 	
 	//Streaming environment 
 	public static final String PARALLELISM = "parallelism";
-	public static final String CHECKPOINT_INTERVAL = "checkpoint_interval";
-	public static final String MINIMUM_PAUSE_BETWEEN_CHECKPOINTS = "min_checkpoint_pause";
-	public static final String CHECKPOINT_TIMEOUT = "checkpoint_timeout";
-	public static final String MAX_CONCURRENT_CHECKPOINTS = "max_concurrent_checkpoints";
-	public static final String CHECKPOINT_DIRECTORY = "checkpoint_directory";
-	public static final String RESTART_ATTEMPS = "restart_attempts";
-	public static final String RESTART_INTERVAL = "restart_interval";
-	public static final String RESTART_FLAG = "restart_flag";
+	public static final String CHECKPOINT_INTERVAL = "checkpoint.interval";
+	public static final String MINIMUM_PAUSE_BETWEEN_CHECKPOINTS = "min.checkpoint.pause";
+	public static final String CHECKPOINT_TIMEOUT = "checkpoint.timeout";
+	public static final String MAX_CONCURRENT_CHECKPOINTS = "max.concurrent.checkpoints";
+	public static final String CHECKPOINT_DIRECTORY = "checkpoint.directory";
+	public static final String RESTART_ATTEMPS = "restart.attempts";
+	public static final String RESTART_INTERVAL = "restart.interval";
+	public static final String RESTART_FLAG = "restart.flag";
 		
 	//HBase
 	public static final String HBASE_ZOOKEEPER_QUORUM = "hbase.zookeeper.quorum";
@@ -36,66 +36,32 @@ public class ETLConstants {
 	public static final String HBASE_CONNECTION_ERROR_CODE = "";
 	
 	//Postgre Sql
-	public static final String POSTGRE_SQL_PASSWORD = "postgresql_password";
-	public static final String POSTGRE_SQL_DRIVER = "postgresql_driver";
-	public static final String POSTGRE_SQL_URL = "postgresql_url";
-	public static final String POSTGRE_SQL_SSL_MODE = "&sslmode=require";
-	public static final String POSTGRE_SQL_SERVER = "postgresql_server";
-	public static final String POSTGRE_SQL_TRIPDATAMART = "postgresql_tripdatamart";
-	public static final String POSTGRE_SQL_MASTERDATAMART = "postgresql_masterdatamart";
+	//public static final String POSTGRE_SQL_PASSWORD = "postgresql_password";
+	//public static final String POSTGRE_SQL_URL = "postgresql_url";
+	//public static final String POSTGRE_SQL_SERVER = "postgresql_server";
+	//public static final String POSTGRE_SQL_TRIPDATAMART = "postgresql_tripdatamart";
+	//public static final String POSTGRE_SQL_MASTERDATAMART = "postgresql_masterdatamart";
 
 	//Datamart Constants
-	public static final String DATAMART_POSTGRE_SERVER_NAME = "datamart_postgre_server_name";
-	public static final String DATAMART_POSTGRE_PORT = "datamart_postgre_port";
-	public static final String DATAMART_POSTGRE_USER = "datamart_postgre_userId";
-	public static final String DATAMART_POSTGRE_DATABASE_NAME ="datamart_postgre_database_name";
-	public static final String DATAMART_POSTGRE_PASSWORD = "datamart_postgre_password";
+	public static final String POSTGRE_SQL_DRIVER = "postgresql.driver";
+	public static final String POSTGRE_SQL_SSL_MODE = "&sslmode=require";
+	
+	public static final String DATAMART_POSTGRE_SERVER_NAME = "datamart.postgres.server.name";
+	public static final String DATAMART_POSTGRE_PORT = "datamart.postgres.port";
+	public static final String DATAMART_POSTGRE_USER = "datamart.postgres.userId";
+	public static final String DATAMART_POSTGRE_DATABASE_NAME ="datamart.postgres.database.name";
+	public static final String DATAMART_POSTGRE_PASSWORD = "datamart.postgres.password";
 	
 	//master datamart
-	public static final String MASTER_POSTGRE_SERVER_NAME = "master_postgre_server_name";
-	public static final String MASTER_POSTGRE_PORT = "master_postgre_port";
-	public static final String MASTER_POSTGRE_DATABASE_NAME = "master_postgre_database_name";
-	public static final String MASTER_POSTGRE_USER = "master_postgre_userId";
-	public static final String MASTER_POSTGRE_PASSWORD = "master_postgre_password";
+	public static final String MASTER_POSTGRE_SERVER_NAME = "master.postgres.server.name";
+	public static final String MASTER_POSTGRE_PORT = "master.postgres.port";
+	public static final String MASTER_POSTGRE_DATABASE_NAME = "master.postgres.database.name";
+	public static final String MASTER_POSTGRE_USER = "master.postgres.userId";
+	public static final String MASTER_POSTGRE_PASSWORD = "master.postgres.password";
 	
 	//HBase Status Column Family
 	public static final String STS_MSG_COLUMNFAMILY_T = "t";
-	
-	//HBase Status Columns 
-	/*public static final String TRIP_ID = "tripId";
-	public static final String VID = "vid";
-	public static final String GPS_START_DATETIME = "gpsStartDateTime";
-	public static final String GPS_END_DATETIME = "gpsEndDateTime";
-	public static final String GPS_TRIP_DIST = "gpsTripDist";
-	public static final String GPS_STOP_VEH_DIST = "gpsStopVehDist";
-	public static final String GPS_START_VEH_DIST = "gpsStartVehDist";
-	public static final String VIDLE_DURATION = "vIdleDuration";
-	public static final String GPS_START_LATITUDE = "gpsStartLatitude";
-	public static final String GPS_START_LONGITUDE = "gpsStartLongitude";
-	public static final String GPS_END_LATITUDE = "gpsEndLatitude";
-	public static final String GPS_END_LONGITUDE = "gpsEndLongitude";
-	public static final String VUSED_FUEL = "vUsedFuel";
-	public static final String VSTOP_FUEL = "vStopFuel";
-	public static final String VSTART_FUEL = "vStartFuel";
-	public static final String VTRIP_MOTION_DURATION = "vTripMotionDuration";
-	public static final String RECEIVED_TIMESTAMP = "receivedTimestamp";
-	public static final String VPTO_DURATION = "vPTODuration";
-	public static final String VHARSH_BRAKE_DURATION = "vHarshBrakeDuration";
-	public static final String VBRAKE_DURATION = "vBrakeDuration";
-	public static final String VMAX_THROTTLE_PADDLE_DURATION = "vMaxThrottlePaddleDuration";
-	public static final String VTRIP_ACCELERATION_TIME = "vTripAccelerationTime";
-	public static final String VCRUISE_CONTROL_DIST = "vCruiseControlDist";
-	public static final String VTRIP_DPA_BRAKINGCOUNT = "vTripDPABrakingCount";
-	public static final String VTRIP_DPA_ANTICIPATION_COUNT = "vTripDPAAnticipationCount";
-	public static final String VCRUISE_CONTROL_FUEL_CONSUMED = "vCruiseControlFuelConsumed";
-	public static final String VIDLE_FUEL_CONSUMED = "vIdleFuelConsumed";
-	public static final String VSUM_TRIP_DPA_BRAKING_SCORE = "vSumTripDPABrakingScore";
-	public static final String VSUM_TRIP_DPA_ANTICIPATION_SCORE = "vSumTripDPAAnticipationScore";
-	public static final String DRIVER_ID = "driverId";
-	public static final String EVENT_DATETIME_FIRST_INDEX = "eventDateTimeFirstIndex";
-	public static final String EVT_DATETIME = "evtDateTime";
-	public static final String INCREMENT = "increment";*/
-	
+		
 	public static final String TRIP_ID = "TripID";
 	public static final String VID = "VID";
 	public static final String VIN = "VIN";
@@ -155,8 +121,8 @@ public class ETLConstants {
 	
 	
 	//HBase table details
-	public static final String INDEX_TABLE_NM = "index_table_name";
-	public static final String STATUS_TABLE_NM = "status_table_name";
+	public static final String INDEX_TABLE_NM = "hbase.index.table.name";
+	public static final String STATUS_TABLE_NM = "hbase.status.table.name";
 	
 	//Conti Message Constants
 	public static final String INDEX_MSG_TRANSID = "03000";
@@ -191,8 +157,8 @@ public class ETLConstants {
 	public static final String AUDIT_CREATE_EVENT_TYPE = "1";
 	public static final String AUDIT_EVENT_STATUS_START = "2";
 	public static final String AUDIT_EVENT_STATUS_FAIL = "1";
-	public static final String GRPC_SERVER = "grpc_server";
-	public static final String GRPC_PORT = "grpc_port";
+	public static final String GRPC_SERVER = "grpc.server";
+	public static final String GRPC_PORT = "grpc.port";
 	public static final String TRIP_JOB_NAME ="tripEtlJob";
 	public static final String TRIP_STREAMING_JOB_NAME ="tripStreamingJob";
 	public static final String DEFAULT_OBJECT_ID ="00";
@@ -207,9 +173,9 @@ public class ETLConstants {
 	public static final String ZOOKEEPER_CONNECT= "zookeeper.connect";
 	public static final String WN0_KAFKA_INTERNAL_2181 = "wn0-kafka.c0kbh01dsx0uhhbdv5oig221gb.ax.internal.cloudapp.net:2181";
 	public static final String GROUP_ID="group.id";
-	public static final String INDEX_TOPIC="Index_Topic";
-	public static final String MONITORING_TOPIC="Monitoring_Topic";
-	public static final String STATUS_TOPIC = "Status_Topic";
+	public static final String INDEX_TOPIC="index.message.topic";
+	public static final String MONITORING_TOPIC="monitoring.message.topic";
+	public static final String STATUS_TOPIC = "status.message.topic";
 	public static final String EVENT_HUB_CONFIG = "event.hub.config";
 	public static final String EVENT_HUB_BOOTSTRAP = "event.hub.bootstrap";
 	public static final String SECURITY_PROTOCOL = "security.protocol";

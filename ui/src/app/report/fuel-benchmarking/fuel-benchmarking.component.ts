@@ -359,10 +359,10 @@ export class FuelBenchmarkingComponent implements OnInit {
         break;
       }
     }
-    // this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
-    // this.setGlobalSearchData(this.fleetUtilizationSearchData);
-    // if(!this.makeDisableVehicleGroup)
-    // {
+    // // this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
+    // // this.setGlobalSearchData(this.fleetUtilizationSearchData);
+    // // if(!this.makeDisableVehicleGroup)
+    // // {
       this.resetTripFormControlValue(); // extra addded as per discuss with Atul
       this.filterDateData(); // extra addded as per discuss with Atul
     

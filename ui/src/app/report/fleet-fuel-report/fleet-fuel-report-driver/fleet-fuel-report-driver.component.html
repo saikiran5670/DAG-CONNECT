@@ -173,6 +173,7 @@
   
   <!-- </div> -->
   <!-- Summary Section -->
+  <div *ngIf= '!driverSelected'>
   <div *ngIf='!showDetailedReport'>
   <div id="charts">
     <div *ngIf='!showDetailedReport'>
@@ -1170,6 +1171,11 @@
       </mat-expansion-panel>
   
     </mat-card>
+    </div>
+    </div>
+    <div *ngIf="driverSelected">
+      <app-detail-driver-report [translationData]='translationData' [driverDetails]='driverInfo' [dateDetails]='dateInfo' [displayedColumns]='detaildisplayedColumns' (backToMainPage)="backToMainPage()" 
+      ></app-detail-driver-report>
     </div>
 
    
