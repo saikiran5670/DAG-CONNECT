@@ -270,7 +270,7 @@
     <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTripReportDetails || 'Trip Report Details' }}</span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblLogBookDetails || 'Logbook Details' }}</span>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div *ngIf='initData.length == 0'>
@@ -280,25 +280,32 @@
       <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
         <div style='padding: 20px; margin-bottom: 10px; background: #bee3f8;'>
           <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
-            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblFrom || 'From' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.fromDate }}</span>
               </span>
             </div>
-            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehGroupName }}</span>
               </span>
             </div>
-            <div *ngIf='showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='showField.vin' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <span>{{ translationData.lblVehicleVIN || 'Vehicle VIN' }}: </span>
+                <span>{{ translationData.lblAlertLevel || 'Alert Level' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vin }}</span>
               </span>
             </div>
-            <div *ngIf='!showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='showField.vin' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+              <span>
+                <span>{{ translationData.lblAlertCategory || 'Alert Category' }}: </span>
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vin }}</span>
+              </span>
+            </div>
+            
+            <div *ngIf='!showField.vin' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblTo || 'To' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
@@ -306,21 +313,21 @@
             </div>
           </div>
           <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
-            <div *ngIf='showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='showField.vin' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblTo || 'To' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
               </span>
             </div>
-            <div *ngIf='showField.vehicleName' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='showField.vehicleName' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
+                <span>{{ translationData.lblVehicleName || 'Vehicle' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
               </span>
             </div>
-            <div *ngIf='showField.regNo' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='showField.regNo' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <span>{{ translationData.lblRegPlateNumber || 'Reg. Plate Number' }}: </span>
+                <span>{{ translationData.lblAlertType || 'Alert Type' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.regNo }}</span>
               </span>
             </div>
