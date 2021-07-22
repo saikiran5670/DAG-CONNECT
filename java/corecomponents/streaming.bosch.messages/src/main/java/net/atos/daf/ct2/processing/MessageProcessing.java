@@ -46,6 +46,7 @@ public class MessageProcessing<U, T> implements Serializable {
 
 				Index indexobj = new Index();
 				IndexDocument indexDocument = new IndexDocument();
+				
 				/* json message parsing and store in jsonObject */
 				JSONObject jsonObject = transformMessages(value.toString());
 
