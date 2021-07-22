@@ -13,6 +13,7 @@ export class FleetFuelPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
   @Input() translationData: any;
+  @Input() generalPreferences;
   @Output() setFuelFleetFlag = new EventEmitter<any>();
   reportId;
   initData;
@@ -28,6 +29,7 @@ export class FleetFuelPreferencesComponent implements OnInit {
   selectionForVehicleDetailsColumns = new SelectionModel(true, []);
   selectionForSingleVehicleDetailsColumns = new SelectionModel(true, []);
   fleetFuelForm = new FormGroup({});
+  unitId;
 
   lineBarDD: any = [{
     type: 'L',
@@ -40,6 +42,8 @@ export class FleetFuelPreferencesComponent implements OnInit {
   constructor(private reportService: ReportService) { }
 
   ngOnInit(): void {
+    let accountPreference = JSON.parse(localStorage.getItem('accountInfo')).accountPreference;
+    this.unitId = accountPreference.unitId
     this.loadFleetFuelPreferences();
   }
 
@@ -234,6 +238,15 @@ export class FleetFuelPreferencesComponent implements OnInit {
     });
     console.log("save Object", [..._summaryArr, ..._vehicleRankingArr, ..._vehicleDetailsArr, ..._singleVehicleDetailsArr, ..._chartsArr])
     return [..._summaryArr, ..._vehicleRankingArr, ..._vehicleDetailsArr, ..._singleVehicleDetailsArr, ..._chartsArr];
+  }
+
+  getUnits() {
+    let unitObj = this.generalPreferences.unit.filter(item => item.id == this.unitId);
+    if(unitObj.value == 'Imperial') {
+      return '(lts/100km)';
+    } else {
+      return '(mpg(miles per gallon))';
+    }
   }
 
 }

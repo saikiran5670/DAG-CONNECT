@@ -1,5 +1,7 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AccountService } from 'src/app/services/account.service';
 import { ReportService } from 'src/app/services/report.service';
+import { TranslationService } from 'src/app/services/translation.service';
 import { FleetFuelPreferencesComponent } from './fleet-fuel-preferences/fleet-fuel-preferences.component';
 
 @Component({
@@ -30,11 +32,13 @@ export class ReportsPreferencesComponent implements OnInit {
   editFuelDeviationPerferencesFlag: boolean = false;
   showFleetFuelPerferences: boolean = false;
   editFleetFuelPerferencesFlag: boolean = false;
+  generalPreferences;
 
-  constructor( private reportService: ReportService ) { }
+  constructor(private reportService: ReportService, private translationService: TranslationService, private accountService: AccountService) { }
 
   ngOnInit() {
     this.loadReportData();
+    this.getPreferences();
   }
 
   loadReportData(){
@@ -47,6 +51,11 @@ export class ReportsPreferencesComponent implements OnInit {
       this.hideloader();
       this.reportListData = [];
     });
+  }
+
+  getPreferences() {
+    let languageCode = JSON.parse(localStorage.getItem('language')).code;
+    this.translationService.getPreferences(languageCode).subscribe((res) => this.generalPreferences = res)
   }
 
   hideloader() {
