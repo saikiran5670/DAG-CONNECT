@@ -84,25 +84,25 @@ export class LiveFleetMapComponent implements OnInit {
     this.configureAutoSuggest();
     //this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
-    this.dataInterchangeService.detailDataInterface$.subscribe(data => {
+    this.dataInterchangeService.detailDataInterface$.subscribe(vehicleResponse => {
     this.tripTraceArray = [];
 
-      if (data) {
-        if(data.length){
-          this.tripTraceArray = data;
-          this.showIcons = true;
-
-        }
-        else{
-          this.tripTraceArray.push(data);
-          this.showIcons = false;
-
-        }
-      }
-      else {
+    if (vehicleResponse) {
+      if(!vehicleResponse.vehicleDetailsFlag){
+        this.tripTraceArray = vehicleResponse.data;
         this.showIcons = true;
+
       }
-      
+      else{
+        this.tripTraceArray.push(vehicleResponse.data);
+        this.showIcons = false;
+
+      }
+    }
+    else {
+      this.showIcons = true;
+    }
+    
       this.mapIconData();
     })
   }
@@ -166,12 +166,12 @@ export class LiveFleetMapComponent implements OnInit {
       this.hereService.lookUpSuggestion(qParam).subscribe((data: any) => {
         this.searchMarker = {};
         if(data && data.position && data.position.lat && data.position.lng){
-          this.searchMarker = {
+          let searchMarker = {
             lat: data.position.lat,
             lng: data.position.lng,
             from: 'search'
           }
-          this.fleetMapService.setMapToLocation(this.searchMarker);
+          this.fleetMapService.setMapToLocation(searchMarker);
           //let _ui = this.fleetMapService.getUI();
           //this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
         }
