@@ -90,9 +90,9 @@
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlerts || 'Alerts' }} ({{gridData.fleetOverviewAlert.length}})</span>
             </div>
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
             <span class='custom-font' (click)="gotoLogBook()">
-                <span class='backBtnCss'>{{ translationData.lblLogBook || 'Log Book' }} ></span>
+                <span class='backBtnCss'>{{ translationData.lblLogBook || 'Log Book' }} </span><span>></span>
             </span>
         </div>
         </div>
