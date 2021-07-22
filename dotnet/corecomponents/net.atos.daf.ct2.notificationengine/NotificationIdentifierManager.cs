@@ -29,6 +29,7 @@ namespace net.atos.daf.ct2.notificationengine
                 tripAlert = await _notificationIdentifierRepository.GetVehicleIdForTrip(tripAlert);
                 List<Notification> notificationOutput = new List<Notification>();
                 List<Notification> notificationDetails = await _notificationIdentifierRepository.GetNotificationDetails(tripAlert);
+                // Condition added to check for trip base alert and need to condition for non trip based alert type
                 List<NotificationHistory> notificatinFrequencyCheck = await _notificationIdentifierRepository.GetNotificationHistory(tripAlert);
                 List<TripAlert> generatedAlertForVehicle = await _notificationIdentifierRepository.GetGeneratedTripAlert(tripAlert);
                 int numberOfAlertForvehicle = notificatinFrequencyCheck.Count();
