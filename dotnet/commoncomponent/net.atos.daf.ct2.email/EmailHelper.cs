@@ -94,7 +94,7 @@ namespace net.atos.daf.ct2.email
                         break;
                 }
 
-                if (emailTemplate.TemplateLabels.Count() > 0 && (emailTemplate.EventType != EmailEventType.ScheduledReportEmail || emailTemplate.EventType != EmailEventType.AlertNotificationEmail))
+                if (emailTemplate.TemplateLabels.Count() > 0 && emailTemplate.EventType != EmailEventType.ScheduledReportEmail && emailTemplate.EventType != EmailEventType.AlertNotificationEmail)
                 {
                     var translationLabel = emailTemplate.TemplateLabels.Where(x => x.LabelKey.EndsWith("_Subject")).FirstOrDefault();
                     messageRequest.Subject = translationLabel == null ? " " : translationLabel.TranslatedValue;

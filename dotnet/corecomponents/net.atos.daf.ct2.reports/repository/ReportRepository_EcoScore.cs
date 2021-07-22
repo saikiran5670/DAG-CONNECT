@@ -2197,7 +2197,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 Left join BrakeDuration brdur on brdur.vin = anc.vin
                                 Left join Braking brk on brk.vin = brdur.vin
 
-                                where 1 = 1 --AND(dis.distance >= @MinDriverTotalDistance OR @MinDriverTotalDistance IS NULL)";
+                                where 1 = 1 AND(dis.distance >= @MinDriverTotalDistance OR @MinDriverTotalDistance IS NULL)";
 
                 List<EcoScoreReportSingleDriver> lstSingleDriver = (List<EcoScoreReportSingleDriver>)await _dataMartdataAccess.QueryAsync<EcoScoreReportSingleDriver>(query, parameters);
                 return lstSingleDriver?.Count > 0 ? lstSingleDriver : new List<EcoScoreReportSingleDriver>();

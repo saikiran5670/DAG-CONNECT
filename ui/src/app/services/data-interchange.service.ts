@@ -5,6 +5,8 @@ import { Injectable } from '@angular/core';
 export class DataInterchangeService {
     private dataInterfaceSource = new Subject<any>();
     dataInterface$ = this.dataInterfaceSource.asObservable();
+    private dataHealthSource = new Subject<any>();
+    healthData$ = this.dataHealthSource.asObservable();
     private orgRoleInterfaceSource = new Subject<any>();
     orgRoleInterface$ = this.orgRoleInterfaceSource.asObservable();
     private settingInterfaceSource = new Subject<any>();
@@ -22,6 +24,10 @@ export class DataInterchangeService {
 
     getDataInterface(data: any) {
         this.dataInterfaceSource.next(data);
+    }
+
+    gethealthDetails(data: any) {
+        this.dataHealthSource.next(data);
     }
 
     getOrgRoleInterface(data: any) {
