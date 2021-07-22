@@ -55,9 +55,7 @@ selectedStartTime: any = '00:00';
 selectedEndTime: any = '23:59'; 
 logBookForm: FormGroup;
 mapFilterForm: FormGroup;
-// displayedColumns = ['All','vin', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
-// displayedColumns = ['All','vin','odometer','vehicleName','registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events','odometer'];
-displayedColumns = ['All', 'vin', 'odometer', 'vehicleName', 'registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
+displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', 'alertType', 'alertName', 'alertCategory', 'tripStartTime', 'tripEndTime', 'vehicleName','vin','occurrence','thresholdValue'];
 translationData: any;
 showMap: boolean = false;
 showBack: boolean = false;
@@ -608,7 +606,6 @@ ngOnDestroy(){
       //   this.updateDataSource(this.tripData);
       // });
     }
-    console.log(this.alertLvl);
       let vehicleGroup =this.logBookForm.controls.vehicleGroup.value.toString();
       let vehicleName = this.logBookForm.controls.vehicle.value.toString();
       let alertLevel = this.logBookForm.controls.alertLevel.value;
@@ -635,9 +632,27 @@ ngOnDestroy(){
           "end_time": _endTime     
         }
       
+        let filterData = this.wholeLogBookData["enumTranslation"];
+        filterData.forEach(item => {
+          let type= this.translationData[item["key"]];
+        });
+
       
       this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
-        console.log("logbookData=" +logbookData);
+        this.hideloader();
+        logbookData.forEach(element => {
+          element.alertGeneratedTime = Util.convertUtcToDate(element.alertGeneratedTime, this.prefTimeZone);
+          element.tripStartTime = Util.convertUtcToDate(element.tripStartTime, this.prefTimeZone);
+          element.tripEndTime = Util.convertUtcToDate(element.tripEndTime, this.prefTimeZone);
+        });
+        
+        this.updateDataSource(logbookData);
+      }, (error)=>{
+          this.hideloader();
+          this.initData = [];
+          this.tableInfoObj = {};
+          this.updateDataSource(this.initData);
+
       });
     
   }
@@ -780,22 +795,6 @@ ngOnDestroy(){
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
-    // console.log("----UpdateDataSource---initData", this.initData )
-    this.showMap = false;
-    this.selectedTrip.clear();
-    if(this.initData.length > 0){
-      if(!this.showMapPanel){ //- map panel not shown already
-        this.showMapPanel = true;
-        setTimeout(() => {
-          this.reportMapService.initMap(this.mapElement);
-        }, 0);
-      }else{
-        this.reportMapService.clearRoutesFromMap();
-      }
-    }
-    else{
-      this.showMapPanel = false;
-    }
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;

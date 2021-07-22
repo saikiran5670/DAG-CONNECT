@@ -46,9 +46,9 @@ public class Trip implements Serializable {
 	private Double tripCalPtoDuration;
 	private Double tripCalHarshBrakeDuration;
 	private Double tripCalHeavyThrottleDuration;
-	private Integer tripCalCrsCntrlDist25To50;
-	private Integer tripCalCrsCntrlDist50To75;
-	private Integer tripCalCrsCntrlDistAbv75;
+	private Long tripCalCrsCntrlDist25To50;
+	private Long tripCalCrsCntrlDist50To75;
+	private Long tripCalCrsCntrlDistAbv75;
 	private Double tripCalAvgTrafficClsfn;
 	private Double tripCalCCFuelConsumption;
 	private Long vCruiseControlFuelConsumed;

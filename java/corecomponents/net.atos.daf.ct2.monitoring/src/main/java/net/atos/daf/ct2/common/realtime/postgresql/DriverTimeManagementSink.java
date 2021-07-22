@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+import org.apache.kafka.common.utils.Exit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 	 */
 	private static final long serialVersionUID = 1L;
 
-	Logger log = LoggerFactory.getLogger(MonitorDataProcess.class);
+	Logger logger = LoggerFactory.getLogger(MonitorDataProcess.class);
 
 	// private PreparedStatement statement;
 	Connection connection = null;
@@ -37,16 +38,13 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 
 	LiveFleetDriverActivityDao driverDAO;
 
-	
-	DriverActivityPojo DriverActivity;
-
 	private List<Monitor> queue;
 	private List<Monitor> synchronizedCopy;
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 
-		log.info("########## In LiveFleet Drive Time Management ##############");
+		logger.info("########## In LiveFleet Drive Time Management ##############");
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
 		driverDAO = new LiveFleetDriverActivityDao();
@@ -65,7 +63,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 
 		} catch (Exception e) {
 
-			log.error("Error in Live fleet position" + e.getMessage());
+			logger.error("Error in Live fleet position" + e.getMessage());
 
 		}
 
@@ -74,13 +72,15 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 	public void invoke(KafkaRecord<Monitor> monitor) throws Exception {
 
 		Monitor row = monitor.getValue();
+		if("abcd".equalsIgnoreCase(row.getDocument().getTripID())) {
+			System.out.println("findigs--" + row);
+		}
+		
 		Integer value = new Integer(7);
 		if (value.equals(row.getMessageType())) {
 			// if (row.getMessageType().equals(7)) {
 			queue = new ArrayList<Monitor>();
 			synchronizedCopy = new ArrayList<Monitor>();
-
-			DriverActivity = new DriverActivityPojo();
 
 			try {
 
@@ -92,99 +92,121 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 					synchronized (synchronizedCopy) {
 						synchronizedCopy = new ArrayList<Monitor>(queue);
 						queue.clear();
-						Long endTime = null;
+						int i=0;
+						/*
+						 * for (Monitor monitorData : synchronizedCopy) { if
+						 * (("driver1").equalsIgnoreCase(monitorData.getDocument().getDriverID())) {
+						 * System.out.print("moniterData sequence: "+i +
+						 * "eventTime:"+monitorData.getEvtDateTime()); i++; } else {
+						 * System.out.println("no driver1"); }
+						 * 
+						 * }
+						 */
+					
 						for (Monitor monitorData : synchronizedCopy) {
+							Long currentEndTime = null;
 
 							try {
-								endTime = (TimeFormatter.getInstance().convertUTCToEpochMilli(
+								currentEndTime = (TimeFormatter.getInstance().convertUTCToEpochMilli(
 										monitorData.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 							} catch (ParseException e) {
 								// TODO Auto-generated catch block
+								logger.error("Error in Live fleet position- error in parsing event Date Time" + e.getMessage());
 								e.printStackTrace();
 							}
 
 							// -----**** DRIVER 1
 
-							/*
-							 * Long driverStartTime =
-							 * driverDAO.driver_read(monitorData.getDocument().getDriverID(),
-							 * monitorData.getDocument().getDriver1WorkingState().toString());
-							 */
+							logger.info("Read Driver details from previous row");
+							TwoMinuteRulePojo previousDriverOneDetails=null;
+							if(null!=monitorData.getDocument().getDriver1WorkingState()) {
+								 previousDriverOneDetails = driverDAO.driver_read(
+										monitorData.getDocument().getDriverID(),
+										monitorData.getDocument().getDriver1WorkingState().toString());
+							} else {
+								break;
+							}
+							
 
-							TwoMinuteRulePojo driverDetails = driverDAO.driver_read(
-									monitorData.getDocument().getDriverID(),
-									monitorData.getDocument().getDriver1WorkingState().toString());
 
-							Long driver1StartTime = driverDetails.getStart_time();
-							String OldCode1 = driverDetails.getCode();
+							if (previousDriverOneDetails != null) {
+								Long driverOneStartTime = previousDriverOneDetails.getStart_time();
+								String previousCode1 = previousDriverOneDetails.getCode();
 
-							if (driver1StartTime != null) {
+								Long duration1 = currentEndTime - driverOneStartTime;
 
-								Long duration1 = endTime - driver1StartTime;
-
-								// Integer workingValue=new Integer(7);
-								if (OldCode1.equalsIgnoreCase("2") && driverDetails.getDuration() <=120) {
-
-									String logicalCode = monitorData.getDocument().getDriver1WorkingState()
-											.toString();
-
-									driverDAO.driver_update(monitorData.getDocument().getDriverID(), endTime, duration1,
+								if (previousCode1.equalsIgnoreCase("2") && duration1 <= 120000) {
+									logger.info("Two minute rule calculation");
+									String logicalCode = monitorData.getDocument().getDriver1WorkingState().toString();
+									driverDAO.driver_update(monitorData.getDocument().getDriverID(), currentEndTime, duration1,
 											logicalCode);
+									logger.info("Driver1 records updated in driver table with twoMinuiteRule :: ");
 
 								} else {
-
-									driverDAO.driver_update(monitorData.getDocument().getDriverID(), endTime, duration1,
-											monitorData.getDocument().getDriver1WorkingState().toString());
+									driverDAO.driver_update(monitorData.getDocument().getDriverID(), currentEndTime, duration1,
+											previousCode1);
+									logger.info("Driver1 records updated in driver table :: ");
 								}
-								DriverActivityPojo DriverDetailsD1 = DriverActivityCalculation(monitorData,
-										DriverActivity, true);
-
+								DriverActivityPojo DriverDetailsD1 = driverActivityCalculation(monitorData, true);
 								driverDAO.driver_insert(DriverDetailsD1);
+								logger.info("Driver1 records inserted in driver table :: ");
 
 							} else {
 
-								DriverActivityPojo DriverDetailsD1 = DriverActivityCalculation(monitorData,
-										DriverActivity, true);
-
+								DriverActivityPojo DriverDetailsD1 = driverActivityCalculation(monitorData, true);
 								driverDAO.driver_insert(DriverDetailsD1);
+								logger.info("Driver1 new records inserted in driver table :: ");
 							}
-							/// --------------------------------
+							
 							// --------** DRIVER 2
-							
-							driverDetails = driverDAO.driver_read(monitorData.getDocument().getDriver2ID(),
+
+							TwoMinuteRulePojo previousDriver2Details = driverDAO.driver_read(
+									monitorData.getDocument().getDriver2ID(),
 									monitorData.getDocument().getDriver2WorkingState().toString());
-							
-							Long driver2StartTime = driverDetails.getStart_time();
-							String Old2Code = driverDetails.getCode();
 
-							if (driver2StartTime != null) {
+							if (previousDriver2Details != null) {
 								
+								Long driverTwoStartTime = previousDriver2Details.getStart_time();
+								String previousDriverTwoCode = previousDriver2Details.getCode();
 
-								Long duration2 = endTime - driver2StartTime;
-								if (Old2Code.equalsIgnoreCase("2") && driverDetails.getDuration() <=120) {
-									
+								Long duration2 = currentEndTime - driverTwoStartTime;
+								if (previousDriverTwoCode.equalsIgnoreCase("2") && duration2 <= 120000) {
+
 									String FormattedCode = monitorData.getDocument().getDriver2WorkingState()
 											.toString();
-									driverDAO.driver_update(monitorData.getDocument().getDriver2ID(), endTime, duration2,FormattedCode);
-									
+
+									driverDAO.driver_update(monitorData.getDocument().getDriver2ID(), currentEndTime,
+											duration2, FormattedCode);
+									logger.info("Driver2 records updated in driver table with twoMinuiteRule :: ");
+
 								} else {
-									driverDAO.driver_update(monitorData.getDocument().getDriver2ID(), endTime, duration2,monitorData.getDocument().getDriver2WorkingState().toString());
+									/*
+									 * driverDAO.driver_update(monitorData.getDocument().getDriver2ID(), endTime,
+									 * duration2,monitorData.getDocument().getDriver2WorkingState().toString());
+									 */
+
+									
+
+									driverDAO.driver_update(monitorData.getDocument().getDriver2ID(), currentEndTime,
+											duration2, previousDriverTwoCode);
+									logger.info("Driver2 record updated in driver table :: ");
 								}
 
-								DriverActivityPojo DriverDetailsD2 = DriverActivityCalculation(monitorData,
-										DriverActivity, false);
+								DriverActivityPojo DriverDetailsD2 = driverActivityCalculation(monitorData,false);
 
+								
 								driverDAO.driver_insert(DriverDetailsD2);
+								logger.info("Driver2 record inserted in driver table :: ");
 
 							} else {
 
-								DriverActivityPojo DriverDetailsD2 = DriverActivityCalculation(monitorData,
-										DriverActivity, false);
+								DriverActivityPojo DriverDetailsD2 = driverActivityCalculation(monitorData, false);
+
+								
 
 								driverDAO.driver_insert(DriverDetailsD2);
+								logger.info("Driver2 new record inserted in driver table :: ");
 							}
-							
-							
 
 							/*
 							 * driverStartTime =
@@ -215,6 +237,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 					}
 				}
 			} catch (Exception e) {
+				logger.error("Error in Live fleet position, Invoke Method" + e.getMessage());
 				e.printStackTrace();
 			}
 
@@ -222,40 +245,42 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 
 	}
 
-	public DriverActivityPojo DriverActivityCalculation(Monitor row, DriverActivityPojo DriverActivity,
-			boolean driverIdentification) {
+	public DriverActivityPojo driverActivityCalculation(Monitor row, boolean driverIdentification) {
 
-		DriverActivity.setTripId(row.getDocument().getTripID());
-		DriverActivity.setVid(row.getVid());
+		DriverActivityPojo driverActivity = new DriverActivityPojo();
+
+		driverActivity.setTripId(row.getDocument().getTripID());
+		driverActivity.setVid(row.getVid());
 		// DriverActivity.setVin(null);
 		// DriverActivity.setTripStartTimeStamp(Types);
 		// DriverActivity.setTripEndTimeStamp(null);
 		try {
-			DriverActivity.setActivityDate(TimeFormatter.getInstance()
+			driverActivity.setActivityDate(TimeFormatter.getInstance()
 					.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
+			logger.error("Error in Live fleet position, ActivityDate calculation" + e.getMessage());
 			e.printStackTrace();
-		} // activity_date
+		} 
 
 		if (driverIdentification == true) {
 			// Driver 1
 
-			DriverActivity.setDriverID(row.getDocument().getDriverID());
-			DriverActivity.setCode(row.getDocument().getDriver1WorkingState().toString());
-			DriverActivity.setIsDriver1(true);
-			DriverActivity.setLogicalCode(row.getDocument().getDriver1WorkingState().toString());
+			driverActivity.setDriverID(row.getDocument().getDriverID());
+			driverActivity.setCode(row.getDocument().getDriver1WorkingState().toString());
+			driverActivity.setIsDriver1(true);
+			driverActivity.setLogicalCode(row.getDocument().getDriver1WorkingState().toString());
 		} else {
 			// Driver 2
 
-			DriverActivity.setDriverID(row.getDocument().getDriver2ID());
-			DriverActivity.setCode(row.getDocument().getDriver2WorkingState().toString());
-			DriverActivity.setIsDriver1(false);
-			DriverActivity.setLogicalCode(row.getDocument().getDriver2WorkingState().toString());
+			driverActivity.setDriverID(row.getDocument().getDriver2ID());
+			driverActivity.setCode(row.getDocument().getDriver2WorkingState().toString());
+			driverActivity.setIsDriver1(false);
+			driverActivity.setLogicalCode(row.getDocument().getDriver2WorkingState().toString());
 		}
 
 		try {
-			DriverActivity.setStartTime(TimeFormatter.getInstance()
+			driverActivity.setStartTime(TimeFormatter.getInstance()
 					.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -263,26 +288,27 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 		} // start time
 
 		try {
-			DriverActivity.setEndTime(TimeFormatter.getInstance()
+			driverActivity.setEndTime(TimeFormatter.getInstance()
 					.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
+			logger.error("Error in Live fleet position, setEndDate" + e.getMessage());
 			e.printStackTrace();
 		} // end-time
 
-		DriverActivity.setDuration(null); // it will be null when record creates.
+		driverActivity.setDuration(null); // it will be null when record creates.
 
-		DriverActivity.setCreatedAtDm(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
+		driverActivity.setCreatedAtDm(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
 		// DriverActivity.setCreated_at_kafka(row.getReceivedTimestamp());
-		DriverActivity.setCreatedAtKafka(Long.parseLong(row.getKafkaProcessingTS()));
-		DriverActivity.setCreatedAtM2m(row.getReceivedTimestamp());
+		driverActivity.setCreatedAtKafka(Long.parseLong(row.getKafkaProcessingTS()));
+		driverActivity.setCreatedAtM2m(row.getReceivedTimestamp());
 		// DriverActivity.setModified_at(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
-		DriverActivity.setModifiedAt(null); // it will be null when record
+		driverActivity.setModifiedAt(null); // it will be null when record
 											// creates.
-		DriverActivity.setLastProcessedMessageTimestamp(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
-		DriverActivity.setVin(row.getVin());
+		driverActivity.setLastProcessedMessageTimestamp(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
+		driverActivity.setVin(row.getVin());
 		System.out.println("in driver activity sink class---" + row.getVin());
-		return DriverActivity;
+		return driverActivity;
 
 	}
 

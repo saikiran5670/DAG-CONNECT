@@ -48,11 +48,11 @@ namespace net.atos.daf.ct2.notificationengine.test
         {
             TripAlert tripAlert = new TripAlert();
             tripAlert.Id = 1;
-            tripAlert.Tripid = "a801403e-ae4c-42cf-bf2d-ae39009c61fc";
-            tripAlert.Vin = "XLR0998HGFFT76657";
-            tripAlert.CategoryType = "F";
-            tripAlert.Type = "P";
-            tripAlert.Alertid = 330;
+            tripAlert.Tripid = "a801403e-ae4c-42cf-bf2d-ae39009c61aa";
+            tripAlert.Vin = "BLRAE75PC0E272200";
+            tripAlert.CategoryType = "L";
+            tripAlert.Type = "D";
+            tripAlert.Alertid = 210;
             tripAlert.Latitude = 51.12768173;
             tripAlert.Longitude = 4.935644627;
             tripAlert.AlertGeneratedTime = 1623325980000;
