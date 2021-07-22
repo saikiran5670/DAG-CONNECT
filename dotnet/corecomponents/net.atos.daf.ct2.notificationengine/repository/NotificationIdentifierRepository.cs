@@ -109,10 +109,14 @@ namespace net.atos.daf.ct2.notificationengine.repository
                                             , notification_sent_date as NotificationSendDate
                                             , status as Status
 	                                            FROM master.notificationhistory 	                                           
-	                                            where alert_id=@alert_id;";
+	                                            where alert_id=@alert_id
+                                                    and vehicle_id=@vehicle_id
+                                                    and trip_id=@trip_id;";
 
             var parameter = new DynamicParameters();
             parameter.Add("@alert_id", tripAlert.Alertid);
+            parameter.Add("@vehicle_id", tripAlert.VehicleId);
+            parameter.Add("@trip_id", tripAlert.Tripid);
 
             List<NotificationHistory> notificationHistoryOutput = (List<NotificationHistory>)await _dataAccess.QueryAsync<NotificationHistory>(queryStatement, parameter);
             return notificationHistoryOutput;

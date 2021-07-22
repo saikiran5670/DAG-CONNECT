@@ -24,6 +24,7 @@ export class CurrentFleetComponent implements OnInit {
   messages: any[] = [];
   subscription: Subscription;
   isOpen: boolean = false;
+  healthData: any = []
   // detailsData =[
   //   {
   //     "id": 8,
@@ -137,7 +138,8 @@ export class CurrentFleetComponent implements OnInit {
       });
       this.sendMessage();
       this.dataInterchangeService.healthData$.subscribe(data => {
-        this.isOpen = data;
+        this.healthData = data;
+        this.isOpen = true;
       });
     }
 

@@ -9,6 +9,7 @@ import {ProgressBarMode} from '@angular/material/progress-bar';
 import { ThemePalette } from '@angular/material/core';
 import { ReportService } from 'src/app/services/report.service';
 
+
 @Component({
   selector: 'app-fuel-benchmarking-table',
   templateUrl: './fuel-benchmarking-table.component.html',
@@ -24,7 +25,8 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   @Input() endDateRange: any;
   @Input() selectionValueBenchmarkBY: any;
   @Input() benchmarkSelectionChange: any;
-  vehicleHeaderCount :any = 0;
+  @Input() vehicleGroupSelected:any;
+  //vehicleHeaderCount :any = 0;
   initData: any = [];
   responseDataTP: any = {}
   headerArray: any = ["Period"];
@@ -80,7 +82,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     if (this.selectionValueBenchmarkBY == "timePeriods") {
       this.tableHeadingwithRange = this.startDateRange + " to " + this.endDateRange;
     } else if (this.selectionValueBenchmarkBY == "vehicleGroups") {
-      this.tableHeadingwithRange = `Vehicle Group ${this.vehicleHeaderCount}`;
+      this.tableHeadingwithRange = this.vehicleGroupSelected;
     }
 
     for (let row of this.test) {
@@ -99,7 +101,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     if (this.displayedColumns.length > 1) {
       this.displayedColumns.splice(index, 1)
     }
-    this.vehicleHeaderCount--;
+    //this.vehicleHeaderCount--;
   }
 
   addColumn(data, column) {
@@ -122,7 +124,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
         }
       }
     }
-    this.vehicleHeaderCount++;
+    //this.vehicleHeaderCount++;
   }
   
   getUserPreferenceReport() {
