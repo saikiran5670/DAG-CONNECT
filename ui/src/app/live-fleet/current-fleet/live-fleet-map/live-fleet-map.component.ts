@@ -50,6 +50,7 @@ export class LiveFleetMapComponent implements OnInit {
   displayRouteView: any = 'C';
   @Input() translationData:any;
   @Input()  detailsData : any;
+  @Input() preferenceObject : any;
   @ViewChild("map") public mapElement: ElementRef;
   accountId:any;
   accountPrefObj : any;
