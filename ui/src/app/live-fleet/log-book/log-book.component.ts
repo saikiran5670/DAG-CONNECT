@@ -592,11 +592,11 @@ ngOnDestroy(){
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     let _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
     if(_vinData.length > 0){
-      this.showLoadingIndicator = true;
+      //this.showLoadingIndicator = true;
       // this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
       //   this.hideloader();
       //   this.tripData = this.reportMapService.getConvertedDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-      //   this.setTableInfo();
+       // this.setTableInfo();
       //   this.updateDataSource(this.tripData);
       // }, (error)=>{
       //   //console.log(error);
@@ -645,7 +645,7 @@ ngOnDestroy(){
           element.tripStartTime = Util.convertUtcToDate(element.tripStartTime, this.prefTimeZone);
           element.tripEndTime = Util.convertUtcToDate(element.tripEndTime, this.prefTimeZone);
         });
-        
+        this.setTableInfo();
         this.updateDataSource(logbookData);
       }, (error)=>{
           this.hideloader();
@@ -660,8 +660,8 @@ ngOnDestroy(){
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';
-    let vin: any = '';
-    let plateNo: any = '';
+    //let vin: any = '';
+    //let plateNo: any = '';
     let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.logBookForm.controls.vehicleGroup.value));
     if(vehGrpCount.length > 0){
       vehGrpName = vehGrpCount[0].vehicleGroupName;
@@ -669,16 +669,16 @@ ngOnDestroy(){
     let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
     if(vehCount.length > 0){
       vehName = vehCount[0].vehicleName;
-      vin = vehCount[0].vin;
-      plateNo = vehCount[0].registrationNo;
+    //  vin = vehCount[0].vin;
+     // plateNo = vehCount[0].registrationNo;
     }
     this.tableInfoObj = {
       fromDate: this.formStartDate(this.startDateValue),
       endDate: this.formStartDate(this.endDateValue),
       vehGroupName: vehGrpName,
       vehicleName: vehName,
-      vin: vin,
-      regNo: plateNo
+      //vin: vin,
+      //regNo: plateNo
     }
   }
 
@@ -794,7 +794,9 @@ ngOnDestroy(){
   }
 
   updateDataSource(tableData: any) {
+    console.log(tableData);
     this.initData = tableData;
+    console.log("initData", this.initData);
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
@@ -814,8 +816,8 @@ ngOnDestroy(){
   const header = ['VIN', 'Odometer', 'Vehicle Name', 'Registration No', 'Start Date', 'End Date', 'Distance('+ unitValkm + ')', 'Idle Duration(hh:mm)', 'Average Speed('+ unitValkmh + ')', 'Average Weight('+ unitValkg + ')', 'Start Position', 'End Position', 'Fuel Consumption('+ unitVal100km + ')', 'Driving Time(hh:mm)', 'Alerts', 'Events'];
   const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Vehicle VIN', 'Reg. Plate Number'];
   let summaryObj=[
-    ['Trip Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
-    this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, this.tableInfoObj.vin, this.tableInfoObj.regNo
+    ['Log Data', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+    this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName
     ]
   ];
   const summaryData= summaryObj;
