@@ -9,6 +9,16 @@ namespace net.atos.daf.ct2.reportservice.entity
 {
     public class Mapper
     {
+        public EnumTranslation MapEnumTranslation(reports.entity.EnumTranslation enumTrans)
+        {
+            EnumTranslation objenumtrans = new EnumTranslation();
+            objenumtrans.Id = enumTrans.Id;
+            objenumtrans.Type = string.IsNullOrEmpty(enumTrans.Type) ? string.Empty : enumTrans.Type;
+            objenumtrans.Enum = string.IsNullOrEmpty(enumTrans.Enum) ? string.Empty : enumTrans.Enum;
+            objenumtrans.ParentEnum = string.IsNullOrEmpty(enumTrans.ParentEnum) ? string.Empty : enumTrans.ParentEnum;
+            objenumtrans.Key = string.IsNullOrEmpty(enumTrans.Key) ? string.Empty : enumTrans.Key;
+            return objenumtrans;
+        }
         internal IEnumerable<UserPreferenceDataColumn> MapUserPreferences(IEnumerable<UserPreferenceReportDataColumn> userPreferences)
         {
             var userPreferenceResult = new List<UserPreferenceDataColumn>();
