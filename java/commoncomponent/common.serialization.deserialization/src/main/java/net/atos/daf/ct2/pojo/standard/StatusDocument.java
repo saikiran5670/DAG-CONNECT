@@ -70,7 +70,7 @@ public class StatusDocument implements Serializable {
   @JsonProperty(value = "VTripMotionBrakeDist")
   private Long vTripMotionBrakeDist;
   @JsonProperty(value = "VTripMotionBrakeDuration")
-  private Integer vTripMotionBrakeDuration;
+  private Long vTripMotionBrakeDuration;
   @JsonProperty(value = "VTripMotionPTODuration")
   private Long vTripMotionPTODuration;
   @JsonProperty(value = "VTripMotionPTOFuelConsumed")

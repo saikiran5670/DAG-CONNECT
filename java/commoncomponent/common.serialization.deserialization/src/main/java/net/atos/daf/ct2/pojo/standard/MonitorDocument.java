@@ -27,7 +27,7 @@ public class MonitorDocument implements Serializable {
     private ROEventObject roEventObject;
 
     @JsonProperty(value = "GPSHdop")
-    private Integer gpsHdop;
+    private Double gpsHdop;
     @JsonProperty(value = "GPSSpeed")
     private Long gpsSpeed;
 
