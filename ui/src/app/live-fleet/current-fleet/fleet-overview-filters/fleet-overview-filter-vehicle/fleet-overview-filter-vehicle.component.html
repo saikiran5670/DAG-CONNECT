@@ -45,6 +45,11 @@
      </div>
   </mat-expansion-panel>
 
-  <app-vehicle-details *ngIf='isVehicleDetails' [translationData]='translationData'  [selectedElementData]='selectedElementData'(backToPage)='checkCreationForVehicleDetails($event)'></app-vehicle-details>
+  <app-vehicle-details *ngIf='isVehicleDetails' 
+  [translationData]='translationData'  
+  [selectedElementData]='selectedElementData'
+  [categoryList] = "categoryList"
+  [levelList] = "levelList" 
+  (backToPage)='checkCreationForVehicleDetails($event)'></app-vehicle-details>
 </div>
 
