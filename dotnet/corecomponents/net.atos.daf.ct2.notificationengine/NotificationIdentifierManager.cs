@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.email.Entity;
+using net.atos.daf.ct2.email.Enum;
+using net.atos.daf.ct2.notification;
+using net.atos.daf.ct2.notification.entity;
 using net.atos.daf.ct2.notificationengine.entity;
 using net.atos.daf.ct2.notificationengine.repository;
 using net.atos.daf.ct2.utilities;
@@ -12,9 +16,11 @@ namespace net.atos.daf.ct2.notificationengine
     public class NotificationIdentifierManager : INotificationIdentifierManager
     {
         private readonly INotificationIdentifierRepository _notificationIdentifierRepository;
-        public NotificationIdentifierManager(INotificationIdentifierRepository notificationIdentifierRepository)
+        private readonly IEmailNotificationManager _emailNotificationManager;
+        public NotificationIdentifierManager(INotificationIdentifierRepository notificationIdentifierRepository, IEmailNotificationManager emailNotificationManager)
         {
             _notificationIdentifierRepository = notificationIdentifierRepository;
+            _emailNotificationManager = emailNotificationManager;
         }
         public async Task<List<Notification>> GetNotificationDetails(TripAlert tripAlert)
         {
@@ -36,7 +42,7 @@ namespace net.atos.daf.ct2.notificationengine
                     {
                         notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
                     }
-                    else if (item.Noti_frequency_type == "T" && item.Notlim_max_limit <= numberOfAlertForvehicle)
+                    else if (item.Noti_frequency_type == "T" && item.Notlim_max_limit > numberOfAlertForvehicle)
                     {
                         notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
                     }
@@ -128,14 +134,37 @@ namespace net.atos.daf.ct2.notificationengine
                     }
                 }
 
-                if (identifiedNotificationRec.Where(x => x.NotificationModeType == "E").Count() > 0)
+                if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "E").Count() > 0)
                 {
+                    foreach (var item in identifiedNotificationRec)
+                    {
+                        Dictionary<string, string> addAddress = new Dictionary<string, string>();
+                        item.EmailId = "harneetsinghrekhi@yahoo.co.in";
+                        addAddress.Add(item.EmailId, null);
+                        var mailNotification = new MailNotificationRequest()
+                        {
+                            MessageRequest = new MessageRequest()
+                            {
+                                AccountInfo = new AccountInfo() { EmailId = item.EmailId, Organization_Id = item.OrganizationId },
+                                ToAddressList = addAddress,
+                                Subject = item.EmailSub,
+                                Description = item.EmailText
+                            },
+                            ContentType = EmailContentType.Html,
+                            EventType = EmailEventType.AlertNotificationEmail
+                        };
 
+                        var isSuccess = await _emailNotificationManager.TriggerSendEmail(mailNotification);
+                        item.Status = isSuccess ? NotificationSendType.Successful.ToString() : NotificationSendType.Failed.ToString();
+                        await InsertNotificationSentHistory(item);
+                    }
                 }
-                else if (identifiedNotificationRec.Where(x => x.NotificationModeType == "S").Count() > 0)
+
+                if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
                 {
                 }
-                else if (identifiedNotificationRec.Where(x => x.NotificationModeType == "W").Count() > 0)
+
+                if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").Count() > 0)
                 {
                 }
 

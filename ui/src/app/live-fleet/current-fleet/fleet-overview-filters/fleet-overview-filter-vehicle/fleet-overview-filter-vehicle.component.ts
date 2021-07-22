@@ -1,5 +1,7 @@
 import { EventEmitter, Input, Output } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
+import { DataInterchangeService } from '../../../../services/data-interchange.service';
+
 
 @Component({
   selector: 'app-fleet-overview-filter-vehicle',
@@ -23,7 +25,7 @@ todayFlagClicked : boolean =true;
 isVehicleDetails : boolean = false;
 selectedElementData: any = [];
 
-constructor() { }
+constructor(private dataInterchangeService: DataInterchangeService) { }
 
 
   ngOnInit(): void {
@@ -54,7 +56,8 @@ let emitObj = {
     let obj ={
       vehicleDetailsFlag : this.isVehicleDetails
     }
-    this.vehicleFilterComponentEmit.emit(obj);
+    this.dataInterchangeService.getVehicleData(data); //change as per selected vehicle
+    //this.vehicleFilterComponentEmit.emit(obj);
   }
 
   checkCreationForVehicleDetails(item: any){
@@ -63,6 +66,8 @@ let emitObj = {
     let obj ={
       vehicleDetailsFlag : this.isVehicleDetails
     }
+    this.dataInterchangeService.getVehicleData(null); // when back clicked 
+
     this.vehicleFilterComponentEmit.emit(obj);
   }
 }

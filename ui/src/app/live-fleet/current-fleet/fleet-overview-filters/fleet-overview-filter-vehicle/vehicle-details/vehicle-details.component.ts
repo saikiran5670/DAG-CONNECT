@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { InputEditor } from 'angular-slickgrid';
+import { NavigationExtras, Router } from '@angular/router';
 
 @Component({
   selector: 'app-vehicle-details',
@@ -11,10 +11,12 @@ export class VehicleDetailsComponent implements OnInit {
   @Input() selectedElementData: any;
   @Input() translationData: any;
   gridData: any = [];
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     this.gridData = this.selectedElementData;
+    var d = new Date(this.selectedElementData.latestProcessedMessageTimeStamp);
+    this.gridData.latestProcessedMessageTimeStamp = d.toLocaleString();
   }
 
   toBack() {
@@ -26,7 +28,13 @@ export class VehicleDetailsComponent implements OnInit {
   }
 
   gotoHealthStatus(data: any){
-
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromVehicleDetails: true,
+        vehicleDetails: data
+      }
+    };
+    this.router.navigate(['fleetoverview/livefleet'], navigationExtras);
   }
 
 }

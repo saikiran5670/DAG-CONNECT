@@ -34,7 +34,7 @@
                 <div *ngIf="index !== 0 && i == 4">
                   Consumption (Ltrs/100km)
                   <div *ngFor="let ranking of row[column]; let index=index">
-                    <span class="vehice-name">{{index + 1}}. {{ranking.vehicleName}} </span>
+                    <span class="vehice-name">{{index + 1}}. {{ranking.vehicleName==""?ranking.vin:ranking.vehicleName}} </span>
                     <mat-progress-bar class="example-margin" [color]="color" [mode]="mode" [bufferValue]="100 - ranking.ltrVal" [value]='ranking.ltrVal'>
                     </mat-progress-bar>
                   </div>
@@ -42,7 +42,7 @@
                 </div>
 
                 <div *ngIf="index !== 0 && i == 5">
-                  <canvas baseChart [data]="doughnutChartData" [labels]="doughnutChartLabels" [chartType]="doughnutChartType">
+                  <canvas baseChart [data]="row[column]" [labels]="doughnutChartLabels" [chartType]="doughnutChartType">
                   </canvas>
                 </div>
 

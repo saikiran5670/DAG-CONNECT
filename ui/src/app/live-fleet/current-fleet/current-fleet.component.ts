@@ -3,6 +3,7 @@ import { TranslationService } from '../../services/translation.service';
 import { ReportService } from 'src/app/services/report.service';
 import { MessageService } from 'src/app/services/message.service';
 import { Subscription } from 'rxjs';
+import { DataInterchangeService} from '../../services/data-interchange.service'
 
 declare var H: any;
 
@@ -126,7 +127,8 @@ export class CurrentFleetComponent implements OnInit {
   
   constructor(private translationService: TranslationService,
     private reportService: ReportService,
-    private messageService: MessageService) { 
+    private messageService: MessageService,
+    private dataInterchangeService: DataInterchangeService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
           this.refreshData();
@@ -162,6 +164,8 @@ export class CurrentFleetComponent implements OnInit {
     }
     this.reportService.getFleetOverviewDetails(objData).subscribe((data:any) => {
        this.detailsData = data;
+        this.dataInterchangeService.getVehicleData(data);
+
     });
    }
 

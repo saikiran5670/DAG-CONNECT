@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.reports.repository
                            -- on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(tripalert.latitude as numeric),4)
                          --   and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
                             where tripalert.vin= ANY(@vins)
-                           and ((to_timestamp(tripalert.alert_generated_time)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time)::date) >= (now()::date - @days)) ";
+                           and ((to_timestamp(tripalert.alert_generated_time/1000)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time/1000)::date) >= (now()::date - @days)) ";
 
             tripAlertList = await _dataMartdataAccess.QueryAsync<LogbookTripAlertDetails>(query, parameter);
             return tripAlertList.AsList<LogbookTripAlertDetails>();
@@ -56,8 +56,8 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 var parameter = new DynamicParameters();
 
-                parameter.Add("@start_time_stamp", logbookFilter.Start_Time, System.Data.DbType.Int32);
-                parameter.Add("@end_time_stamp", logbookFilter.End_time, System.Data.DbType.Int32);
+                parameter.Add("@start_time_stamp", logbookFilter.Start_Time / 1000, System.Data.DbType.Int32);
+                parameter.Add("@end_time_stamp", logbookFilter.End_time / 1000, System.Data.DbType.Int32);
                 string queryLogBookPull = @"select distinct ta.vin as VIN,
                                 v.registration_no as VehicleRegNo,
                                 v.name as VehicleName,
@@ -82,8 +82,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
                                 and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)
                                 where 1=1 
-                                and ((to_timestamp(ta.alert_generated_time)::date) >= (to_timestamp(@start_time_stamp)::date)
-                                and (to_timestamp(ta.alert_generated_time)::date) <= (to_timestamp(@end_time_stamp )::date))";
+                                and ((to_timestamp(ta.alert_generated_time/1000)::date) >= (to_timestamp(@start_time_stamp)::date)
+                                and (to_timestamp(ta.alert_generated_time/1000)::date) <= (to_timestamp(@end_time_stamp )::date))";
 
 
 

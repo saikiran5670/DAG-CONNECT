@@ -36,7 +36,7 @@ public class ROEventData  implements Serializable {
     @JsonProperty(value = "Message_Timestamp")
     private Date messageTimestamp;
     @JsonProperty(value = "Message_NumSeq")
-    private Integer messageNumSeq;
+    private Long messageNumSeq;
     @JsonProperty(value = "Message_Name")
     private String messageName;
 

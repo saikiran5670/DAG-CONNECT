@@ -119,9 +119,10 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
   }
 
   setDefaultFormValues() {
+    for (let field of this.fuelBenchmarkComponentPrefData) {
+      this.fuelBenchmarkForm.get([field.key]).setValue(field.thresholdValue != '' ? field.thresholdValue : '0.00');
+    }
     this.fuelBenchmarkForm.get('rp_fb_chart_fuelconsumption').setValue(this.fuelBenchmarkChartsPrefData[0].chartType != '' ? this.fuelBenchmarkChartsPrefData[0].chartType : 'D');
-    this.fuelBenchmarkForm.get('rp_fb_component_highfuelefficiency').setValue(this.fuelBenchmarkComponentPrefData[0].thresholdValue != '' ? this.fuelBenchmarkChartsPrefData[0].thresholdValue : '0.00');
-    this.fuelBenchmarkForm.get('rp_fb_component_lowfuelefficiency').setValue(this.fuelBenchmarkChartsPrefData[0].thresholdValue != '' ? this.fuelBenchmarkChartsPrefData[0].thresholdValue : '0.00');
   }
 
   getName(name: any, _count: any) {
@@ -176,6 +177,7 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
     }
   
     this.reportService.updateReportUserPreference(benchmarkObject).subscribe((data: any) => {
+      this.setFuelBenchmarkReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
     });
 
   }
