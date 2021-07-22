@@ -594,7 +594,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   }
 
   getHistoryData(tripId: any){
-    this.reportService.getvehiclehealthstatus(this.healthData.vin,this.localStLanguage.code,tripId).subscribe((res) => {
+    this.reportService.getvehiclehealthstatus(this.healthData.vin,'bg-BG',tripId).subscribe((res) => {
       this.historyHealthData = res;
       this.healthDdataSource = new MatTableDataSource(this.historyHealthData);
       this.changeDetectorRef.detectChanges();
