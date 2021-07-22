@@ -34,13 +34,6 @@ export class FleetOverviewSummaryComponent implements OnInit {
   // @ViewChild(BaseChartDirective) chart: BaseChartDirective;
 
   constructor(private messageService: MessageService) {
-    // this.criticalAlert = 15;
-    // this.mileageDone = 2205;
-    // this.drivers = 350;
-    // //this.driveTime = '30 hh 30 mm';
-    // this.noAction = 08;
-    // this.serviceNow = 2;
-    // this.stopNow = 3;
     this.subscription = this.messageService.getMessage().subscribe(message => {
       if (message.key.indexOf("refreshData") < 0 && message.key.indexOf("refreshTimer") < 0) {
         this.summaryData = message.key;
@@ -196,10 +189,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
       }
     });
   }
-  // console.log("totalDriveTime "+totalDriveTime);
   this.driveTime = Util.getHhMmTime(totalDriveTime);
-  // console.log("mileageDone"+this.mileageDone);
-  // console.log("dri "+ Util.getHhMmTime(totalDriveTime));
   this.barChartData = [
     { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
   ];
