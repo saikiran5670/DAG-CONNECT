@@ -136,30 +136,7 @@ namespace net.atos.daf.ct2.notificationengine
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "E").Count() > 0)
                 {
-                    foreach (var item in identifiedNotificationRec)
-                    {
-                        Dictionary<string, string> addAddress = new Dictionary<string, string>();
-                        if (!addAddress.ContainsKey(item.EmailId))
-                        {
-                            addAddress.Add(item.EmailId, null);
-                        }
-                        var mailNotification = new MailNotificationRequest()
-                        {
-                            MessageRequest = new MessageRequest()
-                            {
-                                AccountInfo = new AccountInfo() { EmailId = item.EmailId, Organization_Id = item.OrganizationId },
-                                ToAddressList = addAddress,
-                                Subject = item.EmailSub,
-                                Description = item.EmailText
-                            },
-                            ContentType = EmailContentType.Html,
-                            EventType = EmailEventType.AlertNotificationEmail
-                        };
-
-                        var isSuccess = await _emailNotificationManager.TriggerSendEmail(mailNotification);
-                        item.Status = isSuccess ? NotificationSendType.Successful.ToString() : NotificationSendType.Failed.ToString();
-                        await InsertNotificationSentHistory(item);
-                    }
+                    await SendEmailNotification(identifiedNotificationRec);
                 }
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
@@ -183,6 +160,42 @@ namespace net.atos.daf.ct2.notificationengine
         public async Task<NotificationHistory> InsertNotificationSentHistory(NotificationHistory notificationHistory)
         {
             return await _notificationIdentifierRepository.InsertNotificationSentHistory(notificationHistory);
+        }
+        public async Task<bool> SendEmailNotification(List<NotificationHistory> notificationHistoryEmail)
+        {
+            try
+            {
+                bool isResult = false;
+                foreach (var item in notificationHistoryEmail)
+                {
+                    Dictionary<string, string> addAddress = new Dictionary<string, string>();
+                    if (!addAddress.ContainsKey(item.EmailId))
+                    {
+                        addAddress.Add(item.EmailId, null);
+                    }
+                    var mailNotification = new MailNotificationRequest()
+                    {
+                        MessageRequest = new MessageRequest()
+                        {
+                            AccountInfo = new AccountInfo() { EmailId = item.EmailId, Organization_Id = item.OrganizationId },
+                            ToAddressList = addAddress,
+                            Subject = item.EmailSub,
+                            Description = item.EmailText
+                        },
+                        ContentType = EmailContentType.Html,
+                        EventType = EmailEventType.AlertNotificationEmail
+                    };
+
+                    isResult = await _emailNotificationManager.TriggerSendEmail(mailNotification);
+                    item.Status = isResult ? ((char)NotificationSendType.Successful).ToString() : ((char)NotificationSendType.Failed).ToString();
+                    await InsertNotificationSentHistory(item);
+                }
+                return isResult;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
