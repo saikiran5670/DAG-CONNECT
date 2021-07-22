@@ -1050,11 +1050,12 @@ message LogbookFilterResponse {
 }
 
 message LogbookSearchParameter {
-  repeated AssociatedVehicleRequest AssociatedVehicleRequest = 1;
-  repeated FilterResponse ALFilterResponse = 2;
-  repeated AlertCategoryFilterResponse ACFilterResponse = 3;    
-  repeated AlertCategoryFilterRequest AlertTypeFilterRequest=4;
-  repeated LogbookTripAlertDetailsRequest LogbookTripAlertDetailsRequest =5;
+  repeated LogbookTripAlertDetailsRequest LogbookTripAlertDetailsRequest =1;
+  repeated AssociatedVehicleRequest AssociatedVehicleRequest = 2;
+  repeated FilterResponse ALFilterResponse = 3;
+  repeated AlertCategoryFilterResponse ACFilterResponse = 4;    
+  repeated AlertCategoryFilterRequest AlertTypeFilterRequest=5;  
+   repeated EnumTranslation EnumTranslation = 6;   
 }
 message AlertCategoryFilterRequest {
 		 int32 VehicleGroupId =  1;
@@ -1126,6 +1127,15 @@ message LogbookTripAlertDetailsRequest
         Responsecode code =2;
         string Message = 3;
     }
+
+     message EnumTranslation{
+    int32 Id= 1;
+    string Type=2;
+    string Enum=3;
+    string ParentEnum=4;
+    string Key=5; 
+}
+  
 //***************End Logbook*******************
 /// START : Fuel Bechmark Report
 message FuelBenchmarkRequest{

@@ -595,19 +595,51 @@ ngOnDestroy(){
     let _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
     if(_vinData.length > 0){
       this.showLoadingIndicator = true;
-      this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
-        this.hideloader();
-        this.tripData = this.reportMapService.getConvertedDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-        this.setTableInfo();
-        this.updateDataSource(this.tripData);
-      }, (error)=>{
-        //console.log(error);
-        this.hideloader();
-        this.tripData = [];
-        this.tableInfoObj = {};
-        this.updateDataSource(this.tripData);
-      });
+      // this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
+      //   this.hideloader();
+      //   this.tripData = this.reportMapService.getConvertedDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+      //   this.setTableInfo();
+      //   this.updateDataSource(this.tripData);
+      // }, (error)=>{
+      //   //console.log(error);
+      //   this.hideloader();
+      //   this.tripData = [];
+      //   this.tableInfoObj = {};
+      //   this.updateDataSource(this.tripData);
+      // });
     }
+    console.log(this.alertLvl);
+      let vehicleGroup =this.logBookForm.controls.vehicleGroup.value.toString();
+      let vehicleName = this.logBookForm.controls.vehicle.value.toString();
+      let alertLevel = this.logBookForm.controls.alertLevel.value;
+      let alertType = this.logBookForm.controls.alertType.value;
+      let alertCategory = this.logBookForm.controls.alertCategory.value;
+      let objData =
+        {
+          "groupId": [
+            vehicleGroup
+          ],
+          "vin": [
+            vehicleName
+          ],
+          "alertLevel": [
+            alertLevel
+          ],
+          "alertCategory": [
+            alertCategory
+          ],
+          "alertType": [
+            alertType
+          ],
+          "start_Time":_startTime,
+          "end_time": _endTime     
+        }
+      
+      
+      this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
+        console.log("logbookData=" +logbookData);
+      });
+    
   }
 
   setTableInfo(){
@@ -708,8 +740,11 @@ ngOnDestroy(){
       }
       this.logBookForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
     }else{
-      this.logBookForm.get('vehicle').setValue('');
-      this.logBookForm.get('vehicleGroup').setValue(0);
+      this.logBookForm.get('vehicle').setValue("all");
+      this.logBookForm.get('vehicleGroup').setValue("all");
+      this.logBookForm.get('alertLevel').setValue("all");
+      this.logBookForm.get('alertType').setValue("all");
+      this.logBookForm.get('alertCategory').setValue("all");
     }
   }
 
@@ -1122,7 +1157,8 @@ ngOnDestroy(){
     
     
     if(this.wholeLogBookData.logbookTripAlertDetailsRequest.length > 0){
-      let filterVIN: any = this.wholeLogBookData.logbookTripAlertDetailsRequest.filter(item => (parseInt(item.alertGeneratedTime.toString() + "000")>= currentStartTime) && ( (parseInt(item.alertGeneratedTime.toString() + "000")) <= currentEndTime)).map(data => data.vin);
+      // let filterVIN: any = this.wholeLogBookData.logbookTripAlertDetailsRequest.filter(item => (parseInt(item.alertGeneratedTime.toString() + "000")>= currentStartTime) && ( (parseInt(item.alertGeneratedTime.toString() + "000")) <= currentEndTime)).map(data => data.vin);
+      let filterVIN: any = this.wholeLogBookData.logbookTripAlertDetailsRequest.filter(item => item.alertGeneratedTime >= currentStartTime && item.alertGeneratedTime <= currentEndTime).map(data => data.vin);
       if(filterVIN.length > 0){
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
         console.log("distinctVIN:: ", distinctVIN);
@@ -1138,8 +1174,7 @@ ngOnDestroy(){
           });
         }
       }else{
-        this.logBookForm.get('vehicle').setValue('');
-        this.logBookForm.get('vehicleGroup').setValue('');
+        this.resetFilterValues();
       }
     }
 
@@ -1156,7 +1191,7 @@ ngOnDestroy(){
         });
       }
       //this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-      this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+      // this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
   
       // this.resetTripFormControlValue();
     }
@@ -1169,6 +1204,14 @@ ngOnDestroy(){
     if(this.showBack){
       this.onSearch();
     }
+  }
+
+  resetFilterValues(){
+    this.logBookForm.get('vehicle').setValue('');
+    this.logBookForm.get('vehicleGroup').setValue('');
+    this.logBookForm.get('alertLevel').setValue('');
+    this.logBookForm.get('alertType').setValue('');
+    this.logBookForm.get('alertCategory').setValue('');
   }
 
   makeAlertInformation(){

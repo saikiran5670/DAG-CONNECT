@@ -1,13 +1,13 @@
 ﻿using Confluent.Kafka;
 
-namespace net.atos.daf.ct2.kafkacdc
+namespace net.atos.daf.ct2.confluentkafka
 {
-    public class KafkaConfig
+    internal class KafkaConfig
     {
         private const string SASLUSERNAME = "$ConnectionString";
         private const string BROKERVERSION = "1.0.0";
 
-        public ConsumerConfig GetConsumerConfig(string brokerList
+        public static ConsumerConfig GetConsumerConfig(string brokerList
                 , string connStr
                 , string cacertLocation
                 , string consumerGroup)
@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.kafkacdc
             return config;
         }
 
-        public ProducerConfig GetProducerConfig(string brokerList
+        public static ProducerConfig GetProducerConfig(string brokerList
                 , string connStr
                 , string cacertLocation)
         {

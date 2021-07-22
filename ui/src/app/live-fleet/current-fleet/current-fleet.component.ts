@@ -3,7 +3,9 @@ import { TranslationService } from '../../services/translation.service';
 import { ReportService } from 'src/app/services/report.service';
 import { MessageService } from 'src/app/services/message.service';
 import { Subscription } from 'rxjs';
-import { DataInterchangeService} from '../../services/data-interchange.service'
+import { DataInterchangeService} from '../../services/data-interchange.service';
+import { OrganizationService } from '../../services/organization.service';
+
 
 declare var H: any;
 
@@ -23,6 +25,14 @@ export class CurrentFleetComponent implements OnInit {
   detailsData =[];
   messages: any[] = [];
   subscription: Subscription;
+  isOpen: boolean = false;
+  healthData: any = [];
+  prefTimeFormat: any; //-- coming from pref setting
+  prefTimeZone: any; //-- coming from pref setting
+  prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
+  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+  accountPrefObj: any;
+  preferenceObject : any;
   // detailsData =[
   //   {
   //     "id": 8,
@@ -128,14 +138,20 @@ export class CurrentFleetComponent implements OnInit {
   constructor(private translationService: TranslationService,
     private reportService: ReportService,
     private messageService: MessageService,
-    private dataInterchangeService: DataInterchangeService) { 
+    private dataInterchangeService: DataInterchangeService,
+    private organizationService: OrganizationService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
           this.refreshData();
         }
       });
       this.sendMessage();
+      this.dataInterchangeService.healthData$.subscribe(data => {
+        this.healthData = data;
+        this.isOpen = true;
+      });
     }
+
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -150,6 +166,18 @@ export class CurrentFleetComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
+      // this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      //   if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+      //     this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+      //   }else{ // org pref
+      //     this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+      //       this.proceedStep(prefData, orgPref);
+      //     }, (error) => { // failed org API
+      //       let pref: any = {};
+      //       this.proceedStep(prefData, pref);
+      //     });
+      //   }
+      // });
     });
     this.clickOpenClose='Click to Open';
     let objData = {
@@ -190,10 +218,36 @@ export class CurrentFleetComponent implements OnInit {
   
   } 
 
+  
+  // proceedStep(prefData: any, preference: any){
+  //   let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+  //   if(_search.length > 0){
+  //     this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+  //     this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+  //     this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+  //     this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+  //   }else{
+  //     this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+  //     this.prefTimeZone = prefData.timezone[0].value;
+  //     this.prefDateFormat = prefData.dateformat[0].name;
+  //     this.prefUnitFormat = prefData.unit[0].name;
+  //   }
+  //   this.preferenceObject = {
+  //     prefTimeFormat : this.prefTimeFormat,
+  //     prefTimeZone : this.prefTimeZone,
+  //     prefDateFormat : this.prefDateFormat,
+  //     prefUnitFormat : this.prefUnitFormat
+  //   }
+  // }
+
   sendMessage(): void {
     // send message to subscribers via observable subject
     this.messageService.sendMessage('refreshTimer');
   }
   
   refreshData(){}
+
+  toBack(){
+    this.isOpen = false;
+ }
 }

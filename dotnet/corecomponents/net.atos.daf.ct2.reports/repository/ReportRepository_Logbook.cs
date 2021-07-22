@@ -126,7 +126,27 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
+        public async Task<IEnumerable<EnumTranslation>> GetAlertCategory()
+        {
+            try
+            {
+                var queryStatement = @"SELECT                                     
+                                    id as Id, 
+                                    type as Type, 
+                                    enum as Enum, 
+                                    parent_enum as ParentEnum, 
+                                    key as Key
+                                    FROM translation.enumtranslation;";
 
+                IEnumerable<EnumTranslation> enumtranslationlist = await _dataAccess.QueryAsync<EnumTranslation>(queryStatement, null);
+
+                return enumtranslationlist;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         public async Task<List<FilterProperty>> GetAlertLevelList(List<string> enums)
         {
             var parameter = new DynamicParameters();
