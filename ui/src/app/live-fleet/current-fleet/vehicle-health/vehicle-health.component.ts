@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -25,6 +25,7 @@ import { OrganizationService } from 'src/app/services/organization.service';
 // import { CalendarOptions } from '@fullcalendar/angular';
 import { DataInterchangeService } from 'src/app/services/data-interchange.service';
 import { ReportService } from 'src/app/services/report.service';
+import { Observable } from 'rxjs';
 
 declare var H: any;
 
@@ -33,14 +34,14 @@ declare var H: any;
   templateUrl: './vehicle-health.component.html',
   styleUrls: ['./vehicle-health.component.less']
 })
-export class VehicleHealthComponent implements OnInit {
+export class VehicleHealthComponent implements OnInit, OnDestroy {
   tripReportId: any = 1;
   selectionTab: any;
   reportPrefData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Input() healthData: any;
   @Input() tripId: any;
-  @Input() historyHealthData: any;
+  @Input() historyHealthData: any = [];
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   vehicleHealthForm: FormGroup;
@@ -60,7 +61,6 @@ export class VehicleHealthComponent implements OnInit {
   selectedTrip = new SelectionModel(true, []);
   selectedPOI = new SelectionModel(true, []);
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   vehicleHealthSearchData: any = {};
   tripData: any = [];
@@ -92,10 +92,14 @@ export class VehicleHealthComponent implements OnInit {
   map:any;
   platform:any;
   ui: any;
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  obs: Observable<any>;
+  healthDdataSource: MatTableDataSource<any>;
  
 
 
-  constructor(private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService) { 
+  constructor(private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef) { 
     
       
       this.defaultTranslation();
@@ -591,9 +595,18 @@ export class VehicleHealthComponent implements OnInit {
 
   getHistoryData(tripId: any){
     this.reportService.getvehiclehealthstatus(this.healthData.vin,this.localStLanguage.code,tripId).subscribe((res) => {
-      console.log('history',res);
       this.historyHealthData = res;
+      this.healthDdataSource = new MatTableDataSource(this.historyHealthData);
+      this.changeDetectorRef.detectChanges();
+      this.healthDdataSource.paginator = this.paginator;
+      this.obs = this.healthDdataSource.connect();
     });
+  }
+
+  ngOnDestroy() {
+    if (this.dataSource) { 
+      this.dataSource.disconnect(); 
+    }
   }
 
 }

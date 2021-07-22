@@ -43,7 +43,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
   'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
   'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
-  detaildisplayedColumns = ['driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
+  detaildisplayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
   'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
@@ -54,6 +54,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
+  driverSelected : boolean =false;
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
@@ -346,6 +347,11 @@ export class FleetFuelReportDriverComponent implements OnInit {
               private router: Router,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private reportMapService: ReportMapService) { }
+              defaultTranslation(){
+                this.translationData = {
+                  lblSearchReportParameters: 'Search Report Parameters'
+                }
+               }
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
@@ -1487,16 +1493,40 @@ setVehicleGroupAndVehiclePreSelection() {
     displayHeader.style.display ="block";
   }
 
-  onDriverSelected(vehData:any){
-    const navigationExtras: NavigationExtras = {
-      state: {
-        fromFleetFuelReport: true,
-        vehicleData:vehData
-      }
-    };
-    this.router.navigate(['report/detaildriverreport'], navigationExtras);
+  backToMainPage(){
+    this.driverSelected=false;
+
   }
-  
+
+  driverInfo : any ={};
+  dateInfo : any ={};
+ onDriverSelected(vehData:any){
+   this.isDetailsOpen=true;
+   this.isSummaryOpen =true;
+   this.isChartsOpen=true;
+  let s = this.vehicleGrpDD.filter(i=>i.vehicleGroupId==this.tripForm.controls.vehicleGroup.value)
+  let _s = this.vehicleDD.filter(i=>i.vin==vehData.vin)
+  this.tripForm.get('vehicle').setValue(_s.length>0 ?  _s[0].vehicleId : 0)
+  let currentStartTime = Util.convertDateToUtc(this.startDateValue);
+  let currentEndTime = Util.convertDateToUtc(this.endDateValue); 
+  this.dateInfo={
+    startTime: currentStartTime,
+    endTime : currentEndTime,
+    fromDate: this.formStartDate(this.startDateValue),
+    endDate: this.formStartDate(this.endDateValue),
+    vehGroupName : s.length>0 ?  s[0].vehicleGroupName : 'All' 
+  }
+   this.driverInfo=vehData;
+   this.driverSelected=true;
+    //const navigationExtras: NavigationExtras = {
+    //  state: {
+    //    fromFleetfuelReport: true,
+    //    vehicleData: vehData
+    //  }
+    //};
+    //this.router.navigate(['report/detaildriverreport'], navigationExtras);
+  }
+
 
   sumOfColumns(columnName : any){
     let sum: any = 0;

@@ -202,12 +202,14 @@
       </mat-card>
   
       <!-- Warning Details -->
-      <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' id ="warning">
-        <mat-expansion-panel [(expanded)]="isWarningOpen" class="full-width" fxLayoutGap="10px" (opened)="isWarningOpen == true"
-        (closed)="isWarningOpen == false">
+      <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' id="warning">
+        <mat-expansion-panel [(expanded)]="isWarningOpen" class="full-width" fxLayoutGap="10px"
+          (opened)="isWarningOpen == true" (closed)="isWarningOpen == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (!isCurrent) && (translationData.lblWarning || 'Warning History') || (translationData.lblWarning || 'Current Warning') }}</span>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (!isCurrent) &&
+                (translationData.lblWarning || 'Warning History') || (translationData.lblWarning || 'Current Warning')
+                }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div>
@@ -215,44 +217,43 @@
               <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>Sort By</mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select (selectionChange)="onWarningTypeSelection($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Severity' }}" >
+                  <mat-select (selectionChange)="onWarningTypeSelection($event)"
+                    placeholder="{{ translationData.lblSelectVehicleGroup || 'Severity' }}">
                     <mat-option></mat-option>
                     <mat-option value="All Warnings">Severity 1</mat-option>
                     <mat-option value="Active">Severity 2</mat-option>
                   </mat-select>
-                </mat-form-field> 
+                </mat-form-field>
               </div>
             </div>
-            <div style="font: 500 16px/32px Roboto, 'Helvetica Neue', sans-serif;" fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-              <div class="areaWidth min-width-30-per warning_history" fxLayout="column" fxLayoutAlign="left">
-                <div>Oil pressure too low</div>
-              </div>
-              <div class="areaWidth min-width-30-per warning_history" fxLayout="column" fxLayoutAlign="left">
-                <div>Oil pressure too low</div>
-              </div>
-              <div class="areaWidth min-width-30-per warning_history" fxLayout="column" fxLayoutAlign="left">
+            <div style="font: 500 16px/32px Roboto, 'Helvetica Neue', sans-serif;" fxLayout="row"
+              fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+              <mat-card class="areaWidth min-width-30-per warning_history" fxLayout="column" fxLayoutAlign="left"
+                *ngFor="let warning of obs | async">
                 <div>
-                  <span class="name_bold">Oil pressure too low</span>
+                  <span style="font-weight: bold;">Oil pressure too low</span>
                 </div>
                 <div fxLayout="row">
                   <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
-                    <span class="name_small">Activated Time</span>
-                    <span style="font-size: 14px;">04/01/2021 02:33:21</span>
+                    <span style="font-size: small;">Activated Time</span>
+                    <span>04/01/2021 02:33:21</span>
                   </div>
                   <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
-                    <span class="name_small">Deactivated Time</span>
-                    <span style="font-size: 14px;">04/01/2021 02:55:21</span>
+                    <span style="font-size: small;">Deactivated Time</span>
+                    <span>04/01/2021 02:55:21</span>
                   </div>
                 </div>
-                <div fxLayout="row" class="name_small">
+                <div fxLayout="row">
                   <span>Driver Name: </span>
-                  <span class="name_bold">Jhon Doe</span>
+                  <span style="font-weight:bold">{{warning.driverName}}</span>
                 </div>
-                <div class="bottom_hr"></div>
-              </div>
+                <div style="glyph-orientation-horizontal: 0deg;"></div>
+              </mat-card>
+              
             </div>
+            <mat-paginator [pageSize]="3" [pageSizeOptions]="[3, 9, 15, 30]"></mat-paginator>
           </div>
         </mat-expansion-panel>
       </mat-card>
-    </div>
-  </div>
+      </div>
+  </div> 
