@@ -84,14 +84,14 @@ public class EcoScoreDao implements Serializable {
 
 
 		if (rec.getVSumTripDPABrakingScore() != null)
-			statement.setDouble(7, rec.getVSumTripDPABrakingScore());
+			statement.setLong(7, rec.getVSumTripDPABrakingScore());
 		else
-			statement.setDouble(7, 0);
+			statement.setLong(7, 0);
 
 		if (rec.getVTripDPABrakingCount() != null)
-			statement.setDouble(8, rec.getVTripDPABrakingCount());
+			statement.setLong(8, rec.getVTripDPABrakingCount());
 		else
-			statement.setDouble(8, 0);
+			statement.setLong(8, 0);
 
 		if (rec.getVSumTripDPAAnticipationScore() != null)
 			statement.setLong(9, rec.getVSumTripDPAAnticipationScore());
@@ -114,9 +114,9 @@ public class EcoScoreDao implements Serializable {
 			statement.setLong(12, 0);
 
 		if (rec.getVPTODuration() != null)
-			statement.setDouble(13, rec.getVPTODuration());
+			statement.setLong(13, rec.getVPTODuration());
 		else
-			statement.setDouble(13, 0);
+			statement.setLong(13, 0);
 		
 		if (rec.getVIdleDuration() != null)
 			statement.setLong(14, rec.getVIdleDuration());
@@ -124,9 +124,9 @@ public class EcoScoreDao implements Serializable {
 			statement.setLong(14, 0);
 		
 		if (rec.getVMaxThrottlePaddleDuration() != null)
-			statement.setDouble(15, rec.getVMaxThrottlePaddleDuration());
+			statement.setLong(15, rec.getVMaxThrottlePaddleDuration());
 		else
-			statement.setDouble(15, 0);
+			statement.setLong(15, 0);
 
 		if (rec.getVCruiseControlDist() != null)
 			statement.setLong(16, rec.getVCruiseControlDist());
@@ -134,19 +134,19 @@ public class EcoScoreDao implements Serializable {
 			statement.setLong(16, 0);
 
 		if (rec.getTripCalCrsCntrlDist25To50() != null)
-			statement.setDouble(17, rec.getTripCalCrsCntrlDist25To50());
+			statement.setLong(17, rec.getTripCalCrsCntrlDist25To50());
 		else
-			statement.setDouble(17, 0);
+			statement.setLong(17, 0);
 
 		if (rec.getTripCalCrsCntrlDist50To75() != null)
-			statement.setDouble(18, rec.getTripCalCrsCntrlDist50To75());
+			statement.setLong(18, rec.getTripCalCrsCntrlDist50To75());
 		else
-			statement.setDouble(18, 0);
+			statement.setLong(18, 0);
 		
 		if (rec.getTripCalCrsCntrlDistAbv75() != null)
-			statement.setDouble(19, rec.getTripCalCrsCntrlDistAbv75());
+			statement.setLong(19, rec.getTripCalCrsCntrlDistAbv75());
 		else
-			statement.setDouble(19, 0);
+			statement.setLong(19, 0);
 		
 		if (rec.getTachoVGrossWtCmbSum() != null)
 			statement.setDouble(20, rec.getTachoVGrossWtCmbSum());
@@ -154,9 +154,9 @@ public class EcoScoreDao implements Serializable {
 			statement.setDouble(20, 0);
 		
 		if (rec.getVHarshBrakeDuration() != null)
-			statement.setInt(21, rec.getVHarshBrakeDuration());
+			statement.setLong(21, rec.getVHarshBrakeDuration());
 		else
-			statement.setDouble(21, 0);
+			statement.setLong(21, 0);
 
 		if (rec.getVBrakeDuration() != null)
 			statement.setLong(22, rec.getVBrakeDuration());
@@ -212,14 +212,14 @@ public class EcoScoreDao implements Serializable {
 			statement.setLong(33, 0);
 
 		if (rec.getVSumTripDPABrakingScore() != null)
-			statement.setDouble(34, rec.getVSumTripDPABrakingScore());
+			statement.setLong(34, rec.getVSumTripDPABrakingScore());
 		else
-			statement.setDouble(34, 0);
+			statement.setLong(34, 0);
 
 		if (rec.getVTripDPABrakingCount() != null)
-			statement.setDouble(35, rec.getVTripDPABrakingCount());
+			statement.setLong(35, rec.getVTripDPABrakingCount());
 		else
-			statement.setDouble(35, 0);
+			statement.setLong(35, 0);
 
 		if (rec.getVSumTripDPAAnticipationScore() != null)
 			statement.setLong(36, rec.getVSumTripDPAAnticipationScore());
@@ -242,9 +242,9 @@ public class EcoScoreDao implements Serializable {
 			statement.setLong(39, 0);
 
 		if (rec.getVPTODuration() != null)
-			statement.setDouble(40, rec.getVPTODuration());
+			statement.setLong(40, rec.getVPTODuration());
 		else
-			statement.setDouble(40, 0);
+			statement.setLong(40, 0);
 		
 		if (rec.getVIdleDuration() != null)
 			statement.setLong(41, rec.getVIdleDuration());
@@ -252,29 +252,29 @@ public class EcoScoreDao implements Serializable {
 			statement.setLong(41, 0);
 		
 		if (rec.getVMaxThrottlePaddleDuration() != null)
-			statement.setDouble(42, rec.getVMaxThrottlePaddleDuration());
+			statement.setLong(42, rec.getVMaxThrottlePaddleDuration());
 		else
-			statement.setDouble(42, 0);
+			statement.setLong(42, 0);
 
 		if (rec.getVCruiseControlDist() != null)
-			statement.setDouble(43, rec.getVCruiseControlDist());
+			statement.setLong(43, rec.getVCruiseControlDist());
 		else
-			statement.setDouble(43, 0);
+			statement.setLong(43, 0);
 
 		if (rec.getTripCalCrsCntrlDist25To50() != null)
-			statement.setDouble(44, rec.getTripCalCrsCntrlDist25To50());
+			statement.setLong(44, rec.getTripCalCrsCntrlDist25To50());
 		else
-			statement.setDouble(44, 0);
+			statement.setLong(44, 0);
 
 		if (rec.getTripCalCrsCntrlDist50To75() != null)
-			statement.setDouble(45, rec.getTripCalCrsCntrlDist50To75());
+			statement.setLong(45, rec.getTripCalCrsCntrlDist50To75());
 		else
-			statement.setDouble(45, 0);
+			statement.setLong(45, 0);
 		
 		if (rec.getTripCalCrsCntrlDistAbv75() != null)
-			statement.setDouble(46, rec.getTripCalCrsCntrlDistAbv75());
+			statement.setLong(46, rec.getTripCalCrsCntrlDistAbv75());
 		else
-			statement.setDouble(46, 0);
+			statement.setLong(46, 0);
 		
 		if (rec.getTachoVGrossWtCmbSum() != null)
 			statement.setDouble(47, rec.getTachoVGrossWtCmbSum());
@@ -282,9 +282,9 @@ public class EcoScoreDao implements Serializable {
 			statement.setDouble(47, 0);
 		
 		if (rec.getVHarshBrakeDuration() != null)
-			statement.setInt(48, rec.getVHarshBrakeDuration());
+			statement.setLong(48, rec.getVHarshBrakeDuration());
 		else
-			statement.setInt(48, 0);
+			statement.setLong(48, 0);
 
 		if (rec.getVBrakeDuration() != null)
 			statement.setLong(49, rec.getVBrakeDuration());

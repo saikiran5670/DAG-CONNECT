@@ -1076,6 +1076,8 @@ namespace net.atos.daf.ct2.reports.repository
         {
             try
             {
+                var day = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
+
                 var parameters = new DynamicParameters();
                 parameters.Add("@FromDate", request.StartDateTime);
                 parameters.Add("@ToDate", request.EndDateTime);
@@ -1084,6 +1086,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinTripDistance);
                 parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
                 parameters.Add("@OrgId", request.OrgId);
+                parameters.Add("@Day", day.ToString("dd-MMM-yyyy"));
 
                 string query = @"WITH 
                                 ecoscorequery as (
@@ -1311,6 +1314,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(brdur.brakeduration AS DOUBLE PRECISION) as BrakeDuration
                                 ,CAST(brk.braking AS DOUBLE PRECISION) as Braking
                                 ,CAST(anc.anticipationscore  AS DOUBLE PRECISION) as AnticipationScore
+                                , @Day As Day
                                 
                                 from generalblk eco
                                 Left join AverageGrossweight avrg on avrg.driver1_id = eco.driver1_id
@@ -1359,6 +1363,7 @@ namespace net.atos.daf.ct2.reports.repository
         {
             try
             {
+                var day = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
                 var parameters = new DynamicParameters();
                 parameters.Add("@FromDate", request.StartDateTime);
                 parameters.Add("@ToDate", request.EndDateTime);
@@ -1367,6 +1372,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinTripDistance);
                 parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
                 parameters.Add("@OrgId", request.OrgId);
+                parameters.Add("@Day", day.ToString("dd-MMM-yyyy"));
 
                 string query = @"WITH 
                                 ecoscorequery as (
@@ -1594,6 +1600,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(brdur.brakeduration AS DOUBLE PRECISION) as BrakeDuration
                                 ,CAST(brk.braking AS DOUBLE PRECISION) as Braking
                                 ,CAST(anc.anticipationscore  AS DOUBLE PRECISION) as AnticipationScore
+                                , @Day As Day
                                 
                                 from generalblk eco
                                 Left join AverageGrossweight avrg on avrg.organization_id = eco.organization_id
@@ -1642,6 +1649,7 @@ namespace net.atos.daf.ct2.reports.repository
         {
             try
             {
+                var day = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
                 var parameters = new DynamicParameters();
                 parameters.Add("@FromDate", request.StartDateTime);
                 parameters.Add("@ToDate", request.EndDateTime);
@@ -1650,6 +1658,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinTripDistance);
                 parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
                 parameters.Add("@OrgId", request.OrgId);
+                parameters.Add("@Day", day.ToString("dd-MMM-yyyy"));
 
                 string query = @"WITH 
                                 ecoscorequery as (
@@ -1881,6 +1890,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(brdur.brakeduration AS DOUBLE PRECISION) as BrakeDuration
                                 ,CAST(brk.braking AS DOUBLE PRECISION) as Braking
                                 ,CAST(anc.anticipationscore  AS DOUBLE PRECISION) as AnticipationScore
+                                ,@Day as Day
                                 
                                 from generalblk eco
                                 Left join AverageGrossweight avrg on avrg.vin = eco.vin
@@ -1930,6 +1940,7 @@ namespace net.atos.daf.ct2.reports.repository
         {
             try
             {
+                var day = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
                 var parameters = new DynamicParameters();
                 parameters.Add("@FromDate", request.StartDateTime);
                 parameters.Add("@ToDate", request.EndDateTime);
@@ -1938,6 +1949,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinTripDistance);
                 parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
                 parameters.Add("@OrgId", request.OrgId);
+                parameters.Add("@Day", day.ToString("dd-MMM-yyyy"));
 
                 string query = @"WITH 
                                 ecoscorequery as (
@@ -2168,6 +2180,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(brdur.brakeduration AS DOUBLE PRECISION) as BrakeDuration
                                 ,CAST(brk.braking AS DOUBLE PRECISION) as Braking
                                 ,CAST(anc.anticipationscore  AS DOUBLE PRECISION) as AnticipationScore
+                                ,@Day As Day
                                 
                                  from generalblk eco
                                 Left join AverageGrossweight avrg on avrg.vin = eco.vin
@@ -2421,6 +2434,134 @@ namespace net.atos.daf.ct2.reports.repository
 
                 List<EcoScoreSingleDriverBarPieChart> lstADSChart = (List<EcoScoreSingleDriverBarPieChart>)await _dataMartdataAccess.QueryAsync<EcoScoreSingleDriverBarPieChart>(query, parameters);
                 return lstADSChart?.Count > 0 ? lstADSChart : new List<EcoScoreSingleDriverBarPieChart>();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallCompanyForTrendline(EcoScoreReportSingleDriverRequest request)
+        {
+            try
+            {
+                var day = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
+                var parameters = new DynamicParameters();
+                parameters.Add("@FromDate", request.StartDateTime);
+                parameters.Add("@ToDate", request.EndDateTime);
+                parameters.Add("@Vins", request.VINs.ToArray());
+                parameters.Add("@DriverId", request.DriverId);
+                parameters.Add("@MinTripDistance", request.MinTripDistance);
+                parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
+                parameters.Add("@OrgId", request.OrgId);
+                parameters.Add("@Day", day.ToString("dd-MMM-yyyy"));
+
+                string query = @"WITH 
+                                ecoscorequery as (
+                                    SELECT dr.organization_id, dr.first_name, dr.last_name, eco.driver1_id, eco.trip_distance,eco.trip_id,
+                                    eco.dpa_Braking_score, eco.dpa_Braking_count, eco.dpa_anticipation_score, eco.dpa_anticipation_count, 
+                                    eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_total,
+                                    eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
+									eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
+                                    FROM tripdetail.ecoscoredata eco
+                                    JOIN master.driver dr 
+                                    ON dr.driver_id = eco.driver1_id
+                                    WHERE eco.start_time >= @FromDate --1204336888377
+                                    AND eco.end_time <= @ToDate --1820818919744
+                                    AND eco.vin = ANY(@Vins) --ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
+                                    AND (eco.trip_distance >= @MinTripDistance OR eco.trip_distance IS NULL)
+                                    AND dr.organization_id=@OrgId
+                                ),
+                                 Distance as 
+                                (
+                                    select eco.organization_id,  (CAST(SUM (eco.trip_distance)as DOUBLE PRECISION)) as Distance
+                                    FROM ecoscorequery eco
+                                     GROUP BY eco.organization_id 
+                                ),
+								EcoScore as
+                                (
+                                    SELECT   eco.organization_id ,
+                                    CASE WHEN CAST(SUM(dpa_Braking_count) AS DOUBLE PRECISION)<> 0 and CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION) <> 0  THEN  
+                                    (((CAST(SUM(dpa_Braking_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_Braking_count)AS DOUBLE PRECISION)) +
+                                      (CAST(SUM(dpa_anticipation_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION)))/2)/10 
+                                    else null END as ecoscore
+                                    FROM ecoscorequery eco
+                                    GROUP BY eco.organization_id 
+                                )
+                               
+                                select  
+                                'Overall_Company' as HeaderType, CAST(eco.ecoscore AS DOUBLE PRECISION) AS  EcoScore , @Day as Day 
+                                from EcoScore eco
+                                Left join Distance dis on dis.organization_id = eco.organization_id
+                                where 1 = 1 AND(dis.distance >= @MinDriverTotalDistance OR @MinDriverTotalDistance IS NULL)";
+
+                var temp = await _dataMartdataAccess.QueryAsync<EcoScoreReportSingleDriver>(query, parameters);
+                return temp;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportVinCompanyForTrendline(EcoScoreReportSingleDriverRequest request)
+        {
+            try
+            {
+                var day = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
+                var parameters = new DynamicParameters();
+                parameters.Add("@FromDate", request.StartDateTime);
+                parameters.Add("@ToDate", request.EndDateTime);
+                parameters.Add("@Vins", request.VINs.ToArray());
+                parameters.Add("@DriverId", request.DriverId);
+                parameters.Add("@MinTripDistance", request.MinTripDistance);
+                parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
+                parameters.Add("@OrgId", request.OrgId);
+                parameters.Add("@Day", day.ToString("dd-MMM-yyyy"));
+
+                string query = @"WITH 
+                                ecoscorequery as (
+                                  SELECT dr.organization_id, dr.first_name, dr.last_name, eco.driver1_id, eco.trip_distance,eco.trip_id,
+                                    eco.dpa_Braking_score, eco.dpa_Braking_count, eco.dpa_anticipation_score, eco.dpa_anticipation_count, 
+                                    eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_total,
+                                    eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
+									eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
+									,ve.registration_no,ve.name
+                                    FROM tripdetail.ecoscoredata eco
+									JOIN master.vehicle ve 
+									ON eco.vin = ve.vin
+                                    JOIN master.driver dr 
+                                    ON dr.driver_id = eco.driver1_id
+                                  WHERE eco.start_time >= @FromDate --1204336888377
+                                    AND eco.end_time <= @ToDate --1820818919744
+                                    AND eco.vin = ANY(@Vins) --ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
+                                    AND (eco.trip_distance >= @MinTripDistance OR eco.trip_distance IS NULL)
+                                    AND dr.organization_id=@OrgId
+                                ),
+                                Distance as 
+                                (
+                                    select eco.organization_id, eco.vin,  (CAST(SUM (eco.trip_distance)as DOUBLE PRECISION)) as Distance
+                                    FROM ecoscorequery eco
+                                     GROUP BY eco.organization_id ,eco.vin
+                                ),
+								EcoScore as
+                                (
+                                    SELECT eco.organization_id ,eco.vin, 
+                                    CASE WHEN CAST(SUM(dpa_Braking_count) AS DOUBLE PRECISION)<> 0 and CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION) <> 0  THEN  
+                                    (((CAST(SUM(dpa_Braking_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_Braking_count)AS DOUBLE PRECISION)) +
+                                      (CAST(SUM(dpa_anticipation_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION)))/2)/10 
+                                    else null END as ecoscore
+                                    FROM ecoscorequery eco
+                                    GROUP BY eco.organization_id ,eco.vin
+                                )
+                                select 'VIN_Company' as HeaderType, 
+                                eco.vin,
+                                CAST(eco.ecoscore AS DOUBLE PRECISION) as EcoScore,@Day As Day
+                                from EcoScore eco
+                                Left join Distance dis on dis.vin = eco.vin
+                                where 1 = 1 AND(dis.distance >= @MinDriverTotalDistance OR @MinDriverTotalDistance IS NULL)";
+
+                var temp = await _dataMartdataAccess.QueryAsync<EcoScoreReportSingleDriver>(query, parameters);
+                return temp;
             }
             catch (Exception)
             {

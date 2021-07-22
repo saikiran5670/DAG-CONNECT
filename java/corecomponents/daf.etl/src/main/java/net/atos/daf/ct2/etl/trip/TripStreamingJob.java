@@ -273,7 +273,7 @@ public class TripStreamingJob {
 						stsMsg.getDocument().getVTripIdleWithoutPTODuration());
 				
 				if(stsMsg.getDocument().getVCruiseControlDistanceDistr() != null){
-					Integer[] distrArrayInt = stsMsg.getDocument().getVCruiseControlDistanceDistr().getDistrArrayInt();
+					Long[] distrArrayInt = stsMsg.getDocument().getVCruiseControlDistanceDistr().getDistrArrayInt();
 					if(distrArrayInt != null){
 						int cruiseDistrSz = distrArrayInt.length;
 						
@@ -284,7 +284,7 @@ public class TripStreamingJob {
 							tripStsData.setTripCalCrsCntrlDist50To75(distrArrayInt[2]);
 						
 						if(cruiseDistrSz >3){
-							int totalCruiseAbv75 =0;
+							Long totalCruiseAbv75 =0L;
 							for(int i =3; i < cruiseDistrSz ; i++ )
 								totalCruiseAbv75 = totalCruiseAbv75 + distrArrayInt[i];
 							

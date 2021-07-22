@@ -66,7 +66,7 @@ public class TripStreamingUnitTesting {
 		tripData.setVTripMotionDuration(73L);
 		tripData.setReceivedTimestamp(1596775611957L);
 		tripData.setVPTODuration(2L);
-		tripData.setVHarshBrakeDuration(1);
+		tripData.setVHarshBrakeDuration(1L);
 		tripData.setVBrakeDuration(10L);
 		tripData.setVMaxThrottlePaddleDuration(3L);
 		tripData.setVTripAccelerationTime(51L);
