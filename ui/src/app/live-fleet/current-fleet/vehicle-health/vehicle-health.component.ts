@@ -24,6 +24,7 @@ import { CalendarOptions } from '@fullcalendar/angular';
 import { OrganizationService } from 'src/app/services/organization.service';
 // import { CalendarOptions } from '@fullcalendar/angular';
 import { DataInterchangeService } from 'src/app/services/data-interchange.service';
+import { ReportService } from 'src/app/services/report.service';
 
 declare var H: any;
 
@@ -38,6 +39,7 @@ export class VehicleHealthComponent implements OnInit {
   reportPrefData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Input() healthData: any;
+  @Input() historyHealthData: any;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   vehicleHealthForm: FormGroup;
@@ -92,7 +94,7 @@ export class VehicleHealthComponent implements OnInit {
  
 
 
-  constructor(private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService) { 
+  constructor(private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService) { 
     
       
       this.defaultTranslation();
@@ -107,6 +109,7 @@ export class VehicleHealthComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log(this.healthData);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -576,8 +579,19 @@ export class VehicleHealthComponent implements OnInit {
   onTabChanged(event: any){
     if(event == 0){
       this.isCurrent = true;
-    } else
-    this.isCurrent = false;
+      // tripId = this.healthData.tripId;
+    } else {
+      this.isCurrent = false;
+      // tripId = '';
+    }
+    this.getHistoryData();
+  }
+
+  getHistoryData(){
+    this.reportService.getvehiclehealthstatus(this.healthData.vin,this.localStLanguage.code).subscribe((res) => {
+      console.log('history',res);
+      this.historyHealthData = res;
+    });
   }
 
 }
