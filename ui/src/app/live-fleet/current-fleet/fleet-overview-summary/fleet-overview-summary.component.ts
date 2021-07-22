@@ -1,6 +1,9 @@
 import { Component, OnInit,Input } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label, MultiDataSet, SingleDataSet, SingleOrMultiDataSet } from 'ng2-charts'
+import { Subscription } from 'rxjs';
+import { MessageService } from 'src/app/services/message.service';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-fleet-overview-summary',
@@ -9,31 +12,41 @@ import { Color, Label, MultiDataSet, SingleDataSet, SingleOrMultiDataSet } from 
 })
 export class FleetOverviewSummaryComponent implements OnInit {
   @Input() translationData: any=[];
-  criticalAlert: string;
-  mileageDone: string;
-  drivers: string;
+  criticalAlert: number = 0;
+  mileageDone: number = 0;
+  drivers: number = 0;
   driveTime: any;
-  noAction: string;
-  serviceNow: string;
-  stopNow: string;
+  noAction: number = 0;
+  serviceNow: number = 0;
+  stopNow: number = 0;
   barChartLabels: Label[] = ['Moved Vehicle', 'Total Vehicle'];
   barChartType: ChartType = 'bar';
   barChartLegend = true;
   barChartPlugins = [];
   lineChartType = 'horizontalBar';
   doughnutChartType: ChartType = 'doughnut';
+  messages: any[] = [];
+  subscription: Subscription;
+  isToday: boolean = false;
+  summaryData: any=[];
+  movedVehicle: number = 0;
+  totalVehicle: number = 0;
+  // @ViewChild(BaseChartDirective) chart: BaseChartDirective;
 
-  constructor() { 
-    this.criticalAlert = '15';
-    this.mileageDone = '2205';
-    this.drivers = '350';
-    this.driveTime = '30 hh 30 mm';
-    this.noAction = '08';
-    this.serviceNow = '02';
-    this.stopNow = '03';
+  constructor(private messageService: MessageService) {
+    this.subscription = this.messageService.getMessage().subscribe(message => {
+      if (message.key.indexOf("refreshData") < 0 && message.key.indexOf("refreshTimer") < 0) {
+        this.summaryData = message.key;
+        this.refreshData();
+        if(message.key.indexOf("true") !== -1)
+          this.isToday = true;
+        else
+          this.isToday = false;
+      }
+    });
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void { 
   }
 
   barChartOptions: ChartOptions = {
@@ -67,7 +80,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   };
 
   barChartData: ChartDataSets[] = [
-    { data: [10, 25], label: '', barThickness: 16, barPercentage: 0.5 }
+    { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
   ];
 
   // events
@@ -137,5 +150,50 @@ export class FleetOverviewSummaryComponent implements OnInit {
      }
    }
  };
+
+ refreshData(){
+  let totalDriveTime=0;
+  this.movedVehicle=0;
+  this.noAction=0;
+  this.serviceNow=0;
+  this.stopNow=0;
+  this.totalVehicle=0;
+  this.criticalAlert=0;
+  this.mileageDone=0;
+  //this.mileageDone = this.summaryData.reduce((val, elem) => val + elem.tripDistance, 0);
+  if(this.summaryData){
+    let drivers = this.summaryData.filter((elem) => elem.driver1Id);
+    let uniqueDrivers = [...new Set(drivers)];
+    this.drivers = uniqueDrivers.length;
+    let vins = this.summaryData.filter((elem) => elem.vin);
+    let uniqueVin = [...new Set(vins)];
+    this.totalVehicle = uniqueVin.length;
+    this.summaryData.forEach(element => {
+      totalDriveTime += element.drivingTime;
+      if(element.tripDistance){
+        this.mileageDone += element.tripDistance;
+      }
+      if(element.vehicleDrivingStatusType && element.vehicleDrivingStatusType === 'D'){
+        this.movedVehicle += 1;
+      }
+      if(element.vehicleHealthStatusType){
+        if(element.vehicleHealthStatusType === 'N'){
+          this.noAction += 1;
+        } else if(element.vehicleHealthStatusType === 'V'){
+            this.serviceNow += 1;
+        } else if(element.vehicleHealthStatusType === 'T'){
+            this.stopNow += 1;
+        }
+        if(element.latestWarningType && element.latestWarningType === 'C')
+          this.criticalAlert += 1;
+      }
+    });
+  }
+  this.driveTime = Util.getHhMmTime(totalDriveTime);
+  this.barChartData = [
+    { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
+  ];
+  // this.chart.chart.update();
+ }
 
 }

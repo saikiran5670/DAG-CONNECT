@@ -178,6 +178,9 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
   
     this.reportService.updateReportUserPreference(benchmarkObject).subscribe((data: any) => {
       this.setFuelBenchmarkReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     });
 
   }
