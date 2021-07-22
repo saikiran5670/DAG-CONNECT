@@ -15,9 +15,9 @@ public class SparseMatrix  implements Serializable {
   @JsonProperty(value = "ord")
   private Long ord;
   @JsonProperty(value = "A")
-  private Integer[] a;
+  private Long[] a;
   @JsonProperty(value = "IA")
-  private Integer[] ia;
+  private Long[] ia;
   @JsonProperty(value = "JA")
-  private Integer[] ja;
+  private Long[] ja;
 }

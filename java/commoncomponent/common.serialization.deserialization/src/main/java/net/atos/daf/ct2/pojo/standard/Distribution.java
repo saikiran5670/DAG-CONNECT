@@ -21,5 +21,8 @@ public class Distribution implements Serializable {
   @JsonProperty(value = "DistrStep")
   private Long distrStep;
   @JsonProperty(value = "DistrArrayInt")
-  private Integer[] distrArrayInt;
+  private Long[] distrArrayInt;
+  @JsonProperty(value = "DistrArrayTime")
+  private Long[] distrArrayTime;
+  
 }
