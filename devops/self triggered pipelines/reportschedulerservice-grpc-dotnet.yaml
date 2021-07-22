@@ -3,7 +3,9 @@ trigger:
     include:
     - development
     - release
-    - testing
+#    - testing
+#    - master
+
   paths:
     include:
     - dotnet/businessservices/net.atos.daf.ct2.reportschedularservice
@@ -108,6 +110,20 @@ stages:
           log4netConfigPath: $(log4netConfigFile)
     condition: eq(variables['Build.SourceBranchName'],  'release')
 
+  - stage: stage_acc2
+    jobs:
+    - template: dotnet-pipeline-template.yaml  # Template reference
+      parameters:
+        subscription: 'DAF CT AZURE DTA LANDING ZONE ACC2'
+        containerRegistry: '{"loginServer":"acraksebegqte3xzjlk.azurecr.io", "id" : "/subscriptions/fafe4e21-9d47-4ed4-ac72-342230b91172/resourceGroups/daf-lan6-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acraksebegqte3xzjlk"}'
+        variableGroup: 'ACC02-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFile)
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'],  'release')
+
   - stage: stage_acc3
     jobs:
     - template: dotnet-pipeline-template.yaml  # Template reference
@@ -121,3 +137,17 @@ stages:
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
     condition: eq(variables['Build.SourceBranchName'],  'release')
+
+  - stage: stage_prd1
+    jobs:
+    - template: dotnet-pipeline-template.yaml  # Template reference
+      parameters:
+        subscription: 'DAF CT AZURE PRD LANDING ZONE PRD1'
+        containerRegistry: '{"loginServer":"acraksnvtzx55zo3cna.azurecr.io", "id" : "/subscriptions/b7fb87d9-b4c7-42b0-a172-ad71ed2792ed/resourceGroups/daf-prd1-p-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acraksnvtzx55zo3cna"}'
+        variableGroup: 'PRD01-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFile)
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'],  'master')
