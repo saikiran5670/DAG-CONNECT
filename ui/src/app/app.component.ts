@@ -266,7 +266,7 @@ export class AppComponent {
       // this.getNavigationMenu();
     });
     //ToDo: below part to be removed after preferences/dashboard part is developed
-    localStorage.setItem("liveFleetTimer", "10");
+    localStorage.setItem("liveFleetTimer", "120");
     localStorage.setItem("liveFleetMileageThreshold", "1000");
     localStorage.setItem("liveFleetUtilizationThreshold", "5");
 
