@@ -101,7 +101,7 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
   }
 
   setDefaultFormValues() {
-    this.fleetOverviewForm.get('refreshTime').setValue((this.timerPrefData[0].thresholdValue != '') ? (this.timerPrefData[0].thresholdValue > 0 ? this.timerPrefData[0].thresholdValue : 1): 1);
+    this.fleetOverviewForm.get('refreshTime').setValue((this.timerPrefData[0].thresholdValue != '') ? (this.timerPrefData[0].thresholdValue > 0 ? this.timerPrefData[0].thresholdValue : 2): 2);
   }
 
   getName(name: any, _count: any) {
