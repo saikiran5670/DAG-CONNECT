@@ -762,8 +762,9 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
           break;
       }
       let activatedTime = Util.convertUtcToDateFormat(elem.warningTimetamp,'DD/MM/YYYY hh:mm:ss');
-      let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
-      let _vehicleName = elem.vid ? elem.vid : elem.vin;
+      let deactivatedTime = Util.convertUtcToDateFormat(elem.warningDeactivatedTimestamp,'DD/MM/YYYY hh:mm:ss');
+      // let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
+      // let _vehicleName = elem.vid ? elem.vid : elem.vin;
       let iconBubble;
       vehicleIconMarker.addEventListener('pointerenter', function (evt) {
         // event target is the marker itself, group is a parent event target
@@ -778,7 +779,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
               <td style='width: 100px;'>Activated Time: </td> <td><b>${activatedTime}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>Deactivated Time: </td> <td><b>${activatedTime}</b></td>
+              <td style='width: 100px;'>Deactivated Time: </td> <td><b>${deactivatedTime}</b></td>
             </tr>
             <tr>
               <td style='width: 100px;'>Vehicle Name: </td> <td><b>${elem.vehicleName} km</b></td>
