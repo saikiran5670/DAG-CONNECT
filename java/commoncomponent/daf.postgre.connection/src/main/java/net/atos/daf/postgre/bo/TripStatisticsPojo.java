@@ -40,7 +40,7 @@ public class TripStatisticsPojo implements Serializable{
 	private  Long created_at_kafka ;
 	private  Long created_at_dm  ;
 	private  Long modified_at  ;
-	private  Integer fuel_consumption ;
+	private  Long fuel_consumption ;
 	//fuel consumption datatype doubt 
 	
 }
