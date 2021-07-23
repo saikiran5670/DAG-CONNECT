@@ -84,8 +84,8 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
   translationData: any = [];
-  isSummaryOpen: boolean = false;
-  isWarningOpen: boolean = false;
+  isSummaryOpen: boolean = true;
+  isWarningOpen: boolean = true;
   isMapOpen: boolean = false;
   isCurrent: boolean = true;
   selectedIndex: number = 0;
@@ -115,7 +115,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    console.log(this.healthData);
+    // console.log(this.healthData);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -614,8 +614,8 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
 
   markerArray: any = [];
   checkboxClicked(event:any,data:any) {
-    console.log("event",event);
-    console.log("data",data);
+    // console.log("event",event);
+    // console.log("data",data);
     if(event.checked) {
       this.markerArray.push(data);
     } else {
