@@ -711,8 +711,9 @@ namespace net.atos.daf.ct2.group
                             where  1=1
                             and ors.state='A'
                             and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-                            else COALESCE(end_date,0) =0 end
-							and (orm.created_org_id=@organization_id or orm.owner_org_id=@organization_id or orm.target_org_id=@organization_id)";
+                            else COALESCE(end_date,0) =0 end AND ((orm.owner_org_id=@organization_id AND ors.code='Owner')
+                            OR(orm.target_org_id=@organization_id AND ors.code<>'Owner'))";
+                //and(orm.created_org_id = @organization_id or orm.owner_org_id = @organization_id or orm.target_org_id = @organization_id)
                 parameter.Add("@organization_id", orgId);
                 var count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
@@ -736,8 +737,9 @@ namespace net.atos.daf.ct2.group
                                 on ors.id=orm.relationship_id
                                  where ors.state='A'
                                 and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-                                else COALESCE(end_date,0) =0 end
-							    and (orm.created_org_id=@organization_id or veh.organization_id=@organization_id)";
+                                else COALESCE(end_date,0) =0 end AND
+                             (veh.organization_id=@organization_id and orm.owner_org_id=@organization_id and ors.code='Owner')";
+                //and (orm.created_org_id=@organization_id or veh.organization_id=@organization_id)";
                 parameter.Add("@organization_id", orgId);
                 var count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
@@ -762,7 +764,7 @@ namespace net.atos.daf.ct2.group
                             where ors.state='A'
                             and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
                             else COALESCE(end_date,0) =0 end
-							and orm.target_org_id=@organization_id";
+                            AND orm.target_org_id=@organization_id and ors.code<>'Owner'";
                 parameter.Add("@organization_id", orgId);
                 var count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
