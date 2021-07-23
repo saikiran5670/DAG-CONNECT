@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.notificationengine.test
             tripAlert.Vin = "BLRAE75PC0E272200";
             tripAlert.CategoryType = "L";
             tripAlert.Type = "D";
-            tripAlert.Alertid = 210;
+            tripAlert.Alertid = 307;
             tripAlert.Latitude = 51.12768173;
             tripAlert.Longitude = 4.935644627;
             tripAlert.AlertGeneratedTime = 1623325980000;
