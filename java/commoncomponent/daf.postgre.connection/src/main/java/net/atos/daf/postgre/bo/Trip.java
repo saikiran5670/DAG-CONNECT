@@ -71,7 +71,7 @@ public class Trip implements Serializable {
 	private Long vSumTripDPABrakingScore;
 	private Long vSumTripDPAAnticipationScore;
 	
-	private Integer vHarshBrakeDuration;
+	private Long vHarshBrakeDuration;
 	private Long vBrakeDuration; 
 	private Long vTripIdlePTODuration;
 	private Long vTripIdleWithoutPTODuration;
