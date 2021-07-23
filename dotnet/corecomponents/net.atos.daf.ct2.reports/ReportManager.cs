@@ -351,6 +351,7 @@ namespace net.atos.daf.ct2.reports
                     loopEndDate = loopStartDate.AddDays((int)AggregateType.DAY);
                     offset = new DateTimeOffset(GetEndOfDay(loopEndDate));
                     request.EndDateTime = offset.ToUnixTimeMilliseconds();
+
                     var objOverallDriver = await _reportRepository.GetEcoScoreReportOverallDriver(request);
                     if (objOverallDriver != null)
                         lstSingleDriver.AddRange(objOverallDriver);

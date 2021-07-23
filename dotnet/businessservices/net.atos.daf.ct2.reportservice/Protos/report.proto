@@ -44,6 +44,7 @@ rpc GetFuelBenchmarkByVehicleGroup (FuelBenchmarkRequest) returns (FuelBenchmark
 rpc GetFuelBenchmarkByTimePeriod (FuelBenchmarkTimePeriodRequest) returns (FuelBenchmarkResponse);
 rpc GetEcoScoreReportSingleDriver (GetEcoScoreReportSingleDriverRequest) returns (GetEcoScoreReportSingleDriverResponse);
 rpc GetAssociatedVehiclGroup (VehicleListRequest) returns (AssociatedVehicleResponse);
+rpc GetEcoScoreReportTrendlines (GetEcoScoreReportSingleDriverRequest) returns (GetEcoScoreReportTrendlinesResponse);
 }
 
 message VehicleHealthReportRequest{
@@ -1249,4 +1250,51 @@ message GetEcoScoreReportSingleDriverRequest {
   EcoScoreSingleDriverBarPieChart AverageGrossWeightChart = 6;
   EcoScoreSingleDriverBarPieChart AverageDrivingSpeedChart = 7;
   }
+
+message EcoScoreTrendlinesKPIScore {
+ string Day = 1;
+ string Value = 2;
+}
+
+message EcoScoreTrendlinesKPI {
+ string Name = 1;
+ string Key = 2;
+ repeated EcoScoreTrendlinesKPIScore Data = 3;
+}
+
+message EcoScoreTrendlinesKPIInfo {
+ EcoScoreTrendlinesKPI EcoScoreCompany = 1;
+ EcoScoreTrendlinesKPI EcoScore = 2;
+ EcoScoreTrendlinesKPI FuelConsumption = 3;
+ EcoScoreTrendlinesKPI CruiseControlUsage = 4;
+ EcoScoreTrendlinesKPI CruiseControlUsage3050 = 5;
+ EcoScoreTrendlinesKPI CruiseControlUsage5075 = 6;
+ EcoScoreTrendlinesKPI CruiseControlUsage75 = 7;
+ EcoScoreTrendlinesKPI PTOUsage = 8;
+ EcoScoreTrendlinesKPI PTODuration = 9;
+ EcoScoreTrendlinesKPI AverageDrivingSpeed = 10;
+ EcoScoreTrendlinesKPI AverageSpeed = 11;
+ EcoScoreTrendlinesKPI HeavyThrottling = 12;
+ EcoScoreTrendlinesKPI HeavyThrottleDuration = 13;
+ EcoScoreTrendlinesKPI Idling = 14;
+ EcoScoreTrendlinesKPI IdleDuration = 15;
+ EcoScoreTrendlinesKPI BrakingScore = 16;
+ EcoScoreTrendlinesKPI HarshBraking = 17;
+ EcoScoreTrendlinesKPI HarshBrakeDuration = 18;
+ EcoScoreTrendlinesKPI BrakeDuration = 19;
+ EcoScoreTrendlinesKPI Braking = 20;
+ EcoScoreTrendlinesKPI AnticipationScore = 21;
+ }
+
+message EcoScoreTrendlines{
+ string VIN = 1;
+ string VehicleName = 2;
+ EcoScoreTrendlinesKPIInfo KPIInfo = 3;
+}
+
+message GetEcoScoreReportTrendlinesResponse {
+ Responsecode Code = 1;
+ string Message = 2;
+ repeated EcoScoreTrendlines Trendlines = 3 ;
+}
 /// END: Eco Score Report Single Driver
