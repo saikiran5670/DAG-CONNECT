@@ -18,7 +18,6 @@ namespace net.atos.daf.ct2.notificationservice.services
     {
         private readonly ILog _logger;
         private readonly KafkaConfiguration _kafkaConfiguration;
-        private readonly KafkaEntity _kafkaVehicleConfiguration;
         private readonly IConfiguration _configuration;
         private readonly ITripAlertManager _tripAlertManager;
         public PushNotificationManagementService(ITripAlertManager tripAlertManager, IConfiguration configuration)
@@ -27,9 +26,6 @@ namespace net.atos.daf.ct2.notificationservice.services
             this._configuration = configuration;
             _kafkaConfiguration = new KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
-
-            _kafkaVehicleConfiguration = new KafkaEntity();
-            configuration.GetSection("KafkaVehicleConfiguration").Bind(_kafkaVehicleConfiguration);
 
             _tripAlertManager = tripAlertManager;
         }

@@ -95,18 +95,18 @@ namespace net.atos.daf.ct2.reports.repository
                 if (logbookFilter.AlertLevel.Count > 0)
                 {
                     parameter.Add("@alert_level", logbookFilter.AlertLevel);
-                    queryLogBookPull += " and ta.alert_level = Any(@alert_level) ";
+                    queryLogBookPull += " and ta.urgency_level_type = Any(@alert_level) ";
                 }
 
                 if (logbookFilter.AlertType.Count > 0)
                 {
-                    parameter.Add("@alert_level", logbookFilter.AlertLevel);
-                    queryLogBookPull += " and ta.alert_level = Any(@alert_level) ";
+                    parameter.Add("@alert_type", logbookFilter.AlertType);
+                    queryLogBookPull += " and ta.type = Any(@alert_type) ";
                 }
                 if (logbookFilter.AlertCategory.Count > 0)
                 {
                     parameter.Add("@alert_category", logbookFilter.AlertCategory);
-                    queryLogBookPull += " and ta.alert_category = Any(@alert_category) ";
+                    queryLogBookPull += " and ta.category_type = Any(@alert_category) ";
                 }
                 var logBookDetailsResult = await _dataMartdataAccess.QueryAsync<LogbookDetails>(queryLogBookPull, parameter);
                 if (logBookDetailsResult.AsList<LogbookDetails>().Count > 0)

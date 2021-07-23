@@ -17,10 +17,12 @@ import { EcoScoreReportPreferencesComponent } from './reports-preferences/eco-sc
 import { FuelBenchmarkPreferencesComponent } from './reports-preferences/fuel-benchmark-preferences/fuel-benchmark-preferences.component';
 import { FleetFuelPreferencesComponent } from './reports-preferences/fleet-fuel-preferences/fleet-fuel-preferences.component';
 import { FuelDeviationPreferencesComponent } from './reports-preferences/fuel-deviation-preferences/fuel-deviation-preferences.component';
+import { FleetOverviewTabPreferencesComponent } from './fleet-overview-preferences/fleet-overview-tab-preferences/fleet-overview-tab-preferences.component';
+import { LogbookTabPreferencesComponent } from './fleet-overview-preferences/logbook-tab-preferences/logbook-tab-preferences.component';
 
 
 @NgModule({
-  declarations: [ AccountInfoSettingsComponent, ChangePasswordComponent, DashboardPreferencesComponent, FleetOverviewPreferencesComponent, ReportsPreferencesComponent, FleetUtilisationPreferenceComponent, TripReportPreferenceComponent, DriverTimePreferencesComponent, EcoScoreReportPreferencesComponent, FuelBenchmarkPreferencesComponent, FleetFuelPreferencesComponent, FuelDeviationPreferencesComponent ],
+  declarations: [ AccountInfoSettingsComponent, ChangePasswordComponent, DashboardPreferencesComponent, FleetOverviewPreferencesComponent, ReportsPreferencesComponent, FleetUtilisationPreferenceComponent, TripReportPreferenceComponent, DriverTimePreferencesComponent, EcoScoreReportPreferencesComponent, FuelBenchmarkPreferencesComponent, FleetFuelPreferencesComponent, FuelDeviationPreferencesComponent, FleetOverviewTabPreferencesComponent, LogbookTabPreferencesComponent ],
   imports: [
     CommonModule,
     SharedModule,
