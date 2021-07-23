@@ -18,6 +18,9 @@ parameters:
   - TEST01
   - TEST02
   - ACC03
+  - ACC02
+  - ACC01
+  - PRD01
 
 pool: $(PRIVATEAGENT)
 
@@ -34,6 +37,12 @@ variables:
   - group: TEST02-Build-Variables
 - ${{ if eq(parameters.ENV, 'ACC03') }}:
   - group: ACC03-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC02') }}:
+  - group: ACC02-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC01') }}:
+  - group: ACC01-Build-Variables
+- ${{ if eq(parameters.ENV, 'PRD01') }}:
+  - group: PRD01-Build-Variables
   
 steps:
 - task: replacetokens@3
