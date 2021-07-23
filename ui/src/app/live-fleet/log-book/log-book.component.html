@@ -28,7 +28,7 @@
 <!-- <div class="bgtrans"> -->
   <div *ngIf='showBack' fxLayout="row" fxLayoutAlign="end">
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
-      <span class='custom-font' (click)="backToVehicleDetail()">
+      <span class='custom-font' (click)="backToFleetUtilReport()">
         <span><&nbsp;</span>
         <span class='backBtnCss'>{{ 'Back'  || 'Back' }}</span></span>
     </div>
@@ -126,7 +126,7 @@
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblAlertLevel || 'Alert Level' }}</mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="alertLvl.length == 0" (selectionChange)="onAlertLevelChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Level' }}" formControlName="alertLevel">
+                <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onAlertLevelChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Level' }}" formControlName="alertLevel">
                   <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                   <mat-option *ngFor="let rer of alertLvl" [value]="rer.value">
                       {{ rer.name}}
@@ -137,10 +137,10 @@
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblAlertType || 'Alert Type' }}</mat-label>
               <mat-form-field appearance="outline">
-                <mat-select [disabled]="alertTyp.length == 0" (selectionChange)="onAlertTypeChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Type' }}" formControlName="alertType">
+                <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onAlertTypeChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Type' }}" formControlName="alertType">
                   <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
-                  <mat-option *ngFor="let rer of alertTyp" [value]="rer.value">
-                      {{ rer.featureName }}
+                  <mat-option *ngFor="let rer of alertTyp" [value]="rer.enum">
+                      {{ rer.value }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -152,10 +152,10 @@
             <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblAlertCategory || 'Alert Category' }} </mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select [disabled]="alertCtgry.length == 0" (selectionChange)="onAlertCategoryChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Category' }}" formControlName="alertCategory">
+                  <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onAlertCategoryChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Category' }}" formControlName="alertCategory">
                     <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
-                    <mat-option *ngFor="let rer of alertCtgry" [value]="rer.value">
-                        {{ rer.name }}
+                    <mat-option *ngFor="let rer of alertCtgry" [value]="rer.enum">
+                        {{ rer.value }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
@@ -270,7 +270,7 @@
     <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblLogBookDetails || 'Logbook Details' }}</span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTripReportDetails || 'Trip Report Details' }}</span>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div *ngIf='initData.length == 0'>
@@ -280,32 +280,25 @@
       <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
         <div style='padding: 20px; margin-bottom: 10px; background: #bee3f8;'>
           <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
-            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblFrom || 'From' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.fromDate }}</span>
               </span>
             </div>
-            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehGroupName }}</span>
               </span>
             </div>
-            <div *ngIf='showField.vin' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <span>{{ translationData.lblAlertLevel || 'Alert Level' }}: </span>
+                <span>{{ translationData.lblVehicleVIN || 'Vehicle VIN' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vin }}</span>
               </span>
             </div>
-            <div *ngIf='showField.vin' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-              <span>
-                <span>{{ translationData.lblAlertCategory || 'Alert Category' }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vin }}</span>
-              </span>
-            </div>
-            
-            <div *ngIf='!showField.vin' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='!showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblTo || 'To' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
@@ -313,21 +306,21 @@
             </div>
           </div>
           <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
-            <div *ngIf='showField.vin' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblTo || 'To' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
               </span>
             </div>
-            <div *ngIf='showField.vehicleName' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='showField.vehicleName' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <span>{{ translationData.lblVehicleName || 'Vehicle' }}: </span>
+                <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
               </span>
             </div>
-            <div *ngIf='showField.regNo' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='showField.regNo' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <span>{{ translationData.lblAlertType || 'Alert Type' }}: </span>
+                <span>{{ translationData.lblRegPlateNumber || 'Reg. Plate Number' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.regNo }}</span>
               </span>
             </div>
@@ -375,17 +368,17 @@
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>               
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                
-                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'C'">
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'Critical'">
                   <i class="material-icons alertLevelIcon" [style]="{ 'color':'#FF0000' } ">warning</i> 
-                  <span class="alertLevelName">{{ translationData.lblCritical || 'Critical'}}</span>
+                  <span class="alertLevelName">{{ translationData.lblCritical || row.alertLevel}}</span>
                 </span> 
-                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'W'">
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'Warning'">
                   <i class="material-icons alertLevelIcon" [style]="{ 'color':'#FFBF00' } ">warning</i> 
-                  <span class="alertLevelName">{{ translationData.lblWarning || 'Warning'}}</span>
+                  <span class="alertLevelName">{{ translationData.lblWarning || row.alertLevel}}</span>
                 </span>
-                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'A'">
-                  <i class="material-icons alertLevelIcon" [style]="{ 'color':'#FFFF00' } ">warning</i>
-                   <span class="alertLevelName">{{ translationData.lblAdvisory || 'Advisory'}}</span>
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'Advisory'">
+                  <i class="material-icons alertLevelIcon" [style]="{ 'color':'#FFFF00' } ">warning</i> 
+                  <span class="alertLevelName">{{ translationData.lblAdvisory || row.alertLevel}}</span>
                 </span>  
               </mat-cell>
               <!-- <mat-cell *matCellDef="let row">{{ row.alertLevel}}</mat-cell> -->
