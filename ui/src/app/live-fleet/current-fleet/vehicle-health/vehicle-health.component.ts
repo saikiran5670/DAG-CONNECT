@@ -721,8 +721,8 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     _selectedRoutes.forEach(elem => {
       let startAddressPositionLat = elem.startPositionLattitude;
       let startAddressPositionLong = elem.startPositionLongitude;
-      let endAddressPositionLat= elem.latestReceivedPositionLattitude;
-      let endAddressPositionLong= elem.latestReceivedPositionLongitude;
+      let endAddressPositionLat= elem.warningLat;
+      let endAddressPositionLong= elem.warningLng;
       let _vehicleMarkerDetails = this.setIconsOnMap(elem,_ui);
       let _vehicleMarker = _vehicleMarkerDetails['icon'];
       let _alertConfig = _vehicleMarkerDetails['alertConfig'];
