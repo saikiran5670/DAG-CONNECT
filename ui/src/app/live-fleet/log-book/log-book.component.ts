@@ -72,6 +72,7 @@ vehicleListData: any = [];
 trackType: any = 'snail';
 displayRouteView: any = 'C';
 vehicleDD: any = [];
+alertTypeName: any = [];
 vehicleGrpDD: any = [];
 alertLvl: any =[];
 alertTyp: any=[];
@@ -193,6 +194,8 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
   this.defaultTranslation();
   const navigation = this.router.getCurrentNavigation();
   this._state = navigation.extras.state as {
+    fromFleetUtilReport: boolean,
+    vehicleData: any
     fromVehicleDetails: boolean,
     data: any
   };
@@ -257,7 +260,7 @@ ngOnDestroy(){
       name: "",
       value: "",
       filter: "",
-      menuId: 6 //-- for Trip Report
+      menuId: 17 //-- for alert
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
@@ -277,6 +280,7 @@ ngOnDestroy(){
         }
       });
     });
+    this.selectionTimeRange('today');
   }
 
   changeHerePOISelection(event: any, hereData: any){
@@ -592,19 +596,7 @@ ngOnDestroy(){
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     let _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
     if(_vinData.length > 0){
-      //this.showLoadingIndicator = true;
-      // this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
-      //   this.hideloader();
-      //   this.tripData = this.reportMapService.getConvertedDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-       // this.setTableInfo();
-      //   this.updateDataSource(this.tripData);
-      // }, (error)=>{
-      //   //console.log(error);
-      //   this.hideloader();
-      //   this.tripData = [];
-      //   this.tableInfoObj = {};
-      //   this.updateDataSource(this.tripData);
-      // });
+      this.showLoadingIndicator = true;     
     }
       let vehicleGroup =this.logBookForm.controls.vehicleGroup.value.toString();
       let vehicleName = this.logBookForm.controls.vehicle.value.toString();
@@ -631,22 +623,33 @@ ngOnDestroy(){
           "start_Time":_startTime,
           "end_time": _endTime     
         }
-      
-        let filterData = this.wholeLogBookData["enumTranslation"];
-        filterData.forEach(item => {
-          let type= this.translationData[item["key"]];
-        });
+    
 
-      
       this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
         logbookData.forEach(element => {
           element.alertGeneratedTime = Util.convertUtcToDate(element.alertGeneratedTime, this.prefTimeZone);
           element.tripStartTime = Util.convertUtcToDate(element.tripStartTime, this.prefTimeZone);
           element.tripEndTime = Util.convertUtcToDate(element.tripEndTime, this.prefTimeZone);
-       });
-        this.setTableInfo();
-        this.updateDataSource(logbookData);
+          // let filterData = this.wholeLogBookData["enumTranslation"];
+          let filterData = this.wholeLogBookData["enumTranslation"];
+      filterData.forEach(element => {
+        element["value"]= this.translationData[element["key"]];
+      });
+
+          let categoryList = filterData.filter(item => item.type == 'C');
+          let alertTypeList= filterData.filter(item => item.type == 'T');
+          // this.alertCriticalityList= filterData.filter(item => item.type == 'U');
+          let newData = alertTypeList.filter((s) => s.enum == element.alertType);
+          let catData = categoryList.filter((s) => s.enum == element.alertCategory);
+          element.alertCategory = catData[0].value;
+          element.alertType = newData[0].value;
+          let alertLevelName = this.alertLvl.filter((s) => s.value == element.alertLevel);
+          element.alertLevel = alertLevelName[0].name;
+         this.initData = logbookData;
+        });
+  this.setTableInfo();
+        this.updateDataSource(this.initData);
       }, (error)=>{
           this.hideloader();
           this.initData = [];
@@ -660,27 +663,87 @@ ngOnDestroy(){
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';
-    //let vin: any = '';
-    //let plateNo: any = '';
+    let aLvl : any = '';
+    let aTpe : any = '';
+    let aCtgry : any = '';
+  
     let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.logBookForm.controls.vehicleGroup.value));
     if(vehGrpCount.length > 0){
-      vehGrpName = vehGrpCount[0].vehicleGroupName;
+    vehGrpName = vehGrpCount[0].vehicleGroupName;
     }
     let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
     if(vehCount.length > 0){
-      vehName = vehCount[0].vehicleName;
-    //  vin = vehCount[0].vin;
-     // plateNo = vehCount[0].registrationNo;
+    vehName = vehCount[0].vehicleName;
+     
+    }
+    console.log("alertLvl",this.alertLvl);
+    let aLCount =this.alertLvl.filter(i => i.value == this.logBookForm.controls.alertLevel.value);
+    console.log("aLCount", aLCount);
+    if(aLCount.length > 0){
+    aLvl = aLCount[0].alertLevel;
+    console.log("aLvl",aLvl);
+    }
+    
+     
+    
+    let aTCount = this.alertTyp.filter(i =>i.value == this.logBookForm.controls.alertType.value);
+    console.log("alertTyp", this.alertTyp);
+    console.log("aTCount", aTCount);
+    if(aTCount.length > 0){
+    aTpe = aTCount[0].alertType;
+    }
+    
+     
+    
+    let aCCount = this.alertCtgry.filter(i =>i.value == this.logBookForm.controls.alertCategory.value);
+    console.log("alertCtgry", this.alertCtgry);
+    console.log("aCCount", aCCount);
+    if(aCCount.length > 0){
+    aCtgry = aCCount[0].alertCategory;
     }
     this.tableInfoObj = {
-      fromDate: this.formStartDate(this.startDateValue),
-      endDate: this.formStartDate(this.endDateValue),
-      vehGroupName: vehGrpName,
-      vehicleName: vehName,
-      //vin: vin,
-      //regNo: plateNo
+    fromDate: this.formStartDate(this.startDateValue),
+    endDate: this.formStartDate(this.endDateValue),
+    vehGroupName: vehGrpName,
+    vehicleName: vehName,
+    
+    alertLevel : this.logBookForm.controls.alertLevel.value,
+    alertType : this.logBookForm.controls.alertType.value,
+    alertCategory : this.logBookForm.controls.alertCategory.value 
     }
-  }
+    if(this.tableInfoObj.vehGroupName=='')
+    {
+      this.tableInfoObj.vehGroupName='All';
+    }
+    if(this.tableInfoObj.vehicleName=='')
+    {
+      this.tableInfoObj.vehicleName='All';
+    }
+
+    let newLevel = this.alertLvl.filter(item => item.value == this.tableInfoObj.alertLevel); 
+    if(newLevel.length > 0){
+     this.tableInfoObj.alertLevel= newLevel[0].name;
+    }
+    else{
+      this.tableInfoObj.alertLevel= 'All';
+    }
+
+    let newType = this.alertTyp.filter(item => item.enum == this.tableInfoObj.alertType); 
+    if(newType.length>0){
+    this.tableInfoObj.alertType= newType[0].value;
+    }
+     else{
+      this.tableInfoObj.alertType= 'All';
+    }
+
+    let newCat = this.alertCtgry.filter(item => item.enum == this.tableInfoObj.alertCategory); 
+    if(newCat.length>0){
+    this.tableInfoObj.alertCategory= newCat[0].value;
+    }
+    else{
+      this.tableInfoObj.alertCategory= 'All';
+    }   
+    }
 
   formStartDate(date: any){
     let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
@@ -738,6 +801,7 @@ ngOnDestroy(){
     this.selectedPOI.clear();
     this.selectedHerePOI.clear();
     this.searchMarker = {};
+    this.selectionTimeRange('today');
   }
 
   resetLogFormControlValue(){
@@ -764,23 +828,7 @@ ngOnDestroy(){
   }
 
   onVehicleGroupChange(event: any){
-    /*if(event.value || event.value == 0){
-    this.internalSelection = true; 
-    if(parseInt(event.value) == 0){ //-- all group
-      this.vehicleDD = this.vehicleListData;
-    }else{
-      let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
-      if(search.length > 0){
-        this.vehicleDD = [];
-        search.forEach(element => {
-          this.vehicleDD.push(element);  
-        });
-      }
-    }
-  }
-    else {
-      this.logBookForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
-    }*/
+   
   }
 
   onVehicleChange(event: any){
@@ -794,9 +842,7 @@ ngOnDestroy(){
   }
 
   updateDataSource(tableData: any) {
-    console.log(tableData);
     this.initData = tableData;
-    console.log("initData", this.initData);
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
@@ -805,128 +851,129 @@ ngOnDestroy(){
   }
 
   exportAsExcelFile(){  
-  const title = 'Logbook';
-  const summary = 'Logbook Details Section';
-  const detail = 'Alert Detail Section';
-  
-  const header = ['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle Name', 'VIN', 'Occurrence', 'Threshold Value'];
-  const summaryHeader = ['Logbook Name', 'Logbook Created', 'Logbook Start Time', 'Logbook End Time', 'Vehicle Group', 'Vehicle Name', 'Alert Level', 'Alert Type', 'Alert Category'];
-  let summaryObj=[
-    ['Logbook Data', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
-    this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName
-    ] 
-  ];
-  const summaryData= summaryObj;
-  
-  //Create workbook and worksheet
-  let workbook = new Workbook();
-  let worksheet = workbook.addWorksheet('Trip Report');
-  //Add Row and formatting
-  let titleRow = worksheet.addRow([title]);
-  worksheet.addRow([]);
-  titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
- 
-  worksheet.addRow([]);  
-  let subTitleRow = worksheet.addRow([summary]);
-  let summaryRow = worksheet.addRow(summaryHeader);  
-  summaryData.forEach(element => {  
-    worksheet.addRow(element);   
-  });      
-  worksheet.addRow([]);
-  summaryRow.eachCell((cell, number) => {
-    cell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFFFFF00' },
-      bgColor: { argb: 'FF0000FF' }      
-    }
-    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-  })  
-  worksheet.addRow([]);   
-  let subTitleDetailRow = worksheet.addRow([detail]);
-  let headerRow = worksheet.addRow(header);
-  headerRow.eachCell((cell, number) => {
-    cell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFFFFF00' },
-      bgColor: { argb: 'FF0000FF' }
-    }
-    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-  })
-  this.initData.forEach(item => {     
-    worksheet.addRow([item.alertLevel, item.alertGeneratedTime, item.vehicleRegNo, item.alertType, item.alertName, 
-      item.alertCategory, item.tripStartTime, item.tripEndTime, item.vehicleName,
-      item.vin, item.occurrence, item.thresholdValue]);   
-  }); 
-  worksheet.mergeCells('A1:D2'); 
-  subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
-  subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
-  for (var i = 0; i < header.length; i++) {    
-    worksheet.columns[i].width = 20;      
-  }
-  for (var j = 0; j < summaryHeader.length; j++) {  
-    worksheet.columns[j].width = 20; 
-  }
-  worksheet.addRow([]); 
-  workbook.xlsx.writeBuffer().then((data) => {
-    let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    fs.saveAs(blob, 'Logbook.xlsx');
- }) 
-}
-  
-  exportAsPDFFile(){
-    var doc = new jsPDF();
-    (doc as any).autoTable({
-      styles: {
-          cellPadding: 0.5,
-          fontSize: 12
-      },       
-      didDrawPage: function(data) {     
-          // Header
-          doc.setFontSize(14);
-          var fileTitle = "Logbook Details";
-          var img = "/assets/logo.png";
-          doc.addImage(img, 'JPEG',10,10,0,0);
- 
-          var img = "/assets/logo_daf.png"; 
-          doc.text(fileTitle, 14, 35);
-          doc.addImage(img, 'JPEG',150, 10, 0, 10);            
-      },
-      margin: {
-          bottom: 20, 
-          top:30 
+    const title = 'Logbook';
+    const summary = 'Logbook Details Section';
+    const detail = 'Alert Detail Section';
+    
+    const header = ['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle', 'VIN', 'Occurrence', 'Threshold Value'];
+    const summaryHeader = ['Logbook Name', 'Logbook Created', 'Logbook Start Time', 'Logbook End Time', 'Vehicle Group', 'Vehicle Name', 'Alert Level', 'Alert Type', 'Alert Category'];
+    let summaryObj=[
+      ['Logbook Data', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+      this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, this.tableInfoObj.alertLevel,
+      this.tableInfoObj.alertType,this.tableInfoObj.alertCategory
+      ] 
+    ];
+    const summaryData= summaryObj;
+   
+    //Create workbook and worksheet
+    let workbook = new Workbook();
+    let worksheet = workbook.addWorksheet('Logbook');
+    //Add Row and formatting
+    let titleRow = worksheet.addRow([title]);
+    worksheet.addRow([]);
+    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+   
+    worksheet.addRow([]);  
+    let subTitleRow = worksheet.addRow([summary]);
+    let summaryRow = worksheet.addRow(summaryHeader);  
+    summaryData.forEach(element => {  
+      worksheet.addRow(element);   
+    });      
+    worksheet.addRow([]);
+    summaryRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }      
       }
-  });
-
-  let pdfColumns = [['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle Name', 'VIN', 'Occurrence', 'Threshold Value']];   
-  let prepare = []
-    this.initData.forEach(e=>{   
-      var tempObj =[];
-      tempObj.push(e.alertLevel); 
-      tempObj.push(e.alertGeneratedTime); 
-      tempObj.push(e.vehicleRegNo);
-      tempObj.push(e.alertType);
-      tempObj.push(e.alertName);
-      tempObj.push(e.alertCategory);
-      tempObj.push(e.tripStartTime);
-      tempObj.push(e.tripEndTime);
-      tempObj.push(e.vehicleName);
-      tempObj.push(e.vin);
-      tempObj.push(e.occurrence);
-      tempObj.push(e.thresholdValue);
-      prepare.push(tempObj);
-    });
-    (doc as any).autoTable({
-      head: pdfColumns,
-      body: prepare,
-      theme: 'striped',
-      didDrawCell: data => {
-        //console.log(data.column.index)
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })  
+    worksheet.addRow([]);   
+    let subTitleDetailRow = worksheet.addRow([detail]);
+    let headerRow = worksheet.addRow(header);
+    headerRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
       }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
     })
-     doc.save('Logbook.pdf');
+    this.initData.forEach(item => {     
+      worksheet.addRow([item.alertLevel, item.alertGeneratedTime, item.vehicleRegNo, item.alertType, item.alertName, 
+        item.alertCategory, item.tripStartTime, item.tripEndTime, item.vehicleName,
+        item.vin, item.occurrence, item.thresholdValue]);   
+    }); 
+    worksheet.mergeCells('A1:D2'); 
+    subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    for (var i = 0; i < header.length; i++) {    
+      worksheet.columns[i].width = 20;      
+    }
+    for (var j = 0; j < summaryHeader.length; j++) {  
+      worksheet.columns[j].width = 20; 
+    }
+    worksheet.addRow([]); 
+    workbook.xlsx.writeBuffer().then((data) => {
+      let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      fs.saveAs(blob, 'Logbook.xlsx');
+   }) 
   }
+  
+exportAsPDFFile(){
+  var doc = new jsPDF();
+  (doc as any).autoTable({
+    styles: {
+        cellPadding: 0.5,
+        fontSize: 12
+    },       
+    didDrawPage: function(data) {     
+        // Header
+        doc.setFontSize(14);
+        var fileTitle = "Logbook Details";
+        var img = "/assets/logo.png";
+        doc.addImage(img, 'JPEG',10,10,0,0);
+
+        var img = "/assets/logo_daf.png"; 
+        doc.text(fileTitle, 14, 35);
+        doc.addImage(img, 'JPEG',150, 10, 0, 10);            
+    },
+    margin: {
+        bottom: 20, 
+        top:30 
+    }
+});
+
+let pdfColumns = [['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle Name', 'VIN', 'Occurrence', 'Threshold Value']];   
+let prepare = []
+  this.initData.forEach(e=>{   
+    var tempObj =[];
+    tempObj.push(e.alertLevel); 
+    tempObj.push(e.alertGeneratedTime); 
+    tempObj.push(e.vehicleRegNo);
+    tempObj.push(e.alertType);
+    tempObj.push(e.alertName);
+    tempObj.push(e.alertCategory);
+    tempObj.push(e.tripStartTime);
+    tempObj.push(e.tripEndTime);
+    tempObj.push(e.vehicleName);
+    tempObj.push(e.vin);
+    tempObj.push(e.occurrence);
+    tempObj.push(e.thresholdValue);
+    prepare.push(tempObj);
+  });
+  (doc as any).autoTable({
+    head: pdfColumns,
+    body: prepare,
+    theme: 'striped',
+    didDrawCell: data => {
+      //console.log(data.column.index)
+    }
+  })
+   doc.save('Logbook.pdf');
+}
 
   masterToggleForTrip() {
     this.tripTraceArray = [];
@@ -1132,16 +1179,27 @@ ngOnDestroy(){
     this.vehicleGrpDD = [];
     let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
-    //console.log(currentStartTime + "<->" + currentEndTime);
-    // console.log("this.wholeLogBookData", this.wholeLogBookData);
+   
     console.log("this.wholeLogBookData.associatedVehicleRequest ---:: ", this.wholeLogBookData.associatedVehicleRequest);
     console.log("this.wholeLogBookData.alFilterResponse---::", this.wholeLogBookData.alFilterResponse);
     console.log("this.wholeLogBookData.alertTypeFilterRequest---::", this.wholeLogBookData.alertTypeFilterRequest);
     console.log("this.wholeLogBookData.acFilterResponse---::", this.wholeLogBookData.acFilterResponse);
     
-    
+    let filterData = this.wholeLogBookData["enumTranslation"];
+    filterData.forEach(element => {
+      element["value"]= this.translationData[element["key"]];
+    });
+
+    let levelListData =[];
+        let categoryList = filterData.filter(item => item.type == 'C');
+        let alertTypeList= filterData.filter(item => item.type == 'T');
+        this.wholeLogBookData.alFilterResponse.forEach(item=>{
+          let levelName =  this.translationData[item.name];
+          levelListData.push({'name':levelName, 'value': item.value})
+        }); 
+
+
     if(this.wholeLogBookData.logbookTripAlertDetailsRequest.length > 0){
-      // let filterVIN: any = this.wholeLogBookData.logbookTripAlertDetailsRequest.filter(item => (parseInt(item.alertGeneratedTime.toString() + "000")>= currentStartTime) && ( (parseInt(item.alertGeneratedTime.toString() + "000")) <= currentEndTime)).map(data => data.vin);
       let filterVIN: any = this.wholeLogBookData.logbookTripAlertDetailsRequest.filter(item => item.alertGeneratedTime >= currentStartTime && item.alertGeneratedTime <= currentEndTime).map(data => data.vin);
       if(filterVIN.length > 0){
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
@@ -1163,8 +1221,10 @@ ngOnDestroy(){
     }
 
     this.vehicleGroupListData = finalVINDataList;
-    if(this.vehicleGroupListData.length > 0){
-      this.makeAlertInformation();
+    if(this.vehicleGroupListData.length > 0){   
+      this.alertTyp = alertTypeList;
+      this.alertCtgry = categoryList;
+      this.alertLvl =   levelListData;
       let _s = this.vehicleGroupListData.map(item => item.vehicleGroupId).filter((value, index, self) => self.indexOf(value) === index);
       if(_s.length > 0){
         _s.forEach(element => {
@@ -1173,13 +1233,8 @@ ngOnDestroy(){
             this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
           }
         });
-      }
-      //this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-      // this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-  
-      // this.resetTripFormControlValue();
+      }    
     }
-    //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.vehicleDD = this.vehicleListData;
     if(this.vehicleDD.length > 0){
      this.resetLogFormControlValue();
@@ -1196,20 +1251,6 @@ ngOnDestroy(){
     this.logBookForm.get('alertLevel').setValue('');
     this.logBookForm.get('alertType').setValue('');
     this.logBookForm.get('alertCategory').setValue('');
-  }
-
-  makeAlertInformation(){
-    if(this.wholeLogBookData.alFilterResponse.length > 0){
-      this.alertLvl = this.wholeLogBookData.alFilterResponse;
-    }
-
-    if(this.wholeLogBookData.acFilterResponse.length > 0){
-      this.alertCtgry = this.wholeLogBookData.acFilterResponse;
-    }
-
-    if(this.wholeLogBookData.alertTypeFilterRequest.length > 0){
-      this.alertTyp = this.wholeLogBookData.alertTypeFilterRequest;
-    }
   }
 
   onAlertLevelChange(event: any){
@@ -1250,15 +1291,7 @@ ngOnDestroy(){
       this.userPOIList[index].poiList.forEach(_elem => {
         _elem.checked = true;
       });
-      this.userPOIList[index].parentChecked = true;
-      // if(this.selectedPOI.selected.length > 0){
-      //   let _s: any = this.selectedPOI.selected.filter(i => i.categoryId == this.userPOIList[index].categoryId);
-      //   if(_s.length > 0){
-
-      //   }
-      // }else{
-
-      // }
+      this.userPOIList[index].parentChecked = true;     
     }else{ // unchecked
       this.userPOIList[index].subCategoryPOIList.forEach(element => {
         element.checked = false;
@@ -1308,11 +1341,6 @@ ngOnDestroy(){
   private configureAutoSuggest(){
     let searchParam = this.searchStr != null ? this.searchStr : '';
     let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?'+'apiKey='+this.map_key +'&limit=5'+'&q='+searchParam ;
-  // let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
-    //this.suggestionData = this.completerService.remote(
-    //URL,'title','title');
-    //this.suggestionData.dataField("items");
-    //this.dataService = this.suggestionData;
   }
 
   onSearchFocus(){
@@ -1411,25 +1439,3 @@ ngOnDestroy(){
   }
 
 }
-
-
-
-
-
-
-/*import { Component, OnInit } from '@angular/core';
-
-@Component({
-  selector: 'app-log-book',
-  templateUrl: './log-book.component.html',
-  styleUrls: ['./log-book.component.less']
-})
-
-export class LogBookComponent implements OnInit {  
-  
-  constructor() {}
-
-  ngOnInit(): void {
-  }
-
-}*/

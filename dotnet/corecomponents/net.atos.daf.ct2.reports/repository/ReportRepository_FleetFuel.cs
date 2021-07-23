@@ -226,19 +226,19 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , fd.vin             as VIN
                                                		  , vh.registration_no as VehicleRegistrationNo
                                                		  , fd.DriverId
-                                               		  , round ( fd.etl_gps_distance,2)                       as Distance
-                                               		  , round ((fd.veh_message_distance/totalworkingdays),2) as AverageDistancePerDay
-                                               		  , round (fd.average_speed,2)                           as AverageSpeed
-                                               		  , max_speed                                            as MaxSpeed
-                                               		  , numberoftrips                                        as NumberOfTrips
-                                               		  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
-                                               		  , round(fd.fuel_consumed,2)                         As FuelConsumed
-                                               		  , round(fd.fuel_consumption,2)                         As FuelConsumption
-                                               		  , round(fd.co2_emission,2)                             As CO2Emission
-                                               		  , fd.idle_duration                                     as IdleDuration
-                                               		  , round(fd.pto_duration,2)                             as PTODuration
-                                               		  , round(fd.harsh_brake_duration,2)                     As HarshBrakeDuration
-                                               		  , round(fd.heavy_throttle_duration,2)                  As HeavyThrottleDuration
+                                               		  , round ( fd.etl_gps_distance,2)                         as Distance
+                                               		  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistancePerDay
+                                               		  , round (fd.average_speed,2)                             as AverageSpeed
+                                               		  , max_speed                                              as MaxSpeed
+                                               		  , numberoftrips                                          as NumberOfTrips
+                                               		  , round (fd.average_gross_weight_comb,2)                 as AverageGrossWeightComb
+                                               		  , round(fd.fuel_consumed,2)                              As FuelConsumed
+                                               		  , round(fd.fuel_consumption,2)                           As FuelConsumption
+                                               		  , round(fd.co2_emission,2)                               As CO2Emission
+                                               		  , fd.idle_duration                                       as IdleDuration
+                                               		  , round(fd.pto_duration,2)                               as PTODuration
+                                               		  , round(fd.harsh_brake_duration,2)                       As HarshBrakeDuration
+                                               		  , round(fd.heavy_throttle_duration,2)                    As HeavyThrottleDuration
                                                		  , round(fd.cruise_control_distance_30_50)                as CruiseControlDistance30_50
                                                		  , round(fd.cruise_control_distance_50_75)                as CruiseControlDistance50_75
                                                		  , round(fd.cruise_control_distance_more_than_75)         as CruiseControlDistance75
@@ -401,7 +401,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , SUM(average_speed)                                                     as average_speed
 				  , MAX(max_speed)                                                         as max_speed
 				  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
-				  , SUM(etl_gps_fuel_consumed)                                                  as fuel_consumed
+				  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
 				  , SUM(fuel_consumption)                                                  as fuel_consumption
 				  , SUM(co2_emission)                                                      as co2_emission
 				  , SUM(idle_duration)                                                     as idle_duration
@@ -424,7 +424,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , end_position_longitude as endpositionlongitude
                 From
 					tripdetail.trip_statistics
-				where (start_time_stamp >= @FromDate 
+				where (end_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) and  VIN =ANY(@Vins)
 				GROUP BY					
 				  VIN, trip_id,start_time_stamp, end_time_stamp   
@@ -440,17 +440,17 @@ namespace net.atos.daf.ct2.reports.repository
 				  , tripid
 				  , fd.vin             as VIN
 				  , vh.registration_no as VehicleRegistrationNo
-				  , round ( fd.etl_gps_distance,2)                       as Distance
-				  , round ((fd.veh_message_distance/totalworkingdays),2) as AverageDistancePerDay
-				  , round (fd.average_speed,2)                           as AverageSpeed
-				  , max_speed                                            as MaxSpeed
-				  , numberoftrips                                        as NumberOfTrips
-				  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
-				  , round((fd.fuel_consumption/numberoftrips),2)         As FuelConsumed
-				  , round((fd.fuel_consumption/numberoftrips),2)         As FuelConsumption
-				  , round((fd.co2_emission    /numberoftrips),2)         As CO2Emission
-				  , fd.idle_duration                                     as IdleDuration
-				  , round(fd.pto_duration,2)                             as PTODuration
+				  , round ( fd.etl_gps_distance,2)                         as Distance
+				  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistancePerDay
+				  , round (fd.average_speed,2)                             as AverageSpeed
+				  , max_speed                                              as MaxSpeed
+				  , numberoftrips                                          as NumberOfTrips
+				  , round (fd.average_gross_weight_comb,2)                 as AverageGrossWeightComb
+				  , round((fd.fuel_consumed/numberoftrips),2)              As FuelConsumed
+				  , round((fd.fuel_consumption/numberoftrips),2)           As FuelConsumption
+				  , round((fd.co2_emission    /numberoftrips),2)           As CO2Emission
+				  , fd.idle_duration                                       as IdleDuration
+				  , round(fd.pto_duration,2)                               as PTODuration
 				  , round((fd.harsh_brake_duration   /numberoftrips),2)    As HarshBrakeDuration
 				  , round((fd.heavy_throttle_duration/numberoftrips),2)    As HeavyThrottleDuration
 				  , round(fd.cruise_control_distance_30_50)                as CruiseControlDistance30_50
@@ -553,7 +553,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , end_position_longitude as endpositionlongitude
 				From
 					tripdetail.trip_statistics
-				where (start_time_stamp >= @FromDate 
+				where (end_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) and VIN =@Vin and driver1_id =@DriverId
 
 				GROUP BY
@@ -579,7 +579,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , max_speed                                            as MaxSpeed
 				  , numberoftrips                                        as NumberOfTrips
 				  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
-				  , round((fd.fuel_consumption/numberoftrips),2)         As FuelConsumed
+				  , round((fd.fuel_consumed/numberoftrips),2)         As FuelConsumed
 				  , round((fd.fuel_consumption/numberoftrips),2)         As FuelConsumption
 				  , round((fd.co2_emission    /numberoftrips),2)         As CO2Emission
 				  , fd.idle_duration                                     as IdleDuration
