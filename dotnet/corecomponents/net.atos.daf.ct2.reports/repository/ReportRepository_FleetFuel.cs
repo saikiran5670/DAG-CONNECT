@@ -113,7 +113,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , SUM(dpa_score)                                                         as dpa_score
                                                   		From
                                                   			tripdetail.trip_statistics 
-                                                        WHERE (start_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
+                                                        WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
                                                                 and VIN=ANY(@Vins)
                                                   		GROUP BY
                                                   			VIN
@@ -130,7 +130,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , max_speed                                            as MaxSpeed
                                                   		  , numberoftrips                                        as NumberOfTrips
                                                   		  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
-                                                  		  , round(fd.fuel_consumption,2)                         As FuelConsumed
+                                                  		  , round(fd.fuel_consumed,2)                            As FuelConsumed
                                                   		  , round(fd.fuel_consumption,2)                         As FuelConsumption
                                                   		  , round(fd.co2_emission,2)                             As CO2Emission
                                                   		  , fd.idle_duration                                     as IdleDuration
@@ -213,7 +213,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , SUM(dpa_score)                                                         as dpa_score
                                                		From
                                                			tripdetail.trip_statistics
-                                                    WHERE (start_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
+                                                    WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
                                                                 and VIN=ANY(@Vins)
                                                		GROUP BY
                                                			driver1_id
@@ -232,7 +232,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , max_speed                                            as MaxSpeed
                                                		  , numberoftrips                                        as NumberOfTrips
                                                		  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
-                                               		  , round(fd.fuel_consumption,2)                         As FuelConsumed
+                                               		  , round(fd.fuel_consumed,2)                         As FuelConsumed
                                                		  , round(fd.fuel_consumption,2)                         As FuelConsumption
                                                		  , round(fd.co2_emission,2)                             As CO2Emission
                                                		  , fd.idle_duration                                     as IdleDuration

@@ -1,16 +1,59 @@
-<!-- <div class="account-info-settings-container" style="background: white;">
-    <mat-card class='margin-bottom-xlg mat-elevation-z'>
-        <mat-card-content>
-            <div *ngIf='updateMsgVisible' fxLayout="row" fxLayoutAlign="center center"
-                style='padding:10px; color:#fff; background: #5dc24e;'>
-                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
-                    {{ 'displayMessage' }}
-                </div>
-                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
-                    <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
-                </div>
+<mat-card class='mat-elevation-z no-padding margin-bottom-xlg margin-top-20 background-transparent'>
+    <div *ngIf='updateMsgVisible' fxLayout="row" fxLayoutAlign="center center"
+        style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+            {{ displayMessage }}
+        </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+            <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+        </div>
+    </div>
+    <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+    <div *ngIf='!showLoadingIndicator'>
+        <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showFleetOverview"
+            (opened)="showFleetOverview == true" (closed)="showFleetOverview == false">
+            <mat-expansion-panel-header class="full-width">
+                <mat-panel-title>
+                    <span>
+                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                            translationData.lblFleetOverview || 'Fleet Overview' }}</span>
+                        <span style='margin-left: 10px; vertical-align: middle;'>
+                            <mat-icon *ngIf='!editFleetOverviewFlag' (click)="editFleetOverviewPreferences()"
+                                style="cursor: pointer; font-size: 20px;">
+                                edit</mat-icon>
+                        </span>
+                    </span>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div>
+                <app-fleet-overview-tab-preferences *ngIf='showFleetOverview' [editFlag]='editFleetOverviewFlag'
+                    [reportListData]='reportListData' [translationData]='translationData'
+                    (setFleetOverviewFlag)="updateEditFleetOverviewFlag($event)">
+                </app-fleet-overview-tab-preferences>
             </div>
-        </mat-card-content>
-    </mat-card>
-</div> -->
-<p>{{ translationData.lblFleetOverview || 'Fleet Overview' }}</p>
+        </mat-expansion-panel>
+        <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px"
+            [(expanded)]="showLogbook" (opened)="showLogbook == true"
+            (closed)="showLogbook == false">
+            <mat-expansion-panel-header class="full-width">
+                <mat-panel-title>
+                    <span>
+                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                            translationData.lblLogbook || 'Logbook' }}</span>
+                        <span style='margin-left: 10px; vertical-align: middle;'>
+                            <mat-icon *ngIf='!editLogbookFlag' (click)="editLogbookPreferences()"
+                                style="cursor: pointer; font-size: 20px;">
+                                edit</mat-icon>
+                        </span>
+                    </span>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div>
+                <app-logbook-tab-preferences *ngIf='showLogbook'
+                    [editFlag]='editLogbookFlag' [reportListData]='reportListData'
+                    [translationData]='translationData' (setLogbookFlag)="updateEditLogbookFlag($event)">
+                </app-logbook-tab-preferences>
+            </div>
+        </mat-expansion-panel>
+    </div>
+</mat-card>

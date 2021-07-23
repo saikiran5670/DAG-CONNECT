@@ -2342,7 +2342,7 @@ namespace net.atos.daf.ct2.reports.repository
 								   ((CAST(SUM(eco.trip_distance)AS DOUBLE PRECISION) )/((( (SUM (eco.end_time)) - (SUM (eco.start_time)))/1000)-(CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)))
 								   ) ELSE null END as averagedrivingspeed,
                                   eco.trip_distance as Distance,
-	                              CASE WHEN 'metric' = @Unit THEN 3.6 ELSE 2.237 END as unit
+	                              CASE WHEN 'metric' = @Unit THEN 3.6 ELSE 2.237 END as unit --Metric/Imperial conversion
                                   from tripdetail.ecoscoredata eco
                                   JOIN master.driver dr 
                                   ON dr.driver_id = eco.driver1_id

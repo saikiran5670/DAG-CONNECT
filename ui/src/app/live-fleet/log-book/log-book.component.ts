@@ -644,7 +644,7 @@ ngOnDestroy(){
           element.alertGeneratedTime = Util.convertUtcToDate(element.alertGeneratedTime, this.prefTimeZone);
           element.tripStartTime = Util.convertUtcToDate(element.tripStartTime, this.prefTimeZone);
           element.tripEndTime = Util.convertUtcToDate(element.tripEndTime, this.prefTimeZone);
-        });
+       });
         this.setTableInfo();
         this.updateDataSource(logbookData);
       }, (error)=>{
@@ -805,20 +805,16 @@ ngOnDestroy(){
   }
 
   exportAsExcelFile(){  
-  const title = 'Trip Report';
-  const summary = 'Summary Section';
-  const detail = 'Detail Section';
-  let unitVal100km =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'gallon/100mile') : (this.translationData.lblgallonmile || 'gallon/100mile');
-  let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound || 'pound');
-  let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
-  let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile') ;
-
-  const header = ['VIN', 'Odometer', 'Vehicle Name', 'Registration No', 'Start Date', 'End Date', 'Distance('+ unitValkm + ')', 'Idle Duration(hh:mm)', 'Average Speed('+ unitValkmh + ')', 'Average Weight('+ unitValkg + ')', 'Start Position', 'End Position', 'Fuel Consumption('+ unitVal100km + ')', 'Driving Time(hh:mm)', 'Alerts', 'Events'];
-  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Vehicle VIN', 'Reg. Plate Number'];
+  const title = 'Logbook';
+  const summary = 'Logbook Details Section';
+  const detail = 'Alert Detail Section';
+  
+  const header = ['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle Name', 'VIN', 'Occurrence', 'Threshold Value'];
+  const summaryHeader = ['Logbook Name', 'Logbook Created', 'Logbook Start Time', 'Logbook End Time', 'Vehicle Group', 'Vehicle Name', 'Alert Level', 'Alert Type', 'Alert Category'];
   let summaryObj=[
-    ['Log Data', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+    ['Logbook Data', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
     this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName
-    ]
+    ] 
   ];
   const summaryData= summaryObj;
   
@@ -858,12 +854,10 @@ ngOnDestroy(){
     }
     cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
   })
-
- this.initData.forEach(item => {     
-    worksheet.addRow([item.vin, item.odometer, item.vehicleName, item.registrationNo, item.convertedStartTime, 
-      item.convertedEndTime, item.convertedDistance, item.convertedIdleDuration, item.convertedAverageSpeed,
-      item.convertedAverageWeight, item.startPosition, item.endPosition, item.convertedFuelConsumed100Km,
-      item.convertedDrivingTime, item.alert, item.events]);   
+  this.initData.forEach(item => {     
+    worksheet.addRow([item.alertLevel, item.alertGeneratedTime, item.vehicleRegNo, item.alertType, item.alertName, 
+      item.alertCategory, item.tripStartTime, item.tripEndTime, item.vehicleName,
+      item.vin, item.occurrence, item.thresholdValue]);   
   }); 
   worksheet.mergeCells('A1:D2'); 
   subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
@@ -877,9 +871,8 @@ ngOnDestroy(){
   worksheet.addRow([]); 
   workbook.xlsx.writeBuffer().then((data) => {
     let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    fs.saveAs(blob, 'Trip_Report.xlsx');
- })
-  // this.matTableExporter.exportTable('xlsx', {fileName:'Trip_Report', sheet: 'sheet_name'});
+    fs.saveAs(blob, 'Logbook.xlsx');
+ }) 
 }
   
   exportAsPDFFile(){
@@ -892,7 +885,7 @@ ngOnDestroy(){
       didDrawPage: function(data) {     
           // Header
           doc.setFontSize(14);
-          var fileTitle = "Trip Details";
+          var fileTitle = "Logbook Details";
           var img = "/assets/logo.png";
           doc.addImage(img, 'JPEG',10,10,0,0);
  
@@ -906,31 +899,22 @@ ngOnDestroy(){
       }
   });
 
-    let pdfColumns = [['VIN', 'Vehicle Name', 'Registration Number', 'Odometer', 'Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
-    // let pdfColumns = [['Odometer','Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
-
+  let pdfColumns = [['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle Name', 'VIN', 'Occurrence', 'Threshold Value']];   
   let prepare = []
-    this.initData.forEach(e=>{
-      // console.log("---actual data--pdf columns", this.initData)
+    this.initData.forEach(e=>{   
       var tempObj =[];
-      
-      tempObj.push(e.vin); ////need to confirm from backend for key
-      tempObj.push(e.vehicleName); ////need to confirm from backend for key
-      tempObj.push(e.registrationNo); //need to confirm from backend for key
-      tempObj.push(e.odometer);
-      tempObj.push(e.convertedStartTime);
-      tempObj.push(e.convertedEndTime);
-      tempObj.push(e.convertedDistance);
-      tempObj.push(e.convertedIdleDuration);
-      tempObj.push(e.convertedAverageSpeed);
-      tempObj.push(e.convertedAverageWeight);
-      tempObj.push(e.startPosition);
-      tempObj.push(e.endPosition);
-      tempObj.push(e.convertedFuelConsumed100Km);
-      tempObj.push(e.convertedDrivingTime);
-      tempObj.push(e.alert);
-      tempObj.push(e.events);
-
+      tempObj.push(e.alertLevel); 
+      tempObj.push(e.alertGeneratedTime); 
+      tempObj.push(e.vehicleRegNo);
+      tempObj.push(e.alertType);
+      tempObj.push(e.alertName);
+      tempObj.push(e.alertCategory);
+      tempObj.push(e.tripStartTime);
+      tempObj.push(e.tripEndTime);
+      tempObj.push(e.vehicleName);
+      tempObj.push(e.vin);
+      tempObj.push(e.occurrence);
+      tempObj.push(e.thresholdValue);
       prepare.push(tempObj);
     });
     (doc as any).autoTable({
@@ -941,8 +925,7 @@ ngOnDestroy(){
         //console.log(data.column.index)
       }
     })
-    // below line for Download PDF document  
-    doc.save('tripReport.pdf');
+     doc.save('Logbook.pdf');
   }
 
   masterToggleForTrip() {

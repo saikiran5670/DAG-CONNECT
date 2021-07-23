@@ -120,10 +120,10 @@
               <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
                 <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
                 (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
-                  <button *ngIf="selectedBenchmarking == 'timePeriods'" [disabled]="!fuelBenchmarkingForm.valid" class='no-margin' mat-raised-button color="primary" (click)='onSearch("timePeriods")'>               
+                  <button *ngIf="selectedBenchmarking == 'timePeriods'" [disabled]="!fuelBenchmarkingForm.valid || makeAddDisable" class='no-margin' mat-raised-button color="primary" (click)='onSearch("timePeriods")'>               
                     <mat-icon>add_circle_outline</mat-icon>{{ translationData.lblAddPeriod || ' Add Period' }}
                   </button>
-                  <button *ngIf="selectedBenchmarking == 'vehicleGroup'" [disabled]="!fuelBenchmarkingForm.valid" class='no-margin' mat-raised-button color="primary" (click)='onSearch("vehicleGroups")'>               
+                  <button *ngIf="selectedBenchmarking == 'vehicleGroup'" [disabled]="!fuelBenchmarkingForm.valid || makeAddDisable" class='no-margin' mat-raised-button color="primary" (click)='onSearch("vehicleGroups")'>               
                     <mat-icon>add_circle_outline</mat-icon>{{ translationData.lblAddPeriod || ' Add Group' }}
                   </button>
               </div>
