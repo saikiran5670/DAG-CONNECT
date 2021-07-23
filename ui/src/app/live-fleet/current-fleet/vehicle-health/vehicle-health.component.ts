@@ -37,7 +37,7 @@ declare var H: any;
 })
 export class VehicleHealthComponent implements OnInit, OnDestroy {
   tripReportId: any = 1;
-  selectionTab: any;
+  selectionTab;
   reportPrefData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Input() healthData: any;
@@ -97,7 +97,6 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   obs: Observable<any>;
   healthDdataSource: MatTableDataSource<any>;
- 
 
 
   constructor(private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder,private organizationService: OrganizationService, private reportService: ReportService, private changeDetectorRef: ChangeDetectorRef) { 
@@ -122,7 +121,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.getHistoryData(this.healthData.tripId);
     this.vehicleHealthForm = this._formBuilder.group({
-      warningType: ['', [Validators.required]],
+      warningType: ['AllWarnings', [Validators.required]],
       startDate: ['', []],
       endDate: ['', []],
       startTime: ['', []],
@@ -152,6 +151,8 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
         }
       });
     });
+    this.selectionTab = 'last3month';
+    this.selectionTimeRange('last3month');
   }
 
   public ngAfterViewInit() {
@@ -186,14 +187,34 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     ////console.log("process translationData:: ", this.translationData)
   }
 
-  onSearch(){
-    
+  onSearch() {
+      this.isWarningOpen =  true;
+      let filterrredData = [];
+      for (let row of this.historyHealthData) {
+        let startDate = this.vehicleHealthForm.get('startDate').value;
+        let startDateTime = new Date(startDate.getMonth() + "-" + startDate.getDate() + "-" + startDate.getFullYear() + " " + this.vehicleHealthForm.get('startTime').value);
+        let endDate = this.vehicleHealthForm.get('endDate').value;
+        let endDateTime = new Date(endDate.getMonth() + "-" + endDate.getDate() + "-" + endDate.getFullYear() + " " + this.vehicleHealthForm.get('startTime').value);
+        let check = new Date(row.warningTimetamp);
+        if (check >= startDateTime && check <= endDateTime) {
+          filterrredData.push(row)
+        }
+      }
+      let warningType = this.vehicleHealthForm.get('warningType').value;
+      if(warningType == 'Active') {
+        filterrredData
+      } else if (warningType == 'Deactive') {
+
+      }
+      console.log("filterrredData", filterrredData)
+      this.applyDatatoCardPaginator(filterrredData);
   }
 
   onReset(){
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
+    this.onSearch();
     // this.tripData = [];
     // this.vehicleListData = [];
     // this.vehicleGroupListData = this.vehicleGroupListData;
@@ -598,12 +619,39 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
 
   getHistoryData(tripId: any){
     this.reportService.getvehiclehealthstatus(this.healthData.vin,'bg-BG',tripId).subscribe((res) => {
-      this.historyHealthData = res;
-      this.healthDdataSource = new MatTableDataSource(this.historyHealthData);
-      this.changeDetectorRef.detectChanges();
-      this.healthDdataSource.paginator = this.paginator;
-      this.obs = this.healthDdataSource.connect();
+      this.historyHealthData = this.processDataForActivatedAndDeactivatedTime(res);
+      if(this.isCurrent) {
+        this.applyDatatoCardPaginator(this.historyHealthData);
+      } else {
+        this.onSearch();
+      }
     });
+  }
+
+  processDataForActivatedAndDeactivatedTime(responseData) {
+    let groupedObj = {}
+    let finalWarningArray = [];
+    for(const warning of responseData) {
+      if(!groupedObj[warning.warningClass+'_'+warning.warningNumber]) groupedObj[warning.warningClass+'_'+warning.warningNumber] = [];
+      groupedObj[warning.warningClass+'_'+warning.warningNumber].push(warning);
+    }
+    console.log("groupedObj",groupedObj)
+    for(let key in groupedObj) {
+      let activatedObj = groupedObj[key].filter(item => item.warningType == "A");
+      let deactivatedObj = groupedObj[key].filter(item => item.warningType == "D" || (item.warningType == "I"));
+      if(deactivatedObj.length != 0) {
+        activatedObj[0]['warningDeactivatedTimestamp'] = deactivatedObj[0].warningTimetamp;
+      }
+      finalWarningArray.push(activatedObj[0]);
+    }
+    return finalWarningArray;
+  }
+
+  applyDatatoCardPaginator(data) {
+    this.healthDdataSource = new MatTableDataSource(data);
+    this.changeDetectorRef.detectChanges();
+    this.healthDdataSource.paginator = this.paginator;
+    this.obs = this.healthDdataSource.connect();
   }
 
   ngOnDestroy() {
