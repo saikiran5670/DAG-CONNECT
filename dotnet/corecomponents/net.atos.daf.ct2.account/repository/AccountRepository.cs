@@ -81,7 +81,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
                 parameter.Add("@type", (char)account.AccountType);
-                parameter.Add("@driver_id", account.DriverId);
+                parameter.Add("@driver_id", account.DriverId == "" ? null : account.DriverId);
                 string query = @"update master.account set salutation = @salutation,
                                 first_name = @first_name,last_name = @last_name ,driver_id=@driver_id, type = @type
                                 where id = @id RETURNING id";

@@ -1,0 +1,133 @@
+<!-- Table Details Tab -->
+<div *ngIf='logbookPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 logbookPref' fxLayoutAlign="left center"
+    style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForLogbookColumns() : null'
+            [checked]='selectionForLoogbookColumns.hasValue() && isAllSelectedForLogbookColumns()'
+            [indeterminate]='selectionForLoogbookColumns.hasValue() && !isAllSelectedForLogbookColumns()'
+            [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
+                translationData.lblDetails || 'Details' }} ({{
+                translationData.lblTablecolumnviewsettings || 'Table column view settings' }})</span>
+        </mat-checkbox>
+    </div>
+</div>
+<div *ngIf='logbookPrefData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForLoogbookColumns.toggle(logbookPrefData[0]) : null; checkboxClicked($event, logbookPrefData[0])'
+                [checked]="selectionForLoogbookColumns.isSelected(logbookPrefData[0])"
+                [aria-label]='checkboxLabelForColumns(logbookPrefData[0])' class='custom-checkbox'><span>{{
+                    logbookPrefData.length > 0 ? logbookPrefData[0].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForLoogbookColumns.toggle(logbookPrefData[1]) : null; checkboxClicked($event, logbookPrefData[1])'
+                [checked]="selectionForLoogbookColumns.isSelected(logbookPrefData[1])"
+                [aria-label]='checkboxLabelForColumns(logbookPrefData[1])' class='custom-checkbox'><span>{{
+                    logbookPrefData.length > 0 ? logbookPrefData[1].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForLoogbookColumns.toggle(logbookPrefData[2]) : null; checkboxClicked($event, logbookPrefData[2])'
+                [checked]="selectionForLoogbookColumns.isSelected(logbookPrefData[2])"
+                [aria-label]='checkboxLabelForColumns(logbookPrefData[2])' class='custom-checkbox'><span>{{
+                    logbookPrefData.length > 0 ? logbookPrefData[2].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForLoogbookColumns.toggle(logbookPrefData[3]) : null; checkboxClicked($event, logbookPrefData[3])'
+                [checked]="selectionForLoogbookColumns.isSelected(logbookPrefData[3])"
+                [aria-label]='checkboxLabelForColumns(logbookPrefData[3])' class='custom-checkbox'><span>{{
+                    logbookPrefData.length > 0 ? logbookPrefData[3].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForLoogbookColumns.toggle(logbookPrefData[4]) : null; checkboxClicked($event, logbookPrefData[4])'
+                [checked]="selectionForLoogbookColumns.isSelected(logbookPrefData[4])"
+                [aria-label]='checkboxLabelForColumns(logbookPrefData[4])' class='custom-checkbox'><span>{{
+                    logbookPrefData.length > 0 ? logbookPrefData[4].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForLoogbookColumns.toggle(logbookPrefData[5]) : null; checkboxClicked($event, logbookPrefData[5])'
+                [checked]="selectionForLoogbookColumns.isSelected(logbookPrefData[5])"
+                [aria-label]='checkboxLabelForColumns(logbookPrefData[5])' class='custom-checkbox'><span>{{
+                    logbookPrefData.length > 0 ? logbookPrefData[5].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForLoogbookColumns.toggle(logbookPrefData[6]) : null; checkboxClicked($event, logbookPrefData[6])'
+                [checked]="selectionForLoogbookColumns.isSelected(logbookPrefData[6])"
+                [aria-label]='checkboxLabelForColumns(logbookPrefData[6])' class='custom-checkbox'><span>{{
+                    logbookPrefData.length > 0 ? logbookPrefData[6].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForLoogbookColumns.toggle(logbookPrefData[7]) : null; checkboxClicked($event, logbookPrefData[7])'
+                [checked]="selectionForLoogbookColumns.isSelected(logbookPrefData[7])"
+                [aria-label]='checkboxLabelForColumns(logbookPrefData[7])' class='custom-checkbox'><span>{{
+                    logbookPrefData.length > 0 ? logbookPrefData[7].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForLoogbookColumns.toggle(logbookPrefData[8]) : null; checkboxClicked($event, logbookPrefData[8])'
+                [checked]="selectionForLoogbookColumns.isSelected(logbookPrefData[8])"
+                [aria-label]='checkboxLabelForColumns(logbookPrefData[8])' class='custom-checkbox'><span>{{
+                    logbookPrefData.length > 0 ? logbookPrefData[8].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForLoogbookColumns.toggle(logbookPrefData[9]) : null; checkboxClicked($event, logbookPrefData[9])'
+                [checked]="selectionForLoogbookColumns.isSelected(logbookPrefData[9])"
+                [aria-label]='checkboxLabelForColumns(logbookPrefData[9])' class='custom-checkbox'><span>{{
+                    logbookPrefData.length > 0 ? logbookPrefData[9].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForLoogbookColumns.toggle(logbookPrefData[10]) : null; checkboxClicked($event, logbookPrefData[10])'
+                [checked]="selectionForLoogbookColumns.isSelected(logbookPrefData[10])"
+                [aria-label]='checkboxLabelForColumns(logbookPrefData[10])' class='custom-checkbox'><span>{{
+                    logbookPrefData.length > 0 ? logbookPrefData[10].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForLoogbookColumns.toggle(logbookPrefData[11]) : null; checkboxClicked($event, logbookPrefData[11])'
+                [checked]="selectionForLoogbookColumns.isSelected(logbookPrefData[11])"
+                [aria-label]='checkboxLabelForColumns(logbookPrefData[11])' class='custom-checkbox'><span>{{
+                    logbookPrefData.length > 0 ? logbookPrefData[11].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+</div>
+
+<!-- error msg -->
+<div *ngIf='logbookPrefData.length > 0 && editFlag && reqField' fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start">
+    <span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN,
+        Registration Number' }}</span>
+</div>
+
+<!-- buttons -->
+<div *ngIf='logbookPrefData.length > 0 && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
+    <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
+        translationData.lblCancel || 'Cancel' }}</button>
+    <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
+        translationData.lblReset || 'Reset' }}</button>
+    <button [disabled]='reqField || (selectionForLoogbookColumns.selected.length == 0 && logbookPrefData.length > 0)' class='no-margin' mat-raised-button
+        color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm || 'Confirm') }}</button>
+</div>

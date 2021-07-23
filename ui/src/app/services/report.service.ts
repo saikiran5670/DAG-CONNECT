@@ -86,6 +86,18 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
+  getDriverChartDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/drivetime/getdetails/chart`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   getSelectedDriverDetails(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {

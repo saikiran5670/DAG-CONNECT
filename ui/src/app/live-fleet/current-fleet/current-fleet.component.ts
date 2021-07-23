@@ -5,6 +5,7 @@ import { MessageService } from 'src/app/services/message.service';
 import { Subscription } from 'rxjs';
 import { DataInterchangeService} from '../../services/data-interchange.service';
 import { OrganizationService } from '../../services/organization.service';
+import { Router } from '@angular/router';
 
 
 declare var H: any;
@@ -26,6 +27,11 @@ export class CurrentFleetComponent implements OnInit {
   messages: any[] = [];
   subscription: Subscription;
   isOpen: boolean = false;
+  obj: any = {
+    fromVehicleHealth: false,
+    isOpen: false,
+    selectedElementData: []
+  };
   healthData: any = [];
   prefTimeFormat: any; //-- coming from pref setting
   prefTimeZone: any; //-- coming from pref setting
@@ -33,6 +39,7 @@ export class CurrentFleetComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
   preferenceObject : any;
+  _state: any;
   // detailsData =[
   //   {
   //     "id": 8,
@@ -139,7 +146,7 @@ export class CurrentFleetComponent implements OnInit {
     private reportService: ReportService,
     private messageService: MessageService,
     private dataInterchangeService: DataInterchangeService,
-    private organizationService: OrganizationService) { 
+    private organizationService: OrganizationService, private router: Router) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
           this.refreshData();
@@ -150,6 +157,11 @@ export class CurrentFleetComponent implements OnInit {
         this.healthData = data;
         this.isOpen = true;
       });
+      const navigation = this.router.getCurrentNavigation();
+      this._state = navigation.extras.state as {
+        fromVehicleDetails: boolean,
+        data: any
+      };
     }
 
   ngOnInit() {
@@ -197,14 +209,17 @@ export class CurrentFleetComponent implements OnInit {
         data:data
       }
       this.dataInterchangeService.getVehicleData(_dataObj);
-
+      if(this._state && this._state.data){
+        this.userPreferencesSetting();
+        this.toBack();
+      }
     });
    }
 
    processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
-  userPreferencesSetting(event) {
+  userPreferencesSetting(event?: any) {
     this.userPreferencesFlag = !this.userPreferencesFlag;
     let summary = document.getElementById("summary");
     let sidenav = document.getElementById("sidenav");
@@ -252,6 +267,12 @@ export class CurrentFleetComponent implements OnInit {
   refreshData(){}
 
   toBack(){
+    this.obj ={
+      fromVehicleHealth : true,
+      isOpen: this.isOpen,
+      selectedElementData: (this._state && this._state.data) ? this._state.data : this.healthData
+    }
     this.isOpen = false;
+   
  }
 }

@@ -18,7 +18,7 @@ public class IndexDocument implements Serializable {
   private String tripID;
 
   @JsonProperty(value = "GPSHdop")
-  private Integer gpsHdop;
+  private Double gpsHdop;
   @JsonProperty(value = "GPSSpeed")
   private Long gpsSpeed;
 
@@ -106,7 +106,7 @@ public class IndexDocument implements Serializable {
   @JsonProperty(value = "AdBlueLevel")
   private Double[] adBlueLevel;
   @JsonProperty(value = "AirPressure")
-  private Integer[] airPressure;
+  private Long[] airPressure;
   @JsonProperty(value = "AmbientPressure")
   private Double[] ambientPressure;
   @JsonProperty(value = "EngineCoolantLevel")
@@ -122,15 +122,15 @@ public class IndexDocument implements Serializable {
   @JsonProperty(value = "EngineLoad")
   private Integer[] engineLoad;
   @JsonProperty(value = "EngineSpeed")
-  private Integer[] engineSpeed;
+  private Long[] engineSpeed;
   @JsonProperty(value = "FuelLevel")
   private Double[] fuelLevel;
   @JsonProperty(value = "FuelTemperature")
   private Double[] fuelTemperature;
   @JsonProperty(value = "InletAirPressureInInletManifold")
-  private Integer[] inletAirPressureInInletManifold;
+  private Long[] inletAirPressureInInletManifold;
   @JsonProperty(value = "TachoVehicleSpeed")
-  private Integer[] tachoVehicleSpeed;
+  private Long[] tachoVehicleSpeed;
   @JsonProperty(value = "TotalTachoMileage")
-  private Integer[] totalTachoMileage;
+  private Long[] totalTachoMileage;
 }

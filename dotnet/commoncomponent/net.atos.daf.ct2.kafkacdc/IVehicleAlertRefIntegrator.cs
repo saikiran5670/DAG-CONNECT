@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.kafkacdc
     public interface IVehicleAlertRefIntegrator
     {
         Task GetVehicleAlertRefFromVehicleManagement(List<int> vins);
-        Task GetVehicleAlertRefFromAlertConfiguration(List<int> alertIds);
+        Task<List<VehicleAlertRef>> GetVehicleAlertRefFromAlertConfiguration(int alertId);
         Task GetVehicleAlertRefFromAccountVehicleGroupMapping(List<int> vins, List<int> accounts);
         Task GetVehicleAlertRefFromSubscriptionManagement(List<int> subscriptionIds);
     }

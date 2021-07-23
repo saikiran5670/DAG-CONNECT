@@ -81,9 +81,9 @@
         </div>
     </div>
     <ng-container *ngIf='vehicleRankingColumnData.length > 0'>
-        <div fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="32px" fxLayoutAlign="flex-start">
+        <div fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="12px" fxLayoutAlign="flex-start">
             <ng-container *ngFor="let field of vehicleRankingColumnData; let index = index">
-                <div class="padding-10" fxFlex="0 1 calc(33.3% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+                <div class="padding-10" fxFlex="0 1 calc(33.3% - 12px)" fxFlex.lt-md="0 1 calc(50% - 12px)"
                     fxFlex.lt-sm="100%" [ngClass]="{'myStyle': 0 === index % 3}">
                     <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()' class='custom-checkbox'
                         (change)='$event ? selectionForVehicleRankingColumns.toggle(field) : null;'
@@ -118,9 +118,9 @@
     <ng-container *ngIf='chartsColumnData.length > 0'>
         <div fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="5px" fxLayoutAlign="flex-start">
             <ng-container *ngFor="let field of chartsColumnData; let index = index">
-                <div class="padding-10 areaWidth" fxFlex="0 1 calc(33.3% - 5px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+                <div class="padding-10 areaWidth" fxFlex="0 1 calc(33.3% - 5px)" fxFlex.lt-md="0 1 calc(50% - 5px)"
                     fxFlex.lt-sm="100%" [ngClass]="{'myStyle': 0 === index % 3}">
-                    <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()' class='custom-checkbox'
+                    <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()' class='chart-custom-checkbox'
                         (change)='$event ? selectionForChartsColumns.toggle(field) : null;'
                         [checked]="selectionForChartsColumns.isSelected(field)">
                         <!-- <span>{{

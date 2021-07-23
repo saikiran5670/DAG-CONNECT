@@ -13,7 +13,7 @@ import { TranslationService } from 'src/app/services/translation.service';
 import { Util } from 'src/app/shared/util';
 import { ReportService } from 'src/app/services/report.service';
 import { truncate } from 'fs';
-import { ReportMapService } from '../../report-map.service';
+import { ReportMapService } from '../report-map.service';
 import {ThemePalette} from '@angular/material/core';
 import {ProgressBarMode} from '@angular/material/progress-bar';
 import html2canvas from 'html2canvas';
@@ -25,23 +25,23 @@ import { Router, NavigationExtras } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
-import { HereService } from '../../../services/here.service';
+import { HereService } from '../../services/here.service';
 import { ConfigService } from '@ngx-config/core';
-import { LandmarkCategoryService } from '../../../services/landmarkCategory.service'; 
+import { LandmarkCategoryService } from '../../services/landmarkCategory.service'; 
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
-import { MapService } from '../report-mapservice';
+import { MapService } from '../fleet-fuel-report/report-mapservice';
 
 declare var H: any;
 
 @Component({
-  selector: 'app-detail-driver-report',
-  templateUrl: './detail-driver-report.component.html',
-  styleUrls: ['./detail-driver-report.component.less']
+  selector: 'app-vehicletrip',
+  templateUrl: './vehicletrip.component.html',
+  styleUrls: ['./vehicletrip.component.less']
 })
 
-export class DetailDriverReportComponent implements OnInit {
+export class VehicletripComponent implements OnInit {
   @Input() translationData: any;
-  displayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
+  displayedColumns = ['All','startDate','endDate','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
   'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
@@ -194,7 +194,6 @@ export class DetailDriverReportComponent implements OnInit {
       value: 'idlingConsumptionValue'
     }
   ];
-  disableGroup = new H.map.Group();
   group = new H.map.Group();
   endMarker:any;
   startMarker:any;
@@ -531,11 +530,14 @@ tripTraceArray: any = [];
               private completerService: CompleterService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService) {
+                this.defaultTranslation();
                 const navigation = this.router.getCurrentNavigation();
                 this._state = navigation.extras.state as {
-                  fromFleetfuelReport: boolean,
-                  vehicleData: any
+                  
+                fromFleetfuelReport: boolean,
+                vehicleData: any
                 };
+                console.log(this._state);
                 if(this._state){
                   this.showBack = true;
                 }else{
@@ -549,6 +551,11 @@ tripTraceArray: any = [];
                   });
                this.configureAutoSuggest();
                }
+               defaultTranslation(){
+                this.translationData = {
+                  lblSearchReportParameters: 'Search Report Parameters'
+                }    
+              }
 
                
   ngOnInit(): void {
@@ -600,6 +607,15 @@ tripTraceArray: any = [];
 
 
   }
+  detailvehiclereport(){
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromFleetfuelReport: true
+      }
+    };
+    this.router.navigate(['report/fleetfuelreport'], navigationExtras);
+  }
+
   resetTripPrefData(){
     this.tripPrefData = [];
   }
@@ -619,14 +635,7 @@ tripTraceArray: any = [];
     }
   }
 
-  detaildriverreport(){
-    const navigationExtras: NavigationExtras = {
-      state: {
-        fromFleetfuelReport: true
-      }
-    };
-    this.router.navigate(['report/fleetfuelreport'], navigationExtras);
-  }
+
   setDisplayColumnBaseOnPref(){
     let filterPref = this.tripPrefData.filter(i => i.state == 'I'); // removed unchecked
     if(filterPref.length > 0){
@@ -689,57 +698,39 @@ tripTraceArray: any = [];
       this.userPOIList = [];
     });
   }
-
-  selectionPolylineRoute(dataPoints: any, _index: any, checkStatus?: any){
-    let lineString: any = new H.geo.LineString();
-    dataPoints.map((element) => {
-      lineString.pushPoint({lat: element.gpsLatitude, lng: element.gpsLongitude});  
-    });
-
-    let _style: any = {
-      lineWidth: 4, 
-      strokeColor: checkStatus ? 'blue' : 'grey'
-    }
-    let polyline = new H.map.Polyline(
-      lineString, { style: _style }
-    );
-    polyline.setData({id: _index});
-    
-    this.disableGroup.addObject(polyline);
-   }
-   viewselectedroutes(_selectedRoutes:any,_displayRouteView:any,trackType:any){
-    if(_selectedRoutes && _selectedRoutes.length > 0){
-      _selectedRoutes.forEach(elem => {
-        this.startAddressPositionLat = elem.startpositionlattitude;
-        this.startAddressPositionLong = elem.startpositionlongitude;
-        this.endAddressPositionLat= elem.endpositionlattitude;
-        this.endAddressPositionLong= elem.endpositionlongitude;
-        let houseMarker = this.createHomeMarker();
-        let markerSize = { w: 26, h: 32 };
-        const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-        this.startMarker = new H.map.Marker({ lat:this.startAddressPositionLat, lng:this.startAddressPositionLong },{ icon:icon });
-        let endMarker = this.createEndMarker();
-        const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-        this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
-        this.group.addObjects([this.startMarker, this.endMarker]);
-        if(elem.liveFleetPosition.length > 1){
-           // required 2 points atleast to draw polyline
-          let liveFleetPoints: any = elem.liveFleetPosition;
-          liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
-          if(_displayRouteView == 'C' || _displayRouteView == 'F' || _displayRouteView == 'CO'){ // classic route
-            let blueColorCode: any = '#436ddc';
-            this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
-            let filterDataPoints: any = this.getFilterDataPoints(liveFleetPoints, _displayRouteView);
-            filterDataPoints.forEach((element) => {
-              this.drawPolyline(element, trackType);
-            });
-          
-          }
-        }
+viewselectedroutes(_selectedRoutes:any,_displayRouteView:any,trackType:any){
+  if(_selectedRoutes && _selectedRoutes.length > 0){
+    _selectedRoutes.forEach(elem => {
+      this.startAddressPositionLat = elem.startpositionlattitude;
+      this.startAddressPositionLong = elem.startpositionlongitude;
+      this.endAddressPositionLat= elem.endpositionlattitude;
+      this.endAddressPositionLong= elem.endpositionlongitude;
+      let houseMarker = this.createHomeMarker();
+      let markerSize = { w: 26, h: 32 };
+      const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+      this.startMarker = new H.map.Marker({ lat:this.startAddressPositionLat, lng:this.startAddressPositionLong },{ icon:icon });
+      let endMarker = this.createEndMarker();
+      const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+      this.endMarker = new H.map.Marker({ lat:this.endAddressPositionLat, lng:this.endAddressPositionLong },{ icon:iconEnd });
+      this.group.addObjects([this.startMarker, this.endMarker]);
+      if(elem.liveFleetPosition.length > 1){
+         // required 2 points atleast to draw polyline
+        let liveFleetPoints: any = elem.liveFleetPosition;
+        liveFleetPoints.sort((a, b) => parseInt(a.id) - parseInt(b.id)); // sorted in Asc order based on Id's 
+        if(_displayRouteView == 'C' || _displayRouteView == 'F' || _displayRouteView == 'CO'){ // classic route
+          let blueColorCode: any = '#436ddc';
+          this.showClassicRoute(liveFleetPoints, trackType, blueColorCode);
+          let filterDataPoints: any = this.getFilterDataPoints(liveFleetPoints, _displayRouteView);
+          filterDataPoints.forEach((element) => {
+            this.drawPolyline(element, trackType);
+          });
         
-      })
-    }
+        }
+      }
+      
+    })
   }
+}
 
 drawPolyline(finalDatapoints: any, trackType?: any){
   var lineString = new H.geo.LineString();
@@ -911,14 +902,16 @@ createEndMarker(){
 
   public ngAfterViewInit() { }
 
-  loadfleetFuelDetails(vin: any){
+  loadfleetFuelDetails(_vinData: any){
+    let _startTime = Util.convertDateToUtc(this.startDateValue);
+    let _endTime = Util.convertDateToUtc(this.endDateValue);
     let getFleetFuelObj = {
-      "startDateTime": 1521843915459,
-      "endDateTime": 1721843915459,
-      "vin":"BLRAE75PC0E272200",
-      "driverId": "NL B000384974000000"
+      "startDateTime": _startTime,
+      "endDateTime": _endTime,
+      "viNs": _vinData,
+      "LanguageCode": "EN-GB"
     }
-    this.reportService.getDriverTripDetails(getFleetFuelObj).subscribe((data:any) => {
+    this.reportService.getVehicleTripDetails(getFleetFuelObj).subscribe((data:any) => {
     console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
@@ -1008,7 +1001,7 @@ createEndMarker(){
     if(event.checked){
       
       this.rowdata.push(row);
-      this.mapService.viewselectedroutes(this.rowdata,this.displayRouteView,this.trackType);
+      this.mapService.viewselectedroutes(this.rowdata, this.displayRouteView,this.trackType);
 
       let _ui = this.reportMapService.getUI();
      // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
@@ -1081,14 +1074,7 @@ createEndMarker(){
    // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
   }
 
-  backToFleetUtilReport(){
-    const navigationExtras: NavigationExtras = {
-      state: {
-        fromTripReport: true
-      }
-    };
-    this.router.navigate(['report/fleetutilisation'], navigationExtras);
-  }
+ 
 
   dataService: any;
   private configureAutoSuggest(){
@@ -1234,11 +1220,10 @@ createEndMarker(){
         "startDateTime":_startTime,
         "endDateTime":_endTime,
         "viNs":  _vinData,
-        "driverId": "NL B000384974000000"
       }
       this.loadfleetFuelDetails(_vinData);
        this.setTableInfo();
-      // this.updateDataSource(this.FuelData);
+      //  this.updateDataSource(this.FuelData);
       this.hideloader();
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
@@ -1259,8 +1244,7 @@ createEndMarker(){
       "startDateTime": _startTime,
       "endDateTime": _endTime,
       "viNs": _vinData,
-      "LanguageCode": "EN-GB",
-      "driverId": "NL B000384974000000"
+      "LanguageCode": "EN-GB"
     }
     this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
@@ -1303,8 +1287,6 @@ createEndMarker(){
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';
-    let driverName : any ='';
-    let driverID : any ='';
     let vin: any = '';
     let plateNo: any = '';
     // this.vehicleGroupListData.forEach(element => {
@@ -1328,7 +1310,7 @@ createEndMarker(){
     if(vehCount.length > 0){
       vehName = vehCount[0].vehicleName;
       vin = vehCount[0].vin;
-      plateNo = vehCount[0].registrationNo;
+      plateNo = vehCount[0].vehicleRegistrationNo;
     }
 
     // if(parseInt(this.tripForm.controls.vehicleGroup.value) == 0){
@@ -1339,11 +1321,9 @@ createEndMarker(){
       fromDate: this.formStartDate(this.startDateValue),
       endDate: this.formStartDate(this.endDateValue),
       vehGroupName: vehGrpName,
-      vehicleName: vehName,
       vin : vin,
-      plateNo : plateNo,
-      driverName : driverName,
-      driverID : driverID
+      vehicleName: vehName,
+      plateNo : plateNo
 
     }     
   }
@@ -1792,6 +1772,17 @@ getLast3MonthDate(){
 
   resetTripFormControlValue(){
     if(!this.internalSelection && this.fleetFuelSearchData.modifiedFrom !== ""){
+      if(this._state){
+        if(this.vehicleDD.length > 0){
+            let _v = this.vehicleDD.filter(i => i.vin == this._state.vehicleData.vin);
+            if(_v.length > 0){
+              let id =_v[0].vehicleId;
+              this.tripForm.get('vehicle').setValue(id);
+            }
+        }
+        }else{
+          this.tripForm.get('vehicle').setValue(this.fleetFuelSearchData.vehicleDropDownValue);
+      }
       this.tripForm.get('vehicle').setValue(this.fleetFuelSearchData.vehicleDropDownValue);
       this.tripForm.get('vehicleGroup').setValue(this.fleetFuelSearchData.vehicleGroupDropDownValue);
     }else{

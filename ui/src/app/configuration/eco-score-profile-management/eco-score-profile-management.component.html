@@ -109,9 +109,9 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
         <div  fxLayout="column" fxLayoutAlign="start"> 
-            <mat-checkbox *ngIf="actionType != 'manage'" [checked] = "isDAFStandard" (change)='onChange($event)'> {{ (translationData.lblDAFStandard || 'DAF Standard')}} </mat-checkbox>   
             <span *ngIf="actionType == 'manage'">{{ translationData.lblLastUpdate || 'Last Update'}}: {{ lastUpdated }}</span>
             <span *ngIf="actionType == 'manage'">{{ translationData.lblUpdatedBy || 'Updated By'}}: {{ updatedBy }}</span>
+            <mat-checkbox *ngIf = "userType == 'Admin#Global'" [checked] = "actionType == 'create' ? isDAFStandard : isSelected " (change)='onChange($event)'> {{ (translationData.lblDAFStandard || 'DAF Standard')}} </mat-checkbox>   
         </div>
         <div fxLayout="column" fxLayoutAlign="end">
             <div fxLayout="row" class='areaWidth'>
