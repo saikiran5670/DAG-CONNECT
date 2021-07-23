@@ -1,8 +1,9 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ReportService } from 'src/app/services/report.service';
+import { CustomValidators } from 'src/app/shared/custom.validators';
 
 @Component({
   selector: 'app-fleet-overview-tab-preferences',
@@ -27,7 +28,12 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
   ngOnInit() { 
     let repoId: any = this.reportListData.filter(i => i.name == 'Fleet Overview');
     this.fleetOverviewForm = this._formBuilder.group({
-      refreshTime: []
+      refreshTime: ['',[Validators.required]]
+    },{
+      validator: [
+        CustomValidators.numberFieldValidation('refreshTime', 60),
+        CustomValidators.numberMinFieldValidation('refreshTime', 1)
+      ]
     });
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
@@ -35,7 +41,7 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
       this.reportId = 17; //- hard coded for Fleet Overview - Logbook -13
     }
     this.translationUpdate();
-    this.loadTripReportPreferences();
+    this.loadFleetOverviewPreferences();
    }
 
    translationUpdate(){
@@ -50,7 +56,7 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
     }
    }
 
-   loadTripReportPreferences(){
+   loadFleetOverviewPreferences(){
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
       this.initData = prefData['userPreferences'];
       this.resetColumnData();
@@ -95,7 +101,7 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
   }
 
   setDefaultFormValues() {
-    this.fleetOverviewForm.get('refreshTime').setValue(this.timerPrefData[0].thresholdValue != '' ? this.timerPrefData[0].thresholdValue : 0);
+    this.fleetOverviewForm.get('refreshTime').setValue((this.timerPrefData[0].thresholdValue != '') ? (this.timerPrefData[0].thresholdValue > 0 ? this.timerPrefData[0].thresholdValue : 1): 1);
   }
 
   getName(name: any, _count: any) {
@@ -134,7 +140,72 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
     this.setDefaultFormValues();
   }
 
-  onConfirm(){ }
+  onConfirm(){ 
+    let _timerArr: any = [];
+    let _vehInfoArr: any = [];
+    let parentDataAttr: any = [];
+
+    this.timerPrefData.forEach(element => {
+      let sSearch = this.selectionForSetTimerColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+      if(sSearch.length > 0){
+        _timerArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: parseInt(this.fleetOverviewForm.controls.refreshTime.value)});
+      }else{
+        _timerArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: parseInt(this.fleetOverviewForm.controls.refreshTime.value)});
+      }
+    });
+
+    this.vehInfoPrefData.forEach(element => {
+      let sSearch = this.selectionForVehInfoColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+      if(sSearch.length > 0){
+        _vehInfoArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }else{
+        _vehInfoArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }
+    });
+
+    if(this.initData && this.initData.subReportUserPreferences && this.initData.subReportUserPreferences.length > 0){
+      parentDataAttr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      this.initData.subReportUserPreferences.forEach(elem => {
+        if(elem.key.includes('rp_fo_fleetoverview_settimer')){
+          let _val = parseInt(this.fleetOverviewForm.controls.refreshTime.value);
+          if(_val && _val > 0){ // parent selected
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }else{
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }
+        }else if(elem.key.includes('rp_fo_fleetoverview_generalvehicleinformation')){
+          if(this.selectionForVehInfoColumns.selected.length == this.vehInfoPrefData.length){ // parent selected
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }else{
+            parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
+          }
+        }
+      });
+    }
+
+    let objData: any = {
+      reportId: this.reportId,
+      attributes: [..._timerArr, ..._vehInfoArr, ...parentDataAttr] //-- merge data
+    }
+    this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
+      this.loadFleetOverviewPreferences();
+      this.setFleetOverviewFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+      if((this.router.url).includes("fleetoverview/livefleet")){
+        this.reloadCurrentComponent();
+      }
+    });
+  }
+
+  reloadCurrentComponent(){
+    window.location.reload(); //-- reload screen
+  }
+
+  getSuccessMsg(){
+    if(this.translationData.lblDetailssavesuccessfully)
+      return this.translationData.lblDetailssavesuccessfully;
+    else
+      return ("Details save successfully");
+  }
 
   keyPressNumbers(event: any){
     var charCode = (event.which) ? event.which : event.keyCode;
