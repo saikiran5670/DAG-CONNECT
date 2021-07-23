@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ReportService } from '../../../services/report.service';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-fuel-benchmark-preferences',
@@ -45,8 +45,8 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
     let repoId: any = this.reportListData.filter(i => i.name == 'Fuel Benchmarking');
     this.fuelBenchmarkForm = this._formBuilder.group({
       rp_fb_chart_fuelconsumption: [],
-      rp_fb_component_highfuelefficiency: [],
-      rp_fb_component_lowfuelefficiency: []
+      rp_fb_component_highfuelefficiency: ['', [Validators.min(0), Validators.max(100), Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]],
+      rp_fb_component_lowfuelefficiency: ['', [Validators.min(0), Validators.max(100), Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]]
     });
 
     if (repoId.length > 0) {

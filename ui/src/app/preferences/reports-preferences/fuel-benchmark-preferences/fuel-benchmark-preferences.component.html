@@ -18,9 +18,18 @@
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
             <mat-form-field appearance="outline" style='width: 80%'>
-                <input [readonly]='!editFlag' matInput type="text"
+                <input [readonly]='!editFlag' matInput type="number"
                     placeholder="{{ translationData.lblHighFuelEfficency || 'High Fuel Efficency' }}"
                     (keypress)="keyPressNumbers($event)" formControlName="rp_fb_component_highfuelefficiency">
+                    <mat-error *ngIf="fuelBenchmarkForm.get('rp_fb_component_highfuelefficiency').hasError('min')">
+                       No negative values allowed
+                      </mat-error>
+                      <mat-error *ngIf="fuelBenchmarkForm.get('rp_fb_component_highfuelefficiency').hasError('max')">
+                        Max value allowed: 100
+                       </mat-error>
+                       <mat-error *ngIf="fuelBenchmarkForm.get('rp_fb_component_highfuelefficiency').hasError('pattern')">
+                        Value allowed upto 2 decimal places
+                        </mat-error>
             </mat-form-field>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per"></div>
@@ -33,9 +42,19 @@
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
             <mat-form-field appearance="outline" style='width: 80%'>
-                <input [readonly]='!editFlag' matInput type="text"
+                <input [readonly]='!editFlag' matInput type="number"
                     placeholder="{{ translationData.lblLowFuelEfficency || 'Low Fuel Efficency' }}"
                     (keypress)="keyPressNumbers($event)" formControlName="rp_fb_component_lowfuelefficiency">
+                    <mat-error *ngIf="fuelBenchmarkForm.get('rp_fb_component_lowfuelefficiency').hasError('min')">
+                        No negative values allowed
+                       </mat-error>
+                       <mat-error *ngIf="fuelBenchmarkForm.get('rp_fb_component_lowfuelefficiency').hasError('max')">
+                         Max value allowed: 100
+                        </mat-error>
+                        <mat-error *ngIf="fuelBenchmarkForm.get('rp_fb_component_lowfuelefficiency').hasError('pattern')">
+                           Value allowed upto 2 decimal places
+                           </mat-error>
+                       
             </mat-form-field>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per"></div>
@@ -79,7 +98,7 @@
             translationData.lblCancel || 'Cancel' }}</button>
         <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
             translationData.lblReset || 'Reset' }}</button>
-        <button [disabled]='fuelBenchmarkChartsPrefData.length == 0 || fuelBenchmarkComponentPrefData.length == 0'
+        <button [disabled]='!fuelBenchmarkForm.valid || fuelBenchmarkChartsPrefData.length == 0 || fuelBenchmarkComponentPrefData.length == 0'
             class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
             'Confirm') }}</button>
     </div>
