@@ -1,67 +1,58 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ReportService } from '../../../services/report.service';
 import { Router } from '@angular/router';
+import { ReportService } from 'src/app/services/report.service';
 
 @Component({
-  selector: 'app-trip-report-preference',
-  templateUrl: './trip-report-preference.component.html',
-  styleUrls: ['./trip-report-preference.component.less']
+  selector: 'app-logbook-tab-preferences',
+  templateUrl: './logbook-tab-preferences.component.html',
+  styleUrls: ['./logbook-tab-preferences.component.less']
 })
-export class TripReportPreferenceComponent implements OnInit {
+
+export class LogbookTabPreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
   @Input() translationData: any;
-  @Output() setTripReportFlag = new EventEmitter<any>();
-  localStLanguage: any;
-  accountId: any;
-  accountOrganizationId: any;
-  roleID: any;
+  @Output() setLogbookFlag = new EventEmitter<any>();
   reportId: any;
   initData: any = [];
-  tripPrefData: any = [];
-  selectionForTripColumns = new SelectionModel(true, []);
+  logbookPrefData: any = [];
+  selectionForLoogbookColumns = new SelectionModel(true, []);
   reqField: boolean = false;
 
   constructor(private reportService: ReportService, private router: Router) { }
 
-  ngOnInit(){ 
-    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.accountId = parseInt(localStorage.getItem("accountId"));
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    this.roleID = parseInt(localStorage.getItem('accountRoleId'));
-    let repoId: any = this.reportListData.filter(i => i.name == 'Trip Report');
+  ngOnInit() {
+    let repoId: any = this.reportListData.filter(i => i.name == 'Logbook');
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
     }else{
-      this.reportId = 1; //- hard coded for trip report
+      this.reportId = 13; //- hard coded for Logbook
     }
     this.translationUpdate();
-    this.loadTripReportPreferences();
+    this.loadLogbookPreferences();
   }
 
   translationUpdate(){
     this.translationData = {
-      rp_tr_report_tripreportdetails_averageweight: 'Average Weight',
-      rp_tr_report_tripreportdetails_vin: 'VIN',
-      rp_tr_report_tripreportdetails_vehiclename: 'Vehicle Name',
-      rp_tr_report_tripreportdetails_alerts: 'Alerts',
-      rp_tr_report_tripreportdetails_platenumber: 'Reg. Plate Number',
-      rp_tr_report_tripreportdetails_events: 'Events',
-      rp_tr_report_tripreportdetails_odometer: 'Odometer',
-      rp_tr_report_tripreportdetails_averagespeed: 'Average Speed',
-      rp_tr_report_tripreportdetails_drivingtime: 'Driving Time',
-      rp_tr_report_tripreportdetails_fuelconsumed: 'Fuel consumed',
-      rp_tr_report_tripreportdetails_startposition: 'Start Position',
-      rp_tr_report_tripreportdetails_idleduration: 'Idle Duration',
-      rp_tr_report_tripreportdetails_startdate: 'Start Date',
-      rp_tr_report_tripreportdetails_distance: 'Distance',
-      rp_tr_report_tripreportdetails_enddate: 'End Date',
-      rp_tr_report_tripreportdetails_endposition: 'End Position'
+      rp_lb_logbook: 'Logbook',
+      rp_lb_logbook_details: 'Details',
+      rp_lb_logbook_details_alertlevel: 'Alert Level',
+      rp_lb_logbook_details_date: 'Date',
+      rp_lb_logbook_details_vehiclename: 'Vehicle Name',
+      rp_lb_logbook_details_vin: 'VIN',
+      rp_lb_logbook_details_registrationplatenumber: 'Registration Plate Number',
+      rp_lb_logbook_details_alertname: 'Alert Name',
+      rp_lb_logbook_details_tripstart: 'Trip Start',
+      rp_lb_logbook_details_alerttype: 'Alert Type',
+      rp_lb_logbook_details_alertcategory: 'Alert Category',
+      rp_lb_logbook_details_occurance: 'Occurance',
+      rp_lb_logbook_details_tripend: 'Trip End',
+      rp_lb_logbook_details_threshold: 'Threshold'
     }
   }
 
-  loadTripReportPreferences(){
+  loadLogbookPreferences(){
     this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
       this.initData = prefData['userPreferences'];
       this.resetColumnData();
@@ -69,12 +60,8 @@ export class TripReportPreferenceComponent implements OnInit {
       this.validateRequiredField();
     }, (error)=>{
       this.initData = [];
-      this.tripPrefData = [];
+      this.resetColumnData();
     });
-  }
-
-  resetColumnData(){
-    this.tripPrefData = [];
   }
 
   getTranslatedColumnName(prefData: any){
@@ -83,14 +70,14 @@ export class TripReportPreferenceComponent implements OnInit {
         if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
           element.subReportUserPreferences.forEach(item => {
             let _data: any;
-            if(item.key.includes('rp_tr_report_tripreportdetails_')){
+            if(item.key.includes('rp_lb_logbook_details_')){
               _data = item;
               if(this.translationData[item.key]){
                 _data.translatedName = this.translationData[item.key];  
               }else{
                 _data.translatedName = this.getName(item.name, 25);   
               }
-              this.tripPrefData.push(_data);
+              this.logbookPrefData.push(_data);
             }
           });
         }
@@ -105,18 +92,22 @@ export class TripReportPreferenceComponent implements OnInit {
   }
 
   setColumnCheckbox(){
-    this.selectionForTripColumns.clear();
-    this.tripPrefData.forEach(element => {
+    this.selectionForLoogbookColumns.clear();
+    this.logbookPrefData.forEach(element => {
       if(element.state == 'A'){
-        this.selectionForTripColumns.select(element);
+        this.selectionForLoogbookColumns.select(element);
       }
     });
   }
 
+  resetColumnData(){
+    this.logbookPrefData = [];
+  }
+
   validateRequiredField(){
     let _flag = true;
-    if(this.selectionForTripColumns.selected.length > 0){
-      let _search = this.selectionForTripColumns.selected.filter(i => (i.key == 'rp_tr_report_tripreportdetails_vehiclename' || i.key == 'rp_tr_report_tripreportdetails_vin' || i.key == 'rp_tr_report_tripreportdetails_platenumber'));
+    if(this.selectionForLoogbookColumns.selected.length > 0){
+      let _search = this.selectionForLoogbookColumns.selected.filter(i => (i.key == 'rp_lb_logbook_details_vehiclename' || i.key == 'rp_lb_logbook_details_vin' || i.key == 'rp_lb_logbook_details_registrationplatenumber'));
       if(_search.length){
         _flag = false;
       }
@@ -124,18 +115,18 @@ export class TripReportPreferenceComponent implements OnInit {
     this.reqField = _flag;
   }
 
-  isAllSelectedForColumns(){
-    const numSelected = this.selectionForTripColumns.selected.length;
-    const numRows = this.tripPrefData.length;
+  isAllSelectedForLogbookColumns(){
+    const numSelected = this.selectionForLoogbookColumns.selected.length;
+    const numRows = this.logbookPrefData.length;
     return numSelected === numRows;
   }
 
-  masterToggleForColumns(){
-    if(this.isAllSelectedForColumns()){
-      this.selectionForTripColumns.clear();
+  masterToggleForLogbookColumns(){
+    if(this.isAllSelectedForLogbookColumns()){
+      this.selectionForLoogbookColumns.clear();
       this.validateRequiredField();
     }else{
-      this.tripPrefData.forEach(row => { this.selectionForTripColumns.select(row) });
+      this.logbookPrefData.forEach(row => { this.selectionForLoogbookColumns.select(row) });
       this.validateRequiredField();
     }
   }
@@ -146,13 +137,13 @@ export class TripReportPreferenceComponent implements OnInit {
 
   checkboxLabelForColumns(row?: any): string{
     if(row)
-      return `${this.isAllSelectedForColumns() ? 'select' : 'deselect'} all`;
+      return `${this.isAllSelectedForLogbookColumns() ? 'select' : 'deselect'} all`;
     else  
-      return `${this.selectionForTripColumns.isSelected(row) ? 'deselect' : 'select'} row`;
+      return `${this.selectionForLoogbookColumns.isSelected(row) ? 'deselect' : 'select'} row`;
   }
 
   onCancel(){
-    this.setTripReportFlag.emit({flag: false, msg: ''});
+    this.setLogbookFlag.emit({flag: false, msg: ''});
     this.setColumnCheckbox();
     this.validateRequiredField();
   }
@@ -164,8 +155,8 @@ export class TripReportPreferenceComponent implements OnInit {
 
   onConfirm(){
     let _dataArr: any = [];
-    this.tripPrefData.forEach(element => {
-      let search = this.selectionForTripColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+    this.logbookPrefData.forEach(element => {
+      let search = this.selectionForLoogbookColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
       if(search.length > 0){
         _dataArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }else{
@@ -174,7 +165,7 @@ export class TripReportPreferenceComponent implements OnInit {
     });
 
     _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 }); // main parent
-    if(this.selectionForTripColumns.selected.length == this.tripPrefData.length){ // parent selected
+    if(this.selectionForLoogbookColumns.selected.length == this.logbookPrefData.length){ // parent selected
       _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
     }else{ // parent un-selected
       _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
@@ -186,9 +177,9 @@ export class TripReportPreferenceComponent implements OnInit {
     }
 
     this.reportService.updateReportUserPreference(objData).subscribe((_tripPrefData: any) => {
-      this.loadTripReportPreferences();
-      this.setTripReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-      if((this.router.url).includes("tripreport")){
+      this.loadLogbookPreferences();
+      this.setLogbookFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+      if((this.router.url).includes("fleetoverview/logbook")){
         this.reloadCurrentComponent();
       }
     }, (error) => {
@@ -206,5 +197,4 @@ export class TripReportPreferenceComponent implements OnInit {
   reloadCurrentComponent(){
     window.location.reload(); //-- reload screen
   }
-
 }
