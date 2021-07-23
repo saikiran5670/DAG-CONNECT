@@ -72,6 +72,7 @@ vehicleListData: any = [];
 trackType: any = 'snail';
 displayRouteView: any = 'C';
 vehicleDD: any = [];
+alertTypeName: any = [];
 vehicleGrpDD: any = [];
 alertLvl: any =[];
 alertTyp: any=[];
@@ -193,6 +194,8 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
   this.defaultTranslation();
   const navigation = this.router.getCurrentNavigation();
   this._state = navigation.extras.state as {
+    fromFleetUtilReport: boolean,
+    vehicleData: any
     fromVehicleDetails: boolean,
     data: any
   };
@@ -257,7 +260,7 @@ ngOnDestroy(){
       name: "",
       value: "",
       filter: "",
-      menuId: 6 //-- for Trip Report
+      menuId: 17 //-- for alert
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
@@ -277,6 +280,7 @@ ngOnDestroy(){
         }
       });
     });
+    this.selectionTimeRange('today');
   }
 
   changeHerePOISelection(event: any, hereData: any){
@@ -592,11 +596,11 @@ ngOnDestroy(){
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     let _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
     if(_vinData.length > 0){
-      //this.showLoadingIndicator = true;
+      this.showLoadingIndicator = true;
       // this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
       //   this.hideloader();
       //   this.tripData = this.reportMapService.getConvertedDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-       // this.setTableInfo();
+      //   this.setTableInfo();
       //   this.updateDataSource(this.tripData);
       // }, (error)=>{
       //   //console.log(error);
@@ -631,22 +635,33 @@ ngOnDestroy(){
           "start_Time":_startTime,
           "end_time": _endTime     
         }
-      
-        let filterData = this.wholeLogBookData["enumTranslation"];
-        filterData.forEach(item => {
-          let type= this.translationData[item["key"]];
-        });
+    
 
-      
       this.reportService.getLogbookDetails(objData).subscribe((logbookData: any) => {
         this.hideloader();
         logbookData.forEach(element => {
           element.alertGeneratedTime = Util.convertUtcToDate(element.alertGeneratedTime, this.prefTimeZone);
           element.tripStartTime = Util.convertUtcToDate(element.tripStartTime, this.prefTimeZone);
           element.tripEndTime = Util.convertUtcToDate(element.tripEndTime, this.prefTimeZone);
+          // let filterData = this.wholeLogBookData["enumTranslation"];
+          let filterData = this.wholeLogBookData["enumTranslation"];
+      filterData.forEach(element => {
+        element["value"]= this.translationData[element["key"]];
+      });
+
+          let categoryList = filterData.filter(item => item.type == 'C');
+          let alertTypeList= filterData.filter(item => item.type == 'T');
+          // this.alertCriticalityList= filterData.filter(item => item.type == 'U');
+          let newData = alertTypeList.filter((s) => s.enum == element.alertType);
+          let catData = categoryList.filter((s) => s.enum == element.alertCategory);
+          element.alertCategory = catData[0].value;
+          element.alertType = newData[0].value;
+          let alertLevelName = this.alertLvl.filter((s) => s.value == element.alertLevel);
+          element.alertLevel = alertLevelName[0].name;
+         this.initData = logbookData;
         });
-        this.setTableInfo();
-        this.updateDataSource(logbookData);
+
+        this.updateDataSource(this.initData);
       }, (error)=>{
           this.hideloader();
           this.initData = [];
@@ -660,8 +675,8 @@ ngOnDestroy(){
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';
-    //let vin: any = '';
-    //let plateNo: any = '';
+    let vin: any = '';
+    let plateNo: any = '';
     let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.logBookForm.controls.vehicleGroup.value));
     if(vehGrpCount.length > 0){
       vehGrpName = vehGrpCount[0].vehicleGroupName;
@@ -669,16 +684,16 @@ ngOnDestroy(){
     let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.logBookForm.controls.vehicle.value));
     if(vehCount.length > 0){
       vehName = vehCount[0].vehicleName;
-    //  vin = vehCount[0].vin;
-     // plateNo = vehCount[0].registrationNo;
+      vin = vehCount[0].vin;
+      plateNo = vehCount[0].registrationNo;
     }
     this.tableInfoObj = {
       fromDate: this.formStartDate(this.startDateValue),
       endDate: this.formStartDate(this.endDateValue),
       vehGroupName: vehGrpName,
       vehicleName: vehName,
-      //vin: vin,
-      //regNo: plateNo
+      vin: vin,
+      regNo: plateNo
     }
   }
 
@@ -738,6 +753,7 @@ ngOnDestroy(){
     this.selectedPOI.clear();
     this.selectedHerePOI.clear();
     this.searchMarker = {};
+    this.selectionTimeRange('today');
   }
 
   resetLogFormControlValue(){
@@ -794,9 +810,7 @@ ngOnDestroy(){
   }
 
   updateDataSource(tableData: any) {
-    console.log(tableData);
     this.initData = tableData;
-    console.log("initData", this.initData);
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
@@ -805,145 +819,128 @@ ngOnDestroy(){
   }
 
   exportAsExcelFile(){  
-  const title = 'Trip Report';
-  const summary = 'Summary Section';
-  const detail = 'Detail Section';
-  let unitVal100km =(this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'gallon/100mile') : (this.translationData.lblgallonmile || 'gallon/100mile');
-  let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound || 'pound');
-  let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
-  let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile') ;
-
-  const header = ['VIN', 'Odometer', 'Vehicle Name', 'Registration No', 'Start Date', 'End Date', 'Distance('+ unitValkm + ')', 'Idle Duration(hh:mm)', 'Average Speed('+ unitValkmh + ')', 'Average Weight('+ unitValkg + ')', 'Start Position', 'End Position', 'Fuel Consumption('+ unitVal100km + ')', 'Driving Time(hh:mm)', 'Alerts', 'Events'];
-  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Vehicle VIN', 'Reg. Plate Number'];
-  let summaryObj=[
-    ['Log Data', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
-    this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName
-    ]
-  ];
-  const summaryData= summaryObj;
-  
-  //Create workbook and worksheet
-  let workbook = new Workbook();
-  let worksheet = workbook.addWorksheet('Trip Report');
-  //Add Row and formatting
-  let titleRow = worksheet.addRow([title]);
-  worksheet.addRow([]);
-  titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
- 
-  worksheet.addRow([]);  
-  let subTitleRow = worksheet.addRow([summary]);
-  let summaryRow = worksheet.addRow(summaryHeader);  
-  summaryData.forEach(element => {  
-    worksheet.addRow(element);   
-  });      
-  worksheet.addRow([]);
-  summaryRow.eachCell((cell, number) => {
-    cell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFFFFF00' },
-      bgColor: { argb: 'FF0000FF' }      
-    }
-    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-  })  
-  worksheet.addRow([]);   
-  let subTitleDetailRow = worksheet.addRow([detail]);
-  let headerRow = worksheet.addRow(header);
-  headerRow.eachCell((cell, number) => {
-    cell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFFFFF00' },
-      bgColor: { argb: 'FF0000FF' }
-    }
-    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-  })
-
- this.initData.forEach(item => {     
-    worksheet.addRow([item.vin, item.odometer, item.vehicleName, item.registrationNo, item.convertedStartTime, 
-      item.convertedEndTime, item.convertedDistance, item.convertedIdleDuration, item.convertedAverageSpeed,
-      item.convertedAverageWeight, item.startPosition, item.endPosition, item.convertedFuelConsumed100Km,
-      item.convertedDrivingTime, item.alert, item.events]);   
-  }); 
-  worksheet.mergeCells('A1:D2'); 
-  subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
-  subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
-  for (var i = 0; i < header.length; i++) {    
-    worksheet.columns[i].width = 20;      
-  }
-  for (var j = 0; j < summaryHeader.length; j++) {  
-    worksheet.columns[j].width = 20; 
-  }
-  worksheet.addRow([]); 
-  workbook.xlsx.writeBuffer().then((data) => {
-    let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    fs.saveAs(blob, 'Trip_Report.xlsx');
- })
-  // this.matTableExporter.exportTable('xlsx', {fileName:'Trip_Report', sheet: 'sheet_name'});
-}
-  
-  exportAsPDFFile(){
-    var doc = new jsPDF();
-    (doc as any).autoTable({
-      styles: {
-          cellPadding: 0.5,
-          fontSize: 12
-      },       
-      didDrawPage: function(data) {     
-          // Header
-          doc.setFontSize(14);
-          var fileTitle = "Trip Details";
-          var img = "/assets/logo.png";
-          doc.addImage(img, 'JPEG',10,10,0,0);
- 
-          var img = "/assets/logo_daf.png"; 
-          doc.text(fileTitle, 14, 35);
-          doc.addImage(img, 'JPEG',150, 10, 0, 10);            
-      },
-      margin: {
-          bottom: 20, 
-          top:30 
+    const title = 'Logbook';
+    const summary = 'Logbook Details Section';
+    const detail = 'Alert Detail Section';
+    
+    const header = ['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle Name', 'VIN', 'Occurrence', 'Threshold Value'];
+    const summaryHeader = ['Logbook Name', 'Logbook Created', 'Logbook Start Time', 'Logbook End Time', 'Vehicle Group', 'Vehicle Name', 'Alert Level', 'Alert Type', 'Alert Category'];
+    let summaryObj=[
+      ['Logbook Data', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+      this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName
+      ] 
+    ];
+    const summaryData= summaryObj;
+    
+    //Create workbook and worksheet
+    let workbook = new Workbook();
+    let worksheet = workbook.addWorksheet('Trip Report');
+    //Add Row and formatting
+    let titleRow = worksheet.addRow([title]);
+    worksheet.addRow([]);
+    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+   
+    worksheet.addRow([]);  
+    let subTitleRow = worksheet.addRow([summary]);
+    let summaryRow = worksheet.addRow(summaryHeader);  
+    summaryData.forEach(element => {  
+      worksheet.addRow(element);   
+    });      
+    worksheet.addRow([]);
+    summaryRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }      
       }
-  });
-
-    let pdfColumns = [['VIN', 'Vehicle Name', 'Registration Number', 'Odometer', 'Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
-    // let pdfColumns = [['Odometer','Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
-
-  let prepare = []
-    this.initData.forEach(e=>{
-      // console.log("---actual data--pdf columns", this.initData)
-      var tempObj =[];
-      
-      tempObj.push(e.vin); ////need to confirm from backend for key
-      tempObj.push(e.vehicleName); ////need to confirm from backend for key
-      tempObj.push(e.registrationNo); //need to confirm from backend for key
-      tempObj.push(e.odometer);
-      tempObj.push(e.convertedStartTime);
-      tempObj.push(e.convertedEndTime);
-      tempObj.push(e.convertedDistance);
-      tempObj.push(e.convertedIdleDuration);
-      tempObj.push(e.convertedAverageSpeed);
-      tempObj.push(e.convertedAverageWeight);
-      tempObj.push(e.startPosition);
-      tempObj.push(e.endPosition);
-      tempObj.push(e.convertedFuelConsumed100Km);
-      tempObj.push(e.convertedDrivingTime);
-      tempObj.push(e.alert);
-      tempObj.push(e.events);
-
-      prepare.push(tempObj);
-    });
-    (doc as any).autoTable({
-      head: pdfColumns,
-      body: prepare,
-      theme: 'striped',
-      didDrawCell: data => {
-        //console.log(data.column.index)
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })  
+    worksheet.addRow([]);   
+    let subTitleDetailRow = worksheet.addRow([detail]);
+    let headerRow = worksheet.addRow(header);
+    headerRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
       }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
     })
-    // below line for Download PDF document  
-    doc.save('tripReport.pdf');
+    this.initData.forEach(item => {     
+      worksheet.addRow([item.alertLevel, item.alertGeneratedTime, item.vehicleRegNo, item.alertType, item.alertName, 
+        item.alertCategory, item.tripStartTime, item.tripEndTime, item.vehicleName,
+        item.vin, item.occurrence, item.thresholdValue]);   
+    }); 
+    worksheet.mergeCells('A1:D2'); 
+    subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    for (var i = 0; i < header.length; i++) {    
+      worksheet.columns[i].width = 20;      
+    }
+    for (var j = 0; j < summaryHeader.length; j++) {  
+      worksheet.columns[j].width = 20; 
+    }
+    worksheet.addRow([]); 
+    workbook.xlsx.writeBuffer().then((data) => {
+      let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      fs.saveAs(blob, 'Logbook.xlsx');
+   }) 
   }
+  
+exportAsPDFFile(){
+  var doc = new jsPDF();
+  (doc as any).autoTable({
+    styles: {
+        cellPadding: 0.5,
+        fontSize: 12
+    },       
+    didDrawPage: function(data) {     
+        // Header
+        doc.setFontSize(14);
+        var fileTitle = "Logbook Details";
+        var img = "/assets/logo.png";
+        doc.addImage(img, 'JPEG',10,10,0,0);
+
+        var img = "/assets/logo_daf.png"; 
+        doc.text(fileTitle, 14, 35);
+        doc.addImage(img, 'JPEG',150, 10, 0, 10);            
+    },
+    margin: {
+        bottom: 20, 
+        top:30 
+    }
+});
+
+let pdfColumns = [['Alert Level', 'Generated Date', 'Vehicle Reg No', 'Alert Type', 'Alert Name', 'Alert Category', 'Start Time', 'End Time', 'Vehicle Name', 'VIN', 'Occurrence', 'Threshold Value']];   
+let prepare = []
+  this.initData.forEach(e=>{   
+    var tempObj =[];
+    tempObj.push(e.alertLevel); 
+    tempObj.push(e.alertGeneratedTime); 
+    tempObj.push(e.vehicleRegNo);
+    tempObj.push(e.alertType);
+    tempObj.push(e.alertName);
+    tempObj.push(e.alertCategory);
+    tempObj.push(e.tripStartTime);
+    tempObj.push(e.tripEndTime);
+    tempObj.push(e.vehicleName);
+    tempObj.push(e.vin);
+    tempObj.push(e.occurrence);
+    tempObj.push(e.thresholdValue);
+    prepare.push(tempObj);
+  });
+  (doc as any).autoTable({
+    head: pdfColumns,
+    body: prepare,
+    theme: 'striped',
+    didDrawCell: data => {
+      //console.log(data.column.index)
+    }
+  })
+   doc.save('Logbook.pdf');
+}
 
   masterToggleForTrip() {
     this.tripTraceArray = [];
@@ -1156,7 +1153,20 @@ ngOnDestroy(){
     console.log("this.wholeLogBookData.alertTypeFilterRequest---::", this.wholeLogBookData.alertTypeFilterRequest);
     console.log("this.wholeLogBookData.acFilterResponse---::", this.wholeLogBookData.acFilterResponse);
     
-    
+    let filterData = this.wholeLogBookData["enumTranslation"];
+    filterData.forEach(element => {
+      element["value"]= this.translationData[element["key"]];
+    });
+
+    let levelListData =[];
+        let categoryList = filterData.filter(item => item.type == 'C');
+        let alertTypeList= filterData.filter(item => item.type == 'T');
+        this.wholeLogBookData.alFilterResponse.forEach(item=>{
+          let levelName =  this.translationData[item.name];
+          levelListData.push({'name':levelName, 'value': item.value})
+        }); 
+
+
     if(this.wholeLogBookData.logbookTripAlertDetailsRequest.length > 0){
       // let filterVIN: any = this.wholeLogBookData.logbookTripAlertDetailsRequest.filter(item => (parseInt(item.alertGeneratedTime.toString() + "000")>= currentStartTime) && ( (parseInt(item.alertGeneratedTime.toString() + "000")) <= currentEndTime)).map(data => data.vin);
       let filterVIN: any = this.wholeLogBookData.logbookTripAlertDetailsRequest.filter(item => item.alertGeneratedTime >= currentStartTime && item.alertGeneratedTime <= currentEndTime).map(data => data.vin);
@@ -1181,7 +1191,10 @@ ngOnDestroy(){
 
     this.vehicleGroupListData = finalVINDataList;
     if(this.vehicleGroupListData.length > 0){
-      this.makeAlertInformation();
+      // this.makeAlertInformation();
+      this.alertTyp = alertTypeList;
+      this.alertCtgry = categoryList;
+      this.alertLvl =   levelListData;
       let _s = this.vehicleGroupListData.map(item => item.vehicleGroupId).filter((value, index, self) => self.indexOf(value) === index);
       if(_s.length > 0){
         _s.forEach(element => {
@@ -1215,19 +1228,19 @@ ngOnDestroy(){
     this.logBookForm.get('alertCategory').setValue('');
   }
 
-  makeAlertInformation(){
-    if(this.wholeLogBookData.alFilterResponse.length > 0){
-      this.alertLvl = this.wholeLogBookData.alFilterResponse;
-    }
+  // makeAlertInformation(){
+  //   if(this.wholeLogBookData.alFilterResponse.length > 0){
+  //     this.alertLvl = this.wholeLogBookData.alFilterResponse;
+  //   }
 
-    if(this.wholeLogBookData.acFilterResponse.length > 0){
-      this.alertCtgry = this.wholeLogBookData.acFilterResponse;
-    }
+  //   if(this.wholeLogBookData.acFilterResponse.length > 0){
+  //     this.alertCtgry = this.wholeLogBookData.acFilterResponse;
+  //   }
 
-    if(this.wholeLogBookData.alertTypeFilterRequest.length > 0){
-      this.alertTyp = this.wholeLogBookData.alertTypeFilterRequest;
-    }
-  }
+  //   if(this.wholeLogBookData.alertTypeFilterRequest.length > 0){
+  //     this.alertTyp = this.wholeLogBookData.alertTypeFilterRequest;
+  //   }
+  // }
 
   onAlertLevelChange(event: any){
 
