@@ -20,12 +20,21 @@
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth adjust-padding">
             <div fxLayout="row" class='areaWidth' fxLayoutAlign="left center">
                 <mat-form-field appearance="outline" style='width: 75px; margin-right: 10px;'>
-                    <input [readonly]='!editFlag' matInput type="text"
+                    <input maxlength="2" [readonly]='!editFlag' matInput type="text"
                         placeholder="{{ translationData.lblTimer || 'Timer' }}"
                         (keypress)="keyPressNumbers($event)" formControlName="refreshTime">
                 </mat-form-field>
                 <span style="display: flex; place-content: flex-end;">({{ translationData.lbl || 'minimum 1 min or maximum 60 min' }})</span>
             </div>
+            <mat-error [ngClass]="{'errorClass': fleetOverviewForm.get('refreshTime').hasError('required')}" *ngIf="fleetOverviewForm.get('refreshTime').hasError('required')">
+                {{ translationData.lblPleaseEnterTimerValue || 'Please Enter Timer Value' }}
+            </mat-error>
+            <mat-error [ngClass]="{'errorClass': fleetOverviewForm.get('refreshTime').hasError('cannotExceedMaxValue')}" *ngIf="fleetOverviewForm.get('refreshTime').hasError('cannotExceedMaxValue')">
+                {{ translationData.lbl || 'Timer Value cannot be greater than 60' }}
+             </mat-error>
+             <mat-error [ngClass]="{'errorClass': fleetOverviewForm.get('refreshTime').hasError('cannotExceedMinValue')}" *ngIf="fleetOverviewForm.get('refreshTime').hasError('cannotExceedMinValue')">
+                {{ translationData.lbl || 'Timer Value cannot be less than 1' }}
+             </mat-error>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style='height: 60px;' class="areaWidth adjust-padding"></div>
     </div>
@@ -76,7 +85,7 @@
         <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
             translationData.lblReset || 'Reset' }}</button>
         <button
-            [disabled]='(selectionForSetTimerColumns.selected.length == 0 && timerPrefData.length > 0) || (selectionForVehInfoColumns.selected.length == 0 && vehInfoPrefData.length > 0)'
+            [disabled]='!fleetOverviewForm.valid || (selectionForSetTimerColumns.selected.length == 0 && timerPrefData.length > 0) || (selectionForVehInfoColumns.selected.length == 0 && vehInfoPrefData.length > 0)'
             class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
             'Confirm') }}</button>
     </div>
