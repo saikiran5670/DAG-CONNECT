@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.notificationengine
                     else if (item.Noti_frequency_type.ToUpper() == "E")
                     {
                         int index = 0;
-                        List<TripAlert> nGenAlertDetails = (List<TripAlert>)generatedAlertForVehicle.OrderBy(o => o.AlertGeneratedTime).GroupBy(e => new { e.Alertid, e.Vin }); //order by alert generated time  //.Where(e => e.Count() == item.Noti_frequency_threshhold_value);
+                        var nGenAlertDetails = generatedAlertForVehicle.OrderBy(o => o.AlertGeneratedTime).GroupBy(e => new { e.Alertid, e.Vin }); //order by alert generated time  //.Where(e => e.Count() == item.Noti_frequency_threshhold_value);
                         for (int i = 1; i <= nGenAlertDetails.Count(); i++)
                         {
                             if (i / item.Noti_frequency_threshhold_value == 0)

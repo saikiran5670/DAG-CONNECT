@@ -558,6 +558,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 
   allDriversSelected = true;
   allDriverData : any;
+  graphPayload : any;
   onSearch(){
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
@@ -582,8 +583,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       _driverIds.shift();
     }
     else {
-      this.allDriversSelected = false
+      this.allDriversSelected = false;
       _driverIds = this.driverListData.filter(item => item.driverID == (this.driverTimeForm.controls.driver.value)).map(data=>data.driverID);
+     
     }
     
    
@@ -658,7 +660,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           this.updateDataSource(tableData);
         }
         else{
-          this.driverSelected = true;
+         // this.driverSelected = true;
           this.driverDetails = [];
           this.driverDetails = [...tripData.driverActivities];
           let updatedDriverData = this.makeDetailDriverList(tripData.driverActivities);
@@ -666,6 +668,12 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           this.detailConvertedData = [];
           this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
           this.setGeneralDriverDetailValue(updatedDriverData[0]["cummulativeDriverList"]);
+          this.graphPayload = {
+            "startDateTime": _startTime,
+            "endDateTime": _endTime,
+            "driverId": _driverIds[0]
+    
+          }
         }
        
 
@@ -1130,6 +1138,11 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
  
     this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     this.driverSelected = true;
+    this.graphPayload = {
+      "startDateTime": this.startDateValue,
+      "endDateTime": this.endDateValue,
+      "driverId": _row.driverID
+    }
     // this.driverDetails = 
     //   [
     //           {

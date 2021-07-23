@@ -228,28 +228,35 @@
             </div>
             <div style="font: 500 16px/32px Roboto, 'Helvetica Neue', sans-serif;" fxLayout="row"
               fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-              <mat-card class="areaWidth min-width-30-per warning_history" fxLayout="column" fxLayoutAlign="left"
-                *ngFor="let warning of obs | async">
-                <div>
-                  <span style="font-weight: bold;">Oil pressure too low</span>
-                </div>
-                <div fxLayout="row">
-                  <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
-                    <span style="font-size: small;">Activated Time</span>
-                    <span>04/01/2021 02:33:21</span>
+              <div *ngFor="let warning of obs | async">
+                <mat-checkbox style="font-size: 14px;"> View on Map
+                </mat-checkbox>
+                <div class="areaWidth min-width-30-per warning_history" fxLayout="column" fxLayoutAlign="left">
+                  <div class="class_padding" style="font-size: 14px;">
+                    <span class="name_bold">{{warning.warningName}}</span>
                   </div>
-                  <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
-                    <span style="font-size: small;">Deactivated Time</span>
-                    <span>04/01/2021 02:55:21</span>
+                  <div fxLayout="row" class="class_padding">
+                    <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
+                      <span class="name_small">Activated Time</span>
+                      <span style="font-size: 14px;">{{warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a'}}</span>
+                    </div>
+                    <div *ngIf='!isCurrent' class="warning_time" fxLayout="column" fxLayoutAlign="left">
+                      <span class="name_small warning_danger">Deactivated Time</span>
+                      <span style="font-size: 14px;">04/01/2021 02:55:21</span>
+                    </div>
+                  </div>
+                  <div fxLayout="row" class="name_small class_padding">
+                    <span>Driver Name: </span>
+                    <span class="name_bold"> {{warning.driverName}}</span>
+                  </div>
+                  <div class="bottom_hr"></div>
+                  <div class="warning_advice class_padding">
+                    <p>
+                      <span class="name_bold">Advice:</span> {{warning.warningAdvice}}
+                    </p>
                   </div>
                 </div>
-                <div fxLayout="row">
-                  <span>Driver Name: </span>
-                  <span style="font-weight:bold">{{warning.driverName}}</span>
-                </div>
-                <div style="glyph-orientation-horizontal: 0deg;"></div>
-              </mat-card>
-              
+              </div>              
             </div>
             <mat-paginator [pageSize]="3" [pageSizeOptions]="[3, 9, 15, 30]"></mat-paginator>
           </div>

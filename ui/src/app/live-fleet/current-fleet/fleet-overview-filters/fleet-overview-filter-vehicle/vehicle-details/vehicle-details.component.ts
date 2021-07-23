@@ -119,6 +119,9 @@ export class VehicleDetailsComponent implements OnInit {
   }
 
   gotoHealthStatus(){
+    let obj = {
+      fromVehicleHealth : true
+    }
     this.dataInterchangeService.gethealthDetails(this.selectedElementData);
   }
 
@@ -126,7 +129,7 @@ export class VehicleDetailsComponent implements OnInit {
     const navigationExtras: NavigationExtras = {
       state: {
         fromVehicleDetails: true,
-        
+        data: this.selectedElementData
       }
     };
     this.router.navigate(['fleetoverview/logbook'], navigationExtras);

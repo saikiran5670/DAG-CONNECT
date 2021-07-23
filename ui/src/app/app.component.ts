@@ -910,12 +910,17 @@ export class AppComponent {
   startTimer() {
     const source = timer(1000, 2000);
     this.sub = source.subscribe(val => {
-      this.subscribeTimer = this.timeLeft - val;
+      this.subscribeTimer = this.transform(this.timeLeft - val);
       if(this.timeLeft - val == 0){
         this.sendMessage();
         this.refreshTimer();
       }
     });
+  }
+
+  transform(value: number): string {
+    const minutes: number = Math.floor(value / 60);
+    return minutes + ':' + (value - minutes * 60);
   }
 
   clearMessages(): void {
