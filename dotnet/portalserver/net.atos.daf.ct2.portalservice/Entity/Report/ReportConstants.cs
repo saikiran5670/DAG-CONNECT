@@ -56,6 +56,7 @@
         public const string GET_ECOSCORE_REPORT_FAILURE_MSG = "Eco-Score Report details fetched failed. With Error : {0}";
         public const string GET_ECOSCORE_REPORT_NOTFOUND_MSG = "No records found for Eco-Score reprot.";
         public const string GET_ECOSCORE_REPORT_VALIDATION_COMPAREDRIVER_MSG = "Please select minimum 2 or maximum 4 drivers for comparison.";
+        public const string GET_ECOSCORE_REPORT_TRENDLINE_SUCCESS_MSG = "Eco-Score Trendline Report details fetched successfully.";
         #endregion
 
         #region Fleet utilization Report
