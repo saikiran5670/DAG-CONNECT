@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.confluentkafka\net.atos.daf.ct2.confluentkafka.csproj" />
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.notificationengine\net.atos.daf.ct2.notificationengine.csproj" />
   </ItemGroup>
