@@ -229,7 +229,7 @@
             <div style="font: 500 16px/32px Roboto, 'Helvetica Neue', sans-serif;" fxLayout="row"
               fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
               <div *ngFor="let warning of obs | async">
-                <mat-checkbox style="font-size: 14px;"> View on Map
+                <mat-checkbox style="font-size: 14px;" (change)='checkboxClicked($event,warning)'> View on Map
                 </mat-checkbox>
                 <div class="areaWidth min-width-30-per warning_history" fxLayout="column" fxLayoutAlign="left">
                   <div class="class_padding" style="font-size: 14px;">
