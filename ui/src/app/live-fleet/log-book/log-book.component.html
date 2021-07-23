@@ -292,19 +292,13 @@
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehGroupName }}</span>
               </span>
             </div>
-            <div *ngIf='showField.vin' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='showField.alertLevel' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblAlertLevel || 'Alert Level' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.alertLevel }}</span>
               </span>
             </div>
-            <div *ngIf='!showField.vin' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-              <span>
-                <span>{{ translationData.lblTo || 'To' }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
-              </span>
-            </div>
-            <div *ngIf='showField.regNo' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='showField.alertCategory' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblAlertCategory || 'Alert Category' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.alertCategory }}</span>
@@ -312,7 +306,7 @@
             </div>
           </div>
           <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
-            <div *ngIf='showField.vin' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblTo || 'To' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
@@ -324,7 +318,7 @@
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
               </span>
             </div>
-            <div *ngIf='showField.regNo' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='showField.alertType' class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblAlertType || 'Alert Type' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.alertType }}</span>
@@ -390,12 +384,12 @@
               <!-- <mat-cell *matCellDef="let row">{{ row.alertLevel}}</mat-cell> -->
             </ng-container>
             <ng-container matColumnDef="alertGeneratedTime">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlertGeneratedTime || 'Alert Generated Time' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDate || 'Date' }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.alertGeneratedTime}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="vehicleRegNo">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicle || 'Vehicle' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRegistrationNumber || 'Registration Number' }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.vehicleRegNo}}</mat-cell>
             </ng-container>
@@ -430,7 +424,7 @@
               <mat-cell *matCellDef="let row">{{ row.vehicleName}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="vin">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVin || 'Vin' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.vin}}</mat-cell>
             </ng-container>

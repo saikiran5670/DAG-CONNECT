@@ -47,7 +47,7 @@ query: any;
 searchMarker: any = {};
 @ViewChild("map")
 public mapElement: ElementRef;
-tripReportId: any = 1;
+logbookPrefId: any = 13;
 selectionTab: any;
 reportPrefData: any = [];
 @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
@@ -105,8 +105,9 @@ accountPrefObj: any;
 advanceFilterOpen: boolean = false;
 showField: any = {
   vehicleName: true,
-  vin: true,
-  regNo: true
+  alertLevel: true,
+  alertCategory: true,
+  alertType: true
 };
 userPOIList: any = [];
 herePOIList: any = [];
@@ -115,68 +116,52 @@ internalSelection: boolean = false;
 herePOIArr: any = [];
 prefMapData: any = [
   {
-    key: 'rp_tr_report_tripreportdetails_averagespeed',
-    value: 'averageSpeed'
+    key: 'rp_lb_logbook_details_alertlevel',
+    value: 'alertLevel'
   },
   {
-    key: 'rp_tr_report_tripreportdetails_drivingtime',
-    value: 'drivingTime'
+    key: 'rp_lb_logbook_details_date',
+    value: 'alertGeneratedTime'
   },
   {
-    key: 'rp_tr_report_tripreportdetails_alerts',
-    value: 'alert'
+    key: 'rp_lb_logbook_details_vehiclename',
+    value: 'vehicleName'
   },
   {
-    key: 'rp_tr_report_tripreportdetails_averageweight',
-    value: 'averageWeight'
-  },
-  {
-    key: 'rp_tr_report_tripreportdetails_events',
-    value: 'events'
-  },
-  {
-    key: 'rp_tr_report_tripreportdetails_distance',
-    value: 'distance'
-  },
-  {
-    key: 'rp_tr_report_tripreportdetails_enddate',
-    value: 'endTimeStamp'
-  },
-  {
-    key: 'rp_tr_report_tripreportdetails_endposition',
-    value: 'endPosition'
-  },
-  {
-    key: 'rp_tr_report_tripreportdetails_fuelconsumed',
-    value: 'fuelConsumed100Km'
-  },
-  {
-    key: 'rp_tr_report_tripreportdetails_idleduration',
-    value: 'idleDuration'
-  },
-  {
-    key: 'rp_tr_report_tripreportdetails_odometer',
-    value: 'odometer'
-  },
-  {
-    key: 'rp_tr_report_tripreportdetails_platenumber',
-    value: 'registrationNo'
-  },
-  {
-    key: 'rp_tr_report_tripreportdetails_startdate',
-    value: 'startTimeStamp'
-  },
-  {
-    key: 'rp_tr_report_tripreportdetails_vin',
+    key: 'rp_lb_logbook_details_vin',
     value: 'vin'
   },
   {
-    key: 'rp_tr_report_tripreportdetails_startposition',
-    value: 'startPosition'
+    key: 'rp_lb_logbook_details_registrationplatenumber',
+    value: 'vehicleRegNo'
   },
   {
-    key: 'rp_tr_report_tripreportdetails_vehiclename',
-    value: 'vehicleName'
+    key: 'rp_lb_logbook_details_alertname',
+    value: 'alertName'
+  },
+  {
+    key: 'rp_lb_logbook_details_tripstart',
+    value: 'tripStartTime'
+  },
+  {
+    key: 'rp_lb_logbook_details_alerttype',
+    value: 'alertType'
+  },
+  {
+    key: 'rp_lb_logbook_details_alertcategory',
+    value: 'alertCategory'
+  },
+  {
+    key: 'rp_lb_logbook_details_occurance',
+    value: 'occurrence'
+  },
+  {
+    key: 'rp_lb_logbook_details_tripend',
+    value: 'tripEndTime'
+  },
+  {
+    key: 'rp_lb_logbook_details_threshold',
+    value: 'thresholdValue'
   }
 ];
 _state: any ;
@@ -335,7 +320,7 @@ ngOnDestroy(){
   }
 
   getReportPreferences(){
-    this.reportService.getReportUserPreference(this.tripReportId).subscribe((data : any) => {
+    this.reportService.getReportUserPreference(this.logbookPrefId).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetTripPrefData();
       this.getTranslatedColumnName(this.reportPrefData);
@@ -350,17 +335,17 @@ ngOnDestroy(){
   }
 
   resetTripPrefData(){
-    this.tripPrefData = [];
+    this.logbookPrefData = [];
   }
 
-  tripPrefData: any = [];
+  logbookPrefData: any = [];
   getTranslatedColumnName(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(element => {
         if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
           element.subReportUserPreferences.forEach(item => {
-            if(item.key.includes('rp_tr_report_tripreportdetails_')){
-              this.tripPrefData.push(item);
+            if(item.key.includes('rp_lb_logbook_details_')){
+              this.logbookPrefData.push(item);
             }
           });
         }
@@ -369,7 +354,7 @@ ngOnDestroy(){
   }
 
   setDisplayColumnBaseOnPref(){
-    let filterPref = this.tripPrefData.filter(i => i.state == 'I'); // removed unchecked
+    let filterPref = this.logbookPrefData.filter(i => i.state == 'I'); // removed unchecked
     if(filterPref.length > 0){
       filterPref.forEach(element => {
         let search = this.prefMapData.filter(i => i.key == element.key); // present or not
@@ -379,13 +364,14 @@ ngOnDestroy(){
             this.displayedColumns.splice(index, 1); // removed
           }
         }
-
-        if(element.key == 'rp_tr_report_tripreportdetails_vehiclename'){
+        if(element.key == 'rp_lb_logbook_details_vehiclename'){
           this.showField.vehicleName = false;
-        }else if(element.key == 'rp_tr_report_tripreportdetails_vin'){
-          this.showField.vin = false;
-        }else if(element.key == 'rp_tr_report_tripreportdetails_platenumber'){
-          this.showField.regNo = false;
+        }else if(element.key == 'rp_lb_logbook_details_alertlevel'){
+          this.showField.alertLevel = false;
+        }else if(element.key == 'rp_lb_logbook_details_alertcategory'){
+          this.showField.alertCategory = false;
+        }else if(element.key == 'rp_lb_logbook_details_alerttype'){
+          this.showField.alertType = false;
         }
       });
     }
