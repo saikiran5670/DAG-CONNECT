@@ -44,6 +44,7 @@ export class DetailDriverReportComponent implements OnInit {
   @Output() backToMainPage = new EventEmitter<any>();
   @Input() displayedColumns:any;
   @Input() driverSelected : boolean;
+  @Input() graphPayload : any;
   //  displayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   //  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   //  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
@@ -587,7 +588,11 @@ tripTraceArray: any = [];
       filter: "",
       menuId: 10 //-- for fleet utilisation
     }
+ 
     this.loadfleetFuelDetails(this.driverDetails);
+    if(this.driverDetails){
+      this.onSearch();
+    }
     //this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
     //  this.processTranslation(data);
     //  this.mapFilterForm.get('trackType').setValue('snail');
@@ -634,6 +639,7 @@ tripTraceArray: any = [];
     }
   }
 
+  
   detaildriverreport(){
     const navigationExtras: NavigationExtras = {
       state: {
@@ -1355,7 +1361,7 @@ createEndMarker(){
        vehGroupName: this.dateDetails.vehGroupName,
        vehicleName:this.driverDetails.vehicleName,
        vin : this.driverDetails.vin,
-       plateNo :this.driverDetails.registrationNo,
+       plateNo :this.driverDetails.vehicleRegistrationNo,
        driverName : this.driverDetails.driverName,
        driverID : this.driverDetails.driverID
 
@@ -1399,6 +1405,7 @@ createEndMarker(){
     }
     return _date;
   }
+
 
   setChartData(graphData: any){
     graphData.forEach(e => {
