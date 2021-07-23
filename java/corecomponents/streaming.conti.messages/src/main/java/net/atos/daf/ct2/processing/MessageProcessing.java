@@ -3,9 +3,11 @@ package net.atos.daf.ct2.processing;
 import java.util.Map;
 import java.util.Properties;
 
+import net.atos.daf.ct2.models.scheamas.VehicleStatusSchema;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.state.MapStateDescriptor;
+import org.apache.flink.api.common.state.ReadOnlyBroadcastState;
 import org.apache.flink.streaming.api.datastream.BroadcastStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.functions.co.BroadcastProcessFunction;
@@ -21,8 +23,12 @@ import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.Message;
 import net.atos.daf.ct2.serde.KafkaMessageSerializeSchema;
 import net.atos.daf.ct2.utils.JsonMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class MessageProcessing<U, T> {
+public class MessageProcessing<U,R, T> {
+
+    private static final Logger logger = LoggerFactory.getLogger(MessageProcessing.class);
 
   public void consumeContiMessage(
       DataStream<KafkaRecord<U>> messageDataStream,
@@ -31,9 +37,7 @@ public class MessageProcessing<U, T> {
       String sinkTopicName,
       Properties properties,
       Class<T> tClass,
-      BroadcastStream<KafkaRecord<U>> broadcastStream) {
-
-    // SingleOutputStreamOperator<KafkaRecord<T>> singleOutputStreamOperator =
+      BroadcastStream<KafkaRecord<R>> broadcastStream) {
     messageDataStream
         .filter(
             new FilterFunction<KafkaRecord<U>>() {
@@ -44,93 +48,23 @@ public class MessageProcessing<U, T> {
                         .readTree((String) value.getValue())
                         .get("TransID")
                         .asText();
-                System.out.println("Trans ID " + transId);
+                logger.info("Filtered Trans ID " + transId);
                 return transId.equalsIgnoreCase(messageType);
               }
             })
         .connect(broadcastStream)
-        .process(
-            new BroadcastProcessFunction<KafkaRecord<U>, KafkaRecord<U>, KafkaRecord<U>>() {
-
-              private final MapStateDescriptor<Message<U>, KafkaRecord<U>>
-                  broadcastStateDescriptor =
-                      new BroadcastState<U>()
-                          .stateInitialization(
-                              properties.getProperty(DAFCT2Constant.BROADCAST_NAME));
-
-              @Override
-              public void processElement(
-                  KafkaRecord<U> value, ReadOnlyContext ctx, Collector<KafkaRecord<U>> out)
-                  throws Exception {
-                boolean flag = false;
-                System.out.println("Single Record: " + value);
-                //System.out.println("ctx--:"+ ctx.getBroadcastState(broadcastStateDescriptor).immutableEntries());
-                		
-                String valueRecord =
-                    JsonMapper.configuring()
-                        .readTree((String) value.getValue())
-                        .get("VID")
-                        .asText();
-                System.out.println("Record VID: " + valueRecord);
-				 
-                for (Map.Entry<Message<U>, KafkaRecord<U>> map :
-                    ctx.getBroadcastState(broadcastStateDescriptor).immutableEntries()) {
-                  String key = map.getKey().get().toString();
-                  System.out.println("Map: " + map);
-                  System.out.println("Key: " + key);
-
-                  if (key.equalsIgnoreCase(valueRecord)) {
-                    String values = map.getValue().getValue().toString();
-                    String[] arrOfStr =values.split("-");
-               
-                    System.out.println("Broadcats Values: " + values);
-                    JsonNode jsonNode = 
-					    JsonMapper.configuring().readTree(value.getValue().toString());
-                   
-                    ((ObjectNode) jsonNode).put("VIN", arrOfStr[0]);
-                    ((ObjectNode) jsonNode).put("STATUS", arrOfStr[1]);
-                   
-                    
-                    System.out.println("VIN---=" + arrOfStr[0]);
-                    System.out.println("STATUS---=" + arrOfStr[1]);
-                    
-                    KafkaRecord<U> kafkaRecord = new KafkaRecord<U>();
-                    kafkaRecord.setKey(key);
-                    kafkaRecord.setValue((U) JsonMapper.configuring().writeValueAsString(jsonNode));
-                    System.out.println("New Values: " + kafkaRecord);
-
-                    if(arrOfStr[1].equals(DAFCT2Constant.CONNECTED_OTA_OFF) || arrOfStr[1].equals(DAFCT2Constant.CONNECTED_OTA_ON)){
-                    out.collect(kafkaRecord);
-                    }
-                    flag = true;
-                    break;
-                  }
-                }
-                if (!flag) out.collect(value);
-             }
-
-              @Override
-              public void processBroadcastElement(
-                  KafkaRecord<U> value, Context ctx, Collector<KafkaRecord<U>> out)
-                  throws Exception {
-                System.out.println("Broadcast:" + value);
-                ctx.getBroadcastState(broadcastStateDescriptor)
-                    .put(new Message<U>((U) value.getKey()), value);
-              }
-            })
+        .process(new BroadcastMessageProcessor<>(properties))
         .map(
             new MapFunction<KafkaRecord<U>, KafkaRecord<T>>() {
               @Override
               public KafkaRecord<T> map(KafkaRecord<U> value) throws Exception {
-
-                System.out.println("Class:" + tClass);
-                System.out.println("value.getValue() :: "+value.getValue());
+                logger.info("map after process record value.getValue() :: {}",value.getValue());
                 T record = JsonMapper.configuring().readValue((String) value.getValue(), tClass);
 
                 KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
                 kafkaRecord.setKey(key);
                 kafkaRecord.setValue(record);
-                System.out.println("Final: " + kafkaRecord);
+               logger.info("Final KafkaRecord to kafka topic: {} record : {}",sinkTopicName , kafkaRecord);
                 return kafkaRecord;
               }
             })
@@ -141,23 +75,20 @@ public class MessageProcessing<U, T> {
                 properties,
                 FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
 
-    // singleOutputStreamOperator.print();
-
   }
   
   public void contiMessageForHistorical(
 	      DataStream<KafkaRecord<String>> messageDataStream,
 	      Properties properties,
-		  BroadcastStream<KafkaRecord<U>> broadcastStream) {
+		  BroadcastStream<KafkaRecord<R>> broadcastStream) {
 
 		messageDataStream.connect(broadcastStream)
-				.process(new BroadcastProcessFunction<KafkaRecord<String>, KafkaRecord<U>, KafkaRecord<String>>() {
-
+				.process(new BroadcastProcessFunction<KafkaRecord<String>, KafkaRecord<R>, KafkaRecord<String>>() {
 					/**
 					 * 
 					 */
 					private static final long serialVersionUID = 1L;
-					private final MapStateDescriptor<Message<U>, KafkaRecord<U>> broadcastStateDescriptor = new BroadcastState<U>()
+					private final MapStateDescriptor<Message<U>, KafkaRecord<R>> broadcastStateDescriptor = new BroadcastState<U,R>()
 							.stateInitialization(properties.getProperty(DAFCT2Constant.BROADCAST_NAME));
 
 					@Override
@@ -167,20 +98,15 @@ public class MessageProcessing<U, T> {
 						try {
 							JsonNode jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
 							String vid = jsonNodeRec.get("VID").asText();
-							System.out.println("History Record VID: " + vid);
+							logger.info("History Record for VID: {}" , vid);
 							String vin = DAFCT2Constant.UNKNOWN;
 
-							for (Map.Entry<Message<U>, KafkaRecord<U>> map : ctx
-									.getBroadcastState(broadcastStateDescriptor).immutableEntries()) {
-								String key = map.getKey().get().toString();
-								System.out.println("Map: " + map);
-								System.out.println("History Key: " + key);
-
-								if (key.equalsIgnoreCase(vid)) {
-									vin = map.getValue().getValue().toString();
-									System.out.println("Broadcats Values: " + vid);
-									break;
-								}
+							ReadOnlyBroadcastState<Message<U>, KafkaRecord<R>> mapBrodcast = ctx.getBroadcastState(broadcastStateDescriptor);
+							Message<U> keyMessage = new Message<>((U) vid);
+							if(mapBrodcast.contains(keyMessage)){
+								KafkaRecord<R> rKafkaRecord = mapBrodcast.get(keyMessage);
+								VehicleStatusSchema vinStatusRecord = (VehicleStatusSchema)rKafkaRecord.getValue();
+								vin = vinStatusRecord.getVin();
 							}
 							value.setKey(jsonNodeRec.get("TransID").asText() + "_" + vin + "_"
 									+ TimeFormatter.getInstance().getCurrentUTCTime());
@@ -188,14 +114,12 @@ public class MessageProcessing<U, T> {
 						} catch (Exception e) {
 							value.setKey("UnknownMessage" + "_" + TimeFormatter.getInstance().getCurrentUTCTime());
 						}
-
 						out.collect(value);
 					}
-
 					@Override
-					public void processBroadcastElement(KafkaRecord<U> value, Context ctx,
+					public void processBroadcastElement(KafkaRecord<R> value, Context ctx,
 							Collector<KafkaRecord<String>> out) throws Exception {
-						System.out.println("Broadcast:" + value);
+						logger.info("Broadcast updated from history :" + value);
 						ctx.getBroadcastState(broadcastStateDescriptor).put(new Message<U>((U) value.getKey()), value);
 					}
 				})
