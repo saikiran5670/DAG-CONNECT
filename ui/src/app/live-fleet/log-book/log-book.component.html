@@ -376,13 +376,16 @@
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'C'">
-                  <i class="material-icons" [style]="{ 'color':'#FF0000' } ">warning</i> <span>{{ translationData.lblCritical || 'Critical'}}</span>
+                  <i class="material-icons alertLevelIcon" [style]="{ 'color':'#FF0000' } ">warning</i> 
+                  <span class="alertLevelName">{{ translationData.lblCritical || 'Critical'}}</span>
                 </span> 
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'W'">
-                  <i class="material-icons" [style]="{ 'color':'#FFBF00' } ">warning</i> <span>{{ translationData.lblWarning || 'Warning'}}</span>
+                  <i class="material-icons alertLevelIcon" [style]="{ 'color':'#FFBF00' } ">warning</i> 
+                  <span class="alertLevelName">{{ translationData.lblWarning || 'Warning'}}</span>
                 </span>
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.alertLevel == 'A'">
-                  <i class="material-icons" [style]="{ 'color':'#FFFF00' } ">warning</i> <span>{{ translationData.lblAdvisory || 'Advisory'}}</span>
+                  <i class="material-icons alertLevelIcon" [style]="{ 'color':'#FFFF00' } ">warning</i>
+                   <span class="alertLevelName">{{ translationData.lblAdvisory || 'Advisory'}}</span>
                 </span>  
               </mat-cell>
               <!-- <mat-cell *matCellDef="let row">{{ row.alertLevel}}</mat-cell> -->
