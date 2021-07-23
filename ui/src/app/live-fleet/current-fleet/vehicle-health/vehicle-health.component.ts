@@ -201,10 +201,8 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
         }
       }
       let warningType = this.vehicleHealthForm.get('warningType').value;
-      if(warningType == 'Active') {
-        filterrredData
-      } else if (warningType == 'Deactive') {
-
+      if (warningType == 'Deactive') {
+        filterrredData = filterrredData.filter(item => item.warningDeactivatedTimestamp);
       }
       console.log("filterrredData", filterrredData)
       this.applyDatatoCardPaginator(filterrredData);
@@ -265,7 +263,26 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   }
 
   onWarningTypeSelection(warning: any){
-
+    if(warning == 'servicenow') {
+      this.historyHealthData.sort((a, b) => {
+        if (a.warningVehicleHealthStatusType > b.warningVehicleHealthStatusType)
+            return -1;
+        if (a < b)
+            return 1;
+        return 0;
+    });
+    } else if(warning == 'stopnow') {
+      this.historyHealthData.sort((a, b) => {
+        if (a.warningVehicleHealthStatusType < b.warningVehicleHealthStatusType)
+            return -1;
+        if (a < b)
+            return 1;
+        return 0;
+    });
+    } else {
+      this.historyHealthData;
+    }
+    this.applyDatatoCardPaginator(this.historyHealthData);
   }
 
   proceedStep(prefData: any, preference: any){
