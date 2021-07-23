@@ -30,6 +30,7 @@ import { DetailVehicleReportComponent } from './fleet-fuel-report/detail-vehicle
 import { DetailDriverReportComponent } from './fleet-fuel-report/fleet-fuel-report-driver/detail-driver-report/detail-driver-report.component';
 import { FuelBenchmarkingTableComponent } from './fuel-benchmarking/fuel-benchmarking-table/fuel-benchmarking-table/fuel-benchmarking-table.component';
 import { VehicletripComponent } from './vehicletrip/vehicletrip.component';
+import { NgApexchartsModule } from 'ng-apexcharts';
 
 // import interactionPlugin from '@fullcalendar/interaction';
 
@@ -59,6 +60,7 @@ export const MY_DATE_FORMAT = {
     MatTableExporterModule,
     FullCalendarModule,
     Ng2CompleterModule,
+    NgApexchartsModule,
     AngularSlickgridModule.forRoot({
       // add any Global Grid Options/Config you might want
       // to avoid passing the same options over and over in each grids of your App
