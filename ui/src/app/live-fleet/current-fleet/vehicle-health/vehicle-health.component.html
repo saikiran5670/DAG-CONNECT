@@ -225,9 +225,9 @@
               <div *ngFor="let warning of obs | async">
                 <mat-checkbox style="font-size: 14px;" (change)='checkboxClicked($event,warning)'> View on Map
                 </mat-checkbox>
-                <div class="areaWidth min-width-30-per warning_history" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth warning_history" fxLayout="column" fxLayoutAlign="left">
                   <div class="class_padding" style="font-size: 14px;">
-                    <span class="name_bold">{{warning.warningName}}</span>
+                    <span class="name_bold">{{warning.warningName}}&nbsp;</span>
                   </div>
                   <div fxLayout="row" class="class_padding">
                     <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
