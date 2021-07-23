@@ -652,9 +652,15 @@ export class FuelBenchmarkingComponent implements OnInit {
   }
 
   test = [];
+  columnLength:any = 0;
+  makeAddDisable:boolean=false;
 
   onSearch(selectedValue?: any) {
 
+      this.columnLength++;
+      if(this.columnLength>4){
+        this.makeAddDisable=true;
+      }
     console.log("-------search triggere---")
     console.log("vehicle group", this.vehicleGrpDD);
     this.internalSelection = true;
@@ -988,6 +994,8 @@ export class FuelBenchmarkingComponent implements OnInit {
     // this.setGlobalSearchData(this.fleetUtilizationSearchData)
   }
   onReset() {
+    this.makeDisableVehicleGroup=false;
+    this.makeDisableTimePeriod=false;
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();

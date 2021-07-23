@@ -1,5 +1,6 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ReportService } from 'src/app/services/report.service';
 
@@ -19,11 +20,15 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
   vehInfoPrefData: any = [];
   selectionForSetTimerColumns = new SelectionModel(true, []);
   selectionForVehInfoColumns = new SelectionModel(true, []);
+  fleetOverviewForm: FormGroup;
 
-  constructor(private reportService: ReportService, private router: Router) { }
+  constructor(private reportService: ReportService, private router: Router, private _formBuilder: FormBuilder) { }
 
   ngOnInit() { 
     let repoId: any = this.reportListData.filter(i => i.name == 'Fleet Overview');
+    this.fleetOverviewForm = this._formBuilder.group({
+      refreshTime: []
+    });
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
     }else{
@@ -82,8 +87,15 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
           });
         }
       });
-      this.setColumnCheckbox();
+      if (this.timerPrefData.length > 0 && this.vehInfoPrefData.length > 0) {
+        this.setDefaultFormValues();
+        this.setColumnCheckbox();
+      }
     }
+  }
+
+  setDefaultFormValues() {
+    this.fleetOverviewForm.get('refreshTime').setValue(this.timerPrefData[0].thresholdValue != '' ? this.timerPrefData[0].thresholdValue : 0);
   }
 
   getName(name: any, _count: any) {
@@ -114,12 +126,60 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
    onCancel(){
     this.setFleetOverviewFlag.emit({flag: false, msg: ''});
     this.setColumnCheckbox();
+    this.setDefaultFormValues();
   }
 
   onReset(){
     this.setColumnCheckbox();
+    this.setDefaultFormValues();
   }
 
   onConfirm(){ }
+
+  keyPressNumbers(event: any){
+    var charCode = (event.which) ? event.which : event.keyCode;
+    // Only Numbers 0-9
+    if ((charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  isAllSelectedForTimerColumns(){
+    const numSelected = this.selectionForSetTimerColumns.selected.length;
+    const numRows = this.timerPrefData.length;
+    return numSelected === numRows;
+  }
+
+  masterToggleForTimerColumns(){
+    if(this.isAllSelectedForTimerColumns()){
+      this.selectionForSetTimerColumns.clear();
+    }else{
+      this.timerPrefData.forEach(row => { this.selectionForSetTimerColumns.select(row) });
+    }
+  }
+
+  isAllSelectedForVehInfoColumns(){
+    const numSelected = this.selectionForVehInfoColumns.selected.length;
+    const numRows = this.vehInfoPrefData.length;
+    return numSelected === numRows;
+  }
+
+  masterToggleForVehInfoColumns(){
+    if(this.isAllSelectedForVehInfoColumns()){
+      this.selectionForVehInfoColumns.clear();
+    }else{
+      this.vehInfoPrefData.forEach(row => { this.selectionForVehInfoColumns.select(row) });
+    }
+  }
+
+  checkboxLabelForColumns(rowData?: any){
+  }
+
+  checkboxClicked(event: any, rowData: any){
+
+  }
 
 }
