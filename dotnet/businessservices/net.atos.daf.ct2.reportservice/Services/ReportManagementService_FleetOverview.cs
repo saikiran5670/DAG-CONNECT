@@ -25,6 +25,13 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 if (vehicleDetailsAccountVisibilty.Any())
                 {
+                    var vinIds = vehicleDetailsAccountVisibilty.Select(x => x.Vin).Distinct().ToList();
+                    var tripAlertdData = await _reportManager.GetLogbookSearchParameter(vinIds);
+                    var tripAlertResult = JsonConvert.SerializeObject(tripAlertdData);
+                    response.LogbookTripAlertDetailsRequest.AddRange(
+                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<LogbookTripAlertDetailsRequest>>(tripAlertResult,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+
 
                     var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);
                     response.AssociatedVehicleRequest.AddRange(
@@ -41,31 +48,6 @@ namespace net.atos.daf.ct2.reportservice.Services
                     response.FleetOverviewVGFilterResponse.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetOverviewVGFilterRequest>>(res)
                         );
-
-
-                    var alertLevel = await _reportManager.GetAlertLevelList();
-                    var resalertLevel = JsonConvert.SerializeObject(alertLevel);
-                    response.ALFilterResponse.AddRange(
-                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resalertLevel)
-                        );
-
-                    var alertCategory = await _reportManager.GetAlertCategoryList();
-                    var resAlertCategory = JsonConvert.SerializeObject(alertCategory);
-                    response.ACFilterResponse.AddRange(
-                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterResponse>>(resAlertCategory)
-                        );
-
-                    var healthStatus = await _reportManager.GetHealthStatusList();
-                    var resHealthStatus = JsonConvert.SerializeObject(healthStatus);
-                    response.HSFilterResponse.AddRange(
-                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resHealthStatus)
-                        );
-
-                    var otherFilter = await _reportManager.GetOtherFilter();
-                    var resOtherFilter = JsonConvert.SerializeObject(otherFilter);
-                    response.OFilterResponse.AddRange(
-                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resOtherFilter)
-                        );
                     List<string> vehicleIdList = new List<string>();
                     var matchingVins = vehicleDetailsAccountVisibilty.Where(l1 => vehicleByVisibilityAndFeature.Any(l2 => (l2.VehicleId == l1.VehicleId))).ToList();
                     foreach (var item in matchingVins)
@@ -78,9 +60,35 @@ namespace net.atos.daf.ct2.reportservice.Services
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<DriverListResponse>>(resDriverFilter)
                         );
 
-                    response.Message = ReportConstants.FLEETOVERVIEW_FILTER_SUCCESS_MSG;
-                    response.Code = Responsecode.Success;
                 }
+                var alertLevel = await _reportManager.GetAlertLevelList();
+                var resalertLevel = JsonConvert.SerializeObject(alertLevel);
+                response.ALFilterResponse.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resalertLevel)
+                    );
+
+                var alertCategory = await _reportManager.GetAlertCategoryList();
+                var resAlertCategory = JsonConvert.SerializeObject(alertCategory);
+                response.ACFilterResponse.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterResponse>>(resAlertCategory)
+                    );
+
+                var healthStatus = await _reportManager.GetHealthStatusList();
+                var resHealthStatus = JsonConvert.SerializeObject(healthStatus);
+                response.HSFilterResponse.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resHealthStatus)
+                    );
+
+                var otherFilter = await _reportManager.GetOtherFilter();
+                var resOtherFilter = JsonConvert.SerializeObject(otherFilter);
+                response.OFilterResponse.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FilterResponse>>(resOtherFilter)
+                    );
+
+
+                response.Message = ReportConstants.FLEETOVERVIEW_FILTER_SUCCESS_MSG;
+                response.Code = Responsecode.Success;
+
                 _logger.Info("Get method in report service called.");
                 return await Task.FromResult(response);
             }
@@ -113,7 +121,6 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 ReportComponent.entity.FleetOverviewFilter fleetOverviewFilter = new ReportComponent.entity.FleetOverviewFilter
                 {
-                    GroupId = request.GroupIds.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : request.GroupIds.ToList(),
                     AlertCategory = request.AlertCategories.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : request.AlertCategories.ToList(),
                     AlertLevel = request.AlertLevels.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : request.AlertLevels.ToList(),
                     HealthStatus = request.HealthStatus.Any(s => s.Equals("all", StringComparison.OrdinalIgnoreCase)) ? new List<string>() : request.HealthStatus.ToList(),
@@ -127,15 +134,28 @@ namespace net.atos.daf.ct2.reportservice.Services
                 var result = await _reportManager.GetFleetOverviewDetails(fleetOverviewFilter);
                 if (result?.Count > 0)
                 {
+                    List<DriverDetails> driverDetails = _reportManager.GetDriverDetails(result.Where(p => !string.IsNullOrEmpty(p.Driver1Id))
+                                                                                             .Select(x => x.Driver1Id).Distinct().ToList(), request.OrganizationId).Result;
                     List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.LatestWarningClass > 0).Select(x => x.LatestWarningClass).Distinct().ToList(), result.Where(p => p.LatestWarningNumber > 0).Select(x => x.LatestWarningNumber).Distinct().ToList(), request.LanguageCode);
                     foreach (var fleetOverviewDetails in result)
                     {
+                        fleetOverviewDetails.VehicleName = vehicleDeatilsWithAccountVisibility?.FirstOrDefault(d => d.Vin == fleetOverviewDetails.Vin)?.VehicleName ?? string.Empty;
                         foreach (WarningDetails warning in warningDetails)
                         {
                             if (fleetOverviewDetails.LatestWarningClass == warning.WarningClass && fleetOverviewDetails.LatestWarningNumber == warning.WarningNumber)
                             {
                                 fleetOverviewDetails.LatestWarningName = warning.WarningName;
                             }
+
+                        }
+                        //opt-in and no driver card- Unknown - Implemented by UI 
+                        // Opt-out and no driver card- Unknown-Implemented by UI 
+                        //opt-in with driver card- Driver Id
+                        //opt-out with driver card- *
+
+                        if (driverDetails != null && driverDetails.Count > 0)
+                        {
+                            fleetOverviewDetails.DriverName = driverDetails.FirstOrDefault(d => d.DriverId == fleetOverviewDetails.Driver1Id).DriverName;
                         }
                         response.FleetOverviewDetailList.Add(_mapper.ToFleetOverviewDetailsResponse(fleetOverviewDetails));
                     }

@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.reports.repository
 						left join master.vehicle VH on TS.vin=VH.vin
                         WHERE TS.vin = @vin
 	                        AND (
-		                        start_time_stamp >= @StartDateTime
+		                        end_time_stamp >= @StartDateTime
 		                        AND end_time_stamp <= @EndDateTime
 		                        )";
 

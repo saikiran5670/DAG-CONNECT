@@ -84,14 +84,14 @@ public class EcoScoreDao implements Serializable {
 
 
 		if (rec.getVSumTripDPABrakingScore() != null)
-			statement.setDouble(7, rec.getVSumTripDPABrakingScore());
+			statement.setLong(7, rec.getVSumTripDPABrakingScore());
 		else
-			statement.setDouble(7, 0);
+			statement.setLong(7, 0);
 
 		if (rec.getVTripDPABrakingCount() != null)
-			statement.setDouble(8, rec.getVTripDPABrakingCount());
+			statement.setLong(8, rec.getVTripDPABrakingCount());
 		else
-			statement.setDouble(8, 0);
+			statement.setLong(8, 0);
 
 		if (rec.getVSumTripDPAAnticipationScore() != null)
 			statement.setLong(9, rec.getVSumTripDPAAnticipationScore());
@@ -103,8 +103,8 @@ public class EcoScoreDao implements Serializable {
 		else
 			statement.setLong(10, 0);
 
-		if (rec.getVGrossWeightCombination() != null)
-			statement.setDouble(11, rec.getVGrossWeightCombination());
+		if (rec.getTripCalAvgGrossWtComb() != null)
+			statement.setDouble(11, rec.getTripCalAvgGrossWtComb());
 		else
 			statement.setDouble(11, 0);
 
@@ -113,40 +113,40 @@ public class EcoScoreDao implements Serializable {
 		else
 			statement.setLong(12, 0);
 
-		if (rec.getTripCalPtoDuration() != null)
-			statement.setDouble(13, rec.getTripCalPtoDuration());
+		if (rec.getVPTODuration() != null)
+			statement.setLong(13, rec.getVPTODuration());
 		else
-			statement.setDouble(13, 0);
+			statement.setLong(13, 0);
 		
 		if (rec.getVIdleDuration() != null)
-			statement.setInt(14, rec.getVIdleDuration());
+			statement.setLong(14, rec.getVIdleDuration());
 		else
-			statement.setInt(14, 0);
+			statement.setLong(14, 0);
 		
-		if (rec.getTripCalHeavyThrottleDuration() != null)
-			statement.setDouble(15, rec.getTripCalHeavyThrottleDuration());
+		if (rec.getVMaxThrottlePaddleDuration() != null)
+			statement.setLong(15, rec.getVMaxThrottlePaddleDuration());
 		else
-			statement.setDouble(15, 0);
+			statement.setLong(15, 0);
 
-		if (rec.getTripCalCrsCntrlUsage() != null)
-			statement.setDouble(16, rec.getTripCalCrsCntrlUsage());
+		if (rec.getVCruiseControlDist() != null)
+			statement.setLong(16, rec.getVCruiseControlDist());
 		else
-			statement.setDouble(16, 0);
+			statement.setLong(16, 0);
 
 		if (rec.getTripCalCrsCntrlDist25To50() != null)
-			statement.setDouble(17, rec.getTripCalCrsCntrlDist25To50());
+			statement.setLong(17, rec.getTripCalCrsCntrlDist25To50());
 		else
-			statement.setDouble(17, 0);
+			statement.setLong(17, 0);
 
 		if (rec.getTripCalCrsCntrlDist50To75() != null)
-			statement.setDouble(18, rec.getTripCalCrsCntrlDist50To75());
+			statement.setLong(18, rec.getTripCalCrsCntrlDist50To75());
 		else
-			statement.setDouble(18, 0);
+			statement.setLong(18, 0);
 		
 		if (rec.getTripCalCrsCntrlDistAbv75() != null)
-			statement.setDouble(19, rec.getTripCalCrsCntrlDistAbv75());
+			statement.setLong(19, rec.getTripCalCrsCntrlDistAbv75());
 		else
-			statement.setDouble(19, 0);
+			statement.setLong(19, 0);
 		
 		if (rec.getTachoVGrossWtCmbSum() != null)
 			statement.setDouble(20, rec.getTachoVGrossWtCmbSum());
@@ -154,129 +154,159 @@ public class EcoScoreDao implements Serializable {
 			statement.setDouble(20, 0);
 		
 		if (rec.getVHarshBrakeDuration() != null)
-			statement.setInt(21, rec.getVHarshBrakeDuration());
+			statement.setLong(21, rec.getVHarshBrakeDuration());
 		else
-			statement.setDouble(21, 0);
+			statement.setLong(21, 0);
 
 		if (rec.getVBrakeDuration() != null)
-			statement.setInt(22, rec.getVBrakeDuration());
+			statement.setLong(22, rec.getVBrakeDuration());
 		else
-			statement.setDouble(22, 0);
+			statement.setLong(22, 0);
 		
 		statement.setLong(23, TimeFormatter.getInstance().getCurrentUTCTime());
 		
 		//harcoded - clarify column
 		statement.setString(24, DafConstants.TRIP_LEVEL_AGGREGATION);
-		statement.setLong(25, TimeFormatter.getInstance().getCurrentUTCTime());
 		
-				
-		if (rec.getVin() != null) {
-			statement.setString(26, rec.getVin());
-		}else
-			statement.setString(26, DafConstants.UNKNOWN);
-
-		if (rec.getStartDateTime() != null)
-			statement.setLong(27, rec.getStartDateTime());
+		if (rec.getEndDateTime() != null)
+			statement.setLong(25, rec.getEndDateTime());
+		else
+			statement.setLong(25, 0);
+		
+		if (rec.getVGrossWtCmbCount() != null)
+			statement.setLong(26, rec.getVGrossWtCmbCount());
+		else
+			statement.setLong(26, 0);
+		
+		if (rec.getVTripAccelerationTime() != null)
+			statement.setLong(27, rec.getVTripAccelerationTime());
 		else
 			statement.setLong(27, 0);
-
-		if (rec.getEndDateTime() != null)
-			statement.setLong(28, rec.getEndDateTime());
-		else
-			statement.setLong(28, 0);
 		
-		if(rec.getDriverId() != null)
-			statement.setString(29, rec.getDriverId());
-		else
+		statement.setBoolean(28, Boolean.FALSE);
+		
+		//Update Record
+		if (rec.getVin() != null) {
+			statement.setString(29, rec.getVin());
+		}else
 			statement.setString(29, DafConstants.UNKNOWN);
-		
-		if (rec.getTripCalDist() != null)
-			statement.setLong(30, rec.getTripCalDist());
+
+		if (rec.getStartDateTime() != null)
+			statement.setLong(30, rec.getStartDateTime());
 		else
 			statement.setLong(30, 0);
 
-
-		if (rec.getVSumTripDPABrakingScore() != null)
-			statement.setDouble(31, rec.getVSumTripDPABrakingScore());
+		if (rec.getEndDateTime() != null)
+			statement.setLong(31, rec.getEndDateTime());
 		else
-			statement.setDouble(31, 0);
-
-		if (rec.getVTripDPABrakingCount() != null)
-			statement.setDouble(32, rec.getVTripDPABrakingCount());
+			statement.setLong(31, 0);
+		
+		if(rec.getDriverId() != null)
+			statement.setString(32, rec.getDriverId());
 		else
-			statement.setDouble(32, 0);
-
-		if (rec.getVSumTripDPAAnticipationScore() != null)
-			statement.setLong(33, rec.getVSumTripDPAAnticipationScore());
+			statement.setString(32, DafConstants.UNKNOWN);
+		
+		if (rec.getTripCalDist() != null)
+			statement.setLong(33, rec.getTripCalDist());
 		else
 			statement.setLong(33, 0);
 
-		if (rec.getVTripDPAAnticipationCount() != null)
-			statement.setLong(34, rec.getVTripDPAAnticipationCount());
+		if (rec.getVSumTripDPABrakingScore() != null)
+			statement.setLong(34, rec.getVSumTripDPABrakingScore());
 		else
 			statement.setLong(34, 0);
 
-		if (rec.getVGrossWeightCombination() != null)
-			statement.setDouble(35, rec.getVGrossWeightCombination());
+		if (rec.getVTripDPABrakingCount() != null)
+			statement.setLong(35, rec.getVTripDPABrakingCount());
 		else
-			statement.setDouble(35, 0);
+			statement.setLong(35, 0);
 
-		if (rec.getTripCalUsedFuel() != null)
-			statement.setLong(36, rec.getTripCalUsedFuel());
+		if (rec.getVSumTripDPAAnticipationScore() != null)
+			statement.setLong(36, rec.getVSumTripDPAAnticipationScore());
 		else
 			statement.setLong(36, 0);
 
-		if (rec.getTripCalPtoDuration() != null)
-			statement.setDouble(37, rec.getTripCalPtoDuration());
+		if (rec.getVTripDPAAnticipationCount() != null)
+			statement.setLong(37, rec.getVTripDPAAnticipationCount());
 		else
-			statement.setDouble(37, 0);
+			statement.setLong(37, 0);
+
+		if (rec.getTripCalAvgGrossWtComb() != null)
+			statement.setDouble(38, rec.getTripCalAvgGrossWtComb());
+		else
+			statement.setDouble(38, 0);
+
+		if (rec.getTripCalUsedFuel() != null)
+			statement.setLong(39, rec.getTripCalUsedFuel());
+		else
+			statement.setLong(39, 0);
+
+		if (rec.getVPTODuration() != null)
+			statement.setLong(40, rec.getVPTODuration());
+		else
+			statement.setLong(40, 0);
 		
 		if (rec.getVIdleDuration() != null)
-			statement.setInt(38, rec.getVIdleDuration());
+			statement.setLong(41, rec.getVIdleDuration());
 		else
-			statement.setInt(38, 0);
+			statement.setLong(41, 0);
 		
-		if (rec.getTripCalHeavyThrottleDuration() != null)
-			statement.setDouble(39, rec.getTripCalHeavyThrottleDuration());
+		if (rec.getVMaxThrottlePaddleDuration() != null)
+			statement.setLong(42, rec.getVMaxThrottlePaddleDuration());
 		else
-			statement.setDouble(39, 0);
+			statement.setLong(42, 0);
 
-		if (rec.getTripCalCrsCntrlUsage() != null)
-			statement.setDouble(40, rec.getTripCalCrsCntrlUsage());
+		if (rec.getVCruiseControlDist() != null)
+			statement.setLong(43, rec.getVCruiseControlDist());
 		else
-			statement.setDouble(40, 0);
+			statement.setLong(43, 0);
 
 		if (rec.getTripCalCrsCntrlDist25To50() != null)
-			statement.setDouble(41, rec.getTripCalCrsCntrlDist25To50());
+			statement.setLong(44, rec.getTripCalCrsCntrlDist25To50());
 		else
-			statement.setDouble(41, 0);
+			statement.setLong(44, 0);
 
 		if (rec.getTripCalCrsCntrlDist50To75() != null)
-			statement.setDouble(42, rec.getTripCalCrsCntrlDist50To75());
+			statement.setLong(45, rec.getTripCalCrsCntrlDist50To75());
 		else
-			statement.setDouble(42, 0);
+			statement.setLong(45, 0);
 		
 		if (rec.getTripCalCrsCntrlDistAbv75() != null)
-			statement.setDouble(43, rec.getTripCalCrsCntrlDistAbv75());
+			statement.setLong(46, rec.getTripCalCrsCntrlDistAbv75());
 		else
-			statement.setDouble(43, 0);
+			statement.setLong(46, 0);
 		
 		if (rec.getTachoVGrossWtCmbSum() != null)
-			statement.setDouble(44, rec.getTachoVGrossWtCmbSum());
+			statement.setDouble(47, rec.getTachoVGrossWtCmbSum());
 		else
-			statement.setDouble(44, 0);
+			statement.setDouble(47, 0);
 		
 		if (rec.getVHarshBrakeDuration() != null)
-			statement.setInt(45, rec.getVHarshBrakeDuration());
+			statement.setLong(48, rec.getVHarshBrakeDuration());
 		else
-			statement.setDouble(45, 0);
+			statement.setLong(48, 0);
 
 		if (rec.getVBrakeDuration() != null)
-			statement.setInt(46, rec.getVBrakeDuration());
+			statement.setLong(49, rec.getVBrakeDuration());
 		else
-			statement.setDouble(46, 0);
+			statement.setLong(49, 0);
 		
-		statement.setLong(47, TimeFormatter.getInstance().getCurrentUTCTime());
+		statement.setLong(50, TimeFormatter.getInstance().getCurrentUTCTime());
+		
+		if (rec.getEndDateTime() != null)
+			statement.setLong(51, rec.getEndDateTime());
+		else
+			statement.setLong(51, 0);
+		
+		if (rec.getVGrossWtCmbCount() != null)
+			statement.setLong(52, rec.getVGrossWtCmbCount());
+		else
+			statement.setLong(52, 0);
+		
+		if (rec.getVTripAccelerationTime() != null)
+			statement.setLong(53, rec.getVTripAccelerationTime());
+		else
+			statement.setLong(53, 0);
 
 		return statement;
 

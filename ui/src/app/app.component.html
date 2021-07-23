@@ -12,6 +12,16 @@
                     <div fxLayoutAlign="start center" class='half-width titleText'>{{ currentTitle }}
                     </div>
                     <div fxLayoutAlign="end" class='full-width'>
+                        <span *ngIf="isFleetOverview"><button class="btn btn-primary" type="button" disabled>
+                            <div class="lds-roller-sm" style="height: 27px; width: 54px;">
+                                <div></div><div></div><div></div><div></div><div></div><div></div>
+                              </div>
+                           {{ subscribeTimer }}
+                        </button></span>
+                        <!-- <span *ngIf="isFleetOverview"><button class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            {{ subscribeTimer }}
+                        </button>&nbsp;</span> -->
                         <span *ngIf="orgContextType" style='font-size: 14px; display: flex; align-items: center;'>{{ translationData.lblContextSetting || 'Context Setting' }}</span>
                         <mat-select *ngIf="orgContextType" formControlName="contextOrgSelection" class="matSelect" placeholder="{{ orgName }}"
                         (selectionChange)="applyFilterOnOrganization($event.value)">

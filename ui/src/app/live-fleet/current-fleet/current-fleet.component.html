@@ -1,19 +1,34 @@
-    <div fxLayout="row" class="full-width margin-bottom-sm">
-    <div id="summary" style="border: 1px solid black" class="full-width">
+    <div *ngIf = '!isOpen' fxLayout="row" class="full-width margin-bottom-sm">
+    <div id="summary" class="full-width">
+        <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
         <app-fleet-overview-summary></app-fleet-overview-summary>
+        <app-live-fleet-map [translationData]='translationData' [detailsData]='detailsData'></app-live-fleet-map>
+        </mat-card>
     </div>
+    
     <div id="sidenav">
         <div class="example-sidenav-content"
         [ngClass]="userPreferencesFlag ? 'pref-expand' : 'pref-collapse' " >
             <button type="button" mat-button (click)='userPreferencesSetting($event)'>
-                Click to Hide </button>
+                {{clickOpenClose}} </button>
         </div>
-        <div style="padding-top: 5%;">
-        <app-fleet-overview-filters *ngIf="userPreferencesFlag" [translationData]='translationData'></app-fleet-overview-filters>
+        <div>
+        <app-fleet-overview-filters *ngIf="userPreferencesFlag" [fromVehicleHealth]="obj" [translationData]='translationData' [detailsData] ="detailsData"></app-fleet-overview-filters>
         </div>
     </div>
     </div>
-
+    <div *ngIf = 'isOpen' class="bgtrans">
+        <div  fxLayout="row" fxLayoutAlign="end" class='full-width margin-right-xxlg'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+            <span class='custom-font' (click)="toBack()">
+                <span>
+                    <&nbsp;</span>
+                        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+            </span>
+        </div>
+    </div> 
+        <app-vehicle-health [healthData]='healthData'></app-vehicle-health>
+    </div>
         <!-- <mat-drawer-container class="example-container" autosize>
             <mat-drawer #filters class="example-sidenav" mode="side" position="end">
                 <app-fleet-overview-filters></app-fleet-overview-filters>

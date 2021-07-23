@@ -1,0 +1,18 @@
+.myStyle {
+    /* background-color: red; */
+    /* padding: 10px; */
+}
+
+.chart-custom-checkbox {
+    width: 147px;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.custom-dropdown {
+    width: 110px;
+    margin-top: -10px;
+    float: right;
+}

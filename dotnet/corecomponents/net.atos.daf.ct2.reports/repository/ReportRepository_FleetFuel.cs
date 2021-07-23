@@ -418,12 +418,20 @@ namespace net.atos.daf.ct2.reports.repository
 				  , SUM(dpa_score)                                                         as dpa_score
                   , start_time_stamp                                                       as StartDate
                   , end_time_stamp                                                         as EndDate
-				From
+				  , start_position_lattitude as startpositionlattitude
+				  , start_position_longitude as startpositionlongitude
+				  , end_position_lattitude as endpositionlattitude
+				  , end_position_longitude as endpositionlongitude
+                From
 					tripdetail.trip_statistics
 				where (start_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) and  VIN =ANY(@Vins)
 				GROUP BY					
-				  VIN, trip_id,start_time_stamp, end_time_stamp       
+				  VIN, trip_id,start_time_stamp, end_time_stamp   
+                    , start_position_lattitude 
+				  , start_position_longitude 
+				  , end_position_lattitude 
+				  , end_position_longitude 
 			)
 		  , cte_combine as
 			(
@@ -455,6 +463,10 @@ namespace net.atos.daf.ct2.reports.repository
 				  , dpa_score                                              as DPAScore
                   ,StartDate
                   ,EndDate
+                  ,  startpositionlattitude
+				  ,  startpositionlongitude
+				  , endpositionlattitude
+				  , endpositionlongitude
 				FROM
 					CTE_FleetDeatils fd
 				    left join
@@ -535,6 +547,10 @@ namespace net.atos.daf.ct2.reports.repository
 				  , SUM(dpa_score)                                                         as dpa_score
                   , start_time_stamp                                                       as StartDate
                   , end_time_stamp                                                         as EndDate
+                     , start_position_lattitude as startpositionlattitude
+				  , start_position_longitude as startpositionlongitude
+				  , end_position_lattitude as endpositionlattitude
+				  , end_position_longitude as endpositionlongitude
 				From
 					tripdetail.trip_statistics
 				where (start_time_stamp >= @FromDate 
@@ -544,6 +560,10 @@ namespace net.atos.daf.ct2.reports.repository
 					driver1_id 
 				  , VIN
                    ,trip_id,start_time_stamp, end_time_stamp 
+                     , start_position_lattitude 
+				  , start_position_longitude 
+				  , end_position_lattitude 
+				  , end_position_longitude 
 			)
 		  , cte_combine as
 			(
@@ -576,6 +596,10 @@ namespace net.atos.daf.ct2.reports.repository
 				  , dpa_score                                              as DPAScore
                   , StartDate
                   , EndDate
+                  ,  startpositionlattitude
+				  ,  startpositionlongitude
+				  , endpositionlattitude
+				  , endpositionlongitude
 				FROM
 					CTE_FleetDeatils fd
 				    left join

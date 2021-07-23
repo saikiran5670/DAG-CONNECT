@@ -177,7 +177,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 				currentPosition.setGpsLongitude(0.0);
 			}
 		}
-		Integer Fuel_consumption= row.getVUsedFuel();
+		Long Fuel_consumption= row.getVUsedFuel();
 		System.out.println("Fuel_Consuption---->"+ Fuel_consumption );
 		if (Fuel_consumption!= null) {
 			System.out.println("Co2-cofficient-->"+cmData.getCoefficient());

@@ -15,7 +15,7 @@ public class ROEvent  implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonProperty(value = "ROEvtTimestamp")
-    private Integer roEvtTimestamp;
+    private Long roEvtTimestamp;
     @JsonProperty(value = "ROEvtID")
     private Integer roEvtID;
     @JsonProperty(value = "ROEvtData")

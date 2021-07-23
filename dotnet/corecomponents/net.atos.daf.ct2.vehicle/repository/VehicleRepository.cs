@@ -2209,6 +2209,31 @@ namespace net.atos.daf.ct2.vehicle.repository
         }
 
         #endregion
+
+        #region get Group Info for filter
+        public async Task<VehicleCountFilter> GetGroupFilterDetail(int vehicleGroupId, int orgnizationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vehicleGroupId", vehicleGroupId);
+                parameter.Add("@orgnizationId", orgnizationId);
+
+                string query = @"select id as VehicleGroupId,                               
+                                group_type as GroupType,
+                                function_enum as FunctionEnum,
+                                organization_id as OrgnizationId
+                                from master.group where id=@vehicleGroupId AND organization_id=@orgnizationId";
+
+                var vehicleGroup = await _dataAccess.QueryAsync<VehicleCountFilter>(query, parameter);
+                return vehicleGroup.FirstOrDefault();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
     }
 }
 

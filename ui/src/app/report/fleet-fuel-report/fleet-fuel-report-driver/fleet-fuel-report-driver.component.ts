@@ -43,7 +43,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
   'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
   'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
-  detaildisplayedColumns = ['driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
+  detaildisplayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
   'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
@@ -54,6 +54,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
+  driverSelected : boolean =false;
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
@@ -346,6 +347,11 @@ export class FleetFuelReportDriverComponent implements OnInit {
               private router: Router,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private reportMapService: ReportMapService) { }
+              defaultTranslation(){
+                this.translationData = {
+                  lblSearchReportParameters: 'Search Report Parameters'
+                }
+               }
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
@@ -410,9 +416,22 @@ export class FleetFuelReportDriverComponent implements OnInit {
     
   }
 
+  checkForPreference(fieldKey) {
+    if (this.reportPrefData.length != 0) {
+      let filterData = this.reportPrefData.filter(item => item.key.includes('driver_'+fieldKey));
+      if (filterData.length > 0) {
+        if (filterData[0].state == 'A') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
-      
+    this.reportService.getUserPreferenceReport(4, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
       // this.preparePrefData(this.reportPrefData);
@@ -450,12 +469,27 @@ export class FleetFuelReportDriverComponent implements OnInit {
 
   onSearch(){
     this.isChartsOpen = true;
-    this.ConsumedChartType = 'Line';
-    this.TripsChartType= 'Bar';
-    this.Co2ChartType= 'Line';
-    this.DistanceChartType= 'Line';
-    this.ConsumptionChartType= 'Line';
-    this.DurationChartType= 'Line';
+    if (this.reportPrefData.length != 0) {
+      let filterData = this.reportPrefData.filter(item => item.key.includes('chart_fuelconsumed'));
+      this.ConsumedChartType = filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('chart_numberoftrips'));
+      this.TripsChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('chart_co2emission'));
+      this.Co2ChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('chart_distance'));
+      this.DistanceChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('chart_fuelconsumption'));
+      this.ConsumptionChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('chart_idledurationtotaltime'));
+      this.DurationChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+    } else {
+      this.ConsumedChartType = 'Line';
+      this.TripsChartType= 'Bar';
+      this.Co2ChartType= 'Line';
+      this.DistanceChartType= 'Line';
+      this.ConsumptionChartType= 'Line';
+      this.DurationChartType= 'Line';
+    }
     // this.resetChartData(); // reset chart data
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
@@ -962,18 +996,20 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
 
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
-    if(this.prefTimeFormat == 12){
-      if(_y.split(' ')[1] == 'AM' && _x == 12) {
-        date.setHours(0);
+    if(date) {
+      if(this.prefTimeFormat == 12){
+        if(_y.split(' ')[1] == 'AM' && _x == 12) {
+          date.setHours(0);
+        }else{
+          date.setHours(_x);
+        }
+        date.setMinutes(_y.split(' ')[0]);
       }else{
         date.setHours(_x);
+        date.setMinutes(_y);
       }
-      date.setMinutes(_y.split(' ')[0]);
-    }else{
-      date.setHours(_x);
-      date.setMinutes(_y);
+      date.setSeconds(type == 'start' ? '00' : '59');
     }
-    date.setSeconds(type == 'start' ? '00' : '59');
     return date;
   }
 
@@ -989,11 +1025,13 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
     // let dt = moment(todayDate).toDate();
   }
 
-getLast3MonthDate(){
+  getLast3MonthDate() {
     // let date = new Date();
-    var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth()-3);
-    return date;
+    if (this.prefTimeZone) {
+      var date = Util.getUTCDate(this.prefTimeZone);
+      date.setMonth(date.getMonth() - 3);
+      return date;
+    }
   }
 
   onReset(){
@@ -1046,7 +1084,7 @@ getLast3MonthDate(){
 
     let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
-    if(this.wholeTripData.vinTripList.length > 0){
+    if(this.wholeTripData && this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if(filterVIN.length > 0){
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
@@ -1455,11 +1493,40 @@ setVehicleGroupAndVehiclePreSelection() {
     displayHeader.style.display ="block";
   }
 
-  onDriverSelected(_row){
-    this.isChartsOpen = true;
-    this.isSummaryOpen = true; 
-    this.isDetailsOpen = true;
+  backToMainPage(){
+    this.driverSelected=false;
+
   }
+
+  driverInfo : any ={};
+  dateInfo : any ={};
+ onDriverSelected(vehData:any){
+   this.isDetailsOpen=true;
+   this.isSummaryOpen =true;
+   this.isChartsOpen=true;
+  let s = this.vehicleGrpDD.filter(i=>i.vehicleGroupId==this.tripForm.controls.vehicleGroup.value)
+  let _s = this.vehicleDD.filter(i=>i.vin==vehData.vin)
+  this.tripForm.get('vehicle').setValue(_s.length>0 ?  _s[0].vehicleId : 0)
+  let currentStartTime = Util.convertDateToUtc(this.startDateValue);
+  let currentEndTime = Util.convertDateToUtc(this.endDateValue); 
+  this.dateInfo={
+    startTime: currentStartTime,
+    endTime : currentEndTime,
+    fromDate: this.formStartDate(this.startDateValue),
+    endDate: this.formStartDate(this.endDateValue),
+    vehGroupName : s.length>0 ?  s[0].vehicleGroupName : 'All' 
+  }
+   this.driverInfo=vehData;
+   this.driverSelected=true;
+    //const navigationExtras: NavigationExtras = {
+    //  state: {
+    //    fromFleetfuelReport: true,
+    //    vehicleData: vehData
+    //  }
+    //};
+    //this.router.navigate(['report/detaildriverreport'], navigationExtras);
+  }
+
 
   sumOfColumns(columnName : any){
     let sum: any = 0;

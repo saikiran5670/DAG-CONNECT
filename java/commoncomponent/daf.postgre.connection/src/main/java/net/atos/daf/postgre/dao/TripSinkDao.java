@@ -72,9 +72,9 @@ public class TripSinkDao implements Serializable {
 			statement.setLong(4, 0);
 
 		if (rec.getGpsTripDist() != null)
-			statement.setInt(5, rec.getGpsTripDist());
+			statement.setLong(5, rec.getGpsTripDist());
 		else
-			statement.setInt(5, 0);
+			statement.setLong(5, 0);
 
 		if (rec.getTripCalDist() != null)
 			statement.setLong(6, rec.getTripCalDist());
@@ -82,9 +82,9 @@ public class TripSinkDao implements Serializable {
 			statement.setLong(6, 0);
 
 		if (rec.getVIdleDuration() != null)
-			statement.setInt(7, rec.getVIdleDuration());
+			statement.setLong(7, rec.getVIdleDuration());
 		else
-			statement.setInt(7, 0);
+			statement.setLong(7, 0);
 
 		if (rec.getTripCalAvgSpeed() != null)
 			statement.setDouble(8, rec.getTripCalAvgSpeed());
@@ -127,9 +127,9 @@ public class TripSinkDao implements Serializable {
 			statement.setDouble(15, 0);
 
 		if (rec.getVUsedFuel() != null)
-			statement.setInt(16, rec.getVUsedFuel());
+			statement.setLong(16, rec.getVUsedFuel());
 		else
-			statement.setInt(16, 0);
+			statement.setLong(16, 0);
 
 		if (rec.getTripCalUsedFuel() != null)
 			statement.setLong(17, rec.getTripCalUsedFuel());
@@ -137,9 +137,9 @@ public class TripSinkDao implements Serializable {
 			statement.setLong(17, 0);
 
 		if (rec.getVTripMotionDuration() != null)
-			statement.setInt(18, rec.getVTripMotionDuration());
+			statement.setLong(18, rec.getVTripMotionDuration());
 		else
-			statement.setInt(18, 0);
+			statement.setLong(18, 0);
 
 		if (rec.getTripCalDrivingTm() != null)
 			statement.setLong(19, rec.getTripCalDrivingTm());
@@ -202,19 +202,19 @@ public class TripSinkDao implements Serializable {
 			statement.setDouble(30, 0);
 
 		if (rec.getTripCalCrsCntrlDist25To50() != null)
-			statement.setDouble(31, rec.getTripCalCrsCntrlDist25To50());
+			statement.setLong(31, rec.getTripCalCrsCntrlDist25To50());
 		else
-			statement.setDouble(31, 0);
+			statement.setLong(31, 0);
 
 		if (rec.getTripCalCrsCntrlDist50To75() != null)
-			statement.setDouble(32, rec.getTripCalCrsCntrlDist50To75());
+			statement.setLong(32, rec.getTripCalCrsCntrlDist50To75());
 		else
-			statement.setDouble(32, 0);
+			statement.setLong(32, 0);
 
 		if (rec.getTripCalCrsCntrlDistAbv75() != null)
-			statement.setDouble(33, rec.getTripCalCrsCntrlDistAbv75());
+			statement.setLong(33, rec.getTripCalCrsCntrlDistAbv75());
 		else
-			statement.setDouble(33, 0);
+			statement.setLong(33, 0);
 
 		if (rec.getTripCalAvgTrafficClsfn() != null)
 			statement.setDouble(34, rec.getTripCalAvgTrafficClsfn());
@@ -227,14 +227,14 @@ public class TripSinkDao implements Serializable {
 			statement.setDouble(35, 0);
 
 		if (rec.getVCruiseControlFuelConsumed() != null)
-			statement.setInt(36, rec.getVCruiseControlFuelConsumed());
+			statement.setLong(36, rec.getVCruiseControlFuelConsumed());
 		else
-			statement.setInt(36, 0);
+			statement.setLong(36, 0);
 
 		if (rec.getVCruiseControlDist() != null)
-			statement.setInt(37, rec.getVCruiseControlDist());
+			statement.setLong(37, rec.getVCruiseControlDist());
 		else
-			statement.setInt(37, 0);
+			statement.setLong(37, 0);
 
 		if (rec.getTripCalfuelNonActiveCnsmpt() != null)
 			statement.setDouble(38, rec.getTripCalfuelNonActiveCnsmpt());
@@ -242,9 +242,9 @@ public class TripSinkDao implements Serializable {
 			statement.setDouble(38, 0);
 
 		if (rec.getVIdleFuelConsumed() != null)
-			statement.setInt(39, rec.getVIdleFuelConsumed());
+			statement.setLong(39, rec.getVIdleFuelConsumed());
 		else
-			statement.setInt(39, 0);
+			statement.setLong(39, 0);
 
 		if (rec.getTripCalDpaScore() != null)
 			statement.setDouble(40, rec.getTripCalDpaScore());
@@ -277,62 +277,62 @@ public class TripSinkDao implements Serializable {
 		
 
 		if (rec.getVPTODuration() != null)
-			statement.setInt(47, rec.getVPTODuration());
+			statement.setLong(47, rec.getVPTODuration());
 		else
-			statement.setInt(47, 0);
+			statement.setLong(47, 0);
 		
 
 		if (rec.getVHarshBrakeDuration() != null)
-			statement.setInt(48, rec.getVHarshBrakeDuration());
+			statement.setLong(48, rec.getVHarshBrakeDuration());
 		else
-			statement.setInt(48, 0);
+			statement.setLong(48, 0);
 		
 
 		if (rec.getVBrakeDuration() != null)
-			statement.setInt(49, rec.getVBrakeDuration());
+			statement.setLong(49, rec.getVBrakeDuration());
 		else
 			statement.setInt(49, 0);
 		
 		if (rec.getVMaxThrottlePaddleDuration() != null)
-			statement.setInt(50, rec.getVMaxThrottlePaddleDuration());
+			statement.setLong(50, rec.getVMaxThrottlePaddleDuration());
 		else
-			statement.setInt(50, 0);
+			statement.setLong(50, 0);
 		
 		if (rec.getVTripAccelerationTime() != null)
-			statement.setInt(51, rec.getVTripAccelerationTime());
+			statement.setLong(51, rec.getVTripAccelerationTime());
 		else
-			statement.setInt(51, 0);
+			statement.setLong(51, 0);
 		
 		if (rec.getVTripDPABrakingCount() != null)
-			statement.setInt(52, rec.getVTripDPABrakingCount());
+			statement.setLong(52, rec.getVTripDPABrakingCount());
 		else
-			statement.setInt(52, 0);
+			statement.setLong(52, 0);
 		
 		if (rec.getVTripDPAAnticipationCount() != null)
-			statement.setInt(53, rec.getVTripDPAAnticipationCount());
+			statement.setLong(53, rec.getVTripDPAAnticipationCount());
 		else
 			statement.setInt(53, 0);
 				
 		if (rec.getVSumTripDPABrakingScore() != null)
-			statement.setInt(54, rec.getVSumTripDPABrakingScore());
+			statement.setLong(54, rec.getVSumTripDPABrakingScore());
 		else
-			statement.setInt(54, 0);
+			statement.setLong(54, 0);
 
 
 		if (rec.getVSumTripDPAAnticipationScore() != null)
-			statement.setInt(55, rec.getVSumTripDPAAnticipationScore());
+			statement.setLong(55, rec.getVSumTripDPAAnticipationScore());
 		else
 			statement.setInt(55, 0);
 
 		if (rec.getVTripIdleWithoutPTODuration() != null)
-			statement.setInt(56, rec.getVTripIdleWithoutPTODuration());
+			statement.setLong(56, rec.getVTripIdleWithoutPTODuration());
 		else
-			statement.setInt(56, 0);
+			statement.setLong(56, 0);
 		
 		if (rec.getVTripIdlePTODuration() != null)
-			statement.setInt(57, rec.getVTripIdlePTODuration());
+			statement.setLong(57, rec.getVTripIdlePTODuration());
 		else
-			statement.setInt(57, 0);
+			statement.setLong(57, 0);
 		
 		
 		if (rec.getVin() != null) {
@@ -353,9 +353,9 @@ public class TripSinkDao implements Serializable {
 			statement.setLong(60, 0);
 
 		if (rec.getGpsTripDist() != null)
-			statement.setInt(61, rec.getGpsTripDist());
+			statement.setLong(61, rec.getGpsTripDist());
 		else
-			statement.setInt(61, 0);
+			statement.setLong(61, 0);
 
 		if (rec.getTripCalDist() != null)
 			statement.setLong(62, rec.getTripCalDist());
@@ -363,9 +363,9 @@ public class TripSinkDao implements Serializable {
 			statement.setLong(62, 0);
 
 		if (rec.getVIdleDuration() != null)
-			statement.setInt(63, rec.getVIdleDuration());
+			statement.setLong(63, rec.getVIdleDuration());
 		else
-			statement.setInt(63, 0);
+			statement.setLong(63, 0);
 
 		if (rec.getTripCalAvgSpeed() != null)
 			statement.setDouble(64, rec.getTripCalAvgSpeed());
@@ -408,9 +408,9 @@ public class TripSinkDao implements Serializable {
 			statement.setDouble(71, 0);
 
 		if (rec.getVUsedFuel() != null)
-			statement.setInt(72, rec.getVUsedFuel());
+			statement.setLong(72, rec.getVUsedFuel());
 		else
-			statement.setInt(72, 0);
+			statement.setLong(72, 0);
 
 		if (rec.getTripCalUsedFuel() != null)
 			statement.setLong(73, rec.getTripCalUsedFuel());
@@ -418,9 +418,9 @@ public class TripSinkDao implements Serializable {
 			statement.setLong(73, 0);
 
 		if (rec.getVTripMotionDuration() != null)
-			statement.setInt(74, rec.getVTripMotionDuration());
+			statement.setLong(74, rec.getVTripMotionDuration());
 		else
-			statement.setInt(74, 0);
+			statement.setLong(74, 0);
 
 		if (rec.getTripCalDrivingTm() != null)
 			statement.setLong(75, rec.getTripCalDrivingTm());
@@ -483,19 +483,19 @@ public class TripSinkDao implements Serializable {
 			statement.setDouble(86, 0);
 
 		if (rec.getTripCalCrsCntrlDist25To50() != null)
-			statement.setDouble(87, rec.getTripCalCrsCntrlDist25To50());
+			statement.setLong(87, rec.getTripCalCrsCntrlDist25To50());
 		else
-			statement.setDouble(87, 0);
+			statement.setLong(87, 0);
 
 		if (rec.getTripCalCrsCntrlDist50To75() != null)
-			statement.setDouble(88, rec.getTripCalCrsCntrlDist50To75());
+			statement.setLong(88, rec.getTripCalCrsCntrlDist50To75());
 		else
-			statement.setDouble(88, 0);
+			statement.setLong(88, 0);
 
 		if (rec.getTripCalCrsCntrlDistAbv75() != null)
-			statement.setDouble(89, rec.getTripCalCrsCntrlDistAbv75());
+			statement.setLong(89, rec.getTripCalCrsCntrlDistAbv75());
 		else
-			statement.setDouble(89, 0);
+			statement.setLong(89, 0);
 
 		if (rec.getTripCalAvgTrafficClsfn() != null)
 			statement.setDouble(90, rec.getTripCalAvgTrafficClsfn());
@@ -508,14 +508,14 @@ public class TripSinkDao implements Serializable {
 			statement.setDouble(91, 0);
 
 		if (rec.getVCruiseControlFuelConsumed() != null)
-			statement.setInt(92, rec.getVCruiseControlFuelConsumed());
+			statement.setLong(92, rec.getVCruiseControlFuelConsumed());
 		else
-			statement.setInt(92, 0);
+			statement.setLong(92, 0);
 
 		if (rec.getVCruiseControlDist() != null)
-			statement.setInt(93, rec.getVCruiseControlDist());
+			statement.setLong(93, rec.getVCruiseControlDist());
 		else
-			statement.setInt(93, 0);
+			statement.setLong(93, 0);
 
 		if (rec.getTripCalfuelNonActiveCnsmpt() != null)
 			statement.setDouble(94, rec.getTripCalfuelNonActiveCnsmpt());
@@ -523,9 +523,9 @@ public class TripSinkDao implements Serializable {
 			statement.setDouble(94, 0);
 
 		if (rec.getVIdleFuelConsumed() != null)
-			statement.setInt(95, rec.getVIdleFuelConsumed());
+			statement.setLong(95, rec.getVIdleFuelConsumed());
 		else
-			statement.setInt(95, 0);
+			statement.setLong(95, 0);
 
 		if (rec.getTripCalDpaScore() != null)
 			statement.setDouble(96, rec.getTripCalDpaScore());
@@ -557,59 +557,59 @@ public class TripSinkDao implements Serializable {
 			statement.setInt(102, 0);
 		
 		if (rec.getVPTODuration() != null)
-			statement.setInt(103, rec.getVPTODuration());
+			statement.setLong(103, rec.getVPTODuration());
 		else
-			statement.setInt(103, 0);
+			statement.setLong(103, 0);
 	
 		if (rec.getVHarshBrakeDuration() != null)
-			statement.setInt(104, rec.getVHarshBrakeDuration());
+			statement.setLong(104, rec.getVHarshBrakeDuration());
 		else
-			statement.setInt(104, 0);
+			statement.setLong(104, 0);
 	
 		if (rec.getVBrakeDuration() != null)
-			statement.setInt(105, rec.getVBrakeDuration());
+			statement.setLong(105, rec.getVBrakeDuration());
 		else
-			statement.setInt(105, 0);
+			statement.setLong(105, 0);
 		
 		if (rec.getVMaxThrottlePaddleDuration() != null)
-			statement.setInt(106, rec.getVMaxThrottlePaddleDuration());
+			statement.setLong(106, rec.getVMaxThrottlePaddleDuration());
 		else
-			statement.setInt(106, 0);
+			statement.setLong(106, 0);
 		
 		if (rec.getVTripAccelerationTime() != null)
-			statement.setInt(107, rec.getVTripAccelerationTime());
+			statement.setLong(107, rec.getVTripAccelerationTime());
 		else
-			statement.setInt(107, 0);
+			statement.setLong(107, 0);
 		
 		if (rec.getVTripDPABrakingCount() != null)
-			statement.setInt(108, rec.getVTripDPABrakingCount());
+			statement.setLong(108, rec.getVTripDPABrakingCount());
 		else
-			statement.setInt(108, 0);
+			statement.setLong(108, 0);
 		
 		if (rec.getVTripDPAAnticipationCount() != null)
-			statement.setInt(109, rec.getVTripDPAAnticipationCount());
+			statement.setLong(109, rec.getVTripDPAAnticipationCount());
 		else
-			statement.setInt(109, 0);
+			statement.setLong(109, 0);
 				
 		if (rec.getVSumTripDPABrakingScore() != null)
-			statement.setInt(110, rec.getVSumTripDPABrakingScore());
+			statement.setLong(110, rec.getVSumTripDPABrakingScore());
 		else
 			statement.setInt(110, 0);
 
 		if (rec.getVSumTripDPAAnticipationScore() != null)
-			statement.setInt(111, rec.getVSumTripDPAAnticipationScore());
+			statement.setLong(111, rec.getVSumTripDPAAnticipationScore());
 		else
-			statement.setInt(111, 0);
+			statement.setLong(111, 0);
 
 		if (rec.getVTripIdleWithoutPTODuration() != null)
-			statement.setInt(112, rec.getVTripIdleWithoutPTODuration());
+			statement.setLong(112, rec.getVTripIdleWithoutPTODuration());
 		else
-			statement.setInt(112, 0);
+			statement.setLong(112, 0);
 		
 		if (rec.getVTripIdlePTODuration() != null)
-			statement.setInt(113, rec.getVTripIdlePTODuration());
+			statement.setLong(113, rec.getVTripIdlePTODuration());
 		else
-			statement.setInt(113, 0);
+			statement.setLong(113, 0);
 		
 
 		return statement;

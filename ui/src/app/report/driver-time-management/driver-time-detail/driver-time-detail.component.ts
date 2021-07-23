@@ -13,7 +13,6 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { ChartOptions, ChartType, ChartDataSets ,ChartColor,Chart} from 'chart.js';
 import { color } from 'html2canvas/dist/types/css/types/color';
-import * as crosshair from 'chartjs-plugin-crosshair';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
 
@@ -28,6 +27,7 @@ export class DriverTimeDetailComponent implements OnInit {
   @Input() driverDetails : any;
   @Input() detailConvertedData : any;
   @Input() showField: any;
+  @Input() graphPayload : any;
   initData = [];
   searchExpandPanel: boolean = true;
   chartExpandPanel : boolean = true;
@@ -66,17 +66,18 @@ export class DriverTimeDetailComponent implements OnInit {
 
   canvas: any;
   ctx: any;
-  chartPlugins = [crosshair];
+  //chartPlugins = [crosshair];
   zoomMsg : boolean = true;
   summaryObj:any=[];
 
-  constructor(private reportMapService:ReportMapService) { }
+  constructor(private reportMapService:ReportMapService, private reportService: ReportService) { }
 
   ngOnInit(): void {
   //console.log(this.driverDetails)
     //this.setGeneralDriverValue();
+ 
     this.updateDataSource(this.detailConvertedData);
-    this.setGraphData();
+   // this.setGraphData();
 
   }
 
@@ -172,6 +173,9 @@ export class DriverTimeDetailComponent implements OnInit {
   // }
 
   ngOnChanges(){
+    this.reportService.getDriverChartDetails(this.graphPayload).subscribe((data)=>{
+
+    })
     this.updateDataSource(this.detailConvertedData);
     this.setGraphData();
   }
@@ -232,51 +236,51 @@ export class DriverTimeDetailComponent implements OnInit {
           },
         ],
       },
-      plugins: {
-          crosshair: {
-            line: {
-              color: '#F66',  // crosshair line color
-              width: 1        // crosshair line width
-            },
-            sync: {
-              enabled: true,            // enable trace line syncing with other charts
-              group: 1,                 // chart group
-              suppressTooltips: false   // suppress tooltips when showing a synced tracer
-            },
-            pan: {
-                      enabled: true,
-                      mode: 'x'
-            },
-            zoom: {
-              enabled: true,                                      // enable zooming
-              zoomboxBackgroundColor: 'rgba(66,133,244,0.2)',     // background color of zoom box 
-              zoomboxBorderColor: '#48F',                         // border color of zoom box
-              zoomButtonText: 'Reset Zoom',                       // reset zoom button text
-              zoomButtonClass: 'reset-zoom',                      // reset zoom button class
-            },
-            callbacks: {
-              beforeZoom: (start, end) =>{ 
-                this.zoomMsg = true;                 // called before zoom, return false to prevent zoom
-                return true;
-              },
-              afterZoom: (start, end)=>{       
-                this.zoomMsg = false;            // called after zoom
-              }
+      // plugins: {
+      //     crosshair: {
+      //       line: {
+      //         color: '#F66',  // crosshair line color
+      //         width: 1        // crosshair line width
+      //       },
+      //       sync: {
+      //         enabled: true,            // enable trace line syncing with other charts
+      //         group: 1,                 // chart group
+      //         suppressTooltips: false   // suppress tooltips when showing a synced tracer
+      //       },
+      //       pan: {
+      //                 enabled: true,
+      //                 mode: 'x'
+      //       },
+      //       zoom: {
+      //         enabled: true,                                      // enable zooming
+      //         zoomboxBackgroundColor: 'rgba(66,133,244,0.2)',     // background color of zoom box 
+      //         zoomboxBorderColor: '#48F',                         // border color of zoom box
+      //         zoomButtonText: 'Reset Zoom',                       // reset zoom button text
+      //         zoomButtonClass: 'reset-zoom',                      // reset zoom button class
+      //       },
+      //       callbacks: {
+      //         beforeZoom: (start, end) =>{ 
+      //           this.zoomMsg = true;                 // called before zoom, return false to prevent zoom
+      //           return true;
+      //         },
+      //         afterZoom: (start, end)=>{       
+      //           this.zoomMsg = false;            // called after zoom
+      //         }
              
-            }
-          },
-          zoom: {
-                pan: {
-                    enabled: true,
-                    mode: 'x',
-                    rangeMin: {
-                      x: 0,
-                    },
-                    rangeMax: {
-                      x: 24,
-                    },   
-                },
-          }
+      //       }
+      //     },
+      //     zoom: {
+      //           pan: {
+      //               enabled: true,
+      //               mode: 'x',
+      //               rangeMin: {
+      //                 x: 0,
+      //               },
+      //               rangeMax: {
+      //                 x: 24,
+      //               },   
+      //           },
+      //     }
         // zoom: {
         //     pan: {
         //         enabled: true,
@@ -299,7 +303,7 @@ export class DriverTimeDetailComponent implements OnInit {
         //         }
         //     }
         // }
-     },
+     //},
      
     
     };

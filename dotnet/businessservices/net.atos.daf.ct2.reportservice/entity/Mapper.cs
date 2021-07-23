@@ -9,6 +9,16 @@ namespace net.atos.daf.ct2.reportservice.entity
 {
     public class Mapper
     {
+        public EnumTranslation MapEnumTranslation(reports.entity.EnumTranslation enumTrans)
+        {
+            EnumTranslation objenumtrans = new EnumTranslation();
+            objenumtrans.Id = enumTrans.Id;
+            objenumtrans.Type = string.IsNullOrEmpty(enumTrans.Type) ? string.Empty : enumTrans.Type;
+            objenumtrans.Enum = string.IsNullOrEmpty(enumTrans.Enum) ? string.Empty : enumTrans.Enum;
+            objenumtrans.ParentEnum = string.IsNullOrEmpty(enumTrans.ParentEnum) ? string.Empty : enumTrans.ParentEnum;
+            objenumtrans.Key = string.IsNullOrEmpty(enumTrans.Key) ? string.Empty : enumTrans.Key;
+            return objenumtrans;
+        }
         internal IEnumerable<UserPreferenceDataColumn> MapUserPreferences(IEnumerable<UserPreferenceReportDataColumn> userPreferences)
         {
             var userPreferenceResult = new List<UserPreferenceDataColumn>();
@@ -244,11 +254,13 @@ namespace net.atos.daf.ct2.reportservice.entity
                             DataAttributeId = item.DataAttributeId,
                             Name = item.Name ?? string.Empty,
                             Key = item.Key ?? string.Empty,
-                            Target = item.TargetValue,
+                            LimitType = item.LimitType ?? string.Empty,
+                            LimitValue = item.TargetValue,
+                            TargetValue = item.TargetValue,
                             RangeValueType = item.RangeValueType ?? string.Empty
                         };
                         if (!string.IsNullOrEmpty(item.DBColumnName))
-                            preference.Score.AddRange(GetEcoScoreCompareReportAttributeValues(item.DBColumnName, item.LimitType, item.LimitValue, item.TargetValue, compareResult));
+                            preference.Score.AddRange(GetEcoScoreCompareReportAttributeValues(item.DBColumnName, compareResult));
                         preference.SubCompareDrivers.AddRange(FillRecursiveEcoScoreCompareReport(flatObjects, item.SubDataAttributes, compareResult));
 
                         recursiveObjects.Add(preference);
@@ -262,7 +274,7 @@ namespace net.atos.daf.ct2.reportservice.entity
             return recursiveObjects;
         }
 
-        private static List<EcoScoreReportAttribute> GetEcoScoreCompareReportAttributeValues(string attributeName, string limitType, double limitValue, double targetValue, IEnumerable<reports.entity.EcoScoreReportCompareDrivers> compareResult)
+        private static List<EcoScoreReportAttribute> GetEcoScoreCompareReportAttributeValues(string attributeName, IEnumerable<reports.entity.EcoScoreReportCompareDrivers> compareResult)
         {
             var lstAttributes = new List<EcoScoreReportAttribute>();
             try
@@ -272,9 +284,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 {
                     obj = new EcoScoreReportAttribute();
                     obj.DriverId = item.DriverId;
-                    obj.Value = Convert.ToDouble(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault());
-                    if (!string.IsNullOrEmpty(limitType))
-                        obj.Color = Convert.ToString(GetEcoScoreAttributeColor(limitType, limitValue, targetValue, obj.Value));
+                    obj.Value = String.Format("{0:0.0}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault()));
                     lstAttributes.Add(obj);
                 }
             }
@@ -339,20 +349,17 @@ namespace net.atos.daf.ct2.reportservice.entity
                 LatestWarningPositionLongitude = fleetOverviewEntity.LatestWarningPositionLongitude,
                 Vid = fleetOverviewEntity.Vid,
                 RegistrationNo = fleetOverviewEntity.RegistrationNo,
-                DriverFirstName = fleetOverviewEntity.DriverFirstName,
-                DriverLastName = fleetOverviewEntity.DriverLastName,
+                DriverName = fleetOverviewEntity.DriverName,
                 LatestGeolocationAddressId = fleetOverviewEntity.LatestGeolocationAddressId,
                 LatestGeolocationAddress = fleetOverviewEntity.LatestGeolocationAddress,
                 StartGeolocationAddressId = fleetOverviewEntity.StartGeolocationAddressId,
                 StartGeolocationAddress = fleetOverviewEntity.StartGeolocationAddress,
                 LatestWarningGeolocationAddressId = fleetOverviewEntity.LatestWarningGeolocationAddressId,
                 LatestWarningGeolocationAddress = fleetOverviewEntity.LatestWarningGeolocationAddress,
-
-                AlertGeolocationAddressId = fleetOverviewEntity.AlertGeolocationAddressId,
-                AlertGeolocationAddress = fleetOverviewEntity.AlertGeolocationAddress,
                 LatestWarningName = fleetOverviewEntity.LatestWarningName,
+                VehicleName = fleetOverviewEntity.VehicleName
             };
-            if (fleetOverviewEntity.LiveFleetPositions.Count > 0)
+            if (fleetOverviewEntity.LiveFleetPositions != null && fleetOverviewEntity.LiveFleetPositions.Count > 0)
             {
                 foreach (var item in fleetOverviewEntity.LiveFleetPositions)
                 {
@@ -360,7 +367,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 }
             }
 
-            if (fleetOverviewEntity.FleetOverviewAlert.Count > 0)
+            if (fleetOverviewEntity.FleetOverviewAlert != null && fleetOverviewEntity.FleetOverviewAlert.Count > 0)
             {
                 foreach (var item in fleetOverviewEntity.FleetOverviewAlert)
                 {
@@ -389,18 +396,232 @@ namespace net.atos.daf.ct2.reportservice.entity
             FleetOverviewAlert fleetOverviewAlert = new FleetOverviewAlert
             {
                 Id = fleetOverviewAlertEntity.Id,
-                AlertName = fleetOverviewAlertEntity.AlertName,
-                AlertType = fleetOverviewAlertEntity.AlertType,
-                AlertLocation = fleetOverviewAlertEntity.AlertLocation,
-                AlertTime = fleetOverviewAlertEntity.AlertTime,
-                AlertLevel = fleetOverviewAlertEntity.AlertLevel,
+                Name = fleetOverviewAlertEntity.AlertName,
+                Type = fleetOverviewAlertEntity.AlertType,
+                Time = fleetOverviewAlertEntity.AlertTime,
+                Level = fleetOverviewAlertEntity.AlertLevel,
                 CategoryType = fleetOverviewAlertEntity.CategoryType,
-                AlertLatitude = fleetOverviewAlertEntity.AlertLatitude,
-                AlertLongitude = fleetOverviewAlertEntity.AlertLongitude,
+                Latitude = fleetOverviewAlertEntity.AlertLatitude,
+                Longitude = fleetOverviewAlertEntity.AlertLongitude,
+                GeolocationAddressId = fleetOverviewAlertEntity.AlertGeolocationAddressId,
+                GeolocationAddress = fleetOverviewAlertEntity.AlertGeolocationAddress,
+                AlertId = fleetOverviewAlertEntity.AlertId
             };
             return fleetOverviewAlert;
         }
 
+        public FuelBenchmarkDetails MapFuelBenchmarktoModel(net.atos.daf.ct2.reports.entity.FuelBenchmarkDetails request)
+        {
+            FuelBenchmarkDetails fuelbenchmark = new FuelBenchmarkDetails();
+            fuelbenchmark.NumberOfActiveVehicles = request.NumberOfActiveVehicles;
+            fuelbenchmark.NumberOfTotalVehicles = request.NumberOfTotalVehicles;
+            fuelbenchmark.TotalMileage = request.TotalMileage;
+            fuelbenchmark.TotalFuelConsumed = request.TotalFuelConsumed;
+            fuelbenchmark.AverageFuelConsumption = request.AverageFuelConsumption;
+            foreach (var item in request.Ranking)
+            {
+                Ranking objRanking = new Ranking();
+                objRanking.VIN = item.VIN;
+                objRanking.FuelConsumption = item.FuelConsumption;
+                objRanking.VehicleName = item.VehicleName;
+                fuelbenchmark.Ranking.Add(objRanking);
+            }
+            return fuelbenchmark;
+        }
+
+        internal EcoScoreReportSingleDriverRequest MapEcoScoreReportSingleDriverRequest(GetEcoScoreReportSingleDriverRequest request)
+        {
+            var objRequest = new EcoScoreReportSingleDriverRequest
+            {
+                StartDateTime = request.StartDateTime,
+                EndDateTime = request.EndDateTime,
+                VINs = request.VINs.ToList<string>(),
+                DriverId = request.DriverId,
+                MinTripDistance = request.MinTripDistance,
+                MinDriverTotalDistance = request.MinDriverTotalDistance,
+                TargetProfileId = request.TargetProfileId,
+                ReportId = request.ReportId,
+                OrgId = request.OrgId,
+                AccountId = request.AccountId,
+                UoM = request.UoM
+            };
+            return objRequest;
+        }
+
+        internal EcoScoreReportSingleDriverOverallPerformance MapEcoScoreReportSingleDriverOverallPerformance(IEnumerable<reports.entity.EcoScoreReportSingleDriver> result, IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> reportAttributes)
+        {
+            var objOverall = new EcoScoreReportSingleDriverOverallPerformance();
+            var dataMartOverall = result.Where(x => x.HeaderType == "Overall_Driver").FirstOrDefault();
+            if (dataMartOverall != null)
+            {
+                objOverall.EcoScore = MapEcoScoreReportOverallPerformanceKPI(OverallPerformance.EcoScore.ToString(), dataMartOverall, reportAttributes);
+                objOverall.FuelConsumption = MapEcoScoreReportOverallPerformanceKPI(OverallPerformance.FuelConsumption.ToString(), dataMartOverall, reportAttributes);
+                objOverall.AnticipationScore = MapEcoScoreReportOverallPerformanceKPI(OverallPerformance.AnticipationScore.ToString(), dataMartOverall, reportAttributes);
+                objOverall.BrakingScore = MapEcoScoreReportOverallPerformanceKPI(OverallPerformance.BrakingScore.ToString(), dataMartOverall, reportAttributes);
+            }
+            return objOverall;
+        }
+
+        private static EcoScoreReportOverallPerformanceKPI MapEcoScoreReportOverallPerformanceKPI(string kpiName, reports.entity.EcoScoreReportSingleDriver dataMartOverall, IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> reportAttributes)
+        {
+            var objKPI = new EcoScoreReportOverallPerformanceKPI();
+            var dataAttribute = new EcoScoreCompareReportAtttributes();
+            if (dataMartOverall != null)
+            {
+                dataAttribute = reportAttributes.Where(x => x.DBColumnName == kpiName).FirstOrDefault();
+                objKPI.DataAttributeId = dataAttribute.DataAttributeId;
+                objKPI.LimitType = dataAttribute.LimitType;
+                objKPI.LimitValue = dataAttribute.LimitValue;
+                objKPI.TargetValue = dataAttribute.TargetValue;
+                if (kpiName == OverallPerformance.EcoScore.ToString())
+                    objKPI.Score = String.Format("{0:0}", Convert.ToDecimal(dataMartOverall.GetType().GetProperties().Where(y => y.Name.Equals(kpiName)).Select(x => x.GetValue(dataMartOverall)).FirstOrDefault()));
+                else
+                    objKPI.Score = String.Format("{0:0.0}", Convert.ToDecimal(dataMartOverall.GetType().GetProperties().Where(y => y.Name.Equals(kpiName)).Select(x => x.GetValue(dataMartOverall)).FirstOrDefault()));
+            }
+            return objKPI;
+        }
+
+        internal IEnumerable<EcoScoreReportSingleDriverHeader> MapEcoScoreReportSingleDriverHeader(IEnumerable<reports.entity.EcoScoreReportSingleDriver> result)
+        {
+            var lstDriver = new List<EcoScoreReportSingleDriverHeader>();
+            foreach (var item in result)
+            {
+                var obj = new EcoScoreReportSingleDriverHeader
+                {
+                    HeaderType = item.HeaderType,
+                    VIN = item.VIN ?? string.Empty,
+                    VehicleName = item.VehicleName ?? string.Empty,
+                    RegistrationNo = item.RegistrationNo ?? string.Empty
+                };
+                lstDriver.Add(obj);
+            }
+            return lstDriver;
+        }
+
+        internal EcoScoreReportSingleDriver MapEcoScoreReportSingleDriverResponse(IEnumerable<reports.entity.EcoScoreReportSingleDriver> result, IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> reportAttributes)
+        {
+            var root = reportAttributes.Where(up => up.Name.IndexOf('.') == -1).First();
+
+            return FillRecursiveEcoScoreSingleDriverReport(reportAttributes, new int[] { root.DataAttributeId }, result).FirstOrDefault();
+        }
+
+        private static List<EcoScoreReportSingleDriver> FillRecursiveEcoScoreSingleDriverReport(IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> flatObjects, int[] parentIds, IEnumerable<reports.entity.EcoScoreReportSingleDriver> result)
+        {
+            List<EcoScoreReportSingleDriver> recursiveObjects = new List<EcoScoreReportSingleDriver>();
+            try
+            {
+                if (parentIds != null)
+                {
+                    foreach (var item in flatObjects.Where(x => parentIds.Contains(x.DataAttributeId)))
+                    {
+                        var preference = new EcoScoreReportSingleDriver
+                        {
+                            DataAttributeId = item.DataAttributeId,
+                            Name = item.Name ?? string.Empty,
+                            Key = item.Key ?? string.Empty,
+                            LimitType = item.LimitType ?? string.Empty,
+                            LimitValue = item.TargetValue,
+                            TargetValue = item.TargetValue,
+                            RangeValueType = item.RangeValueType ?? string.Empty
+                        };
+                        if (!string.IsNullOrEmpty(item.DBColumnName))
+                            preference.Score.AddRange(GetEcoScoreSingleDriverReportAttributeValues(item.DBColumnName, result));
+                        preference.SubSingleDriver.AddRange(FillRecursiveEcoScoreSingleDriverReport(flatObjects, item.SubDataAttributes, result));
+
+                        recursiveObjects.Add(preference);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw new Exception("Error occurred while parsing the EcoScore single driver - FillRecursiveEcoScoreSingleDriverReport().");
+            }
+            return recursiveObjects;
+        }
+
+        private static List<EcoScoreReportSingleDriverAttribute> GetEcoScoreSingleDriverReportAttributeValues(string attributeName, IEnumerable<reports.entity.EcoScoreReportSingleDriver> result)
+        {
+            var lstAttributes = new List<EcoScoreReportSingleDriverAttribute>();
+            try
+            {
+                EcoScoreReportSingleDriverAttribute obj;
+                foreach (var item in result)
+                {
+                    obj = new EcoScoreReportSingleDriverAttribute();
+                    obj.HeaderType = item.HeaderType;
+                    obj.VIN = item.VIN ?? string.Empty;
+                    obj.Value = String.Format("{0:0.0}", Convert.ToDecimal(item.GetType().GetProperties().Where(y => y.Name.Equals(attributeName)).Select(x => x.GetValue(item)).FirstOrDefault()));
+                    lstAttributes.Add(obj);
+                }
+            }
+            catch (Exception)
+            {
+                throw new Exception("Error occurred while parsing the EcoScore single driver - GetEcoScoreSingleDriverReportAttributeValues().");
+            }
+            return lstAttributes;
+        }
+
+        internal EcoScoreSingleDriverBarPieChart MapEcoScoreAverageGrossWeightChartResponse(List<reports.entity.EcoScoreSingleDriverBarPieChart> result)
+        {
+            var avgGrossWeight = new EcoScoreSingleDriverBarPieChart();
+            string[] labels = new string[6] { "0-10 t", "10-20 t", "20-30 t", "30-40 t", "40-50 t", ">50 t" };
+            avgGrossWeight.XAxisLabel.AddRange(labels);
+
+            List<string> vehicleName = result.Select(x => x.VehicleName).Distinct().ToList();
+            if (vehicleName.Count > 0)
+            {
+                var lstChartData = new List<EcoScoreSingleDriverChartDataSet>();
+                foreach (var item in vehicleName)
+                {
+                    var obj = new EcoScoreSingleDriverChartDataSet();
+                    obj.Label = item;
+                    foreach (var lbl in labels)
+                    {
+                        var avg = result.Where(x => x.VehicleName == item && x.X_Axis == lbl).FirstOrDefault();
+                        if (avg != null)
+                            obj.Data.Add(avg.Y_Axis);
+                        else
+                            obj.Data.Add(new double());
+                    }
+                    lstChartData.Add(obj);
+                }
+                avgGrossWeight.ChartDataSet.AddRange(lstChartData);
+            }
+            return avgGrossWeight;
+        }
+
+        internal EcoScoreSingleDriverBarPieChart MapEcoScoreAverageDrivingSpeedChartResponse(List<reports.entity.EcoScoreSingleDriverBarPieChart> result, string unit)
+        {
+            var avgDrivingSpeed = new EcoScoreSingleDriverBarPieChart();
+            string[] labels;
+            if (unit == UoM.Imperial.ToString())
+                labels = new string[5] { "0-15 mph", "15-30 mph", "30-45 mph", "45-50 mph", ">50 mph" };
+            else
+                labels = new string[5] { "0-30 kmph", "30-50 kmph", "50-75 kmph", "75-85 kmph", ">85 kmph" };
+            avgDrivingSpeed.XAxisLabel.AddRange(labels);
+
+            List<string> vehicleName = result.Select(x => x.VehicleName).Distinct().ToList();
+            if (vehicleName.Count > 0)
+            {
+                var lstChartData = new List<EcoScoreSingleDriverChartDataSet>();
+                foreach (var item in vehicleName)
+                {
+                    var obj = new EcoScoreSingleDriverChartDataSet();
+                    obj.Label = item;
+                    foreach (var lbl in labels)
+                    {
+                        var avg = result.Where(x => x.VehicleName == item && x.X_Axis == lbl).FirstOrDefault();
+                        if (avg != null)
+                            obj.Data.Add(avg.Y_Axis);
+                        else
+                            obj.Data.Add(new double());
+                    }
+                    lstChartData.Add(obj);
+                }
+                avgDrivingSpeed.ChartDataSet.AddRange(lstChartData);
+            }
+            return avgDrivingSpeed;
+        }
     }
 
 }

@@ -34,8 +34,7 @@ namespace net.atos.daf.ct2.reports.entity
         public double Lcts_LatestWarningPositionLongitude { get; set; }
         public string Veh_Vid { get; set; }
         public string Veh_RegistrationNo { get; set; }
-        public string Dri_FirstName { get; set; }
-        public string Dri_LastName { get; set; }
+        public string DriverName { get; set; }
         public int Geoadd_Id { get; set; }
         public string Geoadd_Address { get; set; }
         public int Lps_Id { get; set; }
@@ -54,15 +53,16 @@ namespace net.atos.daf.ct2.reports.entity
         public int Wangeoadd_LatestWarningGeolocationAddressId { get; set; }
         public string Wangeoadd_LatestWarningGeolocationAddress { get; set; }
         public int Tripal_Id { get; set; }
+        public int Tripal_AlertId { get; set; }
+        public string Tripal_Vin { get; set; }
         public string Tripal_TripId { get; set; }
         public string AlertName { get; set; }
         public string AlertType { get; set; }
-        public string AlertLocation { get; set; }
-        public string AlertTime { get; set; }
+        public long AlertTime { get; set; }
         public string AlertLevel { get; set; }
         public string CategoryType { get; set; }
-        public string AlertLatitude { get; set; }
-        public string AlertLongitude { get; set; }
+        public double AlertLatitude { get; set; }
+        public double AlertLongitude { get; set; }
         public int Alertgeoadd_LatestAlertGeolocationAddressId { get; set; }
         public string Alertgeoadd_LatestAlertGeolocationAddress { get; set; }
     }

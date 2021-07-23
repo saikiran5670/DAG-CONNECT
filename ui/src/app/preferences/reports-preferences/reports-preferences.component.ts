@@ -1,5 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AccountService } from 'src/app/services/account.service';
 import { ReportService } from 'src/app/services/report.service';
+import { TranslationService } from 'src/app/services/translation.service';
+import { FleetFuelPreferencesComponent } from './fleet-fuel-preferences/fleet-fuel-preferences.component';
 
 @Component({
   selector: 'app-reports-preferences',
@@ -9,6 +12,8 @@ import { ReportService } from 'src/app/services/report.service';
 
 export class ReportsPreferencesComponent implements OnInit {
   @Input() translationData: any = {};
+  @ViewChild('fleetFuelPerferencesVehicle') fleetFuelPerferencesVehicle: FleetFuelPreferencesComponent;
+  @ViewChild('fleetFuelPerferencesDriver') fleetFuelPerferencesDriver: FleetFuelPreferencesComponent;
   displayMessage: any = '';
   updateMsgVisible: boolean = false;
   showLoadingIndicator: any = false;
@@ -18,12 +23,22 @@ export class ReportsPreferencesComponent implements OnInit {
   editFleetUtilisationFlag: boolean = false;
   reportListData: any = [];
   showDriverTimePerferences: boolean = false;
-  editDriverTimePerferencesFlag:boolean = false;
+  editDriverTimePerferencesFlag: boolean = false;
+  showEcoScorePerferences: boolean = false;
+  editEcoScorePerferencesFlag: boolean = false;
+  showFuelBenchmarkPerferences: boolean = false;
+  editFuelBenchmarkPerferencesFlag: boolean = false;
+  showFuelDeviationPerferences: boolean = false;
+  editFuelDeviationPerferencesFlag: boolean = false;
+  showFleetFuelPerferences: boolean = false;
+  editFleetFuelPerferencesFlag: boolean = false;
+  generalPreferences;
 
-  constructor( private reportService: ReportService ) { }
+  constructor(private reportService: ReportService, private translationService: TranslationService, private accountService: AccountService) { }
 
   ngOnInit() {
     this.loadReportData();
+    this.getPreferences();
   }
 
   loadReportData(){
@@ -36,6 +51,11 @@ export class ReportsPreferencesComponent implements OnInit {
       this.hideloader();
       this.reportListData = [];
     });
+  }
+
+  getPreferences() {
+    let languageCode = JSON.parse(localStorage.getItem('language')).code;
+    this.translationService.getPreferences(languageCode).subscribe((res) => this.generalPreferences = res)
   }
 
   hideloader() {
@@ -87,9 +107,71 @@ export class ReportsPreferencesComponent implements OnInit {
     }
   }
 
+  editFleetFuelPerferences() {
+    this.editFleetFuelPerferencesFlag = true;
+    this.showFleetFuelPerferences = false;
+  }
+
+  updateFleetFuelPerferencesFlag(retObj: any) {
+    if (retObj) {
+      if (retObj.msg && retObj.msg != '') {
+        this.successMsgBlink(retObj.msg);
+      }
+    }
+    this.editFleetFuelPerferencesFlag = false;
+    this.showFleetFuelPerferences = false;
+  }
+
+  onCancel(){
+    this.updateFleetFuelPerferencesFlag({flag: false, msg: ''});
+    this.onReset();
+  }
+
+  onReset(){
+    this.fleetFuelPerferencesVehicle.setColumnCheckbox();
+    this.fleetFuelPerferencesDriver.setColumnCheckbox();
+  }
+
+  onConfirm() {
+    let vehicleObj = this.fleetFuelPerferencesVehicle.onConfirm();
+    let driverObj = this.fleetFuelPerferencesDriver.onConfirm();
+    let objData: any = {
+      reportId: this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id,
+      attributes: [...vehicleObj, ...driverObj]
+    };
+    this.reportService.updateReportUserPreference(objData).subscribe((res: any) => {
+      this.updateFleetFuelPerferencesFlag({ flag: false, msg: this.getSuccessMsg() });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    });
+  }
+
+  getSuccessMsg() {
+    if (this.translationData.lblDetailssavesuccessfully)
+      return this.translationData.lblDetailssavesuccessfully;
+    else
+      return ("Details save successfully");
+  }
+
   editDriverTimePerferences(){
     this.editDriverTimePerferencesFlag = true;
     this.showDriverTimePerferences = false;
+  }
+
+  editEcoScorePerferences(){
+    this.editEcoScorePerferencesFlag = true;
+    this.showEcoScorePerferences = false;
+  }
+
+  editFuelBenchmarkPerferences(){
+    this.editFuelBenchmarkPerferencesFlag = true;
+    this.showFuelBenchmarkPerferences = false;
+  }
+
+  editFuelDeviationPerferences(){
+    this.editFuelDeviationPerferencesFlag = true;
+    this.showFuelDeviationPerferences = false;
   }
 
   updateEditDriverTimeFlag(retObj: any){
@@ -102,4 +184,42 @@ export class ReportsPreferencesComponent implements OnInit {
       this.editDriverTimePerferencesFlag = false; // hard coded
     }
   }
+
+  updateEcoScoreReportFlag(retObj: any){
+    if(retObj){
+      this.editEcoScorePerferencesFlag = retObj.flag;
+      if(retObj.msg && retObj.msg != ''){
+        this.successMsgBlink(retObj.msg);
+      }
+    }else{
+      this.editEcoScorePerferencesFlag = false; // hard coded
+    }
+  }
+
+  updateFuelBenchmarkReportFlag(retObj: any){
+    if(retObj){
+      if(retObj.msg && retObj.msg != ''){
+        this.successMsgBlink(retObj.msg);
+      }
+    }
+    this.editFuelBenchmarkPerferencesFlag = false; // hard coded
+    this.showFuelBenchmarkPerferences = false;
+  }
+
+  updateFuelDeviationReportFlag(retObj: any){
+    if(retObj){
+      this.editFuelDeviationPerferencesFlag = retObj.flag;
+      if(retObj.msg && retObj.msg != ''){
+        this.successMsgBlink(retObj.msg);
+      }
+    }else{
+      this.editFuelDeviationPerferencesFlag = false; // hard coded
+    }
+  }
+  
+  onTabChanged(event) {
+    // event.stopPropogation();
+    // event.preventDefault();
+  }
+
 }

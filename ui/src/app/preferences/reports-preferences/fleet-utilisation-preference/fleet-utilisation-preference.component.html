@@ -235,13 +235,13 @@
                     (selectionChange)="onCalenderDetailDDChange($event)"
                     placeholder="{{ translationData.lblViewcalenderdetails || 'View calender details' }}"
                     formControlName="calenderView">
-                    <mat-option *ngFor="let rer of calenderColumnData" [value]="rer.dataAtrributeId">
+                    <mat-option *ngFor="let rer of calenderColumnData" [value]="rer.dataAttributeId">
                         {{ rer.translatedName }}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
         </div>
-        <div *ngIf='slideStateData.dataAtrributeId' fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+        <div *ngIf='slideStateData.dataAttributeId' fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
             <mat-label style="margin-bottom: 8px !important;">{{ translationData.lblViewcalenderviewmode || 'View
                 calender view mode' }}</mat-label>
             <span>
@@ -394,7 +394,7 @@
         <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
             translationData.lblReset || 'Reset' }}</button>
         <button
-            [disabled]='reqField || selectionForSummaryColumns.selected.length == 0 || selectionForDetailsColumns.selected.length == 0 || selectionForChartsColumns.selected.length == 0'
+            [disabled]='reqField || (selectionForSummaryColumns.selected.length == 0 && summaryColumnData.length > 0) || (selectionForDetailsColumns.selected.length == 0 && detailColumnData.length > 0) || (selectionForChartsColumns.selected.length == 0 && chartsColumnData.length > 0)'
             class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
             'Confirm') }}</button>
     </div>

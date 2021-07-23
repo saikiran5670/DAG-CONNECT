@@ -40,7 +40,7 @@ namespace net.atos.daf.ct2.reports.repository
                                             		FROM
                                             			tripdetail.trip_statistics
                                             		where
-                                            			start_time_stamp   >= @FromDate
+                                            			end_time_stamp   >= @FromDate
                                             			and end_time_stamp <= @ToDate
                                                         and VIN = ANY(@Vins)
                                             		GROUP BY
@@ -51,16 +51,16 @@ namespace net.atos.daf.ct2.reports.repository
                                             		SELECT
                                             			vh.name as vehiclename
                                             		  , vh.vin  as VIN
-                                            		  , numberoftrips
+                                            		  , numberoftrips as NumberOfTrips
                                             		  , vh.registration_no             as RegistrationNumber
                                             		  , fd.etl_gps_trip_time           as TripTime
                                             		  , fd.end_time_stamp              as StopTime
                                             		  , round ( fd.etl_gps_distance,2) as Distance
                                             		  , fd.veh_message_driving_time    as DrivingTime
-                                            		  , fd.idle_duration               as IdleTime
-                                            		  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistance
+                                            		  , fd.idle_duration               as IdleDuration
+                                            		  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistancePerDay
                                             		  , round (fd.average_speed,2)     as AverageSpeed
-                                            		  , round (fd.average_weight,2)    as AverageWeight
+                                            		  , round (fd.average_weight,2)    as AverageWeightPerTrip
                                             		  , round (fd.start_odometer,2)    as Odometer
                                             		FROM
                                             			CTE_FleetDeatils fd

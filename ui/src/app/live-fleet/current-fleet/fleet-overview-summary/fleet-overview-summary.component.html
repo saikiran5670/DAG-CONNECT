@@ -1,2 +1,63 @@
-<p>fleet-overview-summary works!</p>
-<p>wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww</p>
+<mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+  <mat-expansion-panel style="width:100%;" class="full-width"> 
+    <mat-expansion-panel-header class="full-width">
+      <mat-panel-title>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Summary</span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
+        {{ translationData.lblCriticalAlert || 'Critical Al'}}
+    </div>     -->
+    <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
+      <div></div>
+      <button class="border border-light">{{ translationData.lblCriticalAlert || 'Critical Alert' }}<br> <b> {{ criticalAlert }} </b> </button>
+      <button class="border border-light">{{ translationData.lblMileageDone || 'Mileage Done' }}<br> <b> {{ mileageDone }} </b> </button>
+      <button class="border border-light">{{ translationData.lblDrivers || 'Drivers' }}<br> <b> {{ drivers }} </b> </button>
+      <button class="border border-light">{{ translationData.lblDrivingTime || 'Driving Time' }}<br> <b> {{ driveTime }} </b> </button>
+      <button class="border border-light">{{ translationData.lblNoAction || 'No Action' }}<br> <b> {{ noAction }} </b> </button>
+      <button class="border border-light">{{ translationData.lblServiceNow || 'Service Now' }}<br> <b> {{ serviceNow }} </b> </button>
+      <button class="border border-light">{{ translationData.lblStopNow || 'Stop Now' }}<br> <b> {{ stopNow }} </b> </button>
+  </div>
+<br>
+  <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
+    <div>{{ translationData.lblVehicleIn || 'Vehicle in' }} {{ vehicleGroup }}</div>
+  </div>
+  <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
+    <div style="display: block">
+      <canvas baseChart
+        [datasets]="barChartData"
+        [labels]="barChartLabels"
+        [options]="barChartOptions"
+        [plugins]="barChartPlugins"
+        [legend]="barChartLegend"
+        [chartType]="barChartType"
+        [chartType]="lineChartType"
+        [colors]="barChartColors">
+      </canvas>
+    </div>
+    <div style="display: block">
+      <canvas baseChart
+        [data]="doughnutChartDataMileage"
+        [labels]="doughnutChartLabelsMileage"
+        [chartType]="doughnutChartType"
+        [options]="doughnutChartOptionsMileage"
+        [colors]="doughnutColors">
+      </canvas>
+      <div class="text-center"><span><b>{{ translationData.lblFleetMileageRate || 'Fleet Mileage Rate' }}</b></span></div>
+    </div>
+    <!-- <div><span>{{ translationData.lblFleetMileageRate || 'Fleet Mileage Rate' }}</span></div> -->
+    <div style="display: block" class="relative">
+      <canvas baseChart
+        [data]="doughnutChartDataUtil"
+        [labels]="doughnutChartLabelsUtil"
+        [chartType]="doughnutChartType"
+        [options]="doughnutChartOptionsUtil"
+        [colors]="doughnutColors">
+      </canvas>
+      <div class="text-center">
+        <span><b>{{ translationData.lblFleetUtilizationRate || 'Fleet Utilization Rate' }}</b></span>
+      </div>
+    </div>
+  </div>
+  </mat-expansion-panel><br><br>
+</mat-card>

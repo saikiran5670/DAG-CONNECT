@@ -26,7 +26,7 @@
 
         //public string VehicleName { get; set; }
 
-        //public string Vin { get; set; }
+        public string Vin { get; set; }
 
         //public string RegistrationNo { get; set; }
 

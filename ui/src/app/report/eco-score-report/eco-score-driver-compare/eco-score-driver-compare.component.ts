@@ -16,6 +16,8 @@ import { ReportService } from '../../../services/report.service';
   encapsulation: ViewEncapsulation.None
 })
 export class EcoScoreDriverCompareComponent implements OnInit {
+  @Input() generalColumnData: any;
+  @Input() driverPerformanceColumnData: any;
   @Input() translationData: any=[];
   @Input() compareEcoScore: any;
   @Output() backToMainPage = new EventEmitter<any>();
@@ -59,10 +61,78 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   ngOnInit() {
     this.translationUpdate();
     this.showTable = true;
+    this.checkPrefData();
     this.driverDetails = this.compareEcoScore.drivers;
     this.tableColumns();
     this.defineGrid();
     this.loadData();
+  }
+
+  checkPrefData(){
+    if(this.compareEcoScore.compareDrivers && this.compareEcoScore.compareDrivers.subCompareDrivers && this.compareEcoScore.compareDrivers.subCompareDrivers.length > 0){
+      this.compareEcoScore.compareDrivers.subCompareDrivers.forEach(element => {
+        if(element.subCompareDrivers && element.subCompareDrivers.length > 0){
+          let _arr: any = [];
+          element.subCompareDrivers.forEach(_elem => {
+            if(element.name == 'EcoScore.General'){ // general
+              if(_elem.dataAttributeId){
+                let _s = this.generalColumnData.filter(i => i.dataAttributeId == _elem.dataAttributeId && i.state == 'A');
+                if(_s.length > 0){ // filter only active from pref
+                  _arr.push(_elem);
+                }
+              }
+            }else if(element.name == 'EcoScore.DriverPerformance'){ // Driver Performance 
+              // single
+              if(_elem.subCompareDrivers && _elem.subCompareDrivers.length == 0){ // single -> (eco-score & anticipation score)
+                let _q = this.driverPerformanceColumnData.filter(o => o.dataAttributeId == _elem.dataAttributeId && o.state == 'A');
+                if(_q.length > 0){ // filter only active from pref
+                  _arr.push(_elem);
+                }
+              }else{ // nested -> (fuel consume & braking score)
+                let _nestedArr: any = [];
+                _elem.subCompareDrivers.forEach(el => {
+                  if(el.subCompareDrivers && el.subCompareDrivers.length == 0){ // no child -> (others)
+                    if(_elem.name == 'EcoScore.DriverPerformance.FuelConsumption'){
+                      let _p = this.driverPerformanceColumnData[1].subReportUserPreferences.filter(j => j.dataAttributeId == el.dataAttributeId && j.state == 'A');
+                      if(_p.length > 0){ // filter only active from pref
+                        _nestedArr.push(el);
+                      }
+                    }else if(_elem.name == 'EcoScore.DriverPerformance.BrakingScore'){
+                      let _p = this.driverPerformanceColumnData[2].subReportUserPreferences.filter(j => j.dataAttributeId == el.dataAttributeId && j.state == 'A');
+                      if(_p.length > 0){ // filter only active from pref
+                        _nestedArr.push(el);
+                      }
+                    }
+                  }else{ // child -> (cruise usage)
+                    if(_elem.name == 'EcoScore.DriverPerformance.FuelConsumption'){
+                      let _lastArr: any = [];
+                      el.subCompareDrivers.forEach(_data => {
+                        let _x: any = this.driverPerformanceColumnData[1].subReportUserPreferences.filter(_w => _w.name == 'EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage');
+                        if(_x.length > 0 && _x[0].subReportUserPreferences){ // child checker
+                          let _v = _x[0].subReportUserPreferences.filter(i => i.dataAttributeId == _data.dataAttributeId && i.state == 'A');
+                          if(_v.length > 0){ // filter only active from pref
+                            _lastArr.push(_data);
+                          }
+                        }
+                      });
+                      el.subCompareDrivers = _lastArr;
+                      if(_lastArr.length > 0){
+                        _nestedArr.push(el);
+                      }
+                    }
+                  }
+                });
+                _elem.subCompareDrivers = _nestedArr;
+                if(_nestedArr.length > 0){
+                  _arr.push(_elem);
+                }
+              }
+            }
+          });
+          element.subCompareDrivers = _arr;
+        }
+      });
+    }
   }
 
   translationUpdate(){
@@ -104,17 +174,17 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     this.columnDefinitions = [
       {
         id: 'category', name: (this.translationData.lblCategory || 'Category'), field: 'key',
-        type: FieldType.string, width: 150, formatter: this.treeFormatter, excludeFromHeaderMenu: true
+        type: FieldType.string, width: 150, maxWidth: 400, formatter: this.treeFormatter, excludeFromHeaderMenu: true
       },
       {
         id: 'target', name: (this.translationData.lblTarget || 'Target'), field: 'target',
-        type: FieldType.string, minWidth: 90, maxWidth: 100, excludeFromHeaderMenu: true
+        type: FieldType.string, minWidth: 90, maxWidth: 175, excludeFromHeaderMenu: true
       }
     ];
     this.columnDefinitionsGen = [
       {
         id: 'categoryG', name: (this.translationData.lblCategory || 'Category'), field: 'key',
-        type: FieldType.string, width: 150, formatter: this.treeFormatter, excludeFromHeaderMenu: true// maxWidth: 400
+        type: FieldType.string, width: 150, maxWidth: 375, formatter: this.treeFormatter, excludeFromHeaderMenu: true
       }
     ];
     
@@ -132,11 +202,11 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         let driverG1= '<span style="font-weight:700">'+this.driverDetails[0].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[0].driverId+')</span>';
         this.columnDefinitions.push({
           id: 'driver1', name: driver1, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore0, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore0, maxWidth: 325
         });
         this.columnDefinitionsGen.push({
           id: 'driverG1', name: driverG1, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore0, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore0, maxWidth: 375
         });
       }
       if(this.driverDetails.length > 1){
@@ -144,11 +214,11 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         let driverG2= '<span style="font-weight:700">'+this.driverDetails[1].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[1].driverId+')</span>';
         this.columnDefinitions.push({
           id: 'driver2', name: driver2, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 375
         });
         this.columnDefinitionsGen.push({
           id: 'driverG2', name: driverG2, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 275
         });
       }
       if(this.driverDetails.length > 2){
@@ -156,11 +226,11 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         let driverG3= '<span style="font-weight:700">'+this.driverDetails[2].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[2].driverId+')</span>';
         this.columnDefinitions.push({
           id: 'driver3', name: driver3, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 325
         });
         this.columnDefinitionsGen.push({
           id: 'driverG3', name: driverG3, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 375
         });
       }
       if(this.driverDetails.length > 3){
@@ -168,11 +238,11 @@ export class EcoScoreDriverCompareComponent implements OnInit {
         let driverG4= '<span style="font-weight:700">'+this.driverDetails[3].driverName+'</span><br/><span style="font-weight:normal">('+this.driverDetails[3].driverId+')</span>';
         this.columnDefinitions.push({
           id: 'driver4', name: driver4, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 325
         });
         this.columnDefinitionsGen.push({
           id: 'driverG4', name: driverG4, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 250
+          type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 375
         });
       }
     }

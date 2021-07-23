@@ -25,6 +25,10 @@ import * as fs from 'file-saver';
   styleUrls: ['./eco-score-report.component.less']
 })
 export class EcoScoreReportComponent implements OnInit, OnDestroy {
+  generalColumnData: any = [];
+  generalGraphColumnData: any = [];
+  driverPerformanceColumnData: any = [];
+  driverPerformanceGraphColumnData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   selectionTab: any;
   selectedStartTime: any = '00:00';
@@ -83,7 +87,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   driverDetails : any= [];
   detailConvertedData : any;
   reportPrefData: any = [];
-  reportId:number = 9;
+  reportId:number = 10;
   minTripCheck: any;
   minTripValue: any;
   minDriverCheck: any;
@@ -341,16 +345,62 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       }
     }
   }
+  
   getReportPreferences(){
-    this.reportService.getUserPreferenceReport(this.reportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
+    this.reportService.getReportUserPreference(this.reportId).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
-      this.setDisplayColumnBaseOnPref();
+      this.resetColumnData();
+      this.preparePrefData(this.reportPrefData);
+      //this.setDisplayColumnBaseOnPref();
       this.getOnLoadData();
     }, (error) => {
       this.reportPrefData = [];
-      this.setDisplayColumnBaseOnPref();
+      this.resetColumnData();
+      this.preparePrefData(this.reportPrefData);
+      (this.reportPrefData);
+      //this.setDisplayColumnBaseOnPref();
       this.getOnLoadData();
     });
+  }
+
+  preparePrefData(prefData: any){
+    if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
+      prefData.subReportUserPreferences.forEach(element => {
+        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+          element.subReportUserPreferences.forEach(item => {
+            let _data: any = item;
+            if(item.name.includes('EcoScore.General.')){
+              this.generalColumnData.push(_data);
+            }else if(item.name.includes('EcoScore.GeneralGraph.')){
+              this.generalGraphColumnData.push(_data);
+            }else if(item.name.includes('EcoScore.DriverPerformance.')){
+              let index: any;
+              switch(item.name){
+                case 'EcoScore.DriverPerformance.EcoScore':{
+                  index = 0;
+                  break;
+                }
+                case 'EcoScore.DriverPerformance.FuelConsumption':{
+                  index = 1;
+                  break;
+                }
+                case 'EcoScore.DriverPerformance.BrakingScore':{
+                  index = 2;
+                  break;
+                }
+                case 'EcoScore.DriverPerformance.AnticipationScore':{
+                  index = 3;
+                  break;
+                }
+              }
+              this.driverPerformanceColumnData[index] = _data;
+            }else if(item.name.includes('EcoScore.DriverPerformanceGraph.')){
+              this.driverPerformanceGraphColumnData.push(_data);
+            }
+          });
+        }
+      });
+    }
   }
 
   setDisplayColumnBaseOnPref(){
@@ -480,6 +530,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   allDriversSelected = true;
 
   onSearch(){
+    this.driverSelected = false;
+    this.ecoScoreDriver = false;
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     let _vehicelIds = [];
@@ -617,7 +669,16 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.resetEcoScoreFormControlValue();
     this.filterDateData();
+    this.initData = [];
     this.tableInfoObj = {};
+    this.onSearch();
+  }
+
+  resetColumnData(){
+    this.generalColumnData = [];
+    this.generalGraphColumnData = [];
+    this.driverPerformanceColumnData = [];
+    this.driverPerformanceGraphColumnData = [];
   }
 
   resetEcoScoreFormControlValue(){
@@ -663,8 +724,8 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     }
     this.showLoadingIndicator = true;
     this.reportService.getDefaultDriverParameter(loadParam).subscribe((initData: any) => {
-      this.hideloader();
-      this.onLoadData = initData;
+       this.hideloader();
+       this.onLoadData = initData;
       this.filterDateData();     
     }, (error)=>{
       this.hideloader();
@@ -744,7 +805,7 @@ let finalGroupDataList = [];
     this.resetEcoScoreFormControlValue();
     this.selectedVehicleGroup = this.vehicleGroupListData[0].vehicleGroupName;
     if(this.vehicleListData.length >0)
-    this.selectedVehicle = this.vehicleListData[0].vehicleName;   
+    this.selectedVehicle = this.vehicleListData[0].vehicleName;  
   }
 
   setGeneralDriverValue(){
@@ -1302,6 +1363,8 @@ let finalGroupDataList = [];
             //_drivers = JSON.parse('{"code":200,"message":"Eco-Score Report details fetched successfully.","drivers":[{"driverName":"Driver5 DriverL5","driverId":"NL B000171984000002"},{"driverName":"Johan PT","driverId":"NL N110000225456008"}],"compareDrivers":{"dataAttributeId":275,"name":"EcoScore","key":"rp_ecoscore","target":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":276,"name":"EcoScore.General","key":"rp_general","target":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":277,"name":"EcoScore.General.AverageGrossweight","key":"rp_averagegrossweight","target":28.78,"rangeValueType":"D","score":[],"subCompareDrivers":[]},{"dataAttributeId":278,"name":"EcoScore.General.Distance","key":"rp_distance","target":0,"rangeValueType":"","score":[],"subCompareDrivers":[]},{"dataAttributeId":279,"name":"EcoScore.General.NumberOfTrips","key":"rp_numberoftrips","target":0,"rangeValueType":"","score":[],"subCompareDrivers":[]},{"dataAttributeId":280,"name":"EcoScore.General.NumberOfVehicles","key":"rp_numberofvehicles","target":0,"rangeValueType":"","score":[],"subCompareDrivers":[]},{"dataAttributeId":281,"name":"EcoScore.General.AverageDistancePerDay","key":"rp_averagedistanceperday","target":452.66,"rangeValueType":"D","score":[],"subCompareDrivers":[]}]},{"dataAttributeId":285,"name":"EcoScore.DriverPerformance","key":"rp_driverperformance","target":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":286,"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","target":0,"rangeValueType":"","score":[],"subCompareDrivers":[]},{"dataAttributeId":287,"name":"EcoScore.DriverPerformance.FuelConsumption","key":"rp_fuelconsumption","target":0,"rangeValueType":"D","score":[],"subCompareDrivers":[{"dataAttributeId":288,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage","key":"rp_cruisecontrolusage","target":0,"rangeValueType":"D","score":[],"subCompareDrivers":[{"dataAttributeId":289,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage30-50km/h(%)","key":"rp_CruiseControlUsage30","target":0,"rangeValueType":"","score":[],"subCompareDrivers":[]},{"dataAttributeId":290,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage50-75km/h(%)","key":"rp_cruisecontroldistance50","target":0,"rangeValueType":"","score":[],"subCompareDrivers":[]},{"dataAttributeId":291,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage>75km/h(%)","key":"rp_cruisecontroldistance75","target":0,"rangeValueType":"","score":[],"subCompareDrivers":[]}]},{"dataAttributeId":292,"name":"EcoScore.DriverPerformance.FuelConsumption.PTOUsage(%)","key":"rp_ptousage","target":0,"rangeValueType":"D","score":[],"subCompareDrivers":[]},{"dataAttributeId":293,"name":"EcoScore.DriverPerformance.FuelConsumption.PTODuration","key":"rp_ptoduration","target":0,"rangeValueType":"T","score":[],"subCompareDrivers":[]},{"dataAttributeId":294,"name":"EcoScore.DriverPerformance.FuelConsumption.AverageDrivingSpeed","key":"rp_averagedrivingspeed","target":0,"rangeValueType":"D","score":[],"subCompareDrivers":[]},{"dataAttributeId":295,"name":"EcoScore.DriverPerformance.FuelConsumption.AverageSpeed","key":"rp_averagespeed","target":0,"rangeValueType":"D","score":[],"subCompareDrivers":[]},{"dataAttributeId":296,"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottling(%)","key":"rp_heavythrottling","target":48.9,"rangeValueType":"D","score":[],"subCompareDrivers":[]},{"dataAttributeId":297,"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottleDuration","key":"rp_heavythrottleduration","target":3560,"rangeValueType":"T","score":[],"subCompareDrivers":[]},{"dataAttributeId":298,"name":"EcoScore.DriverPerformance.FuelConsumption.Idling(%)","key":"rp_idling","target":23.7,"rangeValueType":"D","score":[],"subCompareDrivers":[]},{"dataAttributeId":299,"name":"EcoScore.DriverPerformance.FuelConsumption.IdleDuration","key":"rp_idleduration","target":0,"rangeValueType":"T","score":[],"subCompareDrivers":[]}]},{"dataAttributeId":300,"name":"EcoScore.DriverPerformance.BrakingScore","key":"rp_brakingscore","target":7.5,"rangeValueType":"D","score":[],"subCompareDrivers":[{"dataAttributeId":301,"name":"EcoScore.DriverPerformance.BrakingScore.HarshBraking(%)","key":"rp_harshbraking","target":0,"rangeValueType":"D","score":[],"subCompareDrivers":[]},{"dataAttributeId":302,"name":"EcoScore.DriverPerformance.BrakingScore.HarshBrakeDuration","key":"rp_harshbrakeduration","target":0,"rangeValueType":"T","score":[],"subCompareDrivers":[]},{"dataAttributeId":303,"name":"EcoScore.DriverPerformance.BrakingScore.Braking(%)","key":"rp_braking","target":0,"rangeValueType":"D","score":[],"subCompareDrivers":[]},{"dataAttributeId":304,"name":"EcoScore.DriverPerformance.BrakingScore.BrakeDuration","key":"rp_brakeduration","target":0,"rangeValueType":"T","score":[],"subCompareDrivers":[]}]},{"dataAttributeId":305,"name":"EcoScore.DriverPerformance.AnticipationScore","key":"rp_anticipationscore","target":7.5,"rangeValueType":"D","score":[],"subCompareDrivers":[]}]}]}}');
             this.compareDriverEcoScoreSearchParam = _drivers;
             this.compareEcoScore = true;
+      }, (error)=>{
+        this.hideloader();
       });
     }
   }

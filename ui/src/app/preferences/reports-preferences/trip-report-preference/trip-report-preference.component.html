@@ -163,6 +163,6 @@
         translationData.lblCancel || 'Cancel' }}</button>
     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
         translationData.lblReset || 'Reset' }}</button>
-    <button [disabled]='reqField || selectionForTripColumns.selected.length == 0' class='no-margin' mat-raised-button
+    <button [disabled]='reqField || (selectionForTripColumns.selected.length == 0 && tripPrefData.length > 0)' class='no-margin' mat-raised-button
         color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm || 'Confirm') }}</button>
 </div>

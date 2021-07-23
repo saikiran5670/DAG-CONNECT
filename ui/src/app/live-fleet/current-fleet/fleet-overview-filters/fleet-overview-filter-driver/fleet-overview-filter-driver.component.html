@@ -1,1 +1,47 @@
-<p>fleet-overview-filter-driver works!</p>
+<div class='mat-elevation-z no-padding margin-bottom-xlg vehicleList-card' style="margin-top: 10px;">
+    <mat-expansion-panel style="padding: 0px;height: calc(100vh - 45px);" [(expanded)]="isVehicleListOpen" class="full-width" fxLayoutGap="10px" (opened)="isVehicleListOpen"
+    (closed)="!isVehicleListOpen">
+      <mat-expansion-panel-header class="full-width" style="height: 45px;">
+        <mat-panel-title>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbl || 'Vehicle List' }}({{vehicleListData.length}})</span>
+       </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class="checkbox">
+        <mat-checkbox [checked]="todayFlagClicked" (change)="onChangetodayCheckbox($event)" >{{ translationData.lblToday || 'Today'}}
+        </mat-checkbox>
+     </div>
+      <div *ngIf="!noRecordFlag">
+        <div class="full-width vehicleList-div" *ngFor="let item of vehicleListData">
+            <div class="vehicleList-icon">
+                <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="Health Status: {{item.vehicleHealthStatusType}} 
+                &#13; Alert: {{item.alertName}}"> </span>
+            </div>
+            <div class="vehicleList-details">
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'VIN'}}: </span>
+                <span class="vehicle-details-data">{{item.vin}}</span>
+            </div>
+            <div>               
+                <span class="vehicle-details-head" >           
+                    {{ item.driverName == '' ?  'Driver Id' :  'Driver Name'}} 
+                </span>
+                <span class="vehicle-details-data">
+                      {{ (item.driverName == '' ? item.driverId : item.driverName) || ((item.driverName == '' && item.driverId == '') ? 'Unknown' : item.driverName)}} 
+               </span>
+            </div> 
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
+                <span class="vehicle-details-data">{{item.vehicleDrivingStatusType}}</span>
+            </div> 
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
+                <span class="vehicle-details-data">{{item.vehicleHealthStatusType}}</span>
+            </div>
+            </div>
+        </div>
+     </div>  
+     <div *ngIf="noRecordFlag">
+        <p>{{translationData.lblNoRecordFound || 'NoRecordFound'}}</p>
+    </div>  
+  </mat-expansion-panel>
+</div>

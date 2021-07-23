@@ -12,5 +12,5 @@ public class SpareMatrixAcceleration extends SparseMatrix  implements Serializab
   private static final long serialVersionUID = 1L;
 
   @JsonProperty(value = "A_VBrake")
-  private Integer[] a_VBrake;
+  private Long[] a_VBrake;
 }
