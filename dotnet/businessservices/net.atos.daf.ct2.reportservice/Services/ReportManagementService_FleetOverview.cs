@@ -224,9 +224,9 @@ namespace net.atos.daf.ct2.reportservice.Services
                     {
                         if (warningDetails != null && warningDetails.Count > 0)
                         {
-                            var warningDetail = warningDetails.FirstOrDefault(w => w.WarningClass == healthStatus.WarningClass && w.WarningNumber == healthStatus.WarningNumber);
-                            healthStatus.WarningName = warningDetail.WarningName ?? string.Empty;
-                            healthStatus.WarningAdvice = warningDetail.WarningAdvice ?? string.Empty;
+                            var warningDetail = warningDetails?.FirstOrDefault(w => w.WarningClass == healthStatus.WarningClass && w.WarningNumber == healthStatus.WarningNumber);
+                            healthStatus.WarningName = warningDetail?.WarningName ?? string.Empty;
+                            healthStatus.WarningAdvice = warningDetail?.WarningAdvice ?? string.Empty;
 
                         }
                         //opt-in and no driver card- Unknown - Implemented by UI 
@@ -236,7 +236,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                         if (driverDetails != null && driverDetails.Count > 0)
                         {
-                            healthStatus.DriverName = driverDetails.FirstOrDefault(d => d.DriverId == healthStatus.WarningDrivingId).DriverName; ;
+                            healthStatus.DriverName = driverDetails?.FirstOrDefault(d => d.DriverId == healthStatus.WarningDrivingId).DriverName ?? string.Empty;
                         }
                     }
                     string res = JsonConvert.SerializeObject(result);
