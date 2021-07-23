@@ -189,6 +189,8 @@
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView || 'Map View' }}</span>
+              
+              <span style="margin-left: 10px;"><mat-icon class='margin-right-10'>info</mat-icon>You can select warning from below list to view on map</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px"> </div>
@@ -226,12 +228,13 @@
                 <mat-checkbox style="font-size: 14px;" (change)='checkboxClicked($event,warning)'> View on Map
                 </mat-checkbox>
                 <div class="areaWidth warning_history" fxLayout="column" fxLayoutAlign="left">
-                  <div class="class_padding" style="font-size: 14px;">
+                  <div style="font-size: 14px; line-height: initial; padding: 10px 10px 0;">
+                    <img src="assets/images/662-red_dsym025.svg" style="float: left; height: 40px; width: 40px;">
                     <span class="name_bold">{{warning.warningName}}&nbsp;</span>
                   </div>
                   <div fxLayout="row" class="class_padding">
                     <div class="warning_time" fxLayout="column" fxLayoutAlign="left">
-                      <span class="name_small">Activated Time</span>
+                      <span [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">Activated Time</span>
                       <span style="font-size: 14px;">{{warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a'}}</span>
                     </div>
                     <div *ngIf='!isCurrent' class="warning_time" fxLayout="column" fxLayoutAlign="left">
