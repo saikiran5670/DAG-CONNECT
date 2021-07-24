@@ -23,13 +23,13 @@ export class FleetOverviewFilterDriverComponent implements OnInit {
   constructor(private reportService: ReportService,private _formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
-    
+    this.onChangedriverCheckbox(this.driverFlagClicked);
   }
 
 
-onChangedriverCheckbox(event){ 
+onChangedriverCheckbox(flag){ 
 let emitObj = {
-  driverFlagClicked  : event.checked
+  driverFlagClicked  : flag
 }
  this.driverFilterComponentEmit.emit(emitObj);
   }

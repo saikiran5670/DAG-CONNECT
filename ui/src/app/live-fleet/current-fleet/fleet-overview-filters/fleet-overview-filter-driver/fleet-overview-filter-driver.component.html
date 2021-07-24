@@ -7,7 +7,7 @@
        </mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class="checkbox">
-        <mat-checkbox [checked]="driverFlagClicked" (change)="onChangedriverCheckbox($event)" >{{ translationData.lblToday || 'Today'}}
+        <mat-checkbox [checked]="driverFlagClicked" (change)="onChangedriverCheckbox($event.checked)" >{{ translationData.lblToday || 'Today'}}
         </mat-checkbox>
      </div>
       <div *ngIf="!noRecordFlag">

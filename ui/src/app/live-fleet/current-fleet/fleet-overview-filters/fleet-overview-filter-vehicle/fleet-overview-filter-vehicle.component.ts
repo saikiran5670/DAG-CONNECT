@@ -36,9 +36,12 @@ constructor(private dataInterchangeService: DataInterchangeService) { }
       this.onChangetodayCheckbox(!this.fromVehicleHealth.fromVehicleHealth);
       this.openVehicleDetails(this.fromVehicleHealth.selectedElementData);
     }
+    else{
+      this.onChangetodayCheckbox(this.todayFlagClicked);
+    }
   }
 
-  onChangetodayCheckbox(event){
+  onChangetodayCheckbox(flag){
   //   if(event.checked){
   //  this.todayFlagClicked = true;
   //  this.getFilterData();
@@ -48,9 +51,9 @@ constructor(private dataInterchangeService: DataInterchangeService) { }
     //  this.todayFlagClicked = false;
     //  this.getFilterData();
     //  this.loadVehicleData();
-    this.todayFlagClicked = event
+    this.todayFlagClicked = flag
   let emitObj = {
-  todayFlagClicked  : event,
+  todayFlagClicked  : flag,
  }
  this.vehicleFilterComponentEmit.emit(emitObj);
   }
