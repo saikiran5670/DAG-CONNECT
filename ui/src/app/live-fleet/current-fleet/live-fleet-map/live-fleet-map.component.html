@@ -3,14 +3,14 @@
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
           <span>
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif; margin-right: 20px;'>{{ 'Map View' }}</span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif; margin-right: 20px;'>{{ translationData.lblMapView || 'Map View' }}</span>
            </span>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div>
         <form [formGroup]="mapFilterForm">
         <a (click)='onAdvanceFilterOpen()' class='advanceFilterAnchor'>
-          <span style='text-decoration: underline;'>{{ 'Advanced Map Filter' }}</span>
+          <span style='text-decoration: underline;'>{{ translationData.lblAdvanceMapFilter||'Advanced Map Filter' }}</span>
           <mat-icon>
             {{ advanceFilterOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
           </mat-icon>
@@ -18,25 +18,25 @@
         <div [ngClass]="{'filterHide': !advanceFilterOpen}" class='advFilterBox'>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
-                 'Display View(s)'}}</div>
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{ 
+                translationData.lblDisplayViews||'Display View(s)'}}</div>
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-                <mat-checkbox (change)='changeAlertSelection($event)'>{{  'Alerts' }}</mat-checkbox>
+                <mat-checkbox (change)='changeAlertSelection($event)'>{{  translationData.lblAlerts ||'Alerts' }}</mat-checkbox>
               </div>
               <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <mat-checkbox>{{ translationData.lblEvents || 'Events' }}</mat-checkbox>
               </div> -->
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <mat-radio-group (change)='onDisplayChange($event)' class='radioAlign' formControlName='routeType'>
-                  <mat-radio-button class='margin-bottom-5' value="C" [checked]="true">{{ 'Classic' }}</mat-radio-button>
-                  <mat-radio-button class='margin-bottom-5' value="F">{{ 'Fuel Consumption' }}</mat-radio-button>
-                  <mat-radio-button value="CO">{{ 'Co2 emission' }}</mat-radio-button>
+                  <mat-radio-button class='margin-bottom-5' value="C" [checked]="true">{{ translationData.lblClassic||'Classic' }}</mat-radio-button>
+                  <mat-radio-button class='margin-bottom-5' value="F">{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</mat-radio-button>
+                  <mat-radio-button value="CO">{{ translationData.lblCOEmission ||'Co2 emission' }}</mat-radio-button>
                 </mat-radio-group>
               </div>
             </div>
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="start" class="full-width font-14" fxLayoutGap="10px">{{
-                'User POI(s)'}}</div>
+                translationData.lblUserPois || 'User POI(s)'}}</div>
               <div class='scrollArea' *ngIf='userPOIList.length > 0'>
                 <div *ngFor="let userPOI of userPOIList; let i = index" class="full-width" fxLayoutGap="10px">
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
@@ -53,11 +53,11 @@
                   </div>
                 </div>
               </div>
-              <div *ngIf='userPOIList.length == 0'>{{ 'No User POI Found!' }}</div>
+              <div *ngIf='userPOIList.length == 0'>{{  translationData.lblNoPOIFound || 'No User POI Found!' }}</div>
             </div>
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
-                 'Here POI(s)'}}</div>
+                translationData.lblHerePois || 'Here POI(s)'}}</div>
                 <div *ngFor="let herePOI of herePOIList; let i = index" fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                   <mat-checkbox (click)='$event.stopPropagation()'
                   (change)='$event ? selectedHerePOI.toggle(herePOI) : null; changeHerePOISelection($event, herePOI)' [checked]='selectedHerePOI.isSelected(herePOI)'>{{ herePOI.translatedName }}</mat-checkbox>
@@ -65,11 +65,11 @@
             </div>
             <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
-                 'Trip Representation'}}</div>
+                translationData.lblTripRepresentation || 'Trip Representation'}}</div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                   <mat-radio-group (change)='onMapRepresentationChange($event)' class='radioAlign' formControlName='trackType'>
-                    <mat-radio-button class='margin-bottom-5' value="snail" [checked]="true">{{ 'Snail Track' }}</mat-radio-button>
-                    <mat-radio-button value="dotted">{{ 'Dotted Track' }}</mat-radio-button>
+                    <mat-radio-button class='margin-bottom-5' value="snail" [checked]="true">{{ translationData.lblSnailTrack || 'Snail Track' }}</mat-radio-button>
+                    <mat-radio-button value="dotted">{{translationData.lblDottedTrack || 'Dotted Track' }}</mat-radio-button>
                   </mat-radio-group>
                 </div>
             </div>
