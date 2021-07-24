@@ -10,7 +10,6 @@ import { DataInterchangeService } from '../../../../services/data-interchange.se
 })
 export class FleetOverviewFilterVehicleComponent implements OnInit {
 @Input() translationData: any;
-@Input() detailsData: any;
 @Input() groupList: any;
 @Input() categoryList: any;
 @Input() levelList: any;

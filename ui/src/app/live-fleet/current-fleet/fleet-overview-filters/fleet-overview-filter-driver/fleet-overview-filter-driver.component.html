@@ -3,15 +3,15 @@
     (closed)="!isVehicleListOpen">
       <mat-expansion-panel-header class="full-width" style="height: 45px;">
         <mat-panel-title>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbl || 'Vehicle List' }}({{vehicleListData.length}})</span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverList || 'DriverList' }}({{driverListData.length}})</span>
        </mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class="checkbox">
-        <mat-checkbox [checked]="todayFlagClicked" (change)="onChangetodayCheckbox($event)" >{{ translationData.lblToday || 'Today'}}
+        <mat-checkbox [checked]="driverFlagClicked" (change)="onChangedriverCheckbox($event)" >{{ translationData.lblToday || 'Today'}}
         </mat-checkbox>
      </div>
       <div *ngIf="!noRecordFlag">
-        <div class="full-width vehicleList-div" *ngFor="let item of vehicleListData">
+        <div class="full-width vehicleList-div" *ngFor="let item of driverListData">
             <div class="vehicleList-icon">
                 <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="Health Status: {{item.vehicleHealthStatusType}} 
                 &#13; Alert: {{item.alertName}}"> </span>
@@ -41,7 +41,7 @@
         </div>
      </div>  
      <div *ngIf="noRecordFlag">
-        <p>{{translationData.lblNoRecordFound || 'No Record Found'}}</p>
+        <p>{{translationData.lblNoRecordFound || 'NoRecordFound'}}</p>
     </div>  
   </mat-expansion-panel>
 </div>

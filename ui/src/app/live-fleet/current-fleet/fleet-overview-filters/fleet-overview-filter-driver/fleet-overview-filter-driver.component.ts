@@ -11,13 +11,11 @@ import { Output } from '@angular/core';
 })
 export class FleetOverviewFilterDriverComponent implements OnInit { 
   @Input() translationData: any;
-  @Input() detailsData: any;
-  @Input() filterData: any;
   groupList : any= []; 
   isVehicleListOpen: boolean = true;
   
-  @Input() vehicleListData: any;
-  todayFlagClicked: boolean = true;
+  @Input() driverListData: any;
+  driverFlagClicked: boolean = true;
   @Input() noRecordFlag: boolean ;
   driverVehicleForm: FormGroup;
   panelOpenState: boolean = false;
@@ -29,9 +27,9 @@ export class FleetOverviewFilterDriverComponent implements OnInit {
   }
 
 
-onChangetodayCheckbox(event){ 
+onChangedriverCheckbox(event){ 
 let emitObj = {
-  todayFlagClicked  : event.checked
+  driverFlagClicked  : event.checked
 }
  this.driverFilterComponentEmit.emit(emitObj);
   }
