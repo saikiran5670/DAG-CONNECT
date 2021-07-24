@@ -1053,6 +1053,7 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   //Radio buttons selection
   onBenchmarkChange(event: any) {
+    this.selectionValueBenchmarkBY= '';
     this.columnLength = 0;
     this.makeAddDisable=false;
     this.makeDisableVehicleGroup=false;
