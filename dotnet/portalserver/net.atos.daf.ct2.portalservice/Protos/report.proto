@@ -1106,6 +1106,7 @@ message LogbookDetails{
          int64 AlertGeneratedTime=19;
          int32 AlertGeolocationAddressId =20;
          int64 ProcessedMessageTimestamp=21;
+         string VehicleHealthStatusType=22;
 }
 
 message LogbookDetailsResponse{
