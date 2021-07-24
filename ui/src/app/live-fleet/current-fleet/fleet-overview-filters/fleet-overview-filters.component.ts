@@ -21,6 +21,7 @@ export class FleetOverviewFiltersComponent implements OnInit {
 @Input() translationData: any;
 @Input() detailsData: any;
 @Input() fromVehicleHealth: any;
+@Input() vehInfoPrefData: any;
 tabVisibilityStatus: boolean = true;
 selectedIndex: number = 0;
 filterData: any;

@@ -33,7 +33,7 @@
                 <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
                 <span class="vehicle-details-data">{{item.vehicleDrivingStatusType}}</span>
             </div> 
-            <div>
+            <div *ngIf="vehInfoPrefData && vehInfoPrefData.length > 0 && vehInfoPrefData[2].state == 'A'">
                 <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
                 <span class="vehicle-details-data">{{item.vehicleHealthStatusType}}</span>
             </div>
@@ -50,6 +50,7 @@
   [selectedElementData]='selectedElementData'
   [categoryList] = "categoryList"
   [levelList] = "levelList" 
+  [vehInfoPrefData]='vehInfoPrefData'
   (backToPage)='checkCreationForVehicleDetails($event)'></app-vehicle-details>
 </div>
 

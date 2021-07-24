@@ -38,7 +38,7 @@
             <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
             <span class="vehicle-details-data">{{gridData.vehicleDrivingStatusType}}</span>
         </div> 
-        <div>
+        <div *ngIf="vehInfoPrefData && vehInfoPrefData.length > 0 && vehInfoPrefData[2].state == 'A'">
             <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
             <span class="vehicle-details-data" class='navigatePoint' (click)='gotoHealthStatus()' matTooltip="{{ translationData.lbl || 'Click for health details'}}">{{gridData.vehicleHealthStatusType}}</span>
         </div>
@@ -59,7 +59,7 @@
  </div>  
 
  <div fxLayout="row" fxLayoutAlign="start" class="full-width vehicleInfo" fxLayoutGap="10px">
-    <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+    <div *ngIf="vehInfoPrefData && vehInfoPrefData.length > 0 && vehInfoPrefData[0].state == 'A'" style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
         <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
             <span>{{ translationData.lbl || 'Current Mileage' }} </span>
         </div>
@@ -67,7 +67,7 @@
             <span><b>{{mileagewithUnit}}{{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</b></span>
         </div>
     </div>
-    <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+    <div *ngIf="vehInfoPrefData && vehInfoPrefData.length > 0 && vehInfoPrefData[1].state == 'A'" style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
         <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
             <span>{{ translationData.lbl || 'Next Service In' }} </span>
         </div>
@@ -75,7 +75,7 @@
             <span><b>{{nextservicing}}{{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</b></span>
         </div>
     </div>
-    <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+    <div *ngIf="vehInfoPrefData && vehInfoPrefData.length > 0 && vehInfoPrefData[2].state == 'A'" style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
         <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
             <span>{{ translationData.lbl || 'Health Status' }} </span>
         </div>
@@ -83,7 +83,7 @@
             <span><b>{{gridData.vehicleHealthStatusType}}</b></span>
         </div>
     </div>
-     </div>
+</div>
 
     <div  class='mat-elevation-z no-padding margin-bottom-xlg'>
         <div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>

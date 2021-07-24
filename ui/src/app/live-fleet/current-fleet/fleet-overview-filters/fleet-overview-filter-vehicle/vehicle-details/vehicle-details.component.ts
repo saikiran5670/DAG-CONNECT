@@ -18,6 +18,7 @@ export class VehicleDetailsComponent implements OnInit {
   @Input() translationData: any;
   @Input() levelList: any;
   @Input() categoryList: any;
+  @Input() vehInfoPrefData: any;
   gridData: any = [];
   localStLanguage: any;
   accountOrganizationId: any;
