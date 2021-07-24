@@ -18,7 +18,7 @@
             </div>
             <div class="vehicleList-details">
             <div>
-                <span class="vehicle-details-head">{{ translationData.lbl || 'VIN'}}: </span>
+                <span class="vehicle-details-head">{{ translationData.lblVin || 'VIN'}}: </span>
                 <span class="vehicle-details-data">{{item.vin}}</span>
             </div>
             <div>               
@@ -30,11 +30,11 @@
                </span>
             </div> 
             <div>
-                <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
+                <span class="vehicle-details-head">{{ translationData.lblDrivingStatus || 'Driving Status'}}:</span>
                 <span class="vehicle-details-data">{{item.vehicleDrivingStatusType}}</span>
             </div> 
             <div>
-                <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
+                <span class="vehicle-details-head">{{ translationData.lblHealthStatus || 'Health Status'}}:</span>
                 <span class="vehicle-details-data">{{item.vehicleHealthStatusType}}</span>
             </div>
             </div>
