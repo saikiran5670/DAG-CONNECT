@@ -121,6 +121,7 @@ public class ContiMessageProcessing implements Serializable {
                     CdcPayloadWrapper wrapper  = (CdcPayloadWrapper)Utils.readValueAsObject(json.getValue(), CdcPayloadWrapper.class);
                     VehicleStatusSchema schema =  (VehicleStatusSchema) Utils.readValueAsObject(wrapper.getPayload(), VehicleStatusSchema.class);
                     schema.setOperationType(wrapper.getOperation());
+                    schema.setNamespace(wrapper.getNamespace());
                     return schema;
                 })
                 .returns(VehicleStatusSchema.class);

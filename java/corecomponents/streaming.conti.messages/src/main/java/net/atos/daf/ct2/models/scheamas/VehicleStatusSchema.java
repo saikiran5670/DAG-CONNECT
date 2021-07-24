@@ -42,6 +42,8 @@ public class VehicleStatusSchema implements Serializable {
     private String schema;
 
     @JsonIgnore
+    private String namespace;
+    @JsonIgnore
     private Long timeStamp = System.currentTimeMillis();
 
 
