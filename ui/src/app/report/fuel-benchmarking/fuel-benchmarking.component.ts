@@ -669,7 +669,12 @@ export class FuelBenchmarkingComponent implements OnInit {
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     let selectedVehicleGroup = this.fuelBenchmarkingForm.controls.vehicleGroup.value;
     if(selectedVehicleGroup!==0){
-    this.vehicleGroupSelected = this.vehicleGrpDD[1].vehicleGroupName;
+      this.vehicleGrpDD.forEach(element => {
+        if(element.vehicleGroupId == selectedVehicleGroup) {
+          this.vehicleGroupSelected = element.vehicleGroupName;
+        } 
+      });
+    // this.vehicleGroupSelected = this.vehicleGrpDD[1].vehicleGroupName;
     }
     else
     {
@@ -687,17 +692,17 @@ export class FuelBenchmarkingComponent implements OnInit {
     if (selectedVehicleGroup) {
       this.showLoadingIndicator = true;
       //request payload 
-      let searchDataParam = {
-        "VechileGroupID": selectedVehicleGroup,
-        "StartDate": _startTime,
-        "EndDate": _endTime,
-        "VINs": [
-          "VIN1",
-          "VIN2",
-          "VIN3",
-          "VIN4"
-        ]
-      }
+      // let searchDataParam = {
+      //   "VechileGroupID": selectedVehicleGroup,
+      //   "StartDate": _startTime,
+      //   "EndDate": _endTime,
+      //   "VINs": [
+      //     "VIN1",
+      //     "VIN2",
+      //     "VIN3",
+      //     "VIN4"
+      //   ]
+      // }
 
 
       console.log("-----vehicleDD---", this.vehicleDD)
@@ -994,6 +999,7 @@ export class FuelBenchmarkingComponent implements OnInit {
     // this.setGlobalSearchData(this.fleetUtilizationSearchData)
   }
   onReset() {
+    this.columnLength = 0;
     this.makeAddDisable=false;
     this.makeDisableVehicleGroup=false;
     this.makeDisableTimePeriod=false;
@@ -1044,6 +1050,7 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   //Radio buttons selection
   onBenchmarkChange(event: any) {
+    this.columnLength = 0;
     this.makeAddDisable=false;
     this.makeDisableVehicleGroup=false;
     this.makeDisableTimePeriod=false;
