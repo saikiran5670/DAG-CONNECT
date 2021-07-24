@@ -147,7 +147,7 @@ export class FleetFuelPreferencesComponent implements OnInit {
           this.chartsColumnData.push(_data);
           this.fleetFuelForm.addControl(element.key, new FormControl(element.chartType != '' ? element.chartType : this.chartDefaultValue[element.key], Validators.required));
         } else if (element.name.includes('Driver.VehicleDetails') || element.name.includes('Vehicle.VehicleDetails')) {
-          _data = element; debugger;
+          _data = element;
           if (this.translationData[element.key]) {
             _data.translatedName = this.translationData[element.key];
           } else {
