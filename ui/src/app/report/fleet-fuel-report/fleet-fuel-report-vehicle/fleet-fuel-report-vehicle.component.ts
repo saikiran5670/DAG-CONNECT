@@ -489,17 +489,17 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   onSearch(){
     this.isChartsOpen = true;
     if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes('chart_fuelconsumed'));
+      let filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumed'));
       this.ConsumedChartType = filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('chart_numberoftrips'));
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_numberoftrips'));
       this.TripsChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('chart_co2emission'));
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_co2emission'));
       this.Co2ChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('chart_distance'));
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_distance'));
       this.DistanceChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('chart_fuelconsumption'));
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumption'));
       this.ConsumptionChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('chart_idledurationtotaltime'));
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_idledurationtotaltime'));
       this.DurationChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
     } else {
       this.ConsumedChartType = 'Line';
