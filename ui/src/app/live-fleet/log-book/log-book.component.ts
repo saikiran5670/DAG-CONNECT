@@ -500,6 +500,11 @@ ngOnDestroy(){
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
   }
+  this.logBookForm.get('vehicle').setValue("all");
+  this.logBookForm.get('vehicleGroup').setValue("all");
+  this.logBookForm.get('alertLevel').setValue("all");
+  this.logBookForm.get('alertType').setValue("all");
+  this.logBookForm.get('alertCategory').setValue("all");
 }
 
   loadWholeTripData(){
@@ -638,14 +643,23 @@ ngOnDestroy(){
           let categoryList = filterData.filter(item => item.type == 'C');
           let alertTypeList= filterData.filter(item => item.type == 'T');
           // this.alertCriticalityList= filterData.filter(item => item.type == 'U');
-          let newData = alertTypeList.filter((s) => s.enum == element.alertType);
+
           let catData = categoryList.filter((s) => s.enum == element.alertCategory);
+          if(catData.length >0){
           element.alertCategory = catData[0].value;
+          }
+
+          let newData = alertTypeList.filter((s) => s.enum == element.alertType);
+          if(newData.length >0){
           element.alertType = newData[0].value;
+          }
+
           let alertLevelName = this.alertLvl.filter((s) => s.value == element.alertLevel);
+          if(alertLevelName.length >0){
           element.alertLevel = alertLevelName[0].name;
-         this.initData = logbookData;
+                 }
         });
+        this.initData = logbookData;
         this.setTableInfo();
         this.updateDataSource(this.initData);
       }, (error)=>{
