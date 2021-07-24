@@ -22,7 +22,7 @@
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             {{ subscribeTimer }}
                         </button>&nbsp;</span> -->
-                        <span *ngIf="orgContextType" style='font-size: 14px; display: flex; align-items: center;'>{{ translationData.lblContextSetting || 'Context Setting' }}</span>
+                        <span *ngIf="orgContextType" style='font-size: 14px; display: flex; align-items: center; margin-left: 10px;'>{{ translationData.lblContextSetting || 'Context Setting' }}</span>
                         <mat-select *ngIf="orgContextType" formControlName="contextOrgSelection" class="matSelect" placeholder="{{ orgName }}"
                         (selectionChange)="applyFilterOnOrganization($event.value)">
                         <mat-option *ngFor="let options of organizationList" [value]="options.id"  matTooltip="{{ options.name }}">
