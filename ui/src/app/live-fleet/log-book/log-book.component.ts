@@ -61,7 +61,7 @@ displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', '
 translationData: any;
 showMap: boolean = false;
 showBack: boolean = false;
-showMapPanel: boolean = true;
+showMapPanel: boolean = false;
 searchExpandPanel: boolean = true;
 tableExpandPanel: boolean = true;
 initData: any = [];
@@ -178,10 +178,10 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
   this.platform = new H.service.Platform({
     "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
   });
-  setTimeout(() => {
-    this.initMap();
+  // setTimeout(() => {
+  //   this.initMap();
       
-    }, 10);
+  //   }, 10);
   this.configureAutoSuggest();
   this.defaultTranslation();
   const navigation = this.router.getCurrentNavigation();
@@ -277,9 +277,7 @@ ngOnDestroy(){
         }
       });
     });
-    this.selectionTimeRange('today');
-    
-
+    //this.selectionTimeRange('today');
   }
 
   changeHerePOISelection(event: any, hereData: any){
@@ -648,7 +646,7 @@ ngOnDestroy(){
           element.alertLevel = alertLevelName[0].name;
          this.initData = logbookData;
         });
-  this.setTableInfo();
+        this.setTableInfo();
         this.updateDataSource(this.initData);
       }, (error)=>{
           this.hideloader();
@@ -843,6 +841,22 @@ ngOnDestroy(){
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
+    this.showMap = false;
+    this.selectedTrip.clear();
+    if(this.initData.length > 0){
+      if(!this.showMapPanel){ //- map panel not shown already
+        this.showMapPanel = true;
+        setTimeout(() => {
+          this.initMap();
+        }, 0);
+      }else{
+        this.clearRoutesFromMap();
+      }
+    }
+    else{
+      this.showMapPanel = false;
+    }
+
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
