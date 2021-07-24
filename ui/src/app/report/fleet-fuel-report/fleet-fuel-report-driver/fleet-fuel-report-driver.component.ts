@@ -43,13 +43,10 @@ export class FleetFuelReportDriverComponent implements OnInit {
   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
   'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
   'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
-  detaildisplayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
-  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
-  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
-  'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
-  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
-  'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
-  'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
+   detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
+   'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','heavyThrottleDuration',
+   'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
+   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
@@ -1493,17 +1490,21 @@ setVehicleGroupAndVehiclePreSelection() {
     displayHeader.style.display ="block";
   }
 
+  // backToMainPage(){
+  //   this.driverSelected = false;
+  //   this.allDriversSelected = true;
+  //   this.updateDataSource(this.initData);
+  //   this.driverTimeForm.get('driver').setValue(0);
+  // }
   backToMainPage(){
     this.driverSelected=false;
-
+    this.updateDataSource(this.initData);
+    this.tripForm.get('vehicle').setValue(0);
   }
 
   driverInfo : any ={};
   dateInfo : any ={};
  onDriverSelected(vehData:any){
-   this.isDetailsOpen=true;
-   this.isSummaryOpen =true;
-   this.isChartsOpen=true;
   let s = this.vehicleGrpDD.filter(i=>i.vehicleGroupId==this.tripForm.controls.vehicleGroup.value)
   let _s = this.vehicleDD.filter(i=>i.vin==vehData.vin)
   this.tripForm.get('vehicle').setValue(_s.length>0 ?  _s[0].vehicleId : 0)
@@ -1518,6 +1519,8 @@ setVehicleGroupAndVehiclePreSelection() {
   }
    this.driverInfo=vehData;
    this.driverSelected=true;
+ 
+
     //const navigationExtras: NavigationExtras = {
     //  state: {
     //    fromFleetfuelReport: true,

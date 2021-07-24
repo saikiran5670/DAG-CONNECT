@@ -994,6 +994,7 @@ export class FuelBenchmarkingComponent implements OnInit {
     // this.setGlobalSearchData(this.fleetUtilizationSearchData)
   }
   onReset() {
+    this.makeAddDisable=false;
     this.makeDisableVehicleGroup=false;
     this.makeDisableTimePeriod=false;
     this.internalSelection = false;
@@ -1043,6 +1044,7 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   //Radio buttons selection
   onBenchmarkChange(event: any) {
+    this.makeAddDisable=false;
     this.makeDisableVehicleGroup=false;
     this.makeDisableTimePeriod=false;
     this.selectedBenchmarking = event.value;
