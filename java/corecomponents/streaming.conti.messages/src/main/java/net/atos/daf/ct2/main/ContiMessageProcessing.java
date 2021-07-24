@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Properties;
 
 import static net.atos.daf.ct2.constant.DAFCT2Constant.AUTO_OFFSET_RESET_CONFIG;
@@ -118,12 +119,23 @@ public class ContiMessageProcessing implements Serializable {
         SingleOutputStreamOperator<VehicleStatusSchema> kafkaCDCMessage = consumeSrcStream.consumeSourceInputStream(
                 streamExecutionEnvironment, MASTER_DATA_TOPIC_NAME, properties)
                 .map(json -> {
-                    CdcPayloadWrapper wrapper  = (CdcPayloadWrapper)Utils.readValueAsObject(json.getValue(), CdcPayloadWrapper.class);
-                    VehicleStatusSchema schema =  (VehicleStatusSchema) Utils.readValueAsObject(wrapper.getPayload(), VehicleStatusSchema.class);
-                    schema.setOperationType(wrapper.getOperation());
-                    schema.setNamespace(wrapper.getNamespace());
-                    return schema;
+                    try{
+                        CdcPayloadWrapper wrapper  = (CdcPayloadWrapper)Utils.readValueAsObject(json.getValue(), CdcPayloadWrapper.class);
+                        if(Objects.nonNull(wrapper.getNamespace()) && wrapper.getNamespace().equalsIgnoreCase("vehicleManagement")){
+                            VehicleStatusSchema schema =  (VehicleStatusSchema) Utils.readValueAsObject(wrapper.getPayload(), VehicleStatusSchema.class);
+                            schema.setOperationType(wrapper.getOperation());
+                            schema.setNamespace(wrapper.getNamespace());
+                            logger.info("Message from kafka cdc topic:: {}",json);
+                            return schema;
+                        }
+                    }catch (Exception e){
+                        logger.error("Un-parsable cdc event :: {} exception :: {}",json,e);
+                    }
+                    return VehicleStatusSchema.builder().build();
+
                 })
+                .returns(VehicleStatusSchema.class)
+                .filter(schema -> Objects.nonNull(schema.getVid()))
                 .returns(VehicleStatusSchema.class);
 
 
