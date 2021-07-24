@@ -21,12 +21,14 @@ export class FleetOverviewFiltersComponent implements OnInit {
 @Input() translationData: any;
 @Input() detailsData: any;
 @Input() fromVehicleHealth: any;
+@Input() vehInfoPrefData: any;
 tabVisibilityStatus: boolean = true;
 selectedIndex: number = 0;
 filterData: any;
 filterValue: any;
 selection1: any;
 selection2: any;
+selection3: any;
 filterVehicleForm:FormGroup;
 todayFlagClicked: boolean = true;
 isVehicleDetails: boolean = false;
@@ -80,6 +82,7 @@ subscription: Subscription;
    
     this.selection1 = ['all'];
     this.selection2 = ['all'];
+    this.selection3 = ['all'];
     this.filterVehicleForm = this._formBuilder.group({
       group: ['all'],
       level: ['all'],
@@ -115,8 +118,9 @@ getFilterData(){
     this.healthList = [];
     this.otherList = [];
     if(!this.todayFlagClicked){
-      this.filterData["vehicleGroups"].forEach(item=>{
+        this.filterData["vehicleGroups"].forEach(item=>{
         this.groupList.push(item) });
+        this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupName");
     
         this.filterData["alertCategory"].forEach(item=>{
         let catName =  this.translationAlertData[item.name];
@@ -191,6 +195,19 @@ getFilterData(){
   })
 } 
 
+
+removeDuplicates(originalArray, prop) {
+  var newArray = [];
+  var lookupObject  = {}; 
+  for(var i in originalArray) {
+     lookupObject[originalArray[i][prop]] = originalArray[i];
+  } 
+  for(i in lookupObject) {
+      newArray.push(lookupObject[i]);
+  }
+   return newArray;
+}
+
   applyFilter(filterValue: string) {
     this.vehicleListData = this.detailsData;
     filterValue = filterValue.trim();
@@ -237,6 +254,7 @@ getFilterData(){
   
   loadVehicleData(){  
     this.initData =this.detailsData;
+    let newAlertCat=[];
     if(!this.todayFlagClicked)
     {
       this.objData = {
@@ -280,9 +298,18 @@ getFilterData(){
           {         
            item.vehicleDrivingStatusType = this.translationData[element.name];
           }
-         });              
-      });      
-     // this.detailsData=data;     
+         });         
+         if(this.categoryList.length>0){
+         item.fleetOverviewAlert.forEach(e => {
+         let alertCategory = this.categoryList.filter((ele)=> ele.value == e.categoryType);
+         if(alertCategory.length>0){
+         newAlertCat.push(alertCategory[0]);
+         }          
+        });  
+       }
+      });    
+     this.categoryList = this.removeDuplicates(newAlertCat, "value");
+     console.log(newAlertCat);    
       this.vehicleListData = data;     
       let _dataObj ={
         vehicleDetailsFlag : this.isVehicleDetails,

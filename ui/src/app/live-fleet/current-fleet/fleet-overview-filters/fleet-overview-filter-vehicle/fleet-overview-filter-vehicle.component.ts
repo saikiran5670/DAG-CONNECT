@@ -19,6 +19,7 @@ export class FleetOverviewFilterVehicleComponent implements OnInit {
 @Input() noRecordFlag: any;
 @Input() vehicleListData: any;
 @Input() fromVehicleHealth: any;
+@Input() vehInfoPrefData: any;
 @Output() vehicleFilterComponentEmit =  new EventEmitter<object>();
 @Output() vehicleDetailsInfoEmit =  new EventEmitter<object>();
 @Output() tabvisibility : EventEmitter<boolean> =  new EventEmitter<boolean>()
