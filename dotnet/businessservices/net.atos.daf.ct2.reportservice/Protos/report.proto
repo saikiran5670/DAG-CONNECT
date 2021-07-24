@@ -59,7 +59,7 @@ message VehicleHealthReportRequest{
 message  VehicleHealthStatusResponse{
 string VehicleRegNo =1;
 string VehicleName =2;
-int32 LctsId =3;
+/*int32 LctsId =3;
 string LctsTripId =4;
 string LctsVin =5;
 int64 LctsTripStartTime =6;
@@ -90,7 +90,7 @@ string LatgeoaddLatestGeolocationAddress =30;
 int32 StageoaddStartGeolocationAddressId =31;
  string StageoaddStartGeolocationAddress =32;
  int32 WangeoaddLatestWarningGeolocationAddressId=33;
- string WangeoaddLatestWarningGeolocationAddress =34;
+ string WangeoaddLatestWarningGeolocationAddress =34;*/
 int32 WarningId =35;
 string DriverName =36;
 string WarningTripId =37;
@@ -110,6 +110,12 @@ int64 WarningOdometerVal =50;
 int64 WarningLatestProcessedMessageTimestamp =51;
 string WarningName = 52;//from dtcwarning table
 string WarningAdvice =53;
+string WarningAddress=54;
+int32 WarningAddressId=55;
+bytes Icon =56;
+string IconName=57;
+string ColorName=58;
+int32 IconId=59;
  
          
 }
@@ -1098,7 +1104,8 @@ message LogbookDetails{
          string ThresholdUnit =18;
          int64 AlertGeneratedTime=19;
          int32 AlertGeolocationAddressId =20;
-          int64 ProcessedMessageTimestamp=21;
+         int64 ProcessedMessageTimestamp=21;
+         string VehicleHealthStatusType=22;
 }
 
 message LogbookDetailsResponse{

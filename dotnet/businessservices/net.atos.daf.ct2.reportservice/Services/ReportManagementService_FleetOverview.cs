@@ -222,11 +222,17 @@ namespace net.atos.daf.ct2.reportservice.Services
                                                                                               .Select(x => x.WarningDrivingId).Distinct().ToList(), request.OrganizationId).Result;
                     foreach (var healthStatus in result)
                     {
+                        healthStatus.VehicleName = vehicleDeatilsWithAccountVisibility?.FirstOrDefault(d => d.Vin == healthStatus.WarningVin)?.VehicleName ?? string.Empty;
+                        healthStatus.VehicleRegNo = vehicleDeatilsWithAccountVisibility?.FirstOrDefault(d => d.Vin == healthStatus.WarningVin)?.RegistrationNo ?? string.Empty;
                         if (warningDetails != null && warningDetails.Count > 0)
                         {
                             var warningDetail = warningDetails?.FirstOrDefault(w => w.WarningClass == healthStatus.WarningClass && w.WarningNumber == healthStatus.WarningNumber);
                             healthStatus.WarningName = warningDetail?.WarningName ?? string.Empty;
                             healthStatus.WarningAdvice = warningDetail?.WarningAdvice ?? string.Empty;
+                            healthStatus.Icon = warningDetail?.Icon ?? new Byte[] { };
+                            healthStatus.IconName = warningDetail?.IconName ?? string.Empty;
+                            healthStatus.ColorName = warningDetail?.ColorName ?? string.Empty;
+                            healthStatus.IconId = warningDetail?.IconId ?? 0;
 
                         }
                         //opt-in and no driver card- Unknown - Implemented by UI 
