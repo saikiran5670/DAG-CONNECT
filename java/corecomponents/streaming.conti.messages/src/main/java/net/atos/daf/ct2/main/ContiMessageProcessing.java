@@ -119,7 +119,7 @@ public class ContiMessageProcessing implements Serializable {
                 streamExecutionEnvironment, MASTER_DATA_TOPIC_NAME, properties)
                 .map(json -> {
                     CdcPayloadWrapper wrapper  = (CdcPayloadWrapper)Utils.readValueAsObject(json.getValue(), CdcPayloadWrapper.class);
-                    VehicleStatusSchema schema =  (VehicleStatusSchema) Utils.readValueAsObject(String.valueOf(wrapper.getPayload()), VehicleStatusSchema.class);
+                    VehicleStatusSchema schema =  (VehicleStatusSchema) Utils.readValueAsObject(wrapper.getPayload(), VehicleStatusSchema.class);
                     schema.setOperationType(wrapper.getOperation());
                     return schema;
                 })

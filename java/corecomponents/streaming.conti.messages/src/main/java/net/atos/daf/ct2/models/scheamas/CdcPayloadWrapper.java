@@ -25,8 +25,8 @@ public class CdcPayloadWrapper implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List<Schema> schema;
-    private Object payload;
+    private String schema;
+    private String payload;
     private String operation;
     private String namespace;
     @JsonIgnore
