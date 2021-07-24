@@ -16,21 +16,21 @@
 
         <div style='display: flex;'>
 
-        <mat-table  [dataSource]="dataSource">
+        <mat-table style="overflow: auto;" [dataSource]="dataSource">
             <!-- <ng-container matColumnDef="period" class="text-truncate" style="max-width: 20%;margin-right: 10px;" >
                 <mat-header-cell style="margin-right: 10px;" *matHeaderCellDef> Period
                 </mat-header-cell>
                 <mat-cell style="margin-right: 10px;" *matCellDef="let row"> {{row}} </mat-cell>
               </ng-container> -->
 
-            <ng-container [matColumnDef]="column" class="text-truncate" style="max-width: 40%;margin-right: 10px;"
+            <ng-container [matColumnDef]="column" class="text-truncate" style="margin-right: 10px;"
               *ngFor="let column of displayedColumns; let index=index">
               <mat-header-cell style="cursor: default; margin-right: 10px;min-width: 300px;" *matHeaderCellDef> {{column == "period" ? "Period" :
                 column}}
                 <mat-icon style="cursor: pointer;" *ngIf="index !== 0" aria-hidden="false" aria-label="Example home icon" (click)="removeColumn(index)">close
                 </mat-icon>
               </mat-header-cell>
-              <mat-cell style="margin-right: 10px;" *matCellDef="let row; let i=index">
+              <mat-cell style="margin-right: 10px; min-width: 300px;" *matCellDef="let row; let i=index">
                 <div *ngIf="(i !== 4 && i !== 5) || column == 'period'" >{{row[column]}}</div>
 
                 <div *ngIf="index !== 0 && i == 4">
@@ -43,7 +43,7 @@
                   
                 </div>
 
-                <div *ngIf="index !== 0 && i == 5">
+                <div class="chartDisplay" *ngIf="index !== 0 && i == 5">
                   <canvas baseChart [data]="row[column]" [labels]="doughnutChartLabels" [chartType]="doughnutChartType">
                   </canvas>
                 </div>
