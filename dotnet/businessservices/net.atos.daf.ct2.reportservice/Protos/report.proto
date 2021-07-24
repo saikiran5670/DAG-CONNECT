@@ -1104,7 +1104,8 @@ message LogbookDetails{
          string ThresholdUnit =18;
          int64 AlertGeneratedTime=19;
          int32 AlertGeolocationAddressId =20;
-          int64 ProcessedMessageTimestamp=21;
+         int64 ProcessedMessageTimestamp=21;
+         string VehicleHealthStatusType=22;
 }
 
 message LogbookDetailsResponse{

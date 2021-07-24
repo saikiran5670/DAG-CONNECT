@@ -27,6 +27,7 @@ namespace net.atos.daf.ct2.reports.entity
         public long AlertGeneratedTime { get; set; }
         public int AlertGeolocationAddressId { get; set; }
         public long ProcessedMessageTimestamp { get; set; }
+        public string VehicleHealthStatusType { get; set; }
 
 
 

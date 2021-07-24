@@ -39,8 +39,8 @@
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblWarningsType || 'Warnings Type' }} </mat-label>
                   <mat-form-field appearance="outline">
-                    <mat-select (selectionChange)="onWarningTypeSelection($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Warnings Type' }}" >
-                      <mat-option value="All Warnings">All Warnings</mat-option>
+                    <mat-select formControlName="warningType" (selectionChange)="onWarningTypeSelection($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Warnings Type' }}" >
+                      <mat-option value="AllWarnings">All Warnings</mat-option>
                       <mat-option value="Active">Active</mat-option>
                       <mat-option value="Deactive">Deactive</mat-option>
                     </mat-select>
@@ -96,7 +96,7 @@
               <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
                 <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
                   (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
-                <button [disabled]="!vehicleHealthForm.valid" class='no-margin' mat-raised-button color="primary"
+                <button class='no-margin' mat-raised-button color="primary"
                   (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
               </div>
             </div>
@@ -222,14 +222,22 @@
                 </mat-form-field>
               </div>
             </div>
-            <div style="font: 500 16px/32px Roboto, 'Helvetica Neue', sans-serif;" fxLayout="row"
-              fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+            <div *ngIf='!obs'>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row"
+                fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record
+                Found!' }}</div>
+              <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
+                translationData.lblSelectionMessage
+                || 'Please select and search required fields from top to view the details' }}</div>
+            </div>
+            <div *ngIf="obs" style="font: 500 16px/32px Roboto, 'Helvetica Neue', sans-serif;" fxLayout="row"
+              fxLayoutAlign="left" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
               <div *ngFor="let warning of obs | async">
                 <mat-checkbox style="font-size: 14px;" (change)='checkboxClicked($event,warning)'> View on Map
                 </mat-checkbox>
                 <div class="areaWidth warning_history" fxLayout="column" fxLayoutAlign="left">
                   <div style="font-size: 14px; line-height: initial; padding: 10px 10px 0;">
-                    <img src="assets/images/662-red_dsym025.svg" style="float: left; height: 40px; width: 40px;">
+                    <img src="assets/images/icons/vehicleHealthStatus/{{warning.iconName}}" style="float: left; height: 40px; width: 40px;">
                     <span class="name_bold">{{warning.warningName}}&nbsp;</span>
                   </div>
                   <div fxLayout="row" class="class_padding">
@@ -237,10 +245,12 @@
                       <span [ngClass]="[isCurrent ? 'name_small warning_danger' : 'name_small']">Activated Time</span>
                       <span style="font-size: 14px;">{{warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a'}}</span>
                     </div>
-                    <div *ngIf='!isCurrent' class="warning_time" fxLayout="column" fxLayoutAlign="left">
-                      <span class="name_small warning_danger">Deactivated Time</span>
-                      <span style="font-size: 14px;">{{warning.warningTimetamp | date: 'yyyy/MM/dd h:mm:ss a'}}</span>
-                    </div>
+                    <ng-container *ngIf="warning.warningDeactivatedTimestamp">
+                      <div *ngIf='!isCurrent' class="warning_time" fxLayout="column" fxLayoutAlign="left">
+                        <span class="name_small warning_danger">Deactivated Time</span>
+                        <span style="font-size: 14px;">{{warning.warningDeactivatedTimestamp | date: 'yyyy/MM/dd h:mm:ss a'}}</span>
+                      </div>
+                    </ng-container>
                   </div>
                   <div fxLayout="row" class="name_small class_padding">
                     <span>Driver Name: </span>
@@ -255,7 +265,7 @@
                 </div>
               </div>              
             </div>
-            <mat-paginator [pageSize]="3" [pageSizeOptions]="[3, 9, 15, 30]"></mat-paginator>
+            <mat-paginator  *ngIf="obs" [pageSize]="3" [pageSizeOptions]="[3, 9, 15, 30]"></mat-paginator>
           </div>
         </mat-expansion-panel>
       </mat-card>
