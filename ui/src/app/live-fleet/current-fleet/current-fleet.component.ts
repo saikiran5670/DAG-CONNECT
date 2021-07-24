@@ -190,7 +190,69 @@ export class CurrentFleetComponent implements OnInit {
       //     });
       //   }
       // });
+      this.getFleetOverviewPreferences();
     });
+   }
+
+  getFleetOverviewPreferences(){
+    let reportListData: any = [];
+    this.reportService.getReportDetails().subscribe((reportList: any)=>{
+      reportListData = reportList.reportDetails;
+      this.callPreferences(reportListData);
+    }, (error)=>{
+      console.log('Report not found...', error);
+      reportListData = [{name: 'Fleet Overview', id: 17}]; // hard coded
+      this.callPreferences(reportListData);
+    });
+  }
+
+  callPreferences(prefData: any){
+    let repoId: any = prefData.filter(i => i.name == 'Fleet Overview');
+    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 17).subscribe((data : any) => {
+      let _preferencesData = data['userPreferences'];
+      this.getTranslatedColumnName(_preferencesData);
+      this.getFleetOverviewDetails();
+    }, (error)=>{
+      console.log('Pref not found...');
+      this.getFleetOverviewDetails();
+    });
+  }
+
+  timerPrefData: any = [];
+  vehInfoPrefData: any = [];
+  getTranslatedColumnName(prefData: any){
+    if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
+      prefData.subReportUserPreferences.forEach(element => {
+        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+          element.subReportUserPreferences.forEach(item => {
+            let _data: any = item;
+            if(item.key.includes('rp_fo_fleetoverview_settimer_')){
+              this.timerPrefData.push(_data);
+            }else if(item.key.includes('rp_fo_fleetoverview_generalvehicleinformation_')){
+              let index: any;
+             switch(item.key){
+               case 'rp_fo_fleetoverview_generalvehicleinformation_currentmileage':{
+                 index = 0;
+                 break;
+               }
+               case 'rp_fo_fleetoverview_generalvehicleinformation_nextservicein':{
+                 index = 1;
+                 break;
+               }
+               case 'rp_fo_fleetoverview_generalvehicleinformation_healthstatus':{
+                 index = 2;
+                 break;
+               }
+             }
+              this.vehInfoPrefData[index] = _data;
+            }
+          });
+        }
+      });
+    }
+  }
+
+   getFleetOverviewDetails(){
     this.clickOpenClose='Click to Open';
     let objData = {
       "groupId": ["all"],
@@ -216,9 +278,10 @@ export class CurrentFleetComponent implements OnInit {
     });
    }
 
-   processTranslation(transData: any) {
+  processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
+  
   userPreferencesSetting(event?: any) {
     this.userPreferencesFlag = !this.userPreferencesFlag;
     let summary = document.getElementById("summary");

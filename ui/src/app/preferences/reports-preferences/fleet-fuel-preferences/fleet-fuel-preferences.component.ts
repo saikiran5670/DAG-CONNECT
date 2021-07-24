@@ -39,6 +39,21 @@ export class FleetFuelPreferencesComponent implements OnInit {
     name: 'Bar Chart'
   }];
 
+  chartDefaultValue = {
+    "rp_ff_report_vehicle_chart_fuelconsumption" : "L",
+    "rp_ff_report_vehicle_chart_co2emission" : "L",
+    "rp_ff_report_vehicle_chart_numberoftrips" : "B",
+    "rp_ff_report_vehicle_chart_distance" : "L",
+    "rp_ff_report_vehicle_chart_idledurationtotaltime" : "L",
+    "rp_ff_report_vehicle_chart_fuelconsumed" : "L",
+    "rp_ff_report_driver_chart_numberoftrips" : "B",
+    "rp_ff_report_driver_chart_distance" : "L",
+    "rp_ff_report_driver_chart_fuelconsumed" : "L",
+    "rp_ff_report_driver_chart_idledurationtotaltime" : "L",
+    "rp_ff_report_driver_chart_fuelconsumption" : "L",
+    "rp_ff_report_driver_chart_co2emission" : "L"
+  }
+
   constructor(private reportService: ReportService) { }
 
   ngOnInit(): void {
@@ -66,7 +81,7 @@ export class FleetFuelPreferencesComponent implements OnInit {
     this.vehicleRankingColumnData = [];
     this.chartsColumnData = [];
     this.vehicleDetailsColumnData = [];
-    this.singleVehicleDetailsColumnData = [];
+    this.singleVehicleDetailsColumnData = [];    
   }
 
   setColumnCheckbox() {
@@ -105,6 +120,9 @@ export class FleetFuelPreferencesComponent implements OnInit {
         this.selectionForSingleVehicleDetailsColumns.select(element);
       }
     });
+    // Object.keys(this.fleetFuelForm.controls).forEach(key => {
+    //   this.fleetFuelForm.controls[key].setValue(this.chartDefaultValue[key]);
+    // });
   }
 
   preparePrefData(prefData: any) {
@@ -127,29 +145,9 @@ export class FleetFuelPreferencesComponent implements OnInit {
             _data.translatedName = this.getName(element.name, 14);
           }
           this.chartsColumnData.push(_data);
-          this.fleetFuelForm.addControl(element.key, new FormControl(element.chartType != '' ? element.chartType : 'B', Validators.required));
-          // let index: any;
-          // switch (element.key) {
-          //   case 'da_report_charts_distanceperday': {
-          //     index = this.chartIndex.distanceIndex = 0;
-          //     break;
-          //   }
-          //   case 'da_report_charts_numberofvehiclesperday': {
-          //     index = this.chartIndex.vehicleIndex = 1;
-          //     break;
-          //   }
-          //   case 'da_report_charts_mileagebasedutilization': {
-          //     index = this.chartIndex.mileageIndex = 2;
-          //     break;
-          //   }
-          //   case 'da_report_charts_timebasedutilization': {
-          //     index = this.chartIndex.timeIndex = 3;
-          //     break;
-          //   }
-          // }
-          // this.chartsColumnData[index] = _data;
+          this.fleetFuelForm.addControl(element.key, new FormControl(element.chartType != '' ? element.chartType : this.chartDefaultValue[element.key], Validators.required));
         } else if (element.name.includes('Driver.VehicleDetails') || element.name.includes('Vehicle.VehicleDetails')) {
-          _data = element; debugger;
+          _data = element;
           if (this.translationData[element.key]) {
             _data.translatedName = this.translationData[element.key];
           } else {
@@ -242,7 +240,7 @@ export class FleetFuelPreferencesComponent implements OnInit {
 
   getUnits() {
     let unitObj = this.generalPreferences.unit.filter(item => item.id == this.unitId);
-    if(unitObj.value == 'Imperial') {
+    if(unitObj[0].value == 'Imperial') {
       return '(lts/100km)';
     } else {
       return '(mpg(miles per gallon))';

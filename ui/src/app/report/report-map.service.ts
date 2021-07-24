@@ -1118,18 +1118,129 @@ export class ReportMapService {
     });
   }
 
+  // trip report data-conversion
   getConvertedDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
       element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone,true);
       element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone,true);
-      element.convertedAverageWeight = this.getAvrgWeight(element.averageWeight, unitFormat);
-      element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
-      element.convertedFuelConsumed100Km = this.getFuelConsumed(element.fuelConsumed100Km, unitFormat);
-      element.convertedDistance = this.getDistance(element.distance, unitFormat);
+      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeight, unitFormat);
+      element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
+      element.convertedFuelConsumed100Km = this.getFuelConsumedUnits(element.fuelConsumed100Km, unitFormat);
+      element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
+      element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
     });
     return gridData;
+  }
+
+  miliLitreToLitre(_data: any){
+      return (_data/1000).toFixed(2);
+  }
+
+  miliLitreToGallon(_data: any){
+    let litre: any = this.miliLitreToLitre(_data);
+    let gallon: any = litre/3.780;
+    return gallon.toFixed(2);
+  }
+
+  convertFuelConsumptionMlmToLtr100km(_data: any){
+    return (_data*100).toFixed(2);
+  }
+
+  convertFuelConsumptionMlmToMpg(_data: any){
+    let data: any = 1.6/(_data * 3.78);
+    return (data).toFixed(2);
+  }
+
+  convertKgToPound(_data: any){
+    return (_data*2.2).toFixed(2);
+  }
+
+  convertKgToTonnes(_data: any){
+    return (_data/1000).toFixed(2);
+  }
+
+  convertWeightUnits(data: any, unitFormat: any){
+    let _data: any;
+    switch(unitFormat){
+      case 'dunit_Metric': { 
+        _data = data; // kg
+        break;
+      }
+      case 'dunit_Imperial': {
+        _data = this.convertKgToPound(data); // pound
+        break;
+      }
+      default: {
+        _data = data; // kg
+      }
+    }
+    return _data;
+  }
+
+  convertSpeedUnits(data: any, unitFormat: any){
+    let _data: any;
+    switch(unitFormat){
+      case 'dunit_Metric': { 
+        _data = this.convertSpeedMmsToKmph(data); // kmph
+        break;
+      }
+      case 'dunit_Imperial': {
+        _data = this.convertSpeedMmsToMph(data); // mph
+        break;
+      }
+      default: {
+        _data = this.convertSpeedMmsToKmph(data); // kmph
+      }
+    }
+    return _data;
+  }
+
+  convertSpeedMmsToKmph(_data: any){
+    return (_data*3600).toFixed(2);
+  }
+
+  convertSpeedMmsToMph(_data: any){
+    let kmph: any = this.convertSpeedMmsToKmph(_data);
+    let mph: any = kmph/1.6;
+    return mph.toFixed(2);
+  }
+
+  // convertSpeedMsToKmph(){
+
+  // }
+
+  // convertSpeedMsToMph(){
+    
+  // }
+
+  convertDistanceUnits(data: any, unitFormat: any){
+    let _data: any;
+    switch(unitFormat){
+      case 'dunit_Metric': { 
+        _data = this.meterToKm(data); // km
+        break;
+      }
+      case 'dunit_Imperial': {
+        _data = this.meterToMile(data); // mile
+        break;
+      }
+      default: {
+        _data = this.meterToKm(data); // km
+      }
+    }
+    return _data;
+  }
+
+  meterToKm(_data: any){
+    return (_data/1000).toFixed(2);
+  }
+
+  meterToMile(_data: any){
+    let km: any = this.meterToKm(_data);
+    let mile = km/1.6;
+    return mile.toFixed(2);
   }
 
   getConvertedFleetDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
@@ -1213,6 +1324,7 @@ export class ReportMapService {
     });
     return _gridData;
   }
+
   getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean){
     let sTime: any = 0;
     if(startTime != 0){
@@ -1227,6 +1339,24 @@ export class ReportMapService {
       eTime = this.formStartEndDate(Util.convertUtcToDate(endTime, timeZone), dateFormat, timeFormat, addTime);
     }
     return eTime;
+  }
+
+  getFuelConsumedUnits(fuelConsumed: any, unitFormat: any){
+    let _fuelConsumed: any = 0;
+    switch(unitFormat){
+      case 'dunit_Metric': { 
+        _fuelConsumed = this.convertFuelConsumptionMlmToLtr100km(fuelConsumed); //-- Ltr/100Km 
+        break;
+      }
+      case 'dunit_Imperial':{
+        _fuelConsumed = this.convertFuelConsumptionMlmToMpg(fuelConsumed); // mpg
+        break;
+      }
+      default: {
+        _fuelConsumed = this.convertFuelConsumptionMlmToLtr100km(fuelConsumed); // Ltr/100Km
+      }
+    }
+    return _fuelConsumed; 
   }
 
   getDistance(distance: any, unitFormat: any){
@@ -1313,6 +1443,10 @@ export class ReportMapService {
       }
     }
     return _fuelConsumed; 
+  }
+
+  convertMsToSeconds(ms: any){
+    return ms/1000;
   }
 
   getHhMmTime(totalSeconds: any){

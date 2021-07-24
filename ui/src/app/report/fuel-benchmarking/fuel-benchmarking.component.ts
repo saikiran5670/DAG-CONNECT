@@ -652,15 +652,13 @@ export class FuelBenchmarkingComponent implements OnInit {
   }
 
   test = [];
-  columnLength:any = 0;
+  // columnLength:any = 0;
   makeAddDisable:boolean=false;
 
   onSearch(selectedValue?: any) {
 
-      this.columnLength++;
-      if(this.columnLength>4){
-        this.makeAddDisable=true;
-      }
+      // this.columnLength++;
+ 
     console.log("-------search triggere---")
     console.log("vehicle group", this.vehicleGrpDD);
     this.internalSelection = true;
@@ -792,9 +790,14 @@ export class FuelBenchmarkingComponent implements OnInit {
       this.reportService.getBenchmarkDataByTimePeriod(requestObj).subscribe((data: any) => {
         this.showLoadingIndicator = true;
         console.log("---api hit and get data for time period range---", data)
-        this.test.push(data);
+        if(!this.test.includes(data)){
+          this.test.push(data);
+        }
         if (this.fuelBenchmarking) {
           this.fuelBenchmarking.loadBenchmarkTable();
+          if(this.test.length >= 4){
+            this.makeAddDisable=true;
+          }
         }
       });
 
@@ -823,9 +826,14 @@ export class FuelBenchmarkingComponent implements OnInit {
       this.reportService.getBenchmarkDataByVehicleGroup(requestObj).subscribe((data: any) => {
         this.showLoadingIndicator = true;
         console.log("---api hit and get data for vehicle group range---", data)
+        if(!this.test.includes(data)){
         this.test.push(data);
+        }
         if (this.fuelBenchmarking) {
           this.fuelBenchmarking.loadBenchmarkTable();
+          if(this.test.length >= 4){
+            this.makeAddDisable=true;
+          }
         }
       });
 
@@ -838,6 +846,7 @@ export class FuelBenchmarkingComponent implements OnInit {
         this.makeDisableTimePeriod=true;
       }
     console.log("---all selected value--", _startTime, _endTime, selectedVehicleGroup, this.vehicleDD)
+
   }
 
   onVehicleGroupChange(event: any) {
@@ -1001,7 +1010,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   }
   onReset() {
     this.selectionValueBenchmarkBY= '';
-    this.columnLength = 0;
+    // this.columnLength = 0;
     this.makeAddDisable=false;
     this.makeDisableVehicleGroup=false;
     this.makeDisableTimePeriod=false;
@@ -1053,7 +1062,8 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   //Radio buttons selection
   onBenchmarkChange(event: any) {
-    this.columnLength = 0;
+    this.selectionValueBenchmarkBY= '';
+    // this.columnLength = 0;
     this.makeAddDisable=false;
     this.makeDisableVehicleGroup=false;
     this.makeDisableTimePeriod=false;

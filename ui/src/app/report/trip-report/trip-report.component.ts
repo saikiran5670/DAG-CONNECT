@@ -583,7 +583,7 @@ ngOnDestroy(){
     if(_vinData.length > 0){
       this.showLoadingIndicator = true;
       this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
-        console.log(_tripData);
+        //console.log(_tripData);
         this.hideloader();
         this.tripData = this.reportMapService.getConvertedDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
         this.setTableInfo();
@@ -812,7 +812,7 @@ ngOnDestroy(){
   })
 
  this.initData.forEach(item => {     
-    worksheet.addRow([item.vin, item.odometer, item.vehicleName, item.registrationNo, item.convertedStartTime, 
+    worksheet.addRow([item.vin, item.convertedOdometer, item.vehicleName, item.registrationNo, item.convertedStartTime, 
       item.convertedEndTime, item.convertedDistance, item.convertedIdleDuration, item.convertedAverageSpeed,
       item.convertedAverageWeight, item.startPosition, item.endPosition, item.convertedFuelConsumed100Km,
       item.convertedDrivingTime, item.alert, item.events]);   
@@ -869,7 +869,7 @@ ngOnDestroy(){
       tempObj.push(e.vin); ////need to confirm from backend for key
       tempObj.push(e.vehicleName); ////need to confirm from backend for key
       tempObj.push(e.registrationNo); //need to confirm from backend for key
-      tempObj.push(e.odometer);
+      tempObj.push(e.convertedOdometer);
       tempObj.push(e.convertedStartTime);
       tempObj.push(e.convertedEndTime);
       tempObj.push(e.convertedDistance);
