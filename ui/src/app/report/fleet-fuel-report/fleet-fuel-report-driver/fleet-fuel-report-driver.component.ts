@@ -550,8 +550,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.selectedTrip.clear();
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator.toArray()[1];
+      this.dataSource.sort = this.sort.toArray()[1];
     });
   }
 
@@ -975,40 +975,38 @@ setDefaultTodayDate(){
 
 setStartEndDateTime(date: any, timeObj: any, type: any){
 
-    if(type == "start"){
-      console.log("--date type--",date)
-      console.log("--date type--",timeObj)
-      // this.fleetUtilizationSearchData["startDateStamp"] = date;
-      // this.fleetUtilizationSearchData.testDate = date;
-      // this.fleetUtilizationSearchData["startTimeStamp"] = timeObj;
-      // this.setGlobalSearchData(this.fleetUtilizationSearchData)
-      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
-      // console.log("---time after function called--",timeObj)
-    }else if(type == "end") {
-      // this.fleetUtilizationSearchData["endDateStamp"] = date;
-      // this.fleetUtilizationSearchData["endTimeStamp"] = timeObj;
-      // this.setGlobalSearchData(this.fleetUtilizationSearchData)
-      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
-    }
-
-    let _x = timeObj.split(":")[0];
-    let _y = timeObj.split(":")[1];
-    if(date) {
-      if(this.prefTimeFormat == 12){
-        if(_y.split(' ')[1] == 'AM' && _x == 12) {
-          date.setHours(0);
-        }else{
-          date.setHours(_x);
-        }
-        date.setMinutes(_y.split(' ')[0]);
-      }else{
-        date.setHours(_x);
-        date.setMinutes(_y);
-      }
-      date.setSeconds(type == 'start' ? '00' : '59');
-    }
-    return date;
+  if(type == "start"){
+    console.log("--date type--",date)
+    console.log("--date type--",timeObj)
+    // this.fleetUtilizationSearchData["startDateStamp"] = date;
+    // this.fleetUtilizationSearchData.testDate = date;
+    // this.fleetUtilizationSearchData["startTimeStamp"] = timeObj;
+    // this.setGlobalSearchData(this.fleetUtilizationSearchData)
+    // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
+    // console.log("---time after function called--",timeObj)
+  }else if(type == "end") {
+    // this.fleetUtilizationSearchData["endDateStamp"] = date;
+    // this.fleetUtilizationSearchData["endTimeStamp"] = timeObj;
+    // this.setGlobalSearchData(this.fleetUtilizationSearchData)
+    // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
   }
+
+  let _x = timeObj.split(":")[0];
+  let _y = timeObj.split(":")[1];
+  if(this.prefTimeFormat == 12){
+    if(_y.split(' ')[1] == 'AM' && _x == 12) {
+      date.setHours(0);
+    }else{
+      date.setHours(_x);
+    }
+    date.setMinutes(_y.split(' ')[0]);
+  }else{
+    date.setHours(_x);
+    date.setMinutes(_y);
+  }
+  date.setSeconds(type == 'start' ? '00' : '59');
+  return date;
+}
 
   getTodayDate(){
     let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
@@ -1266,12 +1264,7 @@ setVehicleGroupAndVehiclePreSelection() {
     this.dataSource.filter = filterValue;
   }
 
-  applyFilterRanking(filterValue: string) {
-    filterValue = filterValue.trim(); 
-    filterValue = filterValue.toLowerCase(); 
-    // this.dataSource.filter = filterValue;
-    this.dataSource2.filter = filterValue;
-  }
+ 
 
   exportAsExcelFile(){
     this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Driver', sheet: 'sheet_name'});

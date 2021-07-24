@@ -1277,8 +1277,8 @@ createEndMarker(){
     }
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator.toArray()[1];
+      this.dataSource.sort = this.sort.toArray()[1];
     });
   }
 
@@ -1707,6 +1707,7 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
 
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
+    if(date) {
     if(this.prefTimeFormat == 12){
       if(_y.split(' ')[1] == 'AM' && _x == 12) {
         date.setHours(0);
@@ -1719,6 +1720,7 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
       date.setMinutes(_y);
     }
     date.setSeconds(type == 'start' ? '00' : '59');
+  }
     return date;
   }
 
