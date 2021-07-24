@@ -61,7 +61,7 @@ displayedColumns = [ 'all','alertLevel', 'alertGeneratedTime', 'vehicleRegNo', '
 translationData: any;
 showMap: boolean = false;
 showBack: boolean = false;
-showMapPanel: boolean = true;
+showMapPanel: boolean = false;
 searchExpandPanel: boolean = true;
 tableExpandPanel: boolean = true;
 initData: any = [];
@@ -178,10 +178,10 @@ constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationSe
   this.platform = new H.service.Platform({
     "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
   });
-  setTimeout(() => {
-    this.initMap();
+  // setTimeout(() => {
+  //   this.initMap();
       
-    }, 10);
+  //   }, 10);
   this.configureAutoSuggest();
   this.defaultTranslation();
   const navigation = this.router.getCurrentNavigation();
@@ -277,9 +277,7 @@ ngOnDestroy(){
         }
       });
     });
-    this.selectionTimeRange('today');
-    
-
+    //this.selectionTimeRange('today');
   }
 
   changeHerePOISelection(event: any, hereData: any){
@@ -506,11 +504,11 @@ ngOnDestroy(){
 
   loadWholeTripData(){
     this.showLoadingIndicator = true;
-    console.log("code adding here for log book ----------------");
+    //console.log("code adding here for log book ----------------");
     this.reportService.getLogBookfilterdetails().subscribe((logBookDataData: any) => {
       this.hideloader();
       this.wholeLogBookData = logBookDataData;
-      console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
+      //console.log("this.wholeLogBookData:---------------------------: ", this.wholeLogBookData);
       this.filterDateData();
       this.loadUserPOI();
     }, (error)=>{
@@ -573,7 +571,7 @@ ngOnDestroy(){
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    ////console.log("process translationData:: ", this.translationData)
+    //////console.log("process translationData:: ", this.translationData)
   }
 
   public ngAfterViewInit() { }
@@ -648,7 +646,7 @@ ngOnDestroy(){
           element.alertLevel = alertLevelName[0].name;
          this.initData = logbookData;
         });
-  this.setTableInfo();
+        this.setTableInfo();
         this.updateDataSource(this.initData);
       }, (error)=>{
           this.hideloader();
@@ -676,19 +674,19 @@ ngOnDestroy(){
     vehName = vehCount[0].vehicleName;
      
     }
-    //console.log("alertLvl",this.alertLvl);
+    ////console.log("alertLvl",this.alertLvl);
     let aLCount =this.alertLvl.filter(i => i.value == this.logBookForm.controls.alertLevel.value);
-    //console.log("aLCount", aLCount);
+    ////console.log("aLCount", aLCount);
     if(aLCount.length > 0){
     aLvl = aLCount[0].alertLevel;
-    //console.log("aLvl",aLvl);
+    ////console.log("aLvl",aLvl);
     }
     
      
     
     let aTCount = this.alertTyp.filter(i =>i.value == this.logBookForm.controls.alertType.value);
-    console.log("alertTyp", this.alertTyp);
-    console.log("aTCount", aTCount);
+    //console.log("alertTyp", this.alertTyp);
+    //console.log("aTCount", aTCount);
     if(aTCount.length > 0){
     aTpe = aTCount[0].alertType;
     }
@@ -696,8 +694,8 @@ ngOnDestroy(){
      
     
     let aCCount = this.alertCtgry.filter(i =>i.value == this.logBookForm.controls.alertCategory.value);
-    console.log("alertCtgry", this.alertCtgry);
-    console.log("aCCount", aCCount);
+    //console.log("alertCtgry", this.alertCtgry);
+    //console.log("aCCount", aCCount);
     if(aCCount.length > 0){
     aCtgry = aCCount[0].alertCategory;
     }
@@ -843,6 +841,22 @@ ngOnDestroy(){
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
+    this.showMap = false;
+    this.selectedTrip.clear();
+    if(this.initData.length > 0){
+      if(!this.showMapPanel){ //- map panel not shown already
+        this.showMapPanel = true;
+        setTimeout(() => {
+          this.initMap();
+        }, 0);
+      }else{
+        this.clearRoutesFromMap();
+      }
+    }
+    else{
+      this.showMapPanel = false;
+    }
+
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
@@ -969,7 +983,7 @@ let prepare = []
     body: prepare,
     theme: 'striped',
     didDrawCell: data => {
-      //console.log(data.column.index)
+      ////console.log(data.column.index)
     }
   })
    doc.save('Logbook.pdf');
@@ -1098,7 +1112,7 @@ let prepare = []
   }
 
   selectionTimeRange(selection: any){
-    console.log("called "+ selection);
+    //console.log("called "+ selection);
     this.internalSelection = true;
     switch(selection){
       case 'today': {
@@ -1187,10 +1201,10 @@ let prepare = []
     let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
    
-    console.log("this.wholeLogBookData.associatedVehicleRequest ---:: ", this.wholeLogBookData.associatedVehicleRequest);
-    console.log("this.wholeLogBookData.alFilterResponse---::", this.wholeLogBookData.alFilterResponse);
-    console.log("this.wholeLogBookData.alertTypeFilterRequest---::", this.wholeLogBookData.alertTypeFilterRequest);
-    console.log("this.wholeLogBookData.acFilterResponse---::", this.wholeLogBookData.acFilterResponse);
+    //console.log("this.wholeLogBookData.associatedVehicleRequest ---:: ", this.wholeLogBookData.associatedVehicleRequest);
+    //console.log("this.wholeLogBookData.alFilterResponse---::", this.wholeLogBookData.alFilterResponse);
+    //console.log("this.wholeLogBookData.alertTypeFilterRequest---::", this.wholeLogBookData.alertTypeFilterRequest);
+    //console.log("this.wholeLogBookData.acFilterResponse---::", this.wholeLogBookData.acFilterResponse);
     
     let filterData = this.wholeLogBookData["enumTranslation"];
     filterData.forEach(element => {
@@ -1210,7 +1224,7 @@ let prepare = []
       let filterVIN: any = this.wholeLogBookData.logbookTripAlertDetailsRequest.filter(item => item.alertGeneratedTime >= currentStartTime && item.alertGeneratedTime <= currentEndTime).map(data => data.vin);
       if(filterVIN.length > 0){
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
-        console.log("distinctVIN:: ", distinctVIN);
+        //console.log("distinctVIN:: ", distinctVIN);
         if(distinctVIN.length > 0){
           distinctVIN.forEach(element => {
             let _item = this.wholeLogBookData.associatedVehicleRequest.filter(i => i.vin === element); 
