@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Grpc.Core;
 using log4net;
+using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.confluentkafka.entity;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicleservice.Entity;
@@ -22,12 +25,14 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         private readonly IVehicleManager _vehicleManager;
         private readonly Group.IGroupManager _groupManager;
         private readonly Mapper _mapper;
+        private readonly KafkaConfiguration _kafkaConfiguration;
 
         private readonly ILog _logger;
         private readonly IAuditTraillib _auditlog;
         private readonly AccountComponent.IAccountManager _accountmanager;
+        private readonly IConfiguration _configuration;
 
-        public VehicleManagementService(IVehicleManager vehicelManager, Group.IGroupManager groupManager, IAuditTraillib auditlog, AccountComponent.IAccountManager accountmanager)
+        public VehicleManagementService(IVehicleManager vehicelManager, Group.IGroupManager groupManager, IAuditTraillib auditlog, AccountComponent.IAccountManager accountmanager, IConfiguration configuration)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _vehicleManager = vehicelManager;
@@ -35,7 +40,8 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             _auditlog = auditlog;
             _accountmanager = accountmanager;
             _mapper = new Mapper();
-
+            _kafkaConfiguration = new KafkaConfiguration();
+            configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
         }
 
         public override async Task<VehiclesBySubscriptionDetailsResponse> GetVehicleBySubscriptionId(SubscriptionIdRequest request, ServerCallContext context)

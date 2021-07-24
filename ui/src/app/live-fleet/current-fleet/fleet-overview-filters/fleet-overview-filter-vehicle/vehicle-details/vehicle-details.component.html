@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card class="block">
 <div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehicleDetails || 'Vehicle Details' }}</span>
@@ -40,7 +40,7 @@
         </div> 
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
-            <span class="vehicle-details-data" class='navigatePoint' (click)='gotoHealthStatus(gridData)' matTooltip="{{ translationData.lbl || 'Click for health details'}}">{{gridData.vehicleHealthStatusType}}</span>
+            <span class="vehicle-details-data" class='navigatePoint' (click)='gotoHealthStatus()' matTooltip="{{ translationData.lbl || 'Click for health details'}}">{{gridData.vehicleHealthStatusType}}</span>
         </div>
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Alert'}}:</span>
@@ -64,7 +64,7 @@
             <span>{{ translationData.lbl || 'Current Mileage' }} </span>
         </div>
         <div class="areaWidth min-width-35-per vehicleInfo" fxLayout="column" fxLayoutAlign="left">
-            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{gridData.odometerVal}}km</span>
+            <span><b>{{mileagewithUnit}}{{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</b></span>
         </div>
     </div>
     <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
@@ -72,7 +72,7 @@
             <span>{{ translationData.lbl || 'Next Service In' }} </span>
         </div>
         <div class="areaWidth min-width-35-per vehicleInfo" fxLayout="column" fxLayoutAlign="left">
-            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{gridData.distanceUntilNextService}}km</span>
+            <span><b>{{nextservicing}}{{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</b></span>
         </div>
     </div>
     <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
@@ -80,33 +80,39 @@
             <span>{{ translationData.lbl || 'Health Status' }} </span>
         </div>
         <div class="areaWidth min-width-35-per vehicleInfo" fxLayout="column" fxLayoutAlign="right">
-            <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{gridData.vehicleHealthStatusType}}</span>
+            <span><b>{{gridData.vehicleHealthStatusType}}</b></span>
         </div>
     </div>
      </div>
-</mat-card>
-<mat-card>
-     <div>
+
+    <div  class='mat-elevation-z no-padding margin-bottom-xlg'>
         <div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlerts || 'Alerts' }} ({{gridData.fleetOverviewAlert.length}})</span>
             </div>
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
-            <span class='custom-font' (click)="toBack()">
-                <span class='backBtnCss'>{{ translationData.lblLogBook || 'Log Book' }} ></span>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+            <span class='custom-font' (click)="gotoLogBook()">
+                <span class='backBtnCss'>{{ translationData.lblLogBook || 'Log Book' }} </span><span>></span>
             </span>
         </div>
-    </div>
+        </div>
      
 
      <div class="full-width vehicleList-div" *ngFor="let item of gridData.fleetOverviewAlert">
         <div class="alertList-icon">
-            <!-- <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="Health Status: {{item.vehicleHealthStatusType}} 
-            &#13; Alert: {{item.alertName}}"> </span> -->
+            <span  *ngIf="item.level == 'Critical'">
+                <i class="material-icons" [style]="{ 'color':'#FF0000' } ">warning</i> 
+              </span> 
+              <span  *ngIf="item.level == 'Warning'">
+                <i class="material-icons" [style]="{ 'color':'#FFBF00' } ">warning</i> 
+              </span>
+              <span *ngIf="item.level == 'Advisory'">
+                <i class="material-icons" [style]="{ 'color':'#FFFF00' } ">warning</i> 
+              </span>  
         </div>
         <div class="alertList-details">
         <div>
-            <span class="vehicle-details-data">{{item.type}}</span>
+            <span class="vehicle-details-data">{{item.categoryType}}</span>
         </div>
         <div>
             <span class="vehicle-details-data">{{timeConversion(item.time)}}</span>

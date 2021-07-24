@@ -265,8 +265,11 @@ export class AppComponent {
       //this.getAccountInfo();
       // this.getNavigationMenu();
     });
+    //ToDo: below part to be removed after preferences/dashboard part is developed
+    localStorage.setItem("liveFleetTimer", "120");
+    localStorage.setItem("liveFleetMileageThreshold", "1000");
+    localStorage.setItem("liveFleetUtilizationThreshold", "5");
 
-    localStorage.setItem("liveFleetTimer", "10");
     this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
 
     this.dataInterchangeService.userNameInterface$.subscribe(data => {
@@ -907,12 +910,17 @@ export class AppComponent {
   startTimer() {
     const source = timer(1000, 2000);
     this.sub = source.subscribe(val => {
-      this.subscribeTimer = this.timeLeft - val;
+      this.subscribeTimer = this.transform(this.timeLeft - val);
       if(this.timeLeft - val == 0){
         this.sendMessage();
         this.refreshTimer();
       }
     });
+  }
+
+  transform(value: number): string {
+    const minutes: number = Math.floor(value / 60);
+    return minutes + ':' + (value - minutes * 60);
   }
 
   clearMessages(): void {

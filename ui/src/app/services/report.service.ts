@@ -86,6 +86,18 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
+  getDriverChartDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/drivetime/getdetails/chart`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   getSelectedDriverDetails(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -396,6 +408,22 @@ getLogBookfilterdetails(): Observable<any[]> {
          .pipe(catchError(this.handleError));
  }
 
+ getvehiclehealthstatus(vin,languagecode,tripid?): Observable<any[]> {
+  let headerObj = this.generateHeader();
+ const headers = {
+   headers: new HttpHeaders({ headerObj }),
+ };
+ if(tripid){
+  return this.httpClient
+  .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getvehiclehealthstatus?VIN=${vin}&TripId=${tripid}&LngCode=${languagecode}`,  headers)
+  .pipe(catchError(this.handleError));
+ } else {
+  return this.httpClient
+  .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getvehiclehealthstatus?VIN=${vin}&LngCode=${languagecode}`,  headers)
+  .pipe(catchError(this.handleError));
+ }
+     
+ }
  getLogbookDetails(data:any){
   let headerObj = this.generateHeader();
   const headers = {

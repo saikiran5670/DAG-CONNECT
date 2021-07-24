@@ -37,6 +37,7 @@
         public const string DELETE_ECOSCORE_PROFILE_FAIL_MSG = "Delete Eco Score Profile Fail.";
         public const string DELETE_ECOSCORE_PROFILE_DEFAULT_PROFILE_MSG = "Is a default profile, Can't delete.";
         public const string DELETE_ECOSCORE_PROFILE_GLOBAL_PROFILE_MSG = "User is Not Authorize to delete Profile.";
+        public const string GET_ECOSCORE_REPORT_TRENDLINE_SUCCESS_MSG = "Eco-Score Trendline Report details fetched successfully.";
         #endregion
 
         #region FleetOverview

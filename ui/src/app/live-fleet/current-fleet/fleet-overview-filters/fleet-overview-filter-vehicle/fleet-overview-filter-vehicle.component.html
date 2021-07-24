@@ -6,7 +6,7 @@
        </mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class="checkbox">
-        <mat-checkbox [checked]="todayFlagClicked" (change)="onChangetodayCheckbox($event)" >{{ translationData.lblToday || 'Today'}}
+        <mat-checkbox [checked]="todayFlagClicked" (change)="onChangetodayCheckbox($event.checked)" >{{ translationData.lblToday || 'Today'}}
 
         </mat-checkbox>
           </div>
@@ -45,6 +45,11 @@
      </div>
   </mat-expansion-panel>
 
-  <app-vehicle-details *ngIf='isVehicleDetails' [translationData]='translationData'  [selectedElementData]='selectedElementData'(backToPage)='checkCreationForVehicleDetails($event)'></app-vehicle-details>
+  <app-vehicle-details *ngIf='isVehicleDetails' 
+  [translationData]='translationData'  
+  [selectedElementData]='selectedElementData'
+  [categoryList] = "categoryList"
+  [levelList] = "levelList" 
+  (backToPage)='checkCreationForVehicleDetails($event)'></app-vehicle-details>
 </div>
 

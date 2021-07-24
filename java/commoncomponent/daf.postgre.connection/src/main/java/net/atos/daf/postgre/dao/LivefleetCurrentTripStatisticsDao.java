@@ -163,7 +163,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 			stmt_insert_current_trip.setLong(23, 0);
 
 		if (tripStatistics.getFuel_consumption() != null)
-			stmt_insert_current_trip.setInt(24, tripStatistics.getFuel_consumption());
+			stmt_insert_current_trip.setLong(24, tripStatistics.getFuel_consumption());
 		else
 			stmt_insert_current_trip.setInt(24, 0);
 

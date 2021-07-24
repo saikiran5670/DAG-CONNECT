@@ -32,7 +32,7 @@ export class PreferencesComponent implements OnInit {
         this.selectedIndex = 1;
       else if(currentComponentUrl.substr(0, 8) == "/report/" )
         this.selectedIndex = 2;
-      else if(currentComponentUrl.substr(0, 11) == "/livefleet/")
+      else if(currentComponentUrl.substr(0, 15) == "/fleetoverview/")
         this.selectedIndex = 3;
       else
         this.selectedIndex = 0;

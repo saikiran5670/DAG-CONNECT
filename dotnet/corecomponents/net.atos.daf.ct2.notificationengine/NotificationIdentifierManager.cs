@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.email.Entity;
@@ -10,6 +11,8 @@ using net.atos.daf.ct2.notification.entity;
 using net.atos.daf.ct2.notificationengine.entity;
 using net.atos.daf.ct2.notificationengine.repository;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.webservice;
+using net.atos.daf.ct2.webservice.entity;
 
 namespace net.atos.daf.ct2.notificationengine
 {
@@ -29,6 +32,7 @@ namespace net.atos.daf.ct2.notificationengine
                 tripAlert = await _notificationIdentifierRepository.GetVehicleIdForTrip(tripAlert);
                 List<Notification> notificationOutput = new List<Notification>();
                 List<Notification> notificationDetails = await _notificationIdentifierRepository.GetNotificationDetails(tripAlert);
+                // Condition added to check for trip base alert and need to condition for non trip based alert type
                 List<NotificationHistory> notificatinFrequencyCheck = await _notificationIdentifierRepository.GetNotificationHistory(tripAlert);
                 List<TripAlert> generatedAlertForVehicle = await _notificationIdentifierRepository.GetGeneratedTripAlert(tripAlert);
                 int numberOfAlertForvehicle = notificatinFrequencyCheck.Count();
@@ -38,18 +42,19 @@ namespace net.atos.daf.ct2.notificationengine
                 // check frequency type of  notification
                 foreach (var item in notificationDetails)
                 {
-                    if (item.Noti_frequency_type == "O")
+                    if (item.Noti_frequency_type.ToUpper() == "O")
                     {
                         notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
                     }
-                    else if (item.Noti_frequency_type == "T")
+                    else if (item.Noti_frequency_type.ToUpper() == "T" && numberOfAlertForvehicle != generatedAlertForVehicle.Count())
                     {
-                        notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
+                        //notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
+                        notificationOutput = notificationDetails.Where(p => p.Noti_frequency_type.ToUpper() == "T").ToList();
                     }
-                    else if (item.Noti_frequency_type == "E")
+                    else if (item.Noti_frequency_type.ToUpper() == "E")
                     {
                         int index = 0;
-                        List<TripAlert> nGenAlertDetails = (List<TripAlert>)generatedAlertForVehicle.OrderBy(o => o.AlertGeneratedTime).GroupBy(e => new { e.Alertid, e.Vin }); //order by alert generated time  //.Where(e => e.Count() == item.Noti_frequency_threshhold_value);
+                        var nGenAlertDetails = generatedAlertForVehicle.OrderBy(o => o.AlertGeneratedTime).GroupBy(e => new { e.Alertid, e.Vin }); //order by alert generated time  //.Where(e => e.Count() == item.Noti_frequency_threshhold_value);
                         for (int i = 1; i <= nGenAlertDetails.Count(); i++)
                         {
                             if (i / item.Noti_frequency_threshhold_value == 0)
@@ -70,17 +75,18 @@ namespace net.atos.daf.ct2.notificationengine
                         var customeTimingDetails = notificationOutput.Where(t => t.Aletimenoti_period_type.ToUpper() == "C");
                         foreach (Notification customeTimingItem in customeTimingDetails)
                         {
-                            var bitsWithIndex = customeTimingItem.Aletimenoti_day_type.Cast<bool>() // we need to use Cast because BitArray does not provide generic IEnumerable
-                                .Select((bit, index) => new { Bit = bit, Index = index }); // projection, we will save bit indices
-                            for (int i = 0; i < bitsWithIndex.Count(); i++)
+                            //var bitsWithIndex = customeTimingItem.Aletimenoti_day_type.Cast<bool>() // we need to use Cast because BitArray does not provide generic IEnumerable
+                            //   .Select((bit, index) => new { Bit = bit, Index = index }); // projection, we will save bit indices
+                            for (int i = 0; i < customeTimingItem.Aletimenoti_day_type.Count; i++)
                             {
                                 //if (customeTimingItem.Aletimenoti_day_type[i] == true && DateTime.Today.DayOfWeek.ToString().ToLower() == "monday")
-                                if (bitsWithIndex.Where(x => x.Bit == true && x.Index == (int)DateTime.Today.DayOfWeek).Select(x => x.Index).Count() > 0)
+                                //if (bitsWithIndex.Where(x => x.Bit == true && x.Index == (int)DateTime.Today.DayOfWeek).Select(x => x.Index).Count() > 0)
+                                if (customeTimingItem.Aletimenoti_day_type[i] == true && i == (int)DateTime.Today.DayOfWeek)
                                 {
                                     int hourInSecond = DateTime.Now.Hour * 3600;
                                     int minInSecond = DateTime.Now.Minute * 60;
                                     int totalSecond = hourInSecond + minInSecond;
-                                    if (customeTimingItem.Aletimenoti_start_date >= totalSecond && customeTimingItem.Aletimenoti_end_date <= totalSecond)
+                                    if (customeTimingItem.Aletimenoti_start_date <= totalSecond && customeTimingItem.Aletimenoti_end_date >= totalSecond)
                                         notificationTimingDetails.Add(customeTimingItem);
                                 }
                             }
@@ -136,38 +142,17 @@ namespace net.atos.daf.ct2.notificationengine
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "E").Count() > 0)
                 {
-                    foreach (var item in identifiedNotificationRec)
-                    {
-                        Dictionary<string, string> addAddress = new Dictionary<string, string>();
-                        if (!addAddress.ContainsKey(item.EmailId))
-                        {
-                            addAddress.Add(item.EmailId, null);
-                        }
-                        var mailNotification = new MailNotificationRequest()
-                        {
-                            MessageRequest = new MessageRequest()
-                            {
-                                AccountInfo = new AccountInfo() { EmailId = item.EmailId, Organization_Id = item.OrganizationId },
-                                ToAddressList = addAddress,
-                                Subject = item.EmailSub,
-                                Description = item.EmailText
-                            },
-                            ContentType = EmailContentType.Html,
-                            EventType = EmailEventType.AlertNotificationEmail
-                        };
-
-                        var isSuccess = await _emailNotificationManager.TriggerSendEmail(mailNotification);
-                        item.Status = isSuccess ? NotificationSendType.Successful.ToString() : NotificationSendType.Failed.ToString();
-                        await InsertNotificationSentHistory(item);
-                    }
+                    await SendEmailNotification(identifiedNotificationRec);
                 }
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
                 {
+
                 }
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").Count() > 0)
                 {
+                    //await GetWebServiceCall(identifiedNotificationRec);
                 }
 
                 return notificationDetails;
@@ -183,6 +168,70 @@ namespace net.atos.daf.ct2.notificationengine
         public async Task<NotificationHistory> InsertNotificationSentHistory(NotificationHistory notificationHistory)
         {
             return await _notificationIdentifierRepository.InsertNotificationSentHistory(notificationHistory);
+        }
+        public async Task<bool> SendEmailNotification(List<NotificationHistory> notificationHistoryEmail)
+        {
+            try
+            {
+                bool isResult = false;
+                foreach (var item in notificationHistoryEmail)
+                {
+                    Dictionary<string, string> addAddress = new Dictionary<string, string>();
+                    if (!addAddress.ContainsKey(item.EmailId))
+                    {
+                        addAddress.Add(item.EmailId, null);
+                    }
+                    var mailNotification = new MailNotificationRequest()
+                    {
+                        MessageRequest = new MessageRequest()
+                        {
+                            AccountInfo = new AccountInfo() { EmailId = item.EmailId, Organization_Id = item.OrganizationId },
+                            ToAddressList = addAddress,
+                            Subject = item.EmailSub,
+                            Description = item.EmailText
+                        },
+                        ContentType = EmailContentType.Html,
+                        EventType = EmailEventType.AlertNotificationEmail
+                    };
+
+                    isResult = await _emailNotificationManager.TriggerSendEmail(mailNotification);
+                    item.Status = isResult ? ((char)NotificationSendType.Successful).ToString() : ((char)NotificationSendType.Failed).ToString();
+                    await InsertNotificationSentHistory(item);
+                }
+                return isResult;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<bool> GetWebServiceCall(List<NotificationHistory> notificationHistoryWebService)
+        {
+            try
+            {
+                bool isResult = false;
+                foreach (var item in notificationHistoryWebService)
+                {
+                    WebServiceManager wsClient = new WebServiceManager();
+                    HeaderDetails headerDetails = new HeaderDetails();
+                    headerDetails.BaseUrl = item.WsUrl;
+                    headerDetails.Body = item.WsText;
+                    headerDetails.AuthType = item.WsAuthType;
+                    headerDetails.UserName = item.WsLogin;
+                    headerDetails.Password = item.WsPassword;
+                    headerDetails.ContentType = "application/json";
+                    HttpResponseMessage response = await wsClient.HttpClientCall(headerDetails);
+                    item.Status = response.StatusCode == System.Net.HttpStatusCode.OK ? ((char)NotificationSendType.Successful).ToString() : ((char)NotificationSendType.Failed).ToString();
+                    await InsertNotificationSentHistory(item);
+                    isResult = true;
+                }
+
+                return isResult;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

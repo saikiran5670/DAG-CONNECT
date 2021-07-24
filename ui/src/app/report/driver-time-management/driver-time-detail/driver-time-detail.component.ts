@@ -27,6 +27,7 @@ export class DriverTimeDetailComponent implements OnInit {
   @Input() driverDetails : any;
   @Input() detailConvertedData : any;
   @Input() showField: any;
+  @Input() graphPayload : any;
   initData = [];
   searchExpandPanel: boolean = true;
   chartExpandPanel : boolean = true;
@@ -69,13 +70,14 @@ export class DriverTimeDetailComponent implements OnInit {
   zoomMsg : boolean = true;
   summaryObj:any=[];
 
-  constructor(private reportMapService:ReportMapService) { }
+  constructor(private reportMapService:ReportMapService, private reportService: ReportService) { }
 
   ngOnInit(): void {
   //console.log(this.driverDetails)
     //this.setGeneralDriverValue();
+ 
     this.updateDataSource(this.detailConvertedData);
-    this.setGraphData();
+   // this.setGraphData();
 
   }
 
@@ -171,6 +173,9 @@ export class DriverTimeDetailComponent implements OnInit {
   // }
 
   ngOnChanges(){
+    this.reportService.getDriverChartDetails(this.graphPayload).subscribe((data)=>{
+
+    })
     this.updateDataSource(this.detailConvertedData);
     this.setGraphData();
   }

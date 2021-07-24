@@ -73,10 +73,11 @@ namespace net.atos.daf.ct2.reports.repository
                                 processed_message_time_stamp as ProcessedMessageTimestamp,
                                 ts.start_time_stamp as TripStartTime,
                                 ts.end_time_stamp as TripEndTime,
+                                ts.vehicle_health_status_type as VehicleHealthStatusType,
                                 alertgeoadd.id as AlertGeolocationAddressId,
                                 coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
                                 from tripdetail.tripalert ta inner join master.vehicle v on ta.vin = v.vin 
-                                left join tripdetail.trip_statistics ts
+                                left join livefleet.livefleet_current_trip_statistics ts
                                 on ta.vin = ts.vin  --and ta.trip_id=ts.trip_id 
                                 left join master.geolocationaddress alertgeoadd
                                 on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
@@ -95,18 +96,18 @@ namespace net.atos.daf.ct2.reports.repository
                 if (logbookFilter.AlertLevel.Count > 0)
                 {
                     parameter.Add("@alert_level", logbookFilter.AlertLevel);
-                    queryLogBookPull += " and ta.alert_level = Any(@alert_level) ";
+                    queryLogBookPull += " and ta.urgency_level_type = Any(@alert_level) ";
                 }
 
                 if (logbookFilter.AlertType.Count > 0)
                 {
-                    parameter.Add("@alert_level", logbookFilter.AlertLevel);
-                    queryLogBookPull += " and ta.alert_level = Any(@alert_level) ";
+                    parameter.Add("@alert_type", logbookFilter.AlertType);
+                    queryLogBookPull += " and ta.type = Any(@alert_type) ";
                 }
                 if (logbookFilter.AlertCategory.Count > 0)
                 {
                     parameter.Add("@alert_category", logbookFilter.AlertCategory);
-                    queryLogBookPull += " and ta.alert_category = Any(@alert_category) ";
+                    queryLogBookPull += " and ta.category_type = Any(@alert_category) ";
                 }
                 var logBookDetailsResult = await _dataMartdataAccess.QueryAsync<LogbookDetails>(queryLogBookPull, parameter);
                 if (logBookDetailsResult.AsList<LogbookDetails>().Count > 0)

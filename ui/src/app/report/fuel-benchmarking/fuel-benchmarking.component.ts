@@ -359,10 +359,10 @@ export class FuelBenchmarkingComponent implements OnInit {
         break;
       }
     }
-    // this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
-    // this.setGlobalSearchData(this.fleetUtilizationSearchData);
-    // if(!this.makeDisableVehicleGroup)
-    // {
+    // // this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
+    // // this.setGlobalSearchData(this.fleetUtilizationSearchData);
+    // // if(!this.makeDisableVehicleGroup)
+    // // {
       this.resetTripFormControlValue(); // extra addded as per discuss with Atul
       this.filterDateData(); // extra addded as per discuss with Atul
     
@@ -652,9 +652,15 @@ export class FuelBenchmarkingComponent implements OnInit {
   }
 
   test = [];
+  columnLength:any = 0;
+  makeAddDisable:boolean=false;
 
   onSearch(selectedValue?: any) {
 
+      this.columnLength++;
+      if(this.columnLength>4){
+        this.makeAddDisable=true;
+      }
     console.log("-------search triggere---")
     console.log("vehicle group", this.vehicleGrpDD);
     this.internalSelection = true;
@@ -753,8 +759,10 @@ export class FuelBenchmarkingComponent implements OnInit {
 
     // }
     this.vehicleDD.forEach(item => {
-      if (item.vin !== undefined) {
+      if (item.vin !== undefined ) {
+        if(!this.vinList.includes(item.vin)){
         this.vinList.push(item.vin);
+        }
       }
     });
 
@@ -986,6 +994,9 @@ export class FuelBenchmarkingComponent implements OnInit {
     // this.setGlobalSearchData(this.fleetUtilizationSearchData)
   }
   onReset() {
+    this.makeAddDisable=false;
+    this.makeDisableVehicleGroup=false;
+    this.makeDisableTimePeriod=false;
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
@@ -1033,6 +1044,7 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   //Radio buttons selection
   onBenchmarkChange(event: any) {
+    this.makeAddDisable=false;
     this.makeDisableVehicleGroup=false;
     this.makeDisableTimePeriod=false;
     this.selectedBenchmarking = event.value;

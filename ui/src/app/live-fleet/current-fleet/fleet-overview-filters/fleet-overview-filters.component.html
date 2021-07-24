@@ -109,6 +109,7 @@
     (tabVisibility)="tabVisibilityHandler($event)" 
     [translationData]='translationData' 
     [detailsData] ="detailsData"
+    [fromVehicleHealth] = "fromVehicleHealth"
     [groupList] = "groupList"
     [categoryList] = "categoryList"
     [levelList] = "levelList"
@@ -116,7 +117,8 @@
     [otherList] = "otherList"
     [noRecordFlag] ="noRecordFlag"
     [vehicleListData] ="vehicleListData"
-    (vehicleFilterComponentEmit)='checkCreationForVehicle($event)'>
+    (vehicleFilterComponentEmit)='checkCreationForVehicle($event)'
+    (vehicleDetailsInfoEmit)='checkToHideFilter($event)'>
 </app-fleet-overview-filter-vehicle>
 </div>
 

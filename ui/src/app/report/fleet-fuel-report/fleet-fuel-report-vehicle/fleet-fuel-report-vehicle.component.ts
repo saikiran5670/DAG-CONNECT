@@ -337,6 +337,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   fromTripPageBack: boolean = false;
   displayData : any = [];
   showDetailedReport : boolean = false;
+  state :any;
   
   constructor(private _formBuilder: FormBuilder, 
               private translationService: TranslationService,
@@ -344,7 +345,12 @@ export class FleetFuelReportVehicleComponent implements OnInit {
               private reportService: ReportService,
               private router: Router,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
-              private reportMapService: ReportMapService) { }
+              private reportMapService: ReportMapService) {}
+               defaultTranslation(){
+                this.translationData = {
+                  lblSearchReportParameters: 'Search Report Parameters'
+                }
+               }
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
@@ -387,6 +393,12 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
 
   }
+
+  setGlobalSearchData(globalSearchFilterData:any) {
+    this.fleetFuelSearchData["modifiedFrom"] = "vehicletrip";
+    localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
+  }
+  
   loadfleetFuelDetails(_vinData: any){
     let _startTime = Util.convertDateToUtc(this.startDateValue);
     let _endTime = Util.convertDateToUtc(this.endDateValue);
@@ -1544,7 +1556,7 @@ doc.addPage();
         vehicleData: vehData
       }
     };
-    this.router.navigate(['report/detailvehiclereport'], navigationExtras);
+    this.router.navigate(['report/vehicletrip'], navigationExtras);
   }
 
 

@@ -10,6 +10,7 @@ using net.atos.daf.ct2.notificationservice;
 using Grpc.Core;
 using log4net;
 using System.Reflection;
+using net.atos.daf.ct2.confluentkafka.entity;
 
 namespace net.atos.daf.ct2.notificationservice.services
 {
@@ -25,6 +26,7 @@ namespace net.atos.daf.ct2.notificationservice.services
             this._configuration = configuration;
             _kafkaConfiguration = new KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
+
             _tripAlertManager = tripAlertManager;
         }
 

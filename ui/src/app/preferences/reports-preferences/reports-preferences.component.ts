@@ -32,7 +32,7 @@ export class ReportsPreferencesComponent implements OnInit {
   editFuelDeviationPerferencesFlag: boolean = false;
   showFleetFuelPerferences: boolean = false;
   editFleetFuelPerferencesFlag: boolean = false;
-  generalPreferences;
+  generalPreferences: any;
 
   constructor(private reportService: ReportService, private translationService: TranslationService, private accountService: AccountService) { }
 
