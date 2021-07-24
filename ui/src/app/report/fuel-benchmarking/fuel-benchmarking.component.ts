@@ -995,10 +995,12 @@ export class FuelBenchmarkingComponent implements OnInit {
   }
   onVehicleChange(event: any) {
     this.internalSelection = true;
+
     // this.fleetUtilizationSearchData["vehicleDropDownValue"] = event.value;
     // this.setGlobalSearchData(this.fleetUtilizationSearchData)
   }
   onReset() {
+    this.selectionValueBenchmarkBY= '';
     this.columnLength = 0;
     this.makeAddDisable=false;
     this.makeDisableVehicleGroup=false;
@@ -1008,6 +1010,7 @@ export class FuelBenchmarkingComponent implements OnInit {
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
+    
     // this.vehicleGroupListData = this.vehicleGroupListData;
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     // this.updateDataSource(this.tripData);
