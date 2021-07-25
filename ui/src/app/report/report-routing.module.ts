@@ -13,6 +13,7 @@ import { EcoScoreReportComponent } from './eco-score-report/eco-score-report.com
 import { FleetFuelReportVehicleComponent } from './fleet-fuel-report/fleet-fuel-report-vehicle/fleet-fuel-report-vehicle.component';
 import { FleetFuelReportDriverComponent } from './fleet-fuel-report/fleet-fuel-report-driver/fleet-fuel-report-driver.component';
 import { VehicletripComponent } from './vehicletrip/vehicletrip.component';
+import { FuelDeviationReportComponent } from './fuel-deviation-report/fuel-deviation-report.component';
 
 const routes: Routes = [
   {
