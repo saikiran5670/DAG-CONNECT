@@ -106,6 +106,6 @@ public class MessageProcessing<T> {
 				properties.getProperty(DAFCT2Constant.SINK_JSON_STRING_TOPIC_NAME),
 				new KafkaMessageSerializeSchema<String>(
 						properties.getProperty(DAFCT2Constant.SINK_JSON_STRING_TOPIC_NAME)),
-				properties, FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
+				properties, FlinkKafkaProducer.Semantic.AT_LEAST_ONCE));
 	}
 }
