@@ -21,13 +21,13 @@
                 <input [readonly]='!editFlag' matInput type="number"
                     placeholder="{{ translationData.lblHighFuelEfficency || 'High Fuel Efficency' }}"
                     (keypress)="keyPressNumbers($event)" formControlName="rp_fb_component_highfuelefficiency">
-                    <mat-error *ngIf="fuelBenchmarkForm.get('rp_fb_component_highfuelefficiency').hasError('min')">
+                    <mat-error style="margin-top: 10px;" *ngIf="fuelBenchmarkForm.get('rp_fb_component_highfuelefficiency').hasError('min')">
                        No negative values allowed
                       </mat-error>
-                      <mat-error *ngIf="fuelBenchmarkForm.get('rp_fb_component_highfuelefficiency').hasError('max')">
+                      <mat-error style="margin-top: 10px;" *ngIf="fuelBenchmarkForm.get('rp_fb_component_highfuelefficiency').hasError('max')">
                         Max value allowed: 100
                        </mat-error>
-                       <mat-error *ngIf="fuelBenchmarkForm.get('rp_fb_component_highfuelefficiency').hasError('pattern')">
+                       <mat-error style="margin-top: 10px;" *ngIf="fuelBenchmarkForm.get('rp_fb_component_highfuelefficiency').hasError('pattern')">
                         Value allowed upto 2 decimal places
                         </mat-error>
             </mat-form-field>
@@ -45,13 +45,13 @@
                 <input [readonly]='!editFlag' matInput type="number"
                     placeholder="{{ translationData.lblLowFuelEfficency || 'Low Fuel Efficency' }}"
                     (keypress)="keyPressNumbers($event)" formControlName="rp_fb_component_lowfuelefficiency">
-                    <mat-error *ngIf="fuelBenchmarkForm.get('rp_fb_component_lowfuelefficiency').hasError('min')">
+                    <mat-error style="margin-top: 10px;" *ngIf="fuelBenchmarkForm.get('rp_fb_component_lowfuelefficiency').hasError('min')">
                         No negative values allowed
                        </mat-error>
-                       <mat-error *ngIf="fuelBenchmarkForm.get('rp_fb_component_lowfuelefficiency').hasError('max')">
+                       <mat-error style="margin-top: 10px;" *ngIf="fuelBenchmarkForm.get('rp_fb_component_lowfuelefficiency').hasError('max')">
                          Max value allowed: 100
                         </mat-error>
-                        <mat-error *ngIf="fuelBenchmarkForm.get('rp_fb_component_lowfuelefficiency').hasError('pattern')">
+                        <mat-error style="margin-top: 10px;" *ngIf="fuelBenchmarkForm.get('rp_fb_component_lowfuelefficiency').hasError('pattern')">
                            Value allowed upto 2 decimal places
                            </mat-error>
                        
