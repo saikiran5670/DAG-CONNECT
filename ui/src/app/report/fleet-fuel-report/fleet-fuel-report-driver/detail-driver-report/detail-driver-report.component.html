@@ -589,20 +589,14 @@
                           </mat-cell>              
                         </ng-container>              
                         <ng-container matColumnDef="cO2Emission">              
-                          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCO2Emission || 'CO2 Emission' }}              
-                            <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ||             
-                        'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') :             
-                        (translationData.lblmile || 'mile') }})</span>             
+                          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCO2Emission || 'CO2 Emission(ton)' }}                          
                           </mat-header-cell>              
                           <mat-cell *matCellDef="let row">              
                             <span>{{row.cO2Emission}}</span>              
                           </mat-cell>
                         </ng-container>            
                         <ng-container matColumnDef="idleDuration">             
-                          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdleDuration || 'Idle Duration' }}
-              
-                          <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :              
-                        (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||  'pound') }})</span> -->              
+                          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdleDuration || 'Idle Duration(hh:mm)' }}              
                           </mat-header-cell>          
                           <mat-cell *matCellDef="let row">             
                            <span>{{row.convertedIdleDuration}}</span>              
@@ -657,14 +651,14 @@
                           </mat-cell>              
                         </ng-container>                        
                 <ng-container matColumnDef="averageGrossWeightComb">      
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageGrossWeightComb || 'Average Gross Weight Comb' }}      
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageGrossWeightComb || 'Average Gross Weight Comb(ton)' }}      
                   </mat-header-cell>     
                   <mat-cell *matCellDef="let row">      
                     <span>{{row.averageGrossWeightComb}}</span>      
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="averageTrafficClassification">      
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageTrafficClassification || 'Average Traffic Classification' }}     
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageTrafficClassification || 'Average Traffic Classification(Ton)' }}     
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">     
                     <span>{{row.averageTrafficClassification}}</span>     
@@ -685,7 +679,7 @@
                   </mat-cell>
                 </ng-container>      
                 <ng-container matColumnDef="idlingConsumption">      
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdlingConsumption || 'Idling Consumption' }}      
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdlingConsumption || 'Idling Consumption(hh:mm)' }}      
                   </mat-header-cell>      
                   <mat-cell *matCellDef="let row">      
                     <span>{{row.idlingConsumption}}</span>      

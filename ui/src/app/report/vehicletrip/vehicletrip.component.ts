@@ -235,8 +235,8 @@ public mapElement: ElementRef;
 tripTraceArray: any = [];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
-  @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
-  @ViewChildren(MatSort) sort = new QueryList<MatSort>();
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
@@ -1707,6 +1707,7 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
 
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
+    if(date) {
     if(this.prefTimeFormat == 12){
       if(_y.split(' ')[1] == 'AM' && _x == 12) {
         date.setHours(0);
@@ -1719,6 +1720,7 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
       date.setMinutes(_y);
     }
     date.setSeconds(type == 'start' ? '00' : '59');
+  }
     return date;
   }
 

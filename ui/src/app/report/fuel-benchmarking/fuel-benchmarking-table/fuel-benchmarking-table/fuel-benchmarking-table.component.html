@@ -30,14 +30,17 @@
                 </mat-icon>
               </mat-header-cell>
               <mat-cell style="margin-right: 10px; min-width: 300px;" *matCellDef="let row; let i=index">
-                <div *ngIf="(i !== 4 && i !== 5) || column == 'period'" >{{row[column]}}</div>
+                <div *ngIf="(i !== 4 && i !== 5) || column == 'period'" >{{i==1 && index !== 0? row[column]+" gal": i==2 && index !== 0? row[column]+" km" : i==3 && index !== 0? row[column]+" mpg" : row[column] }}</div>
 
                 <div *ngIf="index !== 0 && i == 4">
                   Consumption (Ltrs/100km)
                   <div style="margin-top: 10px;" *ngFor="let ranking of row[column]; let index=index">
-                    <span>{{index + 1}}. {{ranking.vehicleName==""?ranking.vin:ranking.vehicleName}} </span>
+                    <div>{{index + 1}}. {{ranking.vehicleName==""?ranking.vin:ranking.vehicleName}} 
+                    <span> <div>        
                     <mat-progress-bar class="example-margin" [color]="color" [mode]="mode" [bufferValue]="100 - ranking.ltrVal" [value]='ranking.ltrVal'>
-                    </mat-progress-bar>
+                    </mat-progress-bar> </div>  </span> </div>                
+                    <div style="position: absolute;
+                    margin-top: -22px; color:black;"> {{ranking.ltrVal}} </div>
                   </div>
                   
                 </div>
