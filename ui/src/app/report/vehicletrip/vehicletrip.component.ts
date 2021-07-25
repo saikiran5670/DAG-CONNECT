@@ -236,7 +236,7 @@ tripTraceArray: any = [];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChildren(MatSort) sort = new QueryList<MatSort>();
+  @ViewChild(MatSort) sort: MatSort;
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
@@ -1278,7 +1278,7 @@ createEndMarker(){
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort.toArray()[1];
+      this.dataSource.sort = this.sort;
     });
   }
 

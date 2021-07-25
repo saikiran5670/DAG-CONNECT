@@ -44,13 +44,13 @@ export class FleetFuelReportDriverComponent implements OnInit {
   'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
   'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
    detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
-   'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','heavyThrottleDuration',
+   'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
    'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
    'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChildren(MatSort) sort = new QueryList<MatSort>();
+  @ViewChild(MatSort) sort: MatSort;
   driverSelected : boolean =false;
   searchExpandPanel: boolean = true;
   initData: any = [];
@@ -551,7 +551,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort.toArray()[1];
+      this.dataSource.sort = this.sort;
     });
   }
 
