@@ -190,6 +190,20 @@ export class FleetFuelPreferencesComponent implements OnInit {
     }
   }
 
+  validateRequiredField(section) {
+    let lowerCaseSection = section.toLowerCase();
+    let lowerCaeTagName = this.tabName.toLowerCase();
+    let selectedElements = this["selectionFor"+section+"Columns"].selected;
+    if (selectedElements.length > 0) {
+      let _search =selectedElements.filter(i => (i.key == `rp_ff_report_${lowerCaeTagName}_${lowerCaseSection}_vehiclename` || i.key == `rp_ff_report_${lowerCaeTagName}_${lowerCaseSection}_vin` || i.key == `rp_ff_report_${lowerCaeTagName}_${lowerCaseSection}_vehicleregistrationno`));
+      if (_search.length == 0) {
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
+
   isAllSelected(section){
     const numSelected = this["selectionFor"+section+"Columns"].selected.length;
     let lowerCaseSection = section.charAt(0).toLowerCase() + section.substring(1);
