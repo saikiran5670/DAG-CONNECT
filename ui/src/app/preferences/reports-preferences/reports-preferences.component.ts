@@ -222,4 +222,18 @@ export class ReportsPreferencesComponent implements OnInit {
     // event.preventDefault();
   }
 
+  validateRequiredField() {
+    if(this.fleetFuelPerferencesVehicle) {
+      let VehicleDetailsV = this.fleetFuelPerferencesVehicle.validateRequiredField('VehicleDetails');
+      let SingleVehicleDetailsV = this.fleetFuelPerferencesVehicle.validateRequiredField('SingleVehicleDetails');
+      let VehicleDetailsD = this.fleetFuelPerferencesDriver.validateRequiredField('VehicleDetails');
+      let SingleVehicleDetailsD = this.fleetFuelPerferencesDriver.validateRequiredField('SingleVehicleDetails');
+      if(VehicleDetailsV || SingleVehicleDetailsV || VehicleDetailsD || SingleVehicleDetailsD) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+
 }

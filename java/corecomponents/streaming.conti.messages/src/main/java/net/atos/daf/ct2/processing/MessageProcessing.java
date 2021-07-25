@@ -1,9 +1,7 @@
 package net.atos.daf.ct2.processing;
 
-import java.util.Map;
 import java.util.Properties;
 
-import net.atos.daf.ct2.models.scheamas.VehicleStatusSchema;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.state.MapStateDescriptor;
@@ -13,18 +11,18 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.functions.co.BroadcastProcessFunction;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.util.Collector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.constant.DAFCT2Constant;
+import net.atos.daf.ct2.models.scheamas.VehicleStatusSchema;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.Message;
 import net.atos.daf.ct2.serde.KafkaMessageSerializeSchema;
 import net.atos.daf.ct2.utils.JsonMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MessageProcessing<U,R, T> {
 
@@ -41,7 +39,12 @@ public class MessageProcessing<U,R, T> {
     messageDataStream
         .filter(
             new FilterFunction<KafkaRecord<U>>() {
-              @Override
+              /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+			@Override
               public boolean filter(KafkaRecord<U> value) throws Exception {
                 String transId =
                     JsonMapper.configuring()
@@ -56,7 +59,12 @@ public class MessageProcessing<U,R, T> {
         .process(new BroadcastMessageProcessor<>(properties))
         .map(
             new MapFunction<KafkaRecord<U>, KafkaRecord<T>>() {
-              @Override
+              /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+			@Override
               public KafkaRecord<T> map(KafkaRecord<U> value) throws Exception {
                 logger.info("map after process record value.getValue() :: {}",value.getValue());
                 T record = JsonMapper.configuring().readValue((String) value.getValue(), tClass);
@@ -65,6 +73,7 @@ public class MessageProcessing<U,R, T> {
                 kafkaRecord.setKey(key);
                 kafkaRecord.setValue(record);
                logger.info("Final KafkaRecord to kafka topic: {} record : {}",sinkTopicName , kafkaRecord);
+              
                 return kafkaRecord;
               }
             })

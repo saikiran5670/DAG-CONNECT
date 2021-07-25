@@ -119,7 +119,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 								System.out.println("warning Message 4 Inserted");
 								warningDao.warningUpdateMessageFourCommonTrip(warningDetail);
 								System.out.println("warning updated for message 10 in another table");
-								
+
 							}
 
 						}
@@ -197,12 +197,11 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 			if (row.getDocument().getVWheelBasedSpeed() != null) {
 				if (row.getDocument().getVWheelBasedSpeed() > 0) {
 					warningDetail.setVehicleDrivingStatusType("D");
-				} /*
-					 * else if(row.getDocument().getVEngineSpeed()!=null &&
-					 * row.getDocument().getVWheelBasedSpeed() == 0 &&
-					 * row.getDocument().getVEngineSpeed() > 0) {
-					 * warningDetail.setVehicleDrivingStatusType("I"); }
-					 */
+				} else if (row.getDocument().getVEngineSpeed() != null && row.getDocument().getVWheelBasedSpeed() == 0
+						&& row.getDocument().getVEngineSpeed() > 0) {
+					warningDetail.setVehicleDrivingStatusType("I");
+				}
+
 				else if (row.getDocument().getVWheelBasedSpeed() == 0) {
 					warningDetail.setVehicleDrivingStatusType("S");
 				}
@@ -287,12 +286,11 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 			if (row.getDocument().getVWheelBasedSpeed() != null) {
 				if (row.getDocument().getVWheelBasedSpeed() > 0) {
 					warningDetail.setVehicleDrivingStatusType("D");
-				} /*
-					 * else if (row.getDocument().getVEngineSpeed()!=null &&
-					 * row.getDocument().getVWheelBasedSpeed() == 0 &&
-					 * row.getDocument().getVEngineSpeed() > 0) {
-					 * warningDetail.setVehicleDrivingStatusType("I"); }
-					 */
+				} else if (row.getDocument().getVEngineSpeed() != null && row.getDocument().getVWheelBasedSpeed() == 0
+						&& row.getDocument().getVEngineSpeed() > 0) {
+					warningDetail.setVehicleDrivingStatusType("I");
+				}
+
 				else if (row.getDocument().getVWheelBasedSpeed() == 0) {
 					warningDetail.setVehicleDrivingStatusType("S");
 				}
