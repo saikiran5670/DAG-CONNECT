@@ -241,9 +241,9 @@ export class FleetFuelPreferencesComponent implements OnInit {
   getUnits() {
     let unitObj = this.generalPreferences.unit.filter(item => item.id == this.unitId);
     if(unitObj[0].value == 'Imperial') {
-      return '(lts/100km)';
-    } else {
       return '(mpg(miles per gallon))';
+    } else {
+      return '(lts/100km)';
     }
   }
 
