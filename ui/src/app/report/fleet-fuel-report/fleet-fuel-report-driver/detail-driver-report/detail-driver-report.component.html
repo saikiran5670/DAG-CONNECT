@@ -521,17 +521,17 @@
                      </mat-cell>                   
                     </ng-container>
                     <ng-container matColumnDef="startDate">      
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblstartDate || 'start Date' }}         
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblstartDate || 'Start Date' }}         
                       </mat-header-cell>         
                       <mat-cell *matCellDef="let row">         
-                        <span>{{row.startDate}}</span>          
+                        <span>{{row.startDate | date:'dd/MM/yyyy hh:mm:ss'}}</span>          
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="endDate">
-                          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblendDate || ' end Date ' }}             
+                          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblendDate || ' End Date ' }}             
                           </mat-header-cell>              
                           <mat-cell *matCellDef="let row">              
-                            <span>{{row.endDate}}</span>              
+                            <span>{{row.endDate | date:'dd/MM/yyyy hh:mm:ss'}}</span>              
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="averageSpeed">     

@@ -499,379 +499,205 @@
                       </mat-checkbox>
                     </mat-cell>
                   </ng-container>
-                  <ng-container matColumnDef="startDate">
-      
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblstartDate || 'Start Date' }}
-        
-                    </mat-header-cell>
-        
-                    <mat-cell *matCellDef="let row">
-        
-                      <span>{{row.startDate}}</span>
-        
-                    </mat-cell>
-        
-                    <!-- <mat-cell *matCellDef="let row">{{ row.convertedIdleDuration != '' ? row.convertedIdleDuration : '-' }}</mat-cell> -->
-        
-                  </ng-container>
-                  <ng-container matColumnDef="endDate">
-
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblendDate || ' End Date ' }}
-            
-                        </mat-header-cell>
-            
-                        <mat-cell *matCellDef="let row">
-            
-                          <span>{{row.endDate}}</span>
-            
-                        </mat-cell>
-            
-                        <!-- <mat-cell *matCellDef="let row">{{ row.convertedIdleDuration != '' ? row.convertedIdleDuration : '-' }}</mat-cell> -->
-            
-                      </ng-container>
                   <ng-container matColumnDef="vehicleName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
                     </mat-header-cell>
-                  <!--  <mat-cell *matCellDef="let row">
-                      <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-'
-                        }}</span>
-                    </mat-cell>-->
-                    <mat-cell *matCellDef="let row" class="text-truncate">
-                      <span>{{row.vehicleName}}</span>
+                    <mat-cell *matCellDef="let row">
+                      <span>{{tableInfoObj.vehicleName}}</span>
                     </mat-cell>
                   </ng-container>
-      
                   <ng-container matColumnDef="vin">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row" class="text-truncate">
-                      <span>{{row.vin}}</span>
-                    </mat-cell>
-                    <!-- <mat-cell *matCellDef="let row">{{ row.vin != '' ? row.vin : '-' }}</mat-cell> -->
-                  </ng-container>
-      
-                  <ng-container matColumnDef="vehicleRegistrationNo" >
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPlateNo || 'Plate No' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row" class="text-truncate">
-                      <span>{{row.vehicleRegistrationNo}}</span>
-                    </mat-cell>
-                    <!-- <mat-cell *matCellDef="let row">{{ row.registrationNumber != '' ? row.registrationNumber : '-' }}</mat-cell> -->
-                  </ng-container>
-      
-                  <ng-container matColumnDef="distance">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }}
-                      <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ||
-                        'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') :
-                        (translationData.lblmile || 'mile') }})</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.convertedDistance}}</span>
-                    </mat-cell>
-                    <!-- <mat-cell *matCellDef="let row">{{ row.convertedDistance != '' ? row.convertedDistance : '-' }}</mat-cell> -->
-                  </ng-container>
-      
-                  <ng-container matColumnDef="averageDistancePerDay">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageDistancePerDay || 'Average
-                      Distance Per Day' }}
-                      <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh ||
-                        'km/h') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'mile/h') :
-                        (translationData.lblmileh || 'mile/h') }})</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.convertedAverageDistance}}</span>
-                    </mat-cell>
-                    <!-- <mat-cell *matCellDef="let row">{{ row.numberOfTrips != '' ? row.numberOfTrips : '-' }}</mat-cell> -->
-                  </ng-container>
-      
-                  <ng-container matColumnDef="averageSpeed">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed || 'Average Speed'
-                      }}
-                      <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh ||
-                        'km/h') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'mile/h') :
-                        (translationData.lblmileh || 'mile/h') }})</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.convertedAverageSpeed}}</span>
-                    </mat-cell>
-                    <!-- <mat-cell *matCellDef="let row">{{ row.convertedTripTime != '' ? row.convertedTripTime : '-' }}</mat-cell> -->
-                  </ng-container>
-      
-                  <ng-container matColumnDef="maxSpeed">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblMaxSpeed || 'Max Speed' }}
-                      <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh ||
-                        'km/h') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'mile/h') :
-                        (translationData.lblmileh || 'mile/h') }})</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.maxSpeed}}</span>
-                    </mat-cell>
-                    <!-- <mat-cell *matCellDef="let row">{{ row.convertedDrivingTime != '' ? row.convertedDrivingTime : '-' }}</mat-cell> -->
-                  </ng-container>
-      
-                  <ng-container matColumnDef="numberOfTrips">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblNoOfTrips || 'Number Of Trips' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.numberOfTrips}}</span>
-                    </mat-cell>
-                    <!-- <mat-cell *matCellDef="let row">{{ row.convertedIdleDuration != '' ? row.convertedIdleDuration : '-' }}</mat-cell> -->
-                  </ng-container>
-      
-                  <ng-container matColumnDef="averageGrossWeightComb">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageGrossWeightComb ||
-                      'Average
-                      Gross Weight Comb' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.averageGrossWeightComb}}</span>
-                    </mat-cell>
-                    <!-- <mat-cell *matCellDef="let row">{{ row.convertedStopTime != '' ? row.convertedStopTime : '-' }}</mat-cell> -->
-                  </ng-container>
-      
-                  <ng-container matColumnDef="fuelConsumed">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumed || 'Fuel Consumed'
-                      }}
-                      <!-- <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h')
-                : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh
-                || 'mile/h') }})</span> -->
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.fuelConsumed}}</span>
-                    </mat-cell>
-                    <!-- <mat-cell *matCellDef="let row">{{ row.convertedAverageSpeed != '' ? row.convertedAverageSpeed : '-' }}</mat-cell> -->
-                  </ng-container>
-      
-                  <ng-container matColumnDef="fuelConsumption">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumption || ' Fuel
-                      Consumption' }}
-                      <!-- <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg ||
-                'kg') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') :
-                (translationData.lblpound || 'pound') }})</span> -->
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.fuelConsumption}}</span>
-                    </mat-cell>
-                    <!-- <mat-cell *matCellDef="let row">{{ row.convertedAverageWeight != '' ? row.convertedAverageWeight : '-' }}</mat-cell> -->
-                  </ng-container>
-      
-                  <ng-container matColumnDef="cO2Emission">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCO2Emission || 'CO2 Emission' }}
-                      <!-- <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ||
-                'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') :
-                (translationData.lblmile || 'mile') }})</span> -->
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.cO2Emission}}</span>
-                    </mat-cell>
-                    <!-- <mat-cell *matCellDef="let row">{{ row.convertedAverageDistance != '' ? row.convertedAverageDistance : '-' }}</mat-cell> -->
-                  </ng-container>
-      
-                  <ng-container matColumnDef="idleDuration">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdleDuration || 'Idle Duration'
-                      }}
-                      <!-- <span
-                style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
-                (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||
-                'pound') }})</span> -->
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.convertedIdleDuration}}</span>
-                    </mat-cell>
-                    <!-- <mat-cell *matCellDef="let row">{{ row.odometer != '' ? row.odometer : '-' }}</mat-cell> -->
-      
-                  </ng-container>
-      
-                  <ng-container matColumnDef="ptoDuration">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPTODuration || 'PTO Duration' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.ptoDuration}}</span>
+                    </mat-header-cell>          
+                    <mat-cell *matCellDef="let row">         
+                      <span>{{tableInfoObj.vin}}</span>
                     </mat-cell>
                   </ng-container>
-      
-                  <ng-container matColumnDef="harshBrakeDuration">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblHarshBrakeDuration || 'Harsh
-                      Brake
-                      Duration' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.harshBrakeDuration}}</span>
+                  <ng-container matColumnDef="vehicleRegistrationNo">      
+                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPlateNo || 'Plate No' }}          
+                    </mat-header-cell>          
+                    <mat-cell *matCellDef="let row">          
+                      <span>{{tableInfoObj.vehicleRegistrationNo}}</span>          
+                   </mat-cell>                   
+                  </ng-container>
+                  <ng-container matColumnDef="startDate">      
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblstartDate || 'Start Date' }}         
+                    </mat-header-cell>         
+                    <mat-cell *matCellDef="let row">         
+                      <span>{{row.startDate | date:'dd/MM/yyyy hh:mm:ss'}}</span>          
                     </mat-cell>
                   </ng-container>
-      
-                  <ng-container matColumnDef="heavyThrottleDuration">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblHeavyThrottleDuration || 'Heavy
-                      Throttle Duration' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.heavyThrottleDuration}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="cruiseControlDistance3050">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCruiseControlDistance30-50 ||
-                      'Cruise Control Distance 30-50' }}
-                      <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh ||
-                        'km/h') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'mile/h') :
-                        (translationData.lblmileh || 'mile/h') }})</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.cruiseControlDistance3050}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="cruiseControlDistance5075">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCruiseControlDistance50-75 ||
-                      'Cruise Control Distance 50-75' }}
-                      <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh ||
-                        'km/h') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'mile/h') :
-                        (translationData.lblmileh || 'mile/h') }})</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.cruiseControlDistance5075}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="cruiseControlDistance75">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCruiseControlDistance>75 ||
-                      'Cruise
-                      Control Distance >75' }}
-                      <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh ||
-                        'km/h') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'mile/h') :
-                        (translationData.lblmileh || 'mile/h') }})</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.cruiseControlDistance75}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="averageTrafficClassification">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageTrafficClassification ||
-                      'Average Traffic Classification' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.averageTrafficClassification}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="ccFuelConsumption">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCCFuelConsumption || 'CC Fuel
-                      Consumption' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.ccFuelConsumption}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="fuelconsumptionCCnonactive">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelconsumptionCCnonactive ||
-                      'Fuel
-                      consumption CC non active' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.fuelconsumptionCCnonactive}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="idlingConsumption">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdlingConsumption || 'Idling
-                      Consumption' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.idlingConsumption}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="dpaScore">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDPAScore || 'DPA Score' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.dpaScore}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="dpaAnticipationScore">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDPAAnticipationscore || 'DPA
-                      Anticipation score' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.dpaAnticipationScore}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="dpaBrakingScore">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDPABrakingscore || 'DPA Braking
-                      score' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.dpaBrakingScore}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="idlingPTOScore">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdlingwithPTOscore || 'Idling
-                      with
-                      PTO(hh:mm:ss) score' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.idlingPTOScore}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="idlingPTO">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdlingwithoutPTO || 'Idling
-                      without
-                      PTO (hh:mm:ss)' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.idlingPTO}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="idlingWithoutPTOpercent">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdlingWithoutPTO || 'Idling
-                      without
-                      PTO' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.idlingWithoutPTOpercent}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="footBrake">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFootBrake || 'Foot Brake' }}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.footBrake}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="cO2Emmision">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCO2emmisiongrkm || 'CO2 emmision
-                      gr/km' }}
-                      <!-- <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
-                (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||
-                'pound') }})</span> -->
-                    </mat-header-cell>
-      
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.cO2Emmision}}</span>
-                    </mat-cell>
-                  </ng-container>
-      
-                  <ng-container matColumnDef="averageTrafficClassificationValue">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblaverageTrafficClassificationValue
-                      || 'average TrafficClassification Value' }}
-                      <!-- <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
-                (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||
-                'pound') }})</span> -->
-                    </mat-header-cell>
-      
-                    <mat-cell *matCellDef="let row">
-                      <span>{{row.averageTrafficClassificationValue}}</span>
-                    </mat-cell>
-                  </ng-container>
+                  <ng-container matColumnDef="endDate">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblendDate || ' End Date ' }}             
+                        </mat-header-cell>              
+                        <mat-cell *matCellDef="let row">              
+                          <span>{{row.endDate | date:'dd/MM/yyyy hh:mm:ss'}}</span>              
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="averageSpeed">     
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed || 'Average Speed' }}             
+                          <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
+                            ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})</span>
+                        </mat-header-cell>             
+                        <mat-cell *matCellDef="let row">             
+                          <span>{{row.convertedAverageSpeed}}</span>             
+                        </mat-cell>             
+                      </ng-container>             
+                      <ng-container matColumnDef="maxSpeed">              
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblMaxSpeed || 'Max Speed' }}              
+                          <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
+                            ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})</span>
+                        </mat-header-cell>              
+                        <mat-cell *matCellDef="let row">              
+                          <span>{{row.maxSpeed}}</span>             
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="distance">     
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }}             
+                          <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial')
+                            ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile') }})</span>
+                        </mat-header-cell>             
+                        <mat-cell *matCellDef="let row">             
+                          <span>{{row.convertedDistance}}</span>              
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="startPosition">      
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblstartDate || 'Start Position' }}         
+                        </mat-header-cell>         
+                        <mat-cell *matCellDef="let row">         
+                          <span>{{row.startPosition}}</span>          
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="endPosition">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblendDate || ' End Position ' }}             
+                            </mat-header-cell>              
+                            <mat-cell *matCellDef="let row">              
+                              <span>{{row.endPosition}}</span>              
+                            </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="fuelConsumed">      
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}              
+                          <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h')              
+                      : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})</span>              
+                        </mat-header-cell>          
+                        <mat-cell *matCellDef="let row">              
+                          <span>{{row.fuelConsumed}}</span>              
+                        </mat-cell>
+                      </ng-container>              
+                      <ng-container matColumnDef="fuelConsumption">              
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumption || ' Fuel Consumption' }}             
+                          <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg ||              
+                      'kg') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') :              
+                      (translationData.lblpound || 'pound') }})</span>              
+                        </mat-header-cell>              
+                        <mat-cell *matCellDef="let row">              
+                          <span>{{row.fuelConsumption}}</span>              
+                        </mat-cell>              
+                      </ng-container>              
+                      <ng-container matColumnDef="cO2Emission">              
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCO2Emission || 'CO2 Emission(ton)' }}                          
+                        </mat-header-cell>              
+                        <mat-cell *matCellDef="let row">              
+                          <span>{{row.cO2Emission}}</span>              
+                        </mat-cell>
+                      </ng-container>            
+                      <ng-container matColumnDef="idleDuration">             
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdleDuration || 'Idle Duration(hh:mm)' }}              
+                        </mat-header-cell>          
+                        <mat-cell *matCellDef="let row">             
+                         <span>{{row.convertedIdleDuration}}</span>              
+                        </mat-cell>
+                      </ng-container>              
+                      <ng-container matColumnDef="ptoDuration">              
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPTODuration || 'PTO Duration' }}             
+                        </mat-header-cell>              
+                        <mat-cell *matCellDef="let row">              
+                          <span>{{row.ptoDuration}}</span>              
+                        </mat-cell>              
+                      </ng-container>
+                      <ng-container matColumnDef="cruiseControlDistance3050">      
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCruiseControlDistance30-50 || 'Cruise Control Distance 30-50' }}              
+                          <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
+                            ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})</span>             
+                        </mat-header-cell>             
+                        <mat-cell *matCellDef="let row">              
+                          <span>{{row.cruiseControlDistance3050}}</span>              
+                        </mat-cell>              
+                      </ng-container>              
+                      <ng-container matColumnDef="cruiseControlDistance5075">              
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCruiseControlDistance50-75 || 'Cruise Control Distance 50-75' }}             
+                          <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
+                            ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})</span>  
+                        </mat-header-cell>             
+                        <mat-cell *matCellDef="let row">             
+                          <span>{{row.cruiseControlDistance5075}}</span>             
+                        </mat-cell>             
+                      </ng-container>             
+                      <ng-container matColumnDef="cruiseControlDistance75">              
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCruiseControlDistance>75 || 'Cruise Control Distance >75' }}              
+                          <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
+                            ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})</span>      
+                        </mat-header-cell>              
+                        <mat-cell *matCellDef="let row">              
+                          <span>{{row.cruiseControlDistance75}}</span>              
+                        </mat-cell>              
+                      </ng-container>
+                      <ng-container matColumnDef="heavyThrottleDuration">      
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblHeavyThrottleDuration || 'Heavy Throttle Duration' }}              
+                        </mat-header-cell>              
+                        <mat-cell *matCellDef="let row">              
+                          <span>{{row.heavyThrottleDuration}}</span>             
+                        </mat-cell>              
+                      </ng-container>
+                      <ng-container matColumnDef="harshBrakeDuration">      
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblHarshBrakeDuration || 'Harsh Brake Duration' }}              
+                        </mat-header-cell>             
+                        <mat-cell *matCellDef="let row">              
+                          <span>{{row.harshBrakeDuration}}</span>             
+                        </mat-cell>              
+                      </ng-container>                        
+              <ng-container matColumnDef="averageGrossWeightComb">      
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageGrossWeightComb || 'Average Gross Weight Comb(ton)' }}      
+                </mat-header-cell>     
+                <mat-cell *matCellDef="let row">      
+                  <span>{{row.averageGrossWeightComb}}</span>      
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="averageTrafficClassification">      
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageTrafficClassification || 'Average Traffic Classification(Ton)' }}     
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">     
+                  <span>{{row.averageTrafficClassification}}</span>     
+                </mat-cell>      
+              </ng-container>
+              <ng-container matColumnDef="ccFuelConsumption">      
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCCFuelConsumption || 'CC Fuel Consumption' }}      
+                </mat-header-cell>      
+                <mat-cell *matCellDef="let row">      
+                  <span>{{row.ccFuelConsumption}}</span>     
+                </mat-cell>     
+              </ng-container>     
+              <ng-container matColumnDef="fuelconsumptionCCnonactive">  
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelconsumptionCCnonactive || 'Fuel consumption CC non active' }}     
+                </mat-header-cell>     
+                <mat-cell *matCellDef="let row">     
+                  <span>{{row.fuelconsumptionCCnonactive}}</span>     
+                </mat-cell>
+              </ng-container>      
+              <ng-container matColumnDef="idlingConsumption">      
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdlingConsumption || 'Idling Consumption(hh:mm)' }}      
+                </mat-header-cell>      
+                <mat-cell *matCellDef="let row">      
+                  <span>{{row.idlingConsumption}}</span>      
+                </mat-cell>     
+              </ng-container>      
+              <ng-container matColumnDef="dpaScore">     
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDPAScore || 'DPA Score' }}     
+                </mat-header-cell>      
+                <mat-cell *matCellDef="let row">      
+                  <span>{{row.dpaScore}}</span>     
+                </mat-cell>      
+              </ng-container>
       
                   <ng-container matColumnDef="idlingConsumptionValue">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblidlingConsumptionValue ||
