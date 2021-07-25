@@ -332,7 +332,58 @@ export class FuelDeviationReportComponent implements OnInit {
   }
 
   filterDateData(){
+    let distinctVIN: any = [];
+    let finalVINDataList: any = [];
+    this.vehicleListData = [];
+    this.vehicleGrpDD = [];
+    let currentStartTime = Util.convertDateToUtc(this.startDateValue);
+    let currentEndTime = Util.convertDateToUtc(this.endDateValue); 
+    if(this.wholeFuelDeviationData.vinTripList.length > 0){
+      let filterVIN: any = this.wholeFuelDeviationData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
+      if(filterVIN.length > 0){
+        distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
+        ////console.log("distinctVIN:: ", distinctVIN);
+        if(distinctVIN.length > 0){
+          distinctVIN.forEach(element => {
+            let _item = this.wholeFuelDeviationData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
+            if(_item.length > 0){
+              this.vehicleListData.push(_item[0]); //-- unique VIN data added 
+              _item.forEach(element => {
+                finalVINDataList.push(element)
+              });
+            }
+          });
+        }
+      }else{
+        this.fuelDeviationForm.get('vehicle').setValue('');
+        this.fuelDeviationForm.get('vehicleGroup').setValue('');
+      }
+    }
+    this.vehicleGroupListData = finalVINDataList;
+    if(this.vehicleGroupListData.length > 0){
+      let _s = this.vehicleGroupListData.map(item => item.vehicleGroupId).filter((value, index, self) => self.indexOf(value) === index);
+      if(_s.length > 0){
+        _s.forEach(element => {
+          let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
+          if(count.length > 0){
+            this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
+          }
+        });
+      }
+      this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+    }
+    this.vehicleDD = this.vehicleListData.slice();
+    if(this.vehicleDD.length > 0){
+      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+      this.resetFuelDeviationFormControlValue();
+    }
+    this.setVehicleGroupAndVehiclePreSelection();
+  }
 
+  setVehicleGroupAndVehiclePreSelection() {
+    if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
+      this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue)
+    }
   }
 
   setDisplayColumnBaseOnPref(){
@@ -586,7 +637,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       this.fuelDeviationForm.get('vehicle').setValue(this.globalSearchFilterData.vehicleDropDownValue);
       this.fuelDeviationForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
     }else{
-      this.fuelDeviationForm.get('vehicle').setValue('');
+      this.fuelDeviationForm.get('vehicle').setValue(0);
       this.fuelDeviationForm.get('vehicleGroup').setValue(0);
     }
   }
@@ -611,21 +662,26 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
 
   onVehicleGroupChange(event: any){
     if(event.value || event.value == 0){
-    this.internalSelection = true; 
-    if(parseInt(event.value) == 0){ //-- all group
-      this.vehicleDD = this.vehicleListData;
-    }else{
-      let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
-      if(search.length > 0){
+      this.internalSelection = true; 
+      let _val: any = parseInt(event.value); 
+      if(_val == 0){ //-- all group
         this.vehicleDD = [];
-        search.forEach(element => {
-          this.vehicleDD.push(element);  
-        });
+        this.vehicleDD = this.vehicleListData.slice();
+        this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+      }else{
+        let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == _val);
+        if(search.length > 0){
+          this.vehicleDD = [];
+          search.forEach(element => {
+            this.vehicleDD.push(element);  
+          });
+        }
       }
+      this.fuelDeviationForm.get('vehicle').setValue(_val == 0 ? 0 : '');
     }
-  }
     else {
       this.fuelDeviationForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
+      this.fuelDeviationForm.get('vehicle').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue) == 0 ? 0 : '');
     }
   }
 
@@ -649,15 +705,24 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     //this.internalSelection = true;
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
-    //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    let _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.fuelDeviationForm.controls.vehicle.value));
+    let _vinData: any = [];
+    if(parseInt(this.fuelDeviationForm.controls.vehicle.value) == 0){ // all vin data
+      _vinData = this.vehicleDD.filter(item => item.vehicleId != 0).map(i => i.vin);
+    }else{ // single vin data
+      _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.fuelDeviationForm.controls.vehicle.value)).map(i => i.vin);
+    }
     if(_vinData.length > 0){
       this.showLoadingIndicator = true;
-      this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
-        //console.log(_tripData);
+      let reportDataObj = {
+        startDateTime: _startTime,
+        endDateTime: _endTime,
+        viNs: _vinData
+      }
+      this.reportService.getFuelDeviationReportDetails(reportDataObj).subscribe((_fuelDeviationData: any) => {
+        //console.log(_fuelDeviationData);
         this.hideloader();
-        this.fuelDeviationData = this.reportMapService.getConvertedDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-        this.setTableInfo();
+        //this.fuelDeviationData = this.reportMapService.getConvertedDataBasedOnPref(_fuelDeviationData.data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+        //this.setTableInfo();
         this.updateDataSource(this.fuelDeviationData);
       }, (error)=>{
         //console.log(error);

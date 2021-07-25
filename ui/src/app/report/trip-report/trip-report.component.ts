@@ -705,7 +705,7 @@ ngOnDestroy(){
     if(event.value || event.value == 0){
     this.internalSelection = true; 
     if(parseInt(event.value) == 0){ //-- all group
-      this.vehicleDD = this.vehicleListData;
+      this.vehicleDD = this.vehicleListData.slice();
     }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       if(search.length > 0){
@@ -1144,7 +1144,7 @@ ngOnDestroy(){
       // this.resetTripFormControlValue();
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    this.vehicleDD = this.vehicleListData;
+    this.vehicleDD = this.vehicleListData.slice();
     if(this.vehicleDD.length > 0){
      this.resetTripFormControlValue();
     }
