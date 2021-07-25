@@ -181,6 +181,31 @@ export class FuelDeviationReportComponent implements OnInit {
     }    
   }
 
+  ngOnDestroy() {
+    this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.fuelDeviationForm.controls.vehicleGroup.value;
+    this.globalSearchFilterData["vehicleDropDownValue"] = this.fuelDeviationForm.controls.vehicle.value;
+    this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
+    this.globalSearchFilterData["startDateStamp"] = this.startDateValue;
+    this.globalSearchFilterData["endDateStamp"] = this.endDateValue;
+    this.globalSearchFilterData.testDate = this.startDateValue;
+    this.globalSearchFilterData.filterPrefTimeFormat = this.prefTimeFormat;
+    if (this.prefTimeFormat == 24) {
+      let _splitStartTime = this.startTimeDisplay.split(':');
+      let _splitEndTime = this.endTimeDisplay.split(':');
+      this.globalSearchFilterData["startTimeStamp"] = `${_splitStartTime[0]}:${_splitStartTime[1]}`;
+      this.globalSearchFilterData["endTimeStamp"] = `${_splitEndTime[0]}:${_splitEndTime[1]}`;
+    } else {
+      this.globalSearchFilterData["startTimeStamp"] = this.startTimeDisplay;
+      this.globalSearchFilterData["endTimeStamp"] = this.endTimeDisplay;
+    }
+    this.setGlobalSearchData(this.globalSearchFilterData);
+  }
+
+  setGlobalSearchData(globalSearchFilterData: any) {
+    this.globalSearchFilterData["modifiedFrom"] = "TripReport";
+    localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
+  }
+
   ngOnInit() {
     this.globalSearchFilterData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -661,27 +686,29 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
   }
 
   onVehicleGroupChange(event: any){
-    if(event.value || event.value == 0){
+    let _val: any;
+    if(event.value || event.value == 0){ // from internal veh-grp DD event
       this.internalSelection = true; 
-      let _val: any = parseInt(event.value); 
-      if(_val == 0){ //-- all group
-        this.vehicleDD = [];
-        this.vehicleDD = this.vehicleListData.slice();
-        this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
-      }else{
-        let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == _val);
-        if(search.length > 0){
-          this.vehicleDD = [];
-          search.forEach(element => {
-            this.vehicleDD.push(element);  
-          });
-        }
-      }
+      _val = parseInt(event.value); 
       this.fuelDeviationForm.get('vehicle').setValue(_val == 0 ? 0 : '');
     }
-    else {
-      this.fuelDeviationForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
-      this.fuelDeviationForm.get('vehicle').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue) == 0 ? 0 : '');
+    else { // from local-storage
+      _val = parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue);
+      this.fuelDeviationForm.get('vehicleGroup').setValue(_val);
+    }
+
+    if(_val == 0){ //-- all group
+      this.vehicleDD = [];
+      this.vehicleDD = this.vehicleListData.slice();
+      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+    }else{
+      let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == _val);
+      if(search.length > 0){
+        this.vehicleDD = [];
+        search.forEach(element => {
+          this.vehicleDD.push(element);  
+        });
+      }
     }
   }
 
