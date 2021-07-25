@@ -57,6 +57,7 @@ public class IndexDataProcess {
 			DataStream<KafkaRecord<Index>> consumerStream = flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
 			consumerStream.print();
 
+			//consumerStream.map(rec -> {System.out.println("Received Index data ::"+rec ); return rec;});
 			/*
 			 * BucketingSink<KafkaRecord<Index>> hdfsSink = new
 			 * BucketingSink<>("file:///home/flink-vm0-user1/checkpoint");
@@ -74,7 +75,7 @@ public class IndexDataProcess {
 			// consumerStream.addSink(new LiveFleetDriverActivityPostgreSink());
 			// // Writing into Driver Activity PostgreSQL Table
 
-			//consumerStream.addSink(new LiveFleetCurrentTripPostgreSink()); // Writing
+			consumerStream.addSink(new LiveFleetCurrentTripPostgreSink()); // Writing
 																			// into
 																			// Current
 																			// Trip
