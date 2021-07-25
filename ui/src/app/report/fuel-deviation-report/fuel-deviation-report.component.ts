@@ -71,11 +71,6 @@ export class FuelDeviationReportComponent implements OnInit {
   fuelDeviationReportId: any = 7; // hard coded for fuel deviation report pref.
   displayedColumns = ['All', 'vin', 'odometer', 'vehicleName', 'registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
   startDateValue: any;
-  showField: any = {
-    vehicleName: true,
-    vin: true,
-    regNo: true
-  };
   tableExpandPanel: boolean = true;
   last3MonthDate: any;
   todayDate: any;
@@ -98,8 +93,76 @@ export class FuelDeviationReportComponent implements OnInit {
   internalSelection: boolean = false;
   prefMapData: any = [
     {
-      key: 'rp_tr_report_tripreportdetails_averagespeed',
-      value: 'averageSpeed'
+      key: 'rp_fd_details_averageweight',
+      value: 'averageweight'
+    },
+    {
+      key: 'rp_fd_details_enddate',
+      value: 'enddate'
+    },
+    {
+      key: 'rp_fd_details_fuelconsumed',
+      value: 'fuelconsumed'
+    },
+    {
+      key: 'rp_fd_details_startdate',
+      value: 'startdate'
+    },
+    {
+      key: 'rp_fd_details_drivingtime',
+      value: 'drivingtime'
+    },
+    {
+      key: 'rp_fd_details_startposition',
+      value: 'startposition'
+    },
+    {
+      key: 'rp_fd_details_difference',
+      value: 'difference'
+    },
+    {
+      key: 'rp_fd_details_alerts',
+      value: 'alerts'
+    },
+    {
+      key: 'rp_fd_details_idleduration',
+      value: 'idleduration'
+    },
+    {
+      key: 'rp_fd_details_endposition',
+      value: 'endposition'
+    },
+    {
+      key: 'rp_fd_details_regplatenumber',
+      value: 'regplatenumber'
+    },
+    {
+      key: 'rp_fd_details_odometer',
+      value: 'odometer'
+    },
+    {
+      key: 'rp_fd_details_averagespeed',
+      value: 'averagespeed'
+    },
+    {
+      key: 'rp_fd_details_distance',
+      value: 'distance'
+    },
+    {
+      key: 'rp_fd_details_date',
+      value: 'date'
+    },
+    {
+      key: 'rp_fd_details_type',
+      value: 'type'
+    },
+    {
+      key: 'rp_fd_details_vin',
+      value: 'vin'
+    },
+    {
+      key: 'rp_fd_details_vehiclename',
+      value: 'vehiclename'
     }
   ];
 
@@ -282,13 +345,6 @@ export class FuelDeviationReportComponent implements OnInit {
           if (index > -1) {
             this.displayedColumns.splice(index, 1); // removed
           }
-        }
-        if(element.key == 'rp_tr_report_tripreportdetails_vehiclename'){
-          this.showField.vehicleName = false;
-        }else if(element.key == 'rp_tr_report_tripreportdetails_vin'){
-          this.showField.vin = false;
-        }else if(element.key == 'rp_tr_report_tripreportdetails_platenumber'){
-          this.showField.regNo = false;
         }
       });
     }
