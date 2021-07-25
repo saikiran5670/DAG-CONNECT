@@ -49,7 +49,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
    'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
-  @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   driverSelected : boolean =false;
   searchExpandPanel: boolean = true;
@@ -550,7 +550,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
     this.selectedTrip.clear();
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
-      this.dataSource.paginator = this.paginator.toArray()[1];
+      this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort.toArray()[1];
     });
   }
