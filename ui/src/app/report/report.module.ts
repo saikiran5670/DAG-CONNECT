@@ -26,7 +26,7 @@ import { AngularSlickgridModule } from 'angular-slickgrid';
 //import { FleetfueldetailsComponent } from './fleet-fuel-report/fleetfueldetails/fleetfueldetails.component';
 import { EcoScoreReportDriverComponent } from './eco-score-report/eco-score-report-driver/eco-score-report-driver.component';
 import { FuelBenchmarkingComponent } from './fuel-benchmarking/fuel-benchmarking.component';
-import { DetailVehicleReportComponent } from './fleet-fuel-report/detail-vehicle-report/detail-vehicle-report.component';
+//import { DetailVehicleReportComponent } from './fleet-fuel-report/detail-vehicle-report/detail-vehicle-report.component';
 import { DetailDriverReportComponent } from './fleet-fuel-report/fleet-fuel-report-driver/detail-driver-report/detail-driver-report.component';
 import { FuelBenchmarkingTableComponent } from './fuel-benchmarking/fuel-benchmarking-table/fuel-benchmarking-table/fuel-benchmarking-table.component';
 import { VehicletripComponent } from './vehicletrip/vehicletrip.component';
@@ -48,7 +48,7 @@ export const MY_DATE_FORMAT = {
 }
 
 @NgModule({
-  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent, EcoScoreReportComponent, EcoScoreDriverCompareComponent, EcoScoreReportDriverComponent, FuelBenchmarkingComponent, DetailVehicleReportComponent, DetailDriverReportComponent, FuelBenchmarkingTableComponent, VehicletripComponent],
+  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent, EcoScoreReportComponent, EcoScoreDriverCompareComponent, EcoScoreReportDriverComponent, FuelBenchmarkingComponent, DetailDriverReportComponent, FuelBenchmarkingTableComponent, VehicletripComponent],
   imports: [
     CommonModule,
     ReportRoutingModule,

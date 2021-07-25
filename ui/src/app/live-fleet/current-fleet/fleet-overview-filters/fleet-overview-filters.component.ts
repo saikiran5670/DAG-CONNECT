@@ -31,12 +31,15 @@ selection2: any;
 selection3: any;
 filterVehicleForm:FormGroup;
 todayFlagClicked: boolean = true;
+driverFlagClicked: boolean = true;
 isVehicleDetails: boolean = false;
 isVehicleListOpen: boolean = true;
 noRecordFlag: boolean = false;
 groupList : any= [];
+driverList: any = [];
 categoryList : any= [];
 vehicleListData: any = [];
+driverListData: any = [];
 levelList : any= [];
 healthList : any= [];
 otherList : any= [];
@@ -91,9 +94,14 @@ subscription: Subscription;
       otherFilter: ['all']
     })
     this.driverVehicleForm = this._formBuilder.group({
-      group: ['all'],
+      driver: ['all'],
     })   
+    if(this.selectedIndex == 0){
     this.getFilterData();
+    }
+    if(this.selectedIndex == 1){
+    this.getDriverData();
+    }
     this.drawIcons(this.detailsData);
   }
 
@@ -109,6 +117,116 @@ subscription: Subscription;
     this.translationAlertData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
 
+
+  getDriverData(){
+    this.reportService.getFilterDetails().subscribe((data: any) => {
+      this.filterData = data;
+      this.driverList = [];
+      if(!this.driverFlagClicked  && this.selectedIndex == 1){
+        this.filterData["driverList"].forEach(item=>{
+          this.driverList.push(item) });
+          // this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupName");
+          this.loadDriverData();
+      }   
+      else{
+        this.loadDriverData(); 
+        this.detailsData.forEach(element => {
+  
+          let currentDate = new Date().getTime();
+            let createdDate = parseInt(element.latestProcessedMessageTimeStamp); 
+            let nextDate = createdDate + 86400000;
+            if(currentDate > createdDate && currentDate < nextDate){
+            let driverData =this.filterData["driverList"].filter(item => item.driverId == element.driver1Id);
+            driverData.forEach(item=>
+              this.driverList.push(item));
+            }
+          })
+          this.loadDriverData();
+      }
+
+    })
+  }
+
+  loadDriverData(){  
+    let newAlertCat=[];
+    if(!this.driverFlagClicked && this.selectedIndex == 1)
+    {
+      this.objData = {
+        "groupId": ['all'],
+        "alertLevel": ['all'],
+        "alertCategory": ['all'],
+        "healthStatus": ['all'],
+        "otherFilter": ['all'],
+        "driverId": ['all'],
+        "days": 90,
+        "languagecode":"cs-CZ"
+    }}
+    if(this.driverFlagClicked && this.selectedIndex == 1)
+    {
+      this.objData = {
+        "groupId": ['all'],
+        "alertLevel": ['all'],
+        "alertCategory": ['all'],
+        "healthStatus": ['all'],
+        "otherFilter": ['all'],
+        "driverId": [this.driverVehicleForm.controls.driver.value.toString()],
+        "days": 0,
+        "languagecode":"cs-CZ"
+      }
+    }
+    let driverSelected = this.driverList.filter((elem)=> elem.driver1Id === this.driverVehicleForm.get("driver").value);
+    this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
+      let val = [{driver : driverSelected.vehicleGroupName, data : data}];
+      this.messageService.sendMessage(val);
+      this.messageService.sendMessage("refreshTimer");
+      this.drawIcons(data);
+      data.forEach(item => {
+        this.filterData["healthStatus"].forEach(e => {
+         if(item.vehicleHealthStatusType==e.value)
+         {         
+          item.vehicleHealthStatusType = this.translationData[e.name];
+         }
+        });
+        this.filterData["otherFilter"].forEach(element => {
+          if(item.vehicleDrivingStatusType==element.value)
+          {         
+           item.vehicleDrivingStatusType = this.translationData[element.name];
+          }
+         });         
+      //    if(this.categoryList.length>0){
+      //    item.fleetOverviewAlert.forEach(e => {
+      //    let alertCategory = this.categoryList.filter((ele)=> ele.value == e.categoryType);
+      //    if(alertCategory.length>0){
+      //    newAlertCat.push(alertCategory[0]);
+      //    }          
+      //   });  
+      //  }
+      });    
+    //  this.categoryList = this.removeDuplicates(newAlertCat, "value");
+    //  console.log(newAlertCat);    
+      this.driverListData = data;     
+      let _dataObj ={
+        vehicleDetailsFlag : this.isVehicleDetails,
+        data:data
+      }
+      this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
+          
+    }, (error) => {
+      let val = [{vehicleGroup : driverSelected.driver, data : error}];
+      this.messageService.sendMessage(val);
+      this.messageService.sendMessage("refreshTimer");
+      if (error.status == 404) {
+        this.noRecordFlag = true;
+        let _dataObj ={
+          vehicleDetailsFlag : this.isVehicleDetails,
+          data:null
+        }
+        this.dataInterchangeService.getVehicleData(_dataObj);
+      }
+    });
+    this.noRecordFlag = false;
+ } 
+
 getFilterData(){
   this.reportService.getFilterDetails().subscribe((data: any) => {
     this.filterData = data;
@@ -117,7 +235,7 @@ getFilterData(){
     this.levelList = [];
     this.healthList = [];
     this.otherList = [];
-    if(!this.todayFlagClicked){
+    if(!this.todayFlagClicked && this.selectedIndex == 0){
         this.filterData["vehicleGroups"].forEach(item=>{
         this.groupList.push(item) });
         this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupName");
@@ -157,7 +275,7 @@ getFilterData(){
       this.vehicleListData = this.detailsData; 
       this.loadVehicleData();
     }
-    if(this.todayFlagClicked){
+    if(this.todayFlagClicked  && this.selectedIndex == 0){
       this.loadVehicleData(); 
       this.detailsData.forEach(element => {
 
@@ -227,6 +345,23 @@ removeDuplicates(originalArray, prop) {
     
   }
 
+  applyFilterDriver(filterValue: string) {
+    this.driverListData = this.detailsData;
+    filterValue = filterValue.trim();
+    filterValue = filterValue.toLowerCase();
+
+    const filteredData = this.detailsData.filter(value => {​​​​​​​​
+      const searchStr = filterValue.toLowerCase();
+      const vin = value.vin.toLowerCase().toString().includes(searchStr);
+      const driver = value.driverName.toLowerCase().toString().includes(searchStr);
+      const drivingStatus = value.vehicleDrivingStatusType.toLowerCase().toString().includes(searchStr);
+      const healthStatus = value.vehicleHealthStatusType.toLowerCase().toString().includes(searchStr);
+      return vin || driver || drivingStatus ||healthStatus;
+    }​​​​​​​​);
+
+    this.driverListData = filteredData;
+  }
+
   onChangeGroup(id: any){
     this.filterVehicleForm.get("group").setValue(id);
     this.loadVehicleData();
@@ -251,11 +386,16 @@ removeDuplicates(originalArray, prop) {
     this.filterVehicleForm.get("otherFilter").setValue(id);
     this.loadVehicleData();
   }
+
+  onChangeDriver(id: any){
+    this.driverVehicleForm.get("driver").setValue(id);
+    this.loadDriverData();
+  }
   
   loadVehicleData(){  
     this.initData =this.detailsData;
     let newAlertCat=[];
-    if(!this.todayFlagClicked)
+    if(!this.todayFlagClicked  && this.selectedIndex == 0)
     {
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
@@ -267,7 +407,7 @@ removeDuplicates(originalArray, prop) {
         "days": 90,
         "languagecode":"cs-CZ"
     }}
-    if(this.todayFlagClicked)
+    if(this.todayFlagClicked  && this.selectedIndex == 0)
     {
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
@@ -339,16 +479,19 @@ removeDuplicates(originalArray, prop) {
 
  checkCreationForVehicle(item: any){
   this.todayFlagClicked = item.todayFlagClicked;
-  this.isVehicleDetails  = item.vehicleDetailsFlag;
+  // this.isVehicleDetails  = item.vehicleDetailsFlag;
+  // this.driverFlagClicked = true;
   this.getFilterData();
+  // this.loadDriverData();
   this.loadVehicleData();
 }
 
 checkCreationForDriver(item:any){
-  this.todayFlagClicked = item.todayFlagClicked;
-  this.getFilterData();
-  this.loadVehicleData();
-
+  this.driverFlagClicked = item.driverFlagClicked;
+  // this.todayFlagClicked  = true;
+  this.getDriverData();
+  // this.loadVehicleData();
+  this.loadDriverData();
 }
 
 

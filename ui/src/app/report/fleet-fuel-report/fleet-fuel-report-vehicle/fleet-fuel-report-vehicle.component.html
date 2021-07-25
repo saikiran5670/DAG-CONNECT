@@ -213,8 +213,8 @@
             <mat-header-cell [hidden]="!checkForPreference('vehicleranking_consumption')" *matHeaderCellDef mat-sort-header>{{ translationData.lblConsumption || 'Consumption' }}
                &nbsp; <span
                 style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' ltr/100km') : (prefUnitFormat ==
-                'dunit_Imperial') ? (translationData.lblgallonmile || 'gallon/100mile') : (translationData.lblgallonmile
-                || ' gallon/100mile') }})</span>
+                'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') : (translationData.lblgallonmile
+                || ' mpg') }})</span>
             </mat-header-cell>
             <mat-cell [hidden]="!checkForPreference('vehicleranking_consumption')" *matCellDef="let row">
               <mat-progress-bar class="example-margin" [color]="color" [mode]="mode" [bufferValue]="bufferValue"
@@ -516,8 +516,7 @@
                   </div>
             </div>
   
-            <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort
-              #exporter="matTableExporter">
+            <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
               <ng-container matColumnDef="vehicleName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicleranking_vehiclename')">{{ translationData.lblVehicleName || 'Vehicle Name' }}
                 </mat-header-cell>
