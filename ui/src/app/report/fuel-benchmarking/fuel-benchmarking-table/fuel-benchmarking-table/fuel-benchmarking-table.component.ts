@@ -119,7 +119,11 @@ export class FuelBenchmarkingTableComponent implements OnInit {
         } else if(this.firstColumn[colIndx] == 'fuelConsumption') {
           let indCol = Number(colIndx) - 1;
           this.dataSource[colIndx][column] = this.updateDoughnutChartData(this.dataSource[indCol][column]);
-        }else {
+        }else if(this.firstColumn[colIndx] == 'numberOfActiveVehicles'){
+          console.log("total vehicles", data);
+          this.dataSource[colIndx][column] = data.fuelBenchmarkDetails.numberOfActiveVehicles + "/" + data.fuelBenchmarkDetails.numberOfTotalVehicles;
+        }
+        else {
           this.dataSource[colIndx][column] = data.fuelBenchmarkDetails[this.firstColumn[colIndx]];
         }
       }

@@ -141,7 +141,12 @@ public class WarningStatisticsDao implements Serializable {
 				updateWarningCommonTrip.setDouble(7, warningDetail.getLatitude());
 				updateWarningCommonTrip.setDouble(8, warningDetail.getLongitude());
 				updateWarningCommonTrip.setString(9, warningDetail.getVehicleDrivingStatusType());
+				
+				if(warningDetail.getOdometerVal()!=null) {
 				updateWarningCommonTrip.setDouble(10, warningDetail.getOdometerVal());
+				} else {
+					updateWarningCommonTrip.setDouble(10, 0);
+				}
 				
 				if(warningDetail.getVin()!=null) {
 					updateWarningCommonTrip.setString(11, warningDetail.getVin());

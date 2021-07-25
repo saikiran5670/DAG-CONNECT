@@ -950,7 +950,7 @@ createEndMarker(){
 
  
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+    this.reportService.getUserPreferenceReport(4, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
@@ -1229,12 +1229,27 @@ createEndMarker(){
     this.advanceFilterOpen = false;
     this.searchMarker = {};
     this.isChartsOpen = true;
-    this.ConsumedChartType = 'Line';
-    this.TripsChartType= 'Bar';
-    this.Co2ChartType= 'Line';
-    this.DistanceChartType= 'Line';
-    this.ConsumptionChartType= 'Line';
-    this.DurationChartType= 'Line';
+    if (this.reportPrefData.length != 0) {
+      let filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_fuelconsumed'));
+      this.ConsumedChartType = filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_numberoftrips'));
+      this.TripsChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_co2emission'));
+      this.Co2ChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_distance'));
+      this.DistanceChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_fuelconsumption'));
+      this.ConsumptionChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_idledurationtotaltime'));
+      this.DurationChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+    } else {
+      this.ConsumedChartType = 'Line';
+      this.TripsChartType= 'Bar';
+      this.Co2ChartType= 'Line';
+      this.DistanceChartType= 'Line';
+      this.ConsumptionChartType= 'Line';
+      this.DurationChartType= 'Line';
+    }
     // this.resetChartData(); // reset chart data
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
@@ -1584,20 +1599,28 @@ createEndMarker(){
   }
 
   proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
-    if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
-    }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
+    if (prefData && preference) {
+      let _search = prefData?.timeformat?.filter(i => i.id == preference.timeFormatId);
+      if (_search && _search.length > 0) {
+        this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+        this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+        this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+        this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
+      } else {
+        if (prefData.timeformat && prefData.timeformat.length > 0) {
+          this.prefTimeFormat = parseInt(prefData.timeformat[0]?.value.split(" ")[0]);
+        }
+        if (prefData.timezone && prefData.timezone.length > 0) {
+          this.prefTimeZone = prefData.timezone[0].value;
+        }
+        if (prefData.dateformat && prefData.dateformat.length > 0) {
+          this.prefDateFormat = prefData.dateformat[0].name;
+        }
+        if (prefData.unit && prefData.unit.length > 0) {
+          this.prefUnitFormat = prefData.unit[0].name;
+        }
+      }
     }
-
-   
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
@@ -2280,6 +2303,20 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     }
     return sum; 
+  }
+
+  checkForPreference(fieldKey) {
+    if (this.reportPrefData.length != 0) {
+      let filterData = this.reportPrefData.filter(item => item.key.includes('driver_'+fieldKey));
+      if (filterData.length > 0) {
+        if (filterData[0].state == 'A') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
 }
