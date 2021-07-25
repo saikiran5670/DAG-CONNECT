@@ -57,9 +57,12 @@ public class BroadcastMessageProcessor<U,R> extends BroadcastProcessFunction<Kaf
                 updatedkafkaRecord.setKey(valueRecord);
                 updatedkafkaRecord.setValue((U) JsonMapper.configuring().writeValueAsString(jsonNode));
                 out.collect(updatedkafkaRecord);
+            }else{
+            	 logger.info(" Vehicle is not connected, ignoring vehicle data :: {}",value);
             }
+            
         }else {
-            logger.info("VID not found for message :: {}",value);
+            logger.info("VID and VIN mapping not found for message :: {}",value);
             out.collect(value);
         }
     }
