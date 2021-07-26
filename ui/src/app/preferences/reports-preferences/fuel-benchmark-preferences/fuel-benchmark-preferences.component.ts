@@ -162,7 +162,7 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
             preferenceType: "C",
             chartType: field.chartType,
             thresholdType: "",
-            thresholdValue: parseInt(this.fuelBenchmarkForm.get([field.key]).value)
+            thresholdValue: parseFloat(this.fuelBenchmarkForm.get([field.key]).value)
             //thresholdValue:4
           }
         }
@@ -204,7 +204,7 @@ export class FuelBenchmarkPreferencesComponent implements OnInit {
     if (this.translationData.lblDetailssavesuccessfully)
       return this.translationData.lblDetailssavesuccessfully;
     else
-      return ("Details save successfully");
+      return ("Details saved successfully");
   }
 
 }
