@@ -1,5 +1,6 @@
 package net.atos.daf.ct2.processing;
 
+import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.flink.api.common.functions.FilterFunction;
@@ -67,16 +68,25 @@ public class MessageProcessing<U,R, T> {
 			@Override
               public KafkaRecord<T> map(KafkaRecord<U> value) throws Exception {
                 logger.info("map after process record value.getValue() :: {}",value.getValue());
-                T record = JsonMapper.configuring().readValue((String) value.getValue(), tClass);
+                try{
+                	 T record = JsonMapper.configuring().readValue((String) value.getValue(), tClass);
 
-                KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
-                kafkaRecord.setKey(key);
-                kafkaRecord.setValue(record);
-               logger.info("Final KafkaRecord to kafka topic: {} record : {}",sinkTopicName , kafkaRecord);
-              
-                return kafkaRecord;
+                     KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
+                     kafkaRecord.setKey(key);
+                     kafkaRecord.setValue(record);
+                     logger.info("Final KafkaRecord to kafka topic: {} record : {}",sinkTopicName , kafkaRecord);
+                     
+                     return kafkaRecord;
+                }catch(Exception e){
+                	logger.error("Issue while Json convertion to Object : {} record : {}",sinkTopicName , value);
+                	logger.error("Issue while Json convertion to Object : {} ",e.getMessage());
+                }
+               
+               return null;
+                
               }
             })
+        .filter( rec -> Objects.nonNull(rec))
         .addSink(
             new FlinkKafkaProducer<KafkaRecord<T>>(
                 sinkTopicName,
