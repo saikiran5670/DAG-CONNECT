@@ -18,6 +18,7 @@ using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Configuration;
 
 namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
 {
@@ -32,7 +33,8 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
         private readonly IAccountManager _accountManager;
         private readonly IOrganizationManager _organizationManager;
         private readonly IVehicleManager _vehicleManager;
-        public EcoScoreDataController(IAuditTraillib auditTrail, IReportManager reportManager, IAccountManager accountManager, IOrganizationManager organizationManager, IVehicleManager vehicleManager)
+        private readonly IConfiguration _configuration;
+        public EcoScoreDataController(IAuditTraillib auditTrail, IReportManager reportManager, IAccountManager accountManager, IOrganizationManager organizationManager, IVehicleManager vehicleManager, IConfiguration configuration)
         {
             _reportManager = reportManager;
             _accountManager = accountManager;
@@ -40,6 +42,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
             _vehicleManager = vehicleManager;
             _auditTrail = auditTrail;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -162,7 +165,8 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
                 AggregationType = Enum.Parse<AggregateType>(request.AggregationType, true),
                 StartTimestamp = request.StartTimestamp.Value,
                 EndTimestamp = request.EndTimestamp.Value,
-                MinDistance = minDistance ?? 0
+                MinDistance = minDistance ?? 0,
+                EcoScoreRecordsLimit = Convert.ToInt32(_configuration["EcoScoreRecordsLimit"])
             };
         }
     }

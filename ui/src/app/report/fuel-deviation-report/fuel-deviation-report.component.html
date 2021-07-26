@@ -243,9 +243,9 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="fuelEventType">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblType || 'Type' }}
+              <mat-header-cell *matHeaderCellDef>{{ translationData.lblType || 'Type' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.fuelEventType != '' ? row.fuelEventType : '-' }}
+              <mat-cell *matCellDef="let row" matTooltip='{{ row.eventTooltip }}'><mat-icon svgIcon="{{ row.svgIcon }}"></mat-icon>
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="fuelDiffernce">
@@ -259,7 +259,7 @@
             </ng-container>
             <ng-container matColumnDef="vin">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}</mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.vin != '' ? row.vin : '-' }}
+              <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip='{{ row.vin }}'>{{ row.vin != '' ? row.vin : '-' }}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="registrationNo">
@@ -269,7 +269,7 @@
             </ng-container>
             <ng-container matColumnDef="eventTime">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDate || 'Date' }}</mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.convertDate != '' ? row.convertDate : '-' }}
+              <mat-cell *matCellDef="let row">{{ row.eventDate != '' ? row.eventDate : '-' }}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="odometer">
@@ -317,7 +317,7 @@
               <mat-cell *matCellDef="let row">{{ row.endPosition != '' ? row.endPosition : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="fuelConsumed">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallon || 'gallon') : (translationData.lblLtr || 'Ltr') }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallon || 'gallon') : (translationData.lblltr || 'ltr') }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedFuelConsumed != '' ? row.convertedFuelConsumed : '-' }}</mat-cell>
             </ng-container>

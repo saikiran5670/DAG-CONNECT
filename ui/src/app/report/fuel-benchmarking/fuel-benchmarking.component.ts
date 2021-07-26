@@ -853,7 +853,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   }
 
   onVehicleGroupChange(event: any) {
-    this.selectedVehicleGroup = event.value;
+    //this.selectedVehicleGroup = event.value;
    
     if (event.value || event.value == 0) {
       this.internalSelection = true;
