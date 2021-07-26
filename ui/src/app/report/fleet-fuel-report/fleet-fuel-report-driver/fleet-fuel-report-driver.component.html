@@ -1174,7 +1174,15 @@
     </div>
     </div>
     <div *ngIf="driverSelected">
-      <app-detail-driver-report [translationData]='translationData' [driverDetails]='driverInfo' [dateDetails]='dateInfo' [displayedColumns]='detaildisplayedColumns' (backToMainPage)="backToMainPage()" 
+      <app-detail-driver-report 
+      [translationData]='translationData' 
+      [driverDetails]='driverInfo' 
+      [dateDetails]='dateInfo' 
+      [displayedColumns]='detaildisplayedColumns' 
+      (backToMainPage)="backToMainPage()" 
+      [startDateValue] ='startDateValue'
+      [endDateValue] = 'endDateValue'
+      [graphData] = 'graphData'
       ></app-detail-driver-report>
     </div>
 

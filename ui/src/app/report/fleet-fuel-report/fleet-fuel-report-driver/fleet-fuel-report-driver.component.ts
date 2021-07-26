@@ -55,6 +55,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
+  graphData: any;
   selectedTrip = new SelectionModel(true, []);
   dataSource: any = new MatTableDataSource([]);
   dataSource2: any = new MatTableDataSource([]);
@@ -534,6 +535,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
     }
     this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
+      this.graphData = graphData;
     });
     //if(_vinData.length === 1){
     //  this.showDetailedReport = true;
