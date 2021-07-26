@@ -901,14 +901,24 @@ createEndMarker(){
   public ngAfterViewInit() { }
 
   loadfleetFuelDetails(vehicleDetails: any){
+
+// let hardCodePayload= {
+//     "startDateTime" : 1525480060000,
+//     "endDateTime" : 1625480060000,
+//     "viNs" : [
+//     "XLR0998HGFFT76657"
+//     ],
+//     "languageCode" : "EN-GB"
+// }
+
     let getFleetFuelObj = {
       "startDateTime": this.dateDetails.startTime,
       "endDateTime": this.dateDetails.endTime,
-      "viNs": vehicleDetails.vin,
-      "LanguageCode": "EN-GB"
+      "viNs": vehicleDetails.vin.split(),
+      "languageCode": "EN-GB"
     }
     this.reportService.getVehicleTripDetails(getFleetFuelObj).subscribe((data:any) => {
-    console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
+    // console.log("---getting data from getFleetFuelvehicleDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
