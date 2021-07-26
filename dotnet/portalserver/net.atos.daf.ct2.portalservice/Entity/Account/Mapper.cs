@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             account.FirstName = request.FirstName;
             account.LastName = request.LastName;
             account.OrganizationId = request.OrganizationId;
-            account.DriverId = request.DriverId;
+            account.DriverId = request.DriverId ?? "";
             account.CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
             account.StartDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
             account.EndDate = 0;

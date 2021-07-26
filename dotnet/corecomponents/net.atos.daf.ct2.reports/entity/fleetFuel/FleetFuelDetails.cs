@@ -34,6 +34,13 @@ namespace net.atos.daf.ct2.reports.entity
         public string IdlingConsumptionValue { get; set; } = string.Empty;
         public double DPAScore { get; set; }
         public List<LiveFleetPosition> LiveFleetPosition { get; set; }
+
+        public long StartDate { get; set; }
+        public long EndDate { get; set; }
+        public double Startpositionlattitude { get; set; }
+        public double Startpositionlongitude { get; set; }
+        public double Endpositionlattitude { get; set; }
+        public double Endpositionlongitude { get; set; }
         //public string DPAAnticipationScore { get; set; } = string.Empty;
         //public string DPABrakingScore{ get; set; } = string.Empty;
         //public string IdlingPTOScore { get; set; } = string.Empty;

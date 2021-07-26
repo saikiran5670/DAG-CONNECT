@@ -1,0 +1,101 @@
+<mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+  <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
+    <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span>
+            <span *ngIf= "selectionValueBenchmarkBY == 'timePeriods'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Benchmark Between Time Periods</span>
+            <span *ngIf= "selectionValueBenchmarkBY == 'vehicleGroups'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Benchmark Between Groups</span>
+          </span>
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+
+        <div class='areaWidth margin-bottom-xlg' style="background-color: #BEE3F8">
+            <span *ngIf= "selectionValueBenchmarkBY == 'timePeriods'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Selected Group: <b>{{vehicleGroupSelected}}</b></span>
+            <span *ngIf= "selectionValueBenchmarkBY == 'vehicleGroups'" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Selected Time Periods: <b>{{startDateRange}} - {{endDateRange}}</b></span>
+          </div>
+
+        <div style='display: flex;'>
+
+        <mat-table style="overflow: auto;" [dataSource]="dataSource">
+            <!-- <ng-container matColumnDef="period" class="text-truncate" style="max-width: 20%;margin-right: 10px;" >
+                <mat-header-cell style="margin-right: 10px;" *matHeaderCellDef> Period
+                </mat-header-cell>
+                <mat-cell style="margin-right: 10px;" *matCellDef="let row"> {{row}} </mat-cell>
+              </ng-container> -->
+
+            <ng-container [matColumnDef]="column" class="text-truncate" style="margin-right: 10px;"
+              *ngFor="let column of displayedColumns; let index=index">
+              <mat-header-cell style="cursor: default; margin-right: 10px;" *matHeaderCellDef> {{selectionValueBenchmarkBY == 'timePeriods'? column == "period" ? "Period" : column : column == "period" ? "Groups" : column}}
+                <mat-icon style="cursor: pointer;" *ngIf="index !== 0" aria-hidden="false" aria-label="Example home icon" (click)="removeColumn(index)">close
+                </mat-icon>
+              </mat-header-cell>
+              <mat-cell style="margin-right: 10px;" *matCellDef="let row; let i=index">
+                <div *ngIf="(i !== 4 && i !== 5) || column == 'period'" >{{i==1 && index !== 0? row[column]+" gal": i==2 && index !== 0? row[column]+" km" : i==3 && index !== 0? row[column]+" mpg" : row[column] }}</div>
+
+                <div *ngIf="index !== 0 && i == 4">
+                  Consumption (Ltrs/100km)
+                  <div style="margin-top: 10px;" *ngFor="let ranking of row[column]; let index=index">
+                    <div>{{index + 1}}. {{ranking.vehicleName==""?ranking.vin:ranking.vehicleName}} 
+                    <span> <div>        
+                    <mat-progress-bar class="example-margin" [color]="color" [mode]="mode" [bufferValue]="100 - ranking.ltrVal" [value]='ranking.ltrVal'>
+                    </mat-progress-bar> </div>  </span> </div>                
+                    <div style="position: sticky;
+                    margin-top: -25px;font-size:10px; color:white;"> {{ranking.ltrVal}} </div>
+                  </div>
+                  
+                </div>
+
+                <div class="chart-container" style="position: relative; height:150px; width:19vw; margin-left: -50px;" *ngIf="index !== 0 && i == 5">
+                  <canvas id="chart" baseChart [data]="row[column]" [labels]="doughnutChartLabels" [chartType]="doughnutChartType">
+                  </canvas>
+                </div>
+
+              </mat-cell>
+            </ng-container>
+
+
+
+            <!-- <ng-container matColumnDef="period">
+                <mat-header-cell *matHeaderCellDef >{{'Period' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                <b style="font-size: 16px;">{{ row.period }}</b>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="range1">
+                <mat-header-cell *matHeaderCellDef >{{ startDateRange}} to {{endDateRange}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                <b style="font-size: 16px;">{{ row.range1 }}</b>
+                </mat-cell>
+            </ng-container> -->
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;">
+                </mat-row>
+        </mat-table>
+      
+        <!-- <mat-table style="max-width: 20%; margin-right: 10px;"  [dataSource]="tabledataSource">
+
+            <ng-container matColumnDef="timerangeColumn">
+                <mat-header-cell *matHeaderCellDef >{{ startDateRange}} to {{endDateRange}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                {{ responseDataTP.ActiveVehicle }}
+                </mat-cell>
+                <mat-cell *matCellDef="let row">
+                {{ responseDataTP.TotalFuelConsumed }}
+                </mat-cell>
+                <mat-cell *matCellDef="let row">
+                {{ responseDataTP.TotalMileage }}
+                </mat-cell>
+                
+            </ng-container>
+
+
+                <mat-header-row *matHeaderRowDef="timerangeColumn"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: timerangeColumn;">
+                </mat-row>
+        </mat-table> -->
+    </div>
+      
+    </mat-expansion-panel>
+</mat-card>

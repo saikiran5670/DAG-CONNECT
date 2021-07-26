@@ -7,6 +7,6 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
 {
     public class RFMSResponseTypeConstants
     {
-        public static string JSON = "application/vnd.fmsstandard.com.vehicles.v3.0+json; UTF-8";
+        public static string ACCPET_TYPE_VEHICLE_JSON = "application/vnd.fmsstandard.com.vehicles.v3.0+json; UTF-8";
     }
 }

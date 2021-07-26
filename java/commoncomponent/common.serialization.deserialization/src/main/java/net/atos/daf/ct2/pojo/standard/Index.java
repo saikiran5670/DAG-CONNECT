@@ -25,7 +25,7 @@ public class Index implements Serializable {
   @JsonProperty(value = "EvtDateTime")
   private String evtDateTime;
   @JsonProperty(value = "Increment")
-  private Integer increment;
+  private Long increment;
   @JsonProperty(value = "ROProfil")
   private String roProfil;
   @JsonProperty(value = "TenantID")
@@ -42,7 +42,7 @@ public class Index implements Serializable {
   @JsonProperty(value = "Jobname")
   private String jobName;
   @JsonProperty(value = "NumSeq")
-  private Integer numSeq;
+  private Long numSeq;
   @JsonProperty(value = "VEvtID")
   private Integer vEvtID;
 
@@ -61,7 +61,7 @@ public class Index implements Serializable {
   @JsonProperty(value = "GPSLongitude")
   private Double gpsLongitude;
   @JsonProperty(value = "GPSAltitude")
-  private Integer gpsAltitude;
+  private Long gpsAltitude;
   @JsonProperty(value = "GPSHeading")
   private Double gpsHeading;
 
@@ -69,14 +69,14 @@ public class Index implements Serializable {
   private String driverID;
 
   @JsonProperty(value = "VCumulatedFuel")
-  private Integer vCumulatedFuel;
+  private Long vCumulatedFuel;
   @JsonProperty(value = "VDist")
-  private Integer vDist;
+  private Long vDist;
 
   @JsonProperty(value = "VUsedFuel")
-  private Integer vUsedFuel;
+  private Long vUsedFuel;
   @JsonProperty(value = "VIdleDuration")
-  private Integer vIdleDuration;
+  private Long vIdleDuration;
 
   @JsonProperty(value = "DocFormat")
   private String docFormat;

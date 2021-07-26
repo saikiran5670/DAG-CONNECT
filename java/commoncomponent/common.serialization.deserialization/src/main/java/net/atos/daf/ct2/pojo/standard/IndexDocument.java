@@ -18,16 +18,16 @@ public class IndexDocument implements Serializable {
   private String tripID;
 
   @JsonProperty(value = "GPSHdop")
-  private Integer gpsHdop;
+  private Double gpsHdop;
   @JsonProperty(value = "GPSSpeed")
-  private Integer gpsSpeed;
+  private Long gpsSpeed;
 
   @JsonProperty(value = "Driver1CardInserted")
   private Boolean driver1CardInserted;
   @JsonProperty(value = "Driver1RemainingDrivingTime")
-  private Integer driver1RemainingDrivingTime;
+  private Long driver1RemainingDrivingTime;
   @JsonProperty(value = "Driver1RemainingRestTime")
-  private Integer driver1RemainingRestTime;
+  private Long driver1RemainingRestTime;
   @JsonProperty(value = "Driver1WorkingState")
   private Integer driver1WorkingState;
   @JsonProperty(value = "Driver2ID")
@@ -38,7 +38,7 @@ public class IndexDocument implements Serializable {
   private Integer driver2WorkingState;
 
   @JsonProperty(value = "VAmbiantAirTemperature")
-  private Integer vAmbiantAirTemperature;
+  private Long vAmbiantAirTemperature;
   // @JsonProperty(value = "")
   // private Integer VAmbientAirTemperature;
   @JsonProperty(value = "VAcceleration")
@@ -50,23 +50,23 @@ public class IndexDocument implements Serializable {
   @JsonProperty(value = "VEngineLoad")
   private Integer vEngineLoad;
   @JsonProperty(value = "VEngineSpeed")
-  private Integer vEngineSpeed;
+  private Long vEngineSpeed;
   @JsonProperty(value = "VEngineTotalHours")
   private Long vEngineTotalHours;
   @JsonProperty(value = "VEngineTotalHoursIdle")
   private Long vEngineTotalHoursIdle;
   @JsonProperty(value = "VFuelCumulated")
-  private Integer vFuelCumulated;
+  private Long vFuelCumulated;
   @JsonProperty(value = "VFuelCumulatedIdle")
   private Long vFuelCumulatedIdle;
   @JsonProperty(value = "VFuelCumulatedLR")
-  private Integer vFuelCumulatedLR;
+  private Long vFuelCumulatedLR;
   @JsonProperty(value = "VFuelLevel1")
   private Double vFuelLevel1;
   @JsonProperty(value = "VGearCurrent")
   private Integer vGearCurrent;
   @JsonProperty(value = "VGrossWeightCombination")
-  private Integer vGrossWeightCombination;
+  private Long vGrossWeightCombination;
   @JsonProperty(value = "VPedalAcceleratorPosition1")
   private Double vPedalAcceleratorPosition1;
   @JsonProperty(value = "VPowerBatteryChargeLevel")
@@ -78,35 +78,35 @@ public class IndexDocument implements Serializable {
   @JsonProperty(value = "VRetarderTorqueMode")
   private Integer vRetarderTorqueMode;
   @JsonProperty(value = "VServiceBrakeAirPressure1")
-  private Integer vServiceBrakeAirPressure1;
+  private Long vServiceBrakeAirPressure1;
   @JsonProperty(value = "VServiceBrakeAirPressure2")
-  private Integer vServiceBrakeAirPressure2;
+  private Long vServiceBrakeAirPressure2;
   @JsonProperty(value = "VTachographSpeed")
   private Integer vTachographSpeed;
   @JsonProperty(value = "VWheelBasedSpeed")
-  private Integer vWheelBasedSpeed;
+  private Long vWheelBasedSpeed;
   @JsonProperty(value = "TT_Norm")
   private String tt_Norm;
   @JsonProperty(value = "TT_ListValue")
   private Integer[] tt_ListValue;
 
   @JsonProperty(value = "GPSSegmentDist")
-  private Integer gpsSegmentDist;
+  private Long gpsSegmentDist;
   @JsonProperty(value = "SegmentHaversineDistance")
-  private Integer segmentHaversineDistance;
+  private Long segmentHaversineDistance;
   @JsonProperty(value = "VSegmentFuelLevel1")
   private Double vSegmentFuelLevel1;
   @JsonProperty(value = "VTankDiff")
   private Double vTankDiff;
 
   @JsonProperty(value = "Period")
-  private Integer period;
+  private Long period;
   @JsonProperty(value = "StartEltsTime")
-  private Integer startEltsTime;
+  private Long startEltsTime;
   @JsonProperty(value = "AdBlueLevel")
   private Double[] adBlueLevel;
   @JsonProperty(value = "AirPressure")
-  private Integer[] airPressure;
+  private Long[] airPressure;
   @JsonProperty(value = "AmbientPressure")
   private Double[] ambientPressure;
   @JsonProperty(value = "EngineCoolantLevel")
@@ -122,15 +122,15 @@ public class IndexDocument implements Serializable {
   @JsonProperty(value = "EngineLoad")
   private Integer[] engineLoad;
   @JsonProperty(value = "EngineSpeed")
-  private Integer[] engineSpeed;
+  private Long[] engineSpeed;
   @JsonProperty(value = "FuelLevel")
   private Double[] fuelLevel;
   @JsonProperty(value = "FuelTemperature")
   private Double[] fuelTemperature;
   @JsonProperty(value = "InletAirPressureInInletManifold")
-  private Integer[] inletAirPressureInInletManifold;
+  private Long[] inletAirPressureInInletManifold;
   @JsonProperty(value = "TachoVehicleSpeed")
-  private Integer[] tachoVehicleSpeed;
+  private Long[] tachoVehicleSpeed;
   @JsonProperty(value = "TotalTachoMileage")
-  private Integer[] totalTachoMileage;
+  private Long[] totalTachoMileage;
 }

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: translationservice-grpc-deployment
+spec:
+  selector:
+    matchLabels:
+      run: translationservice-grpc
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: translationservice-grpc
+    spec:
+      containers:
+      - name: translationservice-grpc
+        image: dafdev017756.azurecr.io/translationservice-grpc
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: translationservice
+spec:
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    run: translationservice-grpc

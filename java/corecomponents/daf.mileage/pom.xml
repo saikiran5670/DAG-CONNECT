@@ -101,7 +101,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>net.atos.daf.etl.App</mainClass>
+							<mainClass>net.atos.daf.ct2.App</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

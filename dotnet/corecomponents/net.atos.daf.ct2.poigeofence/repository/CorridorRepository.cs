@@ -14,14 +14,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
     public class CorridorRepository : ICorridorRepository
     {
         private readonly IDataAccess _dataAccess;
+        private readonly IDataMartDataAccess _dataMartdataAccess;
         private static readonly log4net.ILog _log =
        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private readonly CorridorCoreMapper _corridorCoreMapper;
 
-        public CorridorRepository(IDataAccess dataAccess)
+        public CorridorRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             _dataAccess = dataAccess;
-
+            _dataMartdataAccess = dataMartdataAccess;
             _corridorCoreMapper = new CorridorCoreMapper();
 
         }
@@ -364,6 +365,39 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
             return existingTripCorridor;
         }
+
+
+        private async Task<List<ExistingTrip>> UpdateTripsCorridor(ExistingTripCorridor existingTripCorridor)
+        {
+            var tripList = new List<ExistingTrip>();
+            try
+            {
+                foreach (var existingTrip in existingTripCorridor.ExistingTrips)
+                {
+                    existingTrip.LandmarkId = existingTripCorridor.Id;
+                    var getntoCorridorTrips = @"Select id from master.corridortrips where landmark_id=@landmarkid";
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@landmarkid", existingTrip.LandmarkId);
+                    var id = await _dataAccess.QueryAsync<int>(getntoCorridorTrips, parameter);
+                    var selectedtrips = existingTripCorridor.ExistingTrips.Select(e => e.Id).ToArray();
+                    var deleteid = id.Where(e => !selectedtrips.Contains(e));
+                    if (deleteid.Count() > 0)
+                    {
+                        var deletdids = await DeleteTrips(deleteid.ToList());
+                    }
+                    tripList.Add(existingTrip);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.ToString());
+                // throw;
+            }
+            return tripList;
+
+
+        }
         private async Task<List<ExistingTrip>> AddTripsCorridor(ExistingTripCorridor existingTripCorridor)
         {
             var tripList = new List<ExistingTrip>();
@@ -563,12 +597,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 if (id > 0)
                 {
                     existingTripCorridor.Id = id;
-                    var tripDetailsDeleted = await DeleteTripsCorridor(existingTripCorridor);
-                    if (tripDetailsDeleted)
-                    {
+                    var tripDetailsDeleted = await UpdateTripsCorridor(existingTripCorridor);
 
-                        var result = await AddTripsCorridor(existingTripCorridor);
-                    }
                 }
 
 
@@ -719,27 +749,22 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 string query = string.Empty; var parameter = new DynamicParameters();
                 query = @"select l.id 
-                                ,l.organization_id as OrganizationId
-	                            ,l.name as CorridoreName
-	                            ,l.address as StartPoint
-	                            ,l.latitude as StartLat
-	                            ,l.longitude as StartLong
-                                ,n.address as EndPoint
-	                            ,n.latitude as EndLat
-	                            ,n.longitude as EndLong
-	                            ,l.distance as Distance
-	                            ,l.width as Width
-                                ,l.state as State
-                                ,l.type as CorridorType
-	                            ,l.created_at as CreatedAt
-	                            ,l.created_by as CreatedBy
-	                            ,l.modified_at as ModifiedAt
-	                            ,l.modified_by as ModifiedBy
-                        FROM       master.landmark l
-                        LEFT JOIN master.nodes n on l.id = n.landmark_id
-                        WHERE      l.type = 'E' and l.state in ('A', 'I')
-                        AND        l.organization_id = @organization_id";
-
+				                ,l.organization_id as OrganizationId
+				                ,l.name as CorridoreName
+				                ,l.address as StartPoint
+				                ,l.latitude as StartLat
+				                ,l.longitude as StartLong
+				                ,l.distance as Distance
+				                ,l.width as Width
+				                ,l.state as State
+				                ,l.type as CorridorType
+				                ,l.created_at as CreatedAt
+				                ,l.created_by as CreatedBy
+				                ,l.modified_at as ModifiedAt
+				                ,l.modified_by as ModifiedBy
+		                FROM       master.landmark l
+		                WHERE      l.organization_id = @organization_id 
+		                AND        l.type = 'E' and l.state <> 'D' ";
                 parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
                 var data = await _dataAccess.QueryAsync<CorridorResponse>(query, parameter);
                 List<CorridorResponse> objCorridorResponseList;
@@ -751,7 +776,37 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
-        public List<ExistingTrip> GetExistingtripListByCorridorId(int corridoreid)
+        public async Task<NodeEndLatLongResponse> GetExistingTripCorridorListByLandMarkId(int landMarkId)
+        {
+            try
+            {
+                string query = string.Empty; var parameter = new DynamicParameters();
+                query = @"SELECT id as Id
+                                ,max(seq_no) as SequenceNo
+                                ,latitude as EndLat
+                                ,longitude as EndLong
+                                ,address as Address
+                                ,landmark_id as LandMArkId
+		                  FROM MASTER.NODES GROUP BY 
+                                seq_no
+                                ,latitude
+                                ,longitude
+                                ,address
+                                ,id
+                                ,landmark_id 
+                          HAVING landmark_id=@landmark_id 
+                          ORDER BY 1 DESC";
+                parameter.Add("@landmark_id", landMarkId);
+                var data = await _dataAccess.QueryFirstOrDefaultAsync<NodeEndLatLongResponse>(query, parameter);
+                return data;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<ExistingTrip> GetExistingtripListByCorridorId(int corridoreid, out string vin)
         {
             try
             {
@@ -775,6 +830,16 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 parameter.Add("@landmark_id", corridoreid);
                 var data = _dataAccess.Query<ExistingTrip>(query, parameter);
+                //getting vin from trip statistics
+                vin = "";
+                if (data.Count() > 0)
+                {
+                    var tripparameter = new DynamicParameters();
+                    tripparameter.Add("@tripid", data.FirstOrDefault().TripId ?? "");
+                    string tripquery = @"SELECT VIN FROM tripdetail.trip_statistics where trip_id=@tripid limit 1";
+                    vin = _dataMartdataAccess.ExecuteScalar<string>(tripquery, tripparameter);
+                }
+
                 List<ExistingTrip> objCorridorResponseList;
                 return objCorridorResponseList = data.ToList();
             }

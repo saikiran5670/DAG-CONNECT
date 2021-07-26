@@ -192,6 +192,7 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log("-------selectedElementData---",this.selectedElementData)
     this.vehicleGroupList.forEach(item => {
       this.vehicleGroupIdsSet.push(item.vehicleGroupId);
       this.vehicleGroupIdsSet = [...new Set(this.vehicleGroupIdsSet)];
@@ -203,6 +204,9 @@ export class ExistingTripsComponent implements OnInit {
     this.vehicleGroupList.forEach(item => {      
         this.vinList.push(item.vin)      
     });    
+    if(this.vinList.length > 0){
+      this.vinList.unshift(this.translationData.lblAll || 'All' );     
+    };
     
     this.showLoadingIndicator = true;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -248,10 +252,23 @@ export class ExistingTripsComponent implements OnInit {
     // this.loadExistingTripData();
     this.setDefaultTodayDate();
     this.existingTripForm.get('vehicleGroup').setValue('All');
+    this.existingTripForm.get('vehicle').setValue('All');
+    //For Edit Screen
+    // if(this.actionType === 'edit'){
+    //   this.existingTripForm.controls.label.disable();
+    // }
   }
 
   public ngAfterViewInit() {
-    // this.initMap();
+    //For Edit Screen
+    // if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
+    //   this.setCorridorData();
+    //   this.createFlag = false;
+    //   this.strPresentStart = true;
+    //   this.strPresentEnd = true;
+    // }
+    // this.subscribeWidthValue();
+    // this.existingTripForm.controls.widthInput.setValue(this.corridorWidthKm);
     setTimeout(() => {
       this.mapFunctions.initMap(this.mapElement);
     }, 0);
@@ -443,7 +460,7 @@ export class ExistingTripsComponent implements OnInit {
     this.endTimeDisplay= '23:59:59';
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
-    this.existingTripForm.get('vehicle').setValue('');
+    this.existingTripForm.get('vehicle').setValue('All');
     this.existingTripForm.get('vehicleGroup').setValue('All');
     // this.existingTripForm.get('startTime').setValue(this.selectedStartTime);
     // this.existingTripForm.get('endTime').setValue(this.selectedEndTime);

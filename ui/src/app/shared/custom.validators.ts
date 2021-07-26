@@ -234,4 +234,17 @@ export class CustomValidators {
       }
     };
   }
+
+  static numberMinFieldValidation(name,minValue){
+    return (formGroup: FormGroup) => {
+      const NAME = formGroup.controls[name];
+      var regex = /[0-9]/;
+
+      if (NAME.value) {
+       if(NAME.value < minValue){
+          NAME.setErrors({ cannotExceedMinValue: true });
+        }
+      }
+    };
+  }
 }

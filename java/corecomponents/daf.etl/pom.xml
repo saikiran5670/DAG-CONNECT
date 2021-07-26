@@ -20,47 +20,36 @@
 	</properties>
 
 	<dependencies>
-	
-  	<dependency>
-<groupId>net-atos</groupId>
-<artifactId>net.atos.daf.hbase.connection</artifactId>
-<version>0.0.1-SNAPSHOT</version>
- </dependency> 
 
-	<dependency>
-		<groupId>net.atos</groupId>
-		<artifactId>daf.common</artifactId>
-		<version>0.0.1</version>
-	</dependency>
-	
-	<dependency>
-		<groupId>net.atos</groupId>
-		<artifactId>daf.postgre.connection</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</dependency>
-	
-<!-- 	 <dependency>
-		<groupId>org.hibernate</groupId>
-		<artifactId>hibernate-entitymanager</artifactId>
-		<version>4.3.0.CR2</version>
-	</dependency>
-	<dependency>
-		<groupId>org.hibernate</groupId>
-		<artifactId>hibernate-core</artifactId>
-		<version>4.3.0.CR2</version>
-	</dependency>  
-	
-	<dependency>
-<groupId>org.javassist</groupId>
-<artifactId>javassist</artifactId>
-<version>3.22.0-GA</version>
-</dependency> -->
+		<dependency>
+			<groupId>net-atos</groupId>
+			<artifactId>net.atos.daf.hbase.connection</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
-	<dependency>
-		<groupId>net.atos.daf.ct2</groupId>
-		<artifactId>common.serialization.deserialization</artifactId>
-		<version>1.0-SNAPSHOT</version>
-	</dependency>
+		<dependency>
+			<groupId>net.atos</groupId>
+			<artifactId>daf.common</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.atos</groupId>
+			<artifactId>daf.postgre.connection</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- <dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-entitymanager</artifactId> 
+			<version>4.3.0.CR2</version> </dependency> <dependency> <groupId>org.hibernate</groupId> 
+			<artifactId>hibernate-core</artifactId> <version>4.3.0.CR2</version> </dependency> 
+			<dependency> <groupId>org.javassist</groupId> <artifactId>javassist</artifactId> 
+			<version>3.22.0-GA</version> </dependency> -->
+
+		<dependency>
+			<groupId>net.atos.daf.ct2</groupId>
+			<artifactId>common.serialization.deserialization</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.flink</groupId>
@@ -91,25 +80,21 @@
 			<version>${flink.version}</version>
 		</dependency>
 
-		<!--commented to integrate  
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
- -->
-  
+		<!--commented to integrate <dependency> <groupId>com.fasterxml.jackson.core</groupId> 
+			<artifactId>jackson-core</artifactId> <version>${jackson.version}</version> 
+			</dependency> -->
+
 		<dependency>
 			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-connector-hbase-2.2_${scala.dependency.version}</artifactId>
 			<version>${flink.version}</version>
 		</dependency>
 
-	<dependency>
-		<groupId>org.apache.flink</groupId>
-		<artifactId>flink-connector-kafka_${scala.dependency.version}</artifactId>
-		<version>${flink.version}</version>
-	</dependency>
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-connector-kafka_${scala.dependency.version}</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
 
 
 		<!-- https://mvnrepository.com/artifact/org.apache.flink/flink-connector-jdbc -->
@@ -118,13 +103,9 @@
 			<artifactId>flink-connector-jdbc_${scala.dependency.version}</artifactId>
 			<version>${flink.version}</version>
 		</dependency>
-        
-		<!-- commented while integration 
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.10</version>
-		</dependency> -->
+
+		<!-- commented while integration <dependency> <groupId>org.projectlombok</groupId> 
+			<artifactId>lombok</artifactId> <version>1.18.10</version> </dependency> -->
 
 		<!-- test dependencies -->
 		<dependency>
@@ -141,11 +122,8 @@
 			<scope>test</scope>
 		</dependency>
 
-	<!--  	<dependency>
-			<groupId>org.apache.hbase</groupId>
-			<artifactId>hbase-client</artifactId>
-			<version>${hbase.version}</version>
-		</dependency>  -->
+		<!-- <dependency> <groupId>org.apache.hbase</groupId> <artifactId>hbase-client</artifactId> 
+			<version>${hbase.version}</version> </dependency> -->
 
 		<dependency>
 			<groupId>org.apache.flink</groupId>
@@ -161,27 +139,13 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- commented while integration
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.13</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.13</version>
-		</dependency> -->
-		
-		<!-- <dependency>
+		<!-- commented while integration <dependency> <groupId>org.slf4j</groupId> 
+			<artifactId>slf4j-api</artifactId> <version>1.7.13</version> </dependency> 
+			<dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-log4j12</artifactId> 
+			<version>1.7.13</version> </dependency> -->
 
-    <groupId>org.apache.flink</groupId>
-
-    <artifactId>flink-connector-filesystem_2.12</artifactId>
-
-    <version>1.11.3</version>
-
-</dependency> -->
+		<!-- <dependency> <groupId>org.apache.flink</groupId> <artifactId>flink-connector-filesystem_2.12</artifactId> 
+			<version>1.11.3</version> </dependency> -->
 
 	</dependencies>
 

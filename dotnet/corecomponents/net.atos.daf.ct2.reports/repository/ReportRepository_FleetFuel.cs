@@ -113,7 +113,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , SUM(dpa_score)                                                         as dpa_score
                                                   		From
                                                   			tripdetail.trip_statistics 
-                                                        WHERE (start_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
+                                                        WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
                                                                 and VIN=ANY(@Vins)
                                                   		GROUP BY
                                                   			VIN
@@ -130,7 +130,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , max_speed                                            as MaxSpeed
                                                   		  , numberoftrips                                        as NumberOfTrips
                                                   		  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
-                                                  		  , round(fd.fuel_consumption,2)                         As FuelConsumed
+                                                  		  , round(fd.fuel_consumed,2)                            As FuelConsumed
                                                   		  , round(fd.fuel_consumption,2)                         As FuelConsumption
                                                   		  , round(fd.co2_emission,2)                             As CO2Emission
                                                   		  , fd.idle_duration                                     as IdleDuration
@@ -213,7 +213,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , SUM(dpa_score)                                                         as dpa_score
                                                		From
                                                			tripdetail.trip_statistics
-                                                    WHERE (start_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
+                                                    WHERE (end_time_stamp >= @FromDate and end_time_stamp<= @ToDate) 
                                                                 and VIN=ANY(@Vins)
                                                		GROUP BY
                                                			driver1_id
@@ -226,19 +226,19 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , fd.vin             as VIN
                                                		  , vh.registration_no as VehicleRegistrationNo
                                                		  , fd.DriverId
-                                               		  , round ( fd.etl_gps_distance,2)                       as Distance
-                                               		  , round ((fd.veh_message_distance/totalworkingdays),2) as AverageDistancePerDay
-                                               		  , round (fd.average_speed,2)                           as AverageSpeed
-                                               		  , max_speed                                            as MaxSpeed
-                                               		  , numberoftrips                                        as NumberOfTrips
-                                               		  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
-                                               		  , round(fd.fuel_consumption,2)                         As FuelConsumed
-                                               		  , round(fd.fuel_consumption,2)                         As FuelConsumption
-                                               		  , round(fd.co2_emission,2)                             As CO2Emission
-                                               		  , fd.idle_duration                                     as IdleDuration
-                                               		  , round(fd.pto_duration,2)                             as PTODuration
-                                               		  , round(fd.harsh_brake_duration,2)                     As HarshBrakeDuration
-                                               		  , round(fd.heavy_throttle_duration,2)                  As HeavyThrottleDuration
+                                               		  , round ( fd.etl_gps_distance,2)                         as Distance
+                                               		  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistancePerDay
+                                               		  , round (fd.average_speed,2)                             as AverageSpeed
+                                               		  , max_speed                                              as MaxSpeed
+                                               		  , numberoftrips                                          as NumberOfTrips
+                                               		  , round (fd.average_gross_weight_comb,2)                 as AverageGrossWeightComb
+                                               		  , round(fd.fuel_consumed,2)                              As FuelConsumed
+                                               		  , round(fd.fuel_consumption,2)                           As FuelConsumption
+                                               		  , round(fd.co2_emission,2)                               As CO2Emission
+                                               		  , fd.idle_duration                                       as IdleDuration
+                                               		  , round(fd.pto_duration,2)                               as PTODuration
+                                               		  , round(fd.harsh_brake_duration,2)                       As HarshBrakeDuration
+                                               		  , round(fd.heavy_throttle_duration,2)                    As HeavyThrottleDuration
                                                		  , round(fd.cruise_control_distance_30_50)                as CruiseControlDistance30_50
                                                		  , round(fd.cruise_control_distance_50_75)                as CruiseControlDistance50_75
                                                		  , round(fd.cruise_control_distance_more_than_75)         as CruiseControlDistance75
@@ -401,7 +401,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , SUM(average_speed)                                                     as average_speed
 				  , MAX(max_speed)                                                         as max_speed
 				  , SUM(average_gross_weight_comb)                                         as average_gross_weight_comb
-				  , SUM(etl_gps_fuel_consumed)                                                  as fuel_consumed
+				  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
 				  , SUM(fuel_consumption)                                                  as fuel_consumption
 				  , SUM(co2_emission)                                                      as co2_emission
 				  , SUM(idle_duration)                                                     as idle_duration
@@ -416,12 +416,22 @@ namespace net.atos.daf.ct2.reports.repository
 				  , SUM(fuel_consumption_cc_non_active)                                    as fuel_consumption_cc_non_active
 				  , SUM(idling_consumption)                                                as idling_consumption
 				  , SUM(dpa_score)                                                         as dpa_score
-				From
+                  , start_time_stamp                                                       as StartDate
+                  , end_time_stamp                                                         as EndDate
+				  , start_position_lattitude as startpositionlattitude
+				  , start_position_longitude as startpositionlongitude
+				  , end_position_lattitude as endpositionlattitude
+				  , end_position_longitude as endpositionlongitude
+                From
 					tripdetail.trip_statistics
-				where (start_time_stamp >= @FromDate 
+				where (end_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) and  VIN =ANY(@Vins)
 				GROUP BY					
-				  VIN, trip_id        
+				  VIN, trip_id,start_time_stamp, end_time_stamp   
+                    , start_position_lattitude 
+				  , start_position_longitude 
+				  , end_position_lattitude 
+				  , end_position_longitude 
 			)
 		  , cte_combine as
 			(
@@ -430,17 +440,17 @@ namespace net.atos.daf.ct2.reports.repository
 				  , tripid
 				  , fd.vin             as VIN
 				  , vh.registration_no as VehicleRegistrationNo
-				  , round ( fd.etl_gps_distance,2)                       as Distance
-				  , round ((fd.veh_message_distance/totalworkingdays),2) as AverageDistancePerDay
-				  , round (fd.average_speed,2)                           as AverageSpeed
-				  , max_speed                                            as MaxSpeed
-				  , numberoftrips                                        as NumberOfTrips
-				  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
-				  , round((fd.fuel_consumption/numberoftrips),2)         As FuelConsumed
-				  , round((fd.fuel_consumption/numberoftrips),2)         As FuelConsumption
-				  , round((fd.co2_emission    /numberoftrips),2)         As CO2Emission
-				  , fd.idle_duration                                     as IdleDuration
-				  , round(fd.pto_duration,2)                             as PTODuration
+				  , round ( fd.etl_gps_distance,2)                         as Distance
+				  , round ((fd.veh_message_distance/totalworkingdays),2)   as AverageDistancePerDay
+				  , round (fd.average_speed,2)                             as AverageSpeed
+				  , max_speed                                              as MaxSpeed
+				  , numberoftrips                                          as NumberOfTrips
+				  , round (fd.average_gross_weight_comb,2)                 as AverageGrossWeightComb
+				  , round((fd.fuel_consumed/numberoftrips),2)              As FuelConsumed
+				  , round((fd.fuel_consumption/numberoftrips),2)           As FuelConsumption
+				  , round((fd.co2_emission    /numberoftrips),2)           As CO2Emission
+				  , fd.idle_duration                                       as IdleDuration
+				  , round(fd.pto_duration,2)                               as PTODuration
 				  , round((fd.harsh_brake_duration   /numberoftrips),2)    As HarshBrakeDuration
 				  , round((fd.heavy_throttle_duration/numberoftrips),2)    As HeavyThrottleDuration
 				  , round(fd.cruise_control_distance_30_50)                as CruiseControlDistance30_50
@@ -451,6 +461,12 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactivesx
 				  , idling_consumption                                     as IdlingConsumption
 				  , dpa_score                                              as DPAScore
+                  ,StartDate
+                  ,EndDate
+                  ,  startpositionlattitude
+				  ,  startpositionlongitude
+				  , endpositionlattitude
+				  , endpositionlongitude
 				FROM
 					CTE_FleetDeatils fd
 				    left join
@@ -486,7 +502,7 @@ namespace net.atos.daf.ct2.reports.repository
                 }
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
                 throw;
             }
@@ -529,15 +545,25 @@ namespace net.atos.daf.ct2.reports.repository
 				  , SUM(fuel_consumption_cc_non_active)                                    as fuel_consumption_cc_non_active
 				  , SUM(idling_consumption)                                                as idling_consumption
 				  , SUM(dpa_score)                                                         as dpa_score
+                  , start_time_stamp                                                       as StartDate
+                  , end_time_stamp                                                         as EndDate
+                     , start_position_lattitude as startpositionlattitude
+				  , start_position_longitude as startpositionlongitude
+				  , end_position_lattitude as endpositionlattitude
+				  , end_position_longitude as endpositionlongitude
 				From
 					tripdetail.trip_statistics
-				where (start_time_stamp >= @FromDate 
+				where (end_time_stamp >= @FromDate 
 							   and end_time_stamp<= @ToDate) and VIN =@Vin and driver1_id =@DriverId
 
 				GROUP BY
 					driver1_id 
 				  , VIN
-                   ,trip_id
+                   ,trip_id,start_time_stamp, end_time_stamp 
+                     , start_position_lattitude 
+				  , start_position_longitude 
+				  , end_position_lattitude 
+				  , end_position_longitude 
 			)
 		  , cte_combine as
 			(
@@ -553,7 +579,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , max_speed                                            as MaxSpeed
 				  , numberoftrips                                        as NumberOfTrips
 				  , round (fd.average_gross_weight_comb,2)               as AverageGrossWeightComb
-				  , round((fd.fuel_consumption/numberoftrips),2)         As FuelConsumed
+				  , round((fd.fuel_consumed/numberoftrips),2)         As FuelConsumed
 				  , round((fd.fuel_consumption/numberoftrips),2)         As FuelConsumption
 				  , round((fd.co2_emission    /numberoftrips),2)         As CO2Emission
 				  , fd.idle_duration                                     as IdleDuration
@@ -568,6 +594,12 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactivesx
 				  , idling_consumption                                     as IdlingConsumption
 				  , dpa_score                                              as DPAScore
+                  , StartDate
+                  , EndDate
+                  ,  startpositionlattitude
+				  ,  startpositionlongitude
+				  , endpositionlattitude
+				  , endpositionlongitude
 				FROM
 					CTE_FleetDeatils fd
 				    left join

@@ -60,7 +60,6 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   tableInfoObj: any = {};
   tableDetailsInfoObj: any = {};
   totalDriverCount : number = 0;
-
   tripTraceArray: any = [];
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
@@ -100,12 +99,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     availableTime:true,
     serviceTime:true,
     restTime:true,
-    driveTime:true,
-    
-
+    driveTime:true
   };
-
-  showDetailsField:any={
+  showDetailsField: any = {
     endTime:true,
     startTime:true,
     workTime:true,
@@ -113,11 +109,8 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     serviceTime:true,
     restTime:true,
     driveTime:true,
-    specificdetailchart : true,
-
-
+    specificdetailchart : true
   }
-  
   finalDriverList : any = [];
   finalVehicleList : any =[];
   prefMapData: any = [
@@ -142,39 +135,39 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       value: 'totalresttime'
     },
     {
-      key: 'da_report_alldetails_driverid',
+      key: 'rp_dtm_report_alldetails_driverid',
       value: 'driverId'
     },
     {
-      key: 'da_report_alldetails_drivername',
+      key: 'rp_dtm_report_alldetails_drivername',
       value: 'driverName'
     },
     {
-      key: 'da_report_alldetails_endtime',
+      key: 'rp_dtm_report_alldetails_endtime',
       value: 'endTime'
     },
     {
-      key: 'da_report_alldetails_starttime',
+      key: 'rp_dtm_report_alldetails_starttime',
       value: 'startTime'
     },
     {
-      key: 'da_report_alldetails_worktime',
+      key: 'rp_dtm_report_alldetails_worktime',
       value: 'workTime'
     },
     {
-      key: 'da_report_alldetails_availabletime',
+      key: 'rp_dtm_report_alldetails_availabletime',
       value: 'availableTime'
     },
     {
-      key: 'da_report_alldetails_servicetime',
+      key: 'rp_dtm_report_alldetails_servicetime',
       value: 'serviceTime'
     },
     {
-      key: 'da_report_alldetails_resttime',
+      key: 'rp_dtm_report_alldetails_resttime',
       value: 'restTime'
     },
     {
-      key: 'da_report_alldetails_drivetime',
+      key: 'rp_dtm_report_alldetails_drivetime',
       value: 'driveTime'
     },
     {
@@ -214,31 +207,31 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       value: 'endTime'
     },
     {
-      key: 'da_report_bydriver_date',
+      key: 'rp_dtm_report_bydriver_date',
       value: 'startTime'
     },
     {
-      key: 'da_report_bydriver_worktime',
+      key: 'rp_dtm_report_bydriver_worktime',
       value: 'workTime'
     },
     {
-      key: 'da_report_bydriver_availabletime',
+      key: 'rp_dtm_report_bydriver_availabletime',
       value: 'availableTime'
     },
     {
-      key: 'da_report_bydriver_servicetime',
+      key: 'rp_dtm_report_bydriver_servicetime',
       value: 'serviceTime'
     },
     {
-      key: 'da_report_bydriver_resttime',
+      key: 'rp_dtm_report_bydriver_resttime',
       value: 'restTime'
     },
     {
-      key: 'da_report_bydriver_drivetime',
+      key: 'rp_dtm_report_bydriver_drivetime',
       value: 'driveTime'
     },
     {
-      key: 'da_report_chart_zoomchart',
+      key: 'rp_dtm_report_chart_zoomchart',
       value: 'specificdetailchart'
     }
   ];
@@ -362,50 +355,79 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   
   }
   getReportPreferences(){
-    this.reportService.getUserPreferenceReport(this.reportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
+    this.reportService.getReportUserPreference(this.reportId).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
-      
+      this.resetPref();
+      this.preparePrefData(this.reportPrefData);
       this.setDisplayColumnBaseOnPref();
-      
       this.getOnLoadData();
     }, (error) => {
       this.reportPrefData = [];
+      this.resetPref();
+      this.preparePrefData(this.reportPrefData);
       this.setDisplayColumnBaseOnPref();
-      
       this.getOnLoadData();
     });
   }
 
+  allDriverPrefData: any = [];
+  specificDriverPrefData: any = [];
+  chartPrefData: any = [];
+  resetPref(){
+    this.allDriverPrefData = [];
+    this.specificDriverPrefData = [];
+    this.chartPrefData = [];
+  }  
+
+  preparePrefData(prefData: any){
+    if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
+      prefData.subReportUserPreferences.forEach(element => {
+        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+          element.subReportUserPreferences.forEach(item => {
+            let _data: any = item;
+            if(item.key.includes('rp_dtm_report_chart_')){
+              this.chartPrefData.push(_data);
+            }else if(item.key.includes('rp_dtm_report_alldetails_')){
+              this.allDriverPrefData.push(_data);
+           }else if(item.key.includes('rp_dtm_report_bydriver_')){
+            this.specificDriverPrefData.push(_data);
+           }
+          });
+        }
+      });
+      this.setDisplayColumnBaseOnPref();
+    }
+  }
+
   setDisplayColumnBaseOnPref(){
-    let filterPref = this.reportPrefData.filter(i => i.state == 'I');
-    if(filterPref.length > 0){
-      filterPref.forEach(element => {
+    let filterAllDrvPref = this.allDriverPrefData.filter(i => i.state == 'I');
+    let filterSpecificDrvPref = this.specificDriverPrefData.filter(i => i.state == 'I');
+    
+    if(filterAllDrvPref.length > 0){
+      filterAllDrvPref.forEach(element => {
         let search = this.prefMapData.filter(i => i.key == element.key);
         if(search.length > 0){
           let index = this.displayedColumns.indexOf(search[0].value);
           if (index > -1) {
               let _value = search[0]['value'];
-
               this.displayedColumns.splice(index, 1);
               this.showField[_value] = false;
-
-          }
-          let detailIndex = this.detaildisplayedColumns.indexOf(search[0].value);
-          this.detaildisplayedColumns.indexOf(search[0].value);
-          if (index > -1) {
-              let _detailvalue = search[0]['value'];
-              this.detaildisplayedColumns.splice(detailIndex, 1);
-              this.showDetailsField[_detailvalue] = false;
           }
         }
+      });
+    }
 
-      //   if(element.key == 'da_report_details_vehiclename'){
-      //     this.showField[element.key] = false;
-      //   }else if(element.key == 'da_report_details_vin'){
-      //     this.showField.vin = false;
-      //   }else if(element.key == 'da_report_details_registrationnumber'){
-      //     this.showField.regNo = false;
-      //   }
+    if(filterSpecificDrvPref.length > 0){
+      filterSpecificDrvPref.forEach(item => {
+        let _search = this.prefMapData.filter(i => i.key == item.key);
+        if(_search.length > 0){
+          let detailIndex = this.detaildisplayedColumns.indexOf(_search[0].value);
+          if (detailIndex > -1) {
+            let _detailvalue = _search[0]['value'];
+            this.detaildisplayedColumns.splice(detailIndex, 1);
+            this.showDetailsField[_detailvalue] = false;
+          }
+        }
       });
     }
   }
@@ -536,6 +558,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 
   allDriversSelected = true;
   allDriverData : any;
+  graphPayload : any;
   onSearch(){
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
@@ -560,8 +583,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       _driverIds.shift();
     }
     else {
-      this.allDriversSelected = false
+      this.allDriversSelected = false;
       _driverIds = this.driverListData.filter(item => item.driverID == (this.driverTimeForm.controls.driver.value)).map(data=>data.driverID);
+     
     }
     
    
@@ -636,7 +660,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           this.updateDataSource(tableData);
         }
         else{
-          this.driverSelected = true;
+         // this.driverSelected = true;
           this.driverDetails = [];
           this.driverDetails = [...tripData.driverActivities];
           let updatedDriverData = this.makeDetailDriverList(tripData.driverActivities);
@@ -644,6 +668,12 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
           this.detailConvertedData = [];
           this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
           this.setGeneralDriverDetailValue(updatedDriverData[0]["cummulativeDriverList"]);
+          this.graphPayload = {
+            "startDateTime": _startTime,
+            "endDateTime": _endTime,
+            "driverId": _driverIds[0]
+    
+          }
         }
        
 
@@ -958,58 +988,18 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.dataSource.filter = filterValue;
   }
 
-  getAllSummaryData(){
-    if(this.initData.length > 0){
-      
-      let numberOfTrips_Val:any ; let distanceDone_Val:any; let idleDuration_Val :any;
-      let averageDistPerDay_Val:any; let numbeOfVehicles_Val :any;
-    
-      // if(this.idleDurationStatus){
-      //   idleDuration_Val = idleDuration;     
-      // }
-      // else{
-      //   idleDuration_Val = '-';       
-      // }
-      // if(this.noOfVehStatus){
-      //   numbeOfVehicles_Val = numbeOfVehicles;      
-      // }
-      // else{
-      //   numbeOfVehicles_Val ='-';
-      // }
-      // if(this.avgDistanceStatus){
-      //   averageDistPerDay_Val =  averageDistPerDay;       
-      // }
-      // else{
-      //   averageDistPerDay_Val ='-';       
-      // }
-      // if(this.noOfTripsStatus){
-      //   numberOfTrips_Val = numberOfTrips;      
-      // }
-      // else{
-      //   numberOfTrips_Val='-';      
-      // }
-      // if(this.totalDistanceStatus){
-      //   distanceDone_Val = distanceDone;
-      // }
-      // else{
-      //   distanceDone_Val ='-';       
-      // }    
-      this.summaryObj=[
-        ['Driver Time Report', new Date(), this.fromDisplayDate, this.toDisplayDate,
-          this.selectedVehicleGroup, this.selectedVehicle, this.totalDriverCount, this.tableInfoObj.driveTime, 
-          this.tableInfoObj.workTime, this.tableInfoObj.availableTime, this.tableInfoObj.restTime
-        ]
-      ];
-    }
-  }
-
-  exportAsExcelFile(){    
-  this.getAllSummaryData();
+  exportAsExcelFile(){      
   const title = 'Driver Time Report';
   const summary = 'Summary Section';
   const detail = 'Detail Section';
-  const header = ['Driver Name', 'Driver Id', 'Start Time', 'End Time', 'Drive Time', 'Work Time', 'Service Time', 'Rest Time', 'Available Time'];
-  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Drivers Count', 'Total Drive Time', 'Total Work Time', 'Total Available Time', 'Total Rest Time'];
+  const header = ['Driver Name', 'Driver Id', 'Start Time', 'End Time', 'Drive Time(hh:mm)', 'Work Time(hh:mm)', 'Service Time(hh:mm)', 'Rest Time(hh:mm)', 'Available Time(hh:mm)'];
+  const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Drivers Count', 'Total Drive Time(hh:mm)', 'Total Work Time(hh:mm)', 'Total Available Time(hh:mm)', 'Total Rest Time(hh:mm)'];
+  this.summaryObj=[
+    ['Driver Time Report', new Date(), this.fromDisplayDate, this.toDisplayDate,
+      this.selectedVehicleGroup, this.selectedVehicle, this.totalDriverCount, this.tableInfoObj.driveTime, 
+      this.tableInfoObj.workTime, this.tableInfoObj.availableTime, this.tableInfoObj.restTime
+    ]
+  ];
   const summaryData= this.summaryObj;
   
   //Create workbook and worksheet
@@ -1148,6 +1138,11 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
  
     this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     this.driverSelected = true;
+    this.graphPayload = {
+      "startDateTime": this.startDateValue,
+      "endDateTime": this.endDateValue,
+      "driverId": _row.driverID
+    }
     // this.driverDetails = 
     //   [
     //           {

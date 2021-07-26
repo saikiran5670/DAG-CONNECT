@@ -13,6 +13,9 @@ import { Variable } from '@angular/compiler/src/render3/r3_ast';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { OrganizationService } from './services/organization.service';
 import { AuthService } from './services/auth.service';
+import { MessageService } from './services/message.service';
+import { timer, Subscription } from 'rxjs';
+import { ReportService } from './services/report.service';
 
 @Component({
   selector: 'app-root',
@@ -60,7 +63,7 @@ export class AppComponent {
   orgContextType: any = false;
   private pagetTitles = {
     dashboard: 'Dashboard',
-    livefleet: 'Live Fleet',
+    fleetoverview: 'Fleet Overview',
     logbook: 'Log Book',
     tripreport: 'Trip Report',
     triptracing: 'Trip Tracing',
@@ -116,7 +119,7 @@ export class AppComponent {
       icon: "map",
       externalLink: false,
       pageTitles: {
-        livefleet: 'Live Fleet',
+        fleetoverview: 'Fleet Overview',
         logbook: 'Log Book'
       }
     },
@@ -241,8 +244,13 @@ export class AppComponent {
     timeRangeSelection: "",
     filterPrefTimeFormat: ""
   };
+  subscribeTimer: any;
+  timeLeft: number = 120;
+  messages: any[] = [];
+  subscription: Subscription;
+  isFleetOverview: boolean = false;
 
-  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService) {
+  constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -258,7 +266,12 @@ export class AppComponent {
       //this.getAccountInfo();
       // this.getNavigationMenu();
     });
-
+    //ToDo: below part to be removed after preferences/dashboard part is developed
+    localStorage.setItem("liveFleetMileageThreshold", "1000");
+    localStorage.setItem("liveFleetUtilizationThreshold", "5");
+    if(localStorage.getItem("liveFleetTimer")){
+      this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
+    }
     this.dataInterchangeService.userNameInterface$.subscribe(data => {
       if (data) {
         this.userFullName = `${data.salutation} ${data.firstName} ${data.lastName}`;
@@ -323,6 +336,7 @@ export class AppComponent {
           this.dataInterchangeService.getSettingTabStatus(false);
         }
         this.setPageTitle();
+        this.showSpinner();
       }
 
     });
@@ -331,6 +345,22 @@ export class AppComponent {
     // this.isMobile();
     // this.isTablet();
     // this.isDesktop();
+    this.subscription = this.messageService.getMessage().subscribe(message => {
+      if (message.key.indexOf("refreshTimer") !== -1) {
+        this.refreshTimer();
+        this.isFleetOverview = true;
+      }
+    });
+
+    this.messageService.notifyTimerUpdate().subscribe(timer => {
+      if (timer.value > 0) {
+        if(localStorage.getItem("liveFleetTimer")){
+          this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
+        }else{
+          this.timeLeft = parseInt(timer.value);
+        }
+      }
+    });
   }
 
   getNavigationMenu() {
@@ -350,6 +380,7 @@ export class AppComponent {
     }
     this.accountService.getMenuFeatures(featureMenuObj).subscribe((result: any) => {
       this.getMenu(result, 'orgRoleChange');
+      this.getReportDetails();
     }, (error) => {
       console.log(error);
     });
@@ -395,8 +426,55 @@ export class AppComponent {
     //     elem.link = this.menuStatus[elem.url].link;
     //   }
     //   })
+  }
 
+  reportListData: any = [];
+  getReportDetails(){
+    this.reportService.getReportDetails().subscribe((reportList: any)=>{
+      this.reportListData = reportList.reportDetails;
+      this.getFleetOverviewPreferences(this.reportListData);
+    }, (error)=>{
+      console.log('Report not found...', error);
+      this.reportListData = []
+    });
+  }
 
+  reportId: any;
+  getFleetOverviewPreferences(reportList: any){
+    let repoId: any = this.reportListData.filter(i => i.name == 'Fleet Overview');
+    if(repoId.length > 0){
+      this.reportId = repoId[0].id; 
+    }else{
+      this.reportId = 17; //- hard coded for Fleet Overview
+    }
+    this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
+      let _prefData = prefData['userPreferences'];
+      this.getTranslatedColumnName(_prefData);
+    }, (error)=>{
+      console.log('Pref not found...')
+    });
+  }
+
+  timerPrefData: any = [];
+  getTranslatedColumnName(prefData: any){
+    if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
+      prefData.subReportUserPreferences.forEach(element => {
+        if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
+          element.subReportUserPreferences.forEach(item => {
+            if(item.key.includes('rp_fo_fleetoverview_settimer_')){
+              this.timerPrefData.push(item);
+            }
+          });
+        }
+      });
+    }
+    if(this.timerPrefData && this.timerPrefData.length > 0){
+      let _timeval = this.timerPrefData[0] ? this.timerPrefData[0].thresholdValue : 2; //-- default 2 Mins
+      if(_timeval){
+        localStorage.setItem("liveFleetTimer", (_timeval*60).toString());  // default set
+        this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
+      }
+    }
   }
 
   getMenu(data: any, from?: any) {
@@ -879,6 +957,49 @@ export class AppComponent {
     }, (error) => {
       console.log(error)
     });
+  }
+
+  sendMessage(): void {
+    // send message to subscribers via observable subject
+    this.messageService.sendMessage('refreshData');
+  }
+
+  sub: Subscription;
+  startTimer() {
+    const source = timer(1000, 2000);
+    this.sub = source.subscribe(val => {
+      this.subscribeTimer = this.transform(this.timeLeft - val);
+      if(this.timeLeft - val == 0){
+        this.sendMessage();
+        this.refreshTimer();
+      }
+    });
+  }
+
+  transform(value: number): string {
+    const minutes: number = Math.floor(value / 60);
+    return minutes + ':' + (value - minutes * 60);
+  }
+
+  clearMessages(): void {
+      // clear messages
+      this.messageService.clearMessages();
+  }
+
+  refreshTimer(){
+    if(this.sub)
+      this.sub.unsubscribe();
+    this.startTimer();
+  }
+
+  showSpinner(){
+    if((this.router.url).indexOf("/fleetoverview") !== -1)
+      this.isFleetOverview = true;
+    else{
+      this.isFleetOverview = false;
+      if(this.sub)
+        this.sub.unsubscribe();
+    }
   }
 
 }
