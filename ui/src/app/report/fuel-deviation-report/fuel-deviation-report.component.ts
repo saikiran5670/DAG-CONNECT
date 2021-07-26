@@ -69,7 +69,7 @@ export class FuelDeviationReportComponent implements OnInit {
   wholeFuelDeviationData: any = [];
   tableInfoObj: any = {};
   fuelDeviationReportId: any = 7; // hard coded for fuel deviation report pref.
-  displayedColumns = ['All', 'vin', 'odometer', 'vehicleName', 'registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
+  displayedColumns = ['All', 'fuelEventType', 'fuelDiffernce', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
   startDateValue: any;
   tableExpandPanel: boolean = true;
   last3MonthDate: any;
@@ -94,31 +94,31 @@ export class FuelDeviationReportComponent implements OnInit {
   prefMapData: any = [
     {
       key: 'rp_fd_details_averageweight',
-      value: 'averageweight'
+      value: 'averageWeight'
     },
     {
       key: 'rp_fd_details_enddate',
-      value: 'enddate'
+      value: 'endTimeStamp'
     },
     {
       key: 'rp_fd_details_fuelconsumed',
-      value: 'fuelconsumed'
+      value: 'fuelConsumed'
     },
     {
       key: 'rp_fd_details_startdate',
-      value: 'startdate'
+      value: 'startTimeStamp'
     },
     {
       key: 'rp_fd_details_drivingtime',
-      value: 'drivingtime'
+      value: 'drivingTime'
     },
     {
       key: 'rp_fd_details_startposition',
-      value: 'startposition'
+      value: 'startPosition'
     },
     {
       key: 'rp_fd_details_difference',
-      value: 'difference'
+      value: 'fuelDiffernce'
     },
     {
       key: 'rp_fd_details_alerts',
@@ -126,15 +126,15 @@ export class FuelDeviationReportComponent implements OnInit {
     },
     {
       key: 'rp_fd_details_idleduration',
-      value: 'idleduration'
+      value: 'idleDuration'
     },
     {
       key: 'rp_fd_details_endposition',
-      value: 'endposition'
+      value: 'endPosition'
     },
     {
       key: 'rp_fd_details_regplatenumber',
-      value: 'regplatenumber'
+      value: 'registrationNo'
     },
     {
       key: 'rp_fd_details_odometer',
@@ -142,7 +142,7 @@ export class FuelDeviationReportComponent implements OnInit {
     },
     {
       key: 'rp_fd_details_averagespeed',
-      value: 'averagespeed'
+      value: 'averageSpeed'
     },
     {
       key: 'rp_fd_details_distance',
@@ -150,11 +150,11 @@ export class FuelDeviationReportComponent implements OnInit {
     },
     {
       key: 'rp_fd_details_date',
-      value: 'date'
+      value: 'eventTime'
     },
     {
       key: 'rp_fd_details_type',
-      value: 'type'
+      value: 'fuelEventType'
     },
     {
       key: 'rp_fd_details_vin',
@@ -162,7 +162,7 @@ export class FuelDeviationReportComponent implements OnInit {
     },
     {
       key: 'rp_fd_details_vehiclename',
-      value: 'vehiclename'
+      value: 'vehicleName'
     }
   ];
 
@@ -748,8 +748,8 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       this.reportService.getFuelDeviationReportDetails(reportDataObj).subscribe((_fuelDeviationData: any) => {
         //console.log(_fuelDeviationData);
         this.hideloader();
-        //this.fuelDeviationData = this.reportMapService.getConvertedDataBasedOnPref(_fuelDeviationData.data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-        //this.setTableInfo();
+        this.fuelDeviationData = this.reportMapService.convertFuelDeviationDataBasedOnPref(_fuelDeviationData.data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+        this.setTableInfo();
         this.updateDataSource(this.fuelDeviationData);
       }, (error)=>{
         //console.log(error);
@@ -764,8 +764,6 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';
-    let vin: any = '';
-    let plateNo: any = '';
     let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.fuelDeviationForm.controls.vehicleGroup.value));
     if(vehGrpCount.length > 0){
       vehGrpName = vehGrpCount[0].vehicleGroupName;
@@ -773,16 +771,12 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.fuelDeviationForm.controls.vehicle.value));
     if(vehCount.length > 0){
       vehName = vehCount[0].vehicleName;
-      vin = vehCount[0].vin;
-      plateNo = vehCount[0].registrationNo;
     }
     this.tableInfoObj = {
       fromDate: this.formStartDate(this.startDateValue),
       endDate: this.formStartDate(this.endDateValue),
       vehGroupName: vehGrpName,
-      vehicleName: vehName,
-      vin: vin,
-      regNo: plateNo
+      vehicleName: vehName
     }
   }
 
@@ -911,6 +905,59 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
 
   setMapToLocation(_position){
     this.hereMap.setCenter({lat: _position.lat, lng: _position.lng}, 'default');
+  }
+
+  applyFilter(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // dataSource defaults to lowercase matches
+    this.dataSource.filter = filterValue;
+  }
+
+  exportAsExcelFile() {
+
+  }
+
+  exportAsPDFFile() {
+
+  }
+
+  masterToggleForFuelDeviationEntry() {
+    if(this.isAllSelectedForFuelEntry()) {
+      this.selectedFuelDeviationEntry.clear();
+      this.showMap = false;
+    }
+    else {
+      this.dataSource.data.forEach((row) => {
+        this.selectedFuelDeviationEntry.select(row);
+      });
+      this.showMap = true;
+    }
+  }
+
+  isAllSelectedForFuelEntry() {
+    const numSelected = this.selectedFuelDeviationEntry.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForFuelEntry(row?: any): string {
+    if (row)
+      return `${this.isAllSelectedForFuelEntry() ? 'select' : 'deselect'} all`;
+    else
+      return `${this.selectedFuelDeviationEntry.isSelected(row) ? 'deselect' : 'select'
+        } row`;
+  }
+
+  pageSizeUpdated(_event) {
+    // setTimeout(() => {
+    //   document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
+    // }, 100);
+  }
+
+  fuelEntryCheckboxClicked(event: any, row: any) {
+    this.showMap = this.selectedFuelDeviationEntry.selected.length > 0 ? true : false;
+    if(event.checked) { }
+    else { }
   }
 
 }
