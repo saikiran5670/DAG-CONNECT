@@ -45,6 +45,11 @@ export class DetailDriverReportComponent implements OnInit {
   @Input() displayedColumns:any;
   @Input() driverSelected : boolean;
   @Input() graphPayload : any;
+  @Input() endDateValue: any;
+  @Input() startDateValue: any;
+  @Input() _vinData: any;
+  @Input() graphData: any;
+  idleDuration: any =[];
   //  displayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   //  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   //  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
@@ -268,8 +273,8 @@ tripTraceArray: any = [];
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   vehicleGrpDD: any = [];
   selectionTab: any;
-  startDateValue: any = 0;
-  endDateValue: any = 0;
+  // startDateValue: any = 0;
+  // endDateValue: any = 0;
   last3MonthDate: any;
   todayDate: any;
   vehicleDD: any = [];
@@ -419,7 +424,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 't'    
+          labelString: 'Ton'    
         }
       }]
     }
@@ -1297,9 +1302,10 @@ createEndMarker(){
       "LanguageCode": "EN-GB",
       "driverId": "NL B000384974000000"
     }
-    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
-      this.setChartData(graphData["fleetfuelGraph"]);
-    });
+    // this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
+    //   this.setChartData(graphData["fleetfuelGraph"]);
+    // });
+    this.setChartData(this.graphData["fleetfuelGraph"]);
     //if(_vinData.length === 1){
     //  this.showDetailedReport = true;
     //}
@@ -1435,7 +1441,7 @@ createEndMarker(){
       this.fuelConsumptionChart.push(e.fuelConsumtion);
       let minutes = this.convertTimeToMinutes(e.idleDuration);
       // this.idleDuration.push(e.idleDuration);
-      //this.idleDuration.push(minutes);
+      this.idleDuration.push(minutes);
     })
 
     this.barChartLegend = true;
@@ -1475,13 +1481,13 @@ createEndMarker(){
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
-  // if(this.ConsumedChartType == 'Bar'){
-  //   //this.barChartData6= [
-  //     { data: this.idleDuration,
-  //       label: 'Values ()',
-  //       backgroundColor: '#7BC5EC',
-  //       hoverBackgroundColor: '#7BC5EC', }];
-  // }
+  if(this.ConsumedChartType == 'Bar'){
+    this.barChartData6= [
+      { data: this.idleDuration,
+        label: 'Values ()',
+        backgroundColor: '#7BC5EC',
+        hoverBackgroundColor: '#7BC5EC', }];
+  }
 
     //line chart for fuel consumed
     if(this.ConsumedChartType == 'Line')
@@ -1561,7 +1567,7 @@ createEndMarker(){
   }
     if(this.DurationChartType == 'Line')
     {
-   // this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
+   this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
   }
   
     this.lineChartLabels = this.barChartLabels;
