@@ -1,4 +1,4 @@
-import { Input, ViewChild } from '@angular/core';
+import { ElementRef, Input, ViewChild } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { EmailValidator, FormArray, FormBuilder } from '@angular/forms';
@@ -125,11 +125,12 @@ export class CreateNotificationsAlertComponent implements OnInit {
   // TooltipLabel = TooltipLabel;
   CountryISO;
   preferredCountries: CountryISO[];
+  isDuplicateRecipientLabel: boolean= false;
 
   @ViewChild(NotificationAdvancedFilterComponent)
   notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
 
-  constructor(private _formBuilder: FormBuilder, private alertService: AlertService) { }
+  constructor(private _formBuilder: FormBuilder, private alertService: AlertService, private el: ElementRef) { }
 
   ngOnInit(): void {
     console.log("action type=" + this.actionType);
@@ -359,6 +360,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
     }
     //for edit or duplicate functionality
     else {
+      this.notificationForm.get("recipientLabel").reset();
       this.contactModeType = data.notificationModeType;
       this.weblimitButton = data.notificationLimits[0].notificationModeType;
       this.limitButton = data.notificationLimits[0].notificationModeType;
@@ -544,7 +546,14 @@ export class CreateNotificationsAlertComponent implements OnInit {
 
   }
 
+  duplicateRecipientLabel(){
+    this.isDuplicateRecipientLabel= true;
+    const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'contactMode' + '"]');
+    invalidControl.focus();
+  }
+
   getNotificationDetails(): any {
+    this.isDuplicateRecipientLabel= false;
     this.notificationReceipients = [];
     let WsData;
     let EmailData;

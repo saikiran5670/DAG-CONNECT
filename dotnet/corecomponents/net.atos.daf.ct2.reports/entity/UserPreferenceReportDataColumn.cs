@@ -23,7 +23,7 @@
         public string ChartType { get; set; }
         public string ReportPreferenceType { get; set; }
         public string ThresholdType { get; set; }
-        public long ThresholdValue { get; set; }
+        public double ThresholdValue { get; set; }
         public int[] SubDataAttributes { get; set; }
         private char AttributeType { get; set; }
         public int? TargetProfileId { get; set; }
