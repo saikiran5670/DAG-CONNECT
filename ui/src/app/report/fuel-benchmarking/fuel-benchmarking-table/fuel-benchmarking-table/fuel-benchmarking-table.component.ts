@@ -132,7 +132,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   }
   
   getUserPreferenceReport() {
-    this.reportService.getUserPreferenceReport(6, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+    this.reportService.getReportUserPreference(6).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.loadBenchmarkTable();
     });
@@ -141,17 +141,19 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   updateDoughnutChartData(rakingData) {
     let highthresholdValue;
     let lowthresholdValue;
-    for (let pref of this.reportPrefData) {
-      if (pref.key == "da_report_component_highfuelefficiency") {
-        highthresholdValue = pref.thresholdValue;
-      } else if (pref.key == "da_report_component_lowfuelefficiency") {
-        lowthresholdValue = pref.thresholdValue;
-      } else if (pref.key == "rp_fb_chart_fuelconsumption") {
-        if(pref.chartType == "P") {
-          this.doughnutChartType = 'pie';
-         } else {
-          this.doughnutChartType = 'doughnut';
-         }
+    for (let pref1 of this.reportPrefData.subReportUserPreferences) {
+      for (let pref of pref1.subReportUserPreferences) {
+        if (pref.key == "rp_fb_component_highfuelefficiency") {
+          highthresholdValue = pref.thresholdValue;
+        } else if (pref.key == "rp_fb_component_lowfuelefficiency") {
+          lowthresholdValue = pref.thresholdValue;
+        } else if (pref.key == "rp_fb_chart_fuelconsumption") {
+          if(pref.chartType == "P") {
+            this.doughnutChartType = 'pie';
+          } else {
+            this.doughnutChartType = 'doughnut';
+          }
+        }
       }
     }
     let high = 0;
