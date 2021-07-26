@@ -26,7 +26,7 @@ CREATE TABLE if not exists tripdetail.tripalertdaytimeconfigparam
 TABLESPACE pg_default;
 
 ALTER TABLE  tripdetail.tripalertdaytimeconfigparam 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -76,7 +76,7 @@ CREATE TABLE if not exists tripdetail.tripalertlandmarkconfigparam
 TABLESPACE pg_default;
 
 ALTER TABLE  tripdetail.tripalertlandmarkconfigparam 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -123,7 +123,7 @@ CREATE TABLE if not exists tripdetail.tripalertgenconfigparam
 TABLESPACE pg_default;
 
 ALTER TABLE  tripdetail.tripalertgenconfigparam 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
