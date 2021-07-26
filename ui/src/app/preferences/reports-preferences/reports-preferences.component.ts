@@ -1,5 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AccountService } from 'src/app/services/account.service';
 import { ReportService } from 'src/app/services/report.service';
+import { TranslationService } from 'src/app/services/translation.service';
+import { FleetFuelPreferencesComponent } from './fleet-fuel-preferences/fleet-fuel-preferences.component';
 
 @Component({
   selector: 'app-reports-preferences',
@@ -9,6 +12,8 @@ import { ReportService } from 'src/app/services/report.service';
 
 export class ReportsPreferencesComponent implements OnInit {
   @Input() translationData: any = {};
+  @ViewChild('fleetFuelPerferencesVehicle') fleetFuelPerferencesVehicle: FleetFuelPreferencesComponent;
+  @ViewChild('fleetFuelPerferencesDriver') fleetFuelPerferencesDriver: FleetFuelPreferencesComponent;
   displayMessage: any = '';
   updateMsgVisible: boolean = false;
   showLoadingIndicator: any = false;
@@ -27,11 +32,13 @@ export class ReportsPreferencesComponent implements OnInit {
   editFuelDeviationPerferencesFlag: boolean = false;
   showFleetFuelPerferences: boolean = false;
   editFleetFuelPerferencesFlag: boolean = false;
+  generalPreferences: any;
 
-  constructor( private reportService: ReportService ) { }
+  constructor(private reportService: ReportService, private translationService: TranslationService, private accountService: AccountService) { }
 
   ngOnInit() {
     this.loadReportData();
+    this.getPreferences();
   }
 
   loadReportData(){
@@ -44,6 +51,11 @@ export class ReportsPreferencesComponent implements OnInit {
       this.hideloader();
       this.reportListData = [];
     });
+  }
+
+  getPreferences() {
+    let languageCode = JSON.parse(localStorage.getItem('language')).code;
+    this.translationService.getPreferences(languageCode).subscribe((res) => this.generalPreferences = res)
   }
 
   hideloader() {
@@ -110,6 +122,38 @@ export class ReportsPreferencesComponent implements OnInit {
     this.showFleetFuelPerferences = false;
   }
 
+  onCancel(){
+    this.updateFleetFuelPerferencesFlag({flag: false, msg: ''});
+    this.onReset();
+  }
+
+  onReset(){
+    this.fleetFuelPerferencesVehicle.setColumnCheckbox();
+    this.fleetFuelPerferencesDriver.setColumnCheckbox();
+  }
+
+  onConfirm() {
+    let vehicleObj = this.fleetFuelPerferencesVehicle.onConfirm();
+    let driverObj = this.fleetFuelPerferencesDriver.onConfirm();
+    let objData: any = {
+      reportId: this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id,
+      attributes: [...vehicleObj, ...driverObj]
+    };
+    this.reportService.updateReportUserPreference(objData).subscribe((res: any) => {
+      this.updateFleetFuelPerferencesFlag({ flag: false, msg: this.getSuccessMsg() });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    });
+  }
+
+  getSuccessMsg() {
+    if (this.translationData.lblDetailssavesuccessfully)
+      return this.translationData.lblDetailssavesuccessfully;
+    else
+      return ("Details save successfully");
+  }
+
   editDriverTimePerferences(){
     this.editDriverTimePerferencesFlag = true;
     this.showDriverTimePerferences = false;
@@ -154,13 +198,12 @@ export class ReportsPreferencesComponent implements OnInit {
 
   updateFuelBenchmarkReportFlag(retObj: any){
     if(retObj){
-      this.editFuelBenchmarkPerferencesFlag = retObj.flag;
       if(retObj.msg && retObj.msg != ''){
         this.successMsgBlink(retObj.msg);
       }
-    }else{
-      this.editFuelBenchmarkPerferencesFlag = false; // hard coded
     }
+    this.editFuelBenchmarkPerferencesFlag = false; // hard coded
+    this.showFuelBenchmarkPerferences = false;
   }
 
   updateFuelDeviationReportFlag(retObj: any){
@@ -177,6 +220,20 @@ export class ReportsPreferencesComponent implements OnInit {
   onTabChanged(event) {
     // event.stopPropogation();
     // event.preventDefault();
+  }
+
+  validateRequiredField() {
+    if(this.fleetFuelPerferencesVehicle) {
+      let VehicleDetailsV = this.fleetFuelPerferencesVehicle.validateRequiredField('VehicleDetails');
+      let SingleVehicleDetailsV = this.fleetFuelPerferencesVehicle.validateRequiredField('SingleVehicleDetails');
+      let VehicleDetailsD = this.fleetFuelPerferencesDriver.validateRequiredField('VehicleDetails');
+      let SingleVehicleDetailsD = this.fleetFuelPerferencesDriver.validateRequiredField('SingleVehicleDetails');
+      if(VehicleDetailsV || SingleVehicleDetailsV || VehicleDetailsD || SingleVehicleDetailsD) {
+        return true;
+      }
+      return false;
+    }
+    return false;
   }
 
 }

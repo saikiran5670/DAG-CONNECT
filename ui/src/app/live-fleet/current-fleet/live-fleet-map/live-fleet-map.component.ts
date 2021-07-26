@@ -18,6 +18,8 @@ import { OrganizationService } from '../../../services/organization.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FleetMapService } from '../fleet-map.service'
+import { DataInterchangeService } from '../../../services/data-interchange.service';
+import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 
 declare var H: any;
 
@@ -50,11 +52,16 @@ export class LiveFleetMapComponent implements OnInit {
   displayRouteView: any = 'C';
   @Input() translationData:any;
   @Input()  detailsData : any;
+  @Input() preferenceObject : any;
   @ViewChild("map") public mapElement: ElementRef;
   accountId:any;
   accountPrefObj : any;
   tripTraceArray = [];
   searchMarker: any = {};
+  dataService: any;
+  searchStr: null;
+  suggestionData : any;
+
   constructor(
     private translationService: TranslationService,
     private _formBuilder: FormBuilder,
@@ -65,17 +72,39 @@ export class LiveFleetMapComponent implements OnInit {
     private organizationService: OrganizationService,
     private _configService: ConfigService,
     private hereService: HereService,
-    private fleetMapService:FleetMapService) {
+    private fleetMapService:FleetMapService,
+    private dataInterchangeService:DataInterchangeService,
+    private completerService: CompleterService) {
     this.map_key = _configService.getSettings("hereMap").api_key;
     //Add for Search Fucntionality with Zoom
     ///this.query = "starbucks";
     this.platform = new H.service.Platform({
       "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
-    //this.configureAutoSuggest();
+    this.configureAutoSuggest();
     //this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
+    this.dataInterchangeService.detailDataInterface$.subscribe(vehicleResponse => {
+    this.tripTraceArray = [];
 
+    if (vehicleResponse) {
+      if(!vehicleResponse.vehicleDetailsFlag){
+        this.tripTraceArray = vehicleResponse.data;
+        this.showIcons = true;
+
+      }
+      else{
+        this.tripTraceArray.push(vehicleResponse.data);
+        this.showIcons = false;
+
+      }
+    }
+    else {
+      this.showIcons = true;
+    }
+    
+      this.mapIconData();
+    })
   }
 
   ngOnInit(): void {
@@ -106,13 +135,48 @@ export class LiveFleetMapComponent implements OnInit {
     //this.tripTraceArray = this.detailsData;
     let _ui = this.fleetMapService.getUI();
    // this.fleetMapService.setIconsOnMap(this.detailsData);
-    this.showIcons = true;
+ 
     this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons);
 
     //this.fleetMapService.setIconsOnMap();
     //this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
     
 
+  }
+
+ 
+  private configureAutoSuggest(){
+    let searchParam = this.searchStr != null ? this.searchStr : '';
+    let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?'+'apiKey='+this.map_key +'&limit=5'+'&q='+searchParam ;
+  // let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
+    this.suggestionData = this.completerService.remote(
+    URL,'title','title');
+    this.suggestionData.dataField("items");
+    this.dataService = this.suggestionData;
+  }
+
+  onSearchFocus(){
+    this.searchStr = null;
+  }
+
+  onSearchSelected(selectedAddress: CompleterItem){
+    if(selectedAddress){
+      let id = selectedAddress["originalObject"]["id"];
+      let qParam = 'apiKey='+this.map_key + '&id='+ id;
+      this.hereService.lookUpSuggestion(qParam).subscribe((data: any) => {
+        this.searchMarker = {};
+        if(data && data.position && data.position.lat && data.position.lng){
+          let searchMarker = {
+            lat: data.position.lat,
+            lng: data.position.lng,
+            from: 'search'
+          }
+          this.fleetMapService.setMapToLocation(searchMarker);
+          //let _ui = this.fleetMapService.getUI();
+          //this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+        }
+      });
+    }
   }
 
   changeAlertSelection(_event){

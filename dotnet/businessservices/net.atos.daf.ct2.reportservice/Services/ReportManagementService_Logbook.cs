@@ -19,6 +19,15 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 var response = new LogbookFilterResponse() { LogbookSearchParameter = new LogbookSearchParameter() };
+
+
+                var enumTranslationList = await _reportManager.GetAlertCategory();
+                foreach (var item in enumTranslationList)
+                {
+                    response.LogbookSearchParameter.EnumTranslation.Add(_mapper.MapEnumTranslation(item));
+                }
+
+
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
                                                  .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
@@ -129,8 +138,8 @@ namespace net.atos.daf.ct2.reportservice.Services
                         if (alertThresholdDetails != null && alertThresholdDetails.Count > 0)
                         {
                             var alertThreshold = alertThresholdDetails.FirstOrDefault(w => w.AlertId == logbookDetail.AlertId && w.AlertLevel == logbookDetail.AlertLevel);
-                            logbookDetail.ThresholdValue = alertThreshold.ThresholdValue;
-                            logbookDetail.ThresholdUnit = alertThreshold.ThresholdUnit ?? string.Empty;
+                            logbookDetail.ThresholdValue = alertThreshold?.ThresholdValue ?? 0;
+                            logbookDetail.ThresholdUnit = alertThreshold?.ThresholdUnit ?? string.Empty;
 
                         }
 

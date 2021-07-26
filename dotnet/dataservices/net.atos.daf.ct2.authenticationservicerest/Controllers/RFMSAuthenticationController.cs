@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                         if (response != null && response.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response.AccessToken))
                         {
                             //Check for feature access
-                            var isExists = await _accountManager.CheckForFeatureAccessByEmailId(user.UserName, Constants.MainPolicy);
+                            var isExists = await _accountManager.CheckForFeatureAccessByEmailId(user.UserName, Constants.rFMSMainPolicy);
                             if (!isExists)
                                 return StatusCode(403, string.Empty);
 

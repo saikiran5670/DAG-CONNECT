@@ -143,20 +143,31 @@
           <mat-tab label="{{ translationData.lblVehicle || 'Vehicle' }}">
             <app-fleet-fuel-preferences *ngIf='showFleetFuelPerferences' tabName='Vehicle'
               [editFlag]='editFleetFuelPerferencesFlag' [reportListData]='reportListData'
-              [translationData]='translationData' (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)">
+              [translationData]='translationData' [generalPreferences]="generalPreferences" (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)" #fleetFuelPerferencesVehicle>
             </app-fleet-fuel-preferences>
           </mat-tab>
           <mat-tab label="{{ translationData.lblDriver || 'Driver' }}">
             <app-fleet-fuel-preferences *ngIf='showFleetFuelPerferences' tabName='Driver'
               [editFlag]='editFleetFuelPerferencesFlag' [reportListData]='reportListData'
-              [translationData]='translationData' (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)">
+              [translationData]='translationData' [generalPreferences]="generalPreferences" (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)" #fleetFuelPerferencesDriver>
             </app-fleet-fuel-preferences>
           </mat-tab>
         </mat-tab-group>
+        <!-- Button -->
+        <div
+          *ngIf='editFleetFuelPerferencesFlag'
+          fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
+          <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
+            translationData.lblCancel || 'Cancel' }}</button>
+          <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
+            translationData.lblReset || 'Reset' }}</button>
+          <button [disabled]="validateRequiredField()" class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
+            'Confirm') }}</button>
+        </div>
       </div>
     </mat-expansion-panel>
 
-    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showFuelDeviationPerferences"
+    <mat-expansion-panel *ngIf='false' class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showFuelDeviationPerferences"
       (opened)="showFuelDeviationPerferences == true" (closed)="showFuelDeviationPerferences == false">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>

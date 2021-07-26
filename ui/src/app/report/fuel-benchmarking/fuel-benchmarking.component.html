@@ -30,17 +30,17 @@
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
                   <div style='margin-top: 5px;'>
-                    <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday || 'Today' }}</button>
-                    <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday || 'Yesterday' }}</button>
-                    <button [disabled]="selectionTab == 'lastweek'" (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastWeek || 'Last Week' }}</button>
-                    <button [disabled]="selectionTab == 'lastmonth'" (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastMonth|| 'Last Month' }}</button>
-                    <button [disabled]="selectionTab == 'last3month'" (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
+                    <button [disabled]="selectionTab == 'today' || makeDisableTimePeriod" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday || 'Today' }}</button>
+                    <button [disabled]="selectionTab == 'yesterday' || makeDisableTimePeriod" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday || 'Yesterday' }}</button>
+                    <button [disabled]="selectionTab == 'lastweek' || makeDisableTimePeriod" (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastWeek || 'Last Week' }}</button>
+                    <button [disabled]="selectionTab == 'lastmonth' || makeDisableTimePeriod" (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastMonth|| 'Last Month' }}</button>
+                    <button [disabled]="selectionTab == 'last3month' || makeDisableTimePeriod" (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
                   </div>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span *ngIf="selectedBenchmarking == 'vehicleGroup'" class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline">
-                    <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
+                    <mat-select [disabled]="vehicleGrpDD.length == 0 || makeDisableVehicleGroup" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
                       <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
                           {{ rer.vehicleGroupName }}
                       </mat-option>
@@ -61,18 +61,20 @@
                       <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                         <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                           <mat-form-field appearance="outline">
-                            <input matInput [(ngModel)]="startDateValue" (dateChange)="changeStartDateEvent($event)" [min]='last3MonthDate' [max]='endDateValue' [matDatepicker]="startPicker" formControlName="startDate">
+                            <input matInput [(ngModel)]="startDateValue" (dateChange)="changeStartDateEvent($event)" [min]='last3MonthDate' [max]='endDateValue' [disabled]="makeDisableTimePeriod" [matDatepicker]="startPicker" formControlName="startDate">
                             <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
                             <mat-datepicker #startPicker></mat-datepicker>
                           </mat-form-field>
                         </div>
                         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                          <div [ngClass]="[ makeDisableTimePeriod ? 'makeDisableTimePeriod':'']">
                           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
                             <span class='timeAdjustSpan'>{{ startTimeDisplay }}</span> 
-                            <input [max]='selectedEndTime' [(ngModel)]="selectedStartTime" class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="startTime" readonly>
+                            <input [disabled]="makeDisableTimePeriod" [max]='selectedEndTime' [(ngModel)]="selectedStartTime" class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="startTime" readonly>
                             <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
                             <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker></ngx-material-timepicker>
                           </div>
+                        </div>
                         </div>
                       </div>
                     </div>
@@ -81,17 +83,19 @@
                       <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                         <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                           <mat-form-field appearance="outline">
-                            <input matInput [(ngModel)]="endDateValue" (dateChange)="changeEndDateEvent($event)" [min]='startDateValue' [max]='todayDate' [matDatepicker]="endPicker" formControlName="endDate">
+                            <input matInput [(ngModel)]="endDateValue" (dateChange)="changeEndDateEvent($event)" [disabled]="makeDisableTimePeriod" [min]='startDateValue' [max]='todayDate' [matDatepicker]="endPicker" formControlName="endDate">
                             <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
                             <mat-datepicker #endPicker></mat-datepicker>
                           </mat-form-field>
                         </div>
                         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                          <div [ngClass]="[ makeDisableTimePeriod ? 'makeDisableTimePeriod':'']">
                           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
                             <span class='timeAdjustSpan'>{{ endTimeDisplay }}</span>
-                            <input [min]='selectedStartTime' [(ngModel)]="selectedEndTime"  class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true" formControlName="endTime" readonly>
+                            <input [disabled]="makeDisableTimePeriod" [min]='selectedStartTime' [(ngModel)]="selectedEndTime"  class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true" formControlName="endTime" readonly>
                             <ngx-material-timepicker-toggle [for]="toggleEndTimepicker"></ngx-material-timepicker-toggle>
                             <ngx-material-timepicker (timeChanged)="endTimeChanged($event)" #toggleEndTimepicker></ngx-material-timepicker>
+                          </div>
                           </div>
                         </div>
                       </div>
@@ -116,10 +120,10 @@
               <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
                 <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
                 (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
-                  <button *ngIf="selectedBenchmarking == 'timePeriods'" [disabled]="!fuelBenchmarkingForm.valid" class='no-margin' mat-raised-button color="primary" (click)='onSearch("timePeriods")'>               
+                  <button *ngIf="selectedBenchmarking == 'timePeriods'" [disabled]="!fuelBenchmarkingForm.valid || makeAddDisable" class='no-margin' mat-raised-button color="primary" (click)='onSearch("timePeriods")'>               
                     <mat-icon>add_circle_outline</mat-icon>{{ translationData.lblAddPeriod || ' Add Period' }}
                   </button>
-                  <button *ngIf="selectedBenchmarking == 'vehicleGroup'" [disabled]="!fuelBenchmarkingForm.valid" class='no-margin' mat-raised-button color="primary" (click)='onSearch("vehicleGroups")'>               
+                  <button *ngIf="selectedBenchmarking == 'vehicleGroup'" [disabled]="!fuelBenchmarkingForm.valid || makeAddDisable" class='no-margin' mat-raised-button color="primary" (click)='onSearch("vehicleGroups")'>               
                     <mat-icon>add_circle_outline</mat-icon>{{ translationData.lblAddPeriod || ' Add Group' }}
                   </button>
               </div>
@@ -131,7 +135,9 @@
       <app-fuel-benchmarking-table *ngIf="selectionValueBenchmarkBY"
         [selectionValueBenchmarkBY]= "selectionValueBenchmarkBY"
         [test]="test"
+        [benchmarkSelectionChange]="benchmarkSelectionChange"
         [startDateRange]="startDateRange" 
+        [vehicleGroupSelected] = "vehicleGroupSelected"
         [endDateRange]="endDateRange" #fuelBenchmarking></app-fuel-benchmarking-table>
 
 

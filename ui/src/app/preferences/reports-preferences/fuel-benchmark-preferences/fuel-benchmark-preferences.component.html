@@ -1,8 +1,7 @@
 <form [formGroup]="fuelBenchmarkForm">
     <!-- Component Tab -->
-    <div *ngIf='fuelBenchmarkComponentPrefData.length > 0' fxLayout="row"
-        class='areaWidth full-width padding-10' fxLayoutAlign="left center"
-        style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+    <div *ngIf='fuelBenchmarkComponentPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10'
+        fxLayoutAlign="left center" style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
         <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left">
             <span class='headerFont'>{{ translationData.lblCompoent || 'Component' }}</span>
         </div>
@@ -11,26 +10,51 @@
         </div>
         <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left"></div>
     </div>
-    <div *ngIf='fuelBenchmarkComponentPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 componentPref' fxLayoutAlign="left center">
+    <div *ngIf='fuelBenchmarkComponentPrefData.length > 0' fxLayout="row"
+        class='areaWidth full-width padding-10 componentPref' fxLayoutAlign="left center">
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
-            <span>{{ fuelBenchmarkComponentPrefData.length > 0 ? fuelBenchmarkComponentPrefData[0].translatedName : '' }}</span>
+            <span>{{ fuelBenchmarkComponentPrefData.length > 0 ? fuelBenchmarkComponentPrefData[0].translatedName : ''
+                }}</span>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
             <mat-form-field appearance="outline" style='width: 80%'>
-                <input [readonly]='!editFlag' matInput type="text"
-                    placeholder="{{ translationData.lblHighFuelEfficency || 'High Fuel Efficency' }}" (keypress)="keyPressNumbers($event)" formControlName="highFuelEfficencyField">
+                <input [readonly]='!editFlag' matInput type="number"
+                    placeholder="{{ translationData.lblHighFuelEfficency || 'High Fuel Efficency' }}"
+                    (keypress)="keyPressNumbers($event)" formControlName="rp_fb_component_highfuelefficiency">
+                    <mat-error style="margin-top: 10px;" *ngIf="fuelBenchmarkForm.get('rp_fb_component_highfuelefficiency').hasError('min')">
+                       No negative values allowed
+                      </mat-error>
+                      <mat-error style="margin-top: 10px;" *ngIf="fuelBenchmarkForm.get('rp_fb_component_highfuelefficiency').hasError('max')">
+                        Max value allowed: 100
+                       </mat-error>
+                       <mat-error style="margin-top: 10px;" *ngIf="fuelBenchmarkForm.get('rp_fb_component_highfuelefficiency').hasError('pattern')">
+                        Value allowed upto 2 decimal places
+                        </mat-error>
             </mat-form-field>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per"></div>
     </div>
-    <div *ngIf='fuelBenchmarkComponentPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor componentPref' fxLayoutAlign="left center">
+    <div *ngIf='fuelBenchmarkComponentPrefData.length > 0' fxLayout="row"
+        class='areaWidth full-width padding-10 oddColumnColor componentPref' fxLayoutAlign="left center">
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
-            <span>{{ fuelBenchmarkComponentPrefData.length > 0 ? fuelBenchmarkComponentPrefData[1].translatedName : '' }}</span>
+            <span>{{ fuelBenchmarkComponentPrefData.length > 0 ? fuelBenchmarkComponentPrefData[1].translatedName : ''
+                }}</span>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
             <mat-form-field appearance="outline" style='width: 80%'>
-                <input [readonly]='!editFlag' matInput type="text"
-                    placeholder="{{ translationData.lblLowFuelEfficency || 'Low Fuel Efficency' }}" (keypress)="keyPressNumbers($event)" formControlName="lowFuelEfficencyField">
+                <input [readonly]='!editFlag' matInput type="number"
+                    placeholder="{{ translationData.lblLowFuelEfficency || 'Low Fuel Efficency' }}"
+                    (keypress)="keyPressNumbers($event)" formControlName="rp_fb_component_lowfuelefficiency">
+                    <mat-error style="margin-top: 10px;" *ngIf="fuelBenchmarkForm.get('rp_fb_component_lowfuelefficiency').hasError('min')">
+                        No negative values allowed
+                       </mat-error>
+                       <mat-error style="margin-top: 10px;" *ngIf="fuelBenchmarkForm.get('rp_fb_component_lowfuelefficiency').hasError('max')">
+                         Max value allowed: 100
+                        </mat-error>
+                        <mat-error style="margin-top: 10px;" *ngIf="fuelBenchmarkForm.get('rp_fb_component_lowfuelefficiency').hasError('pattern')">
+                           Value allowed upto 2 decimal places
+                           </mat-error>
+                       
             </mat-form-field>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per"></div>
@@ -47,16 +71,18 @@
         </div>
         <div fxLayout="column" class='min-width-33-3-per' fxLayoutGap="3px" fxLayoutAlign="left"></div>
     </div>
-    <div *ngIf='fuelBenchmarkChartsPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left center">
+    <div *ngIf='fuelBenchmarkChartsPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 chartPref'
+        fxLayoutAlign="left center">
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
-            <span>{{ fuelBenchmarkChartsPrefData.length > 0 ? fuelBenchmarkChartsPrefData[0].translatedName : '' }}</span>
+            <span>{{ fuelBenchmarkChartsPrefData.length > 0 ? fuelBenchmarkChartsPrefData[0].translatedName : ''
+                }}</span>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
             <mat-form-field appearance="outline" style='width: 80%'>
                 <mat-select [disabled]='!editFlag || donutPieDD.length == 0'
                     (selectionChange)="onDonutPieDDChange($event)"
                     placeholder="{{ translationData.lblChartType || 'Chart Type' }}"
-                    formControlName="fuelBechmarkChart">
+                    formControlName="rp_fb_chart_fuelconsumption">
                     <mat-option *ngFor="let rer of donutPieDD" [value]="rer.type">
                         {{ rer.name }}
                     </mat-option>
@@ -66,13 +92,13 @@
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per"></div>
     </div>
     <!-- Button -->
-    <div *ngIf='(fuelBenchmarkChartsPrefData.length > 0 || fuelBenchmarkComponentPrefData.length > 0) && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
+    <div *ngIf='(fuelBenchmarkChartsPrefData.length > 0 || fuelBenchmarkComponentPrefData.length > 0) && editFlag'
+        fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
         <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
             translationData.lblCancel || 'Cancel' }}</button>
         <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
             translationData.lblReset || 'Reset' }}</button>
-        <button
-            [disabled]='fuelBenchmarkChartsPrefData.length == 0 || fuelBenchmarkComponentPrefData.length == 0'
+        <button [disabled]='!fuelBenchmarkForm.valid || fuelBenchmarkChartsPrefData.length == 0 || fuelBenchmarkComponentPrefData.length == 0'
             class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
             'Confirm') }}</button>
     </div>

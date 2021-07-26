@@ -26,6 +26,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public string Address { get; set; }
         public int ThresholdValue { get; set; }
         public string ThresholdUnit { get; set; }
+        public string VehicleHealthStatusType { get; set; }
 
     }
 }

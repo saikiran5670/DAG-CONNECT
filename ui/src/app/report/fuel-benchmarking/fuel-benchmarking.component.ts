@@ -34,7 +34,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
 
   @ViewChild('fuelBenchmarking') fuelBenchmarking: FuelBenchmarkingTableComponent
-
+ vehicleGroupSelected: any;
   tableExpandPanel: boolean = true;
   initData: any = [];
   reportPrefData: any = [];
@@ -43,6 +43,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   accountId: any;
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
+  benchmarkSelectionChange: any = false;
   selectedBenchmark: any = []
   dataSource: any = new MatTableDataSource([]);
   selectedTrip = new SelectionModel(true, []);
@@ -87,6 +88,8 @@ export class FuelBenchmarkingComponent implements OnInit {
   endDateRange: any;
   timeDChartType: boolean = true;
   fuelBenchmarkingForm: FormGroup;
+  makeDisableVehicleGroup:boolean=false;
+  makeDisableTimePeriod:boolean=false;
   // showField: any = {
   //   vehicleName: true,
   //   vin: true,
@@ -356,10 +359,14 @@ export class FuelBenchmarkingComponent implements OnInit {
         break;
       }
     }
-    // this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
-    // this.setGlobalSearchData(this.fleetUtilizationSearchData);
-    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
-    this.filterDateData(); // extra addded as per discuss with Atul
+    // // this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
+    // // this.setGlobalSearchData(this.fleetUtilizationSearchData);
+    // // if(!this.makeDisableVehicleGroup)
+    // // {
+      this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+      this.filterDateData(); // extra addded as per discuss with Atul
+    
+  
   }
 
   proceedStep(prefData: any, preference: any) {
@@ -594,7 +601,7 @@ export class FuelBenchmarkingComponent implements OnInit {
     //console.log(currentStartTime + "<->" + currentEndTime);
     let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
-    if (this.wholeTripData.vinTripList.length > 0) {
+    if (this.wholeTripData && this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0) {
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if (filterVIN.length > 0) {
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
@@ -645,15 +652,32 @@ export class FuelBenchmarkingComponent implements OnInit {
   }
 
   test = [];
+  // columnLength:any = 0;
+  makeAddDisable:boolean=false;
 
   onSearch(selectedValue?: any) {
 
+      // this.columnLength++;
+ 
     console.log("-------search triggere---")
+    console.log("vehicle group", this.vehicleGrpDD);
     this.internalSelection = true;
     // this.resetChartData(); // reset chart data
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     let selectedVehicleGroup = this.fuelBenchmarkingForm.controls.vehicleGroup.value;
+    if(selectedVehicleGroup!==0){
+      this.vehicleGrpDD.forEach(element => {
+        if(element.vehicleGroupId == selectedVehicleGroup) {
+          this.vehicleGroupSelected = element.vehicleGroupName;
+        } 
+      });
+    // this.vehicleGroupSelected = this.vehicleGrpDD[1].vehicleGroupName;
+    }
+    else
+    {
+      this.vehicleGroupSelected = this.vehicleGrpDD[0].vehicleGroupName;
+    }
     let _vinData: any = [];
     this.startDateRange = moment(_startTime).format("DD/MM/YYYY");
     this.endDateRange = moment(_endTime).format("DD/MM/YYYY");
@@ -666,17 +690,17 @@ export class FuelBenchmarkingComponent implements OnInit {
     if (selectedVehicleGroup) {
       this.showLoadingIndicator = true;
       //request payload 
-      let searchDataParam = {
-        "VechileGroupID": selectedVehicleGroup,
-        "StartDate": _startTime,
-        "EndDate": _endTime,
-        "VINs": [
-          "VIN1",
-          "VIN2",
-          "VIN3",
-          "VIN4"
-        ]
-      }
+      // let searchDataParam = {
+      //   "VechileGroupID": selectedVehicleGroup,
+      //   "StartDate": _startTime,
+      //   "EndDate": _endTime,
+      //   "VINs": [
+      //     "VIN1",
+      //     "VIN2",
+      //     "VIN3",
+      //     "VIN4"
+      //   ]
+      // }
 
 
       console.log("-----vehicleDD---", this.vehicleDD)
@@ -737,30 +761,49 @@ export class FuelBenchmarkingComponent implements OnInit {
     // if (parseInt(this.fuelBenchmarkingForm.controls.vehicleGroup.value) == 0) {
 
     // }
+    this.vehicleDD.forEach(item => {
+      if (item.vin !== undefined ) {
+        if(!this.vinList.includes(item.vin)){
+        this.vinList.push(item.vin);
+        }
+      }
+    });
 
     if (this.selectionValueBenchmarkBY == "timePeriods") {
       console.log("---time period fuel benchmark api  will be call here")
       //call api for getFuelByTimePeriod
-      let requestObj = {
-        "startDateTime": _startTime,
-        "endDateTime": _endTime
+      let requestObj = {};
+      if(!selectedVehicleGroup) {
+
+         requestObj = {
+          "startDateTime": _startTime,
+          "endDateTime": _endTime
+        }
+      }else {
+        requestObj = {
+          "startDateTime": _startTime,
+          "endDateTime": _endTime,
+          "viNs": this.vinList,
+          "vehicleGroupId": selectedVehicleGroup,
+        }
       }
       this.reportService.getBenchmarkDataByTimePeriod(requestObj).subscribe((data: any) => {
         this.showLoadingIndicator = true;
         console.log("---api hit and get data for time period range---", data)
-        this.test.push(data);
+        if(!this.test.includes(data)){
+          this.test.push(data);
+        }
         if (this.fuelBenchmarking) {
           this.fuelBenchmarking.loadBenchmarkTable();
+          if(this.test.length >= 4){
+            this.makeAddDisable=true;
+          }
         }
       });
 
     } else if (this.selectedBenchmarking == "vehicleGroup") {
       // if (selectedVehicleGroup) {
-        this.vehicleDD.forEach(item => {
-          if (item.vin !== undefined) {
-            this.vinList.push(item.vin);
-          }
-        });
+
         console.log("---all VIN's--", this.vinList)
       // }
       console.log("---vehicle group benchmark api will be call here")
@@ -783,18 +826,31 @@ export class FuelBenchmarkingComponent implements OnInit {
       this.reportService.getBenchmarkDataByVehicleGroup(requestObj).subscribe((data: any) => {
         this.showLoadingIndicator = true;
         console.log("---api hit and get data for vehicle group range---", data)
+        if(!this.test.includes(data)){
         this.test.push(data);
+        }
         if (this.fuelBenchmarking) {
           this.fuelBenchmarking.loadBenchmarkTable();
+          if(this.test.length >= 4){
+            this.makeAddDisable=true;
+          }
         }
       });
 
     }
 
+      if(this.selectionValueBenchmarkBY=="timePeriods")
+      {
+        this.makeDisableVehicleGroup=true;
+      }else{
+        this.makeDisableTimePeriod=true;
+      }
     console.log("---all selected value--", _startTime, _endTime, selectedVehicleGroup, this.vehicleDD)
+
   }
 
   onVehicleGroupChange(event: any) {
+   
     if (event.value || event.value == 0) {
       this.internalSelection = true;
       //  this.fuelBenchmarkingForm.get('vehicle').setValue(0); //- reset vehicle dropdown
@@ -948,15 +1004,22 @@ export class FuelBenchmarkingComponent implements OnInit {
   }
   onVehicleChange(event: any) {
     this.internalSelection = true;
+
     // this.fleetUtilizationSearchData["vehicleDropDownValue"] = event.value;
     // this.setGlobalSearchData(this.fleetUtilizationSearchData)
   }
   onReset() {
+    this.selectionValueBenchmarkBY= '';
+    // this.columnLength = 0;
+    this.makeAddDisable=false;
+    this.makeDisableVehicleGroup=false;
+    this.makeDisableTimePeriod=false;
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
+    
     // this.vehicleGroupListData = this.vehicleGroupListData;
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     // this.updateDataSource(this.tripData);
@@ -999,8 +1062,20 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   //Radio buttons selection
   onBenchmarkChange(event: any) {
+    this.selectionValueBenchmarkBY= '';
+    // this.columnLength = 0;
+    this.makeAddDisable=false;
+    this.makeDisableVehicleGroup=false;
+    this.makeDisableTimePeriod=false;
     this.selectedBenchmarking = event.value;
     console.log("---option choosen--", this.selectedBenchmarking);
+    if(this.test.length > 0){
+      this.test = [];
+      this.benchmarkSelectionChange = true;
+    }
+    // if (this.fuelBenchmarking) {
+    //   this.fuelBenchmarking.loadBenchmarkTable();
+    // }
     // this.changeGridOnVehicleList(event.value);
   }
 

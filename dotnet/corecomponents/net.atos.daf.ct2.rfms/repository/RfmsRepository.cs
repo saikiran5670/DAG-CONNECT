@@ -32,12 +32,13 @@ namespace net.atos.daf.ct2.rfms.repository
                                         V.ID
                                         ,V.VIN
                                         ,V.NAME AS CUSTOMER_VEHICLE_NAME
-                                        ,VP.MAKE AS BRAND 
+                                        ,'DAF' AS BRAND 
                                         ,VP.MANUFACTURE_DATE AS PRODUCTION_DATE 
-                                        ,VP.TYPE_ID AS TYPE
-                                        ,V.MODEL_ID AS MODEL
+                                        ,'TRUCK' AS TYPE
+                                        ,VP.SERIES_VEHICLE_RANGE AS MODEL
                                         ,V.FUEL_TYPE AS POSSIBLE_FUEL_TYPE
                                         ,VP.ENGINE_EMISSION_LEVEL AS EMISSIONLEVEL
+										,VP.TYPE_ID AS CHASSISTYPE
                                         ,(SELECT COUNT(*) FROM MASTER.VEHICLEAXLEPROPERTIES WHERE VEHICLE_ID = V.ID) AS NOOFAXLES
                                         ,(SELECT COALESCE(SUM(CAST(CHASIS_FUEL_TANK_VOLUME AS double precision)),0) FROM MASTER.VEHICLEFUELTANKPROPERTIES VFTP WHERE VEHICLE_ID = V.ID) AS TOTALFUELTANKVOLUME
                                         ,VP.TRANSMISSION_GEARBOX_TYPE AS GEARBOXTYPE
@@ -173,6 +174,7 @@ namespace net.atos.daf.ct2.rfms.repository
             }
             vehicle.Type = record.type;
             vehicle.Model = record.model;
+            vehicle.ChassisType = record.chassistype;
             if (!string.IsNullOrEmpty(possibleFuelTypes))
                 vehicle.PossibleFuelType = possibleFuelTypes.Split(",").ToList();
             vehicle.EmissionLevel = record.emissionlevel;

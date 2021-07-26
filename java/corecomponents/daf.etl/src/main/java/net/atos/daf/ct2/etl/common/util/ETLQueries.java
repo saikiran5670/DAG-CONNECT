@@ -21,18 +21,18 @@ public class ETLQueries {
 			+ ", stsData.gpsEndLongitude, stsData.vUsedFuel, (stsData.vStopFuel - stsData.vStartFuel) as tripCalUsedFuel"
 			+ ", stsData.vTripMotionDuration, ((stsData.tripCalGpsVehTimeDiff/1000) - stsData.vIdleDuration) as tripCalDrivingTm"
 			+ ", stsData.receivedTimestamp, stsData.co2Emission as tripCalC02Emission "
-			+ ", if(0 <> stsData.tripCalGpsVehDistDiff, (CAST(stsData.vUsedFuel as Double)/stsData.tripCalGpsVehDistDiff), stsData.vUsedFuel) as tripCalFuelConsumption"
-			+ ", if(0 <> stsData.tripCalGpsVehTimeDiff, (CAST(stsData.vPTODuration as Double)/(stsData.tripCalGpsVehTimeDiff * 0.001)), stsData.vPTODuration) as tripCalPtoDuration"
-			+ ", if(0 <> stsData.vBrakeDuration, (CAST(stsData.vHarshBrakeDuration as Double)/stsData.vBrakeDuration), stsData.vHarshBrakeDuration) as tripCalHarshBrakeDuration"
-			+ ", if(0 <> stsData.vTripAccelerationTime, (CAST(stsData.vMaxThrottlePaddleDuration as Double)/stsData.vTripAccelerationTime), stsData.vMaxThrottlePaddleDuration) as tripCalHeavyThrottleDuration"
+			+ ", if(0 <> stsData.tripCalGpsVehDistDiff, (CAST(stsData.vUsedFuel as Double)/stsData.tripCalGpsVehDistDiff) *100, stsData.vUsedFuel) as tripCalFuelConsumption"
+			+ ", if(0 <> stsData.tripCalGpsVehTimeDiff, (CAST(stsData.vPTODuration as Double)/(stsData.tripCalGpsVehTimeDiff * 0.001)) * 100, stsData.vPTODuration) as tripCalPtoDuration"
+			+ ", if(0 <> stsData.vBrakeDuration, (CAST(stsData.vHarshBrakeDuration as Double)/stsData.vBrakeDuration) * 100, stsData.vHarshBrakeDuration) as tripCalHarshBrakeDuration"
+			+ ", if(0 <> stsData.vTripAccelerationTime, (CAST(stsData.vMaxThrottlePaddleDuration as Double)/stsData.vTripAccelerationTime) * 100, stsData.vMaxThrottlePaddleDuration) as tripCalHeavyThrottleDuration"
 			+ ", stsData.tripCalCrsCntrlDist25To50, stsData.tripCalCrsCntrlDist50To75, stsData.tripCalCrsCntrlDistAbv75 "
 			/*+ ", if((stsData.vCruiseControlDist > 30 AND stsData.vCruiseControlDist < 50), if(0 <> stsData.tripCalGpsVehDistDiff, CAST(stsData.vCruiseControlDist as Double)/stsData.tripCalGpsVehDistDiff, stsData.vCruiseControlDist), 0) as tripCalCrsCntrlDistBelow50"
 			+ ", if((stsData.vCruiseControlDist > 50 AND stsData.vCruiseControlDist < 75), if(0 <> stsData.tripCalGpsVehDistDiff, CAST(stsData.vCruiseControlDist as Double)/stsData.tripCalGpsVehDistDiff, stsData.vCruiseControlDist), 0) as tripCalCrsCntrlDistAbv50"
 			+ ", if((stsData.vCruiseControlDist > 75), if(0 <> stsData.tripCalGpsVehDistDiff, CAST(stsData.vCruiseControlDist as Double)/stsData.tripCalGpsVehDistDiff, stsData.vCruiseControlDist), 0) as tripCalCrsCntrlDistAbv75"*/
 			+ ", if(0 <> stsData.tripCalGpsVehDistDiff, (CAST(stsData.vTripDPABrakingCount as Double)+ stsData.vTripDPAAnticipationCount)/stsData.tripCalGpsVehDistDiff, (stsData.vTripDPABrakingCount + stsData.vTripDPAAnticipationCount)) as tripCalAvgTrafficClsfn"
-			+ ", if(0 <> stsData.vCruiseControlDist, (CAST(stsData.vCruiseControlFuelConsumed as Double)/stsData.vCruiseControlDist), stsData.vCruiseControlFuelConsumed) as tripCalCCFuelConsumption"
+			+ ", if(0 <> stsData.vCruiseControlDist, (CAST(stsData.vCruiseControlFuelConsumed as Double)/stsData.vCruiseControlDist) * 100, stsData.vCruiseControlFuelConsumed) as tripCalCCFuelConsumption"
 			+ ", stsData.vCruiseControlFuelConsumed , stsData.vCruiseControlDist, stsData.vIdleFuelConsumed, stsData.kafkaProcessingTS "
-			+ ", (if( 0 <> (stsData.tripCalGpsVehDistDiff - stsData.vCruiseControlDist) ,(stsData.vUsedFuel - if(0 <> stsData.vCruiseControlDist, (CAST(stsData.vCruiseControlFuelConsumed as Double)/stsData.vCruiseControlDist), stsData.vCruiseControlDist) )/(stsData.tripCalGpsVehDistDiff - stsData.vCruiseControlDist) , 0)) as tripCalfuelNonActiveCnsmpt"
+			+ ", (if( 0 <> (stsData.tripCalGpsVehDistDiff - stsData.vCruiseControlDist) , ((stsData.vUsedFuel - if(0 <> stsData.vCruiseControlDist, (CAST(stsData.vCruiseControlFuelConsumed as Double)/stsData.vCruiseControlDist), stsData.vCruiseControlDist) )/(stsData.tripCalGpsVehDistDiff - stsData.vCruiseControlDist)) * 100 , 0)) as tripCalfuelNonActiveCnsmpt"
 			+ ", (if(0 <> stsData.vTripDPABrakingCount, (CAST(stsData.vSumTripDPABrakingScore as Double)/stsData.vTripDPABrakingCount), 0) + if(0 <> stsData.vTripDPAAnticipationCount, (CAST(stsData.vSumTripDPAAnticipationScore as Double)/stsData.vTripDPAAnticipationCount), 0))/2 as tripCalDpaScore"
 			+ ", stsData.driverId, stsData.tripCalGpsVehTimeDiff as tripCalGpsVehTime"
 			+ ", stsData.tripProcessingTS, stsData.etlProcessingTS,  stsData.numberOfIndexMessage, stsData.vTripDPABrakingCount, stsData.vTripDPAAnticipationCount"
@@ -156,16 +156,7 @@ public class ETLQueries {
 			+ ", msg_gross_weight_combinition = ?, no_of_total_index_message =?, veh_message_pto_duration = ?, veh_message_harsh_brake_duration = ?, veh_message_brake_duration = ?"
 			+ ", veh_message_max_throttle_paddle_duration = ?, veh_message_accelerationt_time = ?, veh_message_dpabraking_count = ?, veh_message_dpaanticipation_count = ?"
 			+ ", veh_message_dpabraking_score = ?, veh_message_dpaanticipation_score = ?, veh_message_idle_without_ptoduration = ?, veh_message_idle_ptoduration = ? ";
-/*
-	public static final String ECOSCORE_INSERT_STATEMENT = "INSERT INTO tripdetail.ecoscoredata( trip_id, vin, start_time, end_time, driver1_id, driver2_id"
-			+ ", etl_trip_distance, dpa_braking_score, dpa_braking_count, dpa_anticipation_score, dpa_anticipation_count, gross_weight_combination, used_fuel"
-			+ ", pto_duration, idle_duration, heavy_throttle_pedal_duration, start_fuel, stop_fuel ) "
-			+ "  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-			+ "  ON CONFLICT (trip_id) "
-			+ "  DO UPDATE SET  vin = ?, start_time = ?, end_time = ?, driver1_id = ?, driver2_id = ?, etl_trip_distance = ?, dpa_braking_score = ?"
-			+ ", dpa_braking_count = ?, dpa_anticipation_score = ?, dpa_anticipation_count = ?, gross_weight_combination = ?, used_fuel = ?, pto_duration = ?"
-			+ ", idle_duration = ?, heavy_throttle_pedal_duration = ?, start_fuel = ?"
-			+ ", stop_fuel = ? ";*/
+
 	
 	public static final String ECOSCORE_INSERT_STATEMENT = "INSERT INTO tripdetail.ecoscoredata( trip_id, vin, start_time, end_time, driver1_id "
 			+ ", trip_distance, dpa_braking_score, dpa_braking_count, dpa_anticipation_score, dpa_anticipation_count, gross_weight_combination_total, used_fuel"

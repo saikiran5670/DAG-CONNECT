@@ -26,6 +26,7 @@ namespace net.atos.daf.ct2.account.report
         private readonly IVisibilityManager _visibilityManager;
         private readonly ITemplateManager _templateManager;
         private readonly IUnitConversionManager _unitConversionManager;
+        private readonly IUnitManager _unitManager;
         private readonly EmailEventType _evenType;
         private readonly EmailContentType _contentType;
 
@@ -47,13 +48,15 @@ namespace net.atos.daf.ct2.account.report
         public TripReport(IReportManager reportManager,
                           IReportSchedulerRepository reportSchedularRepository,
                           IVisibilityManager visibilityManager, ITemplateManager templateManager,
-                          IUnitConversionManager unitConversionManager, EmailEventType evenType, EmailContentType contentType)
+                          IUnitConversionManager unitConversionManager, IUnitManager unitManager,
+                          EmailEventType evenType, EmailContentType contentType)
         {
             ReportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
             _visibilityManager = visibilityManager;
             _templateManager = templateManager;
             _unitConversionManager = unitConversionManager;
+            _unitManager = unitManager;
             _evenType = evenType;
             _contentType = contentType;
         }
@@ -128,26 +131,31 @@ namespace net.atos.daf.ct2.account.report
         public async Task<string> GenerateTemplate(byte[] logoBytes)
         {
             if (!IsAllParameterSet) throw new Exception(TripReportConstants.ALL_PARAM_MSG);
-            var fromDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(FromDate, TimeZoneName, $"{DateFormatName} {TimeFormatName}"));
-            var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TimeZoneName, $"{DateFormatName} {TimeFormatName}"));
+            var fromDate = TimeZoneHelper.GetDateTimeFromUTC(FromDate, TimeZoneName, DateTimeFormat);
+            var toDate = TimeZoneHelper.GetDateTimeFromUTC(ToDate, TimeZoneName, DateTimeFormat);
 
             StringBuilder html = new StringBuilder();
-            //ReportTemplateContants.REPORT_TEMPLATE
+
             html.AppendFormat(ReportTemplateSingleto.
                                     GetInstance()
                                     .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
                                                     _contentType, ReportSchedulerData.Code)
-            //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
                               , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
                               , ImageSingleton.GetInstance().GetLogo()
-                              , fromDate.ToString(DateTimeFormat)
+                              , fromDate
                               , "All", VIN
-                              , toDate.ToString(DateTimeFormat)
+                              , toDate
                               , VehicleName, RegistrationNo
                               , await GenerateTable()
+                              , await _unitManager.GetDistanceUnit(UnitToConvert)
+                              , await _unitManager.GetTimeSpanUnit(UnitToConvert)
+                              , await _unitManager.GetSpeedUnit(UnitToConvert)
+                              , await _unitManager.GetWeightUnit(UnitToConvert)
+                              , await _unitManager.GetDistanceUnit(UnitToConvert)
+                              , await _unitManager.GetVolumePerDistanceUnit(UnitToConvert)
+                              , await _unitManager.GetTimeSpanUnit(UnitToConvert)
                 );
-            //return html.Replace("{{", "{").Replace("}}", "}").ToString();
             return html.ToString();
         }
     }

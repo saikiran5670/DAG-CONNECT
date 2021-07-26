@@ -139,6 +139,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     List<WarningDetails> warningDetails = await _reportManager.GetWarningDetails(result.Where(p => p.LatestWarningClass > 0).Select(x => x.LatestWarningClass).Distinct().ToList(), result.Where(p => p.LatestWarningNumber > 0).Select(x => x.LatestWarningNumber).Distinct().ToList(), request.LanguageCode);
                     foreach (var fleetOverviewDetails in result)
                     {
+                        fleetOverviewDetails.VehicleName = vehicleDeatilsWithAccountVisibility?.FirstOrDefault(d => d.Vin == fleetOverviewDetails.Vin)?.VehicleName ?? string.Empty;
                         foreach (WarningDetails warning in warningDetails)
                         {
                             if (fleetOverviewDetails.LatestWarningClass == warning.WarningClass && fleetOverviewDetails.LatestWarningNumber == warning.WarningNumber)
@@ -154,7 +155,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                         if (driverDetails != null && driverDetails.Count > 0)
                         {
-                            fleetOverviewDetails.DriverName = driverDetails.FirstOrDefault(d => d.DriverId == fleetOverviewDetails.Driver1Id).DriverName; ;
+                            fleetOverviewDetails.DriverName = driverDetails.FirstOrDefault(d => d.DriverId == fleetOverviewDetails.Driver1Id).DriverName;
                         }
                         response.FleetOverviewDetailList.Add(_mapper.ToFleetOverviewDetailsResponse(fleetOverviewDetails));
                     }
@@ -221,11 +222,17 @@ namespace net.atos.daf.ct2.reportservice.Services
                                                                                               .Select(x => x.WarningDrivingId).Distinct().ToList(), request.OrganizationId).Result;
                     foreach (var healthStatus in result)
                     {
+                        healthStatus.VehicleName = vehicleDeatilsWithAccountVisibility?.FirstOrDefault(d => d.Vin == healthStatus.WarningVin)?.VehicleName ?? string.Empty;
+                        healthStatus.VehicleRegNo = vehicleDeatilsWithAccountVisibility?.FirstOrDefault(d => d.Vin == healthStatus.WarningVin)?.RegistrationNo ?? string.Empty;
                         if (warningDetails != null && warningDetails.Count > 0)
                         {
-                            var warningDetail = warningDetails.FirstOrDefault(w => w.WarningClass == healthStatus.WarningClass && w.WarningNumber == healthStatus.WarningNumber);
-                            healthStatus.WarningName = warningDetail.WarningName ?? string.Empty;
-                            healthStatus.WarningAdvice = warningDetail.WarningAdvice ?? string.Empty;
+                            var warningDetail = warningDetails?.FirstOrDefault(w => w.WarningClass == healthStatus.WarningClass && w.WarningNumber == healthStatus.WarningNumber);
+                            healthStatus.WarningName = warningDetail?.WarningName ?? string.Empty;
+                            healthStatus.WarningAdvice = warningDetail?.WarningAdvice ?? string.Empty;
+                            healthStatus.Icon = warningDetail?.Icon ?? new Byte[] { };
+                            healthStatus.IconName = warningDetail?.IconName ?? string.Empty;
+                            healthStatus.ColorName = warningDetail?.ColorName ?? string.Empty;
+                            healthStatus.IconId = warningDetail?.IconId ?? 0;
 
                         }
                         //opt-in and no driver card- Unknown - Implemented by UI 
@@ -235,7 +242,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                         if (driverDetails != null && driverDetails.Count > 0)
                         {
-                            healthStatus.DriverName = driverDetails.FirstOrDefault(d => d.DriverId == healthStatus.WarningDrivingId).DriverName; ;
+                            healthStatus.DriverName = driverDetails?.FirstOrDefault(d => d.DriverId == healthStatus.WarningDrivingId).DriverName ?? string.Empty;
                         }
                     }
                     string res = JsonConvert.SerializeObject(result);

@@ -53,7 +53,8 @@ namespace net.atos.daf.ct2.account.report
         public FleetUtilisation(IReportManager reportManager,
                           IReportSchedulerRepository reportSchedularRepository,
                           IVisibilityManager visibilityManager, ITemplateManager templateManager,
-                          IUnitConversionManager unitConversionManager, IUnitManager unitManager, EmailEventType evenType, EmailContentType contentType)
+                          IUnitConversionManager unitConversionManager, IUnitManager unitManager,
+                          EmailEventType evenType, EmailContentType contentType)
         {
             ReportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
@@ -70,7 +71,7 @@ namespace net.atos.daf.ct2.account.report
             FromDate = reportSchedulerData.StartDate;
             ToDate = reportSchedulerData.EndDate;
             VehicleLists = vehicleLists;
-            VINs = vehicleLists.Select(s => s.VIN);
+            VINs = vehicleLists.Select(s => s.VIN).Distinct();
             //VIN = vehicleList.VIN;
             //VehicleName = vehicleList.VehicleName;
             //RegistrationNo = vehicleList.RegistrationNo;
@@ -152,9 +153,9 @@ namespace net.atos.daf.ct2.account.report
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
                               , await GenerateTable()
                               , fromDate.ToString(DateTimeFormat)
-                              , VehicleLists.Any(s => !string.IsNullOrEmpty(s.VehicleGroupName)) ? string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).ToArray()) : "All"
+                              , VehicleLists.Any(s => !string.IsNullOrEmpty(s.VehicleGroupName)) ? string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).Distinct().ToArray()) : "All"
                               , toDate.ToString(DateTimeFormat)
-                              , string.Join(',', VehicleLists.Select(s => s.VehicleName).ToArray())
+                              , string.Join(',', VehicleLists.Select(s => s.VehicleName).Distinct().ToArray())
                               , FleetUtilisationPdfDetails.Count()
                               , FleetUtilisationPdfDetails.Sum(s => s.Distance)
                               , distanceUnit

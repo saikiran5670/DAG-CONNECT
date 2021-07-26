@@ -15,27 +15,28 @@ namespace net.atos.daf.ct2.notificationengine.repository
         public NotificationIdentifierRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             _dataMartdataAccess = dataMartdataAccess;
-            this._dataAccess = dataAccess;
+            _dataAccess = dataAccess;
 
         }
 
         public async Task<TripAlert> GetVehicleIdForTrip(TripAlert tripAlert)
         {
-            string queryStatement = @"SELECT id
-	                                            FROM  master.vehicle
-	                                            where vin=@vin";
-            var parameter = new DynamicParameters();
-            parameter.Add("@vin", tripAlert.Vin);
-
-            int vehicleId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
-            tripAlert.VehicleId = vehicleId;
-            return tripAlert;
+            try
+            {
+                int vehicleId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = tripAlert.Vin });
+                tripAlert.VehicleId = vehicleId;
+                return tripAlert;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<List<Notification>> GetNotificationDetails(TripAlert tripAlert)
         {
 
-            string queryStatement = @"select notref.id as Notref_id
+            string queryStatement = @"select distinct notref.id as Notref_id
 	                                    ,notref.notification_id as Noti_id
 	                                    ,notref.alert_id as Noti_alert_id
 	                                    ,notrec.id as Notrec_id
@@ -73,21 +74,16 @@ namespace net.atos.daf.ct2.notificationengine.repository
                                         ,ale.organization_id as Ale_organization_id
                                     from master.notificationrecipientref notref
                                     inner join master.notificationrecipient notrec
-                                    on notref.recipient_id=notrec.id
+                                    on notref.recipient_id=notrec.id and notrec.state=@state and notref.state=@state
                                     inner join master.alert ale
                                     on notref.alert_id=ale.id
                                     inner join master.notification noti
-                                    on notref.notification_id=noti.id
+                                    on notref.notification_id=noti.id  and noti.state=@state
                                     inner join master.notificationlimit notlim
-                                    on notrec.id=notlim.recipient_id
+                                    on notrec.id=notlim.recipient_id and notlim.state=@state
                                     left join master.alerttimingdetail nottim
-                                    on noti.id=nottim.ref_id and nottim.type=@adFilterType
-                                    where notref.alert_id=@alert_id
-                                    and notref.state=@state
-                                    and notrec.state=@state
-                                    and noti.state=@state
-                                    and notlim.state=@state
-                                    and nottim.state=@state";
+                                    on noti.id=nottim.ref_id and nottim.type=@adFilterType and nottim.state=@state
+                                    where notref.alert_id=@alert_id";
             var parameter = new DynamicParameters();
             parameter.Add("@alert_id", tripAlert.Alertid);
             parameter.Add("@adFilterType", 'N');
@@ -108,16 +104,21 @@ namespace net.atos.daf.ct2.notificationengine.repository
                                             , recipient_id as RecipientId
                                             , notification_mode_type as NotificationModeType
                                             , phone_no as PhoneNo
-                                            , nothis.email_id as EmailId
+                                            , email_id as EmailId
                                             , ws_url as WsUrl
                                             , notification_sent_date as NotificationSendDate
                                             , status as Status
 	                                            FROM master.notificationhistory 	                                           
 	                                            where alert_id=@alert_id
-	                                            and vin=@vin";
+                                                    and vehicle_id=@vehicle_id
+                                                    and trip_id=@trip_id
+                                                    and status<>@status;";
+
             var parameter = new DynamicParameters();
             parameter.Add("@alert_id", tripAlert.Alertid);
-            parameter.Add("@vin", tripAlert.Vin);
+            parameter.Add("@vehicle_id", tripAlert.VehicleId);
+            parameter.Add("@trip_id", tripAlert.Tripid);
+            parameter.Add("@status", ((char)NotificationSendType.Failed).ToString());
 
             List<NotificationHistory> notificationHistoryOutput = (List<NotificationHistory>)await _dataAccess.QueryAsync<NotificationHistory>(queryStatement, parameter);
             return notificationHistoryOutput;

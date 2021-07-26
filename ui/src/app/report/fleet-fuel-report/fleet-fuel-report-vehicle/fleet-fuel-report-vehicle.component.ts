@@ -337,6 +337,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   fromTripPageBack: boolean = false;
   displayData : any = [];
   showDetailedReport : boolean = false;
+  state :any;
   
   constructor(private _formBuilder: FormBuilder, 
               private translationService: TranslationService,
@@ -344,7 +345,12 @@ export class FleetFuelReportVehicleComponent implements OnInit {
               private reportService: ReportService,
               private router: Router,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
-              private reportMapService: ReportMapService) { }
+              private reportMapService: ReportMapService) {}
+               defaultTranslation(){
+                this.translationData = {
+                  lblSearchReportParameters: 'Search Report Parameters'
+                }
+               }
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
@@ -387,6 +393,12 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
 
   }
+
+  setGlobalSearchData(globalSearchFilterData:any) {
+    this.fleetFuelSearchData["modifiedFrom"] = "vehicletrip";
+    localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
+  }
+  
   loadfleetFuelDetails(_vinData: any){
     let _startTime = Util.convertDateToUtc(this.startDateValue);
     let _endTime = Util.convertDateToUtc(this.endDateValue);
@@ -425,7 +437,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
   checkForPreference(fieldKey) {
     if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes(fieldKey));
+      let filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
           return true;
@@ -438,8 +450,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
 
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
-      
+    this.reportService.getUserPreferenceReport(4, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
       // this.preparePrefData(this.reportPrefData);
@@ -477,12 +488,27 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
   onSearch(){
     this.isChartsOpen = true;
-    this.ConsumedChartType = 'Line';
-    this.TripsChartType= 'Bar';
-    this.Co2ChartType= 'Line';
-    this.DistanceChartType= 'Line';
-    this.ConsumptionChartType= 'Line';
-    this.DurationChartType= 'Line';
+    if (this.reportPrefData.length != 0) {
+      let filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumed'));
+      this.ConsumedChartType = filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_numberoftrips'));
+      this.TripsChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_co2emission'));
+      this.Co2ChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_distance'));
+      this.DistanceChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumption'));
+      this.ConsumptionChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_idledurationtotaltime'));
+      this.DurationChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+    } else {
+      this.ConsumedChartType = 'Line';
+      this.TripsChartType= 'Bar';
+      this.Co2ChartType= 'Line';
+      this.DistanceChartType= 'Line';
+      this.ConsumptionChartType= 'Line';
+      this.DurationChartType= 'Line';
+    }
     // this.resetChartData(); // reset chart data
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
@@ -602,7 +628,9 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       fromDate: this.formStartDate(this.startDateValue),
       endDate: this.formStartDate(this.endDateValue),
       vehGroupName: vehGrpName,
-      vehicleName: vehName
+      vehicleName: vehName,
+      vin : vin,
+      plateNo : plateNo,
     }    
   }
 
@@ -1068,7 +1096,7 @@ getLast3MonthDate(){
 
     let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
-    if(this.wholeTripData.vinTripList.length > 0){
+    if(this.wholeTripData && this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if(filterVIN.length > 0){
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
@@ -1528,7 +1556,7 @@ doc.addPage();
         vehicleData: vehData
       }
     };
-    this.router.navigate(['report/detailvehiclereport'], navigationExtras);
+    this.router.navigate(['report/vehicletrip'], navigationExtras);
   }
 
 

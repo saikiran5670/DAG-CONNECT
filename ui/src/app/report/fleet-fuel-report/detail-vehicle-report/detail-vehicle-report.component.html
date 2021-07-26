@@ -1,4 +1,5 @@
 <!-- <div class="bgtrans"> -->
+    <span style="font-size: 15px;margin-top: 10px;">{{translationData.lblViewDetailsBy || 'View details by:Vehicle Trip'}}</span>
     <div *ngIf='showBack' fxLayout="row" fxLayoutAlign="end">
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
           <span class='custom-font' (click)="detailvehiclereport()">
@@ -222,29 +223,29 @@
       
       
                 <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="20px">
-                  <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+                  <div *ngIf="checkForPreference('summary_numberoftrips')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                     <span>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
                     <span
                       style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('noOfTrips')}}</span>
                   </div>
-                  <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+                  <div *ngIf="checkForPreference('summary_distance')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                     <span>{{ translationData.lblDistance || 'Distance' }}</span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('distance')}}{{(
                       prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || ' km') : (prefUnitFormat ==
                       'dunit_Imperial') ? (translationData.lblmile || ' mile') : (translationData.lblmile || ' mile')
                       }}</span>
                   </div>
-                  <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+                  <div *ngIf="checkForPreference('summary_fuelconsumed')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                     <span>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}}
                       I</span>
                   </div>
-                  <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+                  <div *ngIf="checkForPreference('summary_idledurationtotaltime')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                     <span>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('idleDuration')}}
                       hh:mm</span>
                   </div>
-                  <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+                  <div *ngIf="checkForPreference('summary_fuelconsumption')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                     <span>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
                     <span
                       style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelConsumption')}}{{
@@ -252,7 +253,7 @@
                       'dunit_Imperial') ? (translationData.lblgallonmile || 'gallon/100mile') : (translationData.lblgallonmile
                       || ' gallon/100mile') }}</span>
                   </div>
-                  <div class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
+                  <div *ngIf="checkForPreference('summary_co2emission')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                     <span>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('co2emission')}}
                       t</span>
@@ -277,9 +278,10 @@
                     'Charts' }}</span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+              <div fxLayout="row wrap" fxLayoutAlign="start" class="full-width" fxLayoutGap="15px">
       
-                <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+                <div *ngIf="checkForPreference('chart_fuelconsumed')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+                fxFlex.lt-sm="100%">
                   <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{
                     translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
                   <div *ngIf="ConsumedChartType =='Line'" class="chart-wrapper">
@@ -295,7 +297,8 @@
                   </div>
                 </div>
       
-                <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                <div *ngIf="checkForPreference('chart_numberoftrips')" class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+                fxFlex.lt-sm="100%">
                   <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{
                     translationData.lblNumberOfTrips || 'Number Of Trips' }}</span>
                   <div *ngIf="TripsChartType =='Bar'" class="chart-wrapper">
@@ -310,12 +313,13 @@
                     </canvas>
                   </div>
                 </div>
-              </div>
+              <!-- </div>
       
       
       
-              <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-                <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+              <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px"> -->
+                <div *ngIf="checkForPreference('chart_co2emission')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+                fxFlex.lt-sm="100%">
                   <span
                     style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{
                     translationData.lblCo2Emission || 'Co2Emission' }}</span>
@@ -332,7 +336,8 @@
                   </div>
                 </div>
       
-                <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                <div *ngIf="checkForPreference('chart_distance')" class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+                fxFlex.lt-sm="100%">
                   <span
                     style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{
                     translationData.lblDistance || 'Distance' }}</span>
@@ -348,12 +353,13 @@
                     </canvas>
                   </div>
                 </div>
-              </div>
+              <!-- </div>
       
       
       
-              <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-                <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+              <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px"> -->
+                <div *ngIf="checkForPreference('chart_fuelconsumption')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+                fxFlex.lt-sm="100%">
                   <span
                     style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px;'>{{
                     translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
@@ -370,7 +376,8 @@
                   </div>
                 </div>
       
-                <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                <div *ngIf="checkForPreference('chart_idledurationtotaltime')" class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="right" fxFlex="0 1 calc(50% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+                fxFlex.lt-sm="100%">
                   <span
                     style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;padding-top: 20px'>{{
                     translationData.lblIdleDuration || 'Idle Duration' }}</span>
@@ -391,27 +398,18 @@
           </mat-card>
         </div>
 <!--map-->
-        <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='showMapPanel'>
-            <mat-expansion-panel [(expanded)]="showMap" class="full-width" fxLayoutGap="10px">
-              <mat-expansion-panel-header class="full-width">
-                <mat-panel-title>
-                  <span>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif; margin-right: 20px;'>{{ translationData.lblMapView || 'Map View' }}</span>
-                  </span>
-                </mat-panel-title>
-              </mat-expansion-panel-header>
-              <div>
-              </div>
-        
-             <!-- <div class="searchBoxContainer">
-                <ng2-completer placeholder='Search location' inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
-                    [datasource]="dataService" [minSearchLength]="0" (focus)="onSearchFocus()"  [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
-                    (selected)="onSearchSelected($event)" [selectOnClick]="true"></ng2-completer>
-              </div>-->
-        
-              <div #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px"></div>
-            </mat-expansion-panel>
-          </mat-card>
+<mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+  <mat-expansion-panel [(expanded)]="showMap" class="full-width" fxLayoutGap="10px">
+    <mat-expansion-panel-header class="full-width">
+      <mat-panel-title>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView || 'Map
+          View' }}</span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px"></div>
+  </mat-expansion-panel>
+</mat-card>
         <!-- Fleet Table -->
       
         <div>
@@ -464,25 +462,25 @@
                   </div>
                   <div style='padding: 20px; margin-bottom: 10px; background: #bee3f8;'>
                     <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
-                      <div *ngIf='showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                      <div  class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <span>
                           <span>{{ translationData.lblVehicleVIN || 'Vehicle VIN' }}: </span>
                           <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vin }}</span>
                         </span>
                       </div> 
                     
-                      <div *ngIf='showField.vehicleName' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                      <div  class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <span>
                           <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
                           <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
                         </span>
                       </div>
-                      <div *ngIf='showField.vehicleRegistrationNo'  class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                     <!-- <div  class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <span>
                           <span>{{ translationData.lblRegPlateNumber || ' Plate Number' }}: </span>
                           <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{tableInfoObj.vehicleRegistrationNo }}</span>
                         </span>
-                      </div>
+                      </div>-->
                       </div>
                   </div>
       

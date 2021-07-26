@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.reports.repository
                            -- on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(tripalert.latitude as numeric),4)
                          --   and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(tripalert.longitude as numeric),4)
                             where tripalert.vin= ANY(@vins)
-                           and ((to_timestamp(tripalert.alert_generated_time)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time)::date) >= (now()::date - @days)) ";
+                           and ((to_timestamp(tripalert.alert_generated_time/1000)::date) <= (now()::date) and (to_timestamp(tripalert.alert_generated_time/1000)::date) >= (now()::date - @days)) ";
 
             tripAlertList = await _dataMartdataAccess.QueryAsync<LogbookTripAlertDetails>(query, parameter);
             return tripAlertList.AsList<LogbookTripAlertDetails>();
@@ -56,8 +56,8 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 var parameter = new DynamicParameters();
 
-                parameter.Add("@start_time_stamp", logbookFilter.Start_Time, System.Data.DbType.Int32);
-                parameter.Add("@end_time_stamp", logbookFilter.End_time, System.Data.DbType.Int32);
+                parameter.Add("@start_time_stamp", logbookFilter.Start_Time / 1000, System.Data.DbType.Int32);
+                parameter.Add("@end_time_stamp", logbookFilter.End_time / 1000, System.Data.DbType.Int32);
                 string queryLogBookPull = @"select distinct ta.vin as VIN,
                                 v.registration_no as VehicleRegNo,
                                 v.name as VehicleName,
@@ -73,17 +73,18 @@ namespace net.atos.daf.ct2.reports.repository
                                 processed_message_time_stamp as ProcessedMessageTimestamp,
                                 ts.start_time_stamp as TripStartTime,
                                 ts.end_time_stamp as TripEndTime,
+                                ts.vehicle_health_status_type as VehicleHealthStatusType,
                                 alertgeoadd.id as AlertGeolocationAddressId,
                                 coalesce(alertgeoadd.address,'') as AlertGeolocationAddress
                                 from tripdetail.tripalert ta inner join master.vehicle v on ta.vin = v.vin 
-                                left join tripdetail.trip_statistics ts
+                                left join livefleet.livefleet_current_trip_statistics ts
                                 on ta.vin = ts.vin  --and ta.trip_id=ts.trip_id 
                                 left join master.geolocationaddress alertgeoadd
                                 on TRUNC(CAST(alertgeoadd.latitude as numeric),4)= TRUNC(CAST(ta.latitude as numeric),4) 
                                 and TRUNC(CAST(alertgeoadd.longitude as numeric),4) = TRUNC(CAST(ta.longitude as numeric),4)
                                 where 1=1 
-                                and ((to_timestamp(ta.alert_generated_time)::date) >= (to_timestamp(@start_time_stamp)::date)
-                                and (to_timestamp(ta.alert_generated_time)::date) <= (to_timestamp(@end_time_stamp )::date))";
+                                and ((to_timestamp(ta.alert_generated_time/1000)::date) >= (to_timestamp(@start_time_stamp)::date)
+                                and (to_timestamp(ta.alert_generated_time/1000)::date) <= (to_timestamp(@end_time_stamp )::date))";
 
 
 
@@ -95,18 +96,18 @@ namespace net.atos.daf.ct2.reports.repository
                 if (logbookFilter.AlertLevel.Count > 0)
                 {
                     parameter.Add("@alert_level", logbookFilter.AlertLevel);
-                    queryLogBookPull += " and ta.alert_level = Any(@alert_level) ";
+                    queryLogBookPull += " and ta.urgency_level_type = Any(@alert_level) ";
                 }
 
                 if (logbookFilter.AlertType.Count > 0)
                 {
-                    parameter.Add("@alert_level", logbookFilter.AlertLevel);
-                    queryLogBookPull += " and ta.alert_level = Any(@alert_level) ";
+                    parameter.Add("@alert_type", logbookFilter.AlertType);
+                    queryLogBookPull += " and ta.type = Any(@alert_type) ";
                 }
                 if (logbookFilter.AlertCategory.Count > 0)
                 {
                     parameter.Add("@alert_category", logbookFilter.AlertCategory);
-                    queryLogBookPull += " and ta.alert_category = Any(@alert_category) ";
+                    queryLogBookPull += " and ta.category_type = Any(@alert_category) ";
                 }
                 var logBookDetailsResult = await _dataMartdataAccess.QueryAsync<LogbookDetails>(queryLogBookPull, parameter);
                 if (logBookDetailsResult.AsList<LogbookDetails>().Count > 0)
@@ -126,7 +127,27 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
+        public async Task<IEnumerable<EnumTranslation>> GetAlertCategory()
+        {
+            try
+            {
+                var queryStatement = @"SELECT                                     
+                                    id as Id, 
+                                    type as Type, 
+                                    enum as Enum, 
+                                    parent_enum as ParentEnum, 
+                                    key as Key
+                                    FROM translation.enumtranslation;";
 
+                IEnumerable<EnumTranslation> enumtranslationlist = await _dataAccess.QueryAsync<EnumTranslation>(queryStatement, null);
+
+                return enumtranslationlist;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         public async Task<List<FilterProperty>> GetAlertLevelList(List<string> enums)
         {
             var parameter = new DynamicParameters();

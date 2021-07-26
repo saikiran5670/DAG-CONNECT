@@ -1,58 +1,40 @@
-
-<div class="fleet-filter-driver">
-
-    <div fxLayout="row" fxLayoutAlign="space-between" style="padding-top: 20px;">
-        <mat-form-field appearance="outline">
-            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
-            <span matPrefix><mat-icon>search</mat-icon></span>
-        </mat-form-field>        
-   </div>
-   <div  fxLayout="column" fxLayoutAlign="left">
-    <mat-label style='display: flex; place-content: space-between;'>
-        {{ translationData.lbl || 'Select Driver' }}
-    </mat-label>
-    <mat-form-field appearance="outline" class="full-width">
-        <mat-select (selectionChange)="onChangeGroup($event.value)" placeholder="{{ translationData.lblSelectUserRole || 'Select Vehicle Group' }}" >
-            <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
-            <mat-option *ngFor="let item of groupList" [value]="item.vehicleId">
-                {{item.vehicleGroupName}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-</div>     
-
-<mat-card class='mat-elevation-z no-padding margin-bottom-xlg vehicleList-card'>
-    <mat-expansion-panel style="padding: 0px;" [(expanded)]="isVehicleListOpen" class="full-width" fxLayoutGap="10px" (opened)="isVehicleListOpen"
+<div class='mat-elevation-z no-padding margin-bottom-xlg vehicleList-card' style="margin-top: 10px;">
+    <mat-expansion-panel style="padding: 0px;height: calc(100vh - 45px);" [(expanded)]="isVehicleListOpen" class="full-width" fxLayoutGap="10px" (opened)="isVehicleListOpen"
     (closed)="!isVehicleListOpen">
-      <mat-expansion-panel-header class="full-width" style="padding-left: 10px;height: 45px;">
+      <mat-expansion-panel-header class="full-width" style="height: 45px;">
         <mat-panel-title>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbl || 'Vehicle List' }}</span>
-          <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class="checkbox">
-            <mat-checkbox [checked]="todayFlagClicked" (change)="onChangetodayCheckbox($event)" >{{ translationData.lblToday || 'Today'}}
-            </mat-checkbox>
-              </div>
-        </mat-panel-title>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverList || 'DriverList' }}({{driverListData.length}})</span>
+       </mat-panel-title>
       </mat-expansion-panel-header>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class="checkbox">
+        <mat-checkbox [checked]="driverFlagClicked" (change)="onChangedriverCheckbox($event.checked)" >{{ translationData.lblToday || 'Today'}}
+        </mat-checkbox>
+     </div>
       <div *ngIf="!noRecordFlag">
-        <div class="full-width vehicleList-div" *ngFor="let item of vehicleListData">
+        <div class="full-width vehicleList-div" *ngFor="let item of driverListData">
             <div class="vehicleList-icon">
-                <mat-icon style="font-size: 50px;padding: 26px 0px;"> person_pin_circle</mat-icon>
+                <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="Health Status: {{item.vehicleHealthStatusType}} 
+                &#13; Alert: {{item.alertName}}"> </span>
             </div>
             <div class="vehicleList-details">
             <div>
-                <span class="vehicle-details-head">{{ translationData.lbl || 'VIN'}}: </span>
+                <span class="vehicle-details-head">{{ translationData.lblVin || 'VIN'}}: </span>
                 <span class="vehicle-details-data">{{item.vin}}</span>
             </div>
-            <div>
-                <span class="vehicle-details-head">{{ translationData.lbl || 'Driver Name'}}:</span>
-                <span class="vehicle-details-data">{{item.driverFirstName + " " + item.driverLastName}}</span>
+            <div>               
+                <span class="vehicle-details-head" >           
+                    {{ item.driverName == '' ?  'Driver Id' :  'Driver Name'}} 
+                </span>
+                <span class="vehicle-details-data">
+                      {{ (item.driverName == '' ? item.driverId : item.driverName) || ((item.driverName == '' && item.driverId == '') ? 'Unknown' : item.driverName)}} 
+               </span>
             </div> 
             <div>
-                <span class="vehicle-details-head">{{ translationData.lbl || 'Driving Status'}}:</span>
+                <span class="vehicle-details-head">{{ translationData.lblDrivingStatus || 'Driving Status'}}:</span>
                 <span class="vehicle-details-data">{{item.vehicleDrivingStatusType}}</span>
             </div> 
             <div>
-                <span class="vehicle-details-head">{{ translationData.lbl || 'Health Status'}}:</span>
+                <span class="vehicle-details-head">{{ translationData.lblHealthStatus || 'Health Status'}}:</span>
                 <span class="vehicle-details-data">{{item.vehicleHealthStatusType}}</span>
             </div>
             </div>
@@ -62,5 +44,4 @@
         <p>{{translationData.lblNoRecordFound || 'NoRecordFound'}}</p>
     </div>  
   </mat-expansion-panel>
-  </mat-card>
-  </div>
+</div>

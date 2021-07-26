@@ -677,6 +677,39 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpPost]
+        [Route("ecoscore/trendlines")]
+        public async Task<IActionResult> GetEcoScoreReportTrendlines([FromBody] EcoScoreReportSingleDriverRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_DATEMISMATCH_MSG); }
+
+                var grpcRequest = _mapper.MapEcoScoreReportSingleDriver(request);
+                grpcRequest.AccountId = _userDetails.AccountId;
+                grpcRequest.OrgId = GetContextOrgId();
+
+                var response = await _reportServiceClient.GetEcoScoreReportTrendlinesAsync(grpcRequest);
+                if (response?.Trendlines?.Count > 0)
+                {
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_TRENDLINE_SUCCESS_MSG;
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode((int)response.Code, response.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
 
         #region Eco Score Report - User Preferences
@@ -904,9 +937,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 fleetOverviewDetailsRequest.DriverIds.AddRange(fleetOverviewFilter.DriverId);
                 fleetOverviewDetailsRequest.Days = fleetOverviewFilter.Days;
                 /* Need to comment Start */
-                //  fleetOverviewDetailsRequest.AccountId = 171;
-                //  fleetOverviewDetailsRequest.OrganizationId = 36;
-                //   fleetOverviewDetailsRequest.RoleId = 61;
+                //fleetOverviewDetailsRequest.AccountId = 171;
+                // fleetOverviewDetailsRequest.OrganizationId = 36;
+                // fleetOverviewDetailsRequest.RoleId = 61;
                 /* Need to comment End */
                 FleetOverviewDetailsResponse response = await _reportServiceClient.GetFleetOverviewDetailsAsync(fleetOverviewDetailsRequest);
                 if (response == null)
@@ -1179,28 +1212,28 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                     foreach (var hs in vehicleHealthStatus)
                     {
-                        if (hs.LatestGeolocationAddressId == 0 && hs.LatestReceivedPositionLattitude != 0 && hs.LatestReceivedPositionLongitude != 0)
-                        {
-                            GetMapRequest getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(hs.LatestReceivedPositionLattitude, hs.LatestReceivedPositionLongitude);
-                            hs.LatestGeolocationAddressId = getMapRequestLatest.Id;
-                            hs.LatestGeolocationAddress = getMapRequestLatest.Address;
-                        }
-                        if (hs.LatestWarningGeolocationAddressId == 0 && hs.LatestWarningPositionLatitude != 0 && hs.LatestWarningPositionLongitude != 0)
-                        {
-                            GetMapRequest getMapRequestWarning = _hereMapAddressProvider.GetAddressObject(hs.LatestWarningPositionLatitude, hs.LatestWarningPositionLongitude);
-                            hs.LatestWarningGeolocationAddressId = getMapRequestWarning.Id;
-                            hs.LatestWarningGeolocationAddress = getMapRequestWarning.Address;
-                        }
-                        if (hs.StartGeolocationAddressId == 0 && hs.StartPositionLattitude != 0 && hs.StartPositionLongitude != 0)
-                        {
-                            GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(hs.StartPositionLattitude, hs.StartPositionLongitude);
-                            hs.StartGeolocationAddressId = getMapRequestStart.Id;
-                            hs.StartGeolocationAddress = getMapRequestStart.Address;
-                        }
-                        if (hs.WarningLat != 0 && hs.WarningLng != 0)
+                        //if (hs.LatestGeolocationAddressId == 0 && hs.LatestReceivedPositionLattitude != 0 && hs.LatestReceivedPositionLongitude != 0)
+                        //{
+                        //    GetMapRequest getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(hs.LatestReceivedPositionLattitude, hs.LatestReceivedPositionLongitude);
+                        //    hs.LatestGeolocationAddressId = getMapRequestLatest.Id;
+                        //    hs.LatestGeolocationAddress = getMapRequestLatest.Address;
+                        //}
+                        //if (hs.LatestWarningGeolocationAddressId == 0 && hs.LatestWarningPositionLatitude != 0 && hs.LatestWarningPositionLongitude != 0)
+                        //{
+                        //    GetMapRequest getMapRequestWarning = _hereMapAddressProvider.GetAddressObject(hs.LatestWarningPositionLatitude, hs.LatestWarningPositionLongitude);
+                        //    hs.LatestWarningGeolocationAddressId = getMapRequestWarning.Id;
+                        //    hs.LatestWarningGeolocationAddress = getMapRequestWarning.Address;
+                        //}
+                        //if (hs.StartGeolocationAddressId == 0 && hs.StartPositionLattitude != 0 && hs.StartPositionLongitude != 0)
+                        //{
+                        //    GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(hs.StartPositionLattitude, hs.StartPositionLongitude);
+                        //    hs.StartGeolocationAddressId = getMapRequestStart.Id;
+                        //    hs.StartGeolocationAddress = getMapRequestStart.Address;
+                        //}
+                        if (hs.WarningAddressId == 0 && hs.WarningLat != 0 && hs.WarningLng != 0)
                         {
                             GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(hs.WarningLat, hs.WarningLng);
-                            hs.StartGeolocationAddressId = getMapRequestStart.Id;
+                            hs.WarningAddressId = getMapRequestStart.Id;
                             hs.WarningAddress = getMapRequestStart.Address;
                         }
                     }
@@ -1332,9 +1365,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 logBookFilterRequest.AccountId = _userDetails.AccountId;
                 logBookFilterRequest.OrganizationId = GetContextOrgId();
                 logBookFilterRequest.RoleId = _userDetails.RoleId;
-                //   logBookFilterRequest.AccountId = 171;
+                // logBookFilterRequest.AccountId = 171;
                 //  logBookFilterRequest.OrganizationId = 36;
-                //   logBookFilterRequest.RoleId = 61;
+                // logBookFilterRequest.RoleId = 61;
                 LogbookFilterResponse response = await _reportServiceClient.GetLogbookSearchParameterAsync(logBookFilterRequest);
 
                 // reportFleetOverviewFilter = _mapper.ToFleetOverviewEntity(response);
@@ -1381,9 +1414,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 logbookDetailsRequest.StartTime = logbookFilter.Start_Time;
                 logbookDetailsRequest.EndTime = logbookFilter.End_time;
                 /* Need to comment Start */
-                //logbookDetailsRequest.AccountId = 171;
-                //logbookDetailsRequest.OrganizationId = 36;
-                //logbookDetailsRequest.RoleId = 61;
+                // logbookDetailsRequest.AccountId = 171;
+                // logbookDetailsRequest.OrganizationId = 36;
+                // logbookDetailsRequest.RoleId = 61;
                 /* Need to comment End */
 
                 LogbookDetailsResponse response = await _reportServiceClient.GetLogbookDetailsAsync(logbookDetailsRequest);

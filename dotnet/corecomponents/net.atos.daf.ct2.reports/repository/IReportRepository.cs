@@ -46,6 +46,8 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportVINCompany(EcoScoreReportSingleDriverRequest request);
         Task<List<EcoScoreSingleDriverBarPieChart>> GetEcoScoreAverageGrossWeightChartData(EcoScoreReportSingleDriverRequest request);
         Task<List<EcoScoreSingleDriverBarPieChart>> GetEcoScoreAverageDrivingSpeedChartData(EcoScoreReportSingleDriverRequest request);
+        Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallCompanyForTrendline(EcoScoreReportSingleDriverRequest request);
+        Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportVinCompanyForTrendline(EcoScoreReportSingleDriverRequest request);
         Task<List<AlertCategory>> GetAlertCategoryList();
         #region FleetFuel
         Task<List<CO2Coefficient>> GetCO2CoEfficientData();
@@ -81,6 +83,7 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<AlertCategory>> GetAlertCategoryList(List<string> enums);
         Task<List<LogbookDetails>> GetLogbookDetails(LogbookDetailsFilter logbookFilter);
         Task<List<AlertThresholdDetails>> GetThresholdDetails(List<int> alertId, List<string> alertLevel);
+        Task<IEnumerable<EnumTranslation>> GetAlertCategory();
         #endregion
 
         #region Fuel Benchmark Report

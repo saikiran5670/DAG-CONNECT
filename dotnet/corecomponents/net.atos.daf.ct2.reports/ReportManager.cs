@@ -335,6 +335,45 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetEcoScoreAverageDrivingSpeedChartData(request);
         }
+        public async Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportTrendlineData(EcoScoreReportSingleDriverRequest request)
+        {
+            var lstSingleDriver = new List<EcoScoreReportSingleDriver>();
+            var aggregationCount = CalculateAggregationCount(AggregateType.DAY, request.StartDateTime, request.EndDateTime);
+            dynamic result = new dynamic[aggregationCount + 1];
+            var startDate = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
+            DateTime loopStartDate = startDate, loopEndDate;
+            try
+            {
+                for (int counter = 0; counter <= aggregationCount; counter++)
+                {
+                    DateTimeOffset offset = new DateTimeOffset(GetStartOfDay(loopStartDate));
+                    request.StartDateTime = offset.ToUnixTimeMilliseconds();
+                    loopEndDate = loopStartDate.AddDays((int)AggregateType.DAY);
+                    offset = new DateTimeOffset(GetEndOfDay(loopEndDate));
+                    request.EndDateTime = offset.ToUnixTimeMilliseconds();
+
+                    var objOverallDriver = await _reportRepository.GetEcoScoreReportOverallDriver(request);
+                    if (objOverallDriver != null)
+                        lstSingleDriver.AddRange(objOverallDriver);
+                    var objOverallCompany = await _reportRepository.GetEcoScoreReportOverallCompanyForTrendline(request);
+                    if (objOverallCompany != null)
+                        lstSingleDriver.AddRange(objOverallCompany);
+                    var lstVINDriver = await _reportRepository.GetEcoScoreReportVINDriver(request);
+                    if (lstVINDriver.Count > 0)
+                        lstSingleDriver.AddRange(lstVINDriver);
+                    var lstVINCompany = await _reportRepository.GetEcoScoreReportVinCompanyForTrendline(request);
+                    if (lstVINCompany != null)
+                        lstSingleDriver.AddRange(lstVINCompany);
+                    loopStartDate = loopEndDate.AddDays(1);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return lstSingleDriver;
+        }
         #endregion
 
         #endregion
@@ -696,6 +735,17 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetAlertCategoryList(enums);
         }
+        public async Task<IEnumerable<EnumTranslation>> GetAlertCategory()
+        {
+            try
+            {
+                return await _reportRepository.GetAlertCategory();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         public async Task<List<LogbookDetails>> GetLogbookDetails(LogbookDetailsFilter logbookFilter)
         {
             return await _reportRepository.GetLogbookDetails(logbookFilter);
@@ -731,5 +781,13 @@ namespace net.atos.daf.ct2.reports
             return fuelBenchmarkDetails;
         }
         #endregion
+        public static DateTime GetStartOfDay(DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0, 0);
+        }
+        public static DateTime GetEndOfDay(DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 23, 59, 59, 999);
+        }
     }
 }

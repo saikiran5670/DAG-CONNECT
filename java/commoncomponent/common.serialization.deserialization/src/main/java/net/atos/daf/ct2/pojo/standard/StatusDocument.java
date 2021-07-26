@@ -18,65 +18,65 @@ public class StatusDocument implements Serializable {
   private Integer vEvtCause;
 
   @JsonProperty(value = "GPSSpeed")
-  private Integer gpsSpeed;
+  private Long gpsSpeed;
   @JsonProperty(value = "GPSTripDist")
-  private Integer gpsTripDist;
+  private Long gpsTripDist;
   @JsonProperty(value = "TripHaversineDistance")
-  private Integer tripHaversineDistance;
+  private Long tripHaversineDistance;
 
   @JsonProperty(value = "TripID")
   private String tripID;
 
   @JsonProperty(value = "VCruiseControlFuelConsumed")
-  private Integer vCruiseControlFuelConsumed;
+  private Long vCruiseControlFuelConsumed;
   @JsonProperty(value = "VIdleFuelConsumed")
-  private Integer vIdleFuelConsumed;
+  private Long vIdleFuelConsumed;
   @JsonProperty(value = "VMaxThrottlePaddleDuration")
-  private Integer vMaxThrottlePaddleDuration;
+  private Long vMaxThrottlePaddleDuration;
   @JsonProperty(value = "VSumTripDPABrakingScore")
-  private Integer vSumTripDPABrakingScore;
+  private Long vSumTripDPABrakingScore;
   @JsonProperty(value = "VSumTripDPAAnticipationScore")
-  private Integer vSumTripDPAAnticipationScore;
+  private Long vSumTripDPAAnticipationScore;
   @JsonProperty(value = "VTripAccelerationTime")
-  private Integer vTripAccelerationTime;
+  private Long vTripAccelerationTime;
   @JsonProperty(value = "VTripCoastDist")
-  private Integer vTripCoastDist;
+  private Long vTripCoastDist;
   @JsonProperty(value = "VTripCoastDuration")
-  private Integer vTripCoastDuration;
+  private Long vTripCoastDuration;
   @JsonProperty(value = "VTripCoastFuelConsumed")
-  private Integer vTripCoastFuelConsumed;
+  private Long vTripCoastFuelConsumed;
   @JsonProperty(value = "VTripCruiseControlDuration")
-  private Integer vTripCruiseControlDuration;
+  private Long vTripCruiseControlDuration;
   @JsonProperty(value = "VTripDPABrakingCount")
-  private Integer vTripDPABrakingCount;
+  private Long vTripDPABrakingCount;
   @JsonProperty(value = "VTripDPAAnticipationCount")
-  private Integer vTripDPAAnticipationCount;
+  private Long vTripDPAAnticipationCount;
   @JsonProperty(value = "VTripIdleFuelConsumed")
-  private Integer vTripIdleFuelConsumed;
+  private Long vTripIdleFuelConsumed;
   @JsonProperty(value = "VTripIdlePTODuration")
-  private Integer vTripIdlePTODuration;
+  private Long vTripIdlePTODuration;
   @JsonProperty(value = "VTripIdlePTOFuelConsumed")
-  private Integer vTripIdlePTOFuelConsumed;
+  private Long vTripIdlePTOFuelConsumed;
   @JsonProperty(value = "VTripIdleWithoutPTODuration")
-  private Integer vTripIdleWithoutPTODuration;
+  private Long vTripIdleWithoutPTODuration;
   @JsonProperty(value = "VTripIdleWithoutPTOFuelConsumed")
-  private Integer vTripIdleWithoutPTOFuelConsumed;
+  private Long vTripIdleWithoutPTOFuelConsumed;
   @JsonProperty(value = "VTripMotionDuration")
-  private Integer vTripMotionDuration;
+  private Long vTripMotionDuration;
   @JsonProperty(value = "VTripMotionFuelConsumed")
-  private Integer vTripMotionFuelConsumed;
+  private Long vTripMotionFuelConsumed;
   @JsonProperty(value = "VTripMotionBrakeCount")
-  private Integer vTripMotionBrakeCount;
+  private Long vTripMotionBrakeCount;
   @JsonProperty(value = "VTripMotionBrakeDist")
-  private Integer vTripMotionBrakeDist;
+  private Long vTripMotionBrakeDist;
   @JsonProperty(value = "VTripMotionBrakeDuration")
-  private Integer vTripMotionBrakeDuration;
+  private Long vTripMotionBrakeDuration;
   @JsonProperty(value = "VTripMotionPTODuration")
-  private Integer vTripMotionPTODuration;
+  private Long vTripMotionPTODuration;
   @JsonProperty(value = "VTripMotionPTOFuelConsumed")
-  private Integer vTripMotionPTOFuelConsumed;
+  private Long vTripMotionPTOFuelConsumed;
   @JsonProperty(value = "VTripPTOFuelConsumed")
-  private Integer vTripPTOFuelConsumed;
+  private Long vTripPTOFuelConsumed;
 
   @JsonProperty(value = "VCruiseControlDistanceDistr")
   private Distribution vCruiseControlDistanceDistr;

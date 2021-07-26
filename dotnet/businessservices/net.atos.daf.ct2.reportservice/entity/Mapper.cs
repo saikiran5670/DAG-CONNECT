@@ -9,6 +9,16 @@ namespace net.atos.daf.ct2.reportservice.entity
 {
     public class Mapper
     {
+        public EnumTranslation MapEnumTranslation(reports.entity.EnumTranslation enumTrans)
+        {
+            EnumTranslation objenumtrans = new EnumTranslation();
+            objenumtrans.Id = enumTrans.Id;
+            objenumtrans.Type = string.IsNullOrEmpty(enumTrans.Type) ? string.Empty : enumTrans.Type;
+            objenumtrans.Enum = string.IsNullOrEmpty(enumTrans.Enum) ? string.Empty : enumTrans.Enum;
+            objenumtrans.ParentEnum = string.IsNullOrEmpty(enumTrans.ParentEnum) ? string.Empty : enumTrans.ParentEnum;
+            objenumtrans.Key = string.IsNullOrEmpty(enumTrans.Key) ? string.Empty : enumTrans.Key;
+            return objenumtrans;
+        }
         internal IEnumerable<UserPreferenceDataColumn> MapUserPreferences(IEnumerable<UserPreferenceReportDataColumn> userPreferences)
         {
             var userPreferenceResult = new List<UserPreferenceDataColumn>();
@@ -347,6 +357,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 LatestWarningGeolocationAddressId = fleetOverviewEntity.LatestWarningGeolocationAddressId,
                 LatestWarningGeolocationAddress = fleetOverviewEntity.LatestWarningGeolocationAddress,
                 LatestWarningName = fleetOverviewEntity.LatestWarningName,
+                VehicleName = fleetOverviewEntity.VehicleName
             };
             if (fleetOverviewEntity.LiveFleetPositions != null && fleetOverviewEntity.LiveFleetPositions.Count > 0)
             {
@@ -610,6 +621,80 @@ namespace net.atos.daf.ct2.reportservice.entity
                 avgDrivingSpeed.ChartDataSet.AddRange(lstChartData);
             }
             return avgDrivingSpeed;
+        }
+
+        internal List<EcoScoreTrendlines> MapEcoScoreReportTrendlines(IEnumerable<reports.entity.EcoScoreReportSingleDriver> result, IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> reportAttributes)
+        {
+            var trendlines = new List<EcoScoreTrendlines>();
+            var vins = result.Select(x => x.VIN).Distinct();
+            foreach (var item in vins)
+            {
+                var objTrendline = new EcoScoreTrendlines();
+                objTrendline.VIN = item;
+
+                var lstKPIbyDays = result.Where(x => x.VIN == item).ToList();
+                if (lstKPIbyDays != null)
+                {
+                    objTrendline.VehicleName = lstKPIbyDays.FirstOrDefault().VehicleName;
+
+                    #region Get Report Attribute Details for each KPI and get daywise value
+
+                    //EcoScore Company
+                    var attribute = reportAttributes.Where(x => x.DBColumnName == "EcoScore").FirstOrDefault();
+                    var objKPIInfo = new EcoScoreTrendlinesKPIInfo();
+                    objKPIInfo.EcoScoreCompany.Name = attribute.Name;
+                    objKPIInfo.EcoScoreCompany.Key = attribute.Key;
+
+                    var lstDaywiseValue = new List<EcoScoreTrendlinesKPIScore>();
+                    var lstKPI = lstKPIbyDays.Where(x => x.HeaderType == "Overall_Company").ToList();
+                    foreach (var kpi in lstKPI)
+                    {
+                        var data = new EcoScoreTrendlinesKPIScore();
+                        data.Day = kpi.Day;
+                        data.Value = String.Format("{0:0.0}", kpi.EcoScore);
+                        lstDaywiseValue.Add(data);
+                    }
+                    objKPIInfo.EcoScoreCompany.Data.AddRange(lstDaywiseValue.ToArray());
+
+                    //EcoScore 
+                    attribute = reportAttributes.Where(x => x.DBColumnName == "EcoScore").FirstOrDefault();
+                    objKPIInfo = new EcoScoreTrendlinesKPIInfo();
+                    objKPIInfo.EcoScore.Name = attribute.Name;
+                    objKPIInfo.EcoScore.Key = attribute.Key;
+
+                    lstDaywiseValue = new List<EcoScoreTrendlinesKPIScore>();
+                    lstKPI = lstKPIbyDays.Where(x => x.HeaderType == "Overall_Driver").ToList();
+                    foreach (var kpi in lstKPI)
+                    {
+                        var data = new EcoScoreTrendlinesKPIScore();
+                        data.Day = kpi.Day;
+                        data.Value = String.Format("{0:0.0}", kpi.EcoScore);
+                        lstDaywiseValue.Add(data);
+                    }
+                    objKPIInfo.EcoScore.Data.AddRange(lstDaywiseValue.ToArray());
+
+                    //Fuel Consumption
+                    attribute = reportAttributes.Where(x => x.DBColumnName == "FuelConsumption").FirstOrDefault();
+                    objKPIInfo = new EcoScoreTrendlinesKPIInfo();
+                    objKPIInfo.FuelConsumption.Name = attribute.Name;
+                    objKPIInfo.FuelConsumption.Key = attribute.Key;
+
+                    lstDaywiseValue = new List<EcoScoreTrendlinesKPIScore>();
+                    foreach (var kpi in lstKPIbyDays)
+                    {
+                        var data = new EcoScoreTrendlinesKPIScore();
+                        data.Day = kpi.VIN;
+                        data.Value = String.Format("{0:0.0}", kpi.FuelConsumption);
+                        lstDaywiseValue.Add(data);
+                    }
+                    objKPIInfo.FuelConsumption.Data.AddRange(lstDaywiseValue.ToArray());
+                    #endregion
+
+                    objTrendline.KPIInfo = objKPIInfo;
+                }
+                trendlines.Add(objTrendline);
+            }
+            return trendlines;
         }
     }
 

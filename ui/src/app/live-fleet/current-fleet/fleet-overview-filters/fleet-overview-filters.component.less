@@ -1,31 +1,6 @@
 @mobileToTablet: ~"only screen and (min-width: 320px) and (max-width: 949px)";
 @mobile:~"only screen and (min-width: 320px) and (max-width: 949px)";
 
-
-::ng-deep.mat-tab-link,  ::ng-deep.mat-tab-label, ::ng-deep.mat-tab-label-active{
-    min-width: 90px!important;
-    padding: 0px !important;
-     border: 1px solid #cacaca;
-    height: 35px !important;  
-    font-size: 14px;
-    z-index: 999;
-}
-::ng-deep.mat-tab-header
-{
-    border-radius: 0px;
-    //border-radius: 15px;
-   // border: 1px solid #cacaca;
-}
-// .filtersTab .header-less-tabs {
-
-// }
-::ng-deep.mat-tab-header{
-margin-bottom: 0px;
-}
-.filtersTab{
-    position: absolute;
-    margin: -51px 0px 0px 80px;
-}
 .dashboardMenu {
     position: absolute !important;
     display: block !important;
@@ -126,3 +101,61 @@ margin-bottom: 0px;
 {
     border: 1px solid #bab5b5;
 }
+
+
+//driver classes
+
+.tabLabels{
+    min-width: 100px;
+    padding: 0 14px;
+}
+
+.vehicleList-icon{
+width: 30%;
+border: 1px solid #ddd;
+height: 100px;
+float: left;
+border-radius: 5px 0px 0px 5px;
+}
+.vehicleList-details{
+    width: 70%;
+    background: #e9e9e9;
+    border:1px solid #ddd;
+    height: 100px;
+    float: left;
+    border-radius: 0px 5px 5px 0px;
+    padding: 10px;
+    font-size: 12px;
+}
+.vehicle-details-data{
+font-weight: 500;
+}
+.vehicle-details-head{
+    padding-right: 5px;  
+    color: #575656;
+} 
+.vehicleList-icon
+{
+    color:green;
+}
+
+.mat-form-field {
+    width: 100%;
+}
+.vehicleList-div{
+    margin-bottom: 10px;
+    float: left;
+    }
+    ::ng-deep.mat-form-field-appearance-outline .mat-form-field-infix {
+        padding:  0em 0 0.5em 0 !important;
+    }
+    ::ng-deep.mat-form-field-wrapper {
+        padding-bottom: 0.5em;
+    }
+    ::ng-deep.vehicleList-card .mat-expansion-panel-body {
+        padding: 0px 8px !important;
+    }
+
+    .checkbox{
+        padding-left: 45%;
+    }
