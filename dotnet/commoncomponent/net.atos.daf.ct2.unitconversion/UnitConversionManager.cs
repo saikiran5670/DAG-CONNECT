@@ -47,6 +47,17 @@ namespace net.atos.daf.ct2.unitconversion
                             break;
                     }
                     break;
+                case SpeedUnit.KmPerHour:
+                    switch (convertTo)
+                    {
+                        case UnitToConvert.Imperial:
+                            result = value / 1.609;
+                            break;
+                        case UnitToConvert.Metric:
+                            result = value;
+                            break;
+                    }
+                    break;
                 default:
                     result = value;
                     break;
@@ -121,6 +132,29 @@ namespace net.atos.daf.ct2.unitconversion
             return Task.FromResult(Math.Round(result, decimals));
         }
 
+        public Task<double> GetVolumePer100Km(double value, VolumeUnit inputUnit, UnitToConvert convertTo, int decimals = 2)
+        {
+            double result = value;
+            switch (inputUnit)
+            {
+                case VolumeUnit.MilliLiter:
+                    switch (convertTo)
+                    {
+                        case UnitToConvert.Imperial:
+                            result = ((value / 4546) / 62.1371);
+                            break;
+                        case UnitToConvert.Metric:
+                            result = value / 100000;
+                            break;
+                    }
+                    break;
+                default:
+                    result = value;
+                    break;
+            }
+            return Task.FromResult(Math.Round(result, decimals));
+        }
+
         public Task<double> GetWeight(double value, WeightUnit inputUnit, UnitToConvert convertTo, int decimals = 2)
         {
             double result = value;
@@ -134,6 +168,17 @@ namespace net.atos.daf.ct2.unitconversion
                             break;
                         case UnitToConvert.Metric:
                             result = value / 1000;
+                            break;
+                    }
+                    break;
+                case WeightUnit.Tons:
+                    switch (convertTo)
+                    {
+                        case UnitToConvert.Imperial:
+                            result = value;
+                            break;
+                        case UnitToConvert.Metric:
+                            result = value / 1.102;
                             break;
                     }
                     break;

@@ -258,7 +258,7 @@ namespace net.atos.daf.ct2.reports.repository
                     objProfile.Name = pro.profilename;
                     objProfile.Description = pro.profiledescription;
                     objProfile.ActionedBy = pro.actionedby;
-                    objProfile.LastUpdate = pro.lastupdate != null ? Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(pro.lastupdate, "UTC", "yyyy-MM-ddTHH:mm:ss")) : default(DateTime);
+                    objProfile.LastUpdate = pro.lastupdate ?? default(DateTime);
                 }
                 List<EcoScoreProfileKPI> lstProfileKPI = new List<EcoScoreProfileKPI>();
                 foreach (dynamic obj in profileKPI)
@@ -1084,7 +1084,6 @@ namespace net.atos.daf.ct2.reports.repository
         {
             try
             {
-                var day = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
 
                 var parameters = new DynamicParameters();
                 parameters.Add("@FromDate", request.StartDateTime);
@@ -1094,7 +1093,6 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinTripDistance);
                 parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
                 parameters.Add("@OrgId", request.OrgId);
-                parameters.Add("@Day", day.ToString("dd-MMM-yyyy"));
 
                 string query = @"WITH 
                                 ecoscorequery as (
@@ -1330,7 +1328,6 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(brdur.brakeduration AS DOUBLE PRECISION) as BrakeDuration
                                 ,CAST(brk.braking AS DOUBLE PRECISION) as Braking
                                 ,CAST(anc.anticipationscore  AS DOUBLE PRECISION) as AnticipationScore
-                                , @Day As Day
                                 
                                 from generalblk eco
                                 Left join AverageGrossweight avrg on avrg.driver1_id = eco.driver1_id
@@ -1379,7 +1376,6 @@ namespace net.atos.daf.ct2.reports.repository
         {
             try
             {
-                var day = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
                 var parameters = new DynamicParameters();
                 parameters.Add("@FromDate", request.StartDateTime);
                 parameters.Add("@ToDate", request.EndDateTime);
@@ -1388,7 +1384,6 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinTripDistance);
                 parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
                 parameters.Add("@OrgId", request.OrgId);
-                parameters.Add("@Day", day.ToString("dd-MMM-yyyy"));
 
                 string query = @"WITH 
                                 ecoscorequery as (
@@ -1624,7 +1619,6 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(brdur.brakeduration AS DOUBLE PRECISION) as BrakeDuration
                                 ,CAST(brk.braking AS DOUBLE PRECISION) as Braking
                                 ,CAST(anc.anticipationscore  AS DOUBLE PRECISION) as AnticipationScore
-                                , @Day As Day
                                 
                                 from generalblk eco
                                 Left join AverageGrossweight avrg on avrg.organization_id = eco.organization_id
@@ -1673,7 +1667,6 @@ namespace net.atos.daf.ct2.reports.repository
         {
             try
             {
-                var day = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
                 var parameters = new DynamicParameters();
                 parameters.Add("@FromDate", request.StartDateTime);
                 parameters.Add("@ToDate", request.EndDateTime);
@@ -1682,7 +1675,6 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinTripDistance);
                 parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
                 parameters.Add("@OrgId", request.OrgId);
-                parameters.Add("@Day", day.ToString("dd-MMM-yyyy"));
 
                 string query = @"WITH 
                                 ecoscorequery as (
@@ -1922,7 +1914,6 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(brdur.brakeduration AS DOUBLE PRECISION) as BrakeDuration
                                 ,CAST(brk.braking AS DOUBLE PRECISION) as Braking
                                 ,CAST(anc.anticipationscore  AS DOUBLE PRECISION) as AnticipationScore
-                                ,@Day as Day
                                 
                                 from generalblk eco
                                 Left join AverageGrossweight avrg on avrg.vin = eco.vin
@@ -1972,7 +1963,6 @@ namespace net.atos.daf.ct2.reports.repository
         {
             try
             {
-                var day = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
                 var parameters = new DynamicParameters();
                 parameters.Add("@FromDate", request.StartDateTime);
                 parameters.Add("@ToDate", request.EndDateTime);
@@ -1981,7 +1971,6 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinTripDistance);
                 parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
                 parameters.Add("@OrgId", request.OrgId);
-                parameters.Add("@Day", day.ToString("dd-MMM-yyyy"));
 
                 string query = @"WITH 
                                 ecoscorequery as (
@@ -2220,7 +2209,6 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(brdur.brakeduration AS DOUBLE PRECISION) as BrakeDuration
                                 ,CAST(brk.braking AS DOUBLE PRECISION) as Braking
                                 ,CAST(anc.anticipationscore  AS DOUBLE PRECISION) as AnticipationScore
-                                ,@Day As Day
                                 
                                  from generalblk eco
                                 Left join AverageGrossweight avrg on avrg.vin = eco.vin
@@ -2485,7 +2473,6 @@ namespace net.atos.daf.ct2.reports.repository
         {
             try
             {
-                var day = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
 
                 var parameters = new DynamicParameters();
                 parameters.Add("@FromDate", request.StartDateTime);
@@ -2495,7 +2482,6 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinTripDistance);
                 parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
                 parameters.Add("@OrgId", request.OrgId);
-                parameters.Add("@Day", day.ToString("dd-MMM-yyyy"));
 
                 string query = @"WITH 
                                 ecoscorequery as (
@@ -2776,7 +2762,6 @@ namespace net.atos.daf.ct2.reports.repository
         {
             try
             {
-                var day = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
                 var parameters = new DynamicParameters();
                 parameters.Add("@FromDate", request.StartDateTime);
                 parameters.Add("@ToDate", request.EndDateTime);
@@ -2785,7 +2770,6 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinTripDistance);
                 parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
                 parameters.Add("@OrgId", request.OrgId);
-                parameters.Add("@Day", day.ToString("dd-MMM-yyyy"));
 
                 string query = @"WITH 
                                 ecoscorequery as (
@@ -2839,7 +2823,6 @@ namespace net.atos.daf.ct2.reports.repository
         {
             try
             {
-                var day = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
                 var parameters = new DynamicParameters();
                 parameters.Add("@FromDate", request.StartDateTime);
                 parameters.Add("@ToDate", request.EndDateTime);
@@ -2848,7 +2831,6 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinTripDistance);
                 parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
                 parameters.Add("@OrgId", request.OrgId);
-                parameters.Add("@Day", day.ToString("dd-MMM-yyyy"));
 
                 string query = @"WITH 
                                 ecoscorequery as (
@@ -2905,7 +2887,6 @@ namespace net.atos.daf.ct2.reports.repository
         {
             try
             {
-                var day = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
                 var parameters = new DynamicParameters();
                 parameters.Add("@FromDate", request.StartDateTime);
                 parameters.Add("@ToDate", request.EndDateTime);
@@ -2914,7 +2895,6 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinTripDistance);
                 parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance);
                 parameters.Add("@OrgId", request.OrgId);
-                parameters.Add("@Day", day.ToString("dd-MMM-yyyy"));
 
                 string query = @"WITH 
                                 ecoscorequery as (

@@ -71,6 +71,8 @@ namespace net.atos.daf.ct2.reportscheduler.report
                                                               _templateManager, _unitConversionManager, _unitManager, EmailEventType.TripReport, EmailContentType.Html),
             ReportNameConstants.REPORT_FLEET_UTILISATION => new FleetUtilisation(_reportManager, _reportSchedulerRepository, _visibilityManager,
                                                               _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetUtilisation, EmailContentType.Html),
+            ReportNameConstants.REPORT_FLEET_FUEL => new FleetFuel(_reportManager, _reportSchedulerRepository, _visibilityManager,
+                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetFuel, EmailContentType.Html),
             _ => throw new ArgumentException(message: "invalid Report Key value", paramName: nameof(reportKey)),
         };
 
@@ -101,7 +103,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
             {
                 ColorMode = ColorMode.Color,
                 Orientation = Orientation.Portrait,
-                PaperSize = PaperKind.A4,
+                PaperSize = GetPaperKind(),
                 Margins = new MarginSettings { Top = 10 }
             };
             var objectSettings = new ObjectSettings
@@ -118,6 +120,15 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 Objects = { objectSettings }
             };
             return pdf;
+        }
+
+        private PaperKind GetPaperKind()
+        {
+            if (ReportKey == ReportNameConstants.REPORT_FLEET_FUEL)
+            {
+                return PaperKind.A3;
+            }
+            return PaperKind.A4;
         }
 
         private async Task<IEnumerable<VehicleList>> GetVehicleDetails()
