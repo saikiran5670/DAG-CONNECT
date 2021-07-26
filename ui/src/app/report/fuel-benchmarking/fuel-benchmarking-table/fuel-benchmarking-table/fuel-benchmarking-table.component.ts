@@ -113,7 +113,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
         if(this.firstColumn[colIndx] == 'ranking') {
           let rakingSortedData = data.fuelBenchmarkDetails[this.firstColumn[colIndx]].sort((a,b) => (a.fuelConsumption > b.fuelConsumption) ? 1 : ((b.fuelConsumption > a.fuelConsumption) ? -1 : 0));
           for(let row of rakingSortedData) {
-            row["ltrVal"] = row.fuelConsumption/1000;
+            row["ltrVal"] = (row.fuelConsumption/1000).toFixed(2);
           }
           this.dataSource[colIndx][column] = rakingSortedData;
         } else if(this.firstColumn[colIndx] == 'fuelConsumption') {
