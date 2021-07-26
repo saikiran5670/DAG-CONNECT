@@ -352,14 +352,29 @@ export class AlertsComponent implements OnInit {
       //     return this.compare(a1, b1, isAsc);
       //   });
       //  }
+      this.dataSource.sortData = (data : String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        let columnName = this.sort.active;
+        return data.sort((a: any, b: any) => {
+          return this.compare(a[sort.active], b[sort.active], isAsc, columnName);
+        });
+      }
     });
   }
-
-  compare(a: any, b: any, isAsc: boolean) {
-    if(!(a instanceof Number) && isNaN(a)) a = a.toUpperCase();
-    if(!(b instanceof Number) && isNaN(b)) b = b.toUpperCase();
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any) {
+    if(columnName == "name" || columnName =="category"){
+      if(!(a instanceof Number)) a = a.toString().toUpperCase();
+      if(!(b instanceof Number)) b = b.toString().toUpperCase();
+    }
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1); 
   }
+  
+
+  // compare(a: any, b: any, isAsc: boolean) {
+  //   if(!(a instanceof Number) && isNaN(a)) a = a.toUpperCase();
+  //   if(!(b instanceof Number) && isNaN(b)) b = b.toUpperCase();
+  //   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  // }
 
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
