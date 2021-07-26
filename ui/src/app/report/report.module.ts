@@ -29,7 +29,7 @@ import { FuelBenchmarkingComponent } from './fuel-benchmarking/fuel-benchmarking
 //import { DetailVehicleReportComponent } from './fleet-fuel-report/detail-vehicle-report/detail-vehicle-report.component';
 import { DetailDriverReportComponent } from './fleet-fuel-report/fleet-fuel-report-driver/detail-driver-report/detail-driver-report.component';
 import { FuelBenchmarkingTableComponent } from './fuel-benchmarking/fuel-benchmarking-table/fuel-benchmarking-table/fuel-benchmarking-table.component';
-import { VehicletripComponent } from './vehicletrip/vehicletrip.component';
+import { VehicletripComponent } from './fleet-fuel-report/fleet-fuel-report-vehicle/vehicletrip/vehicletrip.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { FuelDeviationReportComponent } from './fuel-deviation-report/fuel-deviation-report.component';
 
