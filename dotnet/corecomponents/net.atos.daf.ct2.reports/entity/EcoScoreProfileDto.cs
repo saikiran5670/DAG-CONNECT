@@ -142,6 +142,7 @@ namespace net.atos.daf.ct2.reports.entity
         public int TargetProfileId { get; set; }
         public string UoM { get; set; }
     }
+
     public class EcoScoreReportSingleDriver
     {
         public string HeaderType { get; set; }
@@ -185,14 +186,6 @@ namespace net.atos.daf.ct2.reports.entity
         public double Y_Axis { get; set; }
         public double Distance { get; set; }
     }
-    public class EcoScoreSingleDriverTrendlineGraph
-    {
-        public string VIN { get; set; }
-        public string VehicleName { get; set; }
-        public string X_Axis { get; set; }
-        public double Y_Axis { get; set; }
-        public double Distance { get; set; }
-    }
 
     public enum RankingColor
     {
@@ -217,5 +210,29 @@ namespace net.atos.daf.ct2.reports.entity
     {
         Metric,
         Imperial
+    }
+    public enum TrendlinesKPI
+    {
+        EcoScoreCompany,
+        EcoScore,
+        FuelConsumption,
+        CruiseControlUsage,
+        CruiseControlUsage30,
+        CruiseControlUsage50,
+        CruiseControlUsage75,
+        PTOUsage,
+        PTODuration,
+        AverageDrivingSpeed,
+        AverageSpeed,
+        HeavyThrottling,
+        HeavyThrottleDuration,
+        Idling,
+        IdleDuration,
+        BrakingScore,
+        HarshBraking,
+        HarshBrakeDuration,
+        BrakeDuration,
+        Braking,
+        AnticipationScore
     }
 }

@@ -1268,15 +1268,11 @@ message EcoScoreSingleDriverBarPieChart
   EcoScoreSingleDriverBarPieChart AverageDrivingSpeedChart = 7;
 }
 
-message EcoScoreTrendlinesKPIScore {
- string Day = 1;
- string Value = 2;
-}
-
 message EcoScoreTrendlinesKPI {
  string Name = 1;
  string Key = 2;
- repeated EcoScoreTrendlinesKPIScore Data = 3;
+ string UoM = 3;
+ map<string, string> Data = 4;
 }
 
 message EcoScoreTrendlinesKPIInfo {

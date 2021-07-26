@@ -549,7 +549,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 var response = new GetEcoScoreReportTrendlinesResponse();
                 if (resultDataMart?.Count > 0)
                 {
-                    response.Trendlines.AddRange(_mapper.MapEcoScoreReportTrendlines(resultDataMart, reportAttributes));
+                    response.Trendlines.AddRange(_mapper.MapEcoScoreReportTrendlines(resultDataMart, reportAttributes, (UoM)Enum.Parse(typeof(UoM), request.UoM)));
                     response.Code = Responsecode.Success;
                     response.Message = ReportConstants.GET_ECOSCORE_REPORT_TRENDLINE_SUCCESS_MSG;
                 }
