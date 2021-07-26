@@ -1138,8 +1138,10 @@ export class ReportMapService {
   convertFuelDeviationDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any, translationData: any){
     let _id: number = 0;
     gridData.forEach(element => {
+      let eventData: any = this.getEventTooltip(element, translationData); 
       element.id = _id++;
-      element.eventTooltip = this.getEventTooltip(element, translationData); 
+      element.svgIcon = eventData.svgIcon,
+      element.eventTooltip = eventData.eventText,
       element.eventDate = this.getStartTime(element.eventTime, dateFormat, timeFormat, timeZone, true);
       element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
       element.convertedStartDate = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone, true);
@@ -1156,25 +1158,30 @@ export class ReportMapService {
 
   getEventTooltip(elem: any, transData: any){
     let _eventTxt: any = '';
+    let _svgIcon: any = 'fuel-desc-run';
     switch(`${elem.fuelEventType}${elem.vehicleActivityType}`){
       case 'IS': {
         _eventTxt = transData.lblFuelIncreaseDuringStop || 'Fuel Increase During Stop';
+        _svgIcon = 'fuel-incr-stop';
         break;
       }
       case 'DS': {
         _eventTxt = transData.lblFuelDecreaseDuringStop || 'Fuel Decrease During Stop';
+        _svgIcon = 'fuel-desc-stop';
         break;
       }
       case 'IR': {
         _eventTxt = transData.lblFuelIncreaseDuringRun || 'Fuel Increase During Run';
+        _svgIcon = 'fuel-incr-run';
         break;
       }
       case 'DR': {
         _eventTxt = transData.lblFuelDecreaseDuringRun || 'Fuel Decrease During Run';
+        _svgIcon = 'fuel-desc-run';
         break;
       }
     }
-    return _eventTxt;
+    return { eventText: _eventTxt, svgIcon: _svgIcon };
   }
 
   miliLitreToLitre(_data: any){

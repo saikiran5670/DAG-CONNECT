@@ -15,6 +15,8 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { CompleterItem, CompleterService } from 'ng2-completer';
 import { ConfigService } from '@ngx-config/core';
 import { HereService } from '../../services/here.service';
+import { MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from '@angular/platform-browser';
 
 declare var H: any;
 
@@ -166,13 +168,21 @@ export class FuelDeviationReportComponent implements OnInit {
     }
   ];
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService) { 
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer) { 
     this.map_key = this.configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
       "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
     this.configureAutoSuggest();
     this.defaultTranslation();
+    this.setIcons();
+  }
+
+  setIcons(){
+    this.matIconRegistry.addSvgIcon("fuel-desc-run", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-decrease-run.svg"));
+    this.matIconRegistry.addSvgIcon("fuel-incr-run", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-increase-run.svg"));
+    this.matIconRegistry.addSvgIcon("fuel-desc-stop", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-decrease-stop.svg"));
+    this.matIconRegistry.addSvgIcon("fuel-incr-stop", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-increase-stop.svg"));
   }
 
   defaultTranslation(){
@@ -947,7 +957,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
               <td style='width: 100px;'>${this.translationData.lblPosition || 'Position'}:</td> <td><b>${element.geoLocationAddress}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblEventDescription || 'Event Description'}:</td> <td><b>${eventDescText}</b></td>
+              <td style='width: 100px;'>${this.translationData.lblEventDescription || 'Event Description'}:</td> <td><b>${eventDescText.eventText}</b></td>
             </tr>
             <tr>
               <td style='width: 100px;'>${this.translationData.lblDifference || 'Difference'}:</td> <td><b>${element.fuelDiffernce}%</b></td>

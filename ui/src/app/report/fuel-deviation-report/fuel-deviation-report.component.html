@@ -243,9 +243,9 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="fuelEventType">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblType || 'Type' }}
+              <mat-header-cell *matHeaderCellDef>{{ translationData.lblType || 'Type' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" matTooltip='{{ row.eventTooltip }}'>{{ row.fuelEventType != '' ? row.fuelEventType : '-' }}
+              <mat-cell *matCellDef="let row" matTooltip='{{ row.eventTooltip }}'><mat-icon svgIcon="{{ row.svgIcon }}"></mat-icon>
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="fuelDiffernce">
@@ -259,7 +259,7 @@
             </ng-container>
             <ng-container matColumnDef="vin">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}</mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.vin != '' ? row.vin : '-' }}
+              <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip='{{ row.vin }}'>{{ row.vin != '' ? row.vin : '-' }}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="registrationNo">
