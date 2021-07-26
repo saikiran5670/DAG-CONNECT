@@ -192,7 +192,7 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
       this.setTimerValueInLocalStorage(parseInt(this.fleetOverviewForm.controls.refreshTime.value));
       this.loadFleetOverviewPreferences();
       this.setFleetOverviewFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-      if((this.router.url).includes("fleetoverview/livefleet")){
+      if((this.router.url).includes("fleetoverview/fleetoverview")){
         this.reloadCurrentComponent();
       }
     });
