@@ -551,40 +551,14 @@ namespace net.atos.daf.ct2.reports
 
         public async Task<EcoScoreKPIInfoDataServiceResponse> GetKPIInfo(EcoScoreDataServiceRequest request)
         {
-            dynamic kpiInfo = null;
-            switch (request.AggregationType)
-            {
-                case AggregateType.TRIP:
-                    kpiInfo = await _reportRepository.GetKPIInfoPerTrip(request);
-                    break;
-                case AggregateType.DAY:
-                case AggregateType.WEEK:
-                case AggregateType.MONTH:
-                    var aggregationCount = CalculateAggregationCount(request.AggregationType, request.StartTimestamp, request.EndTimestamp);
-                    kpiInfo = await _reportRepository.GetKPIInfo(request, aggregationCount);
-                    break;
-            }
-
+            var kpiInfo = await _reportRepository.GetKPIInfo(request);
             var response = MapEcoScoreKPIInfoDataReponse(kpiInfo);
             return response;
         }
 
         public async Task<EcoScoreChartInfoDataServiceResponse> GetChartInfo(EcoScoreDataServiceRequest request)
         {
-            dynamic chartInfo = null;
-            switch (request.AggregationType)
-            {
-                case AggregateType.TRIP:
-                    chartInfo = await _reportRepository.GetChartInfoPerTrip(request);
-                    break;
-                case AggregateType.DAY:
-                case AggregateType.WEEK:
-                case AggregateType.MONTH:
-                    var aggregationCount = CalculateAggregationCount(request.AggregationType, request.StartTimestamp, request.EndTimestamp);
-                    chartInfo = await _reportRepository.GetChartInfo(request, aggregationCount);
-                    break;
-            }
-
+            var chartInfo = await _reportRepository.GetChartInfo(request);
             var response = MapEcoScoreChartInfoDataReponse(chartInfo);
             return response;
         }
@@ -681,6 +655,7 @@ namespace net.atos.daf.ct2.reports
                     return result > 12 ? 12 : result;
             }
             return 0;
+
         }
 
         #endregion
