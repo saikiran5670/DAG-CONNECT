@@ -1135,9 +1135,12 @@ export class ReportMapService {
   }
 
   // fuel deviation report data-conversion 
-  convertFuelDeviationDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
+  convertFuelDeviationDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any, translationData: any){
+    let _id: number = 0;
     gridData.forEach(element => {
-      element.convertDate = this.getStartTime(element.eventTime, dateFormat, timeFormat, timeZone, true);
+      element.id = _id++;
+      element.eventTooltip = this.getEventTooltip(element, translationData); 
+      element.eventDate = this.getStartTime(element.eventTime, dateFormat, timeFormat, timeZone, true);
       element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
       element.convertedStartDate = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone, true);
       element.convertedEndDate = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone, true);
@@ -1149,6 +1152,29 @@ export class ReportMapService {
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
     });
     return gridData;
+  }
+
+  getEventTooltip(elem: any, transData: any){
+    let _eventTxt: any = '';
+    switch(`${elem.fuelEventType}${elem.vehicleActivityType}`){
+      case 'IS': {
+        _eventTxt = transData.lblFuelIncreaseDuringStop || 'Fuel Increase During Stop';
+        break;
+      }
+      case 'DS': {
+        _eventTxt = transData.lblFuelDecreaseDuringStop || 'Fuel Decrease During Stop';
+        break;
+      }
+      case 'IR': {
+        _eventTxt = transData.lblFuelIncreaseDuringRun || 'Fuel Increase During Run';
+        break;
+      }
+      case 'DR': {
+        _eventTxt = transData.lblFuelDecreaseDuringRun || 'Fuel Decrease During Run';
+        break;
+      }
+    }
+    return _eventTxt;
   }
 
   miliLitreToLitre(_data: any){
