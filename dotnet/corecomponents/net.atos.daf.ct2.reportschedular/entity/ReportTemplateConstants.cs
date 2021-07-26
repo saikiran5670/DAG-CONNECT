@@ -90,6 +90,9 @@ tr {{ page-break-inside: avoid }}
 	</table>
   </body>
 </html>";
+        public const string REPORT_TEMPLATE_FLEET_FUEL = @"
+
+";
         public const string REPORT_SUMMARY_TEMPLATE = @"
             <table style='width: 100%; border-collapse: collapse;' border = '0'>                   
                    <tr>
