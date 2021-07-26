@@ -839,25 +839,33 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 CruiseControlUsage as 
                                 (
-                                    SELECT eco.driver1_id, (CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance)  as CruiseControlUsage
+                                    SELECT eco.driver1_id, CASE WHEN SUM(trip_distance) <> 0 THEN 
+									(CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance)  
+									ELSE null END as CruiseControlUsage
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id
                                 ),
                                 CruiseControlUsage30 as 
                                 (
-                                    SELECT eco.driver1_id, (CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance)   as CruiseControlUsage30
+                                    SELECT eco.driver1_id, CASE WHEN SUM(trip_distance) <> 0 THEN 
+									(CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance)  
+									ELSE null END as CruiseControlUsage30
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id
                                 ),
                                 CruiseControlUsage50 as 
                                 (
-                                    SELECT eco.driver1_id, (CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  as CruiseControlUsage50
+                                    SELECT eco.driver1_id, CASE WHEN SUM(trip_distance) <> 0 THEN 
+									(CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  
+									ELSE null END as CruiseControlUsage50
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id
                                 ),
                                 CruiseControlUsage75 as 
                                 (
-                                   SELECT eco.driver1_id, (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)   as CruiseControlUsage75
+                                   SELECT eco.driver1_id, CASE WHEN SUM(trip_distance) <> 0 THEN 
+								   (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)   
+								   ELSE null END as CruiseControlUsage75
 								   FROM ecoscorequery eco
 								   GROUP BY eco.driver1_id
                                 ),
@@ -1158,27 +1166,35 @@ namespace net.atos.daf.ct2.reports.repository
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
                                 ),
-                                CruiseControlUsage as 
+                               CruiseControlUsage as 
                                 (
-                                    SELECT eco.driver1_id, (CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance)  as CruiseControlUsage
+                                    SELECT eco.driver1_id,  CASE WHEN SUM(trip_distance) <>0 THEN
+									(CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance) 
+									ELSE null END as CruiseControlUsage
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id
                                 ),
                                 CruiseControlUsage30 as 
                                 (
-                                    SELECT eco.driver1_id, (CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance)   as CruiseControlUsage30
+                                    SELECT eco.driver1_id,  CASE WHEN SUM(trip_distance) <>0 THEN
+									(CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/ SUM(trip_distance) 
+									ELSE null END as CruiseControlUsage30
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id
                                 ),
                                 CruiseControlUsage50 as 
                                 (
-                                    SELECT eco.driver1_id, (CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  as CruiseControlUsage50
+                                    SELECT eco.driver1_id, CASE WHEN SUM(trip_distance) <>0 THEN
+									(CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance) 
+									ELSE null END as CruiseControlUsage50
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id
                                 ),
                                 CruiseControlUsage75 as 
                                 (
-                                   SELECT eco.driver1_id, (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)   as CruiseControlUsage75
+                                   SELECT eco.driver1_id, CASE WHEN SUM(trip_distance) <>0 THEN
+								   (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  
+								   ELSE null END as  CruiseControlUsage75
 								   FROM ecoscorequery eco
 								   GROUP BY eco.driver1_id
                                 ),
@@ -1446,25 +1462,33 @@ namespace net.atos.daf.ct2.reports.repository
                                 ) ,
                                 CruiseControlUsage as 
                                 (
-                                    SELECT eco.organization_id ,  (CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance)  as CruiseControlUsage
+                                    SELECT eco.organization_id , CASE WHEN SUM(trip_distance) <>0 THEN
+									(CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance) 
+									ELSE null END as CruiseControlUsage
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
                                 ),
                                 CruiseControlUsage30 as 
                                 (
-                                    SELECT eco.organization_id ,  (CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance)   as CruiseControlUsage30
+                                    SELECT eco.organization_id , CASE WHEN SUM(trip_distance) <>0 THEN 
+									(CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance) 
+									ELSE null END as CruiseControlUsage30
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
                                 ),
                                 CruiseControlUsage50 as 
                                 (
-                                    SELECT eco.organization_id , (CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  as CruiseControlUsage50
+                                    SELECT eco.organization_id , CASE WHEN SUM(trip_distance) <>0 THEN 
+									(CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance) 
+									ELSE null END as CruiseControlUsage50
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
                                 ),
                                 CruiseControlUsage75 as 
                                 (
-                                   SELECT eco.organization_id , (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  as CruiseControlUsage75
+                                   SELECT eco.organization_id , CASE WHEN SUM(trip_distance) <>0 THEN 
+								   (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  
+								   ELSE null END as CruiseControlUsage75
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id 
                                 ),
@@ -1735,25 +1759,33 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 CruiseControlUsage as 
                                 (
-                                    SELECT eco.vin,  (CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance)  as CruiseControlUsage
+                                    SELECT eco.vin, CASE WHEN SUM(trip_distance)<>0 THEN
+									(CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance)  
+									ELSE null END as CruiseControlUsage
 									FROM ecoscorequery eco
 									GROUP BY eco.vin
                                 ),
                                 CruiseControlUsage30 as 
                                 (
-                                    SELECT eco.vin,  (CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance)   as CruiseControlUsage30
+                                    SELECT eco.vin, CASE WHEN SUM(trip_distance)<>0 THEN
+									(CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance)   
+									ELSE null END as CruiseControlUsage30
 									FROM ecoscorequery eco
 									GROUP BY eco.vin
                                 ),
                                 CruiseControlUsage50 as 
                                 (
-                                    SELECT eco.vin,  (CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  as CruiseControlUsage50
+                                    SELECT eco.vin, CASE WHEN SUM(trip_distance)<>0 THEN
+									(CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  
+									ELSE null END as CruiseControlUsage50
 									FROM ecoscorequery eco
 									GROUP BY eco.vin
                                 ),
                                 CruiseControlUsage75 as 
                                 (
-                                   SELECT eco.vin,  (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)   as CruiseControlUsage75
+                                   SELECT eco.vin, CASE WHEN SUM(trip_distance)<>0 THEN
+								   (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)   
+								   ELSE null END as CruiseControlUsage75
 								   FROM ecoscorequery eco
 								   GROUP BY eco.vin
                                 ),
@@ -2026,25 +2058,33 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 CruiseControlUsage as 
                                 (
-                                    SELECT eco.organization_id , eco.vin,  (CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance)  as CruiseControlUsage
+                                    SELECT eco.organization_id , eco.vin, CASE WHEN SUM(trip_distance) <>0 THEN
+									(CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance) 
+									ELSE null END as CruiseControlUsage
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
                                 ),
                                 CruiseControlUsage30 as 
                                 (
-                                    SELECT eco.organization_id , eco.vin,  (CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance)   as CruiseControlUsage30
+                                    SELECT eco.organization_id , eco.vin, CASE WHEN SUM(trip_distance) <>0 THEN
+                                    (CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance)
+                                    ELSE null END    as CruiseControlUsage30
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
                                 ),
                                 CruiseControlUsage50 as 
                                 (
-                                    SELECT eco.organization_id , eco.vin,  (CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  as CruiseControlUsage50
+                                    SELECT eco.organization_id , eco.vin, CASE WHEN SUM(trip_distance) <>0 THEN  
+                                    (CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance) 
+                                    ELSE null END    as CruiseControlUsage50
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
                                 ),
                                 CruiseControlUsage75 as 
                                 (
-                                   SELECT eco.organization_id , eco.vin,  (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  as CruiseControlUsage75
+                                   SELECT eco.organization_id , eco.vin,  CASE WHEN SUM(trip_distance) <>0 THEN
+                                   (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  
+                                   ELSE null END  as CruiseControlUsage75
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id ,eco.vin
                                 ),
@@ -2721,7 +2761,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                    AND eco.vin = @VIN --'XLR0998HGFFT76657'
 	                    AND eco.driver1_id = @DriverId --'NL B000384974000000'
 	                    AND eco.trip_distance >= @MinTripDistance
-                        ORDER BY eco.start_time
+                        ORDER BY eco.start_time LIMIT 150
                     )
                     SELECT
                         start_time AS StartTimestamp,
@@ -2888,7 +2928,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                    AND eco.vin = @VIN --'XLR0998HGFFT76657'
 	                    AND eco.driver1_id = @DriverId --'NL B000384974000000'
 	                    AND eco.trip_distance >= @MinTripDistance
-                        ORDER BY eco.start_time
+                        ORDER BY eco.start_time LIMIT 150
                     )
                     SELECT
 	                    start_time AS StartTimestamp,
