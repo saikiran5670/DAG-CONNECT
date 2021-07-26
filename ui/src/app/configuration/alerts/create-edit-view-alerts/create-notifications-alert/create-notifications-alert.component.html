@@ -55,6 +55,9 @@
             <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('specialCharsNotAllowed')">
                 {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
             </mat-error>
+            <mat-error *ngIf="isDuplicateRecipientLabel">
+                {{ translationData.lblDuplicateRecipientLabel || 'Duplicate Recipient Label' }}
+            </mat-error>
         </div>
         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblContactMode || 'Contact Mode' }} <span class='mandatoryColor'>*</span>
@@ -73,7 +76,7 @@
             <mat-hint>{{translationData.lblSelectContactModeAndAddWithList || 'Select contact mode and add with list'}}
             </mat-hint>
             <mat-error
-                *ngIf="notificationForm.get('contactMode').hasError('required') && notificationForm.get('contactMode').touched">
+                *ngIf="notificationForm.get('contactMode').hasError('required') && notificationForm.get('contactMode').touched && !isDuplicateRecipientLabel">
                 {{translationData.lblPleaseSelectContactMode|| 'Please select contact Mode' }}
             </mat-error>
         </div>
