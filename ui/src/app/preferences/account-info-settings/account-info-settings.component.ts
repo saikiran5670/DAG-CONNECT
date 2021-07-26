@@ -153,7 +153,8 @@ export class AccountInfoSettingsComponent implements OnInit {
       "email": "",
       "accountIds": "",
       "name": "",
-      "accountGroupId": 0
+      "accountGroupId": 0,
+      "driverId" : ""
     }
     this.accountService.getAccount(userObjData).subscribe((_data: any)=>{
       this.accountInfo = _data;
@@ -306,7 +307,7 @@ export class AccountInfoSettingsComponent implements OnInit {
         firstName: this.accountSettingsForm.controls.firstName.value,
         lastName: this.accountSettingsForm.controls.lastName.value,
         organizationId: this.organizationId,
-        driverId: this.driverId,
+        driverId: this.accountSettingsForm.controls.driverId.value,
         type: this.accountInfo.type ? this.accountInfo.type : 'P'
     }
     this.accountService.updateAccount(objData).subscribe((data)=>{
