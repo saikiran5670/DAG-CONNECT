@@ -338,34 +338,20 @@ namespace net.atos.daf.ct2.reports
         public async Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportTrendlineData(EcoScoreReportSingleDriverRequest request)
         {
             var lstSingleDriver = new List<EcoScoreReportSingleDriver>();
-            var aggregationCount = CalculateAggregationCount(AggregateType.DAY, request.StartDateTime, request.EndDateTime);
-            dynamic result = new dynamic[aggregationCount + 1];
-            var startDate = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
-            DateTime loopStartDate = startDate, loopEndDate;
             try
             {
-                for (int counter = 0; counter <= aggregationCount; counter++)
-                {
-                    DateTimeOffset offset = new DateTimeOffset(GetStartOfDay(loopStartDate));
-                    request.StartDateTime = offset.ToUnixTimeMilliseconds();
-                    loopEndDate = loopStartDate.AddDays((int)AggregateType.DAY);
-                    offset = new DateTimeOffset(GetEndOfDay(loopEndDate));
-                    request.EndDateTime = offset.ToUnixTimeMilliseconds();
-
-                    var objOverallDriver = await _reportRepository.GetEcoScoreReportOverallDriver(request);
-                    if (objOverallDriver != null)
-                        lstSingleDriver.AddRange(objOverallDriver);
-                    var objOverallCompany = await _reportRepository.GetEcoScoreReportOverallCompanyForTrendline(request);
-                    if (objOverallCompany != null)
-                        lstSingleDriver.AddRange(objOverallCompany);
-                    var lstVINDriver = await _reportRepository.GetEcoScoreReportVINDriver(request);
-                    if (lstVINDriver.Count > 0)
-                        lstSingleDriver.AddRange(lstVINDriver);
-                    var lstVINCompany = await _reportRepository.GetEcoScoreReportVinCompanyForTrendline(request);
-                    if (lstVINCompany != null)
-                        lstSingleDriver.AddRange(lstVINCompany);
-                    loopStartDate = loopEndDate.AddDays(1);
-                }
+                var objOverallDriver = await _reportRepository.GetEcoScoreReportOverallDriverForTrendline(request);
+                if (objOverallDriver != null)
+                    lstSingleDriver.AddRange(objOverallDriver);
+                var objOverallCompany = await _reportRepository.GetEcoScoreReportOverallCompanyForTrendline(request);
+                if (objOverallCompany != null)
+                    lstSingleDriver.AddRange(objOverallCompany);
+                var lstVINDriver = await _reportRepository.GetEcoScoreReportVINDriverForTrendline(request);
+                if (lstVINDriver.Count > 0)
+                    lstSingleDriver.AddRange(lstVINDriver);
+                var lstVINCompany = await _reportRepository.GetEcoScoreReportVinCompanyForTrendline(request);
+                if (lstVINCompany != null)
+                    lstSingleDriver.AddRange(lstVINCompany);
             }
             catch (Exception)
             {

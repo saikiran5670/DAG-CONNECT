@@ -891,7 +891,8 @@
     
   <!-- </div> -->
   <div *ngIf="vehicleSelected">
-    <app-vehicletrip [translationData]='translationData' [vehicleDetails]='vehicleInfo' [dateDetails]='dateInfo' [displayedColumns]='detaildisplayedColumns' (backToMainPage)="backToMainPage()" 
+    <app-vehicletrip [translationData]='translationData' [vehicleDetails]='vehicleInfo' [dateDetails]='dateInfo' [displayedColumns]='detaildisplayedColumns'  [startDateValue] ='startDateValue'
+   [endDateValue] = 'endDateValue' [graphData] = 'graphData' (backToMainPage)="backToMainPage()" 
     ></app-vehicletrip>
   </div>
   

@@ -56,6 +56,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   @ViewChild('fleetfuelvehicle') fleetfuelvehicle: VehicletripComponent;
   initData: any = [];
   FuelData: any;
+  graphData: any;
   selectedTrip = new SelectionModel(true, []);
   dataSource: any = new MatTableDataSource([]);
   dataSource2: any = new MatTableDataSource([]);
@@ -562,6 +563,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     }
     this.reportService.getGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
+      this.graphData= graphData;
     });
   }
   

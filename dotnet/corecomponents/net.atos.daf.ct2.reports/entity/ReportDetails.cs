@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.reports.entity
         public char Type { get; set; }
         public char? ChartType { get; set; }
         public string ThresholdType { get; set; }
-        public long ThresholdValue { get; set; }
+        public double ThresholdValue { get; set; }
     }
     public class ReportListedParamaters
     {

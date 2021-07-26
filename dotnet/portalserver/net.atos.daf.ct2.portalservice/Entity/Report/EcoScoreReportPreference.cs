@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public string ChartType { get; set; }
         [StringLength(1, MinimumLength = 0)]
         public string ThresholdType { get; set; }
-        public long ThresholdValue { get; set; }
+        public double ThresholdValue { get; set; }
     }
 
     public enum ReportPreferenceState
