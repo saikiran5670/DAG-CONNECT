@@ -228,7 +228,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             objProfile.ProfileName = result.Name ?? string.Empty;
             objProfile.ProfileDescription = result.Description ?? string.Empty;
             objProfile.UpdatedBy = result.ActionedBy ?? string.Empty;
-            objProfile.LastUpdate = result.LastUpdate.ToString("MM/dd/yyyy HH:mm:ss");
+            objProfile.LastUpdate = result.LastUpdate;
 
             if (result.ProfileKPIs != null)
             {

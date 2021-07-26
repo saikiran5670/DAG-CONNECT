@@ -35,7 +35,6 @@ namespace net.atos.daf.ct2.reports.entity
         public KPI HarshBrakePercentage { get; set; }
         public KPI HeavyThrottlingDuration { get; set; }
         public KPI HeavyThrottlingPercentage { get; set; }
-        public KPI IdlingTime { get; set; }
         public KPI IdleDuration { get; set; }
         public KPI IdlingPercentage { get; set; }
         public int? NumberOfTrips { get; set; }

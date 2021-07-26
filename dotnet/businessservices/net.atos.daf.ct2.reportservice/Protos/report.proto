@@ -488,7 +488,7 @@ message EcoScoreProfileDetails {
  int32 ProfileId = 1; 
  string ProfileName = 2;
  string ProfileDescription = 3;
- string LastUpdate = 4; 
+ int64 LastUpdate = 4; 
  string UpdatedBy = 5;
  repeated EcoScoreProfileKPIs ProfileSection = 6;
 }

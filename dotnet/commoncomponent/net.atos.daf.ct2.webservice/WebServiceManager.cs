@@ -20,11 +20,13 @@ namespace net.atos.daf.ct2.webservice
                 client.DefaultRequestHeaders.Accept.Add(contentType);
                 if (header.AuthType == "A")
                 {
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic " + Convert.ToBase64String(Encoding.Default.GetBytes($"{header.UserName}:{header.Password}")));
+                    var byteArray = Encoding.ASCII.GetBytes(header.UserName + ":" + header.Password);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
                 }
+
                 return client;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -34,12 +36,17 @@ namespace net.atos.daf.ct2.webservice
         {
             try
             {
-                HttpClient client = PrepareClientHeader(header);
+                //HttpClientHandler clientHandler = new HttpClientHandler();
+                //clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+
+                // Pass the handler to httpclient(from you are calling api)
+                HttpClient client = new HttpClient();
+                client = PrepareClientHeader(header);
                 var contentData = new StringContent(header.Body, System.Text.Encoding.UTF8, header.ContentType);
-                HttpResponseMessage httpResponse = client.PostAsync(header.BaseUrl, contentData).Result;
+                HttpResponseMessage httpResponse = await client.PostAsync(header.BaseUrl, contentData);
                 return httpResponse;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

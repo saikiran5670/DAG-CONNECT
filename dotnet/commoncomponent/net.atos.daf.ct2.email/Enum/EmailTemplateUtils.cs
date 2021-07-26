@@ -17,6 +17,8 @@
         //Below EventTypes are for Report Creation
         TripReport = 6,
         FleetUtilisation = 7,
+        FleetFuel = 9,
+        FleetDeviation = 10,
         //End
         AlertNotificationEmail = 8
     }
