@@ -12,7 +12,8 @@ import { EcoScoreReportComponent } from './eco-score-report/eco-score-report.com
 //import {DetailVehicleReportComponent} from './fleet-fuel-report/detail-vehicle-report/detail-vehicle-report.component';
 import { FleetFuelReportVehicleComponent } from './fleet-fuel-report/fleet-fuel-report-vehicle/fleet-fuel-report-vehicle.component';
 import { FleetFuelReportDriverComponent } from './fleet-fuel-report/fleet-fuel-report-driver/fleet-fuel-report-driver.component';
-import { VehicletripComponent } from './vehicletrip/vehicletrip.component';
+//import { VehicletripComponent } from './vehicletrip/vehicletrip.component';
+import { FuelDeviationReportComponent } from './fuel-deviation-report/fuel-deviation-report.component';
 
 const routes: Routes = [
   {
@@ -30,7 +31,7 @@ const routes: Routes = [
      // { path: "detailvehiclereport",component :DetailVehicleReportComponent},
       { path: "fleetfuelvehicle", component : FleetFuelReportVehicleComponent},
       { path: "fleetfueldriver", component : FleetFuelReportDriverComponent},
-      { path:  "vehicletrip" , component : VehicletripComponent},
+     // { path:  "vehicletrip" , component : VehicletripComponent},
   ]
   }];
 

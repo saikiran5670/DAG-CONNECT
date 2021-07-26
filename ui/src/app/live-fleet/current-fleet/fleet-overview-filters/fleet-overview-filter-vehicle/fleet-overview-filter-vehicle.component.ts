@@ -10,7 +10,6 @@ import { DataInterchangeService } from '../../../../services/data-interchange.se
 })
 export class FleetOverviewFilterVehicleComponent implements OnInit {
 @Input() translationData: any;
-@Input() detailsData: any;
 @Input() groupList: any;
 @Input() categoryList: any;
 @Input() levelList: any;
@@ -19,6 +18,7 @@ export class FleetOverviewFilterVehicleComponent implements OnInit {
 @Input() noRecordFlag: any;
 @Input() vehicleListData: any;
 @Input() fromVehicleHealth: any;
+@Input() vehInfoPrefData: any;
 @Output() vehicleFilterComponentEmit =  new EventEmitter<object>();
 @Output() vehicleDetailsInfoEmit =  new EventEmitter<object>();
 @Output() tabvisibility : EventEmitter<boolean> =  new EventEmitter<boolean>()
@@ -36,9 +36,12 @@ constructor(private dataInterchangeService: DataInterchangeService) { }
       this.onChangetodayCheckbox(!this.fromVehicleHealth.fromVehicleHealth);
       this.openVehicleDetails(this.fromVehicleHealth.selectedElementData);
     }
+    else{
+      this.onChangetodayCheckbox(this.todayFlagClicked);
+    }
   }
 
-  onChangetodayCheckbox(event){
+  onChangetodayCheckbox(flag){
   //   if(event.checked){
   //  this.todayFlagClicked = true;
   //  this.getFilterData();
@@ -48,9 +51,9 @@ constructor(private dataInterchangeService: DataInterchangeService) { }
     //  this.todayFlagClicked = false;
     //  this.getFilterData();
     //  this.loadVehicleData();
-    this.todayFlagClicked = event
+    this.todayFlagClicked = flag
   let emitObj = {
-  todayFlagClicked  : event,
+  todayFlagClicked  : flag,
  }
  this.vehicleFilterComponentEmit.emit(emitObj);
   }

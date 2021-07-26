@@ -41,13 +41,10 @@ declare var H: any;
 
 export class VehicletripComponent implements OnInit {
   @Input() translationData: any;
-  displayedColumns = ['All','startDate','endDate','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
-  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
-  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
-  'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
-  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
-  'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
-  'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
+  displayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
+  'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
+  'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
+  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
   prefMapData: any = [
     {
       key: 'rp_tr_report_fleetfueldetails_startDate',
@@ -235,8 +232,8 @@ public mapElement: ElementRef;
 tripTraceArray: any = [];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
-  @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
-  @ViewChildren(MatSort) sort = new QueryList<MatSort>();
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
@@ -1707,6 +1704,7 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
 
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
+    if(date) {
     if(this.prefTimeFormat == 12){
       if(_y.split(' ')[1] == 'AM' && _x == 12) {
         date.setHours(0);
@@ -1719,6 +1717,7 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
       date.setMinutes(_y);
     }
     date.setSeconds(type == 'start' ? '00' : '59');
+  }
     return date;
   }
 

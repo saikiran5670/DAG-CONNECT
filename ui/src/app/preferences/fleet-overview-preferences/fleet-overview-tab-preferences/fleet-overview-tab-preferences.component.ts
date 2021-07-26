@@ -2,6 +2,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MessageService } from 'src/app/services/message.service';
 import { ReportService } from 'src/app/services/report.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 
@@ -23,7 +24,7 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
   selectionForVehInfoColumns = new SelectionModel(true, []);
   fleetOverviewForm: FormGroup;
 
-  constructor(private reportService: ReportService, private router: Router, private _formBuilder: FormBuilder) { }
+  constructor(private messageService: MessageService, private reportService: ReportService, private router: Router, private _formBuilder: FormBuilder) { }
 
   ngOnInit() { 
     let repoId: any = this.reportListData.filter(i => i.name == 'Fleet Overview');
@@ -188,12 +189,19 @@ export class FleetOverviewTabPreferencesComponent implements OnInit {
       attributes: [..._timerArr, ..._vehInfoArr, ...parentDataAttr] //-- merge data
     }
     this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
+      this.setTimerValueInLocalStorage(parseInt(this.fleetOverviewForm.controls.refreshTime.value));
       this.loadFleetOverviewPreferences();
       this.setFleetOverviewFlag.emit({ flag: false, msg: this.getSuccessMsg() });
       if((this.router.url).includes("fleetoverview/livefleet")){
         this.reloadCurrentComponent();
       }
     });
+  }
+
+  setTimerValueInLocalStorage(timerVal: any){
+    let num = (timerVal*60);
+    localStorage.setItem("liveFleetTimer", num.toString());  // default set
+    this.messageService.sendTimerValue(num);
   }
 
   reloadCurrentComponent(){
