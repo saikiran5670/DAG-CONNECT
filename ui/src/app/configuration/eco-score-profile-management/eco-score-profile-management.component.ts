@@ -320,6 +320,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile); 
       this.isSelected = this.selectedElementData[0].organizationId == 0 ? true : false;
       this.deleteSelection = this.selectedElementData[0].isDeleteAllowed;
+      this.setDefaultValue();
       this.loadProfileKpis(this.selectedProfile);
     }else{
     this.isKPI = false;
