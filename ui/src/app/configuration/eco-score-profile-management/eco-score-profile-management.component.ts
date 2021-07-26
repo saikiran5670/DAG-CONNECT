@@ -87,7 +87,8 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.ecoScoreProfileForm = this._formBuilder.group({
       profileName: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc ]],
       profileDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
-      defaultName: ['']
+      defaultName: [''],
+      createdExisting: ['']
     },
     {
       validator: [
@@ -126,36 +127,38 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   this.lastUpdated = data[0].lastUpdate;
   this.updatedBy = data[0].updatedBy;
 
-  this.kpiData = data[0].profileSection[0].profileKPIDetails[0];
-
-  this.fuelConsumption = data[0].profileSection[1].profileKPIDetails[0];
-  this.cruiseControlUsage = data[0].profileSection[1].profileKPIDetails[1];
-  this.cruiseControlUsage30_50 = data[0].profileSection[1].profileKPIDetails[2];
-  this.cruiseControlUsage50_75 = data[0].profileSection[1].profileKPIDetails[3];
-  this.cruiseControlUsageGreaterThan75 = data[0].profileSection[1].profileKPIDetails[4];
-  this.PTOUsage = data[0].profileSection[1].profileKPIDetails[5];
-  this.PTODuration = data[0].profileSection[1].profileKPIDetails[6];
-  this.averageDrivingSpeed = data[0].profileSection[1].profileKPIDetails[7];
-  this.averageSpeed = data[0].profileSection[1].profileKPIDetails[8];
-  this.heavyThrottling = data[0].profileSection[1].profileKPIDetails[9];
-  this.heavyThrottleDuration = data[0].profileSection[1].profileKPIDetails[10];
-  this.idling = data[0].profileSection[1].profileKPIDetails[11];
-  this.idleDuration = data[0].profileSection[1].profileKPIDetails[12];
-  
-  this.brakingScoreKpiData = data[0].profileSection[2].profileKPIDetails[0];
-  this.harshBrakingScoreKpiData = data[0].profileSection[2].profileKPIDetails[1];
-  this.harshBrakeDurationKpiData = data[0].profileSection[2].profileKPIDetails[2];
-  this.brakeKpiData = data[0].profileSection[2].profileKPIDetails[3];
-  this.brakeDurationKpiData = data[0].profileSection[2].profileKPIDetails[4];
-
-  this.anticipationKpiData = data[0].profileSection[3].profileKPIDetails[0];
-
-  this.otherWtKpiData = data[0].profileSection[4].profileKPIDetails[0];
-  this.otherDistanceKpiData = data[0].profileSection[4].profileKPIDetails[1];
-  
-
+  data[0].profileSection.forEach((item) =>{ 
+    if(item.sectionId == 1){
+      this.kpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 1)[0];
+    } else if(item.sectionId == 2){
+      this.fuelConsumption = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 2)[0];
+      this.cruiseControlUsage = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 3)[0];
+      this.cruiseControlUsage30_50 = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 4)[0];
+      this.cruiseControlUsage50_75 = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 5)[0];
+      this.cruiseControlUsageGreaterThan75 = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 6)[0];
+      this.PTOUsage =item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 7)[0];
+      this.PTODuration = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 8)[0];
+      this.averageDrivingSpeed = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 9)[0];
+      this.averageSpeed = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 10)[0];
+      this.heavyThrottling = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 11)[0];
+      this.heavyThrottleDuration = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 12)[0];
+      this.idling = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 13)[0];
+      this.idleDuration = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 14)[0];
+    } else if(item.sectionId == 3){
+      this.brakingScoreKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 15)[0];
+      this.harshBrakingScoreKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 16)[0];
+      this.harshBrakeDurationKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 17)[0];
+      this.brakeKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 18)[0];
+      this.brakeDurationKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 19)[0];
+    } else if(item.sectionId == 4){
+      this.anticipationKpiData =item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 20)[0];
+    } else{
+      this.otherWtKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 21)[0];
+      this.otherDistanceKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 22)[0];   
+    }
+}); 
   this.isKPI = true;
- 
+
   }
 
   processTranslation(transData: any) {
@@ -228,32 +231,12 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     if(this.actionType == "create"){
     this.ecoScoreProfileForm.get("profileDescription").setValue('');
     this.ecoScoreProfileForm.get("profileName").setValue('');
+    this.ecoScoreProfileForm.get("createdExisting").setValue('');
     this.isKPI = false;
+    this.isCreatedExistingProfile = false;
   } else {
     this.ecoScoreProfileForm.get("profileDescription").setValue(this.selectedElementData[0].profileDescription);
     this.ecoScoreProfileForm.get("profileName").setValue(this.selectedElementData[0].profileName);
-    // this.kpiData;
-    // this.fuelConsumption;
-    // this.cruiseControlUsage;
-    // this.cruiseControlUsage30_50;
-    // this.cruiseControlUsage50_75;
-    // this.cruiseControlUsageGreaterThan75;
-    // this.PTOUsage;
-    // this.PTODuration;
-    // this.averageDrivingSpeed;
-    // this.averageSpeed;
-    // this.heavyThrottling;
-    // this.heavyThrottleDuration;
-    // this.idling;
-    // this.idleDuration;
-    // this.brakingScoreKpiData;
-    // this.harshBrakingScoreKpiData;
-    // this.harshBrakeDurationKpiData;
-    // this.brakeKpiData;
-    // this.brakeDurationKpiData;
-    // this.anticipationKpiData;
-    // this.otherWtKpiData;
-    // this.otherDistanceKpiData;
   }
   this.loadProfileKpis(this.selectedProfile);
   }
@@ -331,6 +314,14 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   profileSelectionDropDown(filterValue: string){
     // this.selectedElementData = [];    
+    if(this.actionType =="create"){
+      this.isKPI = false;
+      this.selectedProfile = filterValue;
+      this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile); 
+      this.isSelected = this.selectedElementData[0].organizationId == 0 ? true : false;
+      this.deleteSelection = this.selectedElementData[0].isDeleteAllowed;
+      this.loadProfileKpis(this.selectedProfile);
+    }else{
     this.isKPI = false;
     this.selectedProfile = filterValue;
     this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile); 
@@ -341,7 +332,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     //this.loadProfileData();
     this.isDAFStandard = false;
     this.isCreatedExistingProfile = false;
-    
+  }
  }
 
  createKPIEmit(item: any){
