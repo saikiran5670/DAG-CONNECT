@@ -159,9 +159,9 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     let low = 0;
     if (rakingData && rakingData.length > 0) {
       for (let ranking of rakingData) {
-        if (highthresholdValue <= ranking.ltrVal) {
+        if (highthresholdValue <= parseFloat(ranking.ltrVal)) {
           high++;
-        } else if (lowthresholdValue >= ranking.ltrVal) {
+        } else if (lowthresholdValue >= parseFloat(ranking.ltrVal)) {
           low++;
         } else {
           medium++;
