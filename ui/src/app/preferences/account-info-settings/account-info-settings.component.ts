@@ -153,8 +153,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       "email": "",
       "accountIds": "",
       "name": "",
-      "accountGroupId": 0,
-      "driverId" : ""
+      "accountGroupId": 0
     }
     this.accountService.getAccount(userObjData).subscribe((_data: any)=>{
       this.accountInfo = _data;
