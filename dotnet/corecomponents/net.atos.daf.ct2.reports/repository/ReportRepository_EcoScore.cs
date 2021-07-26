@@ -2580,7 +2580,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                    AND eco.vin = @VIN --'XLR0998HGFFT76657'
 	                    AND eco.driver1_id = @DriverId --'NL B000384974000000'
 	                    AND eco.trip_distance >= @MinTripDistance
-                        ORDER BY eco.start_time
+                        ORDER BY eco.start_time LIMIT 150
                     )
                     SELECT
                         start_time AS StartTimestamp,
@@ -2747,7 +2747,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                    AND eco.vin = @VIN --'XLR0998HGFFT76657'
 	                    AND eco.driver1_id = @DriverId --'NL B000384974000000'
 	                    AND eco.trip_distance >= @MinTripDistance
-                        ORDER BY eco.start_time
+                        ORDER BY eco.start_time LIMIT 150
                     )
                     SELECT
 	                    start_time AS StartTimestamp,
