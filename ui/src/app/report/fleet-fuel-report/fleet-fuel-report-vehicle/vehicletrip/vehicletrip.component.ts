@@ -45,6 +45,10 @@ export class VehicletripComponent implements OnInit {
   @Input() vehicleSelected : boolean;
   @Input() dateDetails : any;
   @Input() vehicleDetails : any;
+  @Input() endDateValue: any;
+  @Input() startDateValue: any;
+  @Input() _vinData: any;
+  @Input() graphData: any;
   // detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
   // 'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
   // 'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
@@ -264,8 +268,8 @@ tripTraceArray: any = [];
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   vehicleGrpDD: any = [];
   selectionTab: any;
-  startDateValue: any = 0;
-  endDateValue: any = 0;
+  //startDateValue: any = 0;
+  //endDateValue: any = 0;
   last3MonthDate: any;
   todayDate: any;
   vehicleDD: any = [];
@@ -415,7 +419,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 't'    
+          labelString: 'ton'    
         }
       }]
     }
@@ -600,10 +604,13 @@ tripTraceArray: any = [];
     });
 
     this.loadfleetFuelDetails(this.vehicleDetails);
-    //if(this.driverDetails){
-     // this.onSearch();
-    // }
+    if(this.vehicleDetails){
+      this.onSearch();
+     }
 
+    this.isSummaryOpen = true;
+    this.isChartsOpen = true;
+    this.isDetailsOpen = true;
   }
   detailvehiclereport(){
     const navigationExtras: NavigationExtras = {
@@ -1252,9 +1259,7 @@ createEndMarker(){
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
     }
-    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
-      this.setChartData(graphData["fleetfuelGraph"]);
-    });
+    this.setChartData(this.graphData["fleetfuelGraph"]);
     //if(_vinData.length === 1){
     //  this.showDetailedReport = true;
     //}
