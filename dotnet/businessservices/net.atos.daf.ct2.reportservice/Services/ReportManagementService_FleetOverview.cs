@@ -144,7 +144,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                         {
                             if (fleetOverviewDetails.LatestWarningClass == warning.WarningClass && fleetOverviewDetails.LatestWarningNumber == warning.WarningNumber)
                             {
-                                fleetOverviewDetails.LatestWarningName = warning.WarningName;
+                                fleetOverviewDetails.LatestWarningName = warning?.WarningName ?? string.Empty;
                             }
 
                         }
