@@ -46,7 +46,9 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportVINCompany(EcoScoreReportSingleDriverRequest request);
         Task<List<EcoScoreSingleDriverBarPieChart>> GetEcoScoreAverageGrossWeightChartData(EcoScoreReportSingleDriverRequest request);
         Task<List<EcoScoreSingleDriverBarPieChart>> GetEcoScoreAverageDrivingSpeedChartData(EcoScoreReportSingleDriverRequest request);
+        Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallDriverForTrendline(EcoScoreReportSingleDriverRequest request);
         Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallCompanyForTrendline(EcoScoreReportSingleDriverRequest request);
+        Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportVINDriverForTrendline(EcoScoreReportSingleDriverRequest request);
         Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportVinCompanyForTrendline(EcoScoreReportSingleDriverRequest request);
         Task<List<AlertCategory>> GetAlertCategoryList();
         #region FleetFuel
