@@ -41,10 +41,14 @@ declare var H: any;
 
 export class VehicletripComponent implements OnInit {
   @Input() translationData: any;
-  displayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
-  'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
-  'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
-  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
+  @Input() displayedColumns:any;
+  @Input() vehicleSelected : boolean;
+  @Input() dateDetails : any;
+  @Input() vehicleDetails : any;
+  // detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
+  // 'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
+  // 'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
+  // 'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
   prefMapData: any = [
     {
       key: 'rp_tr_report_fleetfueldetails_startDate',
@@ -527,13 +531,6 @@ tripTraceArray: any = [];
               private completerService: CompleterService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService) {
-                this.defaultTranslation();
-                const navigation = this.router.getCurrentNavigation();
-                this._state = navigation.extras.state as {
-                  
-                fromFleetfuelReport: boolean,
-                vehicleData: any
-                };
                 console.log(this._state);
                 if(this._state){
                   this.showBack = true;
@@ -602,6 +599,10 @@ tripTraceArray: any = [];
       });
     });
 
+    this.loadfleetFuelDetails(this.vehicleDetails);
+    //if(this.driverDetails){
+     // this.onSearch();
+    // }
 
   }
   detailvehiclereport(){
@@ -899,13 +900,11 @@ createEndMarker(){
 
   public ngAfterViewInit() { }
 
-  loadfleetFuelDetails(_vinData: any){
-    let _startTime = Util.convertDateToUtc(this.startDateValue);
-    let _endTime = Util.convertDateToUtc(this.endDateValue);
+  loadfleetFuelDetails(vehicleDetails: any){
     let getFleetFuelObj = {
-      "startDateTime": _startTime,
-      "endDateTime": _endTime,
-      "viNs": _vinData,
+      "startDateTime": this.dateDetails.startTime,
+      "endDateTime": this.dateDetails.endTime,
+      "viNs": vehicleDetails.vin,
       "LanguageCode": "EN-GB"
     }
     this.reportService.getVehicleTripDetails(getFleetFuelObj).subscribe((data:any) => {
@@ -1218,7 +1217,7 @@ createEndMarker(){
         "endDateTime":_endTime,
         "viNs":  _vinData,
       }
-      this.loadfleetFuelDetails(_vinData);
+      this.loadfleetFuelDetails(this.vehicleDetails);
        this.setTableInfo();
       //  this.updateDataSource(this.FuelData);
       this.hideloader();
@@ -1282,10 +1281,10 @@ createEndMarker(){
  
  
   setTableInfo(){
-    let vehName: any = '';
-    let vehGrpName: any = '';
-    let vin: any = '';
-    let plateNo: any = '';
+    // let vehName: any = '';
+    // let vehGrpName: any = '';
+    // let vin: any = '';
+    // let plateNo: any = '';
     // this.vehicleGroupListData.forEach(element => {
     //   if(element.vehicleId == parseInt(this.tripForm.controls.vehicle.value)){
     //     vehName = element.vehicleName;
@@ -1299,28 +1298,28 @@ createEndMarker(){
     //   }
     // });
 
-    let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value));
-    if(vehGrpCount.length > 0){
-      vehGrpName = vehGrpCount[0].vehicleGroupName;
-    }
-    let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    if(vehCount.length > 0){
-      vehName = vehCount[0].vehicleName;
-      vin = vehCount[0].vin;
-      plateNo = vehCount[0].vehicleRegistrationNo;
-    }
+    // let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value));
+    // if(vehGrpCount.length > 0){
+    //   vehGrpName = vehGrpCount[0].vehicleGroupName;
+    // }
+    // let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+    // if(vehCount.length > 0){
+    //   vehName = vehCount[0].vehicleName;
+    //   vin = vehCount[0].vin;
+    //   plateNo = vehCount[0].vehicleRegistrationNo;
+    // }
 
     // if(parseInt(this.tripForm.controls.vehicleGroup.value) == 0){
     //   vehGrpName = this.translationData.lblAll || 'All';
     // }
 
     this.tableInfoObj = {
-      fromDate: this.formStartDate(this.startDateValue),
-      endDate: this.formStartDate(this.endDateValue),
-      vehGroupName: vehGrpName,
-      vin : vin,
-      vehicleName: vehName,
-      plateNo : plateNo
+      fromDate: this.dateDetails.fromDate,
+      endDate: this.dateDetails.endDate,
+      vehGroupName:this.dateDetails.vehGroupName,
+      vin : this.vehicleDetails.vin,
+      vehicleName: this.vehicleDetails.vehicleName,
+      plateNo : this.vehicleDetails.vehicleRegistrationNo
 
     }     
   }
