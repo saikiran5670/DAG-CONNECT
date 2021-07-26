@@ -730,6 +730,8 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
+    this.selectedEventMarkers = [];
+    this.eventIconMarker = null;
     this.fuelDeviationData = [];
     this.vehicleListData = [];
     this.updateDataSource(this.fuelDeviationData);
@@ -740,6 +742,8 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
 
   onSearch(){
     //this.internalSelection = true;
+    this.selectedEventMarkers = [];
+    this.eventIconMarker = null;
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     let _vinData: any = [];
