@@ -1368,7 +1368,7 @@ let prepare = []
         data : this._state.data
       }
     };
-    this.router.navigate(['fleetoverview/livefleet'], navigationExtras);
+    this.router.navigate(['fleetoverview/fleetoverview'], navigationExtras);
   }
   }
 

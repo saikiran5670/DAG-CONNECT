@@ -150,8 +150,10 @@
   <!-- </div> -->
   
   <!-- if all selected -->
-  <div *ngIf='!showDetailedReport'>
+
   
+
+  <div *ngIf = '!vehicleSelected'>
     <!-- Ranking section -->
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
       <mat-expansion-panel [(expanded)]="isRankingOpen" class="full-width" fxLayoutGap="10px"
@@ -235,7 +237,7 @@
   
   
     <!-- Summary Section -->
-  
+    
     <div id="charts">
         <div *ngIf='!showDetailedReport'>
       <mat-card  *ngIf='displayData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg' id="summary">
@@ -521,7 +523,7 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicleranking_vehiclename')">{{ translationData.lblVehicleName || 'Vehicle Name' }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicleranking_vehiclename')">
-                  <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-'
+                  <span class='navigatePoint' (click)='onVehicleSelected(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-'
                     }}</span>
                 </mat-cell>
                 <mat-cell *matCellDef="let row" class="text-truncate" [hidden]="!checkForPreference('vehicleranking_vehiclename')">
@@ -883,5 +885,14 @@
         </mat-expansion-panel>
       </mat-card>
     </div>
+</div>
+</div>
+ 
+    
   <!-- </div> -->
+  <div *ngIf="vehicleSelected">
+    <app-vehicletrip [translationData]='translationData' [vehicleDetails]='vehicleInfo' [dateDetails]='dateInfo' [displayedColumns]='detaildisplayedColumns'  [startDateValue] ='startDateValue'
+   [endDateValue] = 'endDateValue' [graphData] = 'graphData' (backToMainPage)="backToMainPage()" 
+    ></app-vehicletrip>
+  </div>
   

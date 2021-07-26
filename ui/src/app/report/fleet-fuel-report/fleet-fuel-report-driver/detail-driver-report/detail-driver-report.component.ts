@@ -28,6 +28,8 @@ import { ConfigService } from '@ngx-config/core';
 import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service'; 
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { MapService } from '../../report-mapservice';
+import * as fs from 'file-saver';
+import { Workbook } from 'exceljs';
 
 declare var H: any;
 
@@ -45,6 +47,11 @@ export class DetailDriverReportComponent implements OnInit {
   @Input() displayedColumns:any;
   @Input() driverSelected : boolean;
   @Input() graphPayload : any;
+  @Input() endDateValue: any;
+  @Input() startDateValue: any;
+  @Input() _vinData: any;
+  @Input() graphData: any;
+  idleDuration: any =[];
   //  displayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   //  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   //  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
@@ -268,8 +275,8 @@ tripTraceArray: any = [];
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   vehicleGrpDD: any = [];
   selectionTab: any;
-  startDateValue: any = 0;
-  endDateValue: any = 0;
+  // startDateValue: any = 0;
+  // endDateValue: any = 0;
   last3MonthDate: any;
   todayDate: any;
   vehicleDD: any = [];
@@ -419,7 +426,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 't'    
+          labelString: 'Ton'    
         }
       }]
     }
@@ -614,6 +621,10 @@ tripTraceArray: any = [];
  let prefData: any ={};
  let pref: any = {};
  this.proceedStep(prefData,pref);
+
+ this.isChartsOpen = true;
+ this.isDetailsOpen = true;
+ this.isSummaryOpen = true;
   }
 
 
@@ -1297,9 +1308,10 @@ createEndMarker(){
       "LanguageCode": "EN-GB",
       "driverId": "NL B000384974000000"
     }
-    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
-      this.setChartData(graphData["fleetfuelGraph"]);
-    });
+    // this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
+    //   this.setChartData(graphData["fleetfuelGraph"]);
+    // });
+    this.setChartData(this.graphData["fleetfuelGraph"]);
     //if(_vinData.length === 1){
     //  this.showDetailedReport = true;
     //}
@@ -1435,7 +1447,7 @@ createEndMarker(){
       this.fuelConsumptionChart.push(e.fuelConsumtion);
       let minutes = this.convertTimeToMinutes(e.idleDuration);
       // this.idleDuration.push(e.idleDuration);
-      //this.idleDuration.push(minutes);
+      this.idleDuration.push(minutes);
     })
 
     this.barChartLegend = true;
@@ -1475,13 +1487,13 @@ createEndMarker(){
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
-  // if(this.ConsumedChartType == 'Bar'){
-  //   //this.barChartData6= [
-  //     { data: this.idleDuration,
-  //       label: 'Values ()',
-  //       backgroundColor: '#7BC5EC',
-  //       hoverBackgroundColor: '#7BC5EC', }];
-  // }
+  if(this.ConsumedChartType == 'Bar'){
+    this.barChartData6= [
+      { data: this.idleDuration,
+        label: 'Values ()',
+        backgroundColor: '#7BC5EC',
+        hoverBackgroundColor: '#7BC5EC', }];
+  }
 
     //line chart for fuel consumed
     if(this.ConsumedChartType == 'Line')
@@ -1561,7 +1573,7 @@ createEndMarker(){
   }
     if(this.DurationChartType == 'Line')
     {
-   // this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
+   this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
   }
   
     this.lineChartLabels = this.barChartLabels;
@@ -2031,10 +2043,122 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
  
+  summaryNewObj: any;
 
-  exportAsExcelFile(){
-    this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Driver', sheet: 'sheet_name'});
-  }
+  getAllSummaryData(){ 
+          if(this.initData.length > 0){
+           let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
+            let fuelConsumption = 0; let fuelconsumed = 0;
+            this.initData.forEach(item => {         
+              numberOfTrips += item.numberOfTrips;
+              distanceDone += parseFloat(item.convertedDistance);
+              fuelconsumed += parseFloat(item.fuelconsumed);
+              idleDuration += parseFloat(item.convertedIdleDuration);
+              fuelConsumption += parseFloat(item.fuelConsumption);   
+            
+            // let time: any = 0;
+            // time += (item.convertedIdleDuration);
+             // let data: any = "00:00";
+              // let hours = Math.floor(time / 3600);
+            // time %= 3600;
+              // let minutes = Math.floor(time / 60);
+              // let seconds = time % 60;
+            // data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
+             // idleDuration = data;    
+          });
+          // numbeOfVehicles = this.initData.length;   
+            
+          this.summaryNewObj = [
+           ['Fleet Fuel Driver Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+             this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
+             fuelconsumed, idleDuration, fuelConsumption
+          ]
+          ];        
+         }
+       }
+          
+
+       exportAsExcelFile() {
+        this.getAllSummaryData();
+        const title = 'Fleet Fuel Driver Report';
+        const summary = 'Summary Section';
+        const detail = 'Detail Section';
+        let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
+        let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+    
+        const header =  ['Driver Name','Driver ID','Vehicle Name', 'VIN', 'Vehicle Registration No', 'Distance', 'Average Distance Per Day('+unitValkmh+')', 'Average Speed('+unitValkmh+')',
+        'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb',  
+        'Idle Duration','Pto Duration','HarshBrakeDuration','Heavy Throttle Duration','Cruise Control Distance 30-50('+unitValkmh+')',
+        'Cruise Control Distance 50-75('+unitValkmh+')','Cruise Control Distance>75('+unitValkmh+')', 'Average Traffic Classification',
+        'Cc Fuel Consumption','fuel Consumption CC Non Active','Idling Consumption','Dpa Score','Dpa AnticipationScore',
+        'Dpa Braking Score','Idling PTO Score(hh:mm:ss)','Idling PTO','Idling Without PTO(hh:mm:ss)','Foot Brake',
+        'CO2 Emmision(gr/km)', 'Average Traffic Classification Value','Idling Consumption Value'];
+        const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed(I)', 'Idle Duration(hh:mm)', 'Fuel Consumption('+unitValkm+')'];
+        const summaryData= this.summaryNewObj;
+        //Create workbook and worksheet
+        let workbook = new Workbook();
+        let worksheet = workbook.addWorksheet('Fleet Fuel Driver Report');
+        //Add Row and formatting
+        let titleRow = worksheet.addRow([title]);
+        worksheet.addRow([]);
+        titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+  
+        worksheet.addRow([]);
+        let subTitleRow = worksheet.addRow([summary]);
+        let summaryRow = worksheet.addRow(summaryHeader);
+        summaryData.forEach(element => {
+          worksheet.addRow(element);
+        });
+        worksheet.addRow([]);
+        summaryRow.eachCell((cell, number) => {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFFFF00' },
+            bgColor: { argb: 'FF0000FF' }
+          }
+          cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+        })
+        worksheet.addRow([]);
+        let subTitleDetailRow = worksheet.addRow([detail]);
+        let headerRow = worksheet.addRow(header);
+        headerRow.eachCell((cell, number) => {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFFFF00' },
+            bgColor: { argb: 'FF0000FF' }
+          }
+          cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+        })    
+        this.initData.forEach(item => {
+          worksheet.addRow([item.driverName, item.driverID, item.vehicleName,item.vin, item.vehicleRegistrationNo, item.convertedDistance,
+          item.convertedAverageDistance, item.convertedAverageSpeed, item.maxSpeed, item.numberOfTrips,
+          item.averageGrossWeightComb, item.convertedIdleDuration, item.ptoDuration,
+          item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
+        item.cruiseControlDistance75, item.averageTrafficClassification, item.ccFuelConsumption, item.fuelconsumptionCCnonactive,
+          item.idlingConsumption, item.dpaScore, item.dpaAnticipationScore, item.dpaBrakingScore,item.idlingPTOScore, item.idlingPTO, item.idlingWithoutPTOpercent,
+          item.footBrake, item.cO2Emmision, item.averageTrafficClassificationValue, item.idlingConsumptionValue
+        ]);
+        });
+  
+    //  exportAsExcelFile(){
+    //   this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Driver', sheet: 'sheet_name'});
+        worksheet.mergeCells('A1:D2');
+        subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+        subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+        for (var i = 0; i < header.length; i++) {
+          worksheet.columns[i].width = 20;
+        }
+        for (var j = 0; j < summaryHeader.length; j++) {
+          worksheet.columns[j].width = 20;
+        }
+        worksheet.addRow([]);
+        workbook.xlsx.writeBuffer().then((data) => {
+          let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          fs.saveAs(blob, 'Fleet_Fuel_Driver.xlsx');
+        })    
+    }
 
    exportAsPDFFile(){
     var doc = new jsPDF('p', 'mm', 'a4');

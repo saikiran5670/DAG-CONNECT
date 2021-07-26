@@ -1123,15 +1123,65 @@ export class ReportMapService {
     gridData.forEach(element => {
       element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone,true);
       element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone,true);
-      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeight, unitFormat);
+      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeight, unitFormat, false);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
-      element.convertedFuelConsumed100Km = this.getFuelConsumedUnits(element.fuelConsumed100Km, unitFormat);
+      element.convertedFuelConsumed100Km = this.getFuelConsumedUnits(element.fuelConsumed100Km, unitFormat, true);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
     });
     return gridData;
+  }
+
+  // fuel deviation report data-conversion 
+  convertFuelDeviationDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any, translationData: any){
+    let _id: number = 0;
+    gridData.forEach(element => {
+      let eventData: any = this.getEventTooltip(element, translationData); 
+      element.id = _id++;
+      element.svgIcon = eventData.svgIcon,
+      element.eventTooltip = eventData.eventText,
+      element.eventDate = this.getStartTime(element.eventTime, dateFormat, timeFormat, timeZone, true);
+      element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
+      element.convertedStartDate = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone, true);
+      element.convertedEndDate = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone, true);
+      element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
+      element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
+      element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
+      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeight, unitFormat, true);
+      element.convertedFuelConsumed = this.getFuelConsumedUnits(element.fuelConsumed, unitFormat, false);
+      element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
+    });
+    return gridData;
+  }
+
+  getEventTooltip(elem: any, transData: any){
+    let _eventTxt: any = '';
+    let _svgIcon: any = 'fuel-desc-run';
+    switch(`${elem.fuelEventType}${elem.vehicleActivityType}`){
+      case 'IS': {
+        _eventTxt = transData.lblFuelIncreaseDuringStop || 'Fuel Increase During Stop';
+        _svgIcon = 'fuel-incr-stop';
+        break;
+      }
+      case 'DS': {
+        _eventTxt = transData.lblFuelDecreaseDuringStop || 'Fuel Decrease During Stop';
+        _svgIcon = 'fuel-desc-stop';
+        break;
+      }
+      case 'IR': {
+        _eventTxt = transData.lblFuelIncreaseDuringRun || 'Fuel Increase During Run';
+        _svgIcon = 'fuel-incr-run';
+        break;
+      }
+      case 'DR': {
+        _eventTxt = transData.lblFuelDecreaseDuringRun || 'Fuel Decrease During Run';
+        _svgIcon = 'fuel-desc-run';
+        break;
+      }
+    }
+    return { eventText: _eventTxt, svgIcon: _svgIcon };
   }
 
   miliLitreToLitre(_data: any){
@@ -1161,19 +1211,19 @@ export class ReportMapService {
     return (_data/1000).toFixed(2);
   }
 
-  convertWeightUnits(data: any, unitFormat: any){
+  convertWeightUnits(data: any, unitFormat: any, tonFlag?: boolean){
     let _data: any;
     switch(unitFormat){
       case 'dunit_Metric': { 
-        _data = data; // kg
+        _data = tonFlag ? this.convertKgToTonnes(data) : data; //-- kg/ton
         break;
       }
       case 'dunit_Imperial': {
-        _data = this.convertKgToPound(data); // pound
+        _data = tonFlag ? this.convertKgToTonnes(data) : this.convertKgToPound(data); //-- pound/ton
         break;
       }
       default: {
-        _data = data; // kg
+        _data = tonFlag ? this.convertKgToTonnes(data) : data; //-- kg/ton
       }
     }
     return _data;
@@ -1341,19 +1391,19 @@ export class ReportMapService {
     return eTime;
   }
 
-  getFuelConsumedUnits(fuelConsumed: any, unitFormat: any){
+  getFuelConsumedUnits(fuelConsumed: any, unitFormat: any, litreFlag?: boolean){
     let _fuelConsumed: any = 0;
     switch(unitFormat){
       case 'dunit_Metric': { 
-        _fuelConsumed = this.convertFuelConsumptionMlmToLtr100km(fuelConsumed); //-- Ltr/100Km 
+        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); //-- Ltr/100Km / ltr
         break;
       }
       case 'dunit_Imperial':{
-        _fuelConsumed = this.convertFuelConsumptionMlmToMpg(fuelConsumed); // mpg
+        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToMpg(fuelConsumed) : this.miliLitreToGallon(fuelConsumed); // mpg / gallon
         break;
       }
       default: {
-        _fuelConsumed = this.convertFuelConsumptionMlmToLtr100km(fuelConsumed); // Ltr/100Km
+        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); // Ltr/100Km / ltr
       }
     }
     return _fuelConsumed; 

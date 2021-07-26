@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.reports.entity
         public ReportPreferenceType Type { get; set; }
         public ReportPreferenceChartType? ChartType { get; set; }
         public ReportPreferenceThresholdType? ThresholdType { get; set; }
-        public long ThresholdValue { get; set; }
+        public double ThresholdValue { get; set; }
     }
 
     public enum ReportUserPreferenceState

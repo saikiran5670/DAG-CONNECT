@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string Name { get; set; }
         public string Description { get; set; }
         public string ActionedBy { get; set; }
-        public DateTime LastUpdate { get; set; }
+        public long LastUpdate { get; set; }
         public List<EcoScoreProfileKPI> ProfileKPIs { get; set; }
         public ProfileType Type { get; set; }
     }

@@ -63,7 +63,7 @@ export class AppComponent {
   orgContextType: any = false;
   private pagetTitles = {
     dashboard: 'Dashboard',
-    livefleet: 'Live Fleet',
+    fleetoverview: 'Fleet Overview',
     logbook: 'Log Book',
     tripreport: 'Trip Report',
     triptracing: 'Trip Tracing',
@@ -119,7 +119,7 @@ export class AppComponent {
       icon: "map",
       externalLink: false,
       pageTitles: {
-        livefleet: 'Live Fleet',
+        fleetoverview: 'Fleet Overview',
         logbook: 'Log Book'
       }
     },
@@ -993,7 +993,7 @@ export class AppComponent {
   }
 
   showSpinner(){
-    if((this.router.url).indexOf("/livefleet") !== -1)
+    if((this.router.url).indexOf("/fleetoverview") !== -1)
       this.isFleetOverview = true;
     else{
       this.isFleetOverview = false;

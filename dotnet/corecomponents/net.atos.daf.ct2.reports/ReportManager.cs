@@ -338,34 +338,20 @@ namespace net.atos.daf.ct2.reports
         public async Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportTrendlineData(EcoScoreReportSingleDriverRequest request)
         {
             var lstSingleDriver = new List<EcoScoreReportSingleDriver>();
-            var aggregationCount = CalculateAggregationCount(AggregateType.DAY, request.StartDateTime, request.EndDateTime);
-            dynamic result = new dynamic[aggregationCount + 1];
-            var startDate = new DateTime(1970, 1, 1).AddMilliseconds(request.StartDateTime);
-            DateTime loopStartDate = startDate, loopEndDate;
             try
             {
-                for (int counter = 0; counter <= aggregationCount; counter++)
-                {
-                    DateTimeOffset offset = new DateTimeOffset(GetStartOfDay(loopStartDate));
-                    request.StartDateTime = offset.ToUnixTimeMilliseconds();
-                    loopEndDate = loopStartDate.AddDays((int)AggregateType.DAY);
-                    offset = new DateTimeOffset(GetEndOfDay(loopEndDate));
-                    request.EndDateTime = offset.ToUnixTimeMilliseconds();
-
-                    var objOverallDriver = await _reportRepository.GetEcoScoreReportOverallDriver(request);
-                    if (objOverallDriver != null)
-                        lstSingleDriver.AddRange(objOverallDriver);
-                    var objOverallCompany = await _reportRepository.GetEcoScoreReportOverallCompanyForTrendline(request);
-                    if (objOverallCompany != null)
-                        lstSingleDriver.AddRange(objOverallCompany);
-                    var lstVINDriver = await _reportRepository.GetEcoScoreReportVINDriver(request);
-                    if (lstVINDriver.Count > 0)
-                        lstSingleDriver.AddRange(lstVINDriver);
-                    var lstVINCompany = await _reportRepository.GetEcoScoreReportVinCompanyForTrendline(request);
-                    if (lstVINCompany != null)
-                        lstSingleDriver.AddRange(lstVINCompany);
-                    loopStartDate = loopEndDate.AddDays(1);
-                }
+                var objOverallDriver = await _reportRepository.GetEcoScoreReportOverallDriverForTrendline(request);
+                if (objOverallDriver != null)
+                    lstSingleDriver.AddRange(objOverallDriver);
+                var objOverallCompany = await _reportRepository.GetEcoScoreReportOverallCompanyForTrendline(request);
+                if (objOverallCompany != null)
+                    lstSingleDriver.AddRange(objOverallCompany);
+                var lstVINDriver = await _reportRepository.GetEcoScoreReportVINDriverForTrendline(request);
+                if (lstVINDriver.Count > 0)
+                    lstSingleDriver.AddRange(lstVINDriver);
+                var lstVINCompany = await _reportRepository.GetEcoScoreReportVinCompanyForTrendline(request);
+                if (lstVINCompany != null)
+                    lstSingleDriver.AddRange(lstVINCompany);
             }
             catch (Exception)
             {
@@ -565,40 +551,14 @@ namespace net.atos.daf.ct2.reports
 
         public async Task<EcoScoreKPIInfoDataServiceResponse> GetKPIInfo(EcoScoreDataServiceRequest request)
         {
-            dynamic kpiInfo = null;
-            switch (request.AggregationType)
-            {
-                case AggregateType.TRIP:
-                    kpiInfo = await _reportRepository.GetKPIInfoPerTrip(request);
-                    break;
-                case AggregateType.DAY:
-                case AggregateType.WEEK:
-                case AggregateType.MONTH:
-                    var aggregationCount = CalculateAggregationCount(request.AggregationType, request.StartTimestamp, request.EndTimestamp);
-                    kpiInfo = await _reportRepository.GetKPIInfo(request, aggregationCount);
-                    break;
-            }
-
+            var kpiInfo = await _reportRepository.GetKPIInfo(request);
             var response = MapEcoScoreKPIInfoDataReponse(kpiInfo);
             return response;
         }
 
         public async Task<EcoScoreChartInfoDataServiceResponse> GetChartInfo(EcoScoreDataServiceRequest request)
         {
-            dynamic chartInfo = null;
-            switch (request.AggregationType)
-            {
-                case AggregateType.TRIP:
-                    chartInfo = await _reportRepository.GetChartInfoPerTrip(request);
-                    break;
-                case AggregateType.DAY:
-                case AggregateType.WEEK:
-                case AggregateType.MONTH:
-                    var aggregationCount = CalculateAggregationCount(request.AggregationType, request.StartTimestamp, request.EndTimestamp);
-                    chartInfo = await _reportRepository.GetChartInfo(request, aggregationCount);
-                    break;
-            }
-
+            var chartInfo = await _reportRepository.GetChartInfo(request);
             var response = MapEcoScoreChartInfoDataReponse(chartInfo);
             return response;
         }
@@ -695,6 +655,7 @@ namespace net.atos.daf.ct2.reports
                     return result > 12 ? 12 : result;
             }
             return 0;
+
         }
 
         #endregion

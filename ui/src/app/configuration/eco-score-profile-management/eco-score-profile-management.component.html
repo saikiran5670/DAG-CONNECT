@@ -91,9 +91,9 @@
                     <span>{{ translationData.lblCreateBasedOnExistingProfile || 'Create based on existing profile' }}</span>
                 </mat-label>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="0px">
-                <mat-checkbox style='padding: 13px 10px 0px 0px;' (change)='onChangeOption($event)'></mat-checkbox>  
+                <mat-checkbox style='padding: 13px 10px 0px 0px;' [checked] = "isCreatedExistingProfile" (change)='onChangeOption($event)'></mat-checkbox>  
                 <mat-form-field [disabled]="!isCreatedExistingProfile" appearance="outline" class="full-width">
-                  <mat-select  [disabled]="!isCreatedExistingProfile" placeholder="{{ translationData.lblTestProfileSelection || 'Test Profile Selection' }}" (selectionChange)="profileSelectionDropDown($event.value)" >
+                  <mat-select  formControlName="createdExisting" [disabled]="!isCreatedExistingProfile" placeholder="{{ translationData.lblTestProfileSelection || 'Test Profile Selection' }}" (selectionChange)="profileSelectionDropDown($event.value)" >
                     <mat-option *ngFor="let options of profileList" [value]="options.profileId">
                       {{options.profileName}}
                     </mat-option>

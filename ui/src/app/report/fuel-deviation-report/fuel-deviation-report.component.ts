@@ -15,6 +15,8 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { CompleterItem, CompleterService } from 'ng2-completer';
 import { ConfigService } from '@ngx-config/core';
 import { HereService } from '../../services/here.service';
+import { MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from '@angular/platform-browser';
 
 declare var H: any;
 
@@ -27,12 +29,12 @@ declare var H: any;
 export class FuelDeviationReportComponent implements OnInit {
   dataService: any;
   searchMarker: any = {};
-  vehicleIconMarker: any;
+  eventIconMarker: any;
   searchStr: string = "";
   suggestionData: any;
-  selectedMarker: any;
+  selectedEventMarkers: any = [];
   defaultLayers: any;
-  hereMap:any;
+  hereMap: any;
   ui: any;
   mapGroup : any;
   map: any;
@@ -69,7 +71,7 @@ export class FuelDeviationReportComponent implements OnInit {
   wholeFuelDeviationData: any = [];
   tableInfoObj: any = {};
   fuelDeviationReportId: any = 7; // hard coded for fuel deviation report pref.
-  displayedColumns = ['All', 'vin', 'odometer', 'vehicleName', 'registrationNo', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
+  displayedColumns = ['All', 'fuelEventType', 'fuelDiffernce', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
   startDateValue: any;
   tableExpandPanel: boolean = true;
   last3MonthDate: any;
@@ -94,31 +96,31 @@ export class FuelDeviationReportComponent implements OnInit {
   prefMapData: any = [
     {
       key: 'rp_fd_details_averageweight',
-      value: 'averageweight'
+      value: 'averageWeight'
     },
     {
       key: 'rp_fd_details_enddate',
-      value: 'enddate'
+      value: 'endTimeStamp'
     },
     {
       key: 'rp_fd_details_fuelconsumed',
-      value: 'fuelconsumed'
+      value: 'fuelConsumed'
     },
     {
       key: 'rp_fd_details_startdate',
-      value: 'startdate'
+      value: 'startTimeStamp'
     },
     {
       key: 'rp_fd_details_drivingtime',
-      value: 'drivingtime'
+      value: 'drivingTime'
     },
     {
       key: 'rp_fd_details_startposition',
-      value: 'startposition'
+      value: 'startPosition'
     },
     {
       key: 'rp_fd_details_difference',
-      value: 'difference'
+      value: 'fuelDiffernce'
     },
     {
       key: 'rp_fd_details_alerts',
@@ -126,15 +128,15 @@ export class FuelDeviationReportComponent implements OnInit {
     },
     {
       key: 'rp_fd_details_idleduration',
-      value: 'idleduration'
+      value: 'idleDuration'
     },
     {
       key: 'rp_fd_details_endposition',
-      value: 'endposition'
+      value: 'endPosition'
     },
     {
       key: 'rp_fd_details_regplatenumber',
-      value: 'regplatenumber'
+      value: 'registrationNo'
     },
     {
       key: 'rp_fd_details_odometer',
@@ -142,7 +144,7 @@ export class FuelDeviationReportComponent implements OnInit {
     },
     {
       key: 'rp_fd_details_averagespeed',
-      value: 'averagespeed'
+      value: 'averageSpeed'
     },
     {
       key: 'rp_fd_details_distance',
@@ -150,11 +152,11 @@ export class FuelDeviationReportComponent implements OnInit {
     },
     {
       key: 'rp_fd_details_date',
-      value: 'date'
+      value: 'eventTime'
     },
     {
       key: 'rp_fd_details_type',
-      value: 'type'
+      value: 'fuelEventType'
     },
     {
       key: 'rp_fd_details_vin',
@@ -162,17 +164,25 @@ export class FuelDeviationReportComponent implements OnInit {
     },
     {
       key: 'rp_fd_details_vehiclename',
-      value: 'vehiclename'
+      value: 'vehicleName'
     }
   ];
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService) { 
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer) { 
     this.map_key = this.configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
       "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
     this.configureAutoSuggest();
     this.defaultTranslation();
+    this.setIcons();
+  }
+
+  setIcons(){
+    this.matIconRegistry.addSvgIcon("fuel-desc-run", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-decrease-run.svg"));
+    this.matIconRegistry.addSvgIcon("fuel-incr-run", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-increase-run.svg"));
+    this.matIconRegistry.addSvgIcon("fuel-desc-stop", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-decrease-stop.svg"));
+    this.matIconRegistry.addSvgIcon("fuel-incr-stop", this.domSanitizer.bypassSecurityTrustResourceUrl("assets/images/icons/fuelDeviationIcons/fuel-increase-stop.svg"));
   }
 
   defaultTranslation(){
@@ -286,7 +296,7 @@ export class FuelDeviationReportComponent implements OnInit {
   clearRoutesFromMap(){
     this.hereMap.removeObjects(this.hereMap.getObjects());
     this.mapGroup.removeAll();
-    this.vehicleIconMarker = null;
+    this.eventIconMarker = null;
    }
 
   private configureAutoSuggest(){
@@ -720,6 +730,8 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
+    this.selectedEventMarkers = [];
+    this.eventIconMarker = null;
     this.fuelDeviationData = [];
     this.vehicleListData = [];
     this.updateDataSource(this.fuelDeviationData);
@@ -730,6 +742,8 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
 
   onSearch(){
     //this.internalSelection = true;
+    this.selectedEventMarkers = [];
+    this.eventIconMarker = null;
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     let _vinData: any = [];
@@ -748,8 +762,8 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       this.reportService.getFuelDeviationReportDetails(reportDataObj).subscribe((_fuelDeviationData: any) => {
         //console.log(_fuelDeviationData);
         this.hideloader();
-        //this.fuelDeviationData = this.reportMapService.getConvertedDataBasedOnPref(_fuelDeviationData.data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-        //this.setTableInfo();
+        this.fuelDeviationData = this.reportMapService.convertFuelDeviationDataBasedOnPref(_fuelDeviationData.data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone, this.translationData);
+        this.setTableInfo();
         this.updateDataSource(this.fuelDeviationData);
       }, (error)=>{
         //console.log(error);
@@ -764,8 +778,6 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';
-    let vin: any = '';
-    let plateNo: any = '';
     let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.fuelDeviationForm.controls.vehicleGroup.value));
     if(vehGrpCount.length > 0){
       vehGrpName = vehGrpCount[0].vehicleGroupName;
@@ -773,16 +785,12 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.fuelDeviationForm.controls.vehicle.value));
     if(vehCount.length > 0){
       vehName = vehCount[0].vehicleName;
-      vin = vehCount[0].vin;
-      plateNo = vehCount[0].registrationNo;
     }
     this.tableInfoObj = {
       fromDate: this.formStartDate(this.startDateValue),
       endDate: this.formStartDate(this.endDateValue),
       vehGroupName: vehGrpName,
-      vehicleName: vehName,
-      vin: vin,
-      regNo: plateNo
+      vehicleName: vehName
     }
   }
 
@@ -909,8 +917,157 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     }
   }
 
-  setMapToLocation(_position){
-    this.hereMap.setCenter({lat: _position.lat, lng: _position.lng}, 'default');
+  setMapToLocation(_position: any){
+    this.hereMap.setCenter({ lat: _position.lat, lng: _position.lng }, 'default');
+  }
+
+  applyFilter(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // dataSource defaults to lowercase matches
+    this.dataSource.filter = filterValue;
+  }
+
+  exportAsExcelFile() {
+
+  }
+
+  exportAsPDFFile() {
+
+  }
+
+  drawEventMarkersOnMap(markerData: any){
+    this.clearRoutesFromMap();
+    markerData.forEach(element => {
+      let markerPositionLat = element.eventLatitude;
+      let markerPositionLng = element.eventLongitude;
+      let eventIcon = this.getEventIcons(element);
+      let markerSize = { w: 22, h: 22 };
+      let icon = new H.map.Icon(eventIcon, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+      this.eventIconMarker = new H.map.Marker({ lat: markerPositionLat, lng: markerPositionLng}, { icon: icon });
+      this.mapGroup.addObject(this.eventIconMarker);
+      let eventDescText: any = this.reportMapService.getEventTooltip(element, this.translationData);
+      let iconInfoBubble: any;
+      this.eventIconMarker.addEventListener('pointerenter', (evt)=> {
+        iconInfoBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+          // read custom data
+          content:`<table style='width: 300px; font-size:12px;'>
+            <tr>
+              <td style='width: 100px;'>${this.translationData.lblDate || 'Date'}:</td> <td><b>${element.eventDate}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>${this.translationData.lblVehicleName || 'Vehicle Name'}:</td> <td><b>${element.vehicleName}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>${this.translationData.lblPosition || 'Position'}:</td> <td><b>${element.geoLocationAddress}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>${this.translationData.lblEventDescription || 'Event Description'}:</td> <td><b>${eventDescText.eventText}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>${this.translationData.lblDifference || 'Difference'}:</td> <td><b>${element.fuelDiffernce}%</b></td>
+            </tr>
+          </table>`
+        });
+        this.ui.addBubble(iconInfoBubble); // show info bubble
+      }, false);
+      this.eventIconMarker.addEventListener('pointerleave', (evt) =>{
+        iconInfoBubble.close(); // hide info bubble
+      }, false);
+    });
+    this.hereMap.addObject(this.mapGroup);
+    if(markerData && markerData.length > 0){
+      let _pos: any = {};
+      if(markerData.length > 1){ //-- multiple event icon- set zoom to last icon
+        _pos = {
+          lat: markerData[markerData.length-1].eventLatitude,
+          lng: markerData[markerData.length-1].eventLongitude
+        }
+      }else{ //-- single event icon- set zoom to that icon
+        _pos = {
+          lat: markerData[0].eventLatitude,
+          lng: markerData[0].eventLongitude
+        }
+      }
+      this.setMapToLocation(_pos);
+    }
+  }
+
+  getEventIcons(eventElement: any){
+    let icon: any = '';
+    let colorCode: any = (eventElement.vehicleActivityType == 'R') ? '#00AE10' : '#D50017';
+    switch(eventElement.fuelEventType){
+      case 'I': { // increase
+        icon = `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="11" cy="11" r="11" fill="${colorCode}"/>
+        <path d="M6.54448 6.74266C5.3089 6.80137 5 7.78474 5 8.26908V16.6057C5 17.6155 5.94055 17.956 6.41082 18H15.5886C16.7529 18 17.0143 17.0117 16.9994 16.5176V4.35029C16.9875 3.36399 16.0935 3.03914 15.648 3H10.1829C9.17306 3.01174 8.82159 3.97358 8.77209 4.45303V4.90802C8.77209 5.61252 8.08896 6.66928 6.54448 6.74266Z" fill="white"/>
+        <rect x="5" y="5.34229" width="3.31245" height="1.90539" rx="0.952697" transform="rotate(-45 5 5.34229)" fill="white"/>
+        <rect x="11" y="5" width="4" height="1" rx="0.5" fill="${colorCode}"/>
+        <path d="M7.27959 14.719L10.9497 8.48971L14.6199 14.719L10.9497 13.4237L7.27959 14.719Z" fill="${colorCode}"/>
+        </svg>`;
+        break;
+      }
+      case 'D': { // decrease
+        icon = `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="11" cy="11" r="11" fill="${colorCode}"/>
+        <path d="M6.54448 6.74266C5.3089 6.80137 5 7.78474 5 8.26908V16.6057C5 17.6155 5.94055 17.956 6.41082 18H15.5886C16.7529 18 17.0143 17.0117 16.9994 16.5176V4.35029C16.9875 3.36399 16.0935 3.03914 15.648 3H10.1829C9.17306 3.01174 8.82159 3.97358 8.77209 4.45303V4.90802C8.77209 5.61252 8.08896 6.66928 6.54448 6.74266Z" fill="white"/>
+        <rect x="5" y="5.34229" width="3.31245" height="1.90539" rx="0.952697" transform="rotate(-45 5 5.34229)" fill="white"/>
+        <rect x="11" y="5" width="4" height="1" rx="0.5" fill="${colorCode}"/>
+        <path d="M14.6198 10.1599L10.9497 16.3892L7.27951 10.1599L10.9497 11.4552L14.6198 10.1599Z" fill="${colorCode}"/>
+        </svg>`;
+        break;
+      }
+    }
+    return icon;
+  }
+
+  masterToggleForFuelDeviationEntry() {
+    this.selectedEventMarkers = [];
+    if(this.isAllSelectedForFuelEntry()) { // remove all event markers
+      this.selectedFuelDeviationEntry.clear();
+      this.showMap = false;
+      this.drawEventMarkersOnMap(this.selectedEventMarkers);
+    }
+    else { // add all event markers
+      this.dataSource.data.forEach((row) => {
+        this.selectedFuelDeviationEntry.select(row);
+        this.selectedEventMarkers.push(row);
+      });
+      this.showMap = true;
+      this.drawEventMarkersOnMap(this.selectedEventMarkers);
+    }
+  }
+
+  isAllSelectedForFuelEntry() {
+    const numSelected = this.selectedFuelDeviationEntry.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForFuelEntry(row?: any): string {
+    if (row)
+      return `${this.isAllSelectedForFuelEntry() ? 'select' : 'deselect'} all`;
+    else
+      return `${this.selectedFuelDeviationEntry.isSelected(row) ? 'deselect' : 'select'
+        } row`;
+  }
+
+  pageSizeUpdated(_event) {
+    // setTimeout(() => {
+    //   document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
+    // }, 100);
+  }
+
+  fuelEntryCheckboxClicked(event: any, row: any) {
+    this.showMap = this.selectedFuelDeviationEntry.selected.length > 0 ? true : false;
+    if(event.checked) { // add event marker
+      this.selectedEventMarkers.push(row);
+      this.drawEventMarkersOnMap(this.selectedEventMarkers);
+    }
+    else { // remove event marker
+      let _arr = this.selectedEventMarkers.filter(item => item.id != row.id);
+      this.selectedEventMarkers = _arr.slice();
+      this.drawEventMarkersOnMap(this.selectedEventMarkers);
+    }
   }
 
 }

@@ -24,12 +24,14 @@ namespace net.atos.daf.ct2.unitconversion.ENUM
 
     public enum SpeedUnit
     {
-        MeterPerMilliSec = 0
+        MeterPerMilliSec = 0,
+        KmPerHour = 1
     }
 
     public enum WeightUnit
     {
-        KiloGram = 0
+        KiloGram = 0,
+        Tons = 1
     }
 
     public enum VolumeUnit

@@ -25,6 +25,7 @@ import { Router, NavigationExtras } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
+import {VehicletripComponent} from 'src/app/report/fleet-fuel-report/fleet-fuel-report-vehicle/vehicletrip/vehicletrip.component'
 
 
 
@@ -42,14 +43,20 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
   'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
   'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
+  detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
+  'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
+  'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
+  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
   rankingColumns = ['ranking','vehicleName','vin','vehicleRegistrationNo','fuelConsumption'];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   searchExpandPanel: boolean = true;
+  @ViewChild('fleetfuelvehicle') fleetfuelvehicle: VehicletripComponent;
   initData: any = [];
   FuelData: any;
+  graphData: any;
   selectedTrip = new SelectionModel(true, []);
   dataSource: any = new MatTableDataSource([]);
   dataSource2: any = new MatTableDataSource([]);
@@ -95,7 +102,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   chartExportFlag: boolean = false;
   tableInfoObj: any ;
   summaryObj: any;
-  detailSummaryObj: any;
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
   bufferValue = 75;
@@ -154,7 +160,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'values()'    
+          labelString: 'No of Trips'    
         }
       }]
     }
@@ -557,6 +563,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     }
     this.reportService.getGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
+      this.graphData= graphData;
     });
   }
   
@@ -591,9 +598,12 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
 
  
+  detailSummaryObj: any;
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';
+    let driverName : any ='';
+    let driverID : any ='';
     let vin: any = '';
     let plateNo: any = '';
     // this.vehicleGroupListData.forEach(element => {
@@ -631,7 +641,21 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       vehicleName: vehName,
       vin : vin,
       plateNo : plateNo,
-    }    
+    }  
+    this.detailSummaryObj={
+      fromDate: this.formStartDate(this.startDateValue),
+      endDate: this.formStartDate(this.endDateValue),
+      vehGroupName: vehGrpName,
+      vehicleName: vehName,
+     // driverName : this.displayData.driverName,
+     // driverID : this.displayData.driverID,
+      noOfTrips: this.FuelData[0].numberOfTrips,
+      distance:  this.FuelData[0].convertedDistance,
+      fuelconsumed:  this.FuelData[0].convertedFuelConsumed100Km,
+      idleDuration: this.FuelData[0].convertedIdleDuration,
+      fuelConsumption: this.FuelData[0].fuelConsumption,
+      co2emission: this.FuelData[0].cO2Emission,
+      }   
   }
 
   formStartDate(date: any){
@@ -1549,14 +1573,30 @@ doc.addPage();
     displayHeader.style.display ="block";
   }
 
-  gotoTrip(vehData:any){
-    const navigationExtras: NavigationExtras = {
-      state: {
-        fromFleetfuelReport: true,
-        vehicleData: vehData
-      }
-    };
-    this.router.navigate(['report/vehicletrip'], navigationExtras);
+  backToMainPage(){
+
+  }
+  vehicleSelected : boolean = false;
+  vehicleInfo : any ={};
+  dateInfo : any ={};
+  onVehicleSelected(vehData:any){
+    let s = this.vehicleGrpDD.filter(i=>i.vehicleGroupId==this.tripForm.controls.vehicleGroup.value)
+    let _s = this.vehicleDD.filter(i=>i.vin==vehData.vin)
+    this.tripForm.get('vehicle').setValue(_s.length>0 ?  _s[0].vehicleId : 0)
+    let currentStartTime = Util.convertDateToUtc(this.startDateValue);
+    let currentEndTime = Util.convertDateToUtc(this.endDateValue); 
+    this.dateInfo={
+      startTime: currentStartTime,
+      endTime : currentEndTime,
+      fromDate: this.formStartDate(this.startDateValue),
+      endDate: this.formStartDate(this.endDateValue),
+      vehGroupName : s.length>0 ?  s[0].vehicleGroupName : 'All' 
+    }
+    this.vehicleInfo = vehData;
+    this.vehicleSelected=true;
+    // if(this.fleetfuelvehicle){
+    //   this.fleetfuelvehicle.ngAfterViewInit();
+    // }
   }
 
 

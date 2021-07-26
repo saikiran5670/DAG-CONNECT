@@ -168,7 +168,7 @@ message UserPreferenceDataColumn{
     string State=7;
     string ChartType = 8;
     string ThresholdType = 9;
-    int64 ThresholdValue = 10;
+    double ThresholdValue = 10;
 }
 
 message UserPreferenceDataColumnResponse{
@@ -208,7 +208,7 @@ message ReportUserPreference{
     string State=4;
     string ChartType=5;
     string ThresholdType=6;
-    int64 ThresholdValue=7;
+    double ThresholdValue=7;
     repeated ReportUserPreference SubReportUserPreferences=8;
 }
 
@@ -225,12 +225,12 @@ message ReportUserPreferenceCreateResponse{
 }
 
 message Atribute{
- int32 DataAttributeId = 1;
- string State = 2;
-   string Type = 3;
- string CharType = 4;
+  int32 DataAttributeId = 1;
+  string State = 2;
+  string Type = 3;
+  string CharType = 4;
   string ThresholdType = 5;
-  int64 ThresholdValue = 6;
+  double ThresholdValue = 6;
 }
 
 message UserPreferenceAttribute {
@@ -239,7 +239,7 @@ message UserPreferenceAttribute {
     int32 Type = 3;
     int32 ChartType = 4;
     int32 ThresholdType = 5;
-    int64 ThresholdValue = 6;
+    double ThresholdValue = 6;
 }
 
 message UserPreferenceCreateResponse{
@@ -488,7 +488,7 @@ message EcoScoreProfileDetails {
  int32 ProfileId = 1; 
  string ProfileName = 2;
  string ProfileDescription = 3;
- string LastUpdate = 4; 
+ int64 LastUpdate = 4; 
  string UpdatedBy = 5;
  repeated EcoScoreProfileKPIs ProfileSection = 6;
 }
