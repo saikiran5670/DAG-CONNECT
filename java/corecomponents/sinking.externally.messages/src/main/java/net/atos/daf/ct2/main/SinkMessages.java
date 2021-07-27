@@ -24,14 +24,13 @@ import net.atos.daf.ct2.exception.DAFCT2Exception;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.processing.MessageProcessing;
 import net.atos.daf.ct2.serde.KafkaMessageDeSerializeSchema;
-import net.atos.daf.ct2.utils.FlinkUtil;
 
 public class SinkMessages<T> {
 
   private static final Logger log = LogManager.getLogger(SinkMessages.class);
   public static String FILE_PATH;
   private static AuditETLJobClient auditETLJobClient;
- // private StreamExecutionEnvironment streamExecutionEnvironment;
+  private StreamExecutionEnvironment streamExecutionEnvironment;
 
   public static Properties configuration() throws DAFCT2Exception {
     Properties properties = new Properties();
@@ -59,15 +58,16 @@ public class SinkMessages<T> {
       properties = configuration();
       auditTrail(properties, "Sink external message job started");
       
-     final StreamExecutionEnvironment env = sinkMessages.flinkConnection(properties);
+    // final StreamExecutionEnvironment env = sinkMessages.flinkConnection(properties);
+      sinkMessages.flinkConnection();
       
       List<String> listTopics = sinkMessages.topicList(properties);
       log.info(" listTopics :: "+listTopics);
       System.out.println(" listTopics :: "+listTopics);
       if(listTopics != null)
-    	  sinkMessages.processing(env, properties, listTopics);
+    	  sinkMessages.processing(properties, listTopics);
       
-      sinkMessages.startExecution(env);
+      sinkMessages.startExecution();
 
     } catch (Exception e) {
       log.error("Exception: ", e);
@@ -77,11 +77,11 @@ public class SinkMessages<T> {
     }
   }
 
-  public StreamExecutionEnvironment flinkConnection(Properties properties) throws TechnicalException {
+  public void flinkConnection() throws TechnicalException {
 
-    //this.streamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment();
+    this.streamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment();
 	  
-	  return FlinkUtil.createStreamExecutionEnvironment(properties);
+	//  return FlinkUtil.createStreamExecutionEnvironment(properties);
    // this.streamExecutionEnvironment.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
     /*this.streamExecutionEnvironment.enableCheckpointing(5000);
     this.streamExecutionEnvironment.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
@@ -162,10 +162,10 @@ public class SinkMessages<T> {
 	 return null;
   }
   
-  public void processing(StreamExecutionEnvironment env, Properties properties, List<String> listTopics) {
+  public void processing( Properties properties, List<String> listTopics) {
  
     DataStream<KafkaRecord<Object>> sourceInputStream =
-        env.addSource(
+    		this.streamExecutionEnvironment.addSource(
             new FlinkKafkaConsumer<KafkaRecord<Object>>(
                 listTopics, new KafkaMessageDeSerializeSchema<Object>(), properties));
     sourceInputStream.print();
@@ -174,14 +174,16 @@ public class SinkMessages<T> {
        
   }
  
-  /*public StreamExecutionEnvironment getstreamExecutionEnvironment() {
+  public StreamExecutionEnvironment getstreamExecutionEnvironment() {
     return this.streamExecutionEnvironment;
   }
-*/
-  public void startExecution(StreamExecutionEnvironment env) throws DAFCT2Exception {
+
+  public void startExecution() throws DAFCT2Exception {
 
     try {
-      env.execute("External Records");
+      //env.execute("External Records");
+      this.streamExecutionEnvironment.execute("External Records");
+
 
     } catch (Exception e) {
       log.error("Unable to process Sink Message using Flink ", e);
