@@ -1,0 +1,5 @@
+FROM docker.elastic.co/beats/filebeat:7.12.0
+COPY filebeatprod.yml /usr/share/filebeat/filebeat.yml
+USER root
+RUN chown -R 10001:10001 /usr/share/filebeat/
+USER 10001
