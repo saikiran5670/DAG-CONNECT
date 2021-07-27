@@ -595,7 +595,7 @@ tripTraceArray: any = [];
       filter: "",
       menuId: 10 //-- for fleet utilisation
     }
- 
+    this.getFleetPreferences();
     this.loadfleetFuelDetails(this.driverDetails);
     if(this.driverDetails){
       this.onSearch();
@@ -1636,7 +1636,6 @@ createEndMarker(){
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
-    this.getFleetPreferences();
   }
 
   setDefaultStartEndTime()
