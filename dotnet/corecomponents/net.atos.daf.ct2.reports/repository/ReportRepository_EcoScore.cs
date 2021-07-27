@@ -288,7 +288,7 @@ namespace net.atos.daf.ct2.reports.repository
         #endregion
 
         #region Eco Score Report - Update Profile
-        public async Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto)
+        public async Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto, bool isAdminRights)
         {
             _dataAccess.Connection.Open();
             IDbTransaction txnScope = _dataAccess.Connection.BeginTransaction();
@@ -303,6 +303,18 @@ namespace net.atos.daf.ct2.reports.repository
                 {
                     updateParameter.Add("@Name", ecoScoreProfileDto.Name);
                     queryForUpdateEcoScoreProfile.Append(", name=@Name");
+                }
+                if (isAdminRights)
+                {
+                    if (ecoScoreProfileDto.IsDAFStandard)
+                    {
+                        updateParameter.Add("@organizationId", null);
+                    }
+                    else
+                    {
+                        updateParameter.Add("@organizationId", ecoScoreProfileDto.OrganizationId);
+                    }
+                    queryForUpdateEcoScoreProfile.Append(", organization_id=@organizationId");
                 }
                 updateParameter.Add("@description", ecoScoreProfileDto.Description);
 
@@ -2485,7 +2497,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                 string query = @"WITH 
                                 ecoscorequery as (
-                                    SELECT dr.first_name, dr.last_name, eco.driver1_id, eco.trip_distance,eco.trip_id,
+                                    SELECT  eco.driver1_id, eco.trip_distance,eco.trip_id,
                                     eco.dpa_Braking_score, eco.dpa_Braking_count, eco.dpa_anticipation_score, eco.dpa_anticipation_count, 
                                     eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_total,
                                     eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
@@ -2504,39 +2516,15 @@ namespace net.atos.daf.ct2.reports.repository
                                 
                                 generalblk as 
                                 (
-                                    select eco.driver1_id,eco.Day, eco.first_name || ' ' || eco.last_name AS driverName, count(eco.driver1_id)  as drivercnt
+                                    select eco.driver1_id,eco.Day
                                     FROM ecoscorequery eco
-                                    GROUP BY eco.driver1_id ,eco.Day,eco.first_name,eco.last_name
-                                ),
-                                AverageGrossweight as 
-                                (
-                                    select eco.driver1_id, eco.Day, (CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION))  as AverageGrossweight
-                                    FROM ecoscorequery eco
-                                    GROUP BY eco.driver1_id,eco.Day
+                                    GROUP BY eco.driver1_id ,eco.Day
                                 ),
                                 Distance as 
                                 (
-                                    select eco.driver1_id,eco.Day, (CAST(SUM (eco.trip_distance)as DOUBLE PRECISION)) as Distance
+                                    select eco.driver1_id,eco.Day,  (CAST(SUM (eco.trip_distance)as DOUBLE PRECISION)) as Distance
                                     FROM ecoscorequery eco
-                                    GROUP BY eco.driver1_id,eco.Day
-                                ),
-                                NumberOfTrips as 
-                                (
-                                    select eco.driver1_id,eco.Day, COUNT (eco.trip_id) as NumberOfTrips
-                                    FROM ecoscorequery eco
-                                    GROUP BY eco.driver1_id,eco.Day
-                                ),
-                                NumberOfVehicles as 
-                                (
-                                    select eco.driver1_id,eco.Day, COUNT (eco.vin) as NumberOfVehicles
-                                    FROM ecoscorequery eco
-                                    GROUP BY eco.driver1_id,eco.Day
-                                ),
-                                AverageDistancePerDay as 
-                                (
-                                    select eco.driver1_id,eco.Day, (SUM(eco.trip_distance) / CEIL(CAST(MAX(eco.end_time) - MIN(eco.start_time) AS DOUBLE PRECISION)/(1000 * 60 * 60 * 24))) as AverageDistancePerDay
-                                    FROM ecoscorequery eco
-                                    GROUP BY eco.driver1_id,eco.Day
+                                    GROUP BY eco.driver1_id ,eco.Day
                                 ),
                                 EcoScore as
                                 (
@@ -2689,15 +2677,9 @@ namespace net.atos.daf.ct2.reports.repository
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id,eco.Day
                                 ) 
-                                select eco.driver1_id as DriverId,eco.Day
-                                ,eco.DriverName ,  'Overall_Driver' as HeaderType
-                                
-                                ,CAST(avrg.averagegrossweight/1000 AS DOUBLE PRECISION) as AverageGrossweight -- convert kg weight to tonnes by /1000
-                                ,CAST(dis.distance/1000 AS DOUBLE PRECISION) as Distance  -- convert meter to km by /1000
-                                ,CAST(notrp.numberoftrips AS DOUBLE PRECISION) as NumberOfTrips
-                                ,CAST(noveh.numberofvehicles AS DOUBLE PRECISION) as NumberOfVehicles
-                                ,CAST(avgdperday.averagedistanceperday/1000 AS DOUBLE PRECISION) as AverageDistancePerDay -- convert meter to km by /1000
-                                
+                                select 
+								eco.Day,'Overall_Driver' as HeaderType, 'Overall' as VIN,'Overall' as VehicleName,
+								eco.driver1_id as DriverId
                                 ,CAST(ecos.ecoscore AS DOUBLE PRECISION) as EcoScore
                                 ,CAST(f.fuelconsumption/1000 AS DOUBLE PRECISION) as FuelConsumption
                                 ,CAST(crus.cruisecontrolusage AS DOUBLE PRECISION) as CruiseControlUsage
@@ -2719,14 +2701,9 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(brk.braking AS DOUBLE PRECISION) as Braking
                                 ,CAST(anc.anticipationscore  AS DOUBLE PRECISION) as AnticipationScore
                                 
-                                
                                 from generalblk eco
-                                Left join AverageGrossweight avrg on avrg.driver1_id = eco.driver1_id and avrg.Day= eco.Day
-                                Left join Distance dis on dis.driver1_id = avrg.driver1_id and avrg.Day= dis.Day
-                                Left join NumberOfTrips notrp on notrp.driver1_id = dis.driver1_id and notrp.Day= dis.Day
-                                Left join numberofvehicles noveh on noveh.driver1_id = notrp.driver1_id and notrp.Day= noveh.Day
-                                Left join AverageDistancePerDay avgdperday on avgdperday.driver1_id = noveh.driver1_id and avgdperday.Day= noveh.Day
-                                Left join EcoScore ecos on ecos.driver1_id = avgdperday.driver1_id and avgdperday.Day= ecos.Day
+                                Left join Distance dis on dis.driver1_id = eco.driver1_id and dis.Day=eco.Day
+                                Left join EcoScore ecos on ecos.driver1_id = dis.driver1_id and dis.Day= ecos.Day
                                 Left join FuelConsumption f on f.driver1_id = ecos.driver1_id  and f.Day= ecos.Day
                                 Left join CruiseControlUsage crus  on crus.driver1_id = f.driver1_id  and f.Day= crus.Day 
                                 Left join CruiseControlUsage30 crusa  on crusa.driver1_id = crus.driver1_id and crusa.Day= crus.Day 
@@ -2773,11 +2750,8 @@ namespace net.atos.daf.ct2.reports.repository
 
                 string query = @"WITH 
                                 ecoscorequery as (
-                                    SELECT dr.organization_id, dr.first_name, dr.last_name, eco.driver1_id, eco.trip_distance,eco.trip_id,
-                                    eco.dpa_Braking_score, eco.dpa_Braking_count, eco.dpa_anticipation_score, eco.dpa_anticipation_count, 
-                                    eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_total,
-                                    eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
-									eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
+                                    SELECT dr.organization_id, eco.driver1_id, eco.trip_distance,eco.trip_id,eco.vin,
+                                    eco.dpa_Braking_score, eco.dpa_Braking_count, eco.dpa_anticipation_score, eco.dpa_anticipation_count
                                     ,date_trunc('day', to_timestamp(eco.end_time/1000)) as Day
                                     FROM tripdetail.ecoscoredata eco
                                     JOIN master.driver dr 
@@ -2787,12 +2761,20 @@ namespace net.atos.daf.ct2.reports.repository
                                     AND eco.vin = ANY(@Vins) --ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
                                     AND (eco.trip_distance >= @MinTripDistance OR eco.trip_distance IS NULL)
                                     AND dr.organization_id=@OrgId
+
                                 ),
+                                 generalblk as 
+                                (
+                                    select eco.organization_id,eco.Day
+                                    FROM ecoscorequery eco
+								    Where eco.driver1_id =@DriverId
+                                    GROUP BY eco.organization_id ,eco.Day
+                                 )  ,
                                  Distance as 
                                 (
                                     select eco.organization_id,eco.Day,  (CAST(SUM (eco.trip_distance)as DOUBLE PRECISION)) as Distance
                                     FROM ecoscorequery eco
-                                     GROUP BY eco.organization_id ,eco.Day
+                                    GROUP BY eco.organization_id ,eco.Day
                                 ),
 								EcoScore as
                                 (
@@ -2804,10 +2786,11 @@ namespace net.atos.daf.ct2.reports.repository
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id,eco.Day 
                                 )
-                               
                                 select  
-                                'Overall_Company' as HeaderType, CAST(eco.ecoscore AS DOUBLE PRECISION) AS  EcoScore , eco.Day 
-                                from EcoScore eco
+								 eco.Day,'Overall_Company' as HeaderType, 'Overall' as VIN,'Overall' as VehicleName
+                                , CAST(eco.ecoscore AS DOUBLE PRECISION) AS  EcoScore 
+								From generalblk ger
+                                Left join EcoScore eco on eco.organization_id = ger.organization_id and ger.Day=eco.Day
                                 Left join Distance dis on dis.organization_id = eco.organization_id and dis.Day=eco.Day
                                 where 1 = 1 AND(dis.distance >= @MinDriverTotalDistance OR @MinDriverTotalDistance IS NULL)";
 
@@ -2834,23 +2817,27 @@ namespace net.atos.daf.ct2.reports.repository
 
                 string query = @"WITH 
                                 ecoscorequery as (
-                                  SELECT dr.organization_id, dr.first_name, dr.last_name, eco.driver1_id, eco.trip_distance,eco.trip_id,
+                                     SELECT dr.organization_id, dr.first_name, dr.last_name, eco.driver1_id, eco.trip_distance,eco.trip_id,
                                     eco.dpa_Braking_score, eco.dpa_Braking_count, eco.dpa_anticipation_score, eco.dpa_anticipation_count, 
-                                    eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_total,
-                                    eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
-									eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75
-									,ve.registration_no,ve.name,date_trunc('day', to_timestamp(eco.end_time/1000)) as Day
+                                    eco.vin ,ve.registration_no,ve.name as VehicleName,date_trunc('day', to_timestamp(eco.end_time/1000)) as Day
                                     FROM tripdetail.ecoscoredata eco
 									JOIN master.vehicle ve 
 									ON eco.vin = ve.vin
                                     JOIN master.driver dr 
                                     ON dr.driver_id = eco.driver1_id
-                                  WHERE eco.start_time >= @FromDate --1204336888377
+                                    WHERE eco.start_time >= @FromDate --1204336888377
                                     AND eco.end_time <= @ToDate --1820818919744
                                     AND eco.vin = ANY(@Vins) --ANY('{XLR0998HGFFT76666,5A37265,XLR0998HGFFT76657,XLRASH4300G1472w0,XLR0998HGFFT74600}')
                                     AND (eco.trip_distance >= @MinTripDistance OR eco.trip_distance IS NULL)
                                     AND dr.organization_id=@OrgId
                                 ),
+                                 generalblk as 
+                                (
+                                    select eco.organization_id,eco.Day, eco.vin,eco.VehicleName
+                                    FROM ecoscorequery eco
+								    Where eco.driver1_id = @DriverId
+                                    GROUP BY eco.organization_id ,eco.Day, eco.vin,eco.VehicleName
+                                 )   ,
                                 Distance as 
                                 (
                                     select eco.organization_id,eco.Day, eco.vin,  (CAST(SUM (eco.trip_distance)as DOUBLE PRECISION)) as Distance
@@ -2867,10 +2854,11 @@ namespace net.atos.daf.ct2.reports.repository
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.Day,eco.vin
                                 )
-                                select 'VIN_Company' as HeaderType, 
-                                eco.vin,
-                                CAST(eco.ecoscore AS DOUBLE PRECISION) as EcoScore,eco.Day
-                                from EcoScore eco
+                                select 
+								eco.Day,'VIN_Company' as HeaderType, gen.vin as VIN,gen.VehicleName as VehicleName,
+                                CAST(eco.ecoscore AS DOUBLE PRECISION) as EcoScore
+								From generalblk gen
+                                Left join EcoScore eco on eco.vin = gen.vin and eco.Day=gen.Day
                                 Left join Distance dis on dis.vin = eco.vin and dis.Day=eco.Day
                                 where 1 = 1 AND(dis.distance >= @MinDriverTotalDistance OR @MinDriverTotalDistance IS NULL)";
 
@@ -2898,7 +2886,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                 string query = @"WITH 
                                 ecoscorequery as (
-                                    SELECT dr.first_name, dr.last_name, eco.driver1_id, eco.trip_distance,eco.trip_id,
+                                    SELECT  eco.driver1_id, eco.trip_distance,eco.trip_id,
                                     eco.dpa_Braking_score, eco.dpa_Braking_count, eco.dpa_anticipation_score, eco.dpa_anticipation_count, 
                                     eco.vin,eco.used_fuel,eco.pto_duration,eco.end_time,eco.start_time,eco.gross_weight_combination_total,
                                     eco.heavy_throttle_pedal_duration,eco.idle_duration,eco.harsh_brake_duration,eco.brake_duration,
@@ -2917,39 +2905,15 @@ namespace net.atos.daf.ct2.reports.repository
                                     AND dr.organization_id=@OrgId
                                 ),
                                 
-                                generalblk as 
+                               generalblk as 
                                 (
-                                    select eco.vin, eco.driver1_id, eco.Day, eco.registration_no,eco.name, eco.first_name || ' ' || eco.last_name AS driverName, count(eco.driver1_id)  as drivercnt
+                                    select eco.vin, eco.driver1_id, eco.Day,eco.name
                                     FROM ecoscorequery eco
-                                    GROUP BY eco.vin, eco.driver1_id,eco.Day, eco.registration_no,eco.name,eco.first_name,eco.last_name
-                                ), 
-								 AverageGrossweight as 
+                                    GROUP BY eco.vin, eco.driver1_id,eco.Day,eco.name
+                                ),  
+                                Distance as 
                                 (
-                                    select eco.vin,eco.Day, CAST(SUM (eco.gross_weight_combination_total)as DOUBLE PRECISION)  as AverageGrossweight
-                                    FROM ecoscorequery eco
-                                    GROUP BY eco.vin,eco.Day
-                                ),
-								Distance as 
-                                ( 
-                                    select eco.vin,eco.Day, CAST(SUM (eco.trip_distance)as DOUBLE PRECISION) as Distance
-                                    FROM ecoscorequery eco
-                                     GROUP BY eco.vin,eco.Day
-                                ),
-                                NumberOfTrips as 
-                                (
-                                    select eco.vin,eco.Day,  COUNT (eco.trip_id) as NumberOfTrips
-                                    FROM ecoscorequery eco
-                                     GROUP BY eco.vin,eco.Day
-                                ),
-                                NumberOfVehicles as 
-                                (
-                                    select eco.vin,eco.Day,  COUNT (eco.vin) as NumberOfVehicles
-                                    FROM ecoscorequery eco
-                                    GROUP BY eco.vin,eco.Day
-                                ),
-                                AverageDistancePerDay as 
-                                ( 
-                                    select eco.vin,eco.Day,  (SUM(eco.trip_distance) / CEIL(CAST(MAX(eco.end_time) - MIN(eco.start_time) AS DOUBLE PRECISION)/(1000 * 60 * 60 * 24))) as AverageDistancePerDay
+                                    select eco.vin,eco.Day,  (CAST(SUM (eco.trip_distance)as DOUBLE PRECISION)) as Distance
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin,eco.Day
                                 ),
@@ -3105,15 +3069,9 @@ namespace net.atos.daf.ct2.reports.repository
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin,eco.Day
                                 )
-                                select eco.driver1_id as DriverId,eco.vin as VIN,eco.Day
-                                ,eco.DriverName, eco.registration_no as RegistrationNo,eco.name as VehicleName, 'VIN_Driver' as HeaderType
-                                
-                                ,CAST(avrg.averagegrossweight/1000 AS DOUBLE PRECISION) as AverageGrossweight -- convert kg weight to tonnes by /1000
-                                ,CAST(dis.distance/1000 AS DOUBLE PRECISION) as Distance  -- convert meter to km by /1000
-                                ,CAST(notrp.numberoftrips AS DOUBLE PRECISION) as NumberOfTrips
-                                ,CAST(noveh.numberofvehicles AS DOUBLE PRECISION) as NumberOfVehicles
-                                ,CAST(avgdperday.averagedistanceperday/1000 AS DOUBLE PRECISION) as AverageDistancePerDay -- convert meter to km by /1000
-                                
+                                select
+								eco.Day,'VIN_Driver' as HeaderType, eco.vin as VIN,eco.name as VehicleName,
+								eco.driver1_id as DriverId
                                 ,CAST(ecos.ecoscore AS DOUBLE PRECISION) as EcoScore
                                 ,CAST(f.fuelconsumption/1000 AS DOUBLE PRECISION) as FuelConsumption
                                 ,CAST(crus.cruisecontrolusage AS DOUBLE PRECISION) as CruiseControlUsage
@@ -3135,13 +3093,9 @@ namespace net.atos.daf.ct2.reports.repository
                                 ,CAST(brk.braking AS DOUBLE PRECISION) as Braking
                                 ,CAST(anc.anticipationscore  AS DOUBLE PRECISION) as AnticipationScore
                                 
-                                from generalblk eco
-                                Left join AverageGrossweight avrg on avrg.vin = eco.vin and avrg.Day=eco.Day
-                                Left join Distance dis on dis.vin = avrg.vin and dis.Day=avrg.Day
-                                Left join NumberOfTrips notrp on notrp.vin = dis.vin     and notrp.Day=dis.Day
-                                Left join numberofvehicles noveh on noveh.vin = notrp.vin   and noveh.Day=notrp.Day
-                                Left join AverageDistancePerDay avgdperday on avgdperday.vin = noveh.vin    and avgdperday.Day=noveh.Day
-                                Left join EcoScore ecos on ecos.vin = avgdperday.vin   and ecos.Day=avgdperday.Day
+                                from generalblk eco  
+                                Left join Distance dis on dis.vin = eco.vin   and dis.Day=eco.Day
+                                Left join EcoScore ecos on ecos.vin = dis.vin   and ecos.Day=dis.Day
                                 Left join FuelConsumption f on f.vin = ecos.vin    and f.Day=ecos.Day
                                 Left join CruiseControlUsage crus  on crus.vin = f.vin     and crus.Day=f.Day
                                 Left join CruiseControlUsage30 crusa  on crusa.vin = crus.vin and crusa.Day=crus.Day

@@ -17,6 +17,7 @@ namespace net.atos.daf.ct2.reports.entity
         public int OrganizationId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool IsDAFStandard { get; set; }
         public string ActionedBy { get; set; }
         public long LastUpdate { get; set; }
         public List<EcoScoreProfileKPI> ProfileKPIs { get; set; }

@@ -163,6 +163,10 @@ namespace net.atos.daf.ct2.reports
             // Default Profile for basic and advance -	DAF Admin – Not Allowed Update Profile Name , Allowed  Rest profile KPIs modifications  2) Org Admin – nothing Allowed
             // Custom profile(Global) -	DAF Admin – All allowed 2) Org Admin – nothing Allowed
             // Custom profile(Org) – DAF Admin – All allowed  2)Org Admin – Allowed(Based on Role and Subscription)
+            if (ecoScoreProfileDto.IsDAFStandard)
+            {
+                ecoScoreProfileDto.OrganizationId = 0;
+            }
             var isExist = await _reportRepository.CheckEcoScoreProfileIsExist(ecoScoreProfileDto.OrganizationId, ecoScoreProfileDto.Name, ecoScoreProfileDto.Id);
             if (!isExist)// check if profile is avilable in DB or not
             {
@@ -173,7 +177,7 @@ namespace net.atos.daf.ct2.reports
                     if (isAdminRights)// admin rights with level 10 & 20
                     {
                         ecoScoreProfileDto.Name = null;
-                        return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto); // DAF Admin – Not Allowed Update Profile Name 
+                        return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto, isAdminRights); // DAF Admin – Not Allowed Update Profile Name 
                     }
                 }
                 else if (versionType == null)
@@ -182,13 +186,13 @@ namespace net.atos.daf.ct2.reports
                     {
                         if (isAdminRights)
                         {
-                            return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
+                            return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto, isAdminRights);
                         }
                         return -3;
                     }
                     else
                     {
-                        return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
+                        return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto, isAdminRights);
                     }
                 }
                 return -2;
@@ -196,7 +200,6 @@ namespace net.atos.daf.ct2.reports
             else
                 return -1;
         }
-
         /// <summary>
         /// 
         /// </summary>

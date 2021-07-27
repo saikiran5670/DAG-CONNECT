@@ -283,6 +283,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 obj.Name = request.Name;
                 obj.OrganizationId = request.OrgId;
                 obj.Description = request.Description;
+                obj.IsDAFStandard = request.IsDAFStandard;
                 obj.ActionedBy = Convert.ToString(request.AccountId);
                 obj.ProfileKPIs = new List<EcoScoreProfileKPI>();
                 foreach (var item in request.ProfileKPIs)
