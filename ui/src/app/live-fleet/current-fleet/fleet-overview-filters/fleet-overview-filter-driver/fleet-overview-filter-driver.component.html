@@ -3,7 +3,7 @@
     (closed)="!isVehicleListOpen">
       <mat-expansion-panel-header class="full-width" style="height: 45px;">
         <mat-panel-title>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverList || 'DriverList' }}({{driverListData.length}})</span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehicleList || 'Vehicle List' }}({{driverListData.length}})</span>
        </mat-panel-title>
       </mat-expansion-panel-header>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class="checkbox">
@@ -26,7 +26,7 @@
                     {{ item.driverName == '' ?  'Driver Id' :  'Driver Name'}} 
                 </span>
                 <span class="vehicle-details-data">
-                      {{ (item.driverName == '' ? item.driverId : item.driverName) || ((item.driverName == '' && item.driverId == '') ? 'Unknown' : item.driverName)}} 
+                      {{ (item.driverName == '' ? item.driver1Id : item.driverName) || ((item.driverName == '' && item.driver1Id == '') ? 'Unknown' : item.driverName)}} 
                </span>
             </div> 
             <div>

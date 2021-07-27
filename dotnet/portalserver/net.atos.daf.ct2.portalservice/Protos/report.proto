@@ -518,9 +518,10 @@ message UpdateEcoScoreProfileRequest {
   int32 ProfileId = 1;
   string Name = 2;
   string Description = 3;
-    int32 OrgId = 4;
-  int32 AccountId = 5;
-  repeated CreateEcoScoreProfileKPI ProfileKPIs = 6;
+  bool IsDAFStandard = 4;
+  int32 OrgId = 5;
+  int32 AccountId = 6;
+  repeated CreateEcoScoreProfileKPI ProfileKPIs = 7;
 }
 message UpdateEcoScoreProfileResponse {
   Responsecode Code = 1;
@@ -1268,15 +1269,11 @@ message EcoScoreSingleDriverBarPieChart
   EcoScoreSingleDriverBarPieChart AverageDrivingSpeedChart = 7;
 }
 
-message EcoScoreTrendlinesKPIScore {
- string Day = 1;
- string Value = 2;
-}
-
 message EcoScoreTrendlinesKPI {
  string Name = 1;
  string Key = 2;
- repeated EcoScoreTrendlinesKPIScore Data = 3;
+ string UoM = 3;
+ map<string, string> Data = 4;
 }
 
 message EcoScoreTrendlinesKPIInfo {

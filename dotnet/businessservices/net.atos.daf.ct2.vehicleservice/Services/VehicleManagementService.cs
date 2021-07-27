@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Confluent.Kafka;
 using Grpc.Core;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -17,7 +18,8 @@ using net.atos.daf.ct2.vehicleservice.Entity;
 using Newtonsoft.Json;
 using AccountComponent = net.atos.daf.ct2.account;
 using Group = net.atos.daf.ct2.group;
-
+using net.atos.daf.ct2.confluentkafka;
+using net.atos.daf.ct2.kafkacdc;
 namespace net.atos.daf.ct2.vehicleservice.Services
 {
     public class VehicleManagementService : VehicleService.VehicleServiceBase
@@ -80,6 +82,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 Objvehicle = await _vehicleManager.Create(Objvehicle);
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Create", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.Info("Create method in vehicle service called.");
+                //ConsumeResult<Null, string> message = VehicleCdcManager.VehicleCdcProducer(List < kafkacdc.entity.VehicleCdc > vehicleCdcList, kafkaConfiguration);
+                //List<kafkacdc.entity.VehicleCdc> vehicleCdcList = new List<kafkacdc.entity.VehicleCdc>();
+                //KafkaConfiguration kafkaConfiguration = new KafkaConfiguration();
+                //ProducerBuilder<Null, string> producerBuilder = await VehicleCdcManager.VehicleCdcProducer(vehicleCdcList, kafkaConfiguration);
 
                 return await Task.FromResult(new VehicleCreateResponce
                 {
