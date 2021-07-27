@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.kafkacdc.test
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _datamartDataacess;
-        private readonly IVehicleAlertRefIntegrator _vehicleAlertRefIntegrator;
+        private readonly IVehicleAlertRefManager _vehicleAlertRefManager;
         private readonly IVehicleAlertRepository _vehicleAlertRepository;
         private readonly IConfiguration _configuration;
         private readonly KafkaConfiguration _kafkaConfig;
@@ -31,14 +31,14 @@ namespace net.atos.daf.ct2.kafkacdc.test
             _datamartDataacess = new PgSQLDataMartDataAccess(datamartconnectionString);
             _vehicleAlertRepository = new VehicleAlertRepository(_dataAccess, _datamartDataacess);
             _configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
-            _vehicleAlertRefIntegrator = new VehicleAlertRefIntegrator(_vehicleAlertRepository, _configuration);
+            _vehicleAlertRefManager = new VehicleAlertRefManager(_vehicleAlertRepository, _configuration);
             _vehicleCdcManager = new VehicleCdcManager();
         }
 
         [TestMethod]
         public void GetVehicleAlertRefFromAlertConfiguration()
         {
-            var result = _vehicleAlertRefIntegrator.GetVehicleAlertRefFromAlertConfiguration(150).Result;
+            var result = _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(150).Result;
             Assert.IsTrue(result.Count > 0);
         }
         [TestMethod]
