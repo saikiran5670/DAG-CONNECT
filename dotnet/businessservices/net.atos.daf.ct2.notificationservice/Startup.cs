@@ -12,6 +12,10 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.notificationengine;
 using net.atos.daf.ct2.notificationengine.repository;
 using net.atos.daf.ct2.notificationservice.services;
+using net.atos.daf.ct2.notification;
+using net.atos.daf.ct2.notification.repository;
+using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.translation;
 
 namespace net.atos.daf.ct2.notificationservice
 {
@@ -39,6 +43,12 @@ namespace net.atos.daf.ct2.notificationservice
 
             services.AddTransient<ITripAlertManager, TripAlertManager>();
             services.AddTransient<ITripAlertRepository, TripAlertRepository>();
+            services.AddTransient<INotificationIdentifierManager, NotificationIdentifierManager>();
+            services.AddTransient<INotificationIdentifierRepository, NotificationIdentifierRepository>();
+            services.AddTransient<IEmailNotificationManager, EmailNotificationManager>();
+            services.AddTransient<IEmailRepository, EmailRepository>();
+            services.AddTransient<ITranslationManager, TranslationManager>();
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
 
             services.AddGrpc();
         }

@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public double CCFuelConsumption { get; set; }
         public double FuelconsumptionCCnonactive { get; set; }
         public string IdlingConsumption { get; set; }
-        public string  DPAScore { get; set; }
+        public string DPAScore { get; set; }
         //public string DPAAnticipationScore { get; set; } = string.Empty;
         //public string DPABrakingScore{ get; set; } = string.Empty;
         //public string IdlingPTOScore { get; set; } = string.Empty;

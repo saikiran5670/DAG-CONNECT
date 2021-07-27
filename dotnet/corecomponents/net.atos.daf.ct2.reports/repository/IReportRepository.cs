@@ -68,7 +68,7 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<FleetOverviewDetails>> GetFleetOverviewDetails(FleetOverviewFilter fleetOverviewFilter);
         Task<dynamic> GetKPIInfo(EcoScoreDataServiceRequest request);
         Task<dynamic> GetChartInfo(EcoScoreDataServiceRequest request);
-        Task<List<DriverFilter>> GetDriverList(List<string> vins);
+        Task<List<DriverFilter>> GetDriverList(List<string> vins, int organizationId);
 
         Task<List<VehicleHealthResult>> GetVehicleHealthStatus(VehicleHealthStatusRequest vehicleHealthStatusRequest);
         Task<List<WarningDetails>> GetWarningDetails(List<int> warningClass, List<int> warningNumber, string lngCode);

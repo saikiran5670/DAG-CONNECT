@@ -227,6 +227,11 @@ export class CreateNotificationsAlertComponent implements OnInit {
       smsEach: ['1'],
       smsMinutes: ['1'],
       smslimitId: []
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForMail('smsDescription'),
+      ]
     });
 
   }
@@ -550,6 +555,16 @@ export class CreateNotificationsAlertComponent implements OnInit {
     this.isDuplicateRecipientLabel= true;
     const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'contactMode' + '"]');
     invalidControl.focus();
+  }
+
+  validateMobileNumber(index){
+    // console.log(this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber.number);
+    if(this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber != null){
+      let phone= (this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber.number).replace(/\s/g, "")
+      if(phone.length > 10){
+        this.notificationForm.controls['FormSMSArray']['controls'][index]['controls']['mobileNumber'].setErrors({ tenDigitNumberAllowed: true });
+      }
+    }
   }
 
   getNotificationDetails(): any {
