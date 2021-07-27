@@ -1419,6 +1419,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     select eco.organization_id, count(eco.driver1_id)  as drivercnt
                                     FROM ecoscorequery eco
+                                    Where eco.driver1_id =@DriverId
                                     GROUP BY eco.organization_id
                                 ) ,
 								 AverageGrossweight as 
@@ -2009,6 +2010,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     select eco.organization_id, eco.vin,  eco.registration_no,eco.name,  count(eco.driver1_id)  as drivercnt
                                     FROM ecoscorequery eco
+                                    Where eco.driver1_id =@DriverId
                                     GROUP BY eco.organization_id,eco.vin, eco.registration_no,eco.name
                                 ) ,
 								 AverageGrossweight as 
