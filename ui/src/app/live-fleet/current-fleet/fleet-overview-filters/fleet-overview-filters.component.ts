@@ -150,7 +150,7 @@ subscription: Subscription;
 
   loadDriverData(){  
     let newAlertCat=[];
-    if(!this.driverFlagClicked && this.selectedIndex == 1)
+    if(!this.todayFlagClicked && this.selectedIndex == 1)
     {
       this.objData = {
         "groupId": ['all'],
@@ -162,7 +162,7 @@ subscription: Subscription;
         "days": 90,
         "languagecode":"cs-CZ"
     }}
-    if(this.driverFlagClicked && this.selectedIndex == 1)
+    if(this.todayFlagClicked && this.selectedIndex == 1)
     {
       this.objData = {
         "groupId": ['all'],
@@ -205,7 +205,7 @@ subscription: Subscription;
       });    
     //  this.categoryList = this.removeDuplicates(newAlertCat, "value");
     //  console.log(newAlertCat);    
-      this.driverListData = data;     
+      this.vehicleListData = data;     
       let _dataObj ={
         vehicleDetailsFlag : this.isVehicleDetails,
         data:data
@@ -218,6 +218,7 @@ subscription: Subscription;
       this.messageService.sendMessage("refreshTimer");
       if (error.status == 404) {
         this.noRecordFlag = true;
+        this.vehicleListData = [];
         let _dataObj ={
           vehicleDetailsFlag : this.isVehicleDetails,
           data:null
@@ -348,7 +349,7 @@ removeDuplicates(originalArray, prop) {
   }
 
   applyFilterDriver(filterValue: string) {
-    this.driverListData = this.detailsData;
+    this.vehicleListData = this.detailsData;
     filterValue = filterValue.trim();
     filterValue = filterValue.toLowerCase();
 
@@ -361,7 +362,7 @@ removeDuplicates(originalArray, prop) {
       return vin || driver || drivingStatus ||healthStatus;
     }​​​​​​​​);
 
-    this.driverListData = filteredData;
+    this.vehicleListData = filteredData;
   }
 
   onChangeGroup(id: any){
@@ -465,6 +466,7 @@ removeDuplicates(originalArray, prop) {
       this.messageService.sendMessage("refreshTimer");
       if (error.status == 404) {
         this.noRecordFlag = true;
+        this.vehicleListData = [];
         let _dataObj ={
           vehicleDetailsFlag : this.isVehicleDetails,
           data:null
@@ -483,9 +485,13 @@ removeDuplicates(originalArray, prop) {
   this.todayFlagClicked = item.todayFlagClicked;
   this.isVehicleDetails  = item.vehicleDetailsFlag;
   // this.driverFlagClicked = true;
-  this.getFilterData();
-  // this.loadDriverData();
-  this.loadVehicleData();
+  if(this.selectedIndex == 1)
+  this.loadDriverData();
+  else{
+    this.getFilterData();
+    this.loadVehicleData();
+  }
+ 
 }
 
 checkCreationForDriver(item:any){

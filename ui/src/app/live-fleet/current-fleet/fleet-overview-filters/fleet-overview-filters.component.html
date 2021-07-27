@@ -104,7 +104,7 @@
 </div>
 </div>
 </mat-expansion-panel>
-<div *ngIf="selectedIndex == 0">
+<div>
     <app-fleet-overview-filter-vehicle 
     (tabVisibility)="tabVisibilityHandler($event)" 
     [translationData]='translationData' 
@@ -122,7 +122,7 @@
 </app-fleet-overview-filter-vehicle>
 </div>
 
-<div *ngIf="selectedIndex == 1"> 
+<!-- <div *ngIf="selectedIndex == 1"> 
     <app-fleet-overview-filter-driver *ngIf="selectedIndex == 1" 
     (tabVisibility)="tabVisibilityHandler($event)" 
     [translationData]='translationData' 
@@ -130,5 +130,5 @@
     [driverListData] ="driverListData"
     (driverFilterComponentEmit)="checkCreationForDriver($event)">
 </app-fleet-overview-filter-driver>
-</div>
+</div> -->
 </div>
