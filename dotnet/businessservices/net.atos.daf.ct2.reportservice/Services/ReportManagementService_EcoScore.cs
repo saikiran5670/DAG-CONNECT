@@ -296,8 +296,25 @@ namespace net.atos.daf.ct2.reportservice.Services
                     data.UpperValue = item.UpperValue;
                     obj.ProfileKPIs.Add(data);
                 }
+                var result = 0;
+                if (request.OrgId > 0)
+                {
+                    var countByOrg = await _reportManager.GetEcoScoreProfilesCount(request.OrgId);
+                    var maxLimit = Convert.ToInt32(_configuration["MaxAllowedEcoScoreProfiles"]);
 
-                var result = await _reportManager.UpdateEcoScoreProfile(obj, isAdminRights);
+                    if (countByOrg < maxLimit)
+                    {
+                        result = await _reportManager.UpdateEcoScoreProfile(obj, isAdminRights);
+                    }
+                    else
+                    {
+                        result = -4;
+                    }
+                }
+                else
+                {
+                    result = await _reportManager.UpdateEcoScoreProfile(obj, isAdminRights);
+                }
 
                 if (result > 0)
                 {
@@ -319,6 +336,11 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     response.Message = entity.ReportConstants.ECOSCORE_PROFILE_NOT_AUTH_MSG;
                     response.Code = Responsecode.Failed;
+                }
+                else if (result == -4)
+                {
+                    response.Code = Responsecode.Forbidden;
+                    response.Message = "Max limit has reached for the creation of Eco-Score profile of requested organization. New profile cannot be created.";
                 }
                 else
                 {
