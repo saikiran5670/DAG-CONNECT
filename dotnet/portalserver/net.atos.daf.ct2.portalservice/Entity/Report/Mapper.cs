@@ -67,6 +67,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
             grpcRequest.ProfileId = request.ProfileId;
             grpcRequest.Name = request.Name;
             grpcRequest.Description = request.Description;
+            grpcRequest.IsDAFStandard = request.IsDAFStandard;
 
             foreach (var kpi in request.ProfileKPIs)
             {

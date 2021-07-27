@@ -153,9 +153,12 @@ namespace net.atos.daf.ct2.reportservice.Services
                         //opt-in with driver card- Driver Id
                         //opt-out with driver card- *
 
-                        if (driverDetails != null && driverDetails.Count > 0)
+
+                        fleetOverviewDetails.DriverName = (driverDetails.Where(d => d.DriverId == fleetOverviewDetails.Driver1Id).Select(n => n.DriverName).FirstOrDefault()) ?? string.Empty;
+
+                        if (string.IsNullOrEmpty(fleetOverviewDetails.Driver1Id))
                         {
-                            fleetOverviewDetails.DriverName = driverDetails.FirstOrDefault(d => d.DriverId == fleetOverviewDetails.Driver1Id).DriverName;
+                            fleetOverviewDetails.DriverName = "Unknown";
                         }
                         response.FleetOverviewDetailList.Add(_mapper.ToFleetOverviewDetailsResponse(fleetOverviewDetails));
                     }
@@ -240,9 +243,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                         //opt-in with driver card- Driver Id
                         //opt-out with driver card- *
 
-                        if (driverDetails != null && driverDetails.Count > 0)
+                        healthStatus.DriverName = (driverDetails.Where(d => d.DriverId == healthStatus.WarningDrivingId).Select(n => n.DriverName).FirstOrDefault()) ?? string.Empty;
+                        if (string.IsNullOrEmpty(healthStatus.WarningDrivingId))
                         {
-                            healthStatus.DriverName = driverDetails?.FirstOrDefault(d => d.DriverId == healthStatus.WarningDrivingId).DriverName ?? string.Empty;
+                            healthStatus.DriverName = "Unknown";
                         }
                     }
                     string res = JsonConvert.SerializeObject(result);

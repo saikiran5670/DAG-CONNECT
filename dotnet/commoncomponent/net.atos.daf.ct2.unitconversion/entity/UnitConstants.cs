@@ -44,4 +44,10 @@ namespace net.atos.daf.ct2.unitconversion.entity
         public const string GALLON_PER_MILES = "gal/mi";
         public const string LITER_PER_KM = "l/km";
     }
+
+    public static class VolumePer100KmConstants
+    {
+        public const string MPG = "mpg";
+        public const string LITER_PER_100KM = "liter/100km";
+    }
 }

@@ -228,7 +228,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             objProfile.ProfileName = result.Name ?? string.Empty;
             objProfile.ProfileDescription = result.Description ?? string.Empty;
             objProfile.UpdatedBy = result.ActionedBy ?? string.Empty;
-            objProfile.LastUpdate = result.LastUpdate.ToString("MM/dd/yyyy HH:mm:ss");
+            objProfile.LastUpdate = result.LastUpdate;
 
             if (result.ProfileKPIs != null)
             {
@@ -283,6 +283,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 obj.Name = request.Name;
                 obj.OrganizationId = request.OrgId;
                 obj.Description = request.Description;
+                obj.IsDAFStandard = request.IsDAFStandard;
                 obj.ActionedBy = Convert.ToString(request.AccountId);
                 obj.ProfileKPIs = new List<EcoScoreProfileKPI>();
                 foreach (var item in request.ProfileKPIs)
@@ -549,7 +550,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 var response = new GetEcoScoreReportTrendlinesResponse();
                 if (resultDataMart?.Count > 0)
                 {
-                    response.Trendlines.AddRange(_mapper.MapEcoScoreReportTrendlines(resultDataMart, reportAttributes));
+                    response.Trendlines.AddRange(_mapper.MapEcoScoreReportTrendlines(resultDataMart, reportAttributes, (UoM)Enum.Parse(typeof(UoM), request.UoM)));
                     response.Code = Responsecode.Success;
                     response.Message = ReportConstants.GET_ECOSCORE_REPORT_TRENDLINE_SUCCESS_MSG;
                 }

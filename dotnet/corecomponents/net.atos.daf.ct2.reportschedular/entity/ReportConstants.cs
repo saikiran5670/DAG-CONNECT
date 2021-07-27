@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
     {
         public const string DATE_FORMAT = "dd/MM/yyyy";
         public const string TIME_FORMAT_24 = "HH:mm:ss";
-        public const string TIME_FORMAT_12 = "hh:mm:ss";
+        public const string TIME_FORMAT_12 = "hh:mm:ss tt";
         public const string TIME_FORMAT_LABLE = "dtimeformat_24Hours";
         public const string UNIT_DEFAULT_LABLE = "dunit_Metric";
         public const string UNIT_METRIC_KEY = "dunit_Metric";
@@ -29,4 +29,19 @@ namespace net.atos.daf.ct2.reportscheduler.entity
     {
         public const string UTC = "UTC";
     }
+
+    public static class IdlingConsumptionConstants
+    {
+        public const string GOOD = "Good";
+        public const string VERY_GOOD = "Very Good";
+        public const string MODERATE = "Moderate";
+    }
+
+    public static class DPAScoreConstants
+    {
+        public const string LIGHT = "Light";
+        public const string MEDIUM = "Medium";
+        public const string HIGH = "High";
+    }
+
 }
