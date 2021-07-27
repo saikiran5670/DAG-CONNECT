@@ -492,7 +492,7 @@
                                         <ngx-intl-tel-input [cssClass]="''" class="full-width" [enableAutoCountrySelect]="true" [enablePlaceholder]="true" 
                                             [enableAutoCountrySelect]="true"  [searchCountryFlag]="true" [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
                                             [selectFirstCountry]="false" [maxLength]="15" [phoneValidation]="true"
-                                            [separateDialCode]="true" name="mobileNumber" formControlName="mobileNumber" (focusout)="validateMobileNumber(i)">
+                                            [separateDialCode]="true" [(ngModel)]="mobileNumber" name="mobileNumber" formControlName="mobileNumber" (ngModelChange)="validateMobileNumber(i)">
                                         </ngx-intl-tel-input>
                                     </div>
                                     <mat-hint>{{translationData.lblOnlyOneContactNumberCanBeAddedAtATime || 'Only one contact number can be added at a time' }}</mat-hint>
