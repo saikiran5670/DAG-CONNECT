@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.notificationengine
                         foreach (Notification customeTimingItem in customeTimingDetails)
                         {
                             //var bitsWithIndex = customeTimingItem.Aletimenoti_day_type.Cast<bool>() // we need to use Cast because BitArray does not provide generic IEnumerable
-                             //   .Select((bit, index) => new { Bit = bit, Index = index }); // projection, we will save bit indices
+                            //   .Select((bit, index) => new { Bit = bit, Index = index }); // projection, we will save bit indices
                             for (int i = 0; i < customeTimingItem.Aletimenoti_day_type.Count; i++)
                             {
                                 //if (customeTimingItem.Aletimenoti_day_type[i] == true && DateTime.Today.DayOfWeek.ToString().ToLower() == "monday")
