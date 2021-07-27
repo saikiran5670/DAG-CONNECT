@@ -363,8 +363,12 @@ export class FuelBenchmarkingComponent implements OnInit {
     // // this.setGlobalSearchData(this.fleetUtilizationSearchData);
     // // if(!this.makeDisableVehicleGroup)
     // // {
+      if(!this.makeDisableVehicleGroup)
+    {  
       this.resetTripFormControlValue(); // extra addded as per discuss with Atul
       this.filterDateData(); // extra addded as per discuss with Atul
+    }
+     
     
   
   }
