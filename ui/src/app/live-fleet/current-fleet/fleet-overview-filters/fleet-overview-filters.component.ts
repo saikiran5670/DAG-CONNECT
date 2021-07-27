@@ -125,7 +125,7 @@ subscription: Subscription;
       if(!this.driverFlagClicked  && this.selectedIndex == 1){
         this.filterData["driverList"].forEach(item=>{
           this.driverList.push(item) });
-          // this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupName");
+          this.driverList = this.removeDuplicates(this.driverList, "driverId");
           this.loadDriverData();
       }   
       else{
