@@ -1,0 +1,55 @@
+<div class='mat-elevation-z no-padding'>
+    <mat-expansion-panel *ngIf='!isVehicleDetails' style="padding: 0px; height: calc(100vh - 45px); overflow: auto; margin-top: 10px;" [expanded]="true"  class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+      <mat-expansion-panel-header class="full-width" style="height: 45px;">
+        <mat-panel-title>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehicleList || 'Vehicle List' }}({{vehicleListData.length}})</span>
+       </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class="checkbox">
+        <mat-checkbox [checked]="todayFlagClicked" (change)="onChangetodayCheckbox($event.checked)" >{{ translationData.lblToday || 'Today'}}
+        </mat-checkbox>
+          </div>
+     <div  *ngIf="!noRecordFlag">
+        <div class="full-width vehicleList-div" *ngFor="let item of vehicleListData" (click) ='openVehicleDetails(item)'>
+            <div class="vehicleList-icon">
+                <span id="steps" class="step-image" [innerHTML]="item.icon"  matTooltip="Health Status: {{item.vehicleHealthStatusType}} 
+                &#13; Alert: {{item.alertName}}"> </span>
+            </div>
+            <div class="vehicleList-details">
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lblVin || 'VIN'}}: </span>
+                <span class="vehicle-details-data">{{item.vin}}</span>
+            </div>
+            <div>               
+            <span class="vehicle-details-head" >           
+                {{ item.driverName == '' ?  'Driver Id' :  'Driver Name'}} 
+            </span>
+            <span class="vehicle-details-data">
+                  {{ (item.driverName == '' ? item.driverId : item.driverName) || ((item.driverName == '' && item.driverId == '') ? 'Unknown' : item.driverName)}} 
+           </span>
+            </div> 
+            <div>
+                <span class="vehicle-details-head">{{ translationData.lblDrivingStatus || 'Driving Status'}}:</span>
+                <span class="vehicle-details-data">{{item.vehicleDrivingStatusType}}</span>
+            </div> 
+            <div *ngIf="vehInfoPrefData && vehInfoPrefData.length > 0 && vehInfoPrefData[2].state == 'A'">
+                <span class="vehicle-details-head">{{ translationData.lblHealthStatus || 'Health Status'}}:</span>
+                <span class="vehicle-details-data">{{item.vehicleHealthStatusType}}</span>
+            </div>
+            </div>
+        </div>
+     </div>    
+     <div *ngIf="noRecordFlag">
+         <p>{{translationData.lblNoRecordFound || 'No Record Found'}}</p>
+     </div>
+  </mat-expansion-panel>
+
+  <app-vehicle-details *ngIf='isVehicleDetails' 
+  [translationData]='translationData'  
+  [selectedElementData]='selectedElementData'
+  [categoryList] = "categoryList"
+  [levelList] = "levelList" 
+  [vehInfoPrefData]='vehInfoPrefData'
+  (backToPage)='checkCreationForVehicleDetails($event)'></app-vehicle-details>
+</div>
+

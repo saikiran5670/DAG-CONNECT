@@ -21,13 +21,13 @@ public class Monitor implements Serializable {
     @JsonProperty(value = "receivedTimestamp")
     private Long receivedTimestamp;
     @JsonProperty(value = "storedTimestamp")
-    private Integer storedTimestamp;
+    private Long storedTimestamp;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     @JsonProperty(value = "EvtDateTime")
     private String evtDateTime;
     @JsonProperty(value = "Increment")
-    private Integer increment;
+    private Long increment;
     @JsonProperty(value = "ROProfil")
     private String roProfil;
     @JsonProperty(value = "TenantID")
@@ -46,7 +46,7 @@ public class Monitor implements Serializable {
     @JsonProperty(value = "MessageType")
     private Integer messageType;
     @JsonProperty(value = "NumSeq")
-    private Integer numSeq;
+    private Long numSeq;
     @JsonProperty(value = "VEvtID")
     private Integer vEvtID;
 
@@ -65,7 +65,7 @@ public class Monitor implements Serializable {
     @JsonProperty(value = "GPSLongitude")
     private Double gpsLongitude;
     @JsonProperty(value = "GPSAltitude")
-    private Integer gpsAltitude;
+    private Long gpsAltitude;
     @JsonProperty(value = "GPSHeading")
     private Double gpsHeading;
 

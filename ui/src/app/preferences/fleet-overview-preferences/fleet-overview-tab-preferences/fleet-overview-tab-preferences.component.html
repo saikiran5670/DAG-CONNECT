@@ -1,0 +1,93 @@
+<form [formGroup]="fleetOverviewForm">
+    <!-- Timer Tab -->
+    <div *ngIf='timerPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10'
+        fxLayoutAlign="left center" style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+        <div fxLayout="column" class='min-width-33-3-per ' fxLayoutGap="3px" fxLayoutAlign="left">
+            <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForTimerColumns() : null'
+                [checked]='selectionForSetTimerColumns.hasValue() && isAllSelectedForTimerColumns()'
+                [indeterminate]='selectionForSetTimerColumns.hasValue() && !isAllSelectedForTimerColumns()'
+                [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'>
+                <span class='headerFont'>{{ translationData.lblSetTimer || 'Set Timer' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+    <div *ngIf='timerPrefData.length > 0' fxLayout="row"
+        class='areaWidth full-width timerPref' fxLayoutAlign="left center">
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth adjust-padding">
+            <span>{{ timerPrefData.length > 0 ? timerPrefData[0].translatedName : ''
+                }}</span>
+        </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth adjust-padding">
+            <div fxLayout="row" class='areaWidth' fxLayoutAlign="left center">
+                <mat-form-field appearance="outline" style='width: 75px; margin-right: 10px;'>
+                    <input maxlength="2" [readonly]='!editFlag' matInput type="text"
+                        placeholder="{{ translationData.lblTimer || 'Timer' }}"
+                        (keypress)="keyPressNumbers($event)" formControlName="refreshTime">
+                </mat-form-field>
+                <span style="display: flex; place-content: flex-end;">({{ translationData.lbl || 'minimum 1 min or maximum 60 min' }})</span>
+            </div>
+            <mat-error [ngClass]="{'errorClass': fleetOverviewForm.get('refreshTime').hasError('required')}" *ngIf="fleetOverviewForm.get('refreshTime').hasError('required')">
+                {{ translationData.lblPleaseEnterTimerValue || 'Please Enter Timer Value' }}
+            </mat-error>
+            <mat-error [ngClass]="{'errorClass': fleetOverviewForm.get('refreshTime').hasError('cannotExceedMaxValue')}" *ngIf="fleetOverviewForm.get('refreshTime').hasError('cannotExceedMaxValue')">
+                {{ translationData.lbl || 'Timer Value cannot be greater than 60' }}
+             </mat-error>
+             <mat-error [ngClass]="{'errorClass': fleetOverviewForm.get('refreshTime').hasError('cannotExceedMinValue')}" *ngIf="fleetOverviewForm.get('refreshTime').hasError('cannotExceedMinValue')">
+                {{ translationData.lbl || 'Timer Value cannot be less than 1' }}
+             </mat-error>
+        </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style='height: 60px;' class="areaWidth adjust-padding"></div>
+    </div>
+
+    <!-- General Vehicle Info tab -->
+    <div *ngIf='vehInfoPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 margin-top-20' fxLayoutAlign="left center"
+        style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForVehInfoColumns() : null'
+                [checked]='selectionForVehInfoColumns.hasValue() && isAllSelectedForVehInfoColumns()'
+                [indeterminate]='selectionForVehInfoColumns.hasValue() && !isAllSelectedForVehInfoColumns()'
+                [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
+                    translationData.lblGeneralVehicleInformation || 'General Vehicle Information' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+    <div *ngIf='vehInfoPrefData.length > 0' fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+        <div fxLayout="column" class="areaWidth min-width-33-3-per adjust-padding" fxLayoutGap="0px" fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForVehInfoColumns.toggle(vehInfoPrefData[0]) : null; checkboxClicked($event, vehInfoPrefData[0])'
+                [checked]="selectionForVehInfoColumns.isSelected(vehInfoPrefData[0])"
+                [aria-label]='checkboxLabelForColumns(vehInfoPrefData[0])' class='custom-checkbox'><span>{{
+                    vehInfoPrefData.length > 0 ? vehInfoPrefData[0].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="column" class="areaWidth min-width-33-3-per adjust-padding" fxLayoutGap="0px" fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForVehInfoColumns.toggle(vehInfoPrefData[1]) : null; checkboxClicked($event, vehInfoPrefData[1])'
+                [checked]="selectionForVehInfoColumns.isSelected(vehInfoPrefData[1])"
+                [aria-label]='checkboxLabelForColumns(vehInfoPrefData[1])' class='custom-checkbox'><span>{{
+                    vehInfoPrefData.length > 0 ? vehInfoPrefData[1].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="column" class="areaWidth min-width-33-3-per adjust-padding" fxLayoutGap="0px" fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForVehInfoColumns.toggle(vehInfoPrefData[2]) : null; checkboxClicked($event, vehInfoPrefData[2])'
+                [checked]="selectionForVehInfoColumns.isSelected(vehInfoPrefData[2])"
+                [aria-label]='checkboxLabelForColumns(vehInfoPrefData[2])' class='custom-checkbox'><span>{{
+                    vehInfoPrefData.length > 0 ? vehInfoPrefData[2].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+
+    <!-- Button -->
+    <div *ngIf='(timerPrefData.length > 0 || vehInfoPrefData.length > 0) && editFlag' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
+        <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
+            translationData.lblCancel || 'Cancel' }}</button>
+        <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
+            translationData.lblReset || 'Reset' }}</button>
+        <button
+            [disabled]='!fleetOverviewForm.valid || (selectionForSetTimerColumns.selected.length == 0 && timerPrefData.length > 0) || (selectionForVehInfoColumns.selected.length == 0 && vehInfoPrefData.length > 0)'
+            class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
+            'Confirm') }}</button>
+    </div>
+
+</form>

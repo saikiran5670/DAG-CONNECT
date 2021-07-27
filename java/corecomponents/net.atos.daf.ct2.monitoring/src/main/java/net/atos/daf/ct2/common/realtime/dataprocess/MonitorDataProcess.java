@@ -14,6 +14,7 @@ import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.common.realtime.hbase.MonitorDataHbaseSink;
 import net.atos.daf.ct2.common.realtime.postgresql.DriverTimeManagementSink;
 import net.atos.daf.ct2.common.realtime.postgresql.LiveFleetPositionPostgreSink;
+import net.atos.daf.ct2.common.realtime.postgresql.WarningStatisticsSink;
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.common.util.FlinkKafkaMonitorDataConsumer;
 import net.atos.daf.ct2.common.util.FlinkUtil;
@@ -54,6 +55,8 @@ public class MonitorDataProcess {
 			//consumerStream.addSink(new LiveFleetPositionPostgreSink()); // Writing into PostgreSQL Table
 			
 			consumerStream.addSink(new DriverTimeManagementSink()); //Drive Time Management
+			consumerStream.addSink(new WarningStatisticsSink());  //Warning Statistics
+			
 
 			log.info("after addsink");
 			try {

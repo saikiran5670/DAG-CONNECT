@@ -8,7 +8,7 @@ import { LogBookComponent } from './log-book/log-book.component';
 const routes: Routes = [
   {
     path: "", component: LiveFleetComponent, children:[
-      { path: "livefleet", component: CurrentFleetComponent },
+      { path: "fleetoverview", component: CurrentFleetComponent },
       { path: "logbook", component: LogBookComponent}
   ]
   }];

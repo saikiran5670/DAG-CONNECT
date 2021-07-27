@@ -56,14 +56,26 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 			
-		connection=PostgreDataSourceConnection.getInstance().getDataSourceConnection(envParams.get(MileageConstants.DATAMART_POSTGRE_SERVER_NAME),
-				Integer.parseInt(envParams.get(MileageConstants.DATAMART_POSTGRE_PORT)),
-				envParams.get(MileageConstants.DATAMART_POSTGRE_DATABASE_NAME),
-				envParams.get(MileageConstants.DATAMART_POSTGRE_USER),
-				envParams.get(MileageConstants.DATAMART_POSTGRE_PASSWORD));
-		logger.info("In trip sink connection done" + connection);
-		statement = connection.prepareStatement(query);
-		
+		try {
+			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(envParams.get(MileageConstants.DATAMART_POSTGRE_SERVER_NAME),
+					Integer.parseInt(envParams.get(MileageConstants.DATAMART_POSTGRE_PORT)),
+					envParams.get(MileageConstants.DATAMART_POSTGRE_DATABASE_NAME),
+					envParams.get(MileageConstants.DATAMART_POSTGRE_USER),
+					envParams.get(MileageConstants.DATAMART_POSTGRE_PASSWORD));
+			logger.info("In trip sink connection done" + connection);
+			statement = connection.prepareStatement(query);
+		} catch (Exception e) {
+			// TODO: handle exception both logger and throw is not required
+			logger.error("Issue while establishing Postgre connection in Mileage streaming Job :: " + e);
+			logger.error("serverNm :: " + envParams.get(MileageConstants.DATAMART_POSTGRE_SERVER_NAME) + " port :: "
+					+ Integer.parseInt(envParams.get(MileageConstants.DATAMART_POSTGRE_PORT)));
+			logger.error("databaseNm :: " + envParams.get(MileageConstants.DATAMART_POSTGRE_DATABASE_NAME) + " user :: "
+					+ envParams.get(MileageConstants.DATAMART_POSTGRE_USER) + " pwd :: "
+					+ envParams.get(MileageConstants.DATAMART_POSTGRE_PASSWORD));
+			logger.error("connection :: " + connection);
+			throw e;
+		}
+
 	}
 
 	@Override

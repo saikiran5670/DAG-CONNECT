@@ -2,20 +2,21 @@
 {
     public enum AggregateType
     {
+        TRIP = -1,
         DAY = 0,
-        WEEK = 1,
-        MONTH = 2,
-        TRIP = 3
+        WEEK = 6,
+        MONTH = 29
     }
 
     public class EcoScoreDataServiceRequest
     {
-        public string AccountId { get; set; }
+        public string AccountEmail { get; set; }
         public string DriverId { get; set; }
         public string OrganizationId { get; set; }
         public string VIN { get; set; }
         public AggregateType AggregationType { get; set; }
         public long StartTimestamp { get; set; }
         public long EndTimestamp { get; set; }
+        public int MinDistance { get; set; }
     }
 }

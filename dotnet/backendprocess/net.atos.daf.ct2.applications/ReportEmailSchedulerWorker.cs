@@ -45,15 +45,35 @@ namespace net.atos.daf.ct2.applications
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 var isSuccess = await _reportEmailSchedulerManager.SendReportEmail();
+                await AddAuditLog(isSuccess.Count() > 0 ? "Process run successfully" : "Proccess run failed, For more details, please check audit logs.", isSuccess.Count() > 0 ? AuditTrailEnum.Event_status.SUCCESS : AuditTrailEnum.Event_status.FAILED);
             }
             catch (Exception ex)
             {
                 _logger.LogInformation($"Failed to run, Error: {ex.Message}");
+                await AddAuditLog($"Failed to email run, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED);
             }
             finally
             {
                 _hostApplicationLifetime.StopApplication();
             }
+        }
+
+        private async Task AddAuditLog(string message, AuditTrailEnum.Event_status eventStatus)
+        {
+            await _auditlog.AddLogs(new AuditTrail
+            {
+                Created_at = DateTime.Now,
+                Performed_at = DateTime.Now,
+                Performed_by = 2,
+                Component_name = "Report Scheduler Email Notification",
+                Service_name = "Backend Process",
+                Event_type = AuditTrailEnum.Event_type.CREATE,
+                Event_status = eventStatus,
+                Message = message,
+                Sourceobject_id = 0,
+                Targetobject_id = 0,
+                Updated_data = "EmailNotificationForReportSchedule"
+            });
         }
     }
 }

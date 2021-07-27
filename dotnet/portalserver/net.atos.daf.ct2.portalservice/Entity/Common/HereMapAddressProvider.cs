@@ -22,13 +22,11 @@ namespace net.atos.daf.ct2.portalservice.Common
 
         public string GetAddress(double lat, double lng)
         {
-
             var mapRequest = new GetMapRequest() { Latitude = lat, Longitude = lng };
             var lookupAddress = _mapServiceClient.GetMapAddressAsync(mapRequest).GetAwaiter().GetResult();
-            return lookupAddress.LookupAddresses.Address ?? string.Empty;
-
-
+            return lookupAddress.LookupAddresses != null ? (lookupAddress.LookupAddresses.Address ?? string.Empty) : string.Empty;
         }
+
         public GetMapRequest GetAddressObject(double lat, double lng)
         {
 
@@ -77,14 +75,6 @@ namespace net.atos.daf.ct2.portalservice.Common
         {
             return ((lng < -180 || lng > 180) && (lat < -90 || lat > 90));
 
-        }
-
-        internal void UpdateFuelDeviationReportAddress(FuelDeviationDetails item)
-        {
-            if (item.GeoLocationAddressId == 0)
-            {
-                item.GeoLocationAddress = GetAddress(item.Latitude, item.Longitude);
-            }
         }
     }
 }

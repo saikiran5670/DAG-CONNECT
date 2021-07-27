@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.rfmsdataservice.Entity
 {
-    public class ResponseObject
+    public class VehicleResponseObject
     {
-        public long RequestTimestamp { get; set; }
-
         [DataMember(Name = "vehicleResponse")]
         public VehicleResponse VehicleResponse { get; set; }
 
@@ -53,8 +48,8 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
         [DataMember(Name = "emissionLevel")]
         public string EmissionLevel { get; set; }
 
-        [DataMember(Name = "tellTaleCode")]
-        public string TellTaleCode { get; set; }
+        //[DataMember(Name = "tellTaleCode")]
+        //public string TellTaleCode { get; set; }
 
         [DataMember(Name = "chassisType")]
         public string ChassisType { get; set; }
@@ -65,20 +60,20 @@ namespace net.atos.daf.ct2.rfmsdataservice.Entity
         [DataMember(Name = "totalFuelTankVolume")]
         public int? TotalFuelTankVolume { get; set; }
 
-        [DataMember(Name = "tachographType")]
-        public string TachographType { get; set; }
+        //[DataMember(Name = "tachographType")]
+        //public string TachographType { get; set; }
 
         [DataMember(Name = "gearboxType")]
         public string GearboxType { get; set; }
 
-        [DataMember(Name = "bodyType")]
-        public string BodyType { get; set; }
+        //[DataMember(Name = "bodyType")]
+        //public string BodyType { get; set; }
 
-        [DataMember(Name = "doorConfiguration")]
-        public List<int> DoorConfiguration { get; set; }
+        //[DataMember(Name = "doorConfiguration")]
+        //public List<int> DoorConfiguration { get; set; }
 
-        [DataMember(Name = "hasRampOrLift")]
-        public bool? HasRampOrLift { get; set; }
+        //[DataMember(Name = "hasRampOrLift")]
+        //public bool? HasRampOrLift { get; set; }
 
         [DataMember(Name = "authorizedPaths")]
         public List<string> AuthorizedPaths { get; set; }

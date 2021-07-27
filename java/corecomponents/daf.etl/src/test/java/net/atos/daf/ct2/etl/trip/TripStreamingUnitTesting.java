@@ -6,8 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.api.java.tuple.Tuple10;
-import org.apache.flink.api.java.tuple.Tuple9;
+import org.apache.flink.api.java.tuple.Tuple11;
 import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -22,11 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import junit.framework.Assert;
+import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.etl.common.bo.TripAggregatedData;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.FlinkUtil;
-import net.atos.daf.common.ct2.utc.TimeFormatter;
 
 public class TripStreamingUnitTesting {
 
@@ -53,56 +52,56 @@ public class TripStreamingUnitTesting {
 		
 		tripData.setVid("M4A1114");
 		tripData.setVin("M4A1114");
-		tripData.setGpsTripDist(299);
+		tripData.setGpsTripDist(299L);
 		tripData.setGpsStopVehDist(Long.valueOf(443567905));
 		tripData.setGpsStartVehDist(Long.valueOf(443567695));
-		tripData.setVIdleDuration(22);
+		tripData.setVIdleDuration(22L);
 		tripData.setGpsStartLatitude(Double.valueOf("41.8842"));
 		tripData.setGpsStartLongitude(Double.valueOf("-87.6388"));
 		tripData.setGpsEndLatitude(Double.valueOf("-87.6388"));
 		tripData.setGpsEndLongitude(Double.valueOf("-87.6388"));
-		tripData.setVUsedFuel(110);
+		tripData.setVUsedFuel(110L);
 		tripData.setVStopFuel(118918536L);
 		tripData.setVStartFuel(118918426L);
-		tripData.setVTripMotionDuration(73);
+		tripData.setVTripMotionDuration(73L);
 		tripData.setReceivedTimestamp(1596775611957L);
-		tripData.setVPTODuration(2);
-		tripData.setVHarshBrakeDuration(1);
-		tripData.setVBrakeDuration(10);
-		tripData.setVMaxThrottlePaddleDuration(3);
-		tripData.setVTripAccelerationTime(51);
-		tripData.setVCruiseControlDist(40);
-		tripData.setVTripDPABrakingCount(5);
-		tripData.setVTripDPAAnticipationCount(6);
-		tripData.setVCruiseControlFuelConsumed(7);
-		tripData.setVIdleFuelConsumed(17);
-		tripData.setVSumTripDPABrakingScore(8);
-		tripData.setVSumTripDPAAnticipationScore(9);
+		tripData.setVPTODuration(2L);
+		tripData.setVHarshBrakeDuration(1L);
+		tripData.setVBrakeDuration(10L);
+		tripData.setVMaxThrottlePaddleDuration(3L);
+		tripData.setVTripAccelerationTime(51L);
+		tripData.setVCruiseControlDist(40L);
+		tripData.setVTripDPABrakingCount(5L);
+		tripData.setVTripDPAAnticipationCount(6L);
+		tripData.setVCruiseControlFuelConsumed(7L);
+		tripData.setVIdleFuelConsumed(17L);
+		tripData.setVSumTripDPABrakingScore(8L);
+		tripData.setVSumTripDPAAnticipationScore(9L);
 		tripData.setDriverId("NL B000171984000002");
 		tripData.setStartDateTime(1596775285000L);
 		tripData.setEndDateTime(1596775380000L);
 		tripData.setTripCalGpsVehDistDiff(210L);
 		tripData.setTripCalGpsVehTimeDiff(95000L);
-		tripData.setNumberOfIndexMessage(4);
+		tripData.setNumberOfIndexMessage(4L);
 		final SingleOutputStreamOperator<TripStatusData> tripStsData= env.fromElements(
 				tripData);
 
-		SingleOutputStreamOperator<Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>> indxData = tripStsData.flatMap(		
-		new FlatMapFunction<TripStatusData, Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>>() {
+		SingleOutputStreamOperator<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> indxData = tripStsData.flatMap(		
+		new FlatMapFunction<TripStatusData, Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>>() {
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void flatMap(TripStatusData value, Collector<Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>> out) throws Exception {
+			public void flatMap(TripStatusData value, Collector<Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>> out) throws Exception {
 				//2020-11-02T16:55:37.000Z
-				out.collect(new Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 0, 655350, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:35.000Z", ETLConstants.DATE_FORMAT ), 11111991L, 111111L, 0) );
+				out.collect(new Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 0, 655350, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:35.000Z", ETLConstants.DATE_FORMAT ), 11111991L, 111111L, 0, "testDriver") );
 				long ts =TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:37.000Z", ETLConstants.DATE_FORMAT );
-				out.collect(new Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 10, 100000, "index", ts, 11111996L, 111113L, 1) );
-				out.collect(new Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 10, 100000, "index", ts, 11111996L, 111113L, 1) );
-				out.collect(new Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 20, 600000, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:36.000Z", ETLConstants.DATE_FORMAT ), 11111993L, 111112L, 1) );
-				out.collect(new Tuple10<String, String, String, Integer, Integer, String, Long, Long, Long, Integer>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 20, 600000, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:38.000Z", ETLConstants.DATE_FORMAT) , 11111993L, 111114L, 1) );
+				out.collect(new Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 10, 100000, "index", ts, 11111996L, 111113L, 1, "testDriver") );
+				out.collect(new Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 10, 100000, "index", ts, 11111996L, 111113L, 1, "testDriver") );
+				out.collect(new Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 20, 600000, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:36.000Z", ETLConstants.DATE_FORMAT ), 11111993L, 111112L, 1, "testDriver") );
+				out.collect(new Tuple11<String, String, String, Integer, Integer, String, Long, Long, Long, Integer, String>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 20, 600000, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:38.000Z", ETLConstants.DATE_FORMAT) , 11111993L, 111114L, 1, "testDriver") );
 								
 			}
 		});

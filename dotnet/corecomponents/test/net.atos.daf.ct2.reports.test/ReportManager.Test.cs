@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reports.repository;
+using net.atos.daf.ct2.reports.entity;
 
 namespace net.atos.daf.ct2.reports.test
 {
@@ -112,5 +113,20 @@ namespace net.atos.daf.ct2.reports.test
             Assert.IsTrue(result.Count() > 0);
         }
         #endregion
+
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetFilteredFuelDeviation_Test()
+        {
+            var fuelDeviationFilterRequest = new FuelDeviationFilter
+            {
+                StartDateTime = 1623330412000,
+                EndDateTime = 1629341411000,
+                VINs = new List<string> { "XLR0998HGFFT76657", "XLRAE75PC0E348696" }
+
+            };
+            var result = await _reportManager.GetFilteredFuelDeviation(fuelDeviationFilterRequest);
+            Assert.IsNotNull(result);
+        }
     }
 }

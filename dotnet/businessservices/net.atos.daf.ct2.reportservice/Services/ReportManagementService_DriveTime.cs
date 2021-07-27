@@ -171,15 +171,50 @@ namespace net.atos.daf.ct2.reportservice.Services
             return await Task.FromResult(new Tuple<ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty>, List<string>>(lstVehiclesWithVisiblity, vinList));
         }
 
-        //private async Task<(ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty>, List<string>)> GetVisibleVINDetails1(int AccountId, int OrganizationId)
-        //{
-        //    IEnumerable<VisibleEntity.VehicleDetailsAccountVisibilty> _vehicleDeatilsWithAccountVisibility = await _visibilityManager.GetVehicleByAccountVisibility(AccountId, OrganizationId);
+        /// <summary>
+        /// Fetch Single Drivers activities chart format data
+        /// </summary>
+        /// <param name="request"> Filters for driver activity by Driver ID </param>
+        /// <param name="context">GRPC Context</param>
+        /// <returns>Driver activity by type column</returns>
+        public override async Task<DriverActivityChartResponse> GetDriverActivityChartDetails(DriverActivityChartFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.Info("Get GetDriversActivity for multiple drivers.");
+                ReportComponent.entity.DriverActivityChartFilter objActivityFilter = new ReportComponent.entity.DriverActivityChartFilter
+                {
+                    DriverId = request.DriverId,
+                    StartDateTime = request.StartDateTime,
+                    EndDateTime = request.EndDateTime
+                };
 
-        //    string lstVehicle = JsonConvert.SerializeObject(_vehicleDeatilsWithAccountVisibility);
-        //    ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty> lstVehiclesWithVisiblity = JsonConvert.DeserializeObject<ProtobufCollection.RepeatedField<VehicleDetailsWithAccountVisibilty>>(lstVehicle);
-        //    List<string> vinList = _vehicleDeatilsWithAccountVisibility.Select(s => s.Vin).Distinct().ToList();
-        //    return await Task.FromResult((lstVehiclesWithVisiblity, vinList));
-        //}
+                var result = await _reportManager.GetDriversActivityChartDetails(objActivityFilter);
+                DriverActivityChartResponse response = new DriverActivityChartResponse();
+                if (result?.Count > 0)
+                {
+                    string res = JsonConvert.SerializeObject(result);
+                    response.DriverActivitiesChartData.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<DriverActivityChartData>>(res));
+                    response.Code = Responsecode.Success;
+                    response.Message = Responsecode.Success.ToString();
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = "No Result Found";
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new DriverActivityChartResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetDriverActivityChartDetails got failed due to - " + ex.Message
+                });
+            }
+        }
 
         #endregion
     }

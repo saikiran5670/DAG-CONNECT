@@ -64,6 +64,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         Task<IEnumerable<VisibilityVehicle>> GetDynamicOEMVehiclesForVisibility(int vehicleGroupId);
         Task<IEnumerable<VehicleGroupDetails>> GetVehicleGroupsViaAccessRelationship(int accountId, int orgId);
         Task<IEnumerable<VisibilityVehicle>> GetGroupTypeVehicles(int vehicleGroupId);
+        Task<VehicleCountFilter> GetGroupFilterDetail(int vehicleGroupId, int orgnizationId);
 
         #endregion
 

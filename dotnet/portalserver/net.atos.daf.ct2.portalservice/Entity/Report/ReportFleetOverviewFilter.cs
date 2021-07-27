@@ -16,6 +16,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public List<POIResponse> UserPois { get; set; }
         public List<POIResponse> GlobalPois { get; set; }
         public List<DriverFilter> DriverList { get; set; }
+        public List<FleetOverviewFilterAlert> FleetOverviewAlerts { get; set; }
 
     }
 
@@ -27,6 +28,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public string FeatureName { get; set; }
         public string FeatureKey { get; set; }
         public bool Subscribe { get; set; }
+        public string Vin { get; set; }
     }
 
     public class FilterProperty
@@ -41,4 +43,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public string LastName { get; set; }
         public int OrganizationId { get; set; }
     }
+
+
 }

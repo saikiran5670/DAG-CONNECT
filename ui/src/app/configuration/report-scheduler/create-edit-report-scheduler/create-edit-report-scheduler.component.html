@@ -437,7 +437,7 @@
                   <button class='actionBtn' mat-flat-button (click)="onChangeReportSchedulerStatus()" fxLayoutAlign="left">
                     <mat-slide-toggle color="primary" [checked]='status' >
                     </mat-slide-toggle>&nbsp;
-                    <span>{{ status ? 'Active' : 'Suspended' }}</span>
+                    <span>{{ status ? translationData.lblActive || 'Active' : translationData.lblSuspended || 'Suspended' }}</span>
                   </button>
 
                 </div>
@@ -464,11 +464,6 @@
           </div>
         </div>
       </div>
-
-      <div *ngIf="actionType == 'view'">
-
-      </div>
-      
     </mat-card-content>
     <mat-card-actions class='no-margin no-padding' *ngIf="actionType != 'view'">
       <div fxLayout="row" fxLayoutAlign="flex-end center">

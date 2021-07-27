@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using net.atos.daf.ct2.account;
@@ -20,7 +19,6 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.organization.repository;
-using net.atos.daf.ct2.rfmsdataservice.Common;
 using net.atos.daf.ct2.rfmsdataservice.CustomAttributes;
 using net.atos.daf.ct2.subscription.repository;
 using net.atos.daf.ct2.translation;
@@ -34,7 +32,7 @@ using AccountPreference = net.atos.daf.ct2.accountpreference;
 using Identity = net.atos.daf.ct2.identity;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using Subscription = net.atos.daf.ct2.subscription;
-
+using net.atos.daf.ct2.rfmsdataservice.Common;
 
 namespace net.atos.daf.ct2.rfmsdataservice
 {
@@ -51,7 +49,13 @@ namespace net.atos.daf.ct2.rfmsdataservice
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            // needed to store rate limit counters
+            services.AddMemoryCache();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.IgnoreNullValues = true;
+            });
+            services.AddHttpContextAccessor();
             services.AddMvc()
             .ConfigureApiBehaviorOptions(options =>
             {
@@ -71,6 +75,9 @@ namespace net.atos.daf.ct2.rfmsdataservice
                 return new PgSQLDataMartDataAccess(DataMartconnectionString);
             });
 
+            services.AddDistributedMemoryCache();
+            services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
+            services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IVehicleManager, VehicleManager>();
@@ -100,14 +107,6 @@ namespace net.atos.daf.ct2.rfmsdataservice
             services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ITranslationManager, TranslationManager>();
-
-            //services.AddSingleton<IPostConfigureOptions<BasicAuthenticationOptions>, BasicAuthenticationPostConfigureOptions>();
-            //services.AddTransient<IBasicAuthenticationService, BasicAuthenticationService>();
-
-            //services.AddMvc(options =>
-            //{
-            //    options.Filters.Add(new ProducesAttribute("application/json"));
-            //});
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(x =>
@@ -166,6 +165,7 @@ namespace net.atos.daf.ct2.rfmsdataservice
 
             services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();
 
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "rFMS 3.0 Data Service", Version = "v1" });
@@ -189,6 +189,8 @@ namespace net.atos.daf.ct2.rfmsdataservice
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.UseRateLimitation();
 
             app.UseEndpoints(endpoints =>
             {

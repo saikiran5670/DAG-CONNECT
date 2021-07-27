@@ -49,15 +49,23 @@ namespace net.atos.daf.ct2.ecoscoredataservice.CustomAttributes
             {
                 string token = Convert.ToString(headerValue);
                 token = token.Replace(AUTHORIZATION_HEADER_TYPE, "");
-                email = await _authenticationService.ValidateTokenGuid(token);
+                if (Guid.TryParse(token, out Guid result))
+                {
+                    email = await _authenticationService.ValidateTokenGuid(token);
+                }
+                else
+                {
+                    return AuthenticateResult.NoResult();
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return AuthenticateResult.Fail("");
+                Logger.LogError(ex, ex.Message);
+                return AuthenticateResult.Fail(ex.Message);
             }
             if (string.IsNullOrEmpty(email))
             {
-                return AuthenticateResult.Fail("");
+                return AuthenticateResult.Fail("Email address not found.");
             }
             else
             {

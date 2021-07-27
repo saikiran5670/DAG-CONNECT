@@ -16,7 +16,7 @@
 
         public const string VALIDATION_STARTDATE_MSG = "Invalid start date.";
         public const string VALIDATION_ENDDATE_MSG = "Invalid end date.";
-        public const string VALIDATION_VINREQUIRED_MSG = "Invalid VIN details.";
+        public const string VALIDATION_VINREQUIRED_MSG = "Invalid or empty VIN details.";
         public const string VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
 
         #region Trip Details Report
@@ -33,7 +33,7 @@
         public const string GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG = "Invalid start date.";
         public const string GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG = "Invalid end date.";
         public const string GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG = "Invalid VIN details.";
-        public const string GET_DRIVER_TIME_VALIDATION_IDREQUIRED_MSG = "Invalid driver id/ids details.";
+        public const string GET_DRIVER_TIME_VALIDATION_DRIVERIDREQUIRED_MSG = "Invalid driver id/ids details.";
         public const string GET_DRIVER_TIME_VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
 
         public const string GET_DRIVER_TIME_SUCCESS_MSG = "Driver details fetched successfully for requested Filters";
@@ -56,6 +56,7 @@
         public const string GET_ECOSCORE_REPORT_FAILURE_MSG = "Eco-Score Report details fetched failed. With Error : {0}";
         public const string GET_ECOSCORE_REPORT_NOTFOUND_MSG = "No records found for Eco-Score reprot.";
         public const string GET_ECOSCORE_REPORT_VALIDATION_COMPAREDRIVER_MSG = "Please select minimum 2 or maximum 4 drivers for comparison.";
+        public const string GET_ECOSCORE_REPORT_TRENDLINE_SUCCESS_MSG = "Eco-Score Trendline Report details fetched successfully.";
         #endregion
 
         #region Fleet utilization Report
@@ -92,6 +93,15 @@
 
         #region Fuel Deviation Report Table Details
         public const string GET_FUEL_DEVIATION_SUCCESS_MSG = "Fuel Deviation fetched successfully for requested Filters";
+        public const string GET_FUEL_DEVIATION_FAIL_MSG = "Fuel Deviation fetched failed for requested Filters";
+        #endregion
+        #region Fuel Bechmark Report
+        public const string GET_FUEL_BENCHMARK_STARTDATE_MSG = "Invalid start date.";
+        public const string GET_FUEL_BENCHMARK_ENDDATE_MSG = "Invalid end date.";
+        public const string GET_FUEL_BENCHMARK_VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
+        public const string GET_FUEL_BENCHMARK_GROUPVEHICLEID_MSG = "Invalid Vechicle group Id.";
+        public const string GET_FUEL_BENCHMARK_SUCCESS_MSG = "Fuel Benchmark details fetched successfully";
+        public const string GET_FUEL_BENCHMARK_FAILURE_MSG = "No Result Found";
         #endregion
     }
 }

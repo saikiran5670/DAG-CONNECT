@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auditservice-grpc-deployment
+spec:
+  selector:
+    matchLabels:
+      run: auditservice-grpc
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: auditservice-grpc
+    spec:
+      containers:
+      - name: auditservice-grpc
+        image: dafdev017756.azurecr.io/auditservice-grpc
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: auditservice
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    run: auditservice-grpc

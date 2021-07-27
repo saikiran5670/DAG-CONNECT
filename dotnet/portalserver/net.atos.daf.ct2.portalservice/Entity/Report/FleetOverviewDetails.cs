@@ -44,5 +44,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public int LatestWarningGeolocationAddressId { get; set; }
         public string LatestWarningGeolocationAddress { get; set; }
         public List<LiveFleetPosition> LiveFleetPositions { get; set; }
+        public List<FleetOverviewAlert> FleetOverviewAlert { get; set; }
     }
 }

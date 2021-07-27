@@ -1,5 +1,14 @@
 <div class='bgtrans'>
-<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
+    style='padding:10px; color:#fff; background: #5dc24e;'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+    {{ profileCreatedMsg }}
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+    <mat-icon (click)='onClose()' style='cursor: pointer;'>{{ translationData.lblClose || 'Close' }}</mat-icon>
+    </div>
+</div>
+<div *ngIf='!titleVisible' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <span>{{ breadcumMsg }}</span>
     </div>
@@ -49,7 +58,7 @@
                         <input maxlength="50" placeholder="{{ translationData.lblTestProfileName || 'Test Profile Name' }}" matInput
                             formControlName="profileName">
                     </mat-form-field>
-                    <span  *ngIf="actionType == 'create'" style='color: #000; text-align: right; font-size: 13px;'>({{ '30 profile max' }})</span>
+                    <span  *ngIf="actionType == 'create'" style='color: #000; text-align: right; font-size: 13px;'>({{ translationData.lbl30ProfileMax || '30 profile max' }})</span>
                     <mat-error *ngIf="ecoScoreProfileForm.get('profileName').hasError('required')">
                         {{ translationData.lblPleasenterprofilename || 'Please Enter Profile Name'}}
                     </mat-error>
@@ -82,9 +91,9 @@
                     <span>{{ translationData.lblCreateBasedOnExistingProfile || 'Create based on existing profile' }}</span>
                 </mat-label>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="0px">
-                <mat-checkbox style='padding: 13px 10px 0px 0px;' (change)='onChangeOption($event)'></mat-checkbox>  
+                <mat-checkbox style='padding: 13px 10px 0px 0px;' [checked] = "isCreatedExistingProfile" (change)='onChangeOption($event)'></mat-checkbox>  
                 <mat-form-field [disabled]="!isCreatedExistingProfile" appearance="outline" class="full-width">
-                  <mat-select  [disabled]="!isCreatedExistingProfile" placeholder="{{ translationData.lblTestProfileSelection || 'Test Profile Selection' }}" (selectionChange)="profileSelectionDropDown($event.value)" >
+                  <mat-select  formControlName="createdExisting" [disabled]="!isCreatedExistingProfile" placeholder="{{ translationData.lblTestProfileSelection || 'Test Profile Selection' }}" (selectionChange)="profileSelectionDropDown($event.value)" >
                     <mat-option *ngFor="let options of profileList" [value]="options.profileId">
                       {{options.profileName}}
                     </mat-option>
@@ -100,9 +109,9 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
         <div  fxLayout="column" fxLayoutAlign="start"> 
-            <mat-checkbox *ngIf="actionType != 'manage'" [checked] = "isDAFStandard" (change)='onChange($event)'> DAF Standard </mat-checkbox>   
-            <span *ngIf="actionType == 'manage'">Last Update: {{ lastUpdated }}</span>
-            <span *ngIf="actionType == 'manage'">Updated By: {{ updatedBy }}</span>
+            <span *ngIf="actionType == 'manage'">{{ translationData.lblLastUpdate || 'Last Update'}}: {{ lastUpdated }}</span>
+            <span *ngIf="actionType == 'manage'">{{ translationData.lblUpdatedBy || 'Updated By'}}: {{ updatedBy }}</span>
+            <mat-checkbox *ngIf = "actionType == 'create' && userType == 'Admin#Global'" [checked] = "actionType == 'create' ? isDAFStandard : isSelected " (change)='onChange($event)'> {{ (translationData.lblDAFStandard || 'DAF Standard')}} </mat-checkbox>   
         </div>
         <div fxLayout="column" fxLayoutAlign="end">
             <div fxLayout="row" class='areaWidth'>
@@ -113,8 +122,6 @@
                 <button class='no-margin' [disabled]="!ecoScoreProfileForm.valid " mat-raised-button color="primary"
                     (click)='onCreate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
                     (translationData.lblSave || 'Save') }}</button>
-                <!-- <button class='no-margin' [disabled]="!ecoScoreProfileForm.valid " mat-raised-button color="primary" *ngIf="actionType == 'create'"
-                    (click)='onCreate()'>{{     (translationData.lblSave || 'Save') }}</button> -->
             </div>
         </div>
     </div>
@@ -126,6 +133,7 @@
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ kpiData.kpiName }}</span>
+                <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblEcoScoreInfoLable || 'The Eco-Score represents the Overall Performance of the driver. The Eco-Score is the rounded down average of the Anticipation and Braking Scores. The Fuel Consumption is not part of the Eco-Score calculation' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
             <app-breaking-score *ngIf = "isKPI" [actionType]='actionType' [selectedElementData]='kpiData' [kpiId] = 1 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
@@ -136,11 +144,12 @@
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Fuel Consumption</span>
+                <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblFuelScoreInfoLable || 'The Fuel Consumption is not part of the Eco-Score calculation' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ fuelConsumption.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='fuelConsumption' [kpiId] = 2 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-max-target-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='fuelConsumption' [kpiId] = 2 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsage.kpiName }}</span>
                 <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='cruiseControlUsage' [kpiId] = 3 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsage30_50.kpiName }}</span>
@@ -150,21 +159,21 @@
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsageGreaterThan75.kpiName }}</span>
                 <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='cruiseControlUsageGreaterThan75' [kpiId] = 6 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ PTOUsage.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='PTOUsage' [kpiId] = 7 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-max-target-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='PTOUsage' [kpiId] = 7 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ PTODuration.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='PTODuration' [kpiId] = 8 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-max-target-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='PTODuration' [kpiId] = 8 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ averageDrivingSpeed.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='averageDrivingSpeed' [kpiId] = 9 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-max-target-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='averageDrivingSpeed' [kpiId] = 9 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ averageSpeed.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='averageSpeed'  [kpiId] = 10 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-max-target-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='averageSpeed'  [kpiId] = 10 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ heavyThrottling.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='heavyThrottling' [kpiId] = 11 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-max-target-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='heavyThrottling' [kpiId] = 11 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ heavyThrottleDuration.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='heavyThrottleDuration' [kpiId] = 12 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-max-target-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='heavyThrottleDuration' [kpiId] = 12 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ idling.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='idling' [kpiId] = 13 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-max-target-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='idling' [kpiId] = 13 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ idleDuration.kpiName }}</span>
-                <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='idleDuration' [kpiId] = 14 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
+                <app-max-target-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='idleDuration' [kpiId] = 14 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
             </div>
     </mat-expansion-panel> 
 </div>
@@ -173,6 +182,7 @@
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Braking Score</span>
+                <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblBrakingScoreInfoLable || 'The Eco-Score is the rounded down average of the  Braking Scores' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
@@ -195,6 +205,7 @@
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ anticipationKpiData.kpiName }}</span>
+                <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblAnticipationScoreInfoLable || 'The Eco-Score is the rounded down average of the Anticipation score' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
         <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='anticipationKpiData' [kpiId] = 20 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
@@ -205,6 +216,7 @@
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Other Fuel Consumption Indicators</span>
+                <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblOtherFuelScoreInfoLable || 'The other  Fuel Consumption is not part of the Eco-Score calculation' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">

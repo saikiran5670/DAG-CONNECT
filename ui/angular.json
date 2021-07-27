@@ -27,12 +27,14 @@
               "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
               "./node_modules/bootstrap/dist/css/bootstrap.min.css",
               "./node_modules/angular-slickgrid/styles/sass/slickgrid-theme-salesforce.lite.scss",
+              "./node_modules/intl-tel-input/build/css/intlTelInput.css",
               "src/styles.less"
             ],
             "scripts": [
               "./node_modules/jspdf/dist/jspdf.es.min.js",
               "./node_modules/jspdf-autotable/dist/jspdf.plugin.autotable.min.js",
-              "./node_modules/jquery/dist/jquery.min.js"
+              "./node_modules/jquery/dist/jquery.min.js",
+              "./node_modules/apexcharts/dist/apexcharts.min.js"
             ]
           },
           "configurations": {
@@ -54,8 +56,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
+                  "maximumWarning": "12mb",
+                  "maximumError": "15mb"
                 },
                 {
                   "type": "anyComponentStyle",

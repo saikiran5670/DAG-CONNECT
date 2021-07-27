@@ -1,5 +1,8 @@
 package net.atos.daf.ct2.constant;
 
+import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
+
 public class DAFCT2Constant {
 
     public static final String JOB_EXEC_TIME = "jobExecTime";
@@ -56,7 +59,8 @@ public class DAFCT2Constant {
     public static final String POSTGRE_DATABASE_NAME = "postgre.database.name";
     public static final String POSTGRE_TABLE_WHITELIST = "postgre.table.name";
     public static final String POSTGRE_PLUGIN_NAME = "postgre.plugin.name";
-    
+    public static final String POSTGRE_CDC_FETCH_DATA_QUERY = "postgres.cdc.fetch.data.query";
+
     public static final String HBASE_CONTI_HISTORICAL_TABLE_NAME = "conti.historical.table.name";
     public static final String HBASE_CONTI_HISTORICAL_TABLE_CF = "conti.historical.table.colfm";
         
@@ -83,4 +87,14 @@ public class DAFCT2Constant {
 	//Vehicle Health
     public static final String CONNECTED_OTA_OFF="C";
     public static final String CONNECTED_OTA_ON="N";
+
+    //KAFKA CONFIG
+    public static final String AUTO_OFFSET_RESET_CONFIG = "auto.offset.reset";
+
+    public static final TypeInformation<?>[] VEHICLE_STATUS_SCHEMA_DEF = new TypeInformation<?>[] {
+            BasicTypeInfo.STRING_TYPE_INFO,
+            BasicTypeInfo.STRING_TYPE_INFO,
+            BasicTypeInfo.STRING_TYPE_INFO,
+            BasicTypeInfo.STRING_TYPE_INFO
+    };
 }

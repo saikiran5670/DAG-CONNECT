@@ -29,4 +29,14 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public string DriverId { get; set; }
     }
 
+    public class DriverTimeChartFilter
+    {
+        [Required]
+        public long StartDateTime { get; set; }
+        [Required]
+        public long EndDateTime { get; set; }
+        [Required]
+        public string DriverId { get; set; }
+    }
+
 }

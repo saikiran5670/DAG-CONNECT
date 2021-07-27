@@ -4,6 +4,7 @@ using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reports.repository;
 using System.Linq;
 using net.atos.daf.ct2.reports.entity.fleetFuel;
+using System;
 
 namespace net.atos.daf.ct2.reports
 {
@@ -67,9 +68,9 @@ namespace net.atos.daf.ct2.reports
         /// </summary>
         /// <param name="DriverActivityFilter">Filters for driver activity with VIN and Driver ID </param>
         /// <returns></returns>
-        public async Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter DriverActivityFilter)
+        public async Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter driverActivityFilter)
         {
-            List<DriversActivities> driverActivities = await _reportRepository.GetDriversActivity(DriverActivityFilter);
+            List<DriversActivities> driverActivities = await _reportRepository.GetDriversActivity(driverActivityFilter);
             List<DriversActivities> combineDriverActivities = new List<DriversActivities>();
             combineDriverActivities = driverActivities.GroupBy(activityGroup => activityGroup.DriverId)
                                                       .Select(activityItem => new DriversActivities
@@ -96,7 +97,7 @@ namespace net.atos.daf.ct2.reports
         /// </summary>
         /// <param name="DriverActivityFilter">Filters for driver activity with VIN and Driver ID </param>
         /// <returns></returns>
-        public async Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter DriverActivityFilter) => await _reportRepository.GetDriversActivity(DriverActivityFilter);
+        public async Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter driverActivityFilter) => await _reportRepository.GetDriversActivity(driverActivityFilter);
 
         public async Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin)
         {
@@ -106,6 +107,13 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetReportSearchParameterByVIN(reportID, startDateTime, endDateTime, vin);
         }
+
+        /// <summary>
+        /// Fetch Single driver activities data for Stack Bar chart
+        /// </summary>
+        /// <param name="DriverActivityChartFilter">Filters for driver activity with VIN and Driver ID </param>
+        /// <returns></returns>
+        public async Task<List<DriverActivityChart>> GetDriversActivityChartDetails(DriverActivityChartFilter driverActivityFilter) => await _reportRepository.GetDriversActivityChartDetails(driverActivityFilter);
         #endregion
 
         #region Eco Score Report
@@ -296,6 +304,64 @@ namespace net.atos.daf.ct2.reports
         }
         #endregion
 
+        #region Eco Score Report Single Driver
+        public async Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportSingleDriver(EcoScoreReportSingleDriverRequest request)
+        {
+            var lstSingleDriver = new List<EcoScoreReportSingleDriver>();
+
+            var objOverallDriver = await _reportRepository.GetEcoScoreReportOverallDriver(request);
+            if (objOverallDriver != null)
+                lstSingleDriver.AddRange(objOverallDriver);
+
+            var objOverallCompany = await _reportRepository.GetEcoScoreReportOverallCompany(request);
+            if (objOverallDriver != null)
+                lstSingleDriver.AddRange(objOverallCompany);
+
+            var lstVINDriver = await _reportRepository.GetEcoScoreReportVINDriver(request);
+            if (lstVINDriver.Count > 0)
+                lstSingleDriver.AddRange(lstVINDriver);
+
+            var lstVINCompany = await _reportRepository.GetEcoScoreReportVINCompany(request);
+            if (lstVINCompany.Count > 0)
+                lstSingleDriver.AddRange(lstVINCompany);
+
+            return lstSingleDriver;
+        }
+        public async Task<List<EcoScoreSingleDriverBarPieChart>> GetEcoScoreAverageGrossWeightChartData(EcoScoreReportSingleDriverRequest request)
+        {
+            return await _reportRepository.GetEcoScoreAverageGrossWeightChartData(request);
+        }
+        public async Task<List<EcoScoreSingleDriverBarPieChart>> GetEcoScoreAverageDrivingSpeedChartData(EcoScoreReportSingleDriverRequest request)
+        {
+            return await _reportRepository.GetEcoScoreAverageDrivingSpeedChartData(request);
+        }
+        public async Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportTrendlineData(EcoScoreReportSingleDriverRequest request)
+        {
+            var lstSingleDriver = new List<EcoScoreReportSingleDriver>();
+            try
+            {
+                var objOverallDriver = await _reportRepository.GetEcoScoreReportOverallDriverForTrendline(request);
+                if (objOverallDriver != null)
+                    lstSingleDriver.AddRange(objOverallDriver);
+                var objOverallCompany = await _reportRepository.GetEcoScoreReportOverallCompanyForTrendline(request);
+                if (objOverallCompany != null)
+                    lstSingleDriver.AddRange(objOverallCompany);
+                var lstVINDriver = await _reportRepository.GetEcoScoreReportVINDriverForTrendline(request);
+                if (lstVINDriver.Count > 0)
+                    lstSingleDriver.AddRange(lstVINDriver);
+                var lstVINCompany = await _reportRepository.GetEcoScoreReportVinCompanyForTrendline(request);
+                if (lstVINCompany != null)
+                    lstSingleDriver.AddRange(lstVINCompany);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return lstSingleDriver;
+        }
+        #endregion
+
         #endregion
 
         #region Fleet Utilizaiton Report
@@ -483,9 +549,139 @@ namespace net.atos.daf.ct2.reports
 
         #region Eco-Score Data service
 
-        public Task<bool> GetKPIInfo(EcoScoreDataServiceRequest request) => _reportRepository.GetKPIInfo(request);
+        public async Task<EcoScoreKPIInfoDataServiceResponse> GetKPIInfo(EcoScoreDataServiceRequest request)
+        {
+            dynamic kpiInfo = null;
+            switch (request.AggregationType)
+            {
+                case AggregateType.TRIP:
+                    kpiInfo = await _reportRepository.GetKPIInfoPerTrip(request);
+                    break;
+                case AggregateType.DAY:
+                case AggregateType.WEEK:
+                case AggregateType.MONTH:
+                    var aggregationCount = CalculateAggregationCount(request.AggregationType, request.StartTimestamp, request.EndTimestamp);
+                    kpiInfo = await _reportRepository.GetKPIInfo(request, aggregationCount);
+                    break;
+            }
 
-        public Task<bool> GetChartInfo(EcoScoreDataServiceRequest request) => _reportRepository.GetChartInfo(request);
+            var response = MapEcoScoreKPIInfoDataReponse(kpiInfo);
+            return response;
+        }
+
+        public async Task<EcoScoreChartInfoDataServiceResponse> GetChartInfo(EcoScoreDataServiceRequest request)
+        {
+            dynamic chartInfo = null;
+            switch (request.AggregationType)
+            {
+                case AggregateType.TRIP:
+                    chartInfo = await _reportRepository.GetChartInfoPerTrip(request);
+                    break;
+                case AggregateType.DAY:
+                case AggregateType.WEEK:
+                case AggregateType.MONTH:
+                    var aggregationCount = CalculateAggregationCount(request.AggregationType, request.StartTimestamp, request.EndTimestamp);
+                    chartInfo = await _reportRepository.GetChartInfo(request, aggregationCount);
+                    break;
+            }
+
+            var response = MapEcoScoreChartInfoDataReponse(chartInfo);
+            return response;
+        }
+
+        private EcoScoreKPIInfoDataServiceResponse MapEcoScoreKPIInfoDataReponse(dynamic records)
+        {
+            if (records is null)
+                return null;
+
+            var response = new EcoScoreKPIInfoDataServiceResponse { KPIInfo = new List<KPIInfo>() };
+
+            foreach (var kpiInfo in records)
+            {
+                if (kpiInfo.starttimestamp != null)
+                {
+                    var kpiInfoResponse = new KPIInfo();
+                    kpiInfoResponse.StartTimestamp = kpiInfo.starttimestamp;
+                    kpiInfoResponse.EndTimestamp = kpiInfo.endtimestamp;
+                    kpiInfoResponse.AnticipationScore = new KPI(kpiInfo.anticipationscore_total, kpiInfo.anticipationscore_count);
+                    kpiInfoResponse.BrakingScore = new KPI(kpiInfo.brakingscore_total, kpiInfo.brakingscore_count);
+                    kpiInfoResponse.FuelConsumption = new KPI(kpiInfo.fuelconsumption_total, kpiInfo.fuelconsumption_count);
+                    kpiInfoResponse.Ecoscore = new KPI(kpiInfo.ecoscore_total, kpiInfo.ecoscore_count);
+                    kpiInfoResponse.NumberOfTrips = kpiInfo.numberoftrips;
+                    kpiInfoResponse.NumberOfVehicles = kpiInfo.numberofvehicles;
+                    kpiInfoResponse.AverageGrossWeight = new KPI(kpiInfo.averagegrossweight_total, kpiInfo.averagegrossweight_count);
+                    kpiInfoResponse.Distance = new KPI(kpiInfo.distance_total, kpiInfo.distance_count);
+                    kpiInfoResponse.AverageDistancePerDay = new KPI(kpiInfo.averagedistanceperday_total, kpiInfo.averagedistanceperday_count);
+                    kpiInfoResponse.CruiseControlUsage = new KPI(kpiInfo.cruisecontrolusage_total, kpiInfo.cruisecontrolusage_count);
+                    kpiInfoResponse.CruiseControlUsage3050kmph = new KPI(kpiInfo.cruisecontrolusage30_total, kpiInfo.cruisecontrolusage30_count);
+                    kpiInfoResponse.CruiseControlUsage5075kmph = new KPI(kpiInfo.cruisecontrolusage50_total, kpiInfo.cruisecontrolusage50_count);
+                    kpiInfoResponse.CruiseControlUsage75kmph = new KPI(kpiInfo.cruisecontrolusage75_total, kpiInfo.cruisecontrolusage75_count);
+                    kpiInfoResponse.PTOPercentage = new KPI(kpiInfo.ptousage_total, kpiInfo.ptousage_count);
+                    kpiInfoResponse.PTODuration = new KPI(kpiInfo.ptoduration_total, kpiInfo.ptoduration_count);
+                    kpiInfoResponse.AverageDrivingSpeed = new KPI(kpiInfo.averagedrivingspeed_total, kpiInfo.averagedrivingspeed_count);
+                    kpiInfoResponse.AverageSpeed = new KPI(kpiInfo.averagespeed_total, kpiInfo.averagespeed_count);
+                    kpiInfoResponse.HeavyThrottlingPercentage = new KPI(kpiInfo.heavythrottling_total, kpiInfo.heavythrottling_count);
+                    kpiInfoResponse.HeavyThrottlingDuration = new KPI(kpiInfo.heavythrottleduration_total, kpiInfo.heavythrottleduration_count);
+                    kpiInfoResponse.IdlingPercentage = new KPI(kpiInfo.idling_total, kpiInfo.idling_count);
+                    kpiInfoResponse.IdleDuration = new KPI(kpiInfo.idleduration_total, kpiInfo.idleduration_count);
+                    kpiInfoResponse.HarshBrakePercentage = new KPI(kpiInfo.harshbraking_total, kpiInfo.harshbraking_count);
+                    kpiInfoResponse.HarshBrakeDuration = new KPI(kpiInfo.harshbrakeduration_total, kpiInfo.harshbrakeduration_count);
+                    kpiInfoResponse.BrakingDuration = new KPI(kpiInfo.brakeduration_total, kpiInfo.brakeduration_count);
+                    kpiInfoResponse.BrakingPercentage = new KPI(kpiInfo.braking_total, kpiInfo.braking_count);
+
+                    response.KPIInfo.Add(kpiInfoResponse);
+                }
+            }
+
+            return response;
+        }
+
+        private EcoScoreChartInfoDataServiceResponse MapEcoScoreChartInfoDataReponse(dynamic records)
+        {
+            if (records is null)
+                return null;
+
+            var response = new EcoScoreChartInfoDataServiceResponse { ChartInfo = new List<ChartInfo>() };
+
+            foreach (var chartInfo in records)
+            {
+                if (chartInfo.starttimestamp != null)
+                {
+                    var chartInfoResponse = new ChartInfo();
+                    chartInfoResponse.StartTimestamp = chartInfo.starttimestamp;
+                    chartInfoResponse.EndTimestamp = chartInfo.endtimestamp;
+                    chartInfoResponse.AnticipationScore = new KPI(chartInfo.anticipationscore_total, chartInfo.anticipationscore_count);
+                    chartInfoResponse.BrakingScore = new KPI(chartInfo.brakingscore_total, chartInfo.brakingscore_count);
+                    chartInfoResponse.FuelConsumption = new KPI(chartInfo.fuelconsumption_total, chartInfo.fuelconsumption_count);
+                    chartInfoResponse.Ecoscore = new KPI(chartInfo.ecoscore_total, chartInfo.ecoscore_count);
+
+                    response.ChartInfo.Add(chartInfoResponse);
+                }
+            }
+            return response;
+        }
+
+        private int CalculateAggregationCount(AggregateType aggregateType, long startTimestamp, long endTimestamp)
+        {
+            var startDate = new DateTime(1970, 1, 1).AddMilliseconds(startTimestamp);
+            var endDate = new DateTime(1970, 1, 1).AddMilliseconds(endTimestamp);
+            var noOfDays = Math.Ceiling((endDate - startDate).TotalDays);
+            int result;
+
+            switch (aggregateType)
+            {
+                case AggregateType.DAY:
+                    result = (int)noOfDays;
+                    return result > 365 ? 365 : result;
+                case AggregateType.WEEK:
+                    result = (int)noOfDays / 7;
+                    return result > 52 ? 52 : result;
+                case AggregateType.MONTH:
+                    result = (int)noOfDays / 30;
+                    return result > 12 ? 12 : result;
+            }
+            return 0;
+        }
 
         #endregion
 
@@ -504,13 +700,80 @@ namespace net.atos.daf.ct2.reports
             return _reportRepository.GetFilteredFuelDeviation(fuelDeviationFilters);
         }
 
+        public Task<IEnumerable<FuelDeviationCharts>> GetFuelDeviationCharts(FuelDeviationFilter fuelDeviationFilters)
+        {
+            return _reportRepository.GetFuelDeviationCharts(fuelDeviationFilters);
+        }
+
         #endregion
 
         #region LogBook
-        public async Task<LogbookSearchFilter> GetLogbookSearchParameter(List<string> vins)
+        public async Task<IEnumerable<LogbookTripAlertDetails>> GetLogbookSearchParameter(List<string> vins)
         {
             return await _reportRepository.GetLogbookSearchParameter(vins);
         }
+
+        public async Task<List<FilterProperty>> GetAlertLevelList(List<string> enums)
+        {
+            return await _reportRepository.GetAlertLevelList(enums);
+        }
+        public async Task<List<AlertCategory>> GetAlertCategoryList(List<string> enums)
+        {
+            return await _reportRepository.GetAlertCategoryList(enums);
+        }
+        public async Task<IEnumerable<EnumTranslation>> GetAlertCategory()
+        {
+            try
+            {
+                return await _reportRepository.GetAlertCategory();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<List<LogbookDetails>> GetLogbookDetails(LogbookDetailsFilter logbookFilter)
+        {
+            return await _reportRepository.GetLogbookDetails(logbookFilter);
+        }
+
+        public async Task<List<AlertThresholdDetails>> GetThresholdDetails(List<int> alertId, List<string> alertLevel)
+        {
+            return await _reportRepository.GetThresholdDetails(alertId, alertLevel);
+        }
         #endregion
+
+        #region Fuel Benchmark Report
+        //public Task<IEnumerable<FuelBenchmark>> GetFuelBenchmarks(FuelBenchmark fuelBenchmarkFilter)
+        //{
+        //    return _reportRepository.GetFuelBenchmarks(fuelBenchmarkFilter);
+        //}
+        public async Task<FuelBenchmarkDetails> GetFuelBenchmarkDetails(FuelBenchmarkFilter fuelBenchmarkFilter)
+        {
+            var fuelConsumptionCalculation = await _reportRepository.GetFuelBenchmarkDetail(fuelBenchmarkFilter);
+
+            FuelBenchmarkDetails fuelBenchmarkDetails = new FuelBenchmarkDetails();
+            if (fuelConsumptionCalculation != null)
+            {
+                var vehicleRanking = await _reportRepository.GetFuelBenchmarkRanking(fuelBenchmarkFilter);
+                fuelBenchmarkDetails.NumberOfActiveVehicles = fuelConsumptionCalculation.Numbersofactivevehicle;
+                fuelBenchmarkDetails.NumberOfTotalVehicles = fuelConsumptionCalculation.Totalnumberofvehicle;
+                fuelBenchmarkDetails.TotalMileage = fuelConsumptionCalculation.Totalmileage;
+                fuelBenchmarkDetails.TotalFuelConsumed = fuelConsumptionCalculation.Totalfuelconsumed;
+                fuelBenchmarkDetails.AverageFuelConsumption = fuelConsumptionCalculation.Averagefuelconsumption;
+                fuelBenchmarkDetails.Ranking = new List<Ranking>();
+                fuelBenchmarkDetails.Ranking = vehicleRanking;
+            }
+            return fuelBenchmarkDetails;
+        }
+        #endregion
+        public static DateTime GetStartOfDay(DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0, 0);
+        }
+        public static DateTime GetEndOfDay(DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 23, 59, 59, 999);
+        }
     }
 }

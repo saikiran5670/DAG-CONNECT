@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         Task<List<ViaAddressDetail>> GetCorridorViaStopById(int id);
         Task<CorridorEditViewResponse> GetCorridorListByOrgIdAndCorriId(CorridorRequest objCorridorRequest);
         Task<RouteCorridor> AddRouteCorridor(RouteCorridor routeCorridor);
-        List<ExistingTrip> GetExistingtripListByCorridorId(int corridoreid);
+        List<ExistingTrip> GetExistingtripListByCorridorId(int corridoreid, out string vin);
         List<Nodepoint> GetTripNodes(string tripid, int landmarkid);
         Task<List<CorridorResponse>> GetExistingTripCorridorListByOrganization(CorridorRequest objCorridorRequest);
         Task<ExistingTripCorridor> AddExistingTripCorridor(ExistingTripCorridor existingTripCorridor);
@@ -21,5 +21,6 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         Task<RouteCorridor> UpdateRouteCorridor(RouteCorridor routeCorridor);
         Task<bool> CheckCorridorexistByIdName(string corridorName, int? organizationId, int id, char type);
+        Task<NodeEndLatLongResponse> GetExistingTripCorridorListByLandMarkId(int landMarkId);
     }
 }

@@ -220,6 +220,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
             Vehicle veh = null;
             try
             {
+                receivedVehicle.Vid = tcuDataReceive.Correlations.VehicleId;
                 receivedVehicle.Tcu_Id = tcuDataReceive.DeviceIdentifier;
                 receivedVehicle.Tcu_Serial_Number = tcuDataReceive.DeviceSerialNumber;
                 receivedVehicle.Is_Tcu_Register = true;

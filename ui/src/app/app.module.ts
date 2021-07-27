@@ -40,6 +40,8 @@ import { ReportSchedulerService } from './services/report.scheduler.service';
 import { NotificationAdvancedFilterComponent } from './configuration/alerts/create-edit-view-alerts/create-notifications-alert/notification-advanced-filter/notification-advanced-filter.component';
 import {AutocompleteLibModule} from 'angular-ng-autocomplete';
 import { DownloadReportModule } from './download-report/download-report.module';
+import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
@@ -67,7 +69,9 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     }),
     PreferencesModule,
     AutocompleteLibModule,
-    DownloadReportModule
+    DownloadReportModule,
+    BsDropdownModule.forRoot(),
+    NgxIntlTelInputModule
     //RouterModule.forRoot(appRoute)
   ],
   providers: [

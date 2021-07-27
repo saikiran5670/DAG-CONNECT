@@ -106,10 +106,27 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 MinTripDistance = request.MinTripDistance,
                 MinDriverTotalDistance = request.MinDriverTotalDistance,
                 TargetProfileId = request.TargetProfileId,
-                ReportId = request.ReportId,
+                ReportId = request.ReportId
             };
             grpcRequest.VINs.AddRange(request.VINs);
             grpcRequest.DriverIds.AddRange(request.DriverIds);
+            return grpcRequest;
+        }
+
+        internal reportservice.GetEcoScoreReportSingleDriverRequest MapEcoScoreReportSingleDriver(EcoScoreReportSingleDriverRequest request)
+        {
+            var grpcRequest = new reportservice.GetEcoScoreReportSingleDriverRequest
+            {
+                StartDateTime = request.StartDateTime,
+                EndDateTime = request.EndDateTime,
+                DriverId = request.DriverId,
+                MinTripDistance = request.MinTripDistance,
+                MinDriverTotalDistance = request.MinDriverTotalDistance,
+                TargetProfileId = request.TargetProfileId,
+                ReportId = request.ReportId,
+                UoM = request.UoM
+            };
+            grpcRequest.VINs.AddRange(request.VINs);
             return grpcRequest;
         }
 
@@ -175,6 +192,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
             foreach (var item in fleetOverviewFilterResponse.FleetOverviewVGFilterResponse)
             {
                 VehicleGroup vehicleGroup = new VehicleGroup();
+                vehicleGroup.Vin = fleetOverviewFilterResponse.AssociatedVehicleRequest.Where(x => x.VehicleId == item.VehicleId).Select(x => x.Vin).FirstOrDefault();
                 vehicleGroup.VehicleGroupId = item.VehicleGroupId;
                 vehicleGroup.VehicleGroupName = fleetOverviewFilterResponse.AssociatedVehicleRequest.Where(x => x.VehicleGroupId == item.VehicleGroupId).Select(x => x.VehicleGroupName).FirstOrDefault();
                 vehicleGroup.VehicleId = item.VehicleId;
@@ -225,7 +243,26 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
                 driver.OrganizationId = item.OrganizationId;
                 reportFleetOverview.DriverList.Add(driver);
             }
+            reportFleetOverview.FleetOverviewAlerts = new List<FleetOverviewFilterAlert>();
+            foreach (var item in fleetOverviewFilterResponse.LogbookTripAlertDetailsRequest)
+            {
+                FleetOverviewFilterAlert fleetOverviewFilterAlert = new FleetOverviewFilterAlert()
+                {
+                    Id = item.Id,
+                    Vin = item.Vin,
+                    AlertLevel = item.AlertLevel,
+                    CategoryType = item.AlertCategoryType,
+                    AlertTime = item.AlertGeneratedTime
+
+
+                };
+                reportFleetOverview.FleetOverviewAlerts.Add(fleetOverviewFilterAlert);
+
+            }
+
             return reportFleetOverview;
+
+
         }
 
     }

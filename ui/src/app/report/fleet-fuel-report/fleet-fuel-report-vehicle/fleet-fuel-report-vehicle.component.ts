@@ -25,6 +25,7 @@ import { Router, NavigationExtras } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
+import {VehicletripComponent} from 'src/app/report/fleet-fuel-report/fleet-fuel-report-vehicle/vehicletrip/vehicletrip.component'
 
 
 
@@ -42,14 +43,20 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
   'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
   'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
+  detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
+  'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
+  'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
+  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
   rankingColumns = ['ranking','vehicleName','vin','vehicleRegistrationNo','fuelConsumption'];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   searchExpandPanel: boolean = true;
+  @ViewChild('fleetfuelvehicle') fleetfuelvehicle: VehicletripComponent;
   initData: any = [];
   FuelData: any;
+  graphData: any;
   selectedTrip = new SelectionModel(true, []);
   dataSource: any = new MatTableDataSource([]);
   dataSource2: any = new MatTableDataSource([]);
@@ -59,8 +66,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   rankingExpandPanel: boolean = false;
   rankingData :any;
   isSummaryOpen: boolean = false;
+  isRankingOpen: boolean =  false;
   summaryColumnData: any = [];
   isChartsOpen: boolean = false;
+  isDetailsOpen:boolean = false;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   startTimeDisplay: any = '00:00:00';
@@ -90,8 +99,9 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   ConsumptionChartType: any;
   DurationChartType: any;
   showLoadingIndicator: boolean = false;
+  chartExportFlag: boolean = false;
   tableInfoObj: any ;
-  detailSummaryObj: any;
+  summaryObj: any;
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
   bufferValue = 75;
@@ -150,7 +160,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'values()'    
+          labelString: 'No of Trips'    
         }
       }]
     }
@@ -333,6 +343,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   fromTripPageBack: boolean = false;
   displayData : any = [];
   showDetailedReport : boolean = false;
+  state :any;
   
   constructor(private _formBuilder: FormBuilder, 
               private translationService: TranslationService,
@@ -340,7 +351,12 @@ export class FleetFuelReportVehicleComponent implements OnInit {
               private reportService: ReportService,
               private router: Router,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
-              private reportMapService: ReportMapService) { }
+              private reportMapService: ReportMapService) {}
+               defaultTranslation(){
+                this.translationData = {
+                  lblSearchReportParameters: 'Search Report Parameters'
+                }
+               }
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
@@ -383,10 +399,18 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
 
   }
+
+  setGlobalSearchData(globalSearchFilterData:any) {
+    this.fleetFuelSearchData["modifiedFrom"] = "vehicletrip";
+    localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
+  }
+  
   loadfleetFuelDetails(_vinData: any){
+    let _startTime = Util.convertDateToUtc(this.startDateValue);
+    let _endTime = Util.convertDateToUtc(this.endDateValue);
     let getFleetFuelObj = {
-      "startDateTime": 1521843915459,
-      "endDateTime": 1721843915459,
+      "startDateTime": _startTime,
+      "endDateTime": _endTime,
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
     }
@@ -417,9 +441,22 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     
   }
 
+  checkForPreference(fieldKey) {
+    if (this.reportPrefData.length != 0) {
+      let filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_'+fieldKey));
+      if (filterData.length > 0) {
+        if (filterData[0].state == 'A') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
-      
+    this.reportService.getUserPreferenceReport(4, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
       // this.preparePrefData(this.reportPrefData);
@@ -457,12 +494,27 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
   onSearch(){
     this.isChartsOpen = true;
-    this.ConsumedChartType = 'Line';
-    this.TripsChartType= 'Bar';
-    this.Co2ChartType= 'Line';
-    this.DistanceChartType= 'Line';
-    this.ConsumptionChartType= 'Line';
-    this.DurationChartType= 'Line';
+    if (this.reportPrefData.length != 0) {
+      let filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumed'));
+      this.ConsumedChartType = filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_numberoftrips'));
+      this.TripsChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_co2emission'));
+      this.Co2ChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_distance'));
+      this.DistanceChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumption'));
+      this.ConsumptionChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_idledurationtotaltime'));
+      this.DurationChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+    } else {
+      this.ConsumedChartType = 'Line';
+      this.TripsChartType= 'Bar';
+      this.Co2ChartType= 'Line';
+      this.DistanceChartType= 'Line';
+      this.ConsumptionChartType= 'Line';
+      this.DurationChartType= 'Line';
+    }
     // this.resetChartData(); // reset chart data
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
@@ -487,8 +539,10 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       //this.setTableInfo();
       //  this.updateDataSource(this.FuelData);
       this.hideloader();
+      this.isRankingOpen = true;
       this.isChartsOpen = true;
       this.isSummaryOpen = true;
+      this.isDetailsOpen = true;
       this.tripData.forEach(element => {
 
       
@@ -509,14 +563,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     }
     this.reportService.getGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
+      this.graphData= graphData;
     });
-    if(_vinData.length === 1){
-      this.showDetailedReport = true;
-    }
-    else{
-      this.showDetailedReport = false;
-
-    }
   }
   
   updateDataSource(tableData: any) {
@@ -550,9 +598,12 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
 
  
+  detailSummaryObj: any;
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';
+    let driverName : any ='';
+    let driverID : any ='';
     let vin: any = '';
     let plateNo: any = '';
     // this.vehicleGroupListData.forEach(element => {
@@ -587,20 +638,24 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       fromDate: this.formStartDate(this.startDateValue),
       endDate: this.formStartDate(this.endDateValue),
       vehGroupName: vehGrpName,
-      vehicleName: vehName
-    }    
+      vehicleName: vehName,
+      vin : vin,
+      plateNo : plateNo,
+    }  
     this.detailSummaryObj={
       fromDate: this.formStartDate(this.startDateValue),
       endDate: this.formStartDate(this.endDateValue),
       vehGroupName: vehGrpName,
       vehicleName: vehName,
+     // driverName : this.displayData.driverName,
+     // driverID : this.displayData.driverID,
       noOfTrips: this.FuelData[0].numberOfTrips,
       distance:  this.FuelData[0].convertedDistance,
       fuelconsumed:  this.FuelData[0].convertedFuelConsumed100Km,
       idleDuration: this.FuelData[0].convertedIdleDuration,
       fuelConsumption: this.FuelData[0].fuelConsumption,
       co2emission: this.FuelData[0].cO2Emission,
-    }  
+      }   
   }
 
   formStartDate(date: any){
@@ -1065,7 +1120,7 @@ getLast3MonthDate(){
 
     let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
-    if(this.wholeTripData.vinTripList.length > 0){
+    if(this.wholeTripData && this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if(filterVIN.length > 0){
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
@@ -1451,7 +1506,15 @@ setVehicleGroupAndVehiclePreSelection() {
       prepare.push(tempObj);    
     });
     
-    
+    let displayHeader = document.getElementById("chartHeader");
+    if(this.isChartsOpen){
+    displayHeader.style.display ="block";
+    }
+    else{
+      displayHeader.style.display = "none";
+    }
+
+
     let DATA = document.getElementById('charts');
     html2canvas( DATA)
     .then(canvas => {  
@@ -1506,17 +1569,39 @@ doc.addPage();
 
     doc.save('fleetFuelByVehicle.pdf');
        
-    });     
+    }); 
+    displayHeader.style.display ="block";
   }
-  gotoTrip(vehData: any){
-    const navigationExtras: NavigationExtras = {
-      state: {
-        fromFleetUtilReport: true,
-        vehicleData: vehData
-      }
-    };
-    this.router.navigate(['report/tripreport'], navigationExtras);
+
+  backToMainPage(){
+
   }
+  vehicleSelected : boolean = false;
+  vehicleInfo : any ={};
+  dateInfo : any ={};
+  onVehicleSelected(vehData:any){
+    let s = this.vehicleGrpDD.filter(i=>i.vehicleGroupId==this.tripForm.controls.vehicleGroup.value)
+    let _s = this.vehicleDD.filter(i=>i.vin==vehData.vin)
+    this.tripForm.get('vehicle').setValue(_s.length>0 ?  _s[0].vehicleId : 0)
+    let currentStartTime = Util.convertDateToUtc(this.startDateValue);
+    let currentEndTime = Util.convertDateToUtc(this.endDateValue); 
+    this.dateInfo={
+      startTime: currentStartTime,
+      endTime : currentEndTime,
+      fromDate: this.formStartDate(this.startDateValue),
+      endDate: this.formStartDate(this.endDateValue),
+      vehGroupName : s.length>0 ?  s[0].vehicleGroupName : 'All' 
+    }
+    this.vehicleInfo = vehData;
+    this.vehicleSelected=true;
+    // if(this.fleetfuelvehicle){
+    //   this.fleetfuelvehicle.ngAfterViewInit();
+    // }
+  }
+
+
+
+  
 
   sumOfColumns(columnName : any){
     let sum: any = 0;

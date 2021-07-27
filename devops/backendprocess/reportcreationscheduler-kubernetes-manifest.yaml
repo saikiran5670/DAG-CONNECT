@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: reportcreationscheduler
     app.kubernetes.io/type: reportcreationscheduler
 spec:
-  schedule: "#{ReportCreationSchedulerCronJobFirstRunMin}# #{ReportCreationSchedulerCronJobFirstRun}# * * *"
+  schedule: "*/30 * * * *"
   jobTemplate:
     spec:
       template:

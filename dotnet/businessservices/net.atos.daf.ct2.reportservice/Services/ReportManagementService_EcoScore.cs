@@ -477,6 +477,102 @@ namespace net.atos.daf.ct2.reportservice.Services
 
         #endregion
 
+        #region Eco Score Report Single Driver
+
+        /// <summary>
+        /// Get Eco Score Report Single Driver
+        /// </summary>
+        /// <param name="request"> Search Parameter object</param>
+        /// <param name="context"> GRPC context</param>
+        /// <returns></returns>
+        public override async Task<GetEcoScoreReportSingleDriverResponse> GetEcoScoreReportSingleDriver(GetEcoScoreReportSingleDriverRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var resultDataMart = await _reportManager.GetEcoScoreReportSingleDriver(_mapper.MapEcoScoreReportSingleDriverRequest(request));
+                var reportAttributes = await _reportManager.GetEcoScoreCompareReportAttributes(request.ReportId, request.TargetProfileId);
+                var response = new GetEcoScoreReportSingleDriverResponse();
+                if (resultDataMart?.Count > 0)
+                {
+                    response.OverallPerformance = _mapper.MapEcoScoreReportSingleDriverOverallPerformance(resultDataMart, reportAttributes);
+                    response.SingleDriver.AddRange(_mapper.MapEcoScoreReportSingleDriverHeader(resultDataMart));
+                    try
+                    {
+                        response.SingleDriverKPIInfo = _mapper.MapEcoScoreReportSingleDriverResponse(resultDataMart, reportAttributes);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(null, ex);
+                        throw new Exception("Error occurred while parsing the EcoScore single driver.");
+                    }
+                    var averageGrossWeight = await _reportManager.GetEcoScoreAverageGrossWeightChartData(_mapper.MapEcoScoreReportSingleDriverRequest(request));
+                    if (averageGrossWeight?.Count > 0)
+                        response.AverageGrossWeightChart = _mapper.MapEcoScoreAverageGrossWeightChartResponse(averageGrossWeight);
+
+                    var averageDrivingSpeed = await _reportManager.GetEcoScoreAverageDrivingSpeedChartData(_mapper.MapEcoScoreReportSingleDriverRequest(request));
+                    if (averageDrivingSpeed?.Count > 0)
+                        response.AverageDrivingSpeedChart = _mapper.MapEcoScoreAverageDrivingSpeedChartResponse(averageDrivingSpeed, request.UoM);
+
+                    response.Code = Responsecode.Success;
+                    response.Message = ReportConstants.GET_REPORT_DETAILS_SUCCESS_MSG;
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_NOTFOUND_MSG;
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GetEcoScoreReportSingleDriverResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetEcoScoreReportSingleDriverResponse get failed due to - " + ex.Message
+                });
+            }
+        }
+
+        /// <summary>
+        /// Get Eco Score Report Single Driver - Trendlines
+        /// </summary>
+        /// <param name="request"> Search Parameter object</param>
+        /// <param name="context"> GRPC context</param>
+        /// <returns></returns>
+        public override async Task<GetEcoScoreReportTrendlinesResponse> GetEcoScoreReportTrendlines(GetEcoScoreReportSingleDriverRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var resultDataMart = await _reportManager.GetEcoScoreReportTrendlineData(_mapper.MapEcoScoreReportSingleDriverRequest(request));
+                var reportAttributes = await _reportManager.GetEcoScoreCompareReportAttributes(request.ReportId, request.TargetProfileId);
+                var response = new GetEcoScoreReportTrendlinesResponse();
+                if (resultDataMart?.Count > 0)
+                {
+                    response.Trendlines.AddRange(_mapper.MapEcoScoreReportTrendlines(resultDataMart, reportAttributes));
+                    response.Code = Responsecode.Success;
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_TRENDLINE_SUCCESS_MSG;
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_NOTFOUND_MSG;
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GetEcoScoreReportTrendlinesResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetEcoScoreReportTrendlinesResponse get failed due to - " + ex.Message
+                });
+            }
+        }
+
+        #endregion
+
         #region Eco Score Report - Create User Preference
 
         /// <summary>
