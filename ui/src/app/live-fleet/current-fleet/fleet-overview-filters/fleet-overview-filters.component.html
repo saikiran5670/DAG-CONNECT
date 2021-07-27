@@ -26,7 +26,7 @@
         <mat-form-field appearance="outline" class="full-width dropdown-filters">
             <mat-select placeholder="All" (selectionChange)="onChangeGroup($event.value)" formControlName="group">
                 <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
-                <mat-option *ngFor="let item of groupList" [value]="item.vehicleId">
+                <mat-option *ngFor="let item of groupList" [value]="item.vehicleGroupId">
                     {{item.vehicleGroupName}}
                 </mat-option>
             </mat-select>
@@ -93,7 +93,7 @@
       </mat-label>
       <mat-form-field appearance="outline" class="full-width">
           <mat-select (selectionChange)="onChangeDriver($event.value)" formControlName="driver" placeholder="{{ translationData.lblSelectDriver || 'Select Driver' }}" >
-              <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
+              <mat-option value='all'>{{ translationData.lblAll || 'All' }}</mat-option>
               <mat-option *ngFor="let item of driverList" [value]="item.driverId">
                   {{item.firstName + ' ' + item.lastName}}
               </mat-option>

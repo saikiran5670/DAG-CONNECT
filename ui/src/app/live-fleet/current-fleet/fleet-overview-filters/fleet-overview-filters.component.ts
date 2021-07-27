@@ -140,6 +140,7 @@ subscription: Subscription;
             driverData.forEach(item=>
               this.driverList.push(item));
             }
+            this.driverList = this.removeDuplicates(this.driverList, "driverId");
           })
           this.loadDriverData();
       }
@@ -157,7 +158,7 @@ subscription: Subscription;
         "alertCategory": ['all'],
         "healthStatus": ['all'],
         "otherFilter": ['all'],
-        "driverId": ['all'],
+        "driverId": [this.driverVehicleForm.controls.driver.value.toString()],
         "days": 90,
         "languagecode":"cs-CZ"
     }}
@@ -238,7 +239,7 @@ getFilterData(){
     if(!this.todayFlagClicked && this.selectedIndex == 0){
         this.filterData["vehicleGroups"].forEach(item=>{
         this.groupList.push(item) });
-        this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupName");
+        this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupId");
     
         this.filterData["alertCategory"].forEach(item=>{
         let catName =  this.translationAlertData[item.name];
@@ -287,6 +288,7 @@ getFilterData(){
           vehicleData.forEach(item=>
             this.groupList.push(item));
           }
+          this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupId");
 
     })
     let currentDate = new Date().getTime();
@@ -554,9 +556,9 @@ setIconsOnMap(element) {
   let _drivingStatus = false;
   let healthColor = '#606060';
   let _alertConfig = undefined;
-  if (element.vehicleDrivingStatusType === 'D') {
-    _drivingStatus = true
-  }
+  // if (element.vehicleDrivingStatusType === 'D') {
+  //   _drivingStatus = true
+  // }
   switch (element.vehicleHealthStatusType) {
     case 'T': // stop now;
       healthColor = '#D50017'; //red
