@@ -441,7 +441,7 @@ export class ReportService {
     };
     return this.httpClient
       .post<any[]>(
-        `${this.reportServiceUrl}/fueldeviation​/charts`, data, headers
+        `${this.reportServiceUrl}/fueldeviation/charts`, data, headers
       )
       .pipe(catchError(this.handleError));
   }

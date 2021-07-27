@@ -21,9 +21,9 @@ namespace net.atos.daf.ct2.confluentkafka
                     producer.Flush();
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(string.Format("Exception Occurred - {0}", e.Message));
+                throw ex;
             }
         }
         //private const string JSON_DATA = @"{'id':'0', 'tripid':'null', 'vin':'null', 'categoryType':'null', 'type':'null', 'name':'null', 'alertid':'0', 'thresholdValue':'0.0', 'thresholdValueUnitType':'null', 'valueAtAlertTime':'0.0', 'latitude':'0.0', 'longitude':'0.0', 'alertGeneratedTime':'0', 'messageTimestamp':'0', 'createdAt':'0', 'modifiedAt':'0'}";
