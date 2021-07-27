@@ -90,18 +90,20 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
-        public async Task<List<DriverFilter>> GetDriverList(List<string> vins)
+        public async Task<List<DriverFilter>> GetDriverList(List<string> vins, int organizationId)
         {
             var parameter = new DynamicParameters();
             parameter.Add("@VehicleIds", vins);
-            string queryDriverFilterPull = @"select dri.driver_id as DriverId
+            parameter.Add("@organization_id", organizationId);
+            string queryDriverFilterPull = @"select distinct dri.driver_id as DriverId
                                                 ,dri.first_name as FirstName
                                                 ,dri.last_name as LastName
                                                 ,dri.organization_id as OrganizationId
                                                 from livefleet.livefleet_current_trip_statistics cts
                                                 inner join master.driver dri
                                                 on cts.driver1_id=driver_id
-                                                where cts.vin= ANY(@VehicleIds)";
+                                                where cts.vin= ANY(@VehicleIds)
+                                                and dri.organization_id=@organization_id";
 
             List<DriverFilter> lstOtherFilter = (List<DriverFilter>)await _dataMartdataAccess.QueryAsync<DriverFilter>(queryDriverFilterPull, parameter);
             if (lstOtherFilter.Count > 0)
