@@ -3364,39 +3364,39 @@ namespace net.atos.daf.ct2.reports.repository
                     -- Fuel Consumption
                     FuelConsumption_Total, FuelConsumption_Count,
                     -- Cruise Control Usage
-                    CruiseControlUsage_Total, CruiseControlUsage_Count,
+                    CruiseControlUsage_Total * 100 as CruiseControlUsage_Total, CruiseControlUsage_Count,
                     -- Cruise Control Usage30-50
-                    CruiseControlUsage30_Total, CruiseControlUsage30_Count,
+                    CruiseControlUsage30_Total * 100 as CruiseControlUsage30_Total, CruiseControlUsage30_Count,
                     -- Cruise Control Usage50-75
-                    CruiseControlUsage50_Total, CruiseControlUsage50_Count,
+                    CruiseControlUsage50_Total * 100 as CruiseControlUsage50_Total, CruiseControlUsage50_Count,
                     -- Cruise Control Usage75+
-                    CruiseControlUsage75_Total, CruiseControlUsage75_Count,
+                    CruiseControlUsage75_Total * 100 as CruiseControlUsage75_Total, CruiseControlUsage75_Count,
                     -- PTO Usage
-                    PTOUsage_Total, PTOUsage_Count,
+                    PTOUsage_Total * 100 as PTOUsage_Total, PTOUsage_Count,
                     -- PTO Duration
-                    PTODuration_Total * 1000, PTODuration_Count,
+                    PTODuration_Total * 1000 as PTODuration_Total, PTODuration_Count,
                     -- Average Driving Speed
                     AverageDrivingSpeed_Total, AverageDrivingSpeed_Count,
                     -- Average Speed
                     AverageSpeed_Total, AverageSpeed_Count,
                     -- Heavy Throttling
-                    HeavyThrottling_Total, HeavyThrottling_Count,
+                    HeavyThrottling_Total * 100 as HeavyThrottling_Total, HeavyThrottling_Count,
                     -- Heavy Throttle Duration
-                    HeavyThrottleDuration_Total * 1000, HeavyThrottleDuration_Count,
+                    HeavyThrottleDuration_Total * 1000 as HeavyThrottleDuration_Total, HeavyThrottleDuration_Count,
                     -- Idling
-                    Idling_Total, Idling_Count,
+                    Idling_Total * 100 as Idling_Total, Idling_Count,
                     -- Idle Duration 
-                    IdleDuration_Total * 1000, IdleDuration_Count,
+                    IdleDuration_Total * 1000 as IdleDuration_Total, IdleDuration_Count,
                     -- Braking Score
                     BrakingScore_Total, BrakingScore_Count,
                     -- Harsh Braking
-                    HarshBraking_Total, HarshBraking_Count,
+                    HarshBraking_Total * 100 as HarshBraking_Total, HarshBraking_Count,
                     -- Harsh Braking Duration
-                    HarshBrakeDuration_Total * 1000, HarshBrakeDuration_Count,
+                    HarshBrakeDuration_Total * 1000 as HarshBrakeDuration_Total, HarshBrakeDuration_Count,
                     -- Brake Duration
-                    BrakeDuration_Total * 1000, BrakeDuration_Count,
+                    BrakeDuration_Total * 1000 as BrakeDuration_Total, BrakeDuration_Count,
                     -- Braking
-                    Braking_Total, Braking_Count,
+                    Braking_Total * 100 as Braking_Total, Braking_Count,
                     -- Anticipation Score
                     AnticipationScore_Total, AnticipationScore_Count
                     FROM GeneralQuery gq
