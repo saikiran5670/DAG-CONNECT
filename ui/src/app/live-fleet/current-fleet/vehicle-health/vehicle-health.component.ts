@@ -635,7 +635,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   }
 
   getHistoryData(tripId: any){
-    this.reportService.getvehiclehealthstatus(this.healthData.vin,'bg-BG',tripId).subscribe((res) => {
+    this.reportService.getvehiclehealthstatus(this.healthData.vin,this.localStLanguage.code,tripId).subscribe((res) => {
       this.historyHealthData = this.processDataForActivatedAndDeactivatedTime(res);
       if(this.isCurrent) {
         this.applyDatatoCardPaginator(this.historyHealthData);
