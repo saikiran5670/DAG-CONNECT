@@ -479,7 +479,7 @@ removeDuplicates(originalArray, prop) {
 
  checkCreationForVehicle(item: any){
   this.todayFlagClicked = item.todayFlagClicked;
-  // this.isVehicleDetails  = item.vehicleDetailsFlag;
+  this.isVehicleDetails  = item.vehicleDetailsFlag;
   // this.driverFlagClicked = true;
   this.getFilterData();
   // this.loadDriverData();
