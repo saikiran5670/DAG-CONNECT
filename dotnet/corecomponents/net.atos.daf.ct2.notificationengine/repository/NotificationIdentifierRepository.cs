@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.notificationengine.repository
                 tripAlert.VehicleId = vehicleId;
                 return tripAlert;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

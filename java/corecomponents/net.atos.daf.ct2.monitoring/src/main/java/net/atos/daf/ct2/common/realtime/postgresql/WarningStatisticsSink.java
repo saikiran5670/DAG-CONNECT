@@ -218,7 +218,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 				} else if (row.getVEvtID() == 45) {
 					warningDetail.setWarningType("D");
 				} else {
-					warningDetail.setWarningType("Q");
+					warningDetail.setWarningType("");
 				}
 			} else {
 				warningDetail.setWarningType("");
@@ -233,7 +233,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 				warningDetail.setLastestProcessedMessageTimeStamp(null);
 			}
 
-			warningDetail.setCreatedAt(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
+			warningDetail.setCreatedAt(TimeFormatter.getInstance().getCurrentUTCTime());
 			if (row.getMessageType() != null) {
 				warningDetail.setMessageType(row.getMessageType());
 			} else {
@@ -311,7 +311,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 				} else if (row.getVEvtID() == 45) {
 					warningDetail.setWarningType("D");
 				} else {
-					warningDetail.setWarningType("Q");
+					warningDetail.setWarningType("");
 				}
 			} else {
 				warningDetail.setWarningType("");
@@ -328,7 +328,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 			} else {
 				warningDetail.setOdometerVal(null);
 			}
-			warningDetail.setCreatedAt(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
+			warningDetail.setCreatedAt(TimeFormatter.getInstance().getCurrentUTCTime());
 
 			if (row.getMessageType() != null) {
 				warningDetail.setMessageType(row.getMessageType());

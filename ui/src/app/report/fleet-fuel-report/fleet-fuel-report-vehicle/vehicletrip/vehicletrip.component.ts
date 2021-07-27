@@ -936,7 +936,7 @@ createEndMarker(){
 
  
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+    this.reportService.getUserPreferenceReport(4, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
@@ -2272,6 +2272,20 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     }
     return sum; 
+  }
+
+  checkForPreference(fieldKey) {
+    if (this.reportPrefData.length != 0) {
+      let filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_'+fieldKey));
+      if (filterData.length > 0) {
+        if (filterData[0].state == 'A') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
 }

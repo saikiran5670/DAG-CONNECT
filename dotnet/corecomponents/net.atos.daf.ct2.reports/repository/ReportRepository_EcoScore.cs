@@ -258,7 +258,7 @@ namespace net.atos.daf.ct2.reports.repository
                     objProfile.Name = pro.profilename;
                     objProfile.Description = pro.profiledescription;
                     objProfile.ActionedBy = pro.actionedby;
-                    objProfile.LastUpdate = pro.lastupdate ?? default(DateTime);
+                    objProfile.LastUpdate = pro.lastupdate ?? UTCHandling.GetUTCFromDateTime(default(DateTime));
                 }
                 List<EcoScoreProfileKPI> lstProfileKPI = new List<EcoScoreProfileKPI>();
                 foreach (dynamic obj in profileKPI)
@@ -1419,6 +1419,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     select eco.organization_id, count(eco.driver1_id)  as drivercnt
                                     FROM ecoscorequery eco
+                                    Where eco.driver1_id =@DriverId
                                     GROUP BY eco.organization_id
                                 ) ,
 								 AverageGrossweight as 
@@ -2009,6 +2010,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     select eco.organization_id, eco.vin,  eco.registration_no,eco.name,  count(eco.driver1_id)  as drivercnt
                                     FROM ecoscorequery eco
+                                    Where eco.driver1_id =@DriverId
                                     GROUP BY eco.organization_id,eco.vin, eco.registration_no,eco.name
                                 ) ,
 								 AverageGrossweight as 
