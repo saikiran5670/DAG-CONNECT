@@ -106,6 +106,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   periodForm: any;
   alertFilterRefs: any = [];
   ui: any;
+  isNotificationFormValid: boolean= true;
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
 
@@ -1370,6 +1371,16 @@ PoiCheckboxClicked(event: any, row: any) {
 
   onClickAdvancedFilter(){
     this.openAdvancedFilter = !this.openAdvancedFilter;
+  }
+
+  onBackToPage(objData){
+    // this.createEditStatus = objData.actionFlag;
+    // this.viewStatus = objData.actionFlag;
+    // if(objData.successMsg && objData.successMsg != ''){
+    //   this.successMsgBlink(objData.successMsg);
+    // }
+    // this.loadScheduledReports();
+    this.isNotificationFormValid= objData.isValidInput;
   }
 
   onCreateUpdate(){
