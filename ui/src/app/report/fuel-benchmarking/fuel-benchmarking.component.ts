@@ -907,8 +907,13 @@ export class FuelBenchmarkingComponent implements OnInit {
   changeEndDateEvent(event: MatDatepickerInputEvent<any>) {
     this.internalSelection = true;
     this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
-    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
-    this.filterDateData(); // extra addded as per discuss with Atul
+
+    if(!this.makeDisableVehicleGroup)
+    {  
+      this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+      this.filterDateData(); // extra addded as per discuss with Atul
+    }
+
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
