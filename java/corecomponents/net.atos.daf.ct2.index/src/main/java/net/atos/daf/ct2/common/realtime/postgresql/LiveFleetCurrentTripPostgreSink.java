@@ -6,6 +6,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -164,8 +165,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 						currentTripPojo.setLast_received_position_longitude(indexValue.getGpsLongitude());
 						currentTripPojo.setLast_received_position_heading(indexValue.getGpsHeading());
 						currentTripPojo.setLast_geolocation_address_id(null);
-						currentTripPojo.setLast_processed_message_timestamp(indexValue.getReceivedTimestamp());
-						
+						currentTripPojo.setLast_processed_message_timestamp(TimeFormatter.getInstance().convertUTCToEpochMilli(LocalDateTime.now().toString(), DafConstants.DTM_TS_FORMAT));
 						currentTripPojo.setStart_geolocation_address_id(null);
 						
 						//warning and vehicle health status fields - to be populated from monitoring messages
@@ -178,7 +178,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 						currentTripPojo.setLatest_warning_position_longitude(null);
 						currentTripPojo.setLatest_warning_geolocation_address_id(null);
 						
-						currentTripPojo.setCreated_at(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
+						currentTripPojo.setCreated_at(TimeFormatter.getInstance().convertUTCToEpochMilli(LocalDateTime.now().toString(), DafConstants.DTM_TS_FORMAT));
 						currentTripPojo.setModified_at(null);
 						
 						} catch(Exception e) {
