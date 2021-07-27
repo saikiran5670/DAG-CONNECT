@@ -3255,55 +3255,55 @@ namespace net.atos.daf.ct2.reports.repository
                         CASE WHEN CAST(SUM(dpa_Braking_count) AS DOUBLE PRECISION)<> 0 and CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION) <> 0  
 	                            THEN (((CAST(SUM(dpa_Braking_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_Braking_count)AS DOUBLE PRECISION)) +
 		                            (CAST(SUM(dpa_anticipation_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION)))/2)/10 
-	                            ELSE NULL END as EcoScore_Total, SUM(eco.dpa_Braking_count) as EcoScore_Count,
+	                            ELSE 0 END as EcoScore_Total, SUM(eco.dpa_Braking_count) as EcoScore_Count,
                         -- Fuel Consumption
                         (CAST(SUM (eco.used_fuel)AS DOUBLE PRECISION )) as FuelConsumption_Total, 1 as FuelConsumption_Count,
                         -- Cruise Control Usage
-                        (CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION )) as CruiseControlUsage_Total, SUM(trip_distance) as CruiseControlUsage_Count,
+                        (CAST(SUM (eco.cruise_control_usage) * 100 AS DOUBLE PRECISION )) as CruiseControlUsage_Total, SUM(trip_distance) as CruiseControlUsage_Count,
                         -- Cruise Control Usage30-50
-                        (CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION )) as CruiseControlUsage30_Total, SUM(trip_distance) as CruiseControlUsage30_Count,
+                        (CAST(SUM (eco.cruise_control_usage_30_50) * 100 AS DOUBLE PRECISION )) as CruiseControlUsage30_Total, SUM(trip_distance) as CruiseControlUsage30_Count,
                         -- Cruise Control Usage50-75
-                        (CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION )) as CruiseControlUsage50_Total, SUM(trip_distance) as CruiseControlUsage50_Count,
+                        (CAST(SUM (eco.cruise_control_usage_50_75) * 100 AS DOUBLE PRECISION )) as CruiseControlUsage50_Total, SUM(trip_distance) as CruiseControlUsage50_Count,
                         -- Cruise Control Usage75+
-                        (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION )) as CruiseControlUsage75_Total, SUM(trip_distance) as CruiseControlUsage75_Count,
+                        (CAST(SUM (eco.cruise_control_usage_75) * 100 AS DOUBLE PRECISION )) as CruiseControlUsage75_Total, SUM(trip_distance) as CruiseControlUsage75_Count,
                         -- PTO Usage
                         CASE WHEN ( SUM (eco.end_time)- SUM (eco.start_time) ) <> 0 and (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) <>0 
-	                            THEN CAST(SUM(eco.pto_duration) AS DOUBLE PRECISION)
-	                            ELSE NULL END as PTOUsage_Total, CAST((SUM (eco.end_time)- SUM (eco.start_time) )/1000 as DOUBLE PRECISION) as PTOUsage_Count,
+	                            THEN CAST(SUM(eco.pto_duration) * 100 AS DOUBLE PRECISION)
+	                            ELSE 0 END as PTOUsage_Total, CAST((SUM (eco.end_time)- SUM (eco.start_time) )/1000 as DOUBLE PRECISION) as PTOUsage_Count,
                         -- PTO Duration
                         SUM(eco.pto_duration) * 1000 as PTODuration_Total, 1 as PTODuration_Count,
                         -- Average Driving Speed
                         CASE WHEN ((((SUM (eco.end_time)) - (SUM (eco.start_time)) )/1000)- (CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION))) <> 0 OR (( (SUM (eco.end_time)) - (SUM (eco.start_time))  ) <> 0 and (CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION)) <>0 ) 
 	                            THEN (CAST(SUM(eco.trip_distance)AS DOUBLE PRECISION))  
-                                ELSE NULL END as AverageDrivingSpeed_Total, ((((SUM (eco.end_time)) - (SUM (eco.start_time)))/1000) - (CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION))) as AverageDrivingSpeed_Count,
+                                ELSE 0 END as AverageDrivingSpeed_Total, ((((SUM (eco.end_time)) - (SUM (eco.start_time)))/1000) - (CAST(SUM(eco.idle_duration)AS DOUBLE PRECISION))) as AverageDrivingSpeed_Count,
                         -- Average Speed
                         CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <>0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000) <>0
 	                            THEN CAST(SUM(eco.trip_distance) AS DOUBLE PRECISION)
-                                ELSE NULL END as AverageSpeed_Total, CAST(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000 AS DOUBLE PRECISION) as AverageSpeed_Count,
+                                ELSE 0 END as AverageSpeed_Total, CAST(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000 AS DOUBLE PRECISION) as AverageSpeed_Count,
                         -- Heavy Throttling
                         CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 
-	                            THEN CAST(SUM(eco.heavy_throttle_pedal_duration) AS DOUBLE PRECISION)
-	                            ELSE NULL END as HeavyThrottling_Total, CAST(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000 AS DOUBLE PRECISION) as HeavyThrottling_Count,
+	                            THEN CAST(SUM(eco.heavy_throttle_pedal_duration) * 100 AS DOUBLE PRECISION)
+	                            ELSE 0 END as HeavyThrottling_Total, CAST(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000 AS DOUBLE PRECISION) as HeavyThrottling_Count,
                         -- Heavy Throttle Duration
                         (CAST(SUM(eco.heavy_throttle_pedal_duration) * 1000 AS DOUBLE PRECISION)) as HeavyThrottleDuration_Total, 1 as HeavyThrottleDuration_Count,
                         -- Idling
                         CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time)))<> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000) <> 0  
-	                            THEN (CAST(SUM(eco.idle_duration) AS DOUBLE PRECISION))
-	                            ELSE NULL END as Idling_Total, CAST(((SUM (eco.end_time))- SUM (eco.start_time))/1000 AS DOUBLE PRECISION) as Idling_Count,
+	                            THEN (CAST(SUM(eco.idle_duration) * 100 AS DOUBLE PRECISION))
+	                            ELSE 0 END as Idling_Total, CAST(((SUM (eco.end_time))- SUM (eco.start_time))/1000 AS DOUBLE PRECISION) as Idling_Count,
                         -- Idle Duration 
                         CAST(SUM(eco.idle_duration) * 1000 AS DOUBLE PRECISION) as IdleDuration_Total, 1 as IdleDuration_Count,
                         -- Braking Score
                         (CAST(SUM(eco.dpa_Braking_score) AS DOUBLE PRECISION)/10)  as BrakingScore_Total, NULLIF((CAST(SUM (eco.dpa_Braking_count)AS DOUBLE PRECISION)),0) as BrakingScore_Count,
                         -- Harsh Braking
-                        CAST(SUM(eco.harsh_brake_duration) AS DOUBLE PRECISION) as HarshBraking_Total, NULLIF((CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0) as HarshBraking_Count,
+                        CAST(SUM(eco.harsh_brake_duration) * 100 AS DOUBLE PRECISION) as HarshBraking_Total, NULLIF((CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0) as HarshBraking_Count,
                         -- Harsh Braking Duration
                         CAST(SUM(eco.harsh_brake_duration) * 1000 AS DOUBLE PRECISION) as HarshBrakeDuration_Total, 1 as HarshBrakeDuration_Count,
                         -- Brake Duration
                         CAST(SUM(eco.brake_duration) * 1000 AS DOUBLE PRECISION) as BrakeDuration_Total, 1 as BrakeDuration_Count,
                         -- Braking
                         CASE WHEN ((SUM (eco.end_time))-(SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))-(SUM (eco.start_time)))/1000) <> 0 
-	                        THEN (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION))
-	                        ELSE NULL END as Braking_Total, CAST(((SUM(eco.end_time))-(SUM (eco.start_time)))/1000 AS DOUBLE PRECISION) as Braking_Count,
+	                        THEN (CAST(SUM(eco.brake_duration) * 100 AS DOUBLE PRECISION))
+	                        ELSE 0 END as Braking_Total, CAST(((SUM(eco.end_time))-(SUM (eco.start_time)))/1000 AS DOUBLE PRECISION) as Braking_Count,
                         -- Anticipation Score
                         ((CAST(SUM(eco.dpa_anticipation_score)AS DOUBLE PRECISION))/10) as AnticipationScore_Total, NULLIF((CAST(SUM(eco.dpa_anticipation_count) AS DOUBLE PRECISION)) ,0) as AnticipationScore_Count
                     FROM ecoscorequery eco";
@@ -3365,55 +3365,55 @@ namespace net.atos.daf.ct2.reports.repository
                         CASE WHEN CAST(dpa_Braking_count AS DOUBLE PRECISION)<> 0 and CAST(dpa_anticipation_count AS DOUBLE PRECISION) <> 0  
 		                        THEN (((CAST(dpa_Braking_score AS DOUBLE PRECISION) / CAST(dpa_Braking_count AS DOUBLE PRECISION)) +
 			                        (CAST(dpa_anticipation_score AS DOUBLE PRECISION) / CAST(dpa_anticipation_count AS DOUBLE PRECISION)))/2)/10 
-		                        ELSE NULL END as EcoScore_Total, eco.dpa_Braking_count as EcoScore_Count,
+		                        ELSE 0 END as EcoScore_Total, eco.dpa_Braking_count as EcoScore_Count,
                         -- Fuel Consumption
                         CAST(eco.used_fuel AS DOUBLE PRECISION) as FuelConsumption_Total, 1 as FuelConsumption_Count,
                         -- Cruise Control Usage
-                        CAST(eco.cruise_control_usage AS DOUBLE PRECISION) as CruiseControlUsage_Total, trip_distance as CruiseControlUsage_Count,
+                        CAST(eco.cruise_control_usage * 100 AS DOUBLE PRECISION) as CruiseControlUsage_Total, trip_distance as CruiseControlUsage_Count,
                         -- Cruise Control Usage30-50
-                        CAST(eco.cruise_control_usage_30_50 AS DOUBLE PRECISION) as CruiseControlUsage30_Total, trip_distance as CruiseControlUsage30_Count,
+                        CAST(eco.cruise_control_usage_30_50 * 100 AS DOUBLE PRECISION) as CruiseControlUsage30_Total, trip_distance as CruiseControlUsage30_Count,
                         -- Cruise Control Usage50-75
-                        CAST(eco.cruise_control_usage_50_75 AS DOUBLE PRECISION) as CruiseControlUsage50_Total, trip_distance as CruiseControlUsage50_Count,
+                        CAST(eco.cruise_control_usage_50_75 * 100 AS DOUBLE PRECISION) as CruiseControlUsage50_Total, trip_distance as CruiseControlUsage50_Count,
                         -- Cruise Control Usage75+
-                        CAST(eco.cruise_control_usage_75 AS DOUBLE PRECISION) as CruiseControlUsage75_Total, trip_distance as CruiseControlUsage75_Count,
+                        CAST(eco.cruise_control_usage_75 * 100 AS DOUBLE PRECISION) as CruiseControlUsage75_Total, trip_distance as CruiseControlUsage75_Count,
                         -- PTO Usage
                         CASE WHEN (eco.end_time - eco.start_time) <> 0 and ((eco.end_time - eco.start_time)/1000) <> 0 
-		                        THEN CAST(eco.pto_duration AS DOUBLE PRECISION)
-		                        ELSE NULL END as PTOUsage_Total, ((eco.end_time - eco.start_time)/1000) as PTOUsage_Count,
+		                        THEN CAST(eco.pto_duration * 100 AS DOUBLE PRECISION)
+		                        ELSE 0 END as PTOUsage_Total, ((eco.end_time - eco.start_time)/1000) as PTOUsage_Count,
                         -- PTO Duration
                         eco.pto_duration * 1000 as PTODuration_Total, 1 as PTODuration_Count,
                         -- Average Driving Speed
                         CASE WHEN (((eco.end_time - eco.start_time)/1000)- (CAST(eco.idle_duration AS DOUBLE PRECISION))) <> 0 OR (((eco.end_time) - (eco.start_time)) <> 0 and (CAST(eco.idle_duration AS DOUBLE PRECISION)) <> 0 ) 
 		                        THEN (CAST(eco.trip_distance AS DOUBLE PRECISION))  
-		                        ELSE NULL END as AverageDrivingSpeed_Total, ((( (eco.end_time) - (eco.start_time))/1000)- (CAST(eco.idle_duration AS DOUBLE PRECISION))) as AverageDrivingSpeed_Count,
+		                        ELSE 0 END as AverageDrivingSpeed_Total, ((( (eco.end_time) - (eco.start_time))/1000)- (CAST(eco.idle_duration AS DOUBLE PRECISION))) as AverageDrivingSpeed_Count,
                         -- Average Speed
                         CASE WHEN ((eco.end_time)- (eco.start_time)) <>0 and (((eco.end_time)- (eco.start_time))/1000) <>0
 		                        THEN CAST(eco.trip_distance AS DOUBLE PRECISION) 
-		                        ELSE NULL END as AverageSpeed_Total, (((eco.end_time)- (eco.start_time))/1000) as AverageSpeed_Count,
+		                        ELSE 0 END as AverageSpeed_Total, (((eco.end_time)- (eco.start_time))/1000) as AverageSpeed_Count,
                         -- Heavy Throttling
                         CASE WHEN ((eco.end_time)- (eco.start_time)) <> 0 and (((eco.end_time)- (eco.start_time))/1000)<>0 
-		                        THEN CAST(eco.heavy_throttle_pedal_duration AS DOUBLE PRECISION)
-		                        ELSE NULL END as HeavyThrottling_Total, (((eco.end_time)- (eco.start_time))/1000) as HeavyThrottling_Count,
+		                        THEN CAST(eco.heavy_throttle_pedal_duration * 100 AS DOUBLE PRECISION)
+		                        ELSE 0 END as HeavyThrottling_Total, (((eco.end_time)- (eco.start_time))/1000) as HeavyThrottling_Count,
                         -- Heavy Throttle Duration
                         (CAST(eco.heavy_throttle_pedal_duration * 1000 AS DOUBLE PRECISION)) as HeavyThrottleDuration_Total, 1 as HeavyThrottleDuration_Count,
                         -- Idling
                         CASE WHEN ((eco.end_time)- (eco.start_time)) <> 0 and (((eco.end_time )- (eco.start_time))/1000) <> 0  
-		                        THEN (CAST(eco.idle_duration AS DOUBLE PRECISION))
-		                        ELSE NULL END as Idling_Total, (((eco.end_time) - (eco.start_time))/1000) as Idling_Count,
+		                        THEN (CAST(eco.idle_duration * 100 AS DOUBLE PRECISION))
+		                        ELSE 0 END as Idling_Total, (((eco.end_time) - (eco.start_time))/1000) as Idling_Count,
                         -- Idle Duration 
                         CAST(eco.idle_duration * 1000 AS DOUBLE PRECISION) as IdleDuration_Total, 1 as IdleDuration_Count,
                         -- Braking Score
                         (CAST(eco.dpa_Braking_score AS DOUBLE PRECISION)/10) as BrakingScore_Total, NULLIF((CAST(eco.dpa_Braking_count AS DOUBLE PRECISION)),0) as BrakingScore_Count,
                         -- Harsh Braking
-                        CAST(eco.harsh_brake_duration AS DOUBLE PRECISION) as HarshBraking_Total, NULLIF((CAST(eco.brake_duration AS DOUBLE PRECISION)),0) as HarshBraking_Count,
+                        CAST(eco.harsh_brake_duration * 100 AS DOUBLE PRECISION) as HarshBraking_Total, NULLIF((CAST(eco.brake_duration AS DOUBLE PRECISION)),0) as HarshBraking_Count,
                         -- Harsh Braking Duration
                         CAST(eco.harsh_brake_duration * 1000 AS DOUBLE PRECISION) as HarshBrakeDuration_Total, 1 as HarshBrakeDuration_Count,
                         -- Brake Duration
                         CAST(eco.brake_duration * 1000 AS DOUBLE PRECISION) as BrakeDuration_Total, 1 as BrakeDuration_Count,
                         -- Braking
                         CASE WHEN (eco.end_time-eco.start_time) <> 0 and ((eco.end_time-eco.start_time)/1000) <> 0 
-		                        THEN (CAST(eco.brake_duration AS DOUBLE PRECISION))
-		                        ELSE NULL END as Braking_Total, ((eco.end_time-eco.start_time)/1000) as Braking_Count,
+		                        THEN (CAST(eco.brake_duration * 100 AS DOUBLE PRECISION))
+		                        ELSE 0 END as Braking_Total, ((eco.end_time-eco.start_time)/1000) as Braking_Count,
                         -- Anticipation Score
                         ((CAST(eco.dpa_anticipation_score AS DOUBLE PRECISION))/10) as AnticipationScore_Total, NULLIF((CAST(eco.dpa_anticipation_count AS DOUBLE PRECISION)) ,0) as AnticipationScore_Count
                         FROM ecoscorequery eco";
@@ -3469,7 +3469,7 @@ namespace net.atos.daf.ct2.reports.repository
                             CASE WHEN CAST(SUM(dpa_Braking_count) AS DOUBLE PRECISION)<> 0 and CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION) <> 0  
 	                                THEN (((CAST(SUM(dpa_Braking_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_Braking_count)AS DOUBLE PRECISION)) +
 		                                (CAST(SUM(dpa_anticipation_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION)))/2)/10 
-	                                ELSE NULL END as EcoScore_Total, SUM(eco.dpa_Braking_count) as EcoScore_Count,
+	                                ELSE 0 END as EcoScore_Total, SUM(eco.dpa_Braking_count) as EcoScore_Count,
                             -- Fuel Consumption
                             (CAST(SUM (eco.used_fuel)AS DOUBLE PRECISION )) as FuelConsumption_Total, 1 as FuelConsumption_Count,
                             -- Braking Score
@@ -3522,7 +3522,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                    CASE WHEN CAST(dpa_Braking_count AS DOUBLE PRECISION) <> 0 and CAST(dpa_anticipation_count AS DOUBLE PRECISION) <> 0  
 			                    THEN ((CAST(dpa_Braking_score AS DOUBLE PRECISION) / CAST(dpa_Braking_count AS DOUBLE PRECISION) +
 				                    (CAST(dpa_anticipation_score AS DOUBLE PRECISION) / CAST(dpa_anticipation_count AS DOUBLE PRECISION)))/2)/10 
-			                    ELSE NULL END as EcoScore_Total, eco.dpa_Braking_count as EcoScore_Count,
+			                    ELSE 0 END as EcoScore_Total, eco.dpa_Braking_count as EcoScore_Count,
 	                    -- Fuel Consumption
 	                    (CAST(eco.used_fuel AS DOUBLE PRECISION)) as FuelConsumption_Total, 1 as FuelConsumption_Count,
 	                    -- Braking Score
