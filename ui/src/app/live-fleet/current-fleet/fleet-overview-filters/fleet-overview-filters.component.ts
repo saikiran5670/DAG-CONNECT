@@ -125,7 +125,7 @@ subscription: Subscription;
       if(!this.driverFlagClicked  && this.selectedIndex == 1){
         this.filterData["driverList"].forEach(item=>{
           this.driverList.push(item) });
-          this.driverList = this.removeDuplicates(this.driverList, "driverId");
+          // this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupName");
           this.loadDriverData();
       }   
       else{
@@ -140,7 +140,6 @@ subscription: Subscription;
             driverData.forEach(item=>
               this.driverList.push(item));
             }
-            this.driverList = this.removeDuplicates(this.driverList, "driverId");
           })
           this.loadDriverData();
       }
@@ -150,7 +149,7 @@ subscription: Subscription;
 
   loadDriverData(){  
     let newAlertCat=[];
-    if(!this.todayFlagClicked && this.selectedIndex == 1)
+    if(!this.driverFlagClicked && this.selectedIndex == 1)
     {
       this.objData = {
         "groupId": ['all'],
@@ -158,11 +157,11 @@ subscription: Subscription;
         "alertCategory": ['all'],
         "healthStatus": ['all'],
         "otherFilter": ['all'],
-        "driverId": [this.driverVehicleForm.controls.driver.value.toString()],
+        "driverId": ['all'],
         "days": 90,
         "languagecode":"cs-CZ"
     }}
-    if(this.todayFlagClicked && this.selectedIndex == 1)
+    if(this.driverFlagClicked && this.selectedIndex == 1)
     {
       this.objData = {
         "groupId": ['all'],
@@ -205,7 +204,7 @@ subscription: Subscription;
       });    
     //  this.categoryList = this.removeDuplicates(newAlertCat, "value");
     //  console.log(newAlertCat);    
-      this.vehicleListData = data;     
+      this.driverListData = data;     
       let _dataObj ={
         vehicleDetailsFlag : this.isVehicleDetails,
         data:data
@@ -218,7 +217,6 @@ subscription: Subscription;
       this.messageService.sendMessage("refreshTimer");
       if (error.status == 404) {
         this.noRecordFlag = true;
-        this.vehicleListData = [];
         let _dataObj ={
           vehicleDetailsFlag : this.isVehicleDetails,
           data:null
@@ -240,7 +238,7 @@ getFilterData(){
     if(!this.todayFlagClicked && this.selectedIndex == 0){
         this.filterData["vehicleGroups"].forEach(item=>{
         this.groupList.push(item) });
-        this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupId");
+        this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupName");
     
         this.filterData["alertCategory"].forEach(item=>{
         let catName =  this.translationAlertData[item.name];
@@ -289,7 +287,6 @@ getFilterData(){
           vehicleData.forEach(item=>
             this.groupList.push(item));
           }
-          this.groupList = this.removeDuplicates(this.groupList, "vehicleGroupId");
 
     })
     let currentDate = new Date().getTime();
@@ -349,7 +346,7 @@ removeDuplicates(originalArray, prop) {
   }
 
   applyFilterDriver(filterValue: string) {
-    this.vehicleListData = this.detailsData;
+    this.driverListData = this.detailsData;
     filterValue = filterValue.trim();
     filterValue = filterValue.toLowerCase();
 
@@ -362,7 +359,7 @@ removeDuplicates(originalArray, prop) {
       return vin || driver || drivingStatus ||healthStatus;
     }​​​​​​​​);
 
-    this.vehicleListData = filteredData;
+    this.driverListData = filteredData;
   }
 
   onChangeGroup(id: any){
@@ -466,7 +463,6 @@ removeDuplicates(originalArray, prop) {
       this.messageService.sendMessage("refreshTimer");
       if (error.status == 404) {
         this.noRecordFlag = true;
-        this.vehicleListData = [];
         let _dataObj ={
           vehicleDetailsFlag : this.isVehicleDetails,
           data:null
@@ -483,15 +479,11 @@ removeDuplicates(originalArray, prop) {
 
  checkCreationForVehicle(item: any){
   this.todayFlagClicked = item.todayFlagClicked;
-  this.isVehicleDetails  = item.vehicleDetailsFlag;
+  // this.isVehicleDetails  = item.vehicleDetailsFlag;
   // this.driverFlagClicked = true;
-  if(this.selectedIndex == 1)
-  this.loadDriverData();
-  else{
-    this.getFilterData();
-    this.loadVehicleData();
-  }
- 
+  this.getFilterData();
+  // this.loadDriverData();
+  this.loadVehicleData();
 }
 
 checkCreationForDriver(item:any){
@@ -562,9 +554,9 @@ setIconsOnMap(element) {
   let _drivingStatus = false;
   let healthColor = '#606060';
   let _alertConfig = undefined;
-  // if (element.vehicleDrivingStatusType === 'D') {
-  //   _drivingStatus = true
-  // }
+  if (element.vehicleDrivingStatusType === 'D') {
+    _drivingStatus = true
+  }
   switch (element.vehicleHealthStatusType) {
     case 'T': // stop now;
       healthColor = '#D50017'; //red
