@@ -52,8 +52,25 @@ namespace net.atos.daf.ct2.kafkacdc.test
                 EH_FQDN = "daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net:9093",//BrokerList
                 EH_NAME = "ingress.atos.vehicle.cdc.json" //topic name
             };
-            var vCdcList = new List<VehicleCdc>() { new VehicleCdc() { FuelType = "B", Status = "C", Vid = "M4A1113", FuelTypeCoefficient = 0, Vin = "XLRAE75PC0E348696" } };
+            var vCdcList = new List<VehicleCdc>() { new VehicleCdc() { FuelType = "B", Status = "C", Vid = "M4A1113", FuelTypeCoefficient = 0, Vin = "XLRAE75PC0E345556" } };
             var result = _vehicleCdcManager.VehicleCdcProducer(vCdcList, _kafkaConfig1);
+            Assert.IsTrue(result != null);
+
+
+        }
+        [TestMethod]
+        public void VehicleCdcConsumer()
+        {
+            var _kafkaConfig1 = new KafkaConfiguration()
+            {
+                CA_CERT_LOCATION = "./cacert.pem",
+                CONSUMER_GROUP = "cdcvehicleconsumer",
+                EH_CONNECTION_STRING = "Endpoint=sb://daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gicUoPvdd/u2bKPFXIhaDbBVgvBDsXrz9kcSWJm8gpw=",
+                EH_FQDN = "daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net:9093",//BrokerList
+                EH_NAME = "ingress.atos.vehicle.cdc.json" //topic name
+            };
+            var result = _vehicleCdcManager.VehicleCdcConsumer(_kafkaConfig1);
+
 
             Assert.IsTrue(result != null);
 
