@@ -139,11 +139,12 @@ public class TripStreamingJob {
 								kafkaRec.setKey(entry.getValue().getTripId());
 								//kafkaRec.setValue(entry.getValue().toString());
 								try {
-									logger.info("Json trip structure :: "+mapper.writeValueAsString(entry.getValue()));
 									kafkaRec.setValue(mapper.writeValueAsString(entry.getValue()));
 								} catch (JsonProcessingException e) {
 									logger.error("Issue while parsing Trip into JSON: " + e.getMessage());
 								}
+								logger.info("Aggregated Json trip structure :: "+kafkaRec);
+
 								out.collect(kafkaRec);
 							}
 						}
