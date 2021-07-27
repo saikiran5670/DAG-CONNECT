@@ -176,7 +176,7 @@ namespace net.atos.daf.ct2.reports.entity
         public double BrakeDuration { get; set; }
         public double Braking { get; set; }
         public double AnticipationScore { get; set; }
-        public string Day { get; set; }
+        public DateTime Day { get; set; }
     }
 
     public class EcoScoreSingleDriverBarPieChart
