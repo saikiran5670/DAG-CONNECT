@@ -155,7 +155,7 @@ namespace net.atos.daf.ct2.rfmsdataservice.Common
         private RateLimitData Map(int maxRate, int period, string authorizedFeature)
         {
             //Calculate the reet time for the request in UTC
-            long resetTime = utilities.UTCHandling.GetUTCFromDateTime(DateTime.Now.AddSeconds(period))/ 1000;
+            long resetTime = utilities.UTCHandling.GetUTCFromDateTime(DateTime.Now.AddSeconds(period)) / 1000;
 
             return new RateLimitData
             {

@@ -9,6 +9,7 @@ using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.group;
+using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.vehicle;
@@ -60,6 +61,8 @@ namespace net.atos.daf.ct2.vehicleservice
             services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ITranslationManager, TranslationManager>();
+            services.AddTransient<IVehicleCdcManager, VehicleCdcManager>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
