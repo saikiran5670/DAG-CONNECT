@@ -274,7 +274,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                     parameter.Add("@state", "I");
                     parameter.Add("@createdat", System.DateTime.UtcNow.Millisecond);
                     string query = @"INSERT INTO tripdetail.vehiclealertref(vin, alert_id, state, created_at)
-                                                    VALUES (@vin, @alertid, @state, @createdat) select id;";
+                                                    VALUES (@vin, @alertid, @state, @createdat) RETURNING id;";
                     int result = await _dataMartdataAccess.ExecuteAsync(query, parameter);
                     if (result <= 0)
                     {
@@ -285,10 +285,10 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                 }
                 transactionScope.Commit();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 transactionScope.Rollback();
-                throw;
+                throw ex;
             }
             finally
             {
@@ -322,10 +322,10 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                 }
                 transactionScope.Rollback();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 transactionScope.Rollback();
-                throw;
+                throw ex;
             }
             finally
             {
@@ -344,9 +344,9 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                 int result = await _dataMartdataAccess.ExecuteAsync(queryAlertLevelPull, parameter);
                 return result > 0;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
     }
