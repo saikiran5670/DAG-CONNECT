@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     {
                         vehicleIdList.Add(item.Vin);
                     }
-                    var driverFilter = await _reportManager.GetDriverList(vehicleIdList.Distinct().ToList());
+                    var driverFilter = await _reportManager.GetDriverList(vehicleIdList.Distinct().ToList(), request.OrganizationId);
                     var resDriverFilter = JsonConvert.SerializeObject(driverFilter);
                     response.DriverList.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<DriverListResponse>>(resDriverFilter)
