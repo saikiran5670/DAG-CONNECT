@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.confluentkafka;
 using net.atos.daf.ct2.confluentkafka.entity;
@@ -49,6 +50,27 @@ namespace net.atos.daf.ct2.kafkacdc
                     await KafkaConfluentWorker.Producer(kafkaEntity);
                     //var test = KafkaConfluentWorker.Consumer(kafkaEntity);
                 }
+            }
+        }
+
+        public async Task VehicleCdcConsumer(KafkaEntity kafkaEntity)
+        {
+            try
+            {
+
+                VehicleCdc vehicleCdc = new VehicleCdc();
+                ConsumeResult<Null, string> message = KafkaConfluentWorker.Consumer(kafkaEntity);
+                while (message != null)
+                {
+                    vehicleCdc = JsonConvert.DeserializeObject<VehicleCdc>(message.Message.Value);
+                }
+
+
+            }
+
+            catch (Exception ex)
+            {
+
             }
         }
     }

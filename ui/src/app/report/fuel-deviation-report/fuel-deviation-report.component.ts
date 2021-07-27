@@ -46,6 +46,7 @@ export class FuelDeviationReportComponent implements OnInit {
   platform: any = '';
   searchExpandPanel: boolean = true;
   fuelDeviationData: any = [];
+  summarySectionData: any = {};
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -443,7 +444,22 @@ export class FuelDeviationReportComponent implements OnInit {
           element.subReportUserPreferences.forEach(item => {
             let _data: any = item;
             if(item.key.includes('rp_fd_summary_')){
-              this.fuelSummaryPrefData.push(_data);
+              let _index: any;
+              switch(item.key){
+                case 'rp_fd_summary_fuelincreaseevents':{
+                  _index = 0;
+                  break;
+                }
+                case 'rp_fd_summary_fueldecreaseevents':{
+                  _index = 1;
+                  break;
+                }
+                case 'rp_fd_summary_vehiclewithfuelevents':{
+                  _index = 2;
+                  break;
+                }
+              }
+              this.fuelSummaryPrefData[_index] = _data;
             }else if(item.key.includes('rp_fd_chart_')){
               let index: any;
               switch(item.key){
@@ -733,6 +749,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.selectedEventMarkers = [];
     this.eventIconMarker = null;
     this.fuelDeviationData = [];
+    this.summarySectionData = {};
     this.vehicleListData = [];
     this.updateDataSource(this.fuelDeviationData);
     this.resetFuelDeviationFormControlValue();
@@ -744,6 +761,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     //this.internalSelection = true;
     this.selectedEventMarkers = [];
     this.eventIconMarker = null;
+    this.summarySectionData = {};
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     let _vinData: any = [];
@@ -761,19 +779,43 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       }
       this.reportService.getFuelDeviationReportDetails(reportDataObj).subscribe((_fuelDeviationData: any) => {
         //console.log(_fuelDeviationData);
-        this.hideloader();
-        this.fuelDeviationData = this.reportMapService.convertFuelDeviationDataBasedOnPref(_fuelDeviationData.data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone, this.translationData);
-        this.setTableInfo();
-        this.updateDataSource(this.fuelDeviationData);
+        this.reportService.getFuelDeviationReportCharts(reportDataObj).subscribe((_fuelDeviationChartData: any) => {
+          this.hideloader();
+          this.setChartsSection(_fuelDeviationChartData);
+          this.setSummarySection(_fuelDeviationData.data);
+          this.fuelDeviationData = this.reportMapService.convertFuelDeviationDataBasedOnPref(_fuelDeviationData.data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone, this.translationData);
+          this.setTableInfo();
+          this.updateDataSource(this.fuelDeviationData);
+        }, (error) => {
+          this.hideloader();
+          console.log("No charts data available...");
+        });
       }, (error)=>{
         //console.log(error);
         this.hideloader();
         this.fuelDeviationData = [];
         this.tableInfoObj = {};
+        this.summarySectionData = {};
         this.updateDataSource(this.fuelDeviationData);
       });
     }
   }
+
+  setSummarySection(data: any){
+    if(data && data.length > 0){
+      let _totalIncCount: any = data.filter(i => i.fuelEventType == 'I');
+      let _totalDecCount: any = data.filter(i => i.fuelEventType == 'D');
+      let vinData: any = data.map(i => i.vin); 
+      let vinCount: any = vinData.filter((value, index, self) => self.indexOf(value) === index);
+      this.summarySectionData = {
+        totalIncCount: _totalIncCount.length,
+        totalDecCount: _totalDecCount.length,
+        totalVehCount: vinCount.length
+      };
+    }
+  }
+
+  setChartsSection(_chartData: any){ }
 
   setTableInfo(){
     let vehName: any = '';
@@ -836,9 +878,13 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.initData = tableData;
     this.showMap = false;
     this.selectedFuelDeviationEntry.clear();
+    this.summaryExpandPanel = false;
+    this.chartExpandPanel = false;
     if(this.initData.length > 0){
       this.showChartPanel = true;
       this.showSummaryPanel = true;
+      this.summaryExpandPanel = true;
+      this.chartExpandPanel = true;
       if(!this.showMapPanel){ //- map panel not shown already
         this.showMapPanel = true;
         setTimeout(() => {

@@ -674,12 +674,19 @@ namespace net.atos.daf.ct2.reportservice.entity
         private static EcoScoreTrendlinesKPI GetEcoScoreTrendlineKPIData(TrendlinesKPI kpiName, UoM unit, IEnumerable<reports.entity.EcoScoreReportSingleDriver> result, IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> reportAttributes)
         {
             var trendline = new EcoScoreTrendlinesKPI();
-            var headerType = "Overall_Driver";
-            if (kpiName == TrendlinesKPI.EcoScoreCompany)
-            {
+            string headerType = string.Empty;
+            string vin = result.FirstOrDefault().VIN;
+            if (vin == "Overall" && kpiName == TrendlinesKPI.EcoScoreCompany)
                 headerType = "Overall_Company";
+            else if (vin == "Overall" && kpiName != TrendlinesKPI.EcoScoreCompany)
+                headerType = "Overall_Driver";
+            else if (vin != "Overall" && kpiName == TrendlinesKPI.EcoScoreCompany)
+                headerType = "VIN_Company";
+            else if (vin != "Overall" && kpiName != TrendlinesKPI.EcoScoreCompany)
+                headerType = "VIN_Driver";
+
+            if (kpiName == TrendlinesKPI.EcoScoreCompany)
                 kpiName = TrendlinesKPI.EcoScore;
-            }
 
             var attribute = reportAttributes.Where(x => x.DBColumnName == kpiName.ToString()).FirstOrDefault();
             trendline.Name = attribute.Name;
@@ -690,7 +697,7 @@ namespace net.atos.daf.ct2.reportservice.entity
             var lstKPI = result.Where(x => x.HeaderType == headerType).OrderBy(x => x.Day).ToList();
             foreach (var kpi in lstKPI)
             {
-                dictDaywiseValue.Add(kpi.Day, GetKPIUnitAndConversionFactor(kpiName, unit, Convert.ToString(kpi.GetType().GetProperties().Where(y => y.Name.Equals(kpiName.ToString())).Select(x => x.GetValue(kpi)).FirstOrDefault())).Item2);
+                dictDaywiseValue.Add(kpi.Day.ToString("MM/dd/yyyy"), GetKPIUnitAndConversionFactor(kpiName, unit, Convert.ToString(kpi.GetType().GetProperties().Where(y => y.Name.Equals(kpiName.ToString())).Select(x => x.GetValue(kpi)).FirstOrDefault())).Item2);
             }
             trendline.Data.Add(dictDaywiseValue);
             return trendline;

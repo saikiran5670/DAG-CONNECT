@@ -144,6 +144,62 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div>
+          <div style='padding: 10px 20px; margin-bottom: 15px; border-radius: 5px; background: #bee3f8;'>
+            <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <span>
+                  <span>{{ translationData.lblFrom || 'From' }}: </span>
+                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.fromDate }}</span>
+                </span>
+              </div>
+              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <span>
+                  <span>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}: </span>
+                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehGroupName }}</span>
+                </span>
+              </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <span>
+                  <span>{{ translationData.lblTo || 'To' }}: </span>
+                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
+                </span>
+              </div>
+              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <span>
+                  <span>{{ translationData.lblVehicle || 'Vehicle' }}: </span>
+                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="center center" class="full-width" fxLayoutGap="30px">
+            <div *ngIf="fuelSummaryPrefData && fuelSummaryPrefData.length > 0 && fuelSummaryPrefData[0].state == 'A'" class="areaWidth min-width-25-per summaryBox" fxLayout="column" fxLayoutAlign="center center">
+              <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
+                <span>{{ translationData.lbl || 'Fuel Increase Events' }}</span>
+              </div>
+              <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
+                <span>{{ (summarySectionData && summarySectionData.totalIncCount) ? summarySectionData.totalIncCount : 0 }}</span>
+              </div>
+            </div>
+            <div *ngIf="fuelSummaryPrefData && fuelSummaryPrefData.length > 0 && fuelSummaryPrefData[1].state == 'A'" class="areaWidth min-width-25-per summaryBox" fxLayout="column" fxLayoutAlign="center center">
+              <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
+                <span>{{ translationData.lbl || 'Fuel Decrease Events' }}</span>
+              </div>
+              <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
+                <span>{{ (summarySectionData && summarySectionData.totalDecCount) ? summarySectionData.totalDecCount : 0 }}</span>
+              </div>
+            </div>
+            <div *ngIf="fuelSummaryPrefData && fuelSummaryPrefData.length > 0 && fuelSummaryPrefData[2].state == 'A'" class="areaWidth min-width-25-per summaryBox" fxLayout="column" fxLayoutAlign="center center">
+              <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
+                <span>{{ translationData.lbl || 'Vehicles With Fuel Events' }}</span>
+              </div>
+              <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
+                <span>{{ (summarySectionData && summarySectionData.totalVehCount) ? summarySectionData.totalVehCount : 0 }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </mat-expansion-panel>
     </mat-card>

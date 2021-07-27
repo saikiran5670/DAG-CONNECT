@@ -23,9 +23,9 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 //Insert into EcoScoreProfile table
                 string query = @"INSERT INTO master.ecoscoreprofile
-                                (organization_id,name,description,default_es_version_type, state, created_at, created_by) 
+                                (organization_id,name,description,default_es_version_type, state, created_at, created_by, modified_at, modified_by) 
                                 VALUES 
-                                (@organization_id, @name, @description, NULL, @state, @created_at, @created_by) RETURNING id";
+                                (@organization_id, @name, @description, NULL, @state, @created_at, @created_by, @modified_at, @modified_by) RETURNING id";
 
                 var parameters = new DynamicParameters();
                 parameters.Add("@organization_id", dto.OrganizationId > 0 ? dto.OrganizationId : new int?());
@@ -44,9 +44,9 @@ namespace net.atos.daf.ct2.reports.repository
                 foreach (var profileKPI in dto.ProfileKPIs)
                 {
                     query = @"INSERT INTO master.ecoscoreprofilekpi
-                        (ecoscore_profile_id,ecoscore_kpi_id,limit_val,target_val, lower_val, upper_val, created_at, created_by,limit_type)
+                        (ecoscore_profile_id,ecoscore_kpi_id,limit_val,target_val, lower_val, upper_val, created_at, created_by, limit_type, modified_at, modified_by)
                         VALUES
-                        (@profile_id, @ecoscore_kpi_id, @limit_val, @target_val, @lower_val, @upper_val, @created_at, @created_by, @limit_type) RETURNING id";
+                        (@profile_id, @ecoscore_kpi_id, @limit_val, @target_val, @lower_val, @upper_val, @created_at, @created_by, @limit_type, @modified_at, @modified_by) RETURNING id";
 
                     parameters = new DynamicParameters();
                     parameters.Add("@profile_id", id);
@@ -2483,6 +2483,12 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
+        #region EcoScore Trendlines
+        /// <summary>
+        /// Get Eco Score Report Single Driver - Overall Driver Trendlines
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
         public async Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallDriverForTrendline(EcoScoreReportSingleDriverRequest request)
         {
             try
@@ -2737,6 +2743,11 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
+        /// <summary>
+        /// Get Eco Score Report Single Driver - Overall Company Trendlines
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
         public async Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallCompanyForTrendline(EcoScoreReportSingleDriverRequest request)
         {
             try
@@ -2804,6 +2815,12 @@ namespace net.atos.daf.ct2.reports.repository
                 throw ex;
             }
         }
+
+        /// <summary>
+        /// Get Eco Score Report Single Driver - VIN Company Trendlines
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
         public async Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportVinCompanyForTrendline(EcoScoreReportSingleDriverRequest request)
         {
             try
@@ -2873,6 +2890,11 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
+        /// <summary>
+        /// Get Eco Score Report Single Driver - VIN Driver Trendlines
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
         public async Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportVINDriverForTrendline(EcoScoreReportSingleDriverRequest request)
         {
             try
@@ -3129,6 +3151,7 @@ namespace net.atos.daf.ct2.reports.repository
                 throw;
             }
         }
+        #endregion
 
         #endregion
 
@@ -3364,39 +3387,39 @@ namespace net.atos.daf.ct2.reports.repository
                     -- Fuel Consumption
                     FuelConsumption_Total, FuelConsumption_Count,
                     -- Cruise Control Usage
-                    CruiseControlUsage_Total, CruiseControlUsage_Count,
+                    CruiseControlUsage_Total * 100 as CruiseControlUsage_Total, CruiseControlUsage_Count,
                     -- Cruise Control Usage30-50
-                    CruiseControlUsage30_Total, CruiseControlUsage30_Count,
+                    CruiseControlUsage30_Total * 100 as CruiseControlUsage30_Total, CruiseControlUsage30_Count,
                     -- Cruise Control Usage50-75
-                    CruiseControlUsage50_Total, CruiseControlUsage50_Count,
+                    CruiseControlUsage50_Total * 100 as CruiseControlUsage50_Total, CruiseControlUsage50_Count,
                     -- Cruise Control Usage75+
-                    CruiseControlUsage75_Total, CruiseControlUsage75_Count,
+                    CruiseControlUsage75_Total * 100 as CruiseControlUsage75_Total, CruiseControlUsage75_Count,
                     -- PTO Usage
-                    PTOUsage_Total, PTOUsage_Count,
+                    PTOUsage_Total * 100 as PTOUsage_Total, PTOUsage_Count,
                     -- PTO Duration
-                    PTODuration_Total * 1000, PTODuration_Count,
+                    PTODuration_Total * 1000 as PTODuration_Total, PTODuration_Count,
                     -- Average Driving Speed
                     AverageDrivingSpeed_Total, AverageDrivingSpeed_Count,
                     -- Average Speed
                     AverageSpeed_Total, AverageSpeed_Count,
                     -- Heavy Throttling
-                    HeavyThrottling_Total, HeavyThrottling_Count,
+                    HeavyThrottling_Total * 100 as HeavyThrottling_Total, HeavyThrottling_Count,
                     -- Heavy Throttle Duration
-                    HeavyThrottleDuration_Total * 1000, HeavyThrottleDuration_Count,
+                    HeavyThrottleDuration_Total * 1000 as HeavyThrottleDuration_Total, HeavyThrottleDuration_Count,
                     -- Idling
-                    Idling_Total, Idling_Count,
+                    Idling_Total * 100 as Idling_Total, Idling_Count,
                     -- Idle Duration 
-                    IdleDuration_Total * 1000, IdleDuration_Count,
+                    IdleDuration_Total * 1000 as IdleDuration_Total, IdleDuration_Count,
                     -- Braking Score
                     BrakingScore_Total, BrakingScore_Count,
                     -- Harsh Braking
-                    HarshBraking_Total, HarshBraking_Count,
+                    HarshBraking_Total * 100 as HarshBraking_Total, HarshBraking_Count,
                     -- Harsh Braking Duration
-                    HarshBrakeDuration_Total * 1000, HarshBrakeDuration_Count,
+                    HarshBrakeDuration_Total * 1000 as HarshBrakeDuration_Total, HarshBrakeDuration_Count,
                     -- Brake Duration
-                    BrakeDuration_Total * 1000, BrakeDuration_Count,
+                    BrakeDuration_Total * 1000 as BrakeDuration_Total, BrakeDuration_Count,
                     -- Braking
-                    Braking_Total, Braking_Count,
+                    Braking_Total * 100 as Braking_Total, Braking_Count,
                     -- Anticipation Score
                     AnticipationScore_Total, AnticipationScore_Count
                     FROM GeneralQuery gq
