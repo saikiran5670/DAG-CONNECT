@@ -23,9 +23,9 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 //Insert into EcoScoreProfile table
                 string query = @"INSERT INTO master.ecoscoreprofile
-                                (organization_id,name,description,default_es_version_type, state, created_at, created_by) 
+                                (organization_id,name,description,default_es_version_type, state, created_at, created_by, modified_at, modified_by) 
                                 VALUES 
-                                (@organization_id, @name, @description, NULL, @state, @created_at, @created_by) RETURNING id";
+                                (@organization_id, @name, @description, NULL, @state, @created_at, @created_by, @modified_at, @modified_by) RETURNING id";
 
                 var parameters = new DynamicParameters();
                 parameters.Add("@organization_id", dto.OrganizationId > 0 ? dto.OrganizationId : new int?());
@@ -44,9 +44,9 @@ namespace net.atos.daf.ct2.reports.repository
                 foreach (var profileKPI in dto.ProfileKPIs)
                 {
                     query = @"INSERT INTO master.ecoscoreprofilekpi
-                        (ecoscore_profile_id,ecoscore_kpi_id,limit_val,target_val, lower_val, upper_val, created_at, created_by,limit_type)
+                        (ecoscore_profile_id,ecoscore_kpi_id,limit_val,target_val, lower_val, upper_val, created_at, created_by, limit_type, modified_at, modified_by)
                         VALUES
-                        (@profile_id, @ecoscore_kpi_id, @limit_val, @target_val, @lower_val, @upper_val, @created_at, @created_by, @limit_type) RETURNING id";
+                        (@profile_id, @ecoscore_kpi_id, @limit_val, @target_val, @lower_val, @upper_val, @created_at, @created_by, @limit_type, @modified_at, @modified_by) RETURNING id";
 
                     parameters = new DynamicParameters();
                     parameters.Add("@profile_id", id);
@@ -2483,6 +2483,12 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
+        #region EcoScore Trendlines
+        /// <summary>
+        /// Get Eco Score Report Single Driver - Overall Driver Trendlines
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
         public async Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallDriverForTrendline(EcoScoreReportSingleDriverRequest request)
         {
             try
@@ -2737,6 +2743,11 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
+        /// <summary>
+        /// Get Eco Score Report Single Driver - Overall Company Trendlines
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
         public async Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportOverallCompanyForTrendline(EcoScoreReportSingleDriverRequest request)
         {
             try
@@ -2804,6 +2815,12 @@ namespace net.atos.daf.ct2.reports.repository
                 throw ex;
             }
         }
+
+        /// <summary>
+        /// Get Eco Score Report Single Driver - VIN Company Trendlines
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
         public async Task<IEnumerable<EcoScoreReportSingleDriver>> GetEcoScoreReportVinCompanyForTrendline(EcoScoreReportSingleDriverRequest request)
         {
             try
@@ -2873,6 +2890,11 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
+        /// <summary>
+        /// Get Eco Score Report Single Driver - VIN Driver Trendlines
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
         public async Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportVINDriverForTrendline(EcoScoreReportSingleDriverRequest request)
         {
             try
@@ -3129,6 +3151,7 @@ namespace net.atos.daf.ct2.reports.repository
                 throw;
             }
         }
+        #endregion
 
         #endregion
 
