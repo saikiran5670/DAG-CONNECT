@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.confluentkafka\net.atos.daf.ct2.confluentkafka.csproj" />
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.kafkacdc\net.atos.daf.ct2.kafkacdc.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.account\net.atos.daf.ct2.account.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.group\net.atos.daf.ct2.group.csproj" />

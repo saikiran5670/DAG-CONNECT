@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
-    class VehicleCdcManager : IVehicleCdcManager
+    public class VehicleCdcManager : IVehicleCdcManager
     {
 
         internal Task<string> PrepareVehicleKafkaJSON(VehicleCdc vehicleCdc, string operation)
@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.kafkacdc
             };
             return Task.FromResult(JsonConvert.SerializeObject(vehicleAlertRefKafkaMessage));
         }
-        internal async Task VehicleCdcProducer(List<VehicleCdc> vehicleCdcList, KafkaConfiguration kafkaConfiguration)
+        public async Task VehicleCdcProducer(List<VehicleCdc> vehicleCdcList, KafkaConfiguration kafkaConfiguration)
         {
             if (vehicleCdcList.Count > 0)
             {
