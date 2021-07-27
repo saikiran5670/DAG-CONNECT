@@ -13,7 +13,7 @@ import { TranslationService } from 'src/app/services/translation.service';
 import { Util } from 'src/app/shared/util';
 import { ReportService } from 'src/app/services/report.service';
 import { truncate } from 'fs';
-import { ReportMapService } from '../report-map.service';
+import { ReportMapService } from '../../../report-map.service';
 import {ThemePalette} from '@angular/material/core';
 import {ProgressBarMode} from '@angular/material/progress-bar';
 import html2canvas from 'html2canvas';
@@ -25,11 +25,11 @@ import { Router, NavigationExtras } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
-import { HereService } from '../../services/here.service';
+import { HereService } from '../../../../services/here.service';
 import { ConfigService } from '@ngx-config/core';
-import { LandmarkCategoryService } from '../../services/landmarkCategory.service'; 
+import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service'; 
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
-import { MapService } from '../fleet-fuel-report/report-mapservice';
+import { MapService } from '../../../fleet-fuel-report/report-mapservice';
 
 declare var H: any;
 
@@ -41,13 +41,18 @@ declare var H: any;
 
 export class VehicletripComponent implements OnInit {
   @Input() translationData: any;
-  displayedColumns = ['All','startDate','endDate','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
-  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
-  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
-  'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
-  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
-  'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
-  'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
+  @Input() displayedColumns:any;
+  @Input() vehicleSelected : boolean;
+  @Input() dateDetails : any;
+  @Input() vehicleDetails : any;
+  @Input() endDateValue: any;
+  @Input() startDateValue: any;
+  @Input() _vinData: any;
+  @Input() graphData: any;
+  // detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
+  // 'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
+  // 'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
+  // 'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
   prefMapData: any = [
     {
       key: 'rp_tr_report_fleetfueldetails_startDate',
@@ -235,8 +240,8 @@ public mapElement: ElementRef;
 tripTraceArray: any = [];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
-  @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
-  @ViewChildren(MatSort) sort = new QueryList<MatSort>();
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
@@ -263,8 +268,8 @@ tripTraceArray: any = [];
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   vehicleGrpDD: any = [];
   selectionTab: any;
-  startDateValue: any = 0;
-  endDateValue: any = 0;
+  //startDateValue: any = 0;
+  //endDateValue: any = 0;
   last3MonthDate: any;
   todayDate: any;
   vehicleDD: any = [];
@@ -414,7 +419,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 't'    
+          labelString: 'ton'    
         }
       }]
     }
@@ -530,13 +535,6 @@ tripTraceArray: any = [];
               private completerService: CompleterService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private reportMapService: ReportMapService, private _configService: ConfigService, private hereService: HereService) {
-                this.defaultTranslation();
-                const navigation = this.router.getCurrentNavigation();
-                this._state = navigation.extras.state as {
-                  
-                fromFleetfuelReport: boolean,
-                vehicleData: any
-                };
                 console.log(this._state);
                 if(this._state){
                   this.showBack = true;
@@ -605,7 +603,14 @@ tripTraceArray: any = [];
       });
     });
 
+    this.loadfleetFuelDetails(this.vehicleDetails);
+    if(this.vehicleDetails){
+      this.onSearch();
+     }
 
+    this.isSummaryOpen = true;
+    this.isChartsOpen = true;
+    this.isDetailsOpen = true;
   }
   detailvehiclereport(){
     const navigationExtras: NavigationExtras = {
@@ -902,17 +907,25 @@ createEndMarker(){
 
   public ngAfterViewInit() { }
 
-  loadfleetFuelDetails(_vinData: any){
-    let _startTime = Util.convertDateToUtc(this.startDateValue);
-    let _endTime = Util.convertDateToUtc(this.endDateValue);
+  loadfleetFuelDetails(vehicleDetails: any){
+
+// let hardCodePayload= {
+//     "startDateTime" : 1525480060000,
+//     "endDateTime" : 1625480060000,
+//     "viNs" : [
+//     "XLR0998HGFFT76657"
+//     ],
+//     "languageCode" : "EN-GB"
+// }
+
     let getFleetFuelObj = {
-      "startDateTime": _startTime,
-      "endDateTime": _endTime,
-      "viNs": _vinData,
-      "LanguageCode": "EN-GB"
+      "startDateTime": this.dateDetails.startTime,
+      "endDateTime": this.dateDetails.endTime,
+      "viNs": vehicleDetails.vin.split(),
+      "languageCode": "EN-GB"
     }
     this.reportService.getVehicleTripDetails(getFleetFuelObj).subscribe((data:any) => {
-    console.log("---getting data from getFleetFueldriverDetailsAPI---",data)
+    // console.log("---getting data from getFleetFuelvehicleDetailsAPI---",data)
     this.displayData = data["fleetFuelDetails"];
     this.FuelData = this.reportMapService.getConvertedFleetFuelDataBasedOnPref(this.displayData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     // this.setTableInfo();
@@ -923,7 +936,7 @@ createEndMarker(){
 
  
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+    this.reportService.getUserPreferenceReport(4, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
@@ -1221,7 +1234,7 @@ createEndMarker(){
         "endDateTime":_endTime,
         "viNs":  _vinData,
       }
-      this.loadfleetFuelDetails(_vinData);
+      this.loadfleetFuelDetails(this.vehicleDetails);
        this.setTableInfo();
       //  this.updateDataSource(this.FuelData);
       this.hideloader();
@@ -1246,9 +1259,7 @@ createEndMarker(){
       "viNs": _vinData,
       "LanguageCode": "EN-GB"
     }
-    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
-      this.setChartData(graphData["fleetfuelGraph"]);
-    });
+    this.setChartData(this.graphData["fleetfuelGraph"]);
     //if(_vinData.length === 1){
     //  this.showDetailedReport = true;
     //}
@@ -1285,10 +1296,10 @@ createEndMarker(){
  
  
   setTableInfo(){
-    let vehName: any = '';
-    let vehGrpName: any = '';
-    let vin: any = '';
-    let plateNo: any = '';
+    // let vehName: any = '';
+    // let vehGrpName: any = '';
+    // let vin: any = '';
+    // let plateNo: any = '';
     // this.vehicleGroupListData.forEach(element => {
     //   if(element.vehicleId == parseInt(this.tripForm.controls.vehicle.value)){
     //     vehName = element.vehicleName;
@@ -1302,28 +1313,28 @@ createEndMarker(){
     //   }
     // });
 
-    let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value));
-    if(vehGrpCount.length > 0){
-      vehGrpName = vehGrpCount[0].vehicleGroupName;
-    }
-    let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    if(vehCount.length > 0){
-      vehName = vehCount[0].vehicleName;
-      vin = vehCount[0].vin;
-      plateNo = vehCount[0].vehicleRegistrationNo;
-    }
+    // let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value));
+    // if(vehGrpCount.length > 0){
+    //   vehGrpName = vehGrpCount[0].vehicleGroupName;
+    // }
+    // let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+    // if(vehCount.length > 0){
+    //   vehName = vehCount[0].vehicleName;
+    //   vin = vehCount[0].vin;
+    //   plateNo = vehCount[0].vehicleRegistrationNo;
+    // }
 
     // if(parseInt(this.tripForm.controls.vehicleGroup.value) == 0){
     //   vehGrpName = this.translationData.lblAll || 'All';
     // }
 
     this.tableInfoObj = {
-      fromDate: this.formStartDate(this.startDateValue),
-      endDate: this.formStartDate(this.endDateValue),
-      vehGroupName: vehGrpName,
-      vin : vin,
-      vehicleName: vehName,
-      plateNo : plateNo
+      fromDate: this.dateDetails.fromDate,
+      endDate: this.dateDetails.endDate,
+      vehGroupName:this.dateDetails.vehGroupName,
+      vin : this.vehicleDetails.vin,
+      vehicleName: this.vehicleDetails.vehicleName,
+      plateNo : this.vehicleDetails.vehicleRegistrationNo
 
     }     
   }
@@ -1707,6 +1718,7 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
 
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
+    if(date) {
     if(this.prefTimeFormat == 12){
       if(_y.split(' ')[1] == 'AM' && _x == 12) {
         date.setHours(0);
@@ -1719,6 +1731,7 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
       date.setMinutes(_y);
     }
     date.setSeconds(type == 'start' ? '00' : '59');
+  }
     return date;
   }
 
@@ -2259,6 +2272,20 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     }
     return sum; 
+  }
+
+  checkForPreference(fieldKey) {
+    if (this.reportPrefData.length != 0) {
+      let filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_'+fieldKey));
+      if (filterData.length > 0) {
+        if (filterData[0].state == 'A') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
 }

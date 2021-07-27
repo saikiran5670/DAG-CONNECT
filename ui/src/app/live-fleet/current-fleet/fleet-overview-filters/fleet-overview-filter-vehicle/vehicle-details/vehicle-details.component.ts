@@ -18,6 +18,7 @@ export class VehicleDetailsComponent implements OnInit {
   @Input() translationData: any;
   @Input() levelList: any;
   @Input() categoryList: any;
+  @Input() vehInfoPrefData: any;
   gridData: any = [];
   localStLanguage: any;
   accountOrganizationId: any;
@@ -72,6 +73,22 @@ export class VehicleDetailsComponent implements OnInit {
         }
       });
     });
+ 
+  }
+
+  proceedStep(prefData: any, preference: any){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefUnitFormat = prefData.unit[0].name;
+    }
     this.selectedElementData.fleetOverviewAlert.forEach(item => {
       this.levelList.forEach(element => {
         if(item.level ==element.value)
@@ -90,24 +107,9 @@ export class VehicleDetailsComponent implements OnInit {
     }); 
   }
 
-  proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
-    if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
-    }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
-    }
-  }
-
   timeConversion(time: any){
-    var d = new Date(time);
-    return d.toLocaleString();
+    let newDate = this.reportMapService.getStartTime(time, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true);
+    return newDate;
   }
 
   toBack() {

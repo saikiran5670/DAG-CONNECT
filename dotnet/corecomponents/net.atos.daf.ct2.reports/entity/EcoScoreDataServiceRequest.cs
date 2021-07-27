@@ -2,10 +2,11 @@
 {
     public enum AggregateType
     {
-        TRIP = -1,
-        DAY = 0,
-        WEEK = 6,
-        MONTH = 29
+        TRIP,
+        DAY,
+        WEEK,
+        MONTH,
+        YEAR
     }
 
     public class EcoScoreDataServiceRequest
@@ -18,5 +19,6 @@
         public long StartTimestamp { get; set; }
         public long EndTimestamp { get; set; }
         public int MinDistance { get; set; }
+        public int EcoScoreRecordsLimit { get; set; }
     }
 }

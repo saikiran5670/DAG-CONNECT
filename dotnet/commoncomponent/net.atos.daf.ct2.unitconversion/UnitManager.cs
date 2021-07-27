@@ -65,6 +65,21 @@ namespace net.atos.daf.ct2.unitconversion
             return Task.FromResult(result);
         }
 
+        public Task<string> GetVolumePer100KmUnit(UnitToConvert convertTo)
+        {
+            string result = string.Empty;
+            switch (convertTo)
+            {
+                case UnitToConvert.Imperial:
+                    result = VolumePer100KmConstants.MPG;
+                    break;
+                case UnitToConvert.Metric:
+                    result = VolumePer100KmConstants.LITER_PER_100KM;
+                    break;
+            }
+            return Task.FromResult(result);
+        }
+
         public Task<string> GetVolumeUnit(UnitToConvert convertTo)
         {
             string result = string.Empty;

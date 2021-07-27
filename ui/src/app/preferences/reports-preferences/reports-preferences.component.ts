@@ -132,19 +132,24 @@ export class ReportsPreferencesComponent implements OnInit {
     this.fleetFuelPerferencesDriver.setColumnCheckbox();
   }
 
+  requestSent:boolean = false;
   onConfirm() {
-    let vehicleObj = this.fleetFuelPerferencesVehicle.onConfirm();
-    let driverObj = this.fleetFuelPerferencesDriver.onConfirm();
-    let objData: any = {
-      reportId: this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id,
-      attributes: [...vehicleObj, ...driverObj]
-    };
-    this.reportService.updateReportUserPreference(objData).subscribe((res: any) => {
-      this.updateFleetFuelPerferencesFlag({ flag: false, msg: this.getSuccessMsg() });
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
-    });
+    if(!this.requestSent) {
+      this.requestSent = true;
+      let vehicleObj = this.fleetFuelPerferencesVehicle.onConfirm();
+      let driverObj = this.fleetFuelPerferencesDriver.onConfirm();
+      let objData: any = {
+        reportId: this.reportListData.filter(i => i.name == 'Fleet Fuel Report')[0].id,
+        attributes: [...vehicleObj, ...driverObj]
+      };
+      this.reportService.updateReportUserPreference(objData).subscribe((res: any) => {
+        this.updateFleetFuelPerferencesFlag({ flag: false, msg: this.getSuccessMsg() });
+        setTimeout(() => {
+          this.requestSent = false;
+          window.location.reload();
+        }, 1000);
+      });
+    }
   }
 
   getSuccessMsg() {
@@ -220,6 +225,20 @@ export class ReportsPreferencesComponent implements OnInit {
   onTabChanged(event) {
     // event.stopPropogation();
     // event.preventDefault();
+  }
+
+  validateRequiredField() {
+    if(this.fleetFuelPerferencesVehicle) {
+      let VehicleDetailsV = this.fleetFuelPerferencesVehicle.validateRequiredField('VehicleDetails');
+      let SingleVehicleDetailsV = this.fleetFuelPerferencesVehicle.validateRequiredField('SingleVehicleDetails');
+      let VehicleDetailsD = this.fleetFuelPerferencesDriver.validateRequiredField('VehicleDetails');
+      let SingleVehicleDetailsD = this.fleetFuelPerferencesDriver.validateRequiredField('SingleVehicleDetails');
+      if(VehicleDetailsV || SingleVehicleDetailsV || VehicleDetailsD || SingleVehicleDetailsD) {
+        return true;
+      }
+      return false;
+    }
+    return false;
   }
 
 }

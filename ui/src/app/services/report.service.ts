@@ -13,34 +13,34 @@ import { ConfigService } from '@ngx-config/core';
 @Injectable()
 export class ReportService {
   reportServiceUrl: string = '';
-  
+
   constructor(private httpClient: HttpClient, private config: ConfigService) {
     this.reportServiceUrl = config.getSettings("foundationServices").reportRESTServiceURL;
   }
 
-  generateHeader(){
-    let genericHeader : object = {
-      'Content-Type' : 'application/json',
-      'accountId' : localStorage.getItem('accountId') ? localStorage.getItem('accountId') : 0,
-      'orgId' : localStorage.getItem('accountOrganizationId') ? localStorage.getItem('accountOrganizationId') : 0,
-      'roleId' : localStorage.getItem('accountRoleId') ? localStorage.getItem('accountRoleId') : 0
+  generateHeader() {
+    let genericHeader: object = {
+      'Content-Type': 'application/json',
+      'accountId': localStorage.getItem('accountId') ? localStorage.getItem('accountId') : 0,
+      'orgId': localStorage.getItem('accountOrganizationId') ? localStorage.getItem('accountOrganizationId') : 0,
+      'roleId': localStorage.getItem('accountRoleId') ? localStorage.getItem('accountRoleId') : 0
     }
     let getHeaderObj = JSON.stringify(genericHeader)
     return getHeaderObj;
   }
 
-  getVINFromTrip(accountId: any, orgId: any){
+  getVINFromTrip(accountId: any, orgId: any) {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-    // .get<any[]>(`${this.reportServiceUrl}/getvinsfromtripstatisticsandvehicledetails?accountId=${accountId}&organizationId=${orgId}`, headers)
+      // .get<any[]>(`${this.reportServiceUrl}/getvinsfromtripstatisticsandvehicledetails?accountId=${accountId}&organizationId=${orgId}`, headers)
       .get<any[]>(`${this.reportServiceUrl}/trip/getparameters?accountId=${accountId}&organizationId=${orgId}`, headers)
       .pipe(catchError(this.handleError));
   }
 
-  getUserPreferenceReport(reportId: any, accountId: any, orgId: any){
+  getUserPreferenceReport(reportId: any, accountId: any, orgId: any) {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
@@ -51,7 +51,7 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
-  getTripDetails(startTime: any, endTime: any, vin: any){
+  getTripDetails(startTime: any, endTime: any, vin: any) {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
@@ -109,20 +109,20 @@ export class ReportService {
       )
       .pipe(catchError(this.handleError));
   }
-  
+
   getDefaultDriverParameter(data: any): Observable<any[]> {
-      let headerObj = this.generateHeader();
-      const headers = {
-        headers: new HttpHeaders({ headerObj }),
-      };
-      return this.httpClient
-        .post<any[]>(
-          `${this.reportServiceUrl}/drivetime/getparameters`, data, headers
-        )
-        .pipe(catchError(this.handleError));
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/drivetime/getparameters`, data, headers
+      )
+      .pipe(catchError(this.handleError));
   }
 
-  getReportDetails(){
+  getReportDetails() {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
@@ -182,7 +182,7 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
-  getEcoScoreProfiles(profileFlag: boolean){
+  getEcoScoreProfiles(profileFlag: boolean) {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
@@ -197,7 +197,7 @@ export class ReportService {
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
-   return this.httpClient
+    return this.httpClient
       .get<any>(`${this.reportServiceUrl}/ecoscore/getprofilekpis?ProfileId=${profileId}`, headers)
       .pipe(catchError(this.handleError));
   }
@@ -213,7 +213,7 @@ export class ReportService {
         `${this.reportServiceUrl}/ecoscore/createprofile`, data, headers
       )
       .pipe(catchError(this.handleError));
-  }  
+  }
 
   updateEcoScoreProfile(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
@@ -226,7 +226,7 @@ export class ReportService {
         `${this.reportServiceUrl}/ecoscore/updateprofile`, data, headers
       )
       .pipe(catchError(this.handleError));
-  }  
+  }
 
   deleteEcoScoreProfile(profileId: number): Observable<void> {
     let headerObj = this.generateHeader();
@@ -234,7 +234,7 @@ export class ReportService {
       headers: new HttpHeaders({ headerObj }),
       responseType: 'text' as 'json'
     };
-   return this.httpClient
+    return this.httpClient
       .delete<any>(`${this.reportServiceUrl}/ecoscore/deleteprofile?ProfileId=${profileId}`, headers)
       .pipe(catchError(this.handleError));
   }
@@ -317,7 +317,7 @@ export class ReportService {
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
-   return this.httpClient
+    return this.httpClient
       .get<any>(`${this.reportServiceUrl}/reportuserpreference/get?reportId=${reportId}`, headers)
       .pipe(catchError(this.handleError));
   }
@@ -335,104 +335,125 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
+  getFleetOverviewDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/fleetoverview/getfleetoverviewdetails`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  //for getfilterdetails for fleet overview
+  getFilterDetails(): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(
+        `${this.reportServiceUrl}/fleetoverview/getfilterdetails`, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getBenchmarkDataByTimePeriod(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/fuelbenchmark/timeperiod`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getBenchmarkDataByVehicleGroup(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/fuelbenchmark/vehiclegroup`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getLogBookfilterdetails(): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getlogbookfilters`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getvehiclehealthstatus(vin, languagecode, tripid?): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    if (tripid) {
+      return this.httpClient
+        .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getvehiclehealthstatus?VIN=${vin}&TripId=${tripid}&LngCode=${languagecode}`, headers)
+        .pipe(catchError(this.handleError));
+    } else {
+      return this.httpClient
+        .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getvehiclehealthstatus?VIN=${vin}&LngCode=${languagecode}`, headers)
+        .pipe(catchError(this.handleError));
+    }
+  }
+
+  getLogbookDetails(data: any) {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(`${this.reportServiceUrl}/fleetoverview/getlogbookdetails`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getFuelDeviationReportDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/fueldeviation/getdetails`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getFuelDeviationReportCharts(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/fueldeviation​/charts`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(errResponse: HttpErrorResponse) {
     console.error('Error : ', errResponse.error);
     return throwError(
       errResponse
     );
-}
-
-getFleetOverviewDetails(data: any): Observable<any[]> {
-  let headerObj = this.generateHeader();
-  const headers = {
-    headers: new HttpHeaders({ headerObj }),
-  };
-  return this.httpClient
-    .post<any[]>(
-      `${this.reportServiceUrl}/fleetoverview/getfleetoverviewdetails`, data, headers
-    )
-    .pipe(catchError(this.handleError));
-}
-
-//for getfilterdetails for fleet overview
-getFilterDetails(): Observable<any[]> {
-  let headerObj = this.generateHeader();
-  const headers = {
-    headers: new HttpHeaders({ headerObj }),
-  };
-  return this.httpClient
-    .get<any[]>(
-      `${this.reportServiceUrl}/fleetoverview/getfilterdetails`, headers
-    )
-    .pipe(catchError(this.handleError));
-}
+  }
 
 
-//Fuel Benchmarking API's
-
-getBenchmarkDataByTimePeriod(data:any ): Observable<any[]> {
-
-  let headerObj = this.generateHeader();
-  const headers = {
-    headers: new HttpHeaders({ headerObj }),
-    responseType: 'text' as 'json'
-  };
-  return this.httpClient
-    .post<any[]>(
-      `${this.reportServiceUrl}/fuelbenchmark/timeperiod`, data, headers
-    )
-    .pipe(catchError(this.handleError));
-}
-
-getBenchmarkDataByVehicleGroup(data:any ): Observable<any[]> {
-
-  let headerObj = this.generateHeader();
-  const headers = {
-    headers: new HttpHeaders({ headerObj }),
-    responseType: 'text' as 'json'
-  };
-  return this.httpClient
-    .post<any[]>(
-      `${this.reportServiceUrl}/fuelbenchmark/vehiclegroup`, data, headers
-    )
-    .pipe(catchError(this.handleError));
-}
-
-getLogBookfilterdetails(): Observable<any[]> {
-  let headerObj = this.generateHeader();
- const headers = {
-   headers: new HttpHeaders({ headerObj }),
- };
-     return this.httpClient
-         .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getlogbookfilters`,  headers)
-         .pipe(catchError(this.handleError));
- }
-
- getvehiclehealthstatus(vin,languagecode,tripid?): Observable<any[]> {
-  let headerObj = this.generateHeader();
- const headers = {
-   headers: new HttpHeaders({ headerObj }),
- };
- if(tripid){
-  return this.httpClient
-  .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getvehiclehealthstatus?VIN=${vin}&TripId=${tripid}&LngCode=${languagecode}`,  headers)
-  .pipe(catchError(this.handleError));
- } else {
-  return this.httpClient
-  .get<any[]>(`${this.reportServiceUrl}/fleetoverview/getvehiclehealthstatus?VIN=${vin}&LngCode=${languagecode}`,  headers)
-  .pipe(catchError(this.handleError));
- }
-     
- }
- getLogbookDetails(data:any){
-  let headerObj = this.generateHeader();
-  const headers = {
-    headers: new HttpHeaders({ headerObj }),
-  };
-  return this.httpClient
-   .post<any[]>(`${this.reportServiceUrl}/fleetoverview/getlogbookdetails`, data, headers)
-    .pipe(catchError(this.handleError));
-}
 
 }
 

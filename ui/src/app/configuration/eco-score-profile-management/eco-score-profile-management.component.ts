@@ -5,6 +5,8 @@ import { CustomValidators } from '../../shared/custom.validators';
 import { ReportService } from 'src/app/services/report.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { OrganizationService } from 'src/app/services/organization.service';
+import { ReportMapService } from 'src/app/report/report-map.service';
 
 @Component({
   selector: 'app-eco-score-profile-management',
@@ -15,6 +17,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class EcoScoreProfileManagementComponent implements OnInit {
   titleVisible : boolean = false;
   localStLanguage: any;
+  accountOrganizationId: any;
+  accountId: any;
+  accountPrefObj: any;
+  prefTimeFormat: any; //-- coming from pref setting
+  prefTimeZone: any; //-- coming from pref setting
+  prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
+  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   breadcumMsg: any = '';
   profileCreatedMsg: any ='';   
   actionType: any = "manage";
@@ -65,12 +74,15 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   userType: any = "Admin#Platform";
   
 
-  constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportService: ReportService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,) { }
+  constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportMapService: ReportMapService,  private organizationService: OrganizationService,private reportService: ReportService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,) { }
 
   ngOnInit(): void {
     this.breadcumMsg = this.getBreadcum(this.actionType);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.userType = localStorage.getItem("userType");
+    this.userType = localStorage.getItem("userType");;
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -82,12 +94,25 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
+      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        }else{ // org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
+        }
+      });
     });
 
     this.ecoScoreProfileForm = this._formBuilder.group({
       profileName: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc ]],
       profileDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
-      defaultName: ['']
+      defaultName: [''],
+      createdExisting: ['']
     },
     {
       validator: [
@@ -95,6 +120,21 @@ export class EcoScoreProfileManagementComponent implements OnInit {
         CustomValidators.specialCharValidationForNameWithoutRequired('profileDescription')
       ]
     });
+  }
+
+  proceedStep(prefData: any, preference: any){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefUnitFormat = prefData.unit[0].name;
+    }
     this.loadProfileData();
   }
 
@@ -117,45 +157,48 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   loadProfileKpis(id: any){
     let details = []
     this.reportService.getEcoScoreProfileKPIs(id).subscribe((data: any) => {
+      console.log(data);
       details = data["profile"];
       this.SliderData(details);  
     })
   }
 
   SliderData(data: any){
-  this.lastUpdated = data[0].lastUpdate;
+  this.lastUpdated = data[0].lastUpdate ? this.reportMapService.getStartTime(data[0].lastUpdate, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true ): '';
   this.updatedBy = data[0].updatedBy;
 
-  this.kpiData = data[0].profileSection[0].profileKPIDetails[0];
-
-  this.fuelConsumption = data[0].profileSection[1].profileKPIDetails[0];
-  this.cruiseControlUsage = data[0].profileSection[1].profileKPIDetails[1];
-  this.cruiseControlUsage30_50 = data[0].profileSection[1].profileKPIDetails[2];
-  this.cruiseControlUsage50_75 = data[0].profileSection[1].profileKPIDetails[3];
-  this.cruiseControlUsageGreaterThan75 = data[0].profileSection[1].profileKPIDetails[4];
-  this.PTOUsage = data[0].profileSection[1].profileKPIDetails[5];
-  this.PTODuration = data[0].profileSection[1].profileKPIDetails[6];
-  this.averageDrivingSpeed = data[0].profileSection[1].profileKPIDetails[7];
-  this.averageSpeed = data[0].profileSection[1].profileKPIDetails[8];
-  this.heavyThrottling = data[0].profileSection[1].profileKPIDetails[9];
-  this.heavyThrottleDuration = data[0].profileSection[1].profileKPIDetails[10];
-  this.idling = data[0].profileSection[1].profileKPIDetails[11];
-  this.idleDuration = data[0].profileSection[1].profileKPIDetails[12];
-  
-  this.brakingScoreKpiData = data[0].profileSection[2].profileKPIDetails[0];
-  this.harshBrakingScoreKpiData = data[0].profileSection[2].profileKPIDetails[1];
-  this.harshBrakeDurationKpiData = data[0].profileSection[2].profileKPIDetails[2];
-  this.brakeKpiData = data[0].profileSection[2].profileKPIDetails[3];
-  this.brakeDurationKpiData = data[0].profileSection[2].profileKPIDetails[4];
-
-  this.anticipationKpiData = data[0].profileSection[3].profileKPIDetails[0];
-
-  this.otherWtKpiData = data[0].profileSection[4].profileKPIDetails[0];
-  this.otherDistanceKpiData = data[0].profileSection[4].profileKPIDetails[1];
-  
-
+  data[0].profileSection.forEach((item) =>{ 
+    if(item.sectionId == 1){
+      this.kpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 1)[0];
+    } else if(item.sectionId == 2){
+      this.fuelConsumption = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 2)[0];
+      this.cruiseControlUsage = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 3)[0];
+      this.cruiseControlUsage30_50 = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 4)[0];
+      this.cruiseControlUsage50_75 = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 5)[0];
+      this.cruiseControlUsageGreaterThan75 = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 6)[0];
+      this.PTOUsage =item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 7)[0];
+      this.PTODuration = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 8)[0];
+      this.averageDrivingSpeed = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 9)[0];
+      this.averageSpeed = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 10)[0];
+      this.heavyThrottling = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 11)[0];
+      this.heavyThrottleDuration = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 12)[0];
+      this.idling = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 13)[0];
+      this.idleDuration = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 14)[0];
+    } else if(item.sectionId == 3){
+      this.brakingScoreKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 15)[0];
+      this.harshBrakingScoreKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 16)[0];
+      this.harshBrakeDurationKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 17)[0];
+      this.brakeKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 18)[0];
+      this.brakeDurationKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 19)[0];
+    } else if(item.sectionId == 4){
+      this.anticipationKpiData =item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 20)[0];
+    } else{
+      this.otherWtKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 21)[0];
+      this.otherDistanceKpiData = item.profileKPIDetails.filter((item) => item.ecoScoreKPIId == 22)[0];   
+    }
+}); 
   this.isKPI = true;
- 
+
   }
 
   processTranslation(transData: any) {
@@ -228,32 +271,12 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     if(this.actionType == "create"){
     this.ecoScoreProfileForm.get("profileDescription").setValue('');
     this.ecoScoreProfileForm.get("profileName").setValue('');
+    this.ecoScoreProfileForm.get("createdExisting").setValue('');
     this.isKPI = false;
+    this.isCreatedExistingProfile = false;
   } else {
     this.ecoScoreProfileForm.get("profileDescription").setValue(this.selectedElementData[0].profileDescription);
     this.ecoScoreProfileForm.get("profileName").setValue(this.selectedElementData[0].profileName);
-    // this.kpiData;
-    // this.fuelConsumption;
-    // this.cruiseControlUsage;
-    // this.cruiseControlUsage30_50;
-    // this.cruiseControlUsage50_75;
-    // this.cruiseControlUsageGreaterThan75;
-    // this.PTOUsage;
-    // this.PTODuration;
-    // this.averageDrivingSpeed;
-    // this.averageSpeed;
-    // this.heavyThrottling;
-    // this.heavyThrottleDuration;
-    // this.idling;
-    // this.idleDuration;
-    // this.brakingScoreKpiData;
-    // this.harshBrakingScoreKpiData;
-    // this.harshBrakeDurationKpiData;
-    // this.brakeKpiData;
-    // this.brakeDurationKpiData;
-    // this.anticipationKpiData;
-    // this.otherWtKpiData;
-    // this.otherDistanceKpiData;
   }
   this.loadProfileKpis(this.selectedProfile);
   }
@@ -331,6 +354,15 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   profileSelectionDropDown(filterValue: string){
     // this.selectedElementData = [];    
+    if(this.actionType =="create"){
+      this.isKPI = false;
+      this.selectedProfile = filterValue;
+      this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile); 
+      this.isSelected = this.selectedElementData[0].organizationId == 0 ? true : false;
+      this.deleteSelection = this.selectedElementData[0].isDeleteAllowed;
+      this.setDefaultValue();
+      this.loadProfileKpis(this.selectedProfile);
+    }else{
     this.isKPI = false;
     this.selectedProfile = filterValue;
     this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile); 
@@ -341,7 +373,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     //this.loadProfileData();
     this.isDAFStandard = false;
     this.isCreatedExistingProfile = false;
-    
+  }
  }
 
  createKPIEmit(item: any){

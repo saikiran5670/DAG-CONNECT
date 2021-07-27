@@ -156,16 +156,7 @@ public class ETLQueries {
 			+ ", msg_gross_weight_combinition = ?, no_of_total_index_message =?, veh_message_pto_duration = ?, veh_message_harsh_brake_duration = ?, veh_message_brake_duration = ?"
 			+ ", veh_message_max_throttle_paddle_duration = ?, veh_message_accelerationt_time = ?, veh_message_dpabraking_count = ?, veh_message_dpaanticipation_count = ?"
 			+ ", veh_message_dpabraking_score = ?, veh_message_dpaanticipation_score = ?, veh_message_idle_without_ptoduration = ?, veh_message_idle_ptoduration = ? ";
-/*
-	public static final String ECOSCORE_INSERT_STATEMENT = "INSERT INTO tripdetail.ecoscoredata( trip_id, vin, start_time, end_time, driver1_id, driver2_id"
-			+ ", etl_trip_distance, dpa_braking_score, dpa_braking_count, dpa_anticipation_score, dpa_anticipation_count, gross_weight_combination, used_fuel"
-			+ ", pto_duration, idle_duration, heavy_throttle_pedal_duration, start_fuel, stop_fuel ) "
-			+ "  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-			+ "  ON CONFLICT (trip_id) "
-			+ "  DO UPDATE SET  vin = ?, start_time = ?, end_time = ?, driver1_id = ?, driver2_id = ?, etl_trip_distance = ?, dpa_braking_score = ?"
-			+ ", dpa_braking_count = ?, dpa_anticipation_score = ?, dpa_anticipation_count = ?, gross_weight_combination = ?, used_fuel = ?, pto_duration = ?"
-			+ ", idle_duration = ?, heavy_throttle_pedal_duration = ?, start_fuel = ?"
-			+ ", stop_fuel = ? ";*/
+
 	
 	public static final String ECOSCORE_INSERT_STATEMENT = "INSERT INTO tripdetail.ecoscoredata( trip_id, vin, start_time, end_time, driver1_id "
 			+ ", trip_distance, dpa_braking_score, dpa_braking_count, dpa_anticipation_score, dpa_anticipation_count, gross_weight_combination_total, used_fuel"

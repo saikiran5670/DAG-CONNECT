@@ -1708,9 +1708,9 @@ PoiCheckboxClicked(event: any, row: any) {
             const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'alertName' + '"]');
             invalidControl.focus();
           }
-          // else if(error.status == 409 && error.error == 'Duplicate notification recipient label'){
-          //   this.notificationComponent.duplicateRecipientLabel();
-          // }
+          else if(error.status == 409 && error.error.includes('Duplicate notification recipient label')){
+            this.notificationComponent.duplicateRecipientLabel();
+          }
         })
     }
     else if(this.actionType == 'edit'){

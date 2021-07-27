@@ -59,7 +59,7 @@ message VehicleHealthReportRequest{
 message  VehicleHealthStatusResponse{
 string VehicleRegNo =1;
 string VehicleName =2;
-int32 LctsId =3;
+/*int32 LctsId =3;
 string LctsTripId =4;
 string LctsVin =5;
 int64 LctsTripStartTime =6;
@@ -90,7 +90,7 @@ string LatgeoaddLatestGeolocationAddress =30;
 int32 StageoaddStartGeolocationAddressId =31;
  string StageoaddStartGeolocationAddress =32;
  int32 WangeoaddLatestWarningGeolocationAddressId=33;
- string WangeoaddLatestWarningGeolocationAddress =34;
+ string WangeoaddLatestWarningGeolocationAddress =34;*/
 int32 WarningId =35;
 string DriverName =36;
 string WarningTripId =37;
@@ -110,8 +110,13 @@ int64 WarningOdometerVal =50;
 int64 WarningLatestProcessedMessageTimestamp =51;
 string WarningName = 52;//from dtcwarning table
 string WarningAdvice =53;
- 
-         
+ string WarningAddress=54;
+int32 WarningAddressId=55;
+bytes Icon =56;
+string IconName=57;
+string ColorName=58;
+int32 IconId=59;
+       
 }
 
 message VehicleHealthStatusListResponse{
@@ -162,7 +167,7 @@ message UserPreferenceDataColumn{
     string State=7;
     string ChartType = 8;
     string ThresholdType = 9;
-    int64 ThresholdValue = 10;
+    double ThresholdValue = 10;
 }
 
 message UserPreferenceDataColumnResponse{
@@ -202,7 +207,7 @@ message ReportUserPreference{
     string State=4;
     string ChartType=5;
     string ThresholdType=6;
-    int64 ThresholdValue=7;
+    double ThresholdValue=7;
     repeated ReportUserPreference SubReportUserPreferences=8;
 }
 
@@ -219,12 +224,12 @@ message ReportUserPreferenceCreateResponse{
 }
 
 message Atribute{
- int32 DataAttributeId = 1;
- string State = 2;
-   string Type = 3;
- string CharType = 4;
+  int32 DataAttributeId = 1;
+  string State = 2;
+  string Type = 3;
+  string CharType = 4;
   string ThresholdType = 5;
-  int64 ThresholdValue = 6;
+  double ThresholdValue = 6;
 }
 
 message UserPreferenceAttribute {
@@ -233,7 +238,7 @@ message UserPreferenceAttribute {
     int32 Type = 3;
     int32 ChartType = 4;
     int32 ThresholdType = 5;
-    int64 ThresholdValue = 6;
+    double ThresholdValue = 6;
 }
 
 message UserPreferenceCreateResponse{
@@ -482,7 +487,7 @@ message EcoScoreProfileDetails {
  int32 ProfileId = 1; 
  string ProfileName = 2;
  string ProfileDescription = 3;
- string LastUpdate = 4; 
+ int64 LastUpdate = 4; 
  string UpdatedBy = 5;
  repeated EcoScoreProfileKPIs ProfileSection = 6;
 }
@@ -513,9 +518,10 @@ message UpdateEcoScoreProfileRequest {
   int32 ProfileId = 1;
   string Name = 2;
   string Description = 3;
-    int32 OrgId = 4;
-  int32 AccountId = 5;
-  repeated CreateEcoScoreProfileKPI ProfileKPIs = 6;
+  bool IsDAFStandard = 4;
+  int32 OrgId = 5;
+  int32 AccountId = 6;
+  repeated CreateEcoScoreProfileKPI ProfileKPIs = 7;
 }
 message UpdateEcoScoreProfileResponse {
   Responsecode Code = 1;
@@ -1101,6 +1107,7 @@ message LogbookDetails{
          int64 AlertGeneratedTime=19;
          int32 AlertGeolocationAddressId =20;
          int64 ProcessedMessageTimestamp=21;
+         string VehicleHealthStatusType=22;
 }
 
 message LogbookDetailsResponse{
@@ -1262,15 +1269,11 @@ message EcoScoreSingleDriverBarPieChart
   EcoScoreSingleDriverBarPieChart AverageDrivingSpeedChart = 7;
 }
 
-message EcoScoreTrendlinesKPIScore {
- string Day = 1;
- string Value = 2;
-}
-
 message EcoScoreTrendlinesKPI {
  string Name = 1;
  string Key = 2;
- repeated EcoScoreTrendlinesKPIScore Data = 3;
+ string UoM = 3;
+ map<string, string> Data = 4;
 }
 
 message EcoScoreTrendlinesKPIInfo {

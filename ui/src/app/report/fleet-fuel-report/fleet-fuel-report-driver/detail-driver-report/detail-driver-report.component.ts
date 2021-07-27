@@ -28,6 +28,8 @@ import { ConfigService } from '@ngx-config/core';
 import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service'; 
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { MapService } from '../../report-mapservice';
+import * as fs from 'file-saver';
+import { Workbook } from 'exceljs';
 
 declare var H: any;
 
@@ -45,6 +47,11 @@ export class DetailDriverReportComponent implements OnInit {
   @Input() displayedColumns:any;
   @Input() driverSelected : boolean;
   @Input() graphPayload : any;
+  @Input() endDateValue: any;
+  @Input() startDateValue: any;
+  @Input() _vinData: any;
+  @Input() graphData: any;
+  idleDuration: any =[];
   //  displayedColumns = ['All','startDate','endDate','driverName','driverID','vehicleName', 'vin', 'vehicleRegistrationNo', 'distance', 'averageDistancePerDay', 'averageSpeed',
   //  'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   //  'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
@@ -240,8 +247,8 @@ public mapElement: ElementRef;
 tripTraceArray: any = [];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
-  @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
-  @ViewChildren(MatSort) sort = new QueryList<MatSort>();
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
   searchExpandPanel: boolean = true;
   initData: any = [];
   FuelData: any;
@@ -268,8 +275,8 @@ tripTraceArray: any = [];
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   vehicleGrpDD: any = [];
   selectionTab: any;
-  startDateValue: any = 0;
-  endDateValue: any = 0;
+  // startDateValue: any = 0;
+  // endDateValue: any = 0;
   last3MonthDate: any;
   todayDate: any;
   vehicleDD: any = [];
@@ -419,7 +426,7 @@ tripTraceArray: any = [];
         },
         scaleLabel: {
           display: true,
-          labelString: 't'    
+          labelString: 'Ton'    
         }
       }]
     }
@@ -588,7 +595,7 @@ tripTraceArray: any = [];
       filter: "",
       menuId: 10 //-- for fleet utilisation
     }
- 
+    this.getFleetPreferences();
     this.loadfleetFuelDetails(this.driverDetails);
     if(this.driverDetails){
       this.onSearch();
@@ -614,6 +621,10 @@ tripTraceArray: any = [];
  let prefData: any ={};
  let pref: any = {};
  this.proceedStep(prefData,pref);
+
+ this.isChartsOpen = true;
+ this.isDetailsOpen = true;
+ this.isSummaryOpen = true;
   }
 
 
@@ -950,7 +961,7 @@ createEndMarker(){
 
  
   getFleetPreferences(){
-    this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+    this.reportService.getUserPreferenceReport(4, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
       
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
@@ -1229,12 +1240,27 @@ createEndMarker(){
     this.advanceFilterOpen = false;
     this.searchMarker = {};
     this.isChartsOpen = true;
-    this.ConsumedChartType = 'Line';
-    this.TripsChartType= 'Bar';
-    this.Co2ChartType= 'Line';
-    this.DistanceChartType= 'Line';
-    this.ConsumptionChartType= 'Line';
-    this.DurationChartType= 'Line';
+    if (this.reportPrefData.length != 0) {
+      let filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_fuelconsumed'));
+      this.ConsumedChartType = filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_numberoftrips'));
+      this.TripsChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_co2emission'));
+      this.Co2ChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_distance'));
+      this.DistanceChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_fuelconsumption'));
+      this.ConsumptionChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+      filterData = this.reportPrefData.filter(item => item.key.includes('driver_chart_idledurationtotaltime'));
+      this.DurationChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
+    } else {
+      this.ConsumedChartType = 'Line';
+      this.TripsChartType= 'Bar';
+      this.Co2ChartType= 'Line';
+      this.DistanceChartType= 'Line';
+      this.ConsumptionChartType= 'Line';
+      this.DurationChartType= 'Line';
+    }
     // this.resetChartData(); // reset chart data
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
@@ -1282,9 +1308,10 @@ createEndMarker(){
       "LanguageCode": "EN-GB",
       "driverId": "NL B000384974000000"
     }
-    this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
-      this.setChartData(graphData["fleetfuelGraph"]);
-    });
+    // this.reportService.getdriverGraphDetails(searchDataParam).subscribe((graphData: any) => {
+    //   this.setChartData(graphData["fleetfuelGraph"]);
+    // });
+    this.setChartData(this.graphData["fleetfuelGraph"]);
     //if(_vinData.length === 1){
     //  this.showDetailedReport = true;
     //}
@@ -1420,7 +1447,7 @@ createEndMarker(){
       this.fuelConsumptionChart.push(e.fuelConsumtion);
       let minutes = this.convertTimeToMinutes(e.idleDuration);
       // this.idleDuration.push(e.idleDuration);
-      //this.idleDuration.push(minutes);
+      this.idleDuration.push(minutes);
     })
 
     this.barChartLegend = true;
@@ -1460,13 +1487,13 @@ createEndMarker(){
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC', }];
   }
-  // if(this.ConsumedChartType == 'Bar'){
-  //   //this.barChartData6= [
-  //     { data: this.idleDuration,
-  //       label: 'Values ()',
-  //       backgroundColor: '#7BC5EC',
-  //       hoverBackgroundColor: '#7BC5EC', }];
-  // }
+  if(this.ConsumedChartType == 'Bar'){
+    this.barChartData6= [
+      { data: this.idleDuration,
+        label: 'Values ()',
+        backgroundColor: '#7BC5EC',
+        hoverBackgroundColor: '#7BC5EC', }];
+  }
 
     //line chart for fuel consumed
     if(this.ConsumedChartType == 'Line')
@@ -1546,7 +1573,7 @@ createEndMarker(){
   }
     if(this.DurationChartType == 'Line')
     {
-   // this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
+   this.lineChartData6= [{ data: this.idleDuration, label: 'Minutes' }, ];
   }
   
     this.lineChartLabels = this.barChartLabels;
@@ -1584,24 +1611,31 @@ createEndMarker(){
   }
 
   proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
-    if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
-    }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
+    if (prefData && preference) {
+      let _search = prefData?.timeformat?.filter(i => i.id == preference.timeFormatId);
+      if (_search && _search.length > 0) {
+        this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+        this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+        this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+        this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;
+      } else {
+        if (prefData.timeformat && prefData.timeformat.length > 0) {
+          this.prefTimeFormat = parseInt(prefData.timeformat[0]?.value.split(" ")[0]);
+        }
+        if (prefData.timezone && prefData.timezone.length > 0) {
+          this.prefTimeZone = prefData.timezone[0].value;
+        }
+        if (prefData.dateformat && prefData.dateformat.length > 0) {
+          this.prefDateFormat = prefData.dateformat[0].name;
+        }
+        if (prefData.unit && prefData.unit.length > 0) {
+          this.prefUnitFormat = prefData.unit[0].name;
+        }
+      }
     }
-
-   
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
-    this.getFleetPreferences();
   }
 
   setDefaultStartEndTime()
@@ -1734,6 +1768,7 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
 
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
+    if(date) {
     if(this.prefTimeFormat == 12){
       if(_y.split(' ')[1] == 'AM' && _x == 12) {
         date.setHours(0);
@@ -1746,6 +1781,7 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
       date.setMinutes(_y);
     }
     date.setSeconds(type == 'start' ? '00' : '59');
+  }
     return date;
   }
 
@@ -1763,9 +1799,11 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
 
 getLast3MonthDate(){
     // let date = new Date();
+    if (this.prefTimeZone) {
     var date = Util.getUTCDate(this.prefTimeZone);
     date.setMonth(date.getMonth()-3);
     return date;
+    }
   }
 
   onReset(){
@@ -2003,229 +2041,336 @@ setVehicleGroupAndVehiclePreSelection() {
     this.dataSource.filter = filterValue;
   }
 
-  applyFilterRanking(filterValue: string) {
-    filterValue = filterValue.trim(); 
-    filterValue = filterValue.toLowerCase(); 
-    // this.dataSource.filter = filterValue;
-    this.dataSource2.filter = filterValue;
-  }
+ 
+  summaryNewObj: any;
 
-  exportAsExcelFile(){
-    this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Driver', sheet: 'sheet_name'});
-  }
+  getAllSummaryData(){ 
+          if(this.initData.length > 0){
+           let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
+            let fuelConsumption = 0; let fuelconsumed = 0;
+            this.initData.forEach(item => {         
+              numberOfTrips += item.numberOfTrips;
+              distanceDone += parseFloat(item.convertedDistance);
+              fuelconsumed += parseFloat(item.fuelconsumed);
+              idleDuration += parseFloat(item.convertedIdleDuration);
+              fuelConsumption += parseFloat(item.fuelConsumption);   
+            
+            // let time: any = 0;
+            // time += (item.convertedIdleDuration);
+             // let data: any = "00:00";
+              // let hours = Math.floor(time / 3600);
+            // time %= 3600;
+              // let minutes = Math.floor(time / 60);
+              // let seconds = time % 60;
+            // data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
+             // idleDuration = data;    
+          });
+          // numbeOfVehicles = this.initData.length;   
+            
+          this.summaryNewObj = [
+           ['Fleet Fuel Driver Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+             this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
+             fuelconsumed, idleDuration, fuelConsumption
+          ]
+          ];        
+         }
+       }
+          
+
+       exportAsExcelFile() {
+        this.getAllSummaryData();
+        const title = 'Fleet Fuel Driver Report';
+        const summary = 'Summary Section';
+        const detail = 'Detail Section';
+        let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
+        let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+    
+        const header =  ['Driver Name','Driver ID','Vehicle Name', 'VIN', 'Vehicle Registration No', 'Distance', 'Average Distance Per Day('+unitValkmh+')', 'Average Speed('+unitValkmh+')',
+        'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb',  
+        'Idle Duration','Pto Duration','HarshBrakeDuration','Heavy Throttle Duration','Cruise Control Distance 30-50('+unitValkmh+')',
+        'Cruise Control Distance 50-75('+unitValkmh+')','Cruise Control Distance>75('+unitValkmh+')', 'Average Traffic Classification',
+        'Cc Fuel Consumption','fuel Consumption CC Non Active','Idling Consumption','Dpa Score','Dpa AnticipationScore',
+        'Dpa Braking Score','Idling PTO Score(hh:mm:ss)','Idling PTO','Idling Without PTO(hh:mm:ss)','Foot Brake',
+        'CO2 Emmision(gr/km)', 'Average Traffic Classification Value','Idling Consumption Value'];
+        const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed(I)', 'Idle Duration(hh:mm)', 'Fuel Consumption('+unitValkm+')'];
+        const summaryData= this.summaryNewObj;
+        //Create workbook and worksheet
+        let workbook = new Workbook();
+        let worksheet = workbook.addWorksheet('Fleet Fuel Driver Report');
+        //Add Row and formatting
+        let titleRow = worksheet.addRow([title]);
+        worksheet.addRow([]);
+        titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+  
+        worksheet.addRow([]);
+        let subTitleRow = worksheet.addRow([summary]);
+        let summaryRow = worksheet.addRow(summaryHeader);
+        summaryData.forEach(element => {
+          worksheet.addRow(element);
+        });
+        worksheet.addRow([]);
+        summaryRow.eachCell((cell, number) => {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFFFF00' },
+            bgColor: { argb: 'FF0000FF' }
+          }
+          cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+        })
+        worksheet.addRow([]);
+        let subTitleDetailRow = worksheet.addRow([detail]);
+        let headerRow = worksheet.addRow(header);
+        headerRow.eachCell((cell, number) => {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFFFF00' },
+            bgColor: { argb: 'FF0000FF' }
+          }
+          cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+        })    
+        this.initData.forEach(item => {
+          worksheet.addRow([item.driverName, item.driverID, item.vehicleName,item.vin, item.vehicleRegistrationNo, item.convertedDistance,
+          item.convertedAverageDistance, item.convertedAverageSpeed, item.maxSpeed, item.numberOfTrips,
+          item.averageGrossWeightComb, item.convertedIdleDuration, item.ptoDuration,
+          item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
+        item.cruiseControlDistance75, item.averageTrafficClassification, item.ccFuelConsumption, item.fuelconsumptionCCnonactive,
+          item.idlingConsumption, item.dpaScore, item.dpaAnticipationScore, item.dpaBrakingScore,item.idlingPTOScore, item.idlingPTO, item.idlingWithoutPTOpercent,
+          item.footBrake, item.cO2Emmision, item.averageTrafficClassificationValue, item.idlingConsumptionValue
+        ]);
+        });
+  
+    //  exportAsExcelFile(){
+    //   this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Driver', sheet: 'sheet_name'});
+        worksheet.mergeCells('A1:D2');
+        subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+        subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+        for (var i = 0; i < header.length; i++) {
+          worksheet.columns[i].width = 20;
+        }
+        for (var j = 0; j < summaryHeader.length; j++) {
+          worksheet.columns[j].width = 20;
+        }
+        worksheet.addRow([]);
+        workbook.xlsx.writeBuffer().then((data) => {
+          let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          fs.saveAs(blob, 'Fleet_Fuel_Driver.xlsx');
+        })    
+    }
 
    exportAsPDFFile(){
-   }
-  //   var doc = new jsPDF('p', 'mm', 'a4');
-  // let pdfColumns = [this.displayedColumns];
-  // let prepare = []
-  //   this.displayData.forEach(e=>{
-  //     var tempObj =[];
-  //     this.displayedColumns.forEach(element => {
-  //       switch(element){
-  //         case 'driverName' :{
-  //           tempObj.push(e.driverName);
-  //           break;
-  //         }
-  //         case 'driverID' :{
-  //           tempObj.push(e.driverID);
-  //           break;
-  //         }
-  //         case 'vehicleName' :{
-  //           tempObj.push(e.vehicleName);
-  //           break;
-  //         }
-  //         case 'vin' :{
-  //           tempObj.push(e.vin);
-  //           break;
-  //         }
-  //         case 'vehicleRegistrationNo' :{
-  //           tempObj.push(e.vehicleRegistrationNo);
-  //           break;
-  //         }
-  //         case 'distance' :{
-  //           tempObj.push(e.convertedDistance);
-  //           break;
-  //         }
-  //         case 'averageDistancePerDay' :{
-  //           tempObj.push(e.convertedAverageDistance);
-  //           break;
-  //         }
-  //         case 'averageSpeed' :{
-  //           tempObj.push(e.convertedAverageSpeed);
-  //           break;
-  //         }
-  //         case 'maxSpeed' :{
-  //           tempObj.push(e.maxSpeed);
-  //           break;
-  //         }
-  //         case 'numberOfTrips' :{
-  //           tempObj.push(e.numberOfTrips);
-  //           break;
-  //         }
-  //         case 'averageGrossWeightComb' :{
-  //           tempObj.push(e.averageGrossWeightComb);
-  //           break;
-  //         }
-  //         case 'fuelConsumed' :{
-  //           tempObj.push(e.fuelConsumed);
-  //           break;
-  //         }
-  //         case 'fuelConsumption' :{
-  //           tempObj.push(e.fuelConsumption);
-  //           break;
-  //         }
-  //         case 'cO2Emission' :{
-  //           tempObj.push(e.cO2Emission);
-  //           break;
-  //         }
-  //         case 'idleDuration' :{
-  //           tempObj.push(e.convertedIdleDuration);
-  //           break;
-  //         }
-  //         case 'ptoDuration' :{
-  //           tempObj.push(e.ptoDuration);
-  //           break;
-  //         }
-  //         case 'harshBrakeDuration' :{
-  //           tempObj.push(e.harshBrakeDuration);
-  //           break;
-  //         }
-  //         case 'heavyThrottleDuration' :{
-  //           tempObj.push(e.heavyThrottleDuration);
-  //           break;
-  //         }
-  //         case 'cruiseControlDistance3050' :{
-  //           tempObj.push(e.cruiseControlDistance3050);
-  //           break;
-  //         }
-  //         case 'cruiseControlDistance5075' :{
-  //           tempObj.push(e.cruiseControlDistance5075);
-  //           break;
-  //         }
-  //         case 'cruiseControlDistance75' :{
-  //           tempObj.push(e.cruiseControlDistance75);
-  //           break;
-  //         }
-  //         case 'averageTrafficClassification' :{
-  //           tempObj.push(e.averageTrafficClassification);
-  //           break;
-  //         }
-  //         case 'ccFuelConsumption' :{
-  //           tempObj.push(e.ccFuelConsumption);
-  //           break;
-  //         }
-  //         case 'fuelconsumptionCCnonactive' :{
-  //           tempObj.push(e.fuelconsumptionCCnonactive);
-  //           break;
-  //         }
-  //         case 'idlingConsumption' :{
-  //           tempObj.push(e.idlingConsumption);
-  //           break;
-  //         }
-  //         case 'dpaScore' :{
-  //           tempObj.push(e.dpaScore);
-  //           break;
-  //         }
-  //         case 'dpaAnticipationScore' :{
-  //           tempObj.push(e.dpaAnticipationScore);
-  //           break;
-  //         }
-  //         case 'dpaBrakingScore' :{
-  //           tempObj.push(e.dpaBrakingScore);
-  //           break;
-  //         }
-  //         case 'idlingPTOScore' :{
-  //           tempObj.push(e.idlingPTOScore);
-  //           break;
-  //         }
-  //         case 'idlingPTO' :{
-  //           tempObj.push(e.idlingPTO);
-  //           break;
-  //         }
-  //         case 'idlingWithoutPTOpercent' :{
-  //           tempObj.push(e.idlingWithoutPTOpercent);
-  //           break;
-  //         }
-  //         case 'footBrake' :{
-  //           tempObj.push(e.footBrake);
-  //           break;
-  //         }
-  //         case 'cO2Emmision' :{
-  //           tempObj.push(e.cO2Emmision);
-  //           break;
-  //         }
-  //         case 'averageTrafficClassificationValue' :{
-  //           tempObj.push(e.averageTrafficClassificationValue);
-  //           break;
-  //         }
-  //         case 'idlingConsumptionValue' :{
-  //           tempObj.push(e.idlingConsumptionValue);
-  //           break;
-  //         }
-  //       }
-  //     })
-
-  //     prepare.push(tempObj);    
-  //   });
-    
-  //   let displayHeader = document.getElementById("chartHeader");
-  //   if(this.isChartsOpen){
-  //   displayHeader.style.display ="block";
-  //   }
-  //   else{
-  //     displayHeader.style.display = "none";
-  //   }
-    
-  //   let DATA = document.getElementById('charts');
-  //   html2canvas( DATA)
-  //   .then(canvas => {  
-  //     (doc as any).autoTable({
-  //       styles: {
-  //           cellPadding: 0.5,
-  //           fontSize: 12
-  //       },       
-  //       didDrawPage: function(data) {     
-  //           // Header
-  //           doc.setFontSize(14);
-  //           var fileTitle = "Fleet Fuel Report by Driver Details";
-  //           var img = "/assets/logo.png";
-  //           doc.addImage(img, 'JPEG',10,10,0,0);
-  
-  //           var img = "/assets/logo_daf.png"; 
-  //           doc.text(fileTitle, 14, 35);
-  //           doc.addImage(img, 'JPEG',150, 10, 0, 10);            
-  //       },
-  //       margin: {
-  //           bottom: 20, 
-  //           top:30 
-  //       }  
-  //     });
-
-  //       let fileWidth = 170;
-  //       let fileHeight = canvas.height * fileWidth / canvas.width;
+    var doc = new jsPDF('p', 'mm', 'a4');
+    let pdfColumns = [this.displayedColumns];
+    let prepare = []
+      this.displayData.forEach(e=>{
+        var tempObj =[];
+        this.displayedColumns.forEach(element => {
+          switch(element){
+            case 'driverName' :{
+              tempObj.push(e.driverName);
+              break;
+            }
+            case 'driverID' :{
+              tempObj.push(e.driverID);
+              break;
+            }
+            case 'vehicleName' :{
+              tempObj.push(e.vehicleName);
+              break;
+            }
+            case 'vin' :{
+              tempObj.push(e.vin);
+              break;
+            }
+            case 'vehicleRegistrationNo' :{
+              tempObj.push(e.vehicleRegistrationNo);
+              break;
+            }
+            case 'distance' :{
+              tempObj.push(e.convertedDistance);
+              break;
+            }
+            case 'averageDistancePerDay' :{
+              tempObj.push(e.convertedAverageDistance);
+              break;
+            }
+            case 'averageSpeed' :{
+              tempObj.push(e.convertedAverageSpeed);
+              break;
+            }
+            case 'maxSpeed' :{
+              tempObj.push(e.maxSpeed);
+              break;
+            }
+            case 'numberOfTrips' :{
+              tempObj.push(e.numberOfTrips);
+              break;
+            }
+            case 'averageGrossWeightComb' :{
+              tempObj.push(e.averageGrossWeightComb);
+              break;
+            }
+            case 'fuelConsumed' :{
+              tempObj.push(e.fuelConsumed);
+              break;
+            }
+            case 'fuelConsumption' :{
+              tempObj.push(e.fuelConsumption);
+              break;
+            }
+            case 'cO2Emission' :{
+              tempObj.push(e.cO2Emission);
+              break;
+            }
+            case 'idleDuration' :{
+              tempObj.push(e.convertedIdleDuration);
+              break;
+            }
+            case 'ptoDuration' :{
+              tempObj.push(e.ptoDuration);
+              break;
+            }
+            case 'harshBrakeDuration' :{
+              tempObj.push(e.harshBrakeDuration);
+              break;
+            }
+            case 'heavyThrottleDuration' :{
+              tempObj.push(e.heavyThrottleDuration);
+              break;
+            }
+            case 'cruiseControlDistance3050' :{
+              tempObj.push(e.cruiseControlDistance3050);
+              break;
+            }
+            case 'cruiseControlDistance5075' :{
+              tempObj.push(e.cruiseControlDistance5075);
+              break;
+            }
+            case 'cruiseControlDistance75' :{
+              tempObj.push(e.cruiseControlDistance75);
+              break;
+            }
+            case 'averageTrafficClassification' :{
+              tempObj.push(e.averageTrafficClassification);
+              break;
+            }
+            case 'ccFuelConsumption' :{
+              tempObj.push(e.ccFuelConsumption);
+              break;
+            }
+            case 'fuelconsumptionCCnonactive' :{
+              tempObj.push(e.fuelconsumptionCCnonactive);
+              break;
+            }
+            case 'idlingConsumption' :{
+              tempObj.push(e.idlingConsumption);
+              break;
+            }
+            case 'dpaScore' :{
+              tempObj.push(e.dpaScore);
+              break;
+            }
+            case 'dpaAnticipationScore' :{
+              tempObj.push(e.dpaAnticipationScore);
+              break;
+            }
+            case 'dpaBrakingScore' :{
+              tempObj.push(e.dpaBrakingScore);
+              break;
+            }
+            case 'idlingPTOScore' :{
+              tempObj.push(e.idlingPTOScore);
+              break;
+            }
+            case 'idlingPTO' :{
+              tempObj.push(e.idlingPTO);
+              break;
+            }
+            case 'idlingWithoutPTOpercent' :{
+              tempObj.push(e.idlingWithoutPTOpercent);
+              break;
+            }
+            case 'footBrake' :{
+              tempObj.push(e.footBrake);
+              break;
+            }
+            case 'cO2Emmision' :{
+              tempObj.push(e.cO2Emmision);
+              break;
+            }
+            case 'averageTrafficClassificationValue' :{
+              tempObj.push(e.averageTrafficClassificationValue);
+              break;
+            }
+            case 'idlingConsumptionValue' :{
+              tempObj.push(e.idlingConsumptionValue);
+              break;
+            }
+          }
+        })
+ 
+        prepare.push(tempObj);    
+      });
+     
+      let displayHeader = document.getElementById("chartHeader");
+      if(this.isChartsOpen){
+      displayHeader.style.display ="block";
+      }
+      else{
+        displayHeader.style.display = "none";
+      }
+     
+      let DATA = document.getElementById('charts');
+      html2canvas( DATA)
+      .then(canvas => {  
+        (doc as any).autoTable({
+          styles: {
+              cellPadding: 0.5,
+              fontSize: 12
+          },       
+          didDrawPage: function(data) {     
+              doc.setFontSize(14);
+              var fileTitle = "Fleet Fuel Report by Driver Details";
+              var img = "/assets/logo.png";
+              doc.addImage(img, 'JPEG',10,10,0,0);
+   
+              var img = "/assets/logo_daf.png"; 
+              doc.text(fileTitle, 14, 35);
+              doc.addImage(img, 'JPEG',150, 10, 0, 10);            
+          },
+          margin: {
+              bottom: 20, 
+              top:30 
+          }  
+        });
+ 
+          let fileWidth = 170;
+          let fileHeight = canvas.height * fileWidth / canvas.width;
+         
+          const FILEURI = canvas.toDataURL('image/png')
+           let PDF = new jsPDF('p', 'mm', 'a4');
+          let position = 0;
+          doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
+          doc.addPage();
+ 
+        (doc as any).autoTable({
+        head: pdfColumns,
+        body: prepare,
+        theme: 'striped',
+        didDrawCell: data => {
+          console.log(data.column.index)
+        }
+      })
+ 
+      doc.save('fleetFuelByDriver.pdf');
         
-  //       const FILEURI = canvas.toDataURL('image/png')
-  //       // let PDF = new jsPDF('p', 'mm', 'a4');
-  //       let position = 0;
-  //       doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
-  //       doc.addPage();
-
-  //     (doc as any).autoTable({
-  //     head: pdfColumns,
-  //     body: prepare,
-  //     theme: 'striped',
-  //     didDrawCell: data => {
-  //       //console.log(data.column.index)
-  //     }
-  //   })
-
-  //   doc.save('fleetFuelByDriver.pdf');
-       
-  //   }); 
-    
-  //   displayHeader.style.display ="block";
-  // }
+      }); 
+     
+      displayHeader.style.display ="block";
+   }
+   
+  
 
   backToMainPageCall(){
     let emitObj = {
@@ -2281,6 +2426,20 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     }
     return sum; 
+  }
+
+  checkForPreference(fieldKey) {
+    if (this.reportPrefData.length != 0) {
+      let filterData = this.reportPrefData.filter(item => item.key.includes('driver_'+fieldKey));
+      if (filterData.length > 0) {
+        if (filterData[0].state == 'A') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
 }

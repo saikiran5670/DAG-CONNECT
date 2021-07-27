@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.email.Entity;
@@ -10,6 +11,8 @@ using net.atos.daf.ct2.notification.entity;
 using net.atos.daf.ct2.notificationengine.entity;
 using net.atos.daf.ct2.notificationengine.repository;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.webservice;
+using net.atos.daf.ct2.webservice.entity;
 
 namespace net.atos.daf.ct2.notificationengine
 {
@@ -144,10 +147,12 @@ namespace net.atos.daf.ct2.notificationengine
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
                 {
+
                 }
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").Count() > 0)
                 {
+                    await GetWebServiceCall(identifiedNotificationRec);
                 }
 
                 return notificationDetails;
@@ -193,6 +198,34 @@ namespace net.atos.daf.ct2.notificationengine
                     item.Status = isResult ? ((char)NotificationSendType.Successful).ToString() : ((char)NotificationSendType.Failed).ToString();
                     await InsertNotificationSentHistory(item);
                 }
+                return isResult;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<bool> GetWebServiceCall(List<NotificationHistory> notificationHistoryWebService)
+        {
+            try
+            {
+                bool isResult = false;
+                foreach (var item in notificationHistoryWebService)
+                {
+                    WebServiceManager wsClient = new WebServiceManager();
+                    HeaderDetails headerDetails = new HeaderDetails();
+                    headerDetails.BaseUrl = item.WsUrl;
+                    headerDetails.Body = item.WsText;
+                    headerDetails.AuthType = item.WsAuthType;
+                    headerDetails.UserName = item.WsLogin;
+                    headerDetails.Password = item.WsPassword;
+                    headerDetails.ContentType = "application/json";
+                    HttpResponseMessage response = await wsClient.HttpClientCall(headerDetails);
+                    item.Status = response.StatusCode == System.Net.HttpStatusCode.OK ? ((char)NotificationSendType.Successful).ToString() : ((char)NotificationSendType.Failed).ToString();
+                    await InsertNotificationSentHistory(item);
+                    isResult = true;
+                }
+
                 return isResult;
             }
             catch (Exception)

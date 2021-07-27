@@ -89,41 +89,37 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 							 * if (moniterData.getDocument().getTripID() != null) { String tripID =
 							 * moniterData.getDocument().getTripID(); }
 							 */
-						if(row.getVin()!=(null))	{
-							vin=row.getVin();
-						} else {
-							vin=row.getVid();
-						}
-						//Long lastestProcessedMessageTimeStamp =warningDao.read(row.getMessageType(),vin);
+							if (row.getVin() != (null)) {
+								vin = row.getVin();
+							} else {
+								vin = row.getVid();
+							}
+							Long lastestProcessedMessageTimeStamp = warningDao.read(row.getMessageType(), vin);
+							System.out.println(
+									"lastestProcessedMessageTimeStamp value --" + lastestProcessedMessageTimeStamp);
 
 							if (messageTen.equals(row.getMessageType())) {
-								
-								
 
-								/*
-								 * WarningStastisticsPojo warningDetail =
-								 * WarningStatisticsCalculation(moniterData,
-								 * messageTen,lastestProcessedMessageTimeStamp);
-								 */
-								
 								WarningStastisticsPojo warningDetail = WarningStatisticsCalculation(moniterData,
-										messageTen);
+										messageTen, lastestProcessedMessageTimeStamp);
+
 								warningDao.warning_insert(warningDetail);
-								System.out.println("warning Inserted");
+								System.out.println("warning message 10 Inserted");
+								warningDao.warningUpdateMessageTenCommonTrip(warningDetail);
+								System.out.println("warning updated for message 10 in another table");
 								logger.info("Warning records inserted to warning table :: ");
 							}
 
 							if (messageFour.equals(row.getMessageType())) {
 
-								/*
-								 * WarningStastisticsPojo warningDetail =
-								 * WarningStatisticsCalculation(moniterData,
-								 * messageFour,lastestProcessedMessageTimeStamp);
-								 */
 								WarningStastisticsPojo warningDetail = WarningStatisticsCalculation(moniterData,
-										messageFour);
+										messageFour, lastestProcessedMessageTimeStamp);
+
 								warningDao.warning_insert(warningDetail);
-								System.out.println("warning Inserted");
+								System.out.println("warning Message 4 Inserted");
+								warningDao.warningUpdateMessageFourCommonTrip(warningDetail);
+								System.out.println("warning updated for message 10 in another table");
+
 							}
 
 						}
@@ -138,15 +134,16 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 		System.out.println("Invoke Finish Warning");
 	}
 
-	public WarningStastisticsPojo WarningStatisticsCalculation(Monitor row, Integer messageType) {
-		
+	public WarningStastisticsPojo WarningStatisticsCalculation(Monitor row, Integer messageType,
+			Long lastestProcessedMessageTimeStamp) {
+
 		WarningStastisticsPojo warningDetail = new WarningStastisticsPojo();
-		//,Long lastestProcessedMessageTimeStamp-----add in parameter
+		// ,Long lastestProcessedMessageTimeStamp-----add in parameter
 		if (messageType == 10) {
 
 			System.out.println("Inside warning calculation type 10");
 
-			warningDetail.setTripId(row.getDocument().getTripID());
+			warningDetail.setTripId(null);
 			warningDetail.setVin(row.getVin());
 			warningDetail.setVid(row.getVid());
 			try {
@@ -193,29 +190,26 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 				}
 			} else {
 
-				warningDetail.setVehicleHealthStatusType("Q ");
+				warningDetail.setVehicleHealthStatusType("");
 			}
 
 			// Vehicle Driving status
 			if (row.getDocument().getVWheelBasedSpeed() != null) {
 				if (row.getDocument().getVWheelBasedSpeed() > 0) {
 					warningDetail.setVehicleDrivingStatusType("D");
-				} /*
-					 * else if(row.getDocument().getVEngineSpeed()!=null &&
-					 * row.getDocument().getVWheelBasedSpeed() == 0 &&
-					 * row.getDocument().getVEngineSpeed() > 0) {
-					 * warningDetail.setVehicleDrivingStatusType("I"); }
-					 */
+				} else if (row.getDocument().getVEngineSpeed() != null && row.getDocument().getVWheelBasedSpeed() == 0
+						&& row.getDocument().getVEngineSpeed() > 0) {
+					warningDetail.setVehicleDrivingStatusType("I");
+				}
+
 				else if (row.getDocument().getVWheelBasedSpeed() == 0) {
 					warningDetail.setVehicleDrivingStatusType("S");
 				}
 			} else {
-				warningDetail.setVehicleDrivingStatusType("Q");
+				warningDetail.setVehicleDrivingStatusType("");
 			}
 
-			
-				warningDetail.setDriverID(null);
-			
+			warningDetail.setDriverID(null);
 
 			// Warning Type
 			if (row.getVEvtID() != null) {
@@ -227,23 +221,25 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 					warningDetail.setWarningType("Q");
 				}
 			} else {
-				warningDetail.setWarningType("Q");
+				warningDetail.setWarningType("");
 			}
 
 			warningDetail.setDistanceUntilNextService(null);
 			warningDetail.setOdometerVal(null);
-			
-				
-			//warningDetail.setLastestProcessedMessageTimeStamp(lastestProcessedMessageTimeStamp);----revert it
-			warningDetail.setLastestProcessedMessageTimeStamp(null);
-			
+
+			if (lastestProcessedMessageTimeStamp != null) {
+				warningDetail.setLastestProcessedMessageTimeStamp(lastestProcessedMessageTimeStamp);
+			} else {
+				warningDetail.setLastestProcessedMessageTimeStamp(null);
+			}
+
 			warningDetail.setCreatedAt(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
-			if(row.getMessageType()!=null) {
+			if (row.getMessageType() != null) {
 				warningDetail.setMessageType(row.getMessageType());
-				} else {
-					warningDetail.setMessageType(null);
-				}
-			
+			} else {
+				warningDetail.setMessageType(null);
+			}
+
 			// warningDetail.setModifiedAt(null);
 
 			System.out.println("in vehicle warning class message 10---" + row.getVin());
@@ -251,7 +247,7 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 
 		} else if (messageType == 4) {
 
-			warningDetail.setTripId(null);
+			warningDetail.setTripId(row.getDocument().getTripID());
 			warningDetail.setVin(row.getVin());
 			warningDetail.setVid(row.getVid());
 			try {
@@ -290,17 +286,16 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 			if (row.getDocument().getVWheelBasedSpeed() != null) {
 				if (row.getDocument().getVWheelBasedSpeed() > 0) {
 					warningDetail.setVehicleDrivingStatusType("D");
-				} /*
-					 * else if (row.getDocument().getVEngineSpeed()!=null &&
-					 * row.getDocument().getVWheelBasedSpeed() == 0 &&
-					 * row.getDocument().getVEngineSpeed() > 0) {
-					 * warningDetail.setVehicleDrivingStatusType("I"); }
-					 */
+				} else if (row.getDocument().getVEngineSpeed() != null && row.getDocument().getVWheelBasedSpeed() == 0
+						&& row.getDocument().getVEngineSpeed() > 0) {
+					warningDetail.setVehicleDrivingStatusType("I");
+				}
+
 				else if (row.getDocument().getVWheelBasedSpeed() == 0) {
 					warningDetail.setVehicleDrivingStatusType("S");
 				}
 			} else {
-				warningDetail.setVehicleDrivingStatusType("Q");
+				warningDetail.setVehicleDrivingStatusType("");
 			}
 
 			if (row.getDocument().getDriverID() != null) {
@@ -319,24 +314,24 @@ public class WarningStatisticsSink extends RichSinkFunction<KafkaRecord<Monitor>
 					warningDetail.setWarningType("Q");
 				}
 			} else {
-				warningDetail.setWarningType("Q");
+				warningDetail.setWarningType("");
 			}
 
-			if(row.getDocument().getVDistanceUntilService()!=null) {
-			warningDetail.setDistanceUntilNextService(row.getDocument().getVDistanceUntilService().longValue());
+			if (row.getDocument().getVDistanceUntilService() != null) {
+				warningDetail.setDistanceUntilNextService(row.getDocument().getVDistanceUntilService().longValue());
 			} else {
 				warningDetail.setDistanceUntilNextService(null);
 			}
-			
-			if(row.getDocument().getVDist()!=null) {
-			warningDetail.setOdometerVal(row.getDocument().getVDist().longValue());
+
+			if (row.getDocument().getVDist() != null) {
+				warningDetail.setOdometerVal(row.getDocument().getVDist().longValue());
 			} else {
 				warningDetail.setOdometerVal(null);
 			}
 			warningDetail.setCreatedAt(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
-			
-			if(row.getMessageType()!=null) {
-			warningDetail.setMessageType(row.getMessageType());
+
+			if (row.getMessageType() != null) {
+				warningDetail.setMessageType(row.getMessageType());
 			} else {
 				warningDetail.setMessageType(null);
 			}
