@@ -20,6 +20,8 @@ using AccountComponent = net.atos.daf.ct2.account;
 using Group = net.atos.daf.ct2.group;
 using net.atos.daf.ct2.confluentkafka;
 using net.atos.daf.ct2.kafkacdc;
+using net.atos.daf.ct2.kafkacdc.entity;
+
 namespace net.atos.daf.ct2.vehicleservice.Services
 {
     public class VehicleManagementService : VehicleService.VehicleServiceBase
@@ -33,8 +35,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         private readonly IAuditTraillib _auditlog;
         private readonly AccountComponent.IAccountManager _accountmanager;
         private readonly IConfiguration _configuration;
+        private readonly IVehicleCdcManager _vehicleCdcManager;
 
-        public VehicleManagementService(IVehicleManager vehicelManager, Group.IGroupManager groupManager, IAuditTraillib auditlog, AccountComponent.IAccountManager accountmanager, IConfiguration configuration)
+        public VehicleManagementService(IVehicleManager vehicelManager, Group.IGroupManager groupManager, IAuditTraillib auditlog, AccountComponent.IAccountManager accountmanager, IConfiguration configuration,
+            IVehicleCdcManager vehicleCdcManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _vehicleManager = vehicelManager;
@@ -44,6 +48,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             _mapper = new Mapper();
             _kafkaConfiguration = new KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
+            _vehicleCdcManager = vehicleCdcManager;
         }
 
         public override async Task<VehiclesBySubscriptionDetailsResponse> GetVehicleBySubscriptionId(SubscriptionIdRequest request, ServerCallContext context)
@@ -83,9 +88,9 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Create", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.Info("Create method in vehicle service called.");
                 //ConsumeResult<Null, string> message = VehicleCdcManager.VehicleCdcProducer(List < kafkacdc.entity.VehicleCdc > vehicleCdcList, kafkaConfiguration);
-                //List<kafkacdc.entity.VehicleCdc> vehicleCdcList = new List<kafkacdc.entity.VehicleCdc>();
-                //KafkaConfiguration kafkaConfiguration = new KafkaConfiguration();
-                //ProducerBuilder<Null, string> producerBuilder = await VehicleCdcManager.VehicleCdcProducer(vehicleCdcList, kafkaConfiguration);
+               //// List<VehicleCdc> vehicleCdcList = new List<VehicleCdc>() { new VehicleCdc() {  Vin=Objvehicle.VIN,Vid=Objvehicle.Vid, FuelType=Objvehicle.Fuel,
+                // Status=Objvehicle.Status.ToString()} };
+                //var producerBuilder = _vehicleCdcManager.VehicleCdcProducer(vehicleCdcList, _kafkaConfiguration);
 
                 return await Task.FromResult(new VehicleCreateResponce
                 {

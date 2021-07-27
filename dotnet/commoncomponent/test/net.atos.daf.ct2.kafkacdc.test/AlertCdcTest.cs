@@ -5,6 +5,8 @@ using net.atos.daf.ct2.kafkacdc.entity;
 using net.atos.daf.ct2.kafkacdc.repository;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using net.atos.daf.ct2.confluentkafka;
 
 namespace net.atos.daf.ct2.kafkacdc.test
 {
@@ -17,6 +19,7 @@ namespace net.atos.daf.ct2.kafkacdc.test
         private readonly IVehicleAlertRepository _vehicleAlertRepository;
         private readonly IConfiguration _configuration;
         private readonly KafkaConfiguration _kafkaConfig;
+        private readonly VehicleCdcManager _vehicleCdcManager;
 
         public AlertCDCTest()
         {
@@ -29,6 +32,7 @@ namespace net.atos.daf.ct2.kafkacdc.test
             _vehicleAlertRepository = new VehicleAlertRepository(_dataAccess, _datamartDataacess);
             _configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
             _vehicleAlertRefIntegrator = new VehicleAlertRefIntegrator(_vehicleAlertRepository, _configuration);
+            _vehicleCdcManager = new VehicleCdcManager();
         }
 
         [TestMethod]
@@ -36,6 +40,24 @@ namespace net.atos.daf.ct2.kafkacdc.test
         {
             var result = _vehicleAlertRefIntegrator.GetVehicleAlertRefFromAlertConfiguration(150).Result;
             Assert.IsTrue(result.Count > 0);
+        }
+        [TestMethod]
+        public void VehicleCdcProducer()
+        {
+            var _kafkaConfig1 = new KafkaConfiguration()
+            {
+                CA_CERT_LOCATION = "./cacert.pem",
+                CONSUMER_GROUP = "cdcvehicleconsumer",
+                EH_CONNECTION_STRING = "Endpoint=sb://daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gicUoPvdd/u2bKPFXIhaDbBVgvBDsXrz9kcSWJm8gpw=",
+                EH_FQDN = "daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net:9093",//BrokerList
+                EH_NAME = "ingress.atos.vehicle.cdc.json" //topic name
+            };
+            var vCdcList = new List<VehicleCdc>() { new VehicleCdc() { FuelType = "B", Status = "C", Vid = "M4A1113", FuelTypeCoefficient = 0, Vin = "XLRAE75PC0E348696" } };
+            var result = _vehicleCdcManager.VehicleCdcProducer(vCdcList, _kafkaConfig1);
+           
+            Assert.IsTrue(result != null);
+
+
         }
     }
 }
