@@ -45,19 +45,26 @@ namespace net.atos.daf.ct2.kafkacdc
                         Topic = kafkaConfiguration.EH_NAME,
                         Cacertlocation = kafkaConfiguration.CA_CERT_LOCATION,
                         ProducerMessage = PrepareVehicleKafkaJSON(vlr, "I").Result,
-                        // Consumergroup = kafkaConfiguration.CONSUMER_GROUP
                     };
                     await KafkaConfluentWorker.Producer(kafkaEntity);
-                    //var test = KafkaConfluentWorker.Consumer(kafkaEntity);
+                    var test = VehicleCdcConsumer(kafkaConfiguration);
                 }
             }
         }
 
-        public async Task VehicleCdcConsumer(KafkaEntity kafkaEntity)
+        public async Task VehicleCdcConsumer(KafkaConfiguration kafkaConfiguration)
         {
             try
             {
+                KafkaEntity kafkaEntity = new KafkaEntity()
+                {
+                    BrokerList = kafkaConfiguration.EH_FQDN,
+                    ConnString = kafkaConfiguration.EH_CONNECTION_STRING,
+                    Topic = kafkaConfiguration.EH_NAME,
+                    Cacertlocation = kafkaConfiguration.CA_CERT_LOCATION,
+                    Consumergroup = kafkaConfiguration.CONSUMER_GROUP
 
+                };
                 VehicleCdc vehicleCdc = new VehicleCdc();
                 ConsumeResult<Null, string> message = KafkaConfluentWorker.Consumer(kafkaEntity);
                 while (message != null)
