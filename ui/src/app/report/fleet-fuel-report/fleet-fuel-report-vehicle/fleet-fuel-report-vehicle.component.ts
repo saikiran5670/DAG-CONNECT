@@ -1071,6 +1071,10 @@ getLast3MonthDate(){
   }
 
   onReset(){
+    this.isSummaryOpen= false;
+    this.isRankingOpen=  false;
+    this.isDetailsOpen=false;
+    this.isChartsOpen= false;
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
