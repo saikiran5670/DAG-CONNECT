@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.vehicleservice
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ITranslationManager, TranslationManager>();
             services.AddTransient<IVehicleCdcManager, VehicleCdcManager>();
-            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

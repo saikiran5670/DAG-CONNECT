@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.kafkacdc
                         Topic = kafkaConfiguration.EH_NAME,
                         Cacertlocation = kafkaConfiguration.CA_CERT_LOCATION,
                         ProducerMessage = PrepareVehicleKafkaJSON(vlr, "I").Result,
-                       // Consumergroup = kafkaConfiguration.CONSUMER_GROUP
+                        // Consumergroup = kafkaConfiguration.CONSUMER_GROUP
                     };
                     await KafkaConfluentWorker.Producer(kafkaEntity);
                     //var test = KafkaConfluentWorker.Consumer(kafkaEntity);

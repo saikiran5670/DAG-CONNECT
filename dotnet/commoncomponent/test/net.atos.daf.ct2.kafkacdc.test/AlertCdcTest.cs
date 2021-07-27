@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.kafkacdc.test
             };
             var vCdcList = new List<VehicleCdc>() { new VehicleCdc() { FuelType = "B", Status = "C", Vid = "M4A1113", FuelTypeCoefficient = 0, Vin = "XLRAE75PC0E348696" } };
             var result = _vehicleCdcManager.VehicleCdcProducer(vCdcList, _kafkaConfig1);
-           
+
             Assert.IsTrue(result != null);
 
 

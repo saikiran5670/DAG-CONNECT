@@ -88,7 +88,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Create", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.Info("Create method in vehicle service called.");
                 //ConsumeResult<Null, string> message = VehicleCdcManager.VehicleCdcProducer(List < kafkacdc.entity.VehicleCdc > vehicleCdcList, kafkaConfiguration);
-               //// List<VehicleCdc> vehicleCdcList = new List<VehicleCdc>() { new VehicleCdc() {  Vin=Objvehicle.VIN,Vid=Objvehicle.Vid, FuelType=Objvehicle.Fuel,
+                //// List<VehicleCdc> vehicleCdcList = new List<VehicleCdc>() { new VehicleCdc() {  Vin=Objvehicle.VIN,Vid=Objvehicle.Vid, FuelType=Objvehicle.Fuel,
                 // Status=Objvehicle.Status.ToString()} };
                 //var producerBuilder = _vehicleCdcManager.VehicleCdcProducer(vehicleCdcList, _kafkaConfiguration);
 
