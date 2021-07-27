@@ -1,0 +1,39 @@
+
+# ============================== Filebeat inputs ===============================
+
+filebeat.inputs:
+
+- type: log
+  enabled: true
+  paths:
+    - /tmp/log/Error/*
+    - /tmp/log/Info/*
+  fields:
+    ENV: #{ENV}#
+    ServiceName: ${serviceName}
+  fields_under_root: true
+  ignore_older: 72h  
+
+  multiline.type: pattern
+  multiline.pattern: '^([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}|\s[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})'
+  multiline.negate: true
+  multiline.match: after
+
+# ------------------------------ Logstash Output -------------------------------
+output.logstash:
+   hosts: ["dafct-con1-p-euwe-cdp-elk-ls-vm1.elk.con.ct2.atos.net:5044","dafct-con1-p-euwe-cdp-elk-ls-vm2.elk.con.ct2.atos.net:5044"]
+   loadbalance: true
+
+  # Optional SSL. By default is off.
+  # List of root certificates for HTTPS server verifications
+   ssl.certificate_authorities: ["/certs/ca.crt"]
+   ssl.verification_mode: none
+   
+# ================================= Processors =================================
+processors:
+  - drop_fields:
+      fields: ["agent", "log", "input", "ecs" ]
+
+# ================================== Logging ===================================
+
+logging.level: warning
