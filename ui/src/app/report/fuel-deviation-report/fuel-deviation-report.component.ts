@@ -334,7 +334,20 @@ export class FuelDeviationReportComponent implements OnInit {
   }
 
   getReportPreferences(){
-    this.reportService.getReportUserPreference(this.fuelDeviationReportId).subscribe((data : any) => {
+    let reportListData: any = [];
+    this.reportService.getReportDetails().subscribe((reportList: any)=>{
+      reportListData = reportList.reportDetails;
+      this.getFuelDeviationReportPreferences(reportListData);
+    }, (error)=>{
+      console.log('Report not found...', error);
+      reportListData = [{name: 'Fuel Deviation Report', id: 7}]; // hard coded
+      this.getFuelDeviationReportPreferences(reportListData);
+    });
+  }
+
+  getFuelDeviationReportPreferences(prefData: any){
+    let repoId: any = prefData.filter(i => i.name == 'Fuel Deviation Report');
+    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 7).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetFuelDeviationPrefData();
       this.getTranslatedColumnName(this.reportPrefData);
