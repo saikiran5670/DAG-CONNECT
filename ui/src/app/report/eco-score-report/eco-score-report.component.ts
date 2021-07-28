@@ -311,6 +311,18 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     this.getReportPreferences();
   }
 
+  getReportPreferences(){
+    let reportListData: any = [];
+    this.reportService.getReportDetails().subscribe((reportList: any)=>{
+      reportListData = reportList.reportDetails;
+      this.getEcoScoreReportPreferences(reportListData);
+    }, (error)=>{
+      console.log('Report not found...', error);
+      reportListData = [{name: 'EcoScore Report', id: 10}]; // hard coded
+      this.getEcoScoreReportPreferences(reportListData);
+    });
+  }
+
   setPrefFormatTime(){
     if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "" &&  ((this.searchFilterpersistData.startTimeStamp || this.searchFilterpersistData.endTimeStamp) !== "") ) {
       if(this.prefTimeFormat == this.searchFilterpersistData.filterPrefTimeFormat){ // same format
@@ -346,8 +358,9 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     }
   }
   
-  getReportPreferences(){
-    this.reportService.getReportUserPreference(this.reportId).subscribe((data : any) => {
+  getEcoScoreReportPreferences(prefData: any){
+    let repoId: any = prefData.filter(i => i.name == 'EcoScore Report');
+    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 10).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetColumnData();
       this.preparePrefData(this.reportPrefData);

@@ -16,7 +16,12 @@ namespace net.atos.daf.ct2.kafkacdc
 {
     public class VehicleCdcManager : IVehicleCdcManager
     {
+        private readonly IVehicleCdcRepository _vehicleCdcRepository;
 
+        public VehicleCdcManager(IVehicleCdcRepository vehicleCdcRepository)
+        {
+            _vehicleCdcRepository = vehicleCdcRepository;
+        }
         internal Task<string> PrepareVehicleKafkaJSON(VehicleCdc vehicleCdc, string operation)
         {
             //vehicleCdc.State = "A";
@@ -82,6 +87,18 @@ namespace net.atos.daf.ct2.kafkacdc
             catch (Exception ex)
             {
 
+            }
+        }
+
+        public async Task<List<VehicleCdc>> GetVehicleCdc(List<int> vids)
+        {
+            try
+            {
+                return await _vehicleCdcRepository.GetVehicleCdc(vids);
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
     }
