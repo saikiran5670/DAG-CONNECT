@@ -8,6 +8,7 @@ using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reportscheduler.entity;
+using net.atos.daf.ct2.reportscheduler.ENUM;
 using net.atos.daf.ct2.reportscheduler.helper;
 using net.atos.daf.ct2.reportscheduler.report;
 using net.atos.daf.ct2.reportscheduler.repository;
@@ -20,7 +21,7 @@ using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.account.report
 {
-    public class FleetFuel : IReport
+    public class FuelDeviation : IReport
     {
         private readonly IReportSchedulerRepository _reportSchedularRepository;
         private readonly IVisibilityManager _visibilityManager;
@@ -47,15 +48,10 @@ namespace net.atos.daf.ct2.account.report
         public ReportCreationScheduler ReportSchedulerData { get; private set; }
         public IReportManager ReportManager { get; }
         public string DateTimeFormat { get; private set; }
-        internal List<FleetFuelPdfDetails> FleetFuelPdfDetails { get; private set; }
-        public double TotalIdleDuration { get; private set; }
-        public double TotalFuelConsumption { get; private set; }
-        public double TotalCO2Emission { get; private set; }
-        public int TotalNumberOfTrips { get; private set; }
-        public double TotalDistance { get; private set; }
-        public double TotalFuelConsumed { get; private set; }
+        public long TotalIdleDuration { get; private set; }
+        public IEnumerable<reports.entity.FuelDeviation> FuelDeviationDetails { get; private set; }
 
-        public FleetFuel(IReportManager reportManager,
+        public FuelDeviation(IReportManager reportManager,
                           IReportSchedulerRepository reportSchedularRepository,
                           IVisibilityManager visibilityManager, ITemplateManager templateManager,
                           IUnitConversionManager unitConversionManager, IUnitManager unitManager,
@@ -77,6 +73,9 @@ namespace net.atos.daf.ct2.account.report
             ToDate = reportSchedulerData.EndDate;
             VehicleLists = vehicleLists;
             VINs = vehicleLists.Select(s => s.VIN).Distinct();
+            //VIN = vehicleList.VIN;
+            //VehicleName = vehicleList.VehicleName;
+            //RegistrationNo = vehicleList.RegistrationNo;
             ReportSchedulerData = reportSchedulerData;
             TimeZoneName = reportSchedulerData.TimeZoneId > 0 ? TimeZoneSingleton.GetInstance(_reportSchedularRepository).GetTimeZoneName(reportSchedulerData.TimeZoneId) : TimeConstants.UTC;
             DateFormatName = reportSchedulerData.DateFormatId > 0 ? DateFormatSingleton.GetInstance(_reportSchedularRepository).GetDateFormatName(reportSchedulerData.DateFormatId) : FormatConstants.DATE_FORMAT;
@@ -92,72 +91,41 @@ namespace net.atos.daf.ct2.account.report
             return Task.FromResult<string>(html.ToString());
         }
 
-        private async Task<string> GetRankingTable()
-        {
-            var rankingPdfDetails = new List<FleetFuelRankingPdf>();
-            int count = 1;
-            foreach (var item in FleetFuelPdfDetails.OrderByDescending(o => o.FuelConsumption))
-            {
-                rankingPdfDetails.Add(new FleetFuelRankingPdf()
-                {
-                    Ranking = count,
-                    VehicleName = item.VehicleName,
-                    VIN = item.VIN,
-                    VehicleRegistrationNo = item.VehicleRegistrationNo,
-                    Consumption = item.FuelConsumption
-                });
-                count++;
-            }
-            var html = ReportHelper
-                        .ToDataTableAndGenerateHTML<FleetFuelRankingPdf>
-                            (rankingPdfDetails);
-            return await Task.FromResult<string>(html);
-        }
         public async Task<string> GenerateTable()
         {
-            var result = await ReportManager.GetFleetFuelDetailsByVehicle(new FleetFuelFilter { StartDateTime = FromDate, EndDateTime = ToDate, VINs = VINs.ToList() });
-            var fleetFuelPdfDetails = new List<FleetFuelPdfDetails>();
+            var result = await ReportManager.GetFilteredFuelDeviation(new FuelDeviationFilter { StartDateTime = FromDate, EndDateTime = ToDate, VINs = VINs.ToList() });
+            var fuelDeviationPdfDetails = new List<FuelDeviationPdfPdfDetails>();
             TotalIdleDuration = result.Sum(s => s.IdleDuration);
             foreach (var item in result)
             {
-                fleetFuelPdfDetails.Add(
-                    new FleetFuelPdfDetails
+                fuelDeviationPdfDetails.Add(
+                    new FuelDeviationPdfPdfDetails
                     {
-                        VehicleName = item.VehicleName,
+                        Type = ReportHelper.GetFuelDeviationType((FuelType)item.FuelEventType, (VehicleActvityType)item.VehicleActivityType),
                         VIN = item.VIN,
-                        VehicleRegistrationNo = item.VehicleRegistrationNo,
+                        FuelDiffernce = item.FuelDiffernce,
+                        RegistrationNo = item.RegistrationNo,
+                        VehicleName = item.VehicleName,
+                        EventTime = TimeZoneHelper.GetDateTimeFromUTC(item.EventTime, TimeZoneName, DateTimeFormat),
+                        Odometer = await _unitConversionManager.GetDistance(item.Odometer, DistanceUnit.Meter, UnitToConvert),
+                        StartDate = TimeZoneHelper.GetDateTimeFromUTC(item.StartTimeStamp, TimeZoneName, DateTimeFormat),
+                        EndDate = TimeZoneHelper.GetDateTimeFromUTC(item.EndTimeStamp, TimeZoneName, DateTimeFormat),
                         Distance = await _unitConversionManager.GetDistance(item.Distance, DistanceUnit.Meter, UnitToConvert),
-                        AverageDistancePerDay = await _unitConversionManager.GetDistance(item.AverageDistancePerDay, DistanceUnit.Meter, UnitToConvert),
-                        AverageSpeed = await _unitConversionManager.GetSpeed(item.AverageSpeed, SpeedUnit.MeterPerMilliSec, UnitToConvert),
-                        MaxSpeed = await _unitConversionManager.GetSpeed(item.MaxSpeed, SpeedUnit.KmPerHour, UnitToConvert),
-                        NumberOfTrips = item.NumberOfTrips,
-                        AverageGrossWeightComb = await _unitConversionManager.GetWeight(item.AverageGrossWeightComb, WeightUnit.KiloGram, UnitToConvert),
+                        IdleDuration = await _unitConversionManager.GetTimeSpan(item.IdleDuration, TimeUnit.Seconds, UnitToConvert),
+                        AverageSpeed = (int)await _unitConversionManager.GetSpeed(item.AverageSpeed, SpeedUnit.MeterPerMilliSec, UnitToConvert),
+                        AverageWeight = await _unitConversionManager.GetWeight(item.AverageWeight, WeightUnit.KiloGram, UnitToConvert),
+                        StartPosition = item.StartPosition,
+                        EndPosition = item.EndPosition,
                         FuelConsumed = await _unitConversionManager.GetVolume(item.FuelConsumed, VolumeUnit.MilliLiter, UnitToConvert),
-                        FuelConsumption = await _unitConversionManager.GetVolumePer100Km(item.Distance, item.FuelConsumed, VolumeUnit.MilliLiter, UnitToConvert),
-                        CO2Emission = await _unitConversionManager.GetWeight(item.CO2Emission, WeightUnit.Tons, UnitToConvert),
-                        IdleDuration = item.IdleDuration,
-                        PTODuration = item.PTODuration,
-                        HarshBrakeDuration = item.HarshBrakeDuration,
-                        HeavyThrottleDuration = item.HeavyThrottleDuration,
-                        CruiseControlDistance30_50 = item.CruiseControlDistance30_50,
-                        CruiseControlDistance50_75 = item.CruiseControlDistance50_75,
-                        CruiseControlDistance75 = item.CruiseControlDistance50_75,
-                        AverageTrafficClassification = item.AverageTrafficClassification,
-                        CCFuelConsumption = await _unitConversionManager.GetVolumePerDistance(item.CCFuelConsumption, VolumePerDistanceUnit.MilliLiterPerMeter, UnitToConvert),
-                        FuelconsumptionCCnonactive = await _unitConversionManager.GetVolumePerDistance(item.FuelconsumptionCCnonactive, VolumePerDistanceUnit.MilliLiterPerMeter, UnitToConvert),
-                        IdlingConsumption = item.IdlingConsumption < 0.002 ? IdlingConsumptionConstants.VERY_GOOD : item.IdlingConsumption > 0.020 ? IdlingConsumptionConstants.MODERATE : IdlingConsumptionConstants.GOOD,
-                        DPAScore = item.DPAScore < 0.3 ? DPAScoreConstants.LIGHT : item.DPAScore > 1.3 ? DPAScoreConstants.MEDIUM : DPAScoreConstants.HIGH
+                        DrivingTime = await _unitConversionManager.GetTimeSpan(item.DrivingTime, TimeUnit.Seconds, UnitToConvert),
+                        Alerts = item.Alerts
                     });
             }
-            TotalNumberOfTrips = fleetFuelPdfDetails.Sum(s => s.NumberOfTrips);
-            TotalDistance = fleetFuelPdfDetails.Sum(s => s.Distance);
-            TotalFuelConsumed = fleetFuelPdfDetails.Sum(s => s.FuelConsumed);
-            TotalFuelConsumption = fleetFuelPdfDetails.Sum(s => s.FuelConsumption);
-            TotalCO2Emission = fleetFuelPdfDetails.Sum(s => s.CO2Emission);
-            FleetFuelPdfDetails = fleetFuelPdfDetails;
+            FuelDeviationDetails = result;
             var html = ReportHelper
-                        .ToDataTableAndGenerateHTML<FleetFuelPdfDetails>
-                            (fleetFuelPdfDetails);
+                        .ToDataTableAndGenerateHTML<FuelDeviationPdfPdfDetails>
+                            (fuelDeviationPdfDetails);
+            //, await _reportSchedularRepository.GetColumnName(ReportSchedulerData.ReportId, ReportSchedulerData.Code)
             return await Task.FromResult<string>(html);
         }
 
@@ -174,12 +142,10 @@ namespace net.atos.daf.ct2.account.report
             //                                        _contentType, ReportSchedulerData.Code)
             var timeSpanUnit = await _unitManager.GetTimeSpanUnit(UnitToConvert);
             var distanceUnit = await _unitManager.GetDistanceUnit(UnitToConvert);
-            var volumndUnit = await _unitManager.GetVolumeUnit(UnitToConvert);
-            var volumnPerDistancedUnit = await _unitManager.GetVolumePerDistanceUnit(UnitToConvert);
-            var volumePer100KmUnit = await _unitManager.GetVolumePer100KmUnit(UnitToConvert);
-            var weightUnit = await _unitManager.GetWeightUnit(UnitToConvert);
-            var speedUnit = await _unitManager.GetSpeedUnit(UnitToConvert);
-            html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE_FLEET_FUEL
+            var fuelIncrease = (char)FuelType.Increase;
+            var fuelDecrease = (char)FuelType.Decrease;
+            html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE_FUEL_DEVIATION
+            //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
                               , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
                               , await GenerateTable()
@@ -187,34 +153,16 @@ namespace net.atos.daf.ct2.account.report
                               , VehicleLists.Any(s => !string.IsNullOrEmpty(s.VehicleGroupName)) ? string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).Distinct().ToArray()) : "All"
                               , toDate.ToString(DateTimeFormat)
                               , string.Join(',', VehicleLists.Select(s => s.VehicleName).Distinct().ToArray())
-                              , TotalNumberOfTrips
-                              , Math.Round(TotalDistance, 2)
+                              , FuelDeviationDetails.Where(w => w.FuelEventType == fuelIncrease).Count()
+                              , FuelDeviationDetails.Where(w => w.FuelEventType == fuelDecrease).Count()
+                              , FuelDeviationDetails.Select(w => w.VIN).Distinct().Count()
                               , distanceUnit
-                              , Math.Round(TotalFuelConsumed, 2)
-                              , volumndUnit
-                              , await _unitConversionManager.GetTimeSpan(TotalIdleDuration, TimeUnit.Seconds, UnitToConvert)
+                              , distanceUnit
                               , timeSpanUnit
-                              , Math.Round(TotalFuelConsumption, 2)
-                              , volumePer100KmUnit
-                              , Math.Round(TotalCO2Emission, 2)
-                              , weightUnit
-                              , distanceUnit
-                              , distanceUnit
-                              , speedUnit
-                              , speedUnit
-                              , weightUnit
-                              , volumndUnit
-                              , volumePer100KmUnit
-                              , weightUnit
-                              , "%"
-                              , "%"
-                              , "%"
-                              , "%"
-                              , volumnPerDistancedUnit
-                              , volumnPerDistancedUnit
-                              , volumnPerDistancedUnit
-                              , volumePer100KmUnit
-                              , await GetRankingTable()
+                              , await _unitManager.GetSpeedUnit(UnitToConvert)
+                              , await _unitManager.GetWeightUnit(UnitToConvert)
+                              , await _unitManager.GetVolumeUnit(UnitToConvert)
+                              , timeSpanUnit
                               , ImageSingleton.GetInstance().GetLogo()
                 );
             return html.ToString();

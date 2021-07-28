@@ -185,9 +185,9 @@ tr {{ page-break-inside: avoid }}
 			<th>PTO Duration ({26})</th>
 			<th>Harsh Brake Duration ({27})</th>
 			<th>Heavy Throttle Duration ({28})</th>
-			<th>Cruise Control Distance 30-50 km/h</th>
-			<th>Cruise Control Distance 50-75 km/h</th>
-			<th>Cruise Control Distance >75 km/h</th>
+			<th>Cruise Control Distance 30-50 km/h %</th>
+			<th>Cruise Control Distance 50-75 km/h %</th>
+			<th>Cruise Control Distance >75 km/h %</th>
 			<th>Average Traffic Classification</th>
 			<th>CC Fuel Consumption ({29})</th>
 			<th>Fuel Consumption CC Non Active ({30})</th>
@@ -197,6 +197,93 @@ tr {{ page-break-inside: avoid }}
 		{1}
 	</table>
 
+  </body>
+</html>";
+        public const string REPORT_TEMPLATE_FUEL_DEVIATION = @"
+
+<!doctype html>
+<html>
+<head>
+<style>
+.detailsDiv {{
+  border: none;
+  background-color: lightblue;    
+  text-align: center
+}}
+.reportDetailsTable {{
+  border-collapse: collapse;
+  width: 100%;
+}}
+
+.reportDetailsTable td, #reportDetailsTable th {{
+  border: 1px solid;
+  padding: 8px;
+}}
+
+.reportDetailsTable tr:nth-child(even){{background-color: #ffffff;}}
+
+.reportDetailsTable th {{
+  border: 1px solid;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: lightblue;
+  color: black;
+}}
+thead {{ display: table-header-group }}
+tfoot {{ display: table-row-group }}
+tr {{ page-break-inside: avoid }}
+</style>
+</head>
+  <body>
+		<img style='margin:20px 50px' align='left' width='180px' height='80px'  src='{0}'>
+		<img style='margin:20px 50px' align='right' width='180px' height='80px' src='{16}'><br/><br/><br/><br/>
+	
+    <h2 style='margin:50px 50px'>[lblFuelDeviation]</h2>
+	<div class='detailsDiv'>
+	  <table  style='width: 100%;'>
+		<tr>
+			<td style='width: 30%;'><p><strong>[lblFrom] : </strong>  {2}</P></td>
+			<td style='width: 30%;'><p><strong>[lblVehicleGroup] : </strong>  {3}</P></td>			
+		</tr>
+		<tr>
+			<td style='width: 30%;'><p><strong>[lblTo] : </strong>  {4}</P></td>
+			<td style='width: 30%;'><p><strong>[lblVehicleName] : </strong>  {5}</P></td>			
+		</tr>
+	  </table>
+	</div><br/><br/>
+<div class='detailsDiv'>
+	  <table  style='width: 100%;'>
+		<tr>
+			<td style='width: 30%;'><p><strong>Fuel Increase Events : </strong>  {6}</P></td>
+			<td style='width: 30%;'><p><strong>Fuel Decrease Events : </strong>  {7}</P></td>		
+			<td style='width: 30%;'><p><strong>Vehicles With Fuel Events : </strong>  {8} </P></td>		
+		</tr>
+	  </table>
+	</div><br/><br/>
+	
+	<table class='reportDetailsTable'>
+		<thead>
+			<th>Type</th>
+			<th>Vehicle Name</th>
+			<th>VIN</th>
+			<th>Registration Number</th>
+			<th>Difference (%)</th>
+			<th>Odometer ({9})</th>
+			<th>Start Date</th>
+			<th>End Date</th>
+			<th>Distance({10})</th>
+			<th>Idle Duration({11})</th>
+			<th>Average Speed ({12})</th>
+			<th>Average  Weight ({13})</th>
+			<th>Start Position</th>
+			<th>End Position</th>
+			<th>Fuel Consumed ({14})</th>
+			<th>Driving Time ({15})</th>
+			<th>Alerts</th>
+		</thead>
+		{1}
+	</table>
   </body>
 </html>";
         public const string REPORT_SUMMARY_TEMPLATE = @"

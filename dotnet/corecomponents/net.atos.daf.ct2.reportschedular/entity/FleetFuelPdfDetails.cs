@@ -18,10 +18,10 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public double FuelConsumed { get; set; }
         public double FuelConsumption { get; set; }
         public double CO2Emission { get; set; }
-        public string IdleDuration { get; set; }
-        public string PTODuration { get; set; }
-        public string HarshBrakeDuration { get; set; }
-        public string HeavyThrottleDuration { get; set; }
+        public double IdleDuration { get; set; }
+        public double PTODuration { get; set; }
+        public double HarshBrakeDuration { get; set; }
+        public double HeavyThrottleDuration { get; set; }
         public double CruiseControlDistance30_50 { get; set; }
         public double CruiseControlDistance50_75 { get; set; }
         public double CruiseControlDistance75 { get; set; }
