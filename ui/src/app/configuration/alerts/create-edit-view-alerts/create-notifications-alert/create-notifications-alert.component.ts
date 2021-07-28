@@ -46,7 +46,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
   notificationReceipients: any = [];
   notifications: any = [];
   openAdvancedFilter: boolean = false;
-  mobileNumber= '';
+  phoneNumber= '';
   contactModes: any = [
     {
       id: 'W',
@@ -458,6 +458,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
         if (!this.FormSMSArray) {
           this.FormSMSArray = this.notificationForm.get("FormSMSArray") as FormArray;
           this.FormSMSArray.at(this.smsIndex).get("mobileNumber").setValue(data.phoneNo);
+          this.phoneNumber= data.phoneNo;
           this.FormSMSArray.at(this.smsIndex).get("smsRecipientLabel").setValue(data.recipientLabel);
           this.FormSMSArray.at(this.smsIndex).get("smsDescription").setValue(data.sms);
           this.FormSMSArray.at(this.smsIndex).get("smsReceipientId").setValue(data.id);
@@ -472,6 +473,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.smsIndex = this.smsIndex + 1;
           this.FormSMSArray.push(this.initSMSItems());
           this.FormSMSArray.at(this.smsIndex).get("mobileNumber").setValue(data.phoneNo);
+          this.phoneNumber= data.phoneNo;
           this.FormSMSArray.at(this.smsIndex).get("smsRecipientLabel").setValue(data.recipientLabel);
           this.FormSMSArray.at(this.smsIndex).get("smsDescription").setValue(data.sms);
           this.FormSMSArray.at(this.smsIndex).get("smsReceipientId").setValue(data.id);

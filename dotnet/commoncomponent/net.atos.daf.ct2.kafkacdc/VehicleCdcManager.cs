@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +10,7 @@ using net.atos.daf.ct2.confluentkafka.entity;
 using net.atos.daf.ct2.kafkacdc.entity;
 using net.atos.daf.ct2.kafkacdc.repository;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
@@ -23,14 +25,16 @@ namespace net.atos.daf.ct2.kafkacdc
                 Data = JsonConvert.SerializeObject(vehicleCdc),
                 Operation = operation,
                 Namespace = "vehicleManagement",
-                Timestamp = 1627107669236
+                Timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds()
             };
             VehicleMgmtKafkaMessage vehicleMgmtKafkaMessage = new VehicleMgmtKafkaMessage()
             {
                 Payload = payload,
                 Schema = "master.Vehicle"
             };
-            return Task.FromResult(JsonConvert.SerializeObject(vehicleMgmtKafkaMessage));
+
+
+            return Task.FromResult(JsonConvert.SerializeObject(vehicleMgmtKafkaMessage, Formatting.Indented));
         }
         public async Task VehicleCdcProducer(List<VehicleCdc> vehicleCdcList, KafkaConfiguration kafkaConfiguration)
         {
@@ -38,13 +42,17 @@ namespace net.atos.daf.ct2.kafkacdc
             {
                 foreach (VehicleCdc vlr in vehicleCdcList)
                 {
+
+                    var message = PrepareVehicleKafkaJSON(vlr, "I").Result.Replace(@"\n", string.Empty).Replace(@"\", string.Empty).Replace("\"\"", string.Empty).Replace("\"{", "{").Replace("}\"", "}");
+
+
                     KafkaEntity kafkaEntity = new KafkaEntity()
                     {
                         BrokerList = kafkaConfiguration.EH_FQDN,
                         ConnString = kafkaConfiguration.EH_CONNECTION_STRING,
                         Topic = kafkaConfiguration.EH_NAME,
                         Cacertlocation = kafkaConfiguration.CA_CERT_LOCATION,
-                        ProducerMessage = PrepareVehicleKafkaJSON(vlr, "I").Result,
+                        ProducerMessage = message.Replace("\"", "'")
                     };
                     await KafkaConfluentWorker.Producer(kafkaEntity);
                     var test = VehicleCdcConsumer(kafkaConfiguration);

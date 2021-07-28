@@ -389,7 +389,19 @@ calendarOptions: CalendarOptions = {
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
-    this.getFleetPreferences();
+    this.getReportPreferences();
+  }
+
+  getReportPreferences(){
+    let reportListData: any = [];
+    this.reportService.getReportDetails().subscribe((reportList: any)=>{
+      reportListData = reportList.reportDetails;
+      this.getFleetUtilPreferences(reportListData);
+    }, (error)=>{
+      console.log('Report not found...', error);
+      reportListData = [{name: 'Fleet Utilisation Report', id: 5}]; // hard coded
+      this.getFleetUtilPreferences(reportListData);
+    });
   }
 
   ngOnDestroy(){
@@ -449,8 +461,9 @@ calendarOptions: CalendarOptions = {
     this.detailColumnData = [];
   }
 
-  getFleetPreferences(){
-    this.reportService.getReportUserPreference(this.fleetUtilReportId).subscribe((data: any) => {
+  getFleetUtilPreferences(prefData: any){
+    let repoId: any = prefData.filter(i => i.name == 'Fleet Utilisation Report');
+    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 5).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
       this.preparePrefData(this.reportPrefData);

@@ -48,7 +48,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
         this.vehicleGroup = message.key[0].vehicleGroup;
         if(message.key[0].vehicleGroup && message.key[0].vehicleGroup === 'all')
           this.vehicleGroup +=' Groups';
-        if(JSON.stringify(message.key[0].data).indexOf("No Result Found") !== -1){
+        if(JSON.stringify(message.key[0].data).indexOf("HttpErrorResponse") !== -1 || JSON.stringify(message.key[0].data).indexOf("No Result Found") !== -1){
           this.resetSummary();
         } else {
           this.summaryData = message.key[0].data;

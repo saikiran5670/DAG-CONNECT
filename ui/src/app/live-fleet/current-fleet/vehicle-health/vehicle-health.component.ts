@@ -93,6 +93,9 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   map:any;
   platform:any;
   ui: any;
+  fromDisplayDate: string;
+  toDisplayDate: string;
+  warningTypeDisplay: string;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   obs: Observable<any>;
@@ -206,6 +209,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       }
       console.log("filterrredData", filterrredData)
       this.applyDatatoCardPaginator(filterrredData);
+      this.setGeneralFleetValue();
   }
 
   onReset(){
@@ -974,5 +978,49 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
           break;
       }
       return {color : _fillColor , level : _level, type : _type};
+  }
+
+  setGeneralFleetValue(){
+    this.fromDisplayDate = this.formStartDate(this.startDateValue);
+    this.toDisplayDate = this.formStartDate(this.endDateValue);
+    this.warningTypeDisplay = this.vehicleHealthForm.get('warningType').value;
+  }
+
+  formStartDate(date: any){
+    let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
+    let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
+    let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
+    let _d = (date.getDate() < 10) ? ('0'+date.getDate()): date.getDate();
+    let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
+    let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
+    let _date: any;
+    let _time: any;
+    if(this.prefTimeFormat == 12){
+      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours()-12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
+    }else{
+      _time = `${h}:${m}:${s}`;
+    }
+    switch(this.prefDateFormat){
+      case 'ddateformat_dd/mm/yyyy': {
+        _date = `${_d}/${_m}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        _date = `${_d}-${_m}-${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        _date = `${_m}-${_d}-${_y} ${_time}`;
+        break;
+      }
+      default:{
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+      }
+    }
+    return _date;
   }
 }
