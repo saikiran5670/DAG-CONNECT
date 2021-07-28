@@ -785,6 +785,7 @@ export class FleetMapService {
     let _drivingStatus = false;
     let healthColor = '#606060';
     let _alertConfig = undefined;
+    element.vehicleDrivingStatusType = 'D'
     if (element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving') {
       _drivingStatus = true
     }
@@ -808,28 +809,28 @@ export class FleetMapService {
         break;
     }
     let _vehicleIcon : any;
-    if(_drivingStatus){
+    // if(_drivingStatus){
 
-      let direction = this.getDirectionIconByBearings(element.latestReceivedPositionHeading);
-      let markerSvg = this.createDrivingMarkerSVG(direction,healthColor);
+    //   let direction = this.getDirectionIconByBearings(element.latestReceivedPositionHeading);
+    //   let markerSvg = this.createDrivingMarkerSVG(direction,healthColor);
       
-      if(element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving'){
+    //   if(element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving'){
         
-        let rippleSize = { w: 50, h: 50 };
-        let rippleMarker = this.createRippleMarker(direction);
-        const iconRipple = new H.map.DomIcon(rippleMarker, { size: rippleSize, anchor: { x:(Math.round(rippleSize.w / 2)), y: (Math.round(rippleSize.h / 2) )} });
-        this.rippleMarker = new H.map.DomMarker({ lat:element.latestReceivedPositionLattitude, lng:element.latestReceivedPositionLongitude },{ icon:iconRipple });
-        this.group.addObject(this.rippleMarker);
+    //     let rippleSize = { w: 50, h: 50 };
+    //     let rippleMarker = this.createRippleMarker(direction);
+    //     const iconRipple = new H.map.DomIcon(rippleMarker, { size: rippleSize, anchor: { x:(Math.round(rippleSize.w / 2)), y: (Math.round(rippleSize.h / 2) )} });
+    //     this.rippleMarker = new H.map.DomMarker({ lat:element.latestReceivedPositionLattitude, lng:element.latestReceivedPositionLongitude },{ icon:iconRipple });
+    //     this.group.addObject(this.rippleMarker);
   
-        }
-      _vehicleIcon =  `<svg width="34" height="40" viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
-      ${markerSvg}
-      </svg>`;
+    //     }
+    //   _vehicleIcon =  `<svg width="34" height="40" viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    //   <style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
+    //   ${markerSvg}
+    //   </svg>`;
 
     
-    }
-    else{
+    // }
+    // else{
       let _alertFound = undefined ;
       
       if(element.fleetOverviewAlert.length > 0){
@@ -889,7 +890,7 @@ export class FleetMapService {
         </svg>`
       }
     
-    }
+   // }
     return {icon: _vehicleIcon,alertConfig:_alertConfig};
   }
 
