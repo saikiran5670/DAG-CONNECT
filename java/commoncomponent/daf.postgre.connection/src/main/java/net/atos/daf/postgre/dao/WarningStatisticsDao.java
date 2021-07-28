@@ -72,7 +72,7 @@ public class WarningStatisticsDao implements Serializable {
 				updateWarningCommonTrip.setDouble(1, warningDetail.getLatitude());
 				updateWarningCommonTrip.setDouble(2, warningDetail.getLongitude());
 				updateWarningCommonTrip.setDouble(3, warningDetail.getHeading());
-				updateWarningCommonTrip.setDouble(4, warningDetail.getCreatedAt());
+				updateWarningCommonTrip.setDouble(4, warningDetail.getWarningTimeStamp());
 				updateWarningCommonTrip.setString(5, warningDetail.getVehicleHealthStatusType());
 				
 				System.out.println( " warningDetail.getWarningClass() ::"+warningDetail.getWarningClass());
@@ -89,7 +89,7 @@ public class WarningStatisticsDao implements Serializable {
 					updateWarningCommonTrip.setInt(7, 0);
 				
 				updateWarningCommonTrip.setString(8, warningDetail.getWarningType());
-				updateWarningCommonTrip.setLong(9, warningDetail.getCreatedAt());
+				updateWarningCommonTrip.setLong(9, warningDetail.getWarningTimeStamp());
 				updateWarningCommonTrip.setDouble(10, warningDetail.getLatitude());
 				updateWarningCommonTrip.setDouble(11, warningDetail.getLongitude());
 				updateWarningCommonTrip.setString(12, warningDetail.getVehicleDrivingStatusType());

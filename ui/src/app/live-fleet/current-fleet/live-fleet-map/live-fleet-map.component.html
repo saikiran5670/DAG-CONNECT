@@ -82,7 +82,7 @@
                 <div *ngFor="let globalPOI of globalPOIList; let i = index" class="full-width" fxLayoutGap="10px">
                   <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                     <mat-checkbox (click)='$event.stopPropagation()'
-                    (change)='$event ? selectedPOI.toggle(globalPOI) : null; changeGlobalPOISelection($event, globalPOI, i)' [checked]='globalPOI.parentChecked'>{{ globalPOI.categoryName }} ({{ globalPOI.poiList.length }})</mat-checkbox>
+                    (change)='$event ? selectedGlobalPOI.toggle(globalPOI) : null; changeGlobalPOISelection($event, globalPOI, i)' [checked]='globalPOI.parentChecked'>{{ globalPOI.categoryName }} ({{ globalPOI.poiList.length }})</mat-checkbox>
                     <mat-icon style='cursor: pointer;' *ngIf='globalPOI.subCategoryPOIList.length > 0' (click)='openClosedGlobalPOI(i)'>
                       {{ globalPOI.open ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
                     </mat-icon>

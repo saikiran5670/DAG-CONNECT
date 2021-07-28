@@ -195,6 +195,39 @@ export class FleetMapService {
     });
   }
 
+  showGlobalPOI(globalPOI: any, _ui: any){
+    globalPOI.forEach(element => {
+      if(element.latitude && element.longitude){
+        let globalPOIMarker = new H.map.Marker({lat: element.latitude, lng: element.longitude},{icon: this.getCategoryPOIIcon()});
+        this.group.addObject(globalPOIMarker);
+        let bubble: any;
+        globalPOIMarker.addEventListener('pointerenter', function (evt) {
+          bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+            content:`<table style='width: 350px;'>
+            <tr>
+              <td style='width: 100px;'>POI Name:</td> <td><b>${element.name}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>Category:</td> <td><b>${element.categoryName}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>Sub-Category:</td> <td><b>${element.subCategoryName != '' ? element.subCategoryName : '-'}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>Address:</td> <td><b>${element.address != '' ? element.address : '-'}</b></td>
+            </tr>
+          </table>`
+          });
+          // show info bubble
+          _ui.addBubble(bubble);
+        }, false);
+        globalPOIMarker.addEventListener('pointerleave', function(evt) {
+          bubble.close();
+        }, false);
+      }
+    });
+  }
+
   showSearchMarker(markerData: any){
     if(markerData && markerData.lat && markerData.lng){
       let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
@@ -434,7 +467,7 @@ export class FleetMapService {
 		</g>`;
   }
 
-    viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any,alertsChecked?: boolean,showIcons?:boolean){
+    viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any,alertsChecked?: boolean,showIcons?:boolean, _globalPOIList?:any){
     this.clearRoutesFromMap();
     if(_herePOI){
       this.showHereMapPOI(_herePOI, _selectedRoutes, _ui);
@@ -444,6 +477,9 @@ export class FleetMapService {
     }
     if(_displayPOIList && _displayPOIList.length > 0){ 
       this.showCategoryPOI(_displayPOIList, _ui); //-- show category POi
+    }
+    if(_globalPOIList && _globalPOIList.length > 0){
+      this.showGlobalPOI(_globalPOIList,_ui);
     }
     if(showIcons && _selectedRoutes && _selectedRoutes.length > 0){
       this.drawIcons(_selectedRoutes,_ui);

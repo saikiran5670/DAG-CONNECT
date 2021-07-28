@@ -383,6 +383,10 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   profileSelectionDropDown(filterValue: string){
     // this.selectedElementData = [];    
+    this.saveButton = true;
+    this.ecoScoreProfileForm.controls.profileName.enable();
+    // this.inputBox = true;
+    this.deleteButton = true;
     if(this.actionType =="create"){
       this.isKPI = false;
       this.selectedProfile = filterValue;
@@ -393,10 +397,6 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       this.loadProfileKpis(this.selectedProfile);
     }else{
     this.isKPI = false;
-    this.saveButton = true;
-    this.ecoScoreProfileForm.controls.profileName.enable();
-    // this.inputBox = true;
-    this.deleteButton = true;
     this.selectedProfile = filterValue;
     this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile); 
     this.isSelected = this.selectedElementData[0].organizationId == 0 ? true : false;
