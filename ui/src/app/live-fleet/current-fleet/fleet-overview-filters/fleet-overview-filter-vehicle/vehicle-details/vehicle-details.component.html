@@ -12,7 +12,7 @@
     </div>
 </div>
 <div>
-    <div class="full-width vehicleList-div">
+    <div class="full-width vehicleList-div" *ngIf='gridData'>
         <div class="vehicleList-icon">
             <span id="steps" class="step-image" [innerHTML]="gridData.icon"  matTooltip="Health Status: {{gridData.vehicleHealthStatusType}} 
             &#13; Alert: {{gridData.alertName}}"> </span>
@@ -44,11 +44,11 @@
         </div>
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Alert'}}:</span>
-            <span class="vehicle-details-data">{{gridData.fleetOverviewAlert.length}}</span>
+            <span class="vehicle-details-data">{{alertLength}}</span>
         </div> 
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Last Message Received'}}:</span>
-            <span class="vehicle-details-data">{{timeConversion(gridData.latestProcessedMessageTimeStamp)}}</span>
+            <span class="vehicle-details-data">{{gridData.latestProcessedMessageTimeStamp ?  timeConversion(gridData.latestProcessedMessageTimeStamp) : '--'}}</span>
         </div> 
         <div>
             <span class="vehicle-details-head">{{ translationData.lbl || 'Address'}}:</span>
@@ -58,7 +58,7 @@
     </div>
  </div>  
 
- <div fxLayout="row" fxLayoutAlign="start" class="full-width vehicleInfo" fxLayoutGap="10px">
+ <div  *ngIf='gridData' fxLayout="row" fxLayoutAlign="start" class="full-width vehicleInfo" fxLayoutGap="10px">
     <div *ngIf="vehInfoPrefData && vehInfoPrefData.length > 0 && vehInfoPrefData[0].state == 'A'" style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
         <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
             <span>{{ translationData.lbl || 'Current Mileage' }} </span>
@@ -85,10 +85,10 @@
     </div>
 </div>
 
-    <div  class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <div  *ngIf='gridData' class='mat-elevation-z no-padding margin-bottom-xlg'>
         <div  fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlerts || 'Alerts' }} ({{gridData.fleetOverviewAlert.length}})</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlerts || 'Alerts' }} ({{alertLength}})</span>
             </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
             <span class='custom-font' (click)="gotoLogBook()">
@@ -98,30 +98,32 @@
         </div>
      
 
-     <div class="full-width vehicleList-div" *ngFor="let item of gridData.fleetOverviewAlert">
+        <div *ngIf='alertLength>0' >
+        <div class="full-width vehicleList-div" *ngFor="let item of gridData.fleetOverviewAlert">
         <div class="alertList-icon">
-            <span  *ngIf="item.level == 'Critical'">
-                <i class="material-icons" [style]="{ 'color':'#FF0000' } ">warning</i> 
-              </span> 
-              <span  *ngIf="item.level == 'Warning'">
-                <i class="material-icons" [style]="{ 'color':'#FFBF00' } ">warning</i> 
-              </span>
-              <span *ngIf="item.level == 'Advisory'">
-                <i class="material-icons" [style]="{ 'color':'#FFFF00' } ">warning</i> 
-              </span>  
+        <span  *ngIf="item.level == 'Critical'">
+            <i class="material-icons" [style]="{ 'color':'#FF0000' } ">warning</i> 
+            </span> 
+            <span  *ngIf="item.level == 'Warning'">
+            <i class="material-icons" [style]="{ 'color':'#FFBF00' } ">warning</i> 
+            </span>
+            <span *ngIf="item.level == 'Advisory'">
+            <i class="material-icons" [style]="{ 'color':'#FFFF00' } ">warning</i> 
+            </span>  
         </div>
         <div class="alertList-details">
         <div>
-            <span class="vehicle-details-data">{{item.categoryType}}</span>
+        <span class="vehicle-details-data">{{item.categoryType}}</span>
         </div>
         <div>
-            <span class="vehicle-details-data">{{timeConversion(item.time)}}</span>
+        <span class="vehicle-details-data">{{timeConversion(item.time)}}</span>
         </div> 
         <div fxLayoutAlign="right">
-            <span class="vehicle-details-data">{{item.level}}</span>
+        <span class="vehicle-details-data">{{item.level}}</span>
         </div>
         </div>
-    </div>
+        </div>
+        </div>
 </div>
 
 </mat-card>

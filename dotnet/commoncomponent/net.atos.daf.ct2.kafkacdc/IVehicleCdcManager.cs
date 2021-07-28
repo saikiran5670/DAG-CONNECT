@@ -7,8 +7,9 @@ namespace net.atos.daf.ct2.kafkacdc
 {
     public interface IVehicleCdcManager
     {
-        Task VehicleCdcProducer(List<VehicleCdc> vehicleCdcList, KafkaConfiguration kafkaConfiguration);
+        Task VehicleCdcProducer(List<int> vehicleCdcList, KafkaConfiguration kafkaConfiguration);
 
         //Task VehicleCdcConsumer(KafkaEntity kafkaEntity);
+        Task<List<VehicleCdc>> GetVehicleCdc(List<int> vid);
     }
 }

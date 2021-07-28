@@ -66,7 +66,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                        ,veh_message_driving_time AS DrivingTime
 	                        ,no_of_alerts AS Alerts
 	                        ,no_of_events AS Events
-	                        ,(fuel_consumption / 100) AS FuelConsumed100km
+	                        ,fuel_consumption  AS FuelConsumed100km
 							,VH.registration_no AS RegistrationNo
 							,VH.name AS VehicleName
                         FROM tripdetail.trip_statistics TS

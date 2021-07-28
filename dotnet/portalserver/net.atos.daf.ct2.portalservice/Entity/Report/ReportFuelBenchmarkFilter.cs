@@ -14,6 +14,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public long EndDateTime { get; set; }
         [Required]
         public List<string> VINs { get; set; }
+        [Required]
         public int VehicleGroupId { get; set; }
     }
 

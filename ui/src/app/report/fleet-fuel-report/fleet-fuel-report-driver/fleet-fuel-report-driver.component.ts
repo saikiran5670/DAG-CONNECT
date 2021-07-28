@@ -1033,10 +1033,8 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
     }
   }
 
+  advanceFilterOpen : boolean = false;
   onReset(){
-    this.isSummaryOpen= false;
-    this.isDetailsOpen=false;
-    this.isChartsOpen= false;
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
@@ -1044,9 +1042,10 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
     this.vehicleListData = [];
     // this.vehicleGroupListData = this.vehicleGroupListData;
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    // this.updateDataSource(this.tripData);
-    // this.tableInfoObj = {};
-    // this.selectedPOI.clear();
+    this.updateDataSource(this.tripData);
+    this.tableInfoObj = {};
+    this.advanceFilterOpen = false;
+    //this.selectedPOI.clear();
     this.resetTripFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
   }

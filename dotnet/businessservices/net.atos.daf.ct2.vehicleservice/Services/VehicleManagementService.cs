@@ -87,10 +87,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 Objvehicle = await _vehicleManager.Create(Objvehicle);
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Create", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.Info("Create method in vehicle service called.");
-                //ConsumeResult<Null, string> message = VehicleCdcManager.VehicleCdcProducer(List < kafkacdc.entity.VehicleCdc > vehicleCdcList, kafkaConfiguration);
-                //// List<VehicleCdc> vehicleCdcList = new List<VehicleCdc>() { new VehicleCdc() {  Vin=Objvehicle.VIN,Vid=Objvehicle.Vid, FuelType=Objvehicle.Fuel,
-                // Status=Objvehicle.Status.ToString()} };
-                //var producerBuilder = _vehicleCdcManager.VehicleCdcProducer(vehicleCdcList, _kafkaConfiguration);
+                await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Id }, _kafkaConfiguration)); 
 
                 return await Task.FromResult(new VehicleCreateResponce
                 {
@@ -143,10 +140,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Update method in vehicle service", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.Info("Update method in vehicle service called.");
 
-                //ConsumeResult<Null, string> message = VehicleCdcManager.VehicleCdcProducer(List < kafkacdc.entity.VehicleCdc > vehicleCdcList, kafkaConfiguration);
-                //// List<VehicleCdc> vehicleCdcList = new List<VehicleCdc>() { new VehicleCdc() {  Vin=Objvehicle.VIN,Vid=Objvehicle.Vid, FuelType=Objvehicle.Fuel,
-                // Status=Objvehicle.Status.ToString()} };
-                //var producerBuilder = _vehicleCdcManager.VehicleCdcProducer(vehicleCdcList, _kafkaConfiguration);
+                await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Id }, _kafkaConfiguration));
                 return await Task.FromResult(new VehicleResponce
                 {
                     Message = "Vehicle updated for id:- " + Objvehicle.ID,
@@ -199,7 +193,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         }
 
 
-        public override Task<VehicleOptInOptOutResponce> UpdateStatus(VehicleOptInOptOutRequest request, ServerCallContext context)
+        public override async Task<VehicleOptInOptOutResponce> UpdateStatus(VehicleOptInOptOutRequest request, ServerCallContext context)
         {
             try
             {
@@ -213,12 +207,12 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 ObjvehicleOptInOptOutResponce = _vehicleManager.UpdateStatus(ObjvehicleOptInOptOutResponce).Result;
 
                 _logger.Info("UpdateStatus method in vehicle service called.");
-                //ConsumeResult<Null, string> message = VehicleCdcManager.VehicleCdcProducer(List < kafkacdc.entity.VehicleCdc > vehicleCdcList, kafkaConfiguration);
-                //// List<VehicleCdc> vehicleCdcList = new List<VehicleCdc>() { new VehicleCdc() {  Vin=Objvehicle.VIN,Vid=Objvehicle.Vid, FuelType=Objvehicle.Fuel,
-                // Status=Objvehicle.Status.ToString()} };
-                //var producerBuilder = _vehicleCdcManager.VehicleCdcProducer(vehicleCdcList, _kafkaConfiguration);
 
-                return Task.FromResult(new VehicleOptInOptOutResponce
+
+                await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Refid }, _kafkaConfiguration));
+
+
+                return await Task.FromResult(new VehicleOptInOptOutResponce
                 {
                     Message = "Status updated for " + ObjvehicleOptInOptOutResponce.RefId,
                     Code = Responcecode.Success
@@ -227,7 +221,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return Task.FromResult(new VehicleOptInOptOutResponce
+                return await Task.FromResult(new VehicleOptInOptOutResponce
                 {
                     Message = "Exception " + ex.Message,
                     Code = Responcecode.Failed
@@ -356,10 +350,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 bool result = await _groupManager.Delete(request.GroupId, Group.ObjectType.VehicleGroup);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete Vehicle Group ", 1, 2, Convert.ToString(request.GroupId)).Result;
-                //ConsumeResult<Null, string> message = VehicleCdcManager.VehicleCdcProducer(List < kafkacdc.entity.VehicleCdc > vehicleCdcList, kafkaConfiguration);
-                //// List<VehicleCdc> vehicleCdcList = new List<VehicleCdc>() { new VehicleCdc() {  Vin=Objvehicle.VIN,Vid=Objvehicle.Vid, FuelType=Objvehicle.Fuel,
-                // Status=Objvehicle.Status.ToString()} };
-                //var producerBuilder = _vehicleCdcManager.VehicleCdcProducer(vehicleCdcList, _kafkaConfiguration);
+
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Vehicle Group deleted.",
@@ -767,10 +758,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 bool result = await _vehicleManager.SetOTAStatus(request.IsOta, request.ModifiedBy, request.VehicleId);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "SetOTAStatus", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set OTA status", 1, 2, Convert.ToString(request.VehicleId)).Result;
-                //ConsumeResult<Null, string> message = VehicleCdcManager.VehicleCdcProducer(List < kafkacdc.entity.VehicleCdc > vehicleCdcList, kafkaConfiguration);
-                //// List<VehicleCdc> vehicleCdcList = new List<VehicleCdc>() { new VehicleCdc() {  Vin=Objvehicle.VIN,Vid=Objvehicle.Vid, FuelType=Objvehicle.Fuel,
-                // Status=Objvehicle.Status.ToString()} };
-                //var producerBuilder = _vehicleCdcManager.VehicleCdcProducer(vehicleCdcList, _kafkaConfiguration);
+                if (result)
+                {
+                    await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.VehicleId }, _kafkaConfiguration));
+                }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Vehicle OTA Status updated.",
@@ -788,17 +779,16 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 });
             }
         }
-
         public override async Task<VehicleGroupDeleteResponce> Terminate(VehicleTerminateRequest request, ServerCallContext context)
         {
             try
             {
                 bool result = await _vehicleManager.Terminate(request.IsTerminate, request.ModifiedBy, request.VehicleId);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Terminate", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set Terminate status", 1, 2, Convert.ToString(request.VehicleId)).Result;
-                //ConsumeResult<Null, string> message = VehicleCdcManager.VehicleCdcProducer(List < kafkacdc.entity.VehicleCdc > vehicleCdcList, kafkaConfiguration);
-                //// List<VehicleCdc> vehicleCdcList = new List<VehicleCdc>() { new VehicleCdc() {  Vin=Objvehicle.VIN,Vid=Objvehicle.Vid, FuelType=Objvehicle.Fuel,
-                // Status=Objvehicle.Status.ToString()} };
-                //var producerBuilder = _vehicleCdcManager.VehicleCdcProducer(vehicleCdcList, _kafkaConfiguration);
+                if (result)
+                {
+                    await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.VehicleId }, _kafkaConfiguration));
+                }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Vehicle Terminate Status updated.",
@@ -823,10 +813,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 bool result = await _vehicleManager.SetOptInStatus(Convert.ToChar(request.IsOptIn), request.ModifiedBy, request.VehicleId);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "SetOptInStatus", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set Opt In status", 1, 2, Convert.ToString(request.VehicleId)).Result;
-                //ConsumeResult<Null, string> message = VehicleCdcManager.VehicleCdcProducer(List < kafkacdc.entity.VehicleCdc > vehicleCdcList, kafkaConfiguration);
-                //// List<VehicleCdc> vehicleCdcList = new List<VehicleCdc>() { new VehicleCdc() {  Vin=Objvehicle.VIN,Vid=Objvehicle.Vid, FuelType=Objvehicle.Fuel,
-                // Status=Objvehicle.Status.ToString()} };
-                //var producerBuilder = _vehicleCdcManager.VehicleCdcProducer(vehicleCdcList, _kafkaConfiguration);
+                if (result)
+                {
+                    await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.VehicleId }, _kafkaConfiguration));
+                }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Vehicle Opt In Status updated.",

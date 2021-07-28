@@ -48,15 +48,15 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         [DisplayName("da_report_details_enddate")]
         public string EndDate { get; set; }
         [DisplayName("da_report_details_distance")]
-        public int Distance { get; set; }
+        public double Distance { get; set; }
         [DisplayName("da_report_details_idleduration")]
         public string IdleDuration { get; set; }
         [DisplayName("da_report_details_averagespeed")]
-        public int AverageSpeed { get; set; }
+        public double AverageSpeed { get; set; }
         [DisplayName("da_report_details_averageweight")]
-        public int AverageWeight { get; set; }
+        public double AverageWeight { get; set; }
         [DisplayName("da_report_details_odometer")]
-        public long Odometer { get; set; }
+        public double Odometer { get; set; }
         [DisplayName("da_report_details_startposition")]
         public string StartPosition { get; set; }
         [DisplayName("da_report_details_endposition")]
