@@ -25,7 +25,7 @@ import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
 import { HereService } from '../../../../services/here.service';
 import { ConfigService } from '@ngx-config/core';
-import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service'; 
+//import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service'; 
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { MapService } from '../../report-mapservice';
 import * as fs from 'file-saver';
@@ -532,7 +532,7 @@ tripTraceArray: any = [];
   platform: any = '';
   
   constructor(private _formBuilder: FormBuilder, 
-              private landmarkCategoryService: LandmarkCategoryService,
+              //private landmarkCategoryService: LandmarkCategoryService,
               private translationService: TranslationService,
               private organizationService: OrganizationService,
               private reportService: ReportService,
@@ -696,31 +696,31 @@ tripTraceArray: any = [];
  //   this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr); 
  // }
 
-  makeHerePOIList(){
-    this.herePOIList = [{
-      key: 'Hotel',
-      translatedName: this.translationData.lblHotel || 'Hotel'
-    },
-    {
-      key: 'Parking',
-      translatedName: this.translationData.lblParking || 'Parking'
-    },
-    {
-      key: 'Petrol Station',
-      translatedName: this.translationData.lblPetrolStation || 'Petrol Station'
-    },
-    {
-      key: 'Railway Station',
-      translatedName: this.translationData.lblRailwayStation || 'Railway Station'
-    }];
-  }
-  loadUserPOI(){
-    this.landmarkCategoryService.getCategoryWisePOI(this.accountOrganizationId).subscribe((poiData: any) => {
-      this.userPOIList = this.makeUserCategoryPOIList(poiData);
-    }, (error) => {
-      this.userPOIList = [];
-    });
-  }
+  // makeHerePOIList(){
+  //   this.herePOIList = [{
+  //     key: 'Hotel',
+  //     translatedName: this.translationData.lblHotel || 'Hotel'
+  //   },
+  //   {
+  //     key: 'Parking',
+  //     translatedName: this.translationData.lblParking || 'Parking'
+  //   },
+  //   {
+  //     key: 'Petrol Station',
+  //     translatedName: this.translationData.lblPetrolStation || 'Petrol Station'
+  //   },
+  //   {
+  //     key: 'Railway Station',
+  //     translatedName: this.translationData.lblRailwayStation || 'Railway Station'
+  //   }];
+  // }
+  // loadUserPOI(){
+  //   this.landmarkCategoryService.getCategoryWisePOI(this.accountOrganizationId).subscribe((poiData: any) => {
+  //     this.userPOIList = this.makeUserCategoryPOIList(poiData);
+  //   }, (error) => {
+  //     this.userPOIList = [];
+  //   });
+  // }
 
   selectionPolylineRoute(dataPoints: any, _index: any, checkStatus?: any){
     let lineString: any = new H.geo.LineString();
@@ -981,12 +981,12 @@ createEndMarker(){
       this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
-      this.loadUserPOI();
+     // this.loadUserPOI();
     }, (error)=>{
       this.hideloader();
       this.wholeTripData.vinTripList = [];
       this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
-      this.loadUserPOI();
+     // this.loadUserPOI();
     });
   }
 
@@ -1004,7 +1004,7 @@ createEndMarker(){
     let _ui = this.reportMapService.getUI();
     if(this.isAllSelectedForTrip()){
       this.selectedTrip.clear();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView);
       this.showMap = false;
     }
     else{
@@ -1807,9 +1807,6 @@ getLast3MonthDate(){
   }
 
   onReset(){
-    this.isSummaryOpen= false;
-    this.isDetailsOpen=false;
-    this.isChartsOpen= false;
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
@@ -1817,9 +1814,10 @@ getLast3MonthDate(){
     this.vehicleListData = [];
     // this.vehicleGroupListData = this.vehicleGroupListData;
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    // this.updateDataSource(this.tripData);
-    // this.tableInfoObj = {};
-    // this.selectedPOI.clear();
+    this.updateDataSource(this.tripData);
+    this.tableInfoObj = {};
+    this.advanceFilterOpen = false;
+    this.selectedPOI.clear();
     this.resetTripFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
   }

@@ -30,6 +30,7 @@ export class VehicleDetailsComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   mileagewithUnit: any;
   nextservicing: any;
+  alertLength : any;
   
   constructor(private router: Router, private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService,  private reportMapService: ReportMapService,  private organizationService: OrganizationService) { }
   
@@ -38,10 +39,7 @@ export class VehicleDetailsComponent implements OnInit {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
   ngOnInit(): void {
-    this.gridData = this.selectedElementData;
-    this.mileagewithUnit = this.reportMapService.getDistance(this.selectedElementData.odometerVal,this.prefUnitFormat);
-    this.nextservicing = this.reportMapService.getDistance(this.selectedElementData.distanceUntilNextService,this.prefUnitFormat)
-    // this.reportService.getFilterDetails().subscribe((data: any) => {
+   // this.reportService.getFilterDetails().subscribe((data: any) => {
     //   this.filterData = data;
     //   this.levelList = [];
     // });
@@ -105,11 +103,24 @@ export class VehicleDetailsComponent implements OnInit {
         }
        });              
     }); 
+    this.gridData = this.selectedElementData;
+    this.alertLength = this.gridData.fleetOverviewAlert ? this.gridData.fleetOverviewAlert.length : 0;
+    this.mileagewithUnit = this.reportMapService.getDistance(this.selectedElementData.odometerVal,this.prefUnitFormat);
+    this.nextservicing = this.reportMapService.getDistance(this.selectedElementData.distanceUntilNextService,this.prefUnitFormat)
+    
+
   }
 
   timeConversion(time: any){
-    let newDate = this.reportMapService.getStartTime(time, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true);
+    let newDate = ''
+    if(time){
+      newDate = this.reportMapService.getStartTime(time, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true);
+    }
+    else{
+      newDate = '';
+    }
     return newDate;
+
   }
 
   toBack() {

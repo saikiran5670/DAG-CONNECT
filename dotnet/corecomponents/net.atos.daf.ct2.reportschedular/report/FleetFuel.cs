@@ -133,15 +133,15 @@ namespace net.atos.daf.ct2.account.report
                         NumberOfTrips = item.NumberOfTrips,
                         AverageGrossWeightComb = await _unitConversionManager.GetWeight(item.AverageGrossWeightComb, WeightUnit.KiloGram, UnitToConvert),
                         FuelConsumed = await _unitConversionManager.GetVolume(item.FuelConsumed, VolumeUnit.MilliLiter, UnitToConvert),
-                        FuelConsumption = await _unitConversionManager.GetVolumePer100Km(item.FuelConsumption, VolumeUnit.MilliLiter, UnitToConvert),
+                        FuelConsumption = await _unitConversionManager.GetVolumePer100Km(item.Distance, item.FuelConsumed, VolumeUnit.MilliLiter, UnitToConvert),
                         CO2Emission = await _unitConversionManager.GetWeight(item.CO2Emission, WeightUnit.Tons, UnitToConvert),
-                        IdleDuration = await _unitConversionManager.GetTimeSpan(item.IdleDuration, TimeUnit.Seconds, UnitToConvert),
-                        PTODuration = await _unitConversionManager.GetTimeSpan(item.PTODuration, TimeUnit.Seconds, UnitToConvert),
-                        HarshBrakeDuration = await _unitConversionManager.GetTimeSpan(item.HarshBrakeDuration, TimeUnit.Seconds, UnitToConvert),
-                        HeavyThrottleDuration = await _unitConversionManager.GetTimeSpan(item.HeavyThrottleDuration, TimeUnit.Seconds, UnitToConvert),
-                        CruiseControlDistance30_50 = await _unitConversionManager.GetDistance(item.CruiseControlDistance30_50, DistanceUnit.Meter, UnitToConvert),
-                        CruiseControlDistance50_75 = await _unitConversionManager.GetDistance(item.CruiseControlDistance50_75, DistanceUnit.Meter, UnitToConvert),
-                        CruiseControlDistance75 = await _unitConversionManager.GetDistance(item.CruiseControlDistance75, DistanceUnit.Meter, UnitToConvert),
+                        IdleDuration = item.IdleDuration,
+                        PTODuration = item.PTODuration,
+                        HarshBrakeDuration = item.HarshBrakeDuration,
+                        HeavyThrottleDuration = item.HeavyThrottleDuration,
+                        CruiseControlDistance30_50 = item.CruiseControlDistance30_50,
+                        CruiseControlDistance50_75 = item.CruiseControlDistance50_75,
+                        CruiseControlDistance75 = item.CruiseControlDistance50_75,
                         AverageTrafficClassification = item.AverageTrafficClassification,
                         CCFuelConsumption = await _unitConversionManager.GetVolumePerDistance(item.CCFuelConsumption, VolumePerDistanceUnit.MilliLiterPerMeter, UnitToConvert),
                         FuelconsumptionCCnonactive = await _unitConversionManager.GetVolumePerDistance(item.FuelconsumptionCCnonactive, VolumePerDistanceUnit.MilliLiterPerMeter, UnitToConvert),
@@ -188,29 +188,29 @@ namespace net.atos.daf.ct2.account.report
                               , toDate.ToString(DateTimeFormat)
                               , string.Join(',', VehicleLists.Select(s => s.VehicleName).Distinct().ToArray())
                               , TotalNumberOfTrips
-                              , TotalDistance
+                              , Math.Round(TotalDistance, 2)
                               , distanceUnit
-                              , TotalFuelConsumed
-                              , volumePer100KmUnit
+                              , Math.Round(TotalFuelConsumed, 2)
+                              , volumndUnit
                               , await _unitConversionManager.GetTimeSpan(TotalIdleDuration, TimeUnit.Seconds, UnitToConvert)
                               , timeSpanUnit
-                              , TotalFuelConsumption
-                              , volumndUnit
-                              , TotalCO2Emission
+                              , Math.Round(TotalFuelConsumption, 2)
+                              , volumePer100KmUnit
+                              , Math.Round(TotalCO2Emission, 2)
                               , weightUnit
-                              , volumndUnit
                               , distanceUnit
                               , distanceUnit
                               , speedUnit
                               , speedUnit
                               , weightUnit
                               , volumndUnit
-                              , volumndUnit
+                              , volumePer100KmUnit
                               , weightUnit
-                              , timeSpanUnit
-                              , timeSpanUnit
-                              , timeSpanUnit
-                              , timeSpanUnit
+                              , "%"
+                              , "%"
+                              , "%"
+                              , "%"
+                              , volumnPerDistancedUnit
                               , volumnPerDistancedUnit
                               , volumnPerDistancedUnit
                               , volumePer100KmUnit

@@ -491,6 +491,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@Vins", request.VINs.ToArray());
                 parameters.Add("@MinTripDistance", request.MinTripDistance > 0 ? request.MinTripDistance : (double?)null);
                 parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance > 0 ? request.MinDriverTotalDistance : (double?)null);
+                parameters.Add("@OrgId", request.OrgId);
 
                 string query = @"WITH ecoscore AS (
                                  SELECT dr.first_name, dr.last_name, eco.driver1_id, eco.trip_distance,
@@ -502,6 +503,7 @@ namespace net.atos.daf.ct2.reports.repository
                                  	AND eco.end_time <= @ToDate
                                  	AND eco.vin = ANY( @Vins )
                                  	AND (eco.trip_distance >= @MinTripDistance OR @MinTripDistance IS NULL)
+                                    AND dr.organization_id=@OrgId
                                  ),
                                  
                                  ecoscorealldriver as 
@@ -959,7 +961,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBrakeDuration  as
                                 (
-                                   SELECT eco.driver1_id, 0 as HarshBrakeDuration
+                                   SELECT eco.driver1_id, CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION) as HarshBrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id
                                 ),
@@ -1286,7 +1288,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBrakeDuration  as
                                 (
-                                   SELECT eco.driver1_id, 0 as HarshBrakeDuration
+                                   SELECT eco.driver1_id, CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION) as HarshBrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id
                                 ),
@@ -1578,7 +1580,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBrakeDuration  as
                                 (
-                                   SELECT eco.organization_id , 0 as HarshBrakeDuration
+                                   SELECT eco.organization_id , CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION) as HarshBrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id 
                                 ),
@@ -1873,7 +1875,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBrakeDuration  as
                                 (
-                                   SELECT eco.vin,  0 as HarshBrakeDuration
+                                   SELECT eco.vin,  CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION) as HarshBrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.vin
                                 ),
@@ -2169,7 +2171,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBrakeDuration  as
                                 (
-                                   SELECT eco.organization_id , eco.vin, 0 as HarshBrakeDuration
+                                   SELECT eco.organization_id , eco.vin, CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION) as HarshBrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id ,eco.vin
                                 ),
@@ -2660,7 +2662,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBrakeDuration  as
                                 (
-                                   SELECT eco.driver1_id,eco.Day, 0 as HarshBrakeDuration
+                                   SELECT eco.driver1_id,eco.Day, CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION) as HarshBrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id,eco.Day
                                 ),
@@ -3068,7 +3070,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBrakeDuration  as
                                 (
-                                   SELECT eco.vin,eco.Day,  0 as HarshBrakeDuration
+                                   SELECT eco.vin,eco.Day,  CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION) as HarshBrakeDuration
                                    FROM ecoscorequery eco
                                    GROUP BY eco.vin,eco.Day
                                 ),

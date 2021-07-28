@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.kafkacdc.entity
     }
     public class VehicleMgmtPayload
     {
-        public string Data { get; set; }
+        public VehicleCdc Data { get; set; }
         public string Operation { get; set; }
         public string Namespace { get; set; }
         public long Timestamp { get; set; }
