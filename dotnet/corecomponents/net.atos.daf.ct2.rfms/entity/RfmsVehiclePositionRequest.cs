@@ -6,7 +6,7 @@ namespace net.atos.daf.ct2.rfms.entity
     {
         public string RequestId { get; set; }
         // enum
-        public DataType Type { get; set; }
+        public DateType Type { get; set; }
 
         public string StartTime { get; set; }
 
@@ -17,6 +17,14 @@ namespace net.atos.daf.ct2.rfms.entity
         public Boolean LatestOnly { get; set; }
 
         public string TriggerFilter { get; set; }
+
+        public string LastVin { get; set; }
+
+        public int ThresholdValue { get; set; }
+
+        public int AccountId { get; set; }
+
+        public int OrgId { get; set; }
 
     }
 }
