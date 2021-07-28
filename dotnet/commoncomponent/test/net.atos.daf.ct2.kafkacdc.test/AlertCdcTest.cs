@@ -47,7 +47,6 @@ namespace net.atos.daf.ct2.kafkacdc.test
             var _kafkaConfig1 = new KafkaConfiguration()
             {
                 CA_CERT_LOCATION = "./cacert.pem",
-                CONSUMER_GROUP = "cdcvehicleconsumer",
                 EH_CONNECTION_STRING = "Endpoint=sb://daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gicUoPvdd/u2bKPFXIhaDbBVgvBDsXrz9kcSWJm8gpw=",
                 EH_FQDN = "daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net:9093",//BrokerList
                 EH_NAME = "ingress.atos.vehicle.cdc.json" //topic name
