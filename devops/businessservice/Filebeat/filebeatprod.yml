@@ -23,11 +23,12 @@ filebeat.inputs:
 output.logstash:
    hosts: ["dafct-con1-p-euwe-cdp-elk-ls-vm1.elk.con.ct2.atos.net:5044","dafct-con1-p-euwe-cdp-elk-ls-vm2.elk.con.ct2.atos.net:5044"]
    loadbalance: true
+   protocol: "https"
 
   # Optional SSL. By default is off.
   # List of root certificates for HTTPS server verifications
-   ssl.certificate_authorities: ["/certs/ca.crt"]
-   ssl.verification_mode: none
+   ssl.certificate_authorities: /certs/ca.crt
+  # ssl.verification_mode: none
    
 # ================================= Processors =================================
 processors:
