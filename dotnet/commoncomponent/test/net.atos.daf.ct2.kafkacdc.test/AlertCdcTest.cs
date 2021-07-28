@@ -43,25 +43,26 @@ namespace net.atos.daf.ct2.kafkacdc.test
             Assert.IsTrue(result.Count > 0);
         }
         [TestMethod]
-        public void VehicleCdcProducer()
+        public async Task VehicleCdcProducer()
         {
-            var _kafkaConfig1 = new KafkaConfiguration()
+            var _kafkaConfig = new KafkaConfiguration()
             {
                 CA_CERT_LOCATION = "./cacert.pem",
                 EH_CONNECTION_STRING = "Endpoint=sb://daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gicUoPvdd/u2bKPFXIhaDbBVgvBDsXrz9kcSWJm8gpw=",
                 EH_FQDN = "daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net:9093",//BrokerList
                 EH_NAME = "ingress.atos.vehicle.cdc.json" //topic name
             };
-            var vCdcList = new List<VehicleCdc>() { new VehicleCdc() { FuelType = "B", Status = "C", Vid = "M4A1113", FuelTypeCoefficient = 0, Vin = "XLRAE75PC0E345556" } };
-            var result = _vehicleCdcManager.VehicleCdcProducer(vCdcList, _kafkaConfig1);
-            Assert.IsTrue(result != null);
+            // var vCdcList = new List<VehicleCdc>() { new VehicleCdc() { FuelType = "B", Status = "C", Vid = "M4A1113", FuelTypeCoefficient = 0, Vin = "XLRAE75PC0E345556" } };
+            var vehicleIds = new List<int>() { 10 };
+            await _vehicleCdcManager.VehicleCdcProducer(vehicleIds, _kafkaConfig);
+            //  Assert.IsTrue(result != null);
 
 
         }
         [TestMethod]
         public void VehicleCdcConsumer()
         {
-            var _kafkaConfig1 = new KafkaConfiguration()
+            var _kafkaConfig = new KafkaConfiguration()
             {
                 CA_CERT_LOCATION = "./cacert.pem",
                 CONSUMER_GROUP = "cdcvehicleconsumer",
@@ -69,9 +70,7 @@ namespace net.atos.daf.ct2.kafkacdc.test
                 EH_FQDN = "daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net:9093",//BrokerList
                 EH_NAME = "ingress.atos.vehicle.cdc.json" //topic name
             };
-            var result = _vehicleCdcManager.VehicleCdcConsumer(_kafkaConfig1);
-
-
+            var result = _vehicleCdcManager.VehicleCdcConsumer(_kafkaConfig);
             Assert.IsTrue(result != null);
 
 

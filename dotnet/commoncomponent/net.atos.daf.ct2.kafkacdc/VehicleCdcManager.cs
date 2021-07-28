@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.kafkacdc
             //vehicleCdc.State = "A";
             VehicleMgmtPayload payload = new VehicleMgmtPayload()
             {
-                Data = JsonConvert.SerializeObject(vehicleCdc),
+                Data = vehicleCdc,
                 Operation = operation,
                 Namespace = "vehicleManagement",
                 Timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds()
@@ -41,26 +41,22 @@ namespace net.atos.daf.ct2.kafkacdc
 
             return Task.FromResult(JsonConvert.SerializeObject(vehicleMgmtKafkaMessage, Formatting.Indented));
         }
-        public async Task VehicleCdcProducer(List<VehicleCdc> vehicleCdcList, KafkaConfiguration kafkaConfiguration)
+        public async Task VehicleCdcProducer(List<int> vehicleIds, KafkaConfiguration kafkaConfiguration)
         {
-            if (vehicleCdcList.Count > 0)
+            if (vehicleIds.Count > 0)
             {
+                List<VehicleCdc> vehicleCdcList = new List<VehicleCdc>();
                 foreach (VehicleCdc vlr in vehicleCdcList)
                 {
-
-                    var message = PrepareVehicleKafkaJSON(vlr, "I").Result.Replace(@"\n", string.Empty).Replace(@"\", string.Empty).Replace("\"\"", string.Empty).Replace("\"{", "{").Replace("}\"", "}");
-
-
                     KafkaEntity kafkaEntity = new KafkaEntity()
                     {
                         BrokerList = kafkaConfiguration.EH_FQDN,
                         ConnString = kafkaConfiguration.EH_CONNECTION_STRING,
                         Topic = kafkaConfiguration.EH_NAME,
                         Cacertlocation = kafkaConfiguration.CA_CERT_LOCATION,
-                        ProducerMessage = message.Replace("\"", "'")
+                        ProducerMessage = PrepareVehicleKafkaJSON(vlr, "I").Result
                     };
                     await KafkaConfluentWorker.Producer(kafkaEntity);
-                    var test = VehicleCdcConsumer(kafkaConfiguration);
                 }
             }
         }
