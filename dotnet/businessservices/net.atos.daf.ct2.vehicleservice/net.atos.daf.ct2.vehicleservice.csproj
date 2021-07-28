@@ -26,4 +26,10 @@
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.group\net.atos.daf.ct2.group.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="cacert.pem">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
