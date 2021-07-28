@@ -115,11 +115,11 @@
         </div>
         <div fxLayout="column" fxLayoutAlign="end">
             <div fxLayout="row" class='areaWidth'>
-                <button class='margin-right-10 min-width-100-px' mat-raised-button color="warn" *ngIf="actionType == 'manage'" [disabled]="!deleteSelection"
+                <button class='margin-right-10 min-width-100-px' mat-raised-button color="warn" *ngIf="actionType == 'manage'" [disabled]="!deleteButton"
                 (click)='onDelete()'>{{ (translationData.lblDelete || 'Delete') }}</button>
                 <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" 
                     (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
-                <button class='no-margin' [disabled]="!ecoScoreProfileForm.valid " mat-raised-button color="primary"
+                <button class='no-margin' [disabled]="!ecoScoreProfileForm.valid || !saveButton" mat-raised-button color="primary"
                     (click)='onCreate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
                     (translationData.lblSave || 'Save') }}</button>
             </div>
