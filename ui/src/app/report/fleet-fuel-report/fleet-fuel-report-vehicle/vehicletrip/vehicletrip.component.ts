@@ -1291,7 +1291,7 @@ createEndMarker(){
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort[1];
+      this.dataSource.sort = this.sort;
     });
   }
 

@@ -118,7 +118,7 @@ namespace net.atos.daf.ct2.unitconversion
                     switch (convertTo)
                     {
                         case UnitToConvert.Imperial:
-                            result = value / 2.352;
+                            result = value / 2.825;
                             break;
                         case UnitToConvert.Metric:
                             result = value;
@@ -132,24 +132,24 @@ namespace net.atos.daf.ct2.unitconversion
             return Task.FromResult(Math.Round(result, decimals));
         }
 
-        public Task<double> GetVolumePer100Km(double value, VolumeUnit inputUnit, UnitToConvert convertTo, int decimals = 2)
+        public Task<double> GetVolumePer100Km(double distance, double fuelconsumed, VolumeUnit inputUnit, UnitToConvert convertTo, int decimals = 2)
         {
-            double result = value;
+            double result = 0;
             switch (inputUnit)
             {
                 case VolumeUnit.MilliLiter:
                     switch (convertTo)
                     {
                         case UnitToConvert.Imperial:
-                            result = ((value / 4546) / 62.1371);
+                            result = ((distance / 1609.344) / (fuelconsumed / 4546));
                             break;
                         case UnitToConvert.Metric:
-                            result = value / 100000;
+                            result = ((fuelconsumed / 1000) / (distance / 1000)) * 100;
                             break;
                     }
                     break;
                 default:
-                    result = value;
+                    result = 0;
                     break;
             }
             return Task.FromResult(Math.Round(result, decimals));
