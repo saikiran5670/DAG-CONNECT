@@ -10,5 +10,6 @@ namespace net.atos.daf.ct2.kafkacdc
         Task VehicleCdcProducer(List<VehicleCdc> vehicleCdcList, KafkaConfiguration kafkaConfiguration);
 
         //Task VehicleCdcConsumer(KafkaEntity kafkaEntity);
+        Task<List<VehicleCdc>> GetVehicleCdc(List<int> vid);
     }
 }

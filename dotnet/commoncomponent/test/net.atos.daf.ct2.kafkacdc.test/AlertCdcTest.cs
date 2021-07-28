@@ -32,7 +32,8 @@ namespace net.atos.daf.ct2.kafkacdc.test
             _vehicleAlertRepository = new VehicleAlertRepository(_dataAccess, _datamartDataacess);
             _configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
             _vehicleAlertRefManager = new VehicleAlertRefManager(_vehicleAlertRepository, _configuration);
-            _vehicleCdcManager = new VehicleCdcManager();
+            var vehicleCdcrepository = new VehicleCdcRepository(_dataAccess, _datamartDataacess);
+            _vehicleCdcManager = new VehicleCdcManager(vehicleCdcrepository);
         }
 
         [TestMethod]
@@ -75,5 +76,20 @@ namespace net.atos.daf.ct2.kafkacdc.test
 
 
         }
+
+
+        #region VehicleCdc
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get VehicleBySubscriptionSet ")]
+        [TestMethod]
+        public async Task UnT_vehicle_VehicleManager_GetVehicleCdc()
+        {
+            List<int> vids = new List<int>() { 1 };
+            var results = await _vehicleCdcManager.GetVehicleCdc(vids);
+            Assert.IsNotNull(results);
+            Assert.IsTrue(results != null);
+        }
+        #endregion
+
     }
 }
