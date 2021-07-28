@@ -3183,7 +3183,7 @@ namespace net.atos.daf.ct2.reports.repository
 				                    eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75,
 				                    eco.tacho_gross_weight_combination,
                                     CASE WHEN @AggregationType = 'TRIP' THEN CAST(eco.trip_id AS TEXT)
-					                     ELSE CAST(date_trunc(@AggregationType, to_timestamp(start_time/1000)) AS TEXT) 
+					                     ELSE CAST(date_trunc(@AggregationType, to_timestamp(eco.end_time/1000)) AS TEXT) 
                                     END as aggregation_type
 	                    FROM tripdetail.ecoscoredata eco
 	                    INNER JOIN master.driver dr ON dr.driver_id = eco.driver1_id
@@ -3482,7 +3482,7 @@ namespace net.atos.daf.ct2.reports.repository
 								eco.dpa_anticipation_score, eco.dpa_anticipation_count, 
 								eco.used_fuel,eco.end_time,eco.start_time,
 								CASE WHEN @AggregationType = 'TRIP' THEN CAST(eco.trip_id AS TEXT)
-									 ELSE CAST(date_trunc(@AggregationType, to_timestamp(start_time/1000)) AS TEXT) 
+									 ELSE CAST(date_trunc(@AggregationType, to_timestamp(eco.end_time/1000)) AS TEXT) 
 								END as aggregation_type
 	                    FROM tripdetail.ecoscoredata eco
 	                    INNER JOIN master.driver dr ON dr.driver_id = eco.driver1_id
