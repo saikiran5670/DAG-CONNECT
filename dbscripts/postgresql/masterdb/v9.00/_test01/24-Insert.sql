@@ -1197,3 +1197,7 @@ update translation.translation set value ='Idling Without PTO (hh:mm:ss)' where 
 update translation.translation set value ='Idling With PTO (hh:mm:ss)' where name='rp_ff_report_driver_vehicledetails_idlingwithpto';
 update translation.translation set value ='Idling Without PTO (hh:mm:ss)' where name='rp_ff_report_vehicle_vehicledetails_idlingwithoutpto';
 update translation.translation set value ='Idling With PTO (hh:mm:ss)' where name='rp_ff_report_vehicle_vehicledetails_idlingwithpto';
+
+update master.menu 
+set name='Fleet Overview',key='lblfleetoverview',url='fleetoverview'
+where lower(name)='live fleet';

@@ -735,7 +735,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 case TrendlinesKPI.CruiseControlUsage50:
                 case TrendlinesKPI.CruiseControlUsage75:
                     if (unit == UoM.Imperial)
-                        return Tuple.Create("mph(%)", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score) * 0.6213));
+                        return Tuple.Create("mph(%)", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score)));
                     else
                         return Tuple.Create("km/h(%)", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score)));
 
