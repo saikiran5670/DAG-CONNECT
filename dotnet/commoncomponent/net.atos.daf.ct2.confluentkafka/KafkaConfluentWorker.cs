@@ -17,8 +17,8 @@ namespace net.atos.daf.ct2.confluentkafka
                 var config = KafkaConfigManager.GetProducerConfig(kafkaEntity);
                 using (var producer = new ProducerBuilder<Null, string>(config).Build())
                 {
-                    var result = await producer.ProduceAsync(kafkaEntity.Topic, new Message<Null, string> { Value = kafkaEntity.ProducerMessage });
-                    Console.WriteLine($"Event {1} sent on Partition: {result.Partition} with Offset: {result.Offset}");
+                     await producer.ProduceAsync(kafkaEntity.Topic, new Message<Null, string> { Value = kafkaEntity.ProducerMessage });
+                   // Console.WriteLine($"Event {1} sent on Partition: {result.Partition} with Offset: {result.Offset}");
 
 
                     producer.Flush();

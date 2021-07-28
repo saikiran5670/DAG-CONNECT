@@ -1374,6 +1374,7 @@ let prepare = []
   }
 
   backToVehicleDetail(){
+    console.log("backToVehicleDetails works well");
     if(this._state && this._state.data){
     const navigationExtras: NavigationExtras = {
       state: {

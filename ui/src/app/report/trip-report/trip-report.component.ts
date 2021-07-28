@@ -322,8 +322,21 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.getReportPreferences();
   }
 
-  getReportPreferences() {
-    this.reportService.getReportUserPreference(this.tripReportId).subscribe((data: any) => {
+  getReportPreferences(){
+    let reportListData: any = [];
+    this.reportService.getReportDetails().subscribe((reportList: any)=>{
+      reportListData = reportList.reportDetails;
+      this.getTripReportPreferences(reportListData);
+    }, (error)=>{
+      console.log('Report not found...', error);
+      reportListData = [{name: 'Trip Report', id: 1}]; // hard coded
+      this.getTripReportPreferences(reportListData);
+    });
+  }
+
+  getTripReportPreferences(prefData: any) {
+    let repoId: any = prefData.filter(i => i.name == 'Trip Report');
+    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 1).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetTripPrefData();
       this.getTranslatedColumnName(this.reportPrefData);
