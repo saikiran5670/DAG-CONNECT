@@ -213,7 +213,7 @@
               <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>Sort By</mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select (selectionChange)="onWarningTypeSelection($event)"
+                  <mat-select [(ngModel)]="warningTypeSelection" (selectionChange)="onWarningTypeSelection($event)"
                     placeholder="{{ translationData.lblSelectVehicleGroup || 'Severity' }}">
                     <mat-option value="severity">Severity</mat-option>
                     <mat-option value="servicenow">Service Now</mat-option>

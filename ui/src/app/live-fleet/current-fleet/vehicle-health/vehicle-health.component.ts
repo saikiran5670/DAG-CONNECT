@@ -96,7 +96,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   fromDisplayDate: string;
   toDisplayDate: string;
   warningTypeDisplay: string;
-
+  warningTypeSelection:any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   obs: Observable<any>;
   healthDdataSource: MatTableDataSource<any>;
@@ -214,17 +214,15 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
 
   onReset(){
     this.internalSelection = false;
-    this.setDefaultStartEndTime();
+    this.selectionTimeRange('today');
     this.setDefaultTodayDate();
-    this.onSearch();
-    // this.tripData = [];
-    // this.vehicleListData = [];
-    // this.vehicleGroupListData = this.vehicleGroupListData;
-    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    // this.updateDataSource(this.tripData);
-    // this.tableInfoObj = {};
-    // this.selectedPOI.clear();
-  }
+    this.setDefaultStartEndTime();  
+    this.vehicleHealthForm.get('warningType').setValue('AllWarnings');
+    this.getHistoryData(this.healthData.tripId);
+    this.warningTypeSelection='';
+    this.isMapOpen = false;
+    this.map.removeObjects(this.map.getObjects());  
+}
 
   sumOfColumns(columnName : any){
     let sum: any = 0;
