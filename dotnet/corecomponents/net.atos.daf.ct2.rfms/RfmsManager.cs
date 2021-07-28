@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using net.atos.daf.ct2.rfms.entity;
 using net.atos.daf.ct2.rfms.repository;
 using net.atos.daf.ct2.vehicle;
@@ -52,7 +50,30 @@ namespace net.atos.daf.ct2.rfms
 
         public async Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
         {
-            return await _rfmsRepository.GetVehiclePosition(rfmsVehiclePositionRequest);
+            int lastVinId = 0;
+            string visibleVins = string.Empty;
+            var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(rfmsVehiclePositionRequest.AccountId, rfmsVehiclePositionRequest.OrgId);
+            if (visibleVehicles.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.LastVin))
+                {
+                    //Get Id for the last vin
+                    var id = visibleVehicles.Where(x => x.VIN == rfmsVehiclePositionRequest.LastVin).Select(p => p.Id);
+                    if (id != null)
+                        lastVinId = Convert.ToInt32(id.FirstOrDefault());
+                }
+                visibleVins = string.Join(",", visibleVehicles.Select(p => p.VIN.ToString()));
+            }
+
+            RfmsVehiclePosition rfmsVehiclePosition = await _rfmsRepository.GetVehiclePosition(rfmsVehiclePositionRequest, visibleVins);
+
+            if (rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Count() > rfmsVehiclePositionRequest.ThresholdValue)
+            {
+                rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Take(rfmsVehiclePositionRequest.ThresholdValue).ToList();
+                rfmsVehiclePosition.MoreDataAvailable = true;
+            }
+
+            return rfmsVehiclePosition;
         }
 
         public async Task<string> GetRFMSFeatureRate(string emailId, string featureName)
