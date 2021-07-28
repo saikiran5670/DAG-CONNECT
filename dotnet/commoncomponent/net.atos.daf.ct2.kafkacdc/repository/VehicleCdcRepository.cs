@@ -21,18 +21,18 @@ namespace net.atos.daf.ct2.kafkacdc.repository
             _dataMartdataAccess = dataMartdataAccess;
         }
 
-        public async Task<List<VehicleCdc>> GetVehicleCdc(List<int> vids)
+        public async Task<List<VehicleCdc>> GetVehicleCdc(List<int> vehicleId)
         {
             try
             {
                 List<VehicleCdc> vehicleCdcs = new List<VehicleCdc>();
                 var parameter = new DynamicParameters();
-                parameter.Add("@vids", vids);
+                parameter.Add("@vehicleId", vehicleId);
 
 
                 var query = @"SELECT id,
-                            vin, status, vid, fuel_type
-                            FROM master.vehicle where vid = @any(vids)";
+                            vin, status, vid, fuel_type as FuelType
+                            FROM master.vehicle where id =ANY(@vehicleId)";
 
                 var data = await _dataAccess.QueryAsync<VehicleCdc>(query, parameter);
                 return vehicleCdcs = data.Cast<VehicleCdc>().ToList();
