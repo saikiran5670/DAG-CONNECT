@@ -98,6 +98,10 @@ namespace net.atos.daf.ct2.reportscheduler.helper
             //put a breakpoint here and check datatable
             return GenerateHTMLString(dataTable);
         }
+        private static string GetColumnName(string displayNamKey, IEnumerable<ReportColumnName> reporyColumns, PropertyInfo prop)
+        {
+            return reporyColumns.Where(w => w.Key == displayNamKey).FirstOrDefault()?.Value ?? prop.Name;
+        }
 
         public static string GenerateHTMLString(DataTable reportData)
         {
@@ -138,12 +142,6 @@ namespace net.atos.daf.ct2.reportscheduler.helper
                 return sb.ToString();
             }
         }
-
-        private static string GetColumnName(string displayNamKey, IEnumerable<ReportColumnName> reporyColumns, PropertyInfo prop)
-        {
-            return reporyColumns.Where(w => w.Key == displayNamKey).FirstOrDefault()?.Value ?? prop.Name;
-        }
-
         public static string GetFuelDeviationType(FuelType fuelype, VehicleActvityType vehicleActvityType)
         {
             switch (fuelype)
@@ -169,5 +167,6 @@ namespace net.atos.daf.ct2.reportscheduler.helper
             }
             return string.Empty;
         }
+
     }
 }
