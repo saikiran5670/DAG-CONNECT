@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.kafkacdc
         {
             if (vehicleIds.Count > 0)
             {
-                List<VehicleCdc> vehicleCdcList = new List<VehicleCdc>();
+                List<VehicleCdc> vehicleCdcList = await GetVehicleCdc(vehicleIds);
                 foreach (VehicleCdc vlr in vehicleCdcList)
                 {
                     KafkaEntity kafkaEntity = new KafkaEntity()
