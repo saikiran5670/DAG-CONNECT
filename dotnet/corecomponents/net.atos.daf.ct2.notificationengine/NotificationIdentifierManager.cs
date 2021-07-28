@@ -152,7 +152,7 @@ namespace net.atos.daf.ct2.notificationengine
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").Count() > 0)
                 {
-                    //await GetWebServiceCall(identifiedNotificationRec);
+                    await GetWebServiceCall(identifiedNotificationRec);
                 }
 
                 return notificationDetails;

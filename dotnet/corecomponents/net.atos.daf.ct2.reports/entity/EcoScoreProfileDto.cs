@@ -17,8 +17,9 @@ namespace net.atos.daf.ct2.reports.entity
         public int OrganizationId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool IsDAFStandard { get; set; }
         public string ActionedBy { get; set; }
-        public DateTime LastUpdate { get; set; }
+        public long LastUpdate { get; set; }
         public List<EcoScoreProfileKPI> ProfileKPIs { get; set; }
         public ProfileType Type { get; set; }
     }
@@ -142,6 +143,7 @@ namespace net.atos.daf.ct2.reports.entity
         public int TargetProfileId { get; set; }
         public string UoM { get; set; }
     }
+
     public class EcoScoreReportSingleDriver
     {
         public string HeaderType { get; set; }
@@ -174,18 +176,10 @@ namespace net.atos.daf.ct2.reports.entity
         public double BrakeDuration { get; set; }
         public double Braking { get; set; }
         public double AnticipationScore { get; set; }
-        public string Day { get; set; }
+        public DateTime Day { get; set; }
     }
 
     public class EcoScoreSingleDriverBarPieChart
-    {
-        public string VIN { get; set; }
-        public string VehicleName { get; set; }
-        public string X_Axis { get; set; }
-        public double Y_Axis { get; set; }
-        public double Distance { get; set; }
-    }
-    public class EcoScoreSingleDriverTrendlineGraph
     {
         public string VIN { get; set; }
         public string VehicleName { get; set; }
@@ -217,5 +211,29 @@ namespace net.atos.daf.ct2.reports.entity
     {
         Metric,
         Imperial
+    }
+    public enum TrendlinesKPI
+    {
+        EcoScoreCompany,
+        EcoScore,
+        FuelConsumption,
+        CruiseControlUsage,
+        CruiseControlUsage30,
+        CruiseControlUsage50,
+        CruiseControlUsage75,
+        PTOUsage,
+        PTODuration,
+        AverageDrivingSpeed,
+        AverageSpeed,
+        HeavyThrottling,
+        HeavyThrottleDuration,
+        Idling,
+        IdleDuration,
+        BrakingScore,
+        HarshBraking,
+        HarshBrakeDuration,
+        BrakeDuration,
+        Braking,
+        AnticipationScore
     }
 }

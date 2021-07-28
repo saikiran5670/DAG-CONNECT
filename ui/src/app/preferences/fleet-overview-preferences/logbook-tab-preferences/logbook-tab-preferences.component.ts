@@ -108,7 +108,7 @@ export class LogbookTabPreferencesComponent implements OnInit {
     let _flag = true;
     if(this.selectionForLoogbookColumns.selected.length > 0){
       let _search = this.selectionForLoogbookColumns.selected.filter(i => (i.key == 'rp_lb_logbook_details_vehiclename' || i.key == 'rp_lb_logbook_details_vin' || i.key == 'rp_lb_logbook_details_registrationplatenumber'));
-      if(_search.length){
+      if(_search.length > 0){
         _flag = false;
       }
     }

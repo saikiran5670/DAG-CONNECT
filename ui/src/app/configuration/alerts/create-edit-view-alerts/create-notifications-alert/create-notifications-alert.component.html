@@ -144,11 +144,11 @@
                                     <!-- <mat-hint>{{translationData.lblTypeMultipleEmailsWithCommaSeparated || 'Type multiple emails
                             with comma (;) separated' }}</mat-hint> -->
                                     <mat-error
-                                        *ngIf="notificationForm.controls['FormEmailArray']['controls'][0].get('emailAddress').hasError('required') && notificationForm.controls['FormEmailArray']['controls'][0].get('emailAddress').touched">
+                                        *ngIf="notificationForm.controls['FormEmailArray']['controls'][i].get('emailAddress').hasError('required') && notificationForm.controls['FormEmailArray']['controls'][i].get('emailAddress').touched">
                                         {{ translationData.lblPleaseenteremailAddress || 'Please enter email address' }}
                                     </mat-error>
                                     <mat-error
-                                        *ngIf="notificationForm.controls['FormEmailArray']['controls'][0].get('emailAddress').hasError('email')">
+                                        *ngIf="notificationForm.controls['FormEmailArray']['controls'][i].get('emailAddress').hasError('email')">
                                         {{ translationData.lblPleaseentervalidemailAddress || 'Please enter valid email
                                         address' }}
                                     </mat-error>
@@ -165,7 +165,7 @@
                                             matInput formControlName="mailSubject" maxlength="120">
                                     </mat-form-field>
                                     <mat-error
-                                        *ngIf="notificationForm.controls['FormEmailArray']['controls'][0].get('mailSubject').hasError('required') && notificationForm.controls['FormEmailArray']['controls'][0].get('mailSubject').touched">
+                                        *ngIf="notificationForm.controls['FormEmailArray']['controls'][i].get('mailSubject').hasError('required') && notificationForm.controls['FormEmailArray']['controls'][i].get('mailSubject').touched">
                                         {{ translationData.lblPleaseenterMailSubject || 'Please enter Mail Subject' }}
                                     </mat-error>
                                 </div>
@@ -185,7 +185,7 @@
                                             formControlName="mailDescription"></textarea>
                                     </mat-form-field>
                                     <mat-error
-                                        *ngIf="notificationForm.controls['FormEmailArray']['controls'][0].get('mailDescription').hasError('required') && notificationForm.controls['FormEmailArray']['controls'][0].get('mailDescription').touched">
+                                        *ngIf="notificationForm.controls['FormEmailArray']['controls'][i].get('mailDescription').hasError('required') && notificationForm.controls['FormEmailArray']['controls'][i].get('mailDescription').touched">
                                         {{ translationData.lblPleaseentermailDescription || 'Please enter mail
                                         Description' }}
                                     </mat-error>
@@ -305,7 +305,7 @@
                                             matInput formControlName="webURL">
                                     </mat-form-field>
                                     <mat-error
-                                        *ngIf="notificationForm.controls['FormWebArray']['controls'][0].get('webURL').hasError('required') && notificationForm.controls['FormWebArray']['controls'][0].get('webURL').touched">
+                                        *ngIf="notificationForm.controls['FormWebArray']['controls'][i].get('webURL').hasError('required') && notificationForm.controls['FormWebArray']['controls'][i].get('webURL').touched">
                                         {{ translationData.lblPleaseenterWebServiceURL || 'Please enter Web Service URL'
                                         }}
                                     </mat-error>
@@ -340,7 +340,7 @@
                                             formControlName="wsDescription"></textarea>
                                     </mat-form-field>
                                     <mat-error
-                                        *ngIf="notificationForm.controls['FormWebArray']['controls'][0].get('wsDescription').hasError('required') && notificationForm.controls['FormWebArray']['controls'][0].get('wsDescription').touched">
+                                        *ngIf="notificationForm.controls['FormWebArray']['controls'][i].get('wsDescription').hasError('required') && notificationForm.controls['FormWebArray']['controls'][i].get('wsDescription').touched">
                                         {{ translationData.lblPleaseenterwsDescription || 'Please enter ws Description'
                                         }}
                                     </mat-error>
@@ -369,11 +369,11 @@
                                             formControlName="loginId">
                                     </mat-form-field>
                                     <mat-error
-                                        *ngIf="notificationForm.controls['FormWebArray']['controls'][0].get('loginId').hasError('required') && notificationForm.controls['FormWebArray']['controls'][0].get('loginId').touched">
+                                        *ngIf="notificationForm.controls['FormWebArray']['controls'][i].get('loginId').hasError('required') && notificationForm.controls['FormWebArray']['controls'][i].get('loginId').touched">
                                         {{ translationData.lblPleaseenteremailAddress || 'Please enter email address' }}
                                     </mat-error>
                                     <mat-error
-                                        *ngIf="notificationForm.controls['FormWebArray']['controls'][0].get('loginId').hasError('email')">
+                                        *ngIf="notificationForm.controls['FormWebArray']['controls'][i].get('loginId').hasError('email')">
                                         {{ translationData.lblPleaseentervalidemailAddress || 'Please enter valid email
                                         address' }}
                                     </mat-error>
@@ -386,7 +386,7 @@
                                             formControlName="password">
                                     </mat-form-field>
                                     <mat-error
-                                        *ngIf="notificationForm.controls['FormWebArray']['controls'][0].get('password').hasError('required') && notificationForm.controls['FormWebArray']['controls'][0].get('password').touched">
+                                        *ngIf="notificationForm.controls['FormWebArray']['controls'][i].get('password').hasError('required') && notificationForm.controls['FormWebArray']['controls'][i].get('password').touched">
                                         {{ translationData.lblPleaseEnterPassword || 'Please enter password' }}
                                     </mat-error>
                                 </div>
@@ -492,14 +492,18 @@
                                         <ngx-intl-tel-input [cssClass]="''" class="full-width" [enableAutoCountrySelect]="true" [enablePlaceholder]="true" 
                                             [enableAutoCountrySelect]="true"  [searchCountryFlag]="true" [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
                                             [selectFirstCountry]="false" [maxLength]="15" [phoneValidation]="true"
-                                            [separateDialCode]="true" name="mobileNumber" formControlName="mobileNumber">
+                                            [separateDialCode]="true" [(ngModel)]="phoneNumber" name="mobileNumber" formControlName="mobileNumber" (ngModelChange)="validateMobileNumber(i)">
                                         </ngx-intl-tel-input>
                                     </div>
                                     <mat-hint>{{translationData.lblOnlyOneContactNumberCanBeAddedAtATime || 'Only one contact number can be added at a time' }}</mat-hint>
                                     <mat-error
-                                        *ngIf="notificationForm.controls['FormSMSArray']['controls'][0].get('mobileNumber').hasError('required') && notificationForm.controls['FormSMSArray']['controls'][0].get('mobileNumber').touched">
+                                        *ngIf="notificationForm.controls['FormSMSArray']['controls'][i].get('mobileNumber').hasError('required') && notificationForm.controls['FormSMSArray']['controls'][i].get('mobileNumber').touched">
                                         {{ translationData.lblPleaseEnterMobileNumber || 'Please Enter Mobile Number' }}
                                     </mat-error>
+                                    <mat-error
+                                    *ngIf="notificationForm.controls['FormSMSArray']['controls'][i].get('mobileNumber').hasError('tenDigitNumberAllowed')">
+                                    {{ translationData.lblPleaseEnterMax10DigitMobileNumber || 'Please Enter maximum 10 Digit Mobile Number' }}
+                                </mat-error>
                                 </div>
                                 
                             </div>
@@ -518,8 +522,11 @@
                                     </mat-form-field>
                                     <mat-hint>{{translationData.lblSMSTextDescription || 'SMS Text Description' }}</mat-hint>
                                     <mat-error
-                                        *ngIf="notificationForm.controls['FormSMSArray']['controls'][0].get('smsDescription').hasError('required') && notificationForm.controls['FormSMSArray']['controls'][0].get('smsDescription').touched">
+                                        *ngIf="notificationForm.controls['FormSMSArray']['controls'][i].get('smsDescription').hasError('required') && notificationForm.controls['FormSMSArray']['controls'][i].get('smsDescription').touched">
                                         {{ translationData.lblPleaseEnterSmsDescription || 'Please enter sms description' }}
+                                    </mat-error>
+                                    <mat-error *ngIf="notificationForm.controls['FormSMSArray']['controls'][i].get('smsDescription').hasError('specialCharsNotAllowed')">
+                                        {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                                     </mat-error>
                                 </div>
                             </div>

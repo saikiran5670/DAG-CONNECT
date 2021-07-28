@@ -25,7 +25,7 @@ public class WarningStatisticsDao implements Serializable {
 	/** SQL statement for insert. */
 
 	private static final String LIVEFLEET_WARNING_INSERT = "INSERT INTO livefleet.livefleet_warning_statistics(trip_id , vin   , warning_time_stamp,	warning_class,	warning_number,	latitude,	longitude,	heading,	vehicle_health_status_type,	vehicle_driving_status_type,	driver1_id,	warning_type,	distance_until_next_service,	odometer_val,	lastest_processed_message_time_stamp,	created_at, modified_at,	message_type) VALUES ( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	private static final String LIVEFLEET_WARNING_READ = "select warning_time_stamp from livefleet.livefleet_warning_statistics where vin = ? AND message_type=? AND vin IS NOT NULL order by id DESC limit 1";
+	private static final String LIVEFLEET_WARNING_READ = "select warning_time_stamp from livefleet.livefleet_warning_statistics where vin = ? AND vin IS NOT NULL order by id DESC limit 1";
 	private static final String LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_FOUR = "UPDATE livefleet.livefleet_current_trip_statistics  SET  distance_until_next_service = ? ,latest_received_position_lattitude = ? , latest_received_position_longitude = ? , latest_received_position_heading = ? ,latest_processed_message_time_stamp = ? ,  latest_warning_timestamp = ? , latest_warning_position_latitude = ? , latest_warning_position_longitude = ?, vehicle_driving_status_type = ? , trip_distance = ?  WHERE trip_id = ( SELECT trip_id FROM livefleet.livefleet_current_trip_statistics WHERE vin = ? ORDER BY id DESC LIMIT 1 )";
 
 	private static final String LIVEFLEET_CURRENT_TRIP_STATISTICS_UPDATE_TEN = "UPDATE livefleet.livefleet_current_trip_statistics  SET latest_received_position_lattitude = ? , latest_received_position_longitude = ? , latest_received_position_heading = ? , latest_processed_message_time_stamp = ? , vehicle_health_status_type = ? , latest_warning_class = ? ,latest_warning_number = ? , latest_warning_type = ? , latest_warning_timestamp = ? , latest_warning_position_latitude = ? , latest_warning_position_longitude = ?, vehicle_driving_status_type = ?  WHERE trip_id = ( SELECT trip_id FROM livefleet.livefleet_current_trip_statistics WHERE vin = ? ORDER BY id DESC LIMIT 1 )";
@@ -72,7 +72,7 @@ public class WarningStatisticsDao implements Serializable {
 				updateWarningCommonTrip.setDouble(1, warningDetail.getLatitude());
 				updateWarningCommonTrip.setDouble(2, warningDetail.getLongitude());
 				updateWarningCommonTrip.setDouble(3, warningDetail.getHeading());
-				updateWarningCommonTrip.setDouble(4, warningDetail.getCreatedAt());
+				updateWarningCommonTrip.setDouble(4, warningDetail.getWarningTimeStamp());
 				updateWarningCommonTrip.setString(5, warningDetail.getVehicleHealthStatusType());
 				
 				System.out.println( " warningDetail.getWarningClass() ::"+warningDetail.getWarningClass());
@@ -89,7 +89,7 @@ public class WarningStatisticsDao implements Serializable {
 					updateWarningCommonTrip.setInt(7, 0);
 				
 				updateWarningCommonTrip.setString(8, warningDetail.getWarningType());
-				updateWarningCommonTrip.setLong(9, warningDetail.getCreatedAt());
+				updateWarningCommonTrip.setLong(9, warningDetail.getWarningTimeStamp());
 				updateWarningCommonTrip.setDouble(10, warningDetail.getLatitude());
 				updateWarningCommonTrip.setDouble(11, warningDetail.getLongitude());
 				updateWarningCommonTrip.setString(12, warningDetail.getVehicleDrivingStatusType());
@@ -136,8 +136,15 @@ public class WarningStatisticsDao implements Serializable {
 				updateWarningCommonTrip.setDouble(2, warningDetail.getLatitude());
 				updateWarningCommonTrip.setDouble(3, warningDetail.getLongitude());
 				updateWarningCommonTrip.setDouble(4, warningDetail.getHeading());
-				updateWarningCommonTrip.setDouble(5, warningDetail.getCreatedAt());
-				updateWarningCommonTrip.setDouble(6, warningDetail.getCreatedAt());
+				/*
+				 * updateWarningCommonTrip.setDouble(5, warningDetail.getCreatedAt());
+				 * updateWarningCommonTrip.setDouble(6, warningDetail.getCreatedAt());
+				 */
+				
+				updateWarningCommonTrip.setDouble(5, warningDetail.getWarningTimeStamp());
+				updateWarningCommonTrip.setDouble(6, warningDetail.getWarningTimeStamp());
+				
+				
 				updateWarningCommonTrip.setDouble(7, warningDetail.getLatitude());
 				updateWarningCommonTrip.setDouble(8, warningDetail.getLongitude());
 				updateWarningCommonTrip.setString(9, warningDetail.getVehicleDrivingStatusType());
@@ -182,7 +189,7 @@ public class WarningStatisticsDao implements Serializable {
 				stmt_read_warning_statistics = connection.prepareStatement(LIVEFLEET_WARNING_READ);
 
 				stmt_read_warning_statistics.setString(1, vin);
-				stmt_read_warning_statistics.setInt(2, messageType);
+				//stmt_read_warning_statistics.setInt(2, messageType);
 
 				rs_position = stmt_read_warning_statistics.executeQuery();
 

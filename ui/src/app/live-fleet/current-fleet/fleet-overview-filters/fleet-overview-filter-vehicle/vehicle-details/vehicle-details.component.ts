@@ -30,6 +30,7 @@ export class VehicleDetailsComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   mileagewithUnit: any;
   nextservicing: any;
+  alertLength : any;
   
   constructor(private router: Router, private dataInterchangeService: DataInterchangeService,@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService,  private reportMapService: ReportMapService,  private organizationService: OrganizationService) { }
   
@@ -38,10 +39,7 @@ export class VehicleDetailsComponent implements OnInit {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
   }
   ngOnInit(): void {
-    this.gridData = this.selectedElementData;
-    this.mileagewithUnit = this.reportMapService.getDistance(this.selectedElementData.odometerVal,this.prefUnitFormat);
-    this.nextservicing = this.reportMapService.getDistance(this.selectedElementData.distanceUntilNextService,this.prefUnitFormat)
-    // this.reportService.getFilterDetails().subscribe((data: any) => {
+   // this.reportService.getFilterDetails().subscribe((data: any) => {
     //   this.filterData = data;
     //   this.levelList = [];
     // });
@@ -73,6 +71,22 @@ export class VehicleDetailsComponent implements OnInit {
         }
       });
     });
+ 
+  }
+
+  proceedStep(prefData: any, preference: any){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefUnitFormat = prefData.unit[0].name;
+    }
     this.selectedElementData.fleetOverviewAlert.forEach(item => {
       this.levelList.forEach(element => {
         if(item.level ==element.value)
@@ -89,26 +103,24 @@ export class VehicleDetailsComponent implements OnInit {
         }
        });              
     }); 
-  }
+    this.gridData = this.selectedElementData;
+    this.alertLength = this.gridData.fleetOverviewAlert ? this.gridData.fleetOverviewAlert.length : 0;
+    this.mileagewithUnit = this.reportMapService.getDistance(this.selectedElementData.odometerVal,this.prefUnitFormat);
+    this.nextservicing = this.reportMapService.getDistance(this.selectedElementData.distanceUntilNextService,this.prefUnitFormat)
+    
 
-  proceedStep(prefData: any, preference: any){
-    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
-    if(_search.length > 0){
-      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
-      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
-      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
-    }else{
-      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
-      this.prefTimeZone = prefData.timezone[0].value;
-      this.prefDateFormat = prefData.dateformat[0].name;
-      this.prefUnitFormat = prefData.unit[0].name;
-    }
   }
 
   timeConversion(time: any){
-    var d = new Date(time);
-    return d.toLocaleString();
+    let newDate = ''
+    if(time){
+      newDate = this.reportMapService.getStartTime(time, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true);
+    }
+    else{
+      newDate = '';
+    }
+    return newDate;
+
   }
 
   toBack() {

@@ -195,6 +195,39 @@ export class FleetMapService {
     });
   }
 
+  showGlobalPOI(globalPOI: any, _ui: any){
+    globalPOI.forEach(element => {
+      if(element.latitude && element.longitude){
+        let globalPOIMarker = new H.map.Marker({lat: element.latitude, lng: element.longitude},{icon: this.getCategoryPOIIcon()});
+        this.group.addObject(globalPOIMarker);
+        let bubble: any;
+        globalPOIMarker.addEventListener('pointerenter', function (evt) {
+          bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+            content:`<table style='width: 350px;'>
+            <tr>
+              <td style='width: 100px;'>POI Name:</td> <td><b>${element.name}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>Category:</td> <td><b>${element.categoryName}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>Sub-Category:</td> <td><b>${element.subCategoryName != '' ? element.subCategoryName : '-'}</b></td>
+            </tr>
+            <tr>
+              <td style='width: 100px;'>Address:</td> <td><b>${element.address != '' ? element.address : '-'}</b></td>
+            </tr>
+          </table>`
+          });
+          // show info bubble
+          _ui.addBubble(bubble);
+        }, false);
+        globalPOIMarker.addEventListener('pointerleave', function(evt) {
+          bubble.close();
+        }, false);
+      }
+    });
+  }
+
   showSearchMarker(markerData: any){
     if(markerData && markerData.lat && markerData.lng){
       let selectedMarker = new H.map.Marker({ lat: markerData.lat, lng: markerData.lng });
@@ -434,7 +467,7 @@ export class FleetMapService {
 		</g>`;
   }
 
-    viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any,alertsChecked?: boolean,showIcons?:boolean){
+    viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any,alertsChecked?: boolean,showIcons?:boolean, _globalPOIList?:any){
     this.clearRoutesFromMap();
     if(_herePOI){
       this.showHereMapPOI(_herePOI, _selectedRoutes, _ui);
@@ -444,6 +477,9 @@ export class FleetMapService {
     }
     if(_displayPOIList && _displayPOIList.length > 0){ 
       this.showCategoryPOI(_displayPOIList, _ui); //-- show category POi
+    }
+    if(_globalPOIList && _globalPOIList.length > 0){
+      this.showGlobalPOI(_globalPOIList,_ui);
     }
     if(showIcons && _selectedRoutes && _selectedRoutes.length > 0){
       this.drawIcons(_selectedRoutes,_ui);
@@ -785,6 +821,7 @@ export class FleetMapService {
     let _drivingStatus = false;
     let healthColor = '#606060';
     let _alertConfig = undefined;
+    //element.vehicleDrivingStatusType = 'D'
     if (element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving') {
       _drivingStatus = true
     }
@@ -808,28 +845,28 @@ export class FleetMapService {
         break;
     }
     let _vehicleIcon : any;
-    if(_drivingStatus){
+    // if(_drivingStatus){
 
-      let direction = this.getDirectionIconByBearings(element.latestReceivedPositionHeading);
-      let markerSvg = this.createDrivingMarkerSVG(direction,healthColor);
+    //   let direction = this.getDirectionIconByBearings(element.latestReceivedPositionHeading);
+    //   let markerSvg = this.createDrivingMarkerSVG(direction,healthColor);
       
-      if(element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving'){
+    //   if(element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving'){
         
-        let rippleSize = { w: 50, h: 50 };
-        let rippleMarker = this.createRippleMarker(direction);
-        const iconRipple = new H.map.DomIcon(rippleMarker, { size: rippleSize, anchor: { x:(Math.round(rippleSize.w / 2)), y: (Math.round(rippleSize.h / 2) )} });
-        this.rippleMarker = new H.map.DomMarker({ lat:element.latestReceivedPositionLattitude, lng:element.latestReceivedPositionLongitude },{ icon:iconRipple });
-        this.group.addObject(this.rippleMarker);
+    //     let rippleSize = { w: 50, h: 50 };
+    //     let rippleMarker = this.createRippleMarker(direction);
+    //     const iconRipple = new H.map.DomIcon(rippleMarker, { size: rippleSize, anchor: { x:(Math.round(rippleSize.w / 2)), y: (Math.round(rippleSize.h / 2) )} });
+    //     this.rippleMarker = new H.map.DomMarker({ lat:element.latestReceivedPositionLattitude, lng:element.latestReceivedPositionLongitude },{ icon:iconRipple });
+    //     this.group.addObject(this.rippleMarker);
   
-        }
-      _vehicleIcon =  `<svg width="34" height="40" viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
-      ${markerSvg}
-      </svg>`;
+    //     }
+    //   _vehicleIcon =  `<svg width="34" height="40" viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    //   <style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#1D884F;}.st2{fill:#F4C914;}.st3{fill:#176BA5;}.st4{fill:#DB4F60;}.st5{fill:#7F7F7F;}.st6{fill:#808281;}.hidden{display:none;}.cls-1{isolation:isolate;}.cls-2{opacity:0.3;mix-blend-mode:multiply;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#db4f60;stroke-width:3px;}.cls-4,.cls-6{stroke-miterlimit:10;}.cls-5,.cls-6{fill:#db4f60;}.cls-6{stroke:#fff;}</style>
+    //   ${markerSvg}
+    //   </svg>`;
 
     
-    }
-    else{
+    // }
+    // else{
       let _alertFound = undefined ;
       
       if(element.fleetOverviewAlert.length > 0){
@@ -889,7 +926,7 @@ export class FleetMapService {
         </svg>`
       }
     
-    }
+   // }
     return {icon: _vehicleIcon,alertConfig:_alertConfig};
   }
 

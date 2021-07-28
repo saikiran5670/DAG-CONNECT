@@ -25,9 +25,11 @@ import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
 import { HereService } from '../../../../services/here.service';
 import { ConfigService } from '@ngx-config/core';
-import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service'; 
+//import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service'; 
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { MapService } from '../../report-mapservice';
+import * as fs from 'file-saver';
+import { Workbook } from 'exceljs';
 
 declare var H: any;
 
@@ -530,7 +532,7 @@ tripTraceArray: any = [];
   platform: any = '';
   
   constructor(private _formBuilder: FormBuilder, 
-              private landmarkCategoryService: LandmarkCategoryService,
+              //private landmarkCategoryService: LandmarkCategoryService,
               private translationService: TranslationService,
               private organizationService: OrganizationService,
               private reportService: ReportService,
@@ -593,7 +595,7 @@ tripTraceArray: any = [];
       filter: "",
       menuId: 10 //-- for fleet utilisation
     }
- 
+    this.getFleetPreferences();
     this.loadfleetFuelDetails(this.driverDetails);
     if(this.driverDetails){
       this.onSearch();
@@ -619,6 +621,10 @@ tripTraceArray: any = [];
  let prefData: any ={};
  let pref: any = {};
  this.proceedStep(prefData,pref);
+
+ this.isChartsOpen = true;
+ this.isDetailsOpen = true;
+ this.isSummaryOpen = true;
   }
 
 
@@ -690,31 +696,31 @@ tripTraceArray: any = [];
  //   this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr); 
  // }
 
-  makeHerePOIList(){
-    this.herePOIList = [{
-      key: 'Hotel',
-      translatedName: this.translationData.lblHotel || 'Hotel'
-    },
-    {
-      key: 'Parking',
-      translatedName: this.translationData.lblParking || 'Parking'
-    },
-    {
-      key: 'Petrol Station',
-      translatedName: this.translationData.lblPetrolStation || 'Petrol Station'
-    },
-    {
-      key: 'Railway Station',
-      translatedName: this.translationData.lblRailwayStation || 'Railway Station'
-    }];
-  }
-  loadUserPOI(){
-    this.landmarkCategoryService.getCategoryWisePOI(this.accountOrganizationId).subscribe((poiData: any) => {
-      this.userPOIList = this.makeUserCategoryPOIList(poiData);
-    }, (error) => {
-      this.userPOIList = [];
-    });
-  }
+  // makeHerePOIList(){
+  //   this.herePOIList = [{
+  //     key: 'Hotel',
+  //     translatedName: this.translationData.lblHotel || 'Hotel'
+  //   },
+  //   {
+  //     key: 'Parking',
+  //     translatedName: this.translationData.lblParking || 'Parking'
+  //   },
+  //   {
+  //     key: 'Petrol Station',
+  //     translatedName: this.translationData.lblPetrolStation || 'Petrol Station'
+  //   },
+  //   {
+  //     key: 'Railway Station',
+  //     translatedName: this.translationData.lblRailwayStation || 'Railway Station'
+  //   }];
+  // }
+  // loadUserPOI(){
+  //   this.landmarkCategoryService.getCategoryWisePOI(this.accountOrganizationId).subscribe((poiData: any) => {
+  //     this.userPOIList = this.makeUserCategoryPOIList(poiData);
+  //   }, (error) => {
+  //     this.userPOIList = [];
+  //   });
+  // }
 
   selectionPolylineRoute(dataPoints: any, _index: any, checkStatus?: any){
     let lineString: any = new H.geo.LineString();
@@ -975,12 +981,12 @@ createEndMarker(){
       this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
-      this.loadUserPOI();
+     // this.loadUserPOI();
     }, (error)=>{
       this.hideloader();
       this.wholeTripData.vinTripList = [];
       this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
-      this.loadUserPOI();
+     // this.loadUserPOI();
     });
   }
 
@@ -998,7 +1004,7 @@ createEndMarker(){
     let _ui = this.reportMapService.getUI();
     if(this.isAllSelectedForTrip()){
       this.selectedTrip.clear();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView);
       this.showMap = false;
     }
     else{
@@ -1630,7 +1636,6 @@ createEndMarker(){
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
-    this.getFleetPreferences();
   }
 
   setDefaultStartEndTime()
@@ -1809,9 +1814,10 @@ getLast3MonthDate(){
     this.vehicleListData = [];
     // this.vehicleGroupListData = this.vehicleGroupListData;
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    // this.updateDataSource(this.tripData);
-    // this.tableInfoObj = {};
-    // this.selectedPOI.clear();
+    this.updateDataSource(this.tripData);
+    this.tableInfoObj = {};
+    this.advanceFilterOpen = false;
+    this.selectedPOI.clear();
     this.resetTripFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -2037,10 +2043,107 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
  
+  summaryNewObj: any;
 
-  exportAsExcelFile(){
-    this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Driver', sheet: 'sheet_name'});
-  }
+  getAllSummaryData(){ 
+          if(this.initData.length > 0){
+            let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
+            let fuelConsumption = 0; let fuelconsumed = 0; let CO2Emission = 0; 
+            numberOfTrips= this.sumOfColumns('noOfTrips');
+     distanceDone= this.sumOfColumns('distance');
+     idleDuration= this.sumOfColumns('idleDuration');
+     fuelConsumption= this.sumOfColumns('fuelconsumed');
+     fuelconsumed= this.sumOfColumns('fuelConsumption');
+     CO2Emission= this.sumOfColumns('co2emission');
+          // numbeOfVehicles = this.initData.length;   
+            
+          this.summaryNewObj = [
+           ['Fleet Fuel Driver Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+             this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
+             fuelconsumed, idleDuration, fuelConsumption
+          ]
+          ];        
+         }
+       }
+         
+ 
+
+
+       exportAsExcelFile() {
+        this.getAllSummaryData();
+        const title = 'Fleet Fuel Driver Trip Report';
+        const summary = 'Summary Section';
+        const detail = 'Detail Section';
+        let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
+        let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+    
+        const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No','Average Speed('+unitValkmh+')','Max Speed('+unitValkmh+')', 'Distance','startPosition', 'endPosition',
+        'fuelConsumed', 'fuelConsumption','cO2Emission',  'Idle Duration','Pto Duration','Cruise Control Distance 30-50('+unitValkmh+')',
+        'Cruise Control Distance 50-75('+unitValkmh+')','Cruise Control Distance>75('+unitValkmh+')','Heavy Throttle Duration','HarshBrakeDuration', 'averageGrossWeightComb', 'averageTrafficClassification',
+        'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
+        const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed(I)', 'Idle Duration(hh:mm)', 'Fuel Consumption('+unitValkm+')'];
+        const summaryData= this.summaryNewObj;
+        //Create workbook and worksheet
+        let workbook = new Workbook();
+        let worksheet = workbook.addWorksheet('Fleet Fuel Driver Trip Report');
+        //Add Row and formatting
+        let titleRow = worksheet.addRow([title]);
+        worksheet.addRow([]);
+        titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+  
+        worksheet.addRow([]);
+        let subTitleRow = worksheet.addRow([summary]);
+        let summaryRow = worksheet.addRow(summaryHeader);
+        summaryData.forEach(element => {
+          worksheet.addRow(element);
+        });
+        worksheet.addRow([]);
+        summaryRow.eachCell((cell, number) => {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFFFF00' },
+            bgColor: { argb: 'FF0000FF' }
+          }
+          cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+        })
+        worksheet.addRow([]);
+        let subTitleDetailRow = worksheet.addRow([detail]);
+        let headerRow = worksheet.addRow(header);
+        headerRow.eachCell((cell, number) => {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFFFF00' },
+            bgColor: { argb: 'FF0000FF' }
+          }
+          cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+        })    
+        this.initData.forEach(item => {
+          worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.averageSpeed,
+            item.maxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.fuelConsumed,item.fuelConsumption,item.cO2Emission,item.idleDuration,
+            item.ptoDuration,item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
+            item.heavyThrottleDuration,item.harshBrakeDuration,item.averageGrossWeightComb,item.averageTrafficClassification,
+            item.ccFuelConsumption,item.fuelconsumptionCCnonactive,item.idlingConsumption,item.dpaScore]);
+        });
+  
+    //  exportAsExcelFile(){
+    //   this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Driver', sheet: 'sheet_name'});
+        worksheet.mergeCells('A1:D2');
+        subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+        subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+        for (var i = 0; i < header.length; i++) {
+          worksheet.columns[i].width = 20;
+        }
+        for (var j = 0; j < summaryHeader.length; j++) {
+          worksheet.columns[j].width = 20;
+        }
+        worksheet.addRow([]);
+        workbook.xlsx.writeBuffer().then((data) => {
+          let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          fs.saveAs(blob, 'Fleet_Fuel_Driver_Trip.xlsx');
+        })    
+    }
 
    exportAsPDFFile(){
     var doc = new jsPDF('p', 'mm', 'a4');

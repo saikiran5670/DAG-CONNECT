@@ -53,6 +53,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   searchExpandPanel: boolean = true;
   tableExpandPanel: boolean = true;
   initData: any = [];
+  warningEvent: any;
   localStLanguage: any;
   accountOrganizationId: any;
   accountId: any;
@@ -69,6 +70,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   vehicleGrpDD: any = [];
   internalSelection: boolean = false;
   showLoadingIndicator: boolean = false;
+  changeWarningFlag: boolean = false;
   startDateValue: any = 0;
   endDateValue: any = 0;
   last3MonthDate: any;
@@ -93,7 +95,10 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   map:any;
   platform:any;
   ui: any;
-
+  fromDisplayDate: string;
+  toDisplayDate: string;
+  warningTypeDisplay: string;
+  warningTypeSelection:any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   obs: Observable<any>;
   healthDdataSource: MatTableDataSource<any>;
@@ -206,21 +211,20 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       }
       console.log("filterrredData", filterrredData)
       this.applyDatatoCardPaginator(filterrredData);
+      this.setGeneralFleetValue();
   }
 
   onReset(){
     this.internalSelection = false;
-    this.setDefaultStartEndTime();
+    this.selectionTimeRange('today');
     this.setDefaultTodayDate();
-    this.onSearch();
-    // this.tripData = [];
-    // this.vehicleListData = [];
-    // this.vehicleGroupListData = this.vehicleGroupListData;
-    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    // this.updateDataSource(this.tripData);
-    // this.tableInfoObj = {};
-    // this.selectedPOI.clear();
-  }
+    this.setDefaultStartEndTime();  
+    this.vehicleHealthForm.get('warningType').setValue('AllWarnings');
+    this.getHistoryData(this.healthData.tripId);
+    this.warningTypeSelection='';
+    this.isMapOpen = false;
+    this.map.removeObjects(this.map.getObjects());  
+}
 
   sumOfColumns(columnName : any){
     let sum: any = 0;
@@ -283,6 +287,12 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       this.historyHealthData;
     }
     this.applyDatatoCardPaginator(this.historyHealthData);
+  }
+
+  onChangeWarningType(warning: any){
+    this.getHistoryData(this.tripId);
+    this.changeWarningFlag = true;
+    this.warningEvent = warning;
   }
 
   proceedStep(prefData: any, preference: any){
@@ -635,14 +645,30 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   }
 
   getHistoryData(tripId: any){
-    this.reportService.getvehiclehealthstatus(this.healthData.vin,'bg-BG',tripId).subscribe((res) => {
+    this.reportService.getvehiclehealthstatus(this.healthData.vin,this.localStLanguage.code,tripId).subscribe((res) => {
+      //res = [{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2029,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627291416000,"warningClass":5,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"T","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"A","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":0,"warningName":"Severe engine overheating","warningAdvice":"High Exhaust System Temperature (HEST)\r\nWhen regeneration is in progress and the exhaust gas temperature reaches levels that can potentially harm bystanders or the surrounding area this indicator is shown.\r\n\r\nIf the red warning pop-up appears and/or the buzzer is audible while driving, there is a serious fault. Depending on the type of fault, it can result in serious damage to the vehicle. The vehicle may behave differently from normal.\r\n– Stop the vehicle immediately while observing extra caution.\r\n– Park the vehicle in a safe place and switch off the engine.\r\n– Have a DAF Service dealer correct the problem as soon as possible.","icon":"","iconId":5,"iconName":"1957-red_dsym0386.svg","colorName":"R"},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2583,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627291416000,"warningClass":5,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"T","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"A","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627291416000,"warningName":"Severe engine overheating","warningAdvice":"High Exhaust System Temperature (HEST)\r\nWhen regeneration is in progress and the exhaust gas temperature reaches levels that can potentially harm bystanders or the surrounding area this indicator is shown.\r\n\r\nIf the red warning pop-up appears and/or the buzzer is audible while driving, there is a serious fault. Depending on the type of fault, it can result in serious damage to the vehicle. The vehicle may behave differently from normal.\r\n– Stop the vehicle immediately while observing extra caution.\r\n– Park the vehicle in a safe place and switch off the engine.\r\n– Have a DAF Service dealer correct the problem as soon as possible.","icon":"","iconId":5,"iconName":"1957-red_dsym0386.svg","colorName":"R"},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2585,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627292256000,"warningClass":7,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"T","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"A","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627291416000,"warningName":"Coolant level too low","warningAdvice":"1. Coolant level low.\r\nDriver check (See section 'Topping up coolant' in chapter 'Inspections and maintenance' of the Driver Manual.)\r\n2. Coolant level sensor.\r\n\r\nIf the red warning pop-up appears and/or the buzzer is audible while driving, there is a serious fault. Depending on the type of fault, it can result in serious damage to the vehicle. The vehicle may behave differently from normal.\r\n– Stop the vehicle immediately while observing extra caution.\r\n– Park the vehicle in a safe place and switch off the engine.\r\n– Have a DAF Service dealer correct the problem as soon as possible.","icon":"","iconId":12,"iconName":"666-red_dsym0357.svg","colorName":"R"},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2586,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627292436000,"warningClass":8,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"V","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"A","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627292256000,"warningName":"","warningAdvice":"","icon":"","iconId":0,"iconName":"","colorName":""},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2587,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627292616000,"warningClass":10,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"V","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"A","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627292436000,"warningName":"","warningAdvice":"","icon":"","iconId":0,"iconName":"","colorName":""},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2634,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627291416000,"warningClass":5,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"T","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"A","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627292616000,"warningName":"Severe engine overheating","warningAdvice":"High Exhaust System Temperature (HEST)\r\nWhen regeneration is in progress and the exhaust gas temperature reaches levels that can potentially harm bystanders or the surrounding area this indicator is shown.\r\n\r\nIf the red warning pop-up appears and/or the buzzer is audible while driving, there is a serious fault. Depending on the type of fault, it can result in serious damage to the vehicle. The vehicle may behave differently from normal.\r\n– Stop the vehicle immediately while observing extra caution.\r\n– Park the vehicle in a safe place and switch off the engine.\r\n– Have a DAF Service dealer correct the problem as soon as possible.","icon":"","iconId":5,"iconName":"1957-red_dsym0386.svg","colorName":"R"},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2635,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627292256000,"warningClass":7,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"T","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"A","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627291416000,"warningName":"Coolant level too low","warningAdvice":"1. Coolant level low.\r\nDriver check (See section 'Topping up coolant' in chapter 'Inspections and maintenance' of the Driver Manual.)\r\n2. Coolant level sensor.\r\n\r\nIf the red warning pop-up appears and/or the buzzer is audible while driving, there is a serious fault. Depending on the type of fault, it can result in serious damage to the vehicle. The vehicle may behave differently from normal.\r\n– Stop the vehicle immediately while observing extra caution.\r\n– Park the vehicle in a safe place and switch off the engine.\r\n– Have a DAF Service dealer correct the problem as soon as possible.","icon":"","iconId":12,"iconName":"666-red_dsym0357.svg","colorName":"R"},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2636,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627292436000,"warningClass":8,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"V","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"D","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627292256000,"warningName":"","warningAdvice":"","icon":"","iconId":0,"iconName":"","colorName":""},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2637,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627292616000,"warningClass":10,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"V","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"D","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627292436000,"warningName":"","warningAdvice":"","icon":"","iconId":0,"iconName":"","colorName":""}];
       this.historyHealthData = this.processDataForActivatedAndDeactivatedTime(res);
+      if(this.historyHealthData.length > 0 && this.changeWarningFlag){
+      if(this.warningEvent.value =='Active'){
+        this.historyHealthData = this.historyHealthData.filter((item: any) => item.warningType == 'A');
+      }
+      else if(this.warningEvent.value =='Deactive'){
+        this.historyHealthData = this.historyHealthData.filter((item: any) => item.warningType == 'D');
+      }
+      else{
+        this.historyHealthData;
+      }
+      this.applyDatatoCardPaginator(this.historyHealthData);
+      this.changeWarningFlag = false;
+    }
       if(this.isCurrent) {
         this.applyDatatoCardPaginator(this.historyHealthData);
       } else {
         this.onSearch();
       }
     });
+    // this.historyHealthData = [{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2029,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627291416000,"warningClass":5,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"T","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"A","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":0,"warningName":"Severe engine overheating","warningAdvice":"High Exhaust System Temperature (HEST)\r\nWhen regeneration is in progress and the exhaust gas temperature reaches levels that can potentially harm bystanders or the surrounding area this indicator is shown.\r\n\r\nIf the red warning pop-up appears and/or the buzzer is audible while driving, there is a serious fault. Depending on the type of fault, it can result in serious damage to the vehicle. The vehicle may behave differently from normal.\r\n– Stop the vehicle immediately while observing extra caution.\r\n– Park the vehicle in a safe place and switch off the engine.\r\n– Have a DAF Service dealer correct the problem as soon as possible.","icon":"","iconId":5,"iconName":"1957-red_dsym0386.svg","colorName":"R"},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2583,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627291416000,"warningClass":5,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"T","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"A","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627291416000,"warningName":"Severe engine overheating","warningAdvice":"High Exhaust System Temperature (HEST)\r\nWhen regeneration is in progress and the exhaust gas temperature reaches levels that can potentially harm bystanders or the surrounding area this indicator is shown.\r\n\r\nIf the red warning pop-up appears and/or the buzzer is audible while driving, there is a serious fault. Depending on the type of fault, it can result in serious damage to the vehicle. The vehicle may behave differently from normal.\r\n– Stop the vehicle immediately while observing extra caution.\r\n– Park the vehicle in a safe place and switch off the engine.\r\n– Have a DAF Service dealer correct the problem as soon as possible.","icon":"","iconId":5,"iconName":"1957-red_dsym0386.svg","colorName":"R"},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2585,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627292256000,"warningClass":7,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"T","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"A","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627291416000,"warningName":"Coolant level too low","warningAdvice":"1. Coolant level low.\r\nDriver check (See section 'Topping up coolant' in chapter 'Inspections and maintenance' of the Driver Manual.)\r\n2. Coolant level sensor.\r\n\r\nIf the red warning pop-up appears and/or the buzzer is audible while driving, there is a serious fault. Depending on the type of fault, it can result in serious damage to the vehicle. The vehicle may behave differently from normal.\r\n– Stop the vehicle immediately while observing extra caution.\r\n– Park the vehicle in a safe place and switch off the engine.\r\n– Have a DAF Service dealer correct the problem as soon as possible.","icon":"","iconId":12,"iconName":"666-red_dsym0357.svg","colorName":"R"},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2586,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627292436000,"warningClass":8,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"V","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"A","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627292256000,"warningName":"","warningAdvice":"","icon":"","iconId":0,"iconName":"","colorName":""},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2587,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627292616000,"warningClass":10,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"V","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"A","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627292436000,"warningName":"","warningAdvice":"","icon":"","iconId":0,"iconName":"","colorName":""},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2634,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627291416000,"warningClass":5,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"T","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"A","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627292616000,"warningName":"Severe engine overheating","warningAdvice":"High Exhaust System Temperature (HEST)\r\nWhen regeneration is in progress and the exhaust gas temperature reaches levels that can potentially harm bystanders or the surrounding area this indicator is shown.\r\n\r\nIf the red warning pop-up appears and/or the buzzer is audible while driving, there is a serious fault. Depending on the type of fault, it can result in serious damage to the vehicle. The vehicle may behave differently from normal.\r\n– Stop the vehicle immediately while observing extra caution.\r\n– Park the vehicle in a safe place and switch off the engine.\r\n– Have a DAF Service dealer correct the problem as soon as possible.","icon":"","iconId":5,"iconName":"1957-red_dsym0386.svg","colorName":"R"},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2635,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627292256000,"warningClass":7,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"T","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"A","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627291416000,"warningName":"Coolant level too low","warningAdvice":"1. Coolant level low.\r\nDriver check (See section 'Topping up coolant' in chapter 'Inspections and maintenance' of the Driver Manual.)\r\n2. Coolant level sensor.\r\n\r\nIf the red warning pop-up appears and/or the buzzer is audible while driving, there is a serious fault. Depending on the type of fault, it can result in serious damage to the vehicle. The vehicle may behave differently from normal.\r\n– Stop the vehicle immediately while observing extra caution.\r\n– Park the vehicle in a safe place and switch off the engine.\r\n– Have a DAF Service dealer correct the problem as soon as possible.","icon":"","iconId":12,"iconName":"666-red_dsym0357.svg","colorName":"R"},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2636,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627292436000,"warningClass":8,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"V","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"D","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627292256000,"warningName":"","warningAdvice":"","icon":"","iconId":0,"iconName":"","colorName":""},{"vehicleRegNo":"BTXR422","vehicleName":"06: Test Veh2","tripId":"","warningId":2637,"driverName":"Unknown","warningTripId":"","warningVin":"XLR0998HGFFT75550","warningTimetamp":1627292616000,"warningClass":10,"warningNumber":3,"warningLat":51.55490112,"warningLng":4.912572861,"warningAddress":"5126 Gilze, Nederland","warningAddressId":378,"warningHeading":231.251743,"warningVehicleHealthStatusType":"V","warningVehicleDrivingStatusType":"D","warningDrivingId":"","warningType":"D","warningDistanceUntilNectService":0,"warningOdometerVal":0,"warningLatestProcessedMessageTimestamp":1627292436000,"warningName":"","warningAdvice":"","icon":"","iconId":0,"iconName":"","colorName":""}];
+  
   }
 
   processDataForActivatedAndDeactivatedTime(responseData) {
@@ -656,9 +682,9 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     for(let key in groupedObj) {
       let activatedObj = groupedObj[key].filter(item => item.warningType == "A");
       let deactivatedObj = groupedObj[key].filter(item => item.warningType == "D" || (item.warningType == "I"));
-      if(deactivatedObj.length != 0) {
-        activatedObj[0]['warningDeactivatedTimestamp'] = deactivatedObj[0].warningTimetamp;
-      }
+      // if(deactivatedObj.length != 0) {
+      //   activatedObj[0]['warningDeactivatedTimestamp'] = deactivatedObj[0].warningTimetamp;
+      // }
       finalWarningArray.push(activatedObj[0]);
     }
     return finalWarningArray;
@@ -718,6 +744,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   // }
 
   drawIcons(_selectedRoutes,_ui){
+      this.map.removeObjects(this.map.getObjects());
     _selectedRoutes.forEach(elem => {
       let startAddressPositionLat = elem.startPositionLattitude;
       let startAddressPositionLong = elem.startPositionLongitude;
@@ -737,7 +764,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       this.map.addObject(vehicleIconMarker);
       let _healthStatus = '',_drivingStatus = '';
       // icon tooltip
-      switch (elem.vehicleHealthStatusType) {
+      switch (elem.warningVehicleHealthStatusType) {
         case 'T': // stop now;
         case 'Stop Now':
           _healthStatus = 'Stop Now';
@@ -753,7 +780,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
         default:
           break;
       }
-      switch (elem.vehicleDrivingStatusType) {
+      switch (elem.warningVehicleDrivingStatusType) {
         case 'N': 
         case 'Never Moved':
           _drivingStatus = 'Never Moved';
@@ -779,7 +806,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
           break;
       }
       let activatedTime = Util.convertUtcToDateFormat(elem.warningTimetamp,'DD/MM/YYYY hh:mm:ss');
-      let deactivatedTime = Util.convertUtcToDateFormat(elem.warningDeactivatedTimestamp,'DD/MM/YYYY hh:mm:ss');
+      let deactivatedTime = elem.warningDeactivatedTimestamp ?  Util.convertUtcToDateFormat(elem.warningDeactivatedTimestamp,'DD/MM/YYYY hh:mm:ss'): '--';
       // let _driverName = elem.driverName ? elem.driverName : elem.driver1Id;
       // let _vehicleName = elem.vid ? elem.vid : elem.vin;
       let iconBubble;
@@ -840,10 +867,10 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     let _drivingStatus = false;
     let healthColor = '#606060';
     let _alertConfig = undefined;
-    if (element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving') {
+    if (element.warningVehicleDrivingStatusType === 'D' || element.warningVehicleDrivingStatusType === 'Driving') {
       _drivingStatus = true
     }
-    switch (element.vehicleHealthStatusType) {
+    switch (element.warningVehicleHealthStatusType) {
       case 'T': // stop now;
       case 'Stop Now':
         healthColor = '#D50017'; //red
@@ -864,14 +891,14 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     }
     let _vehicleIcon : any;
   
-      let _alertFound = undefined ;
+     // let _alertFound = undefined ;
       
       // if(element.fleetOverviewAlert.length > 0){
-      _alertFound = element.warningLat == element.latestReceivedPositionLattitude && element.warningLng == element.latestReceivedPositionLongitude;
+     // _alertFound = element.warningLat == element.latestReceivedPositionLattitude && element.warningLng == element.latestReceivedPositionLongitude;
       // }
       
-      if(_alertFound){
-        _alertConfig = this.getAlertConfig(_alertFound);
+      //if(_alertFound){
+        _alertConfig = this.getAlertConfig(element);
         _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M32.5 24.75C32.5 37 16.75 47.5 16.75 47.5C16.75 47.5 1 37 1 24.75C1 20.5728 2.65937 16.5668 5.61307 13.6131C8.56677 10.6594 12.5728 9 16.75 9C20.9272 9 24.9332 10.6594 27.8869 13.6131C30.8406 16.5668 32.5 20.5728 32.5 24.75Z" stroke="${healthColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M16.75 46.625C24.1875 40.5 31.625 32.9652 31.625 24.75C31.625 16.5348 24.9652 9.875 16.75 9.875C8.53477 9.875 1.875 16.5348 1.875 24.75C1.875 32.9652 9.75 40.9375 16.75 46.625Z" fill="${healthColor}"/>
@@ -899,28 +926,28 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
         </clipPath>
         </defs>
         </svg>`;
-      }
-      else{
-        _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M32.5 17.5C32.5 29.75 16.75 40.25 16.75 40.25C16.75 40.25 1 29.75 1 17.5C1 13.3228 2.65937 9.31677 5.61307 6.36307C8.56677 3.40937 12.5728 1.75 16.75 1.75C20.9272 1.75 24.9332 3.40937 27.8869 6.36307C30.8406 9.31677 32.5 13.3228 32.5 17.5Z" stroke="${healthColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M16.75 39.375C24.1875 33.25 31.625 25.7152 31.625 17.5C31.625 9.28475 24.9652 2.62498 16.75 2.62498C8.53477 2.62498 1.875 9.28475 1.875 17.5C1.875 25.7152 9.75 33.6875 16.75 39.375Z" fill="${healthColor}"/>
-        <path d="M16.75 30.1875C23.9987 30.1875 29.875 24.605 29.875 17.7187C29.875 10.8324 23.9987 5.24998 16.75 5.24998C9.50126 5.24998 3.625 10.8324 3.625 17.7187C3.625 24.605 9.50126 30.1875 16.75 30.1875Z" fill="white"/>
-        <g clip-path="url(#clip0)">
-        <path d="M11.7041 22.8649C10.8917 22.8649 10.2307 22.2039 10.2307 21.3916C10.2307 20.5792 10.8917 19.9183 11.7041 19.9183C12.5164 19.9183 13.1773 20.5792 13.1773 21.3916C13.1773 22.204 12.5164 22.8649 11.7041 22.8649ZM11.7041 20.7241C11.3359 20.7241 11.0365 21.0235 11.0365 21.3916C11.0365 21.7597 11.3359 22.0591 11.7041 22.0591C12.0721 22.0591 12.3715 21.7597 12.3715 21.3916C12.3715 21.0235 12.0721 20.7241 11.7041 20.7241Z" fill="${healthColor}"/>
-        <path d="M21.7961 22.8649C20.9838 22.8649 20.3228 22.2039 20.3228 21.3916C20.3228 20.5792 20.9838 19.9183 21.7961 19.9183C22.6085 19.9183 23.2694 20.5792 23.2694 21.3916C23.2694 22.204 22.6085 22.8649 21.7961 22.8649ZM21.7961 20.7241C21.4281 20.7241 21.1285 21.0235 21.1285 21.3916C21.1285 21.7597 21.4281 22.0591 21.7961 22.0591C22.1642 22.0591 22.4637 21.7597 22.4637 21.3916C22.4637 21.0235 22.1642 20.7241 21.7961 20.7241Z" fill="${healthColor}"/>
-        <path d="M18.819 11.3345H14.6812C14.4587 11.3345 14.2783 11.1542 14.2783 10.9317C14.2783 10.7092 14.4587 10.5288 14.6812 10.5288H18.819C19.0415 10.5288 19.2219 10.7092 19.2219 10.9317C19.2219 11.1542 19.0415 11.3345 18.819 11.3345Z" fill="${healthColor}"/>
-        <path d="M19.6206 23.0272H13.8795C13.6569 23.0272 13.4766 22.8468 13.4766 22.6243C13.4766 22.4018 13.6569 22.2214 13.8795 22.2214H19.6206C19.8431 22.2214 20.0235 22.4018 20.0235 22.6243C20.0235 22.8468 19.8431 23.0272 19.6206 23.0272Z" fill="${healthColor}"/>
-        <path d="M19.6206 20.5619H13.8795C13.6569 20.5619 13.4766 20.3815 13.4766 20.159C13.4766 19.9364 13.6569 19.7561 13.8795 19.7561H19.6206C19.8431 19.7561 20.0235 19.9364 20.0235 20.159C20.0235 20.3815 19.8431 20.5619 19.6206 20.5619Z" fill="${healthColor}"/>
-        <path d="M19.6206 21.7945H13.8795C13.6569 21.7945 13.4766 21.6142 13.4766 21.3916C13.4766 21.1691 13.6569 20.9887 13.8795 20.9887H19.6206C19.8431 20.9887 20.0235 21.1691 20.0235 21.3916C20.0235 21.6142 19.8431 21.7945 19.6206 21.7945Z" fill="${healthColor}"/>
-        <path d="M25.5346 14.8178H23.552C23.2742 14.8178 23.0491 15.0429 23.0491 15.3207V16.4181L22.7635 16.7197V10.9253C22.7635 9.95231 21.9722 9.16096 20.9993 9.16096H12.5009C11.528 9.16096 10.7365 9.9523 10.7365 10.9253V16.7196L10.451 16.4181V15.3207C10.451 15.0429 10.2259 14.8178 9.94814 14.8178H7.96539C7.68767 14.8178 7.4625 15.0429 7.4625 15.3207V16.6183C7.4625 16.8961 7.68767 17.1212 7.96539 17.1212H9.73176L10.1695 17.5835C9.49853 17.8333 9.01905 18.48 9.01905 19.2373V24.4839C9.01905 24.7617 9.24416 24.9868 9.52194 24.9868H10.1291V26.1526C10.1291 26.9447 10.7734 27.5889 11.5655 27.5889C12.3575 27.5889 13.0018 26.9447 13.0018 26.1526V24.9868H20.4981V26.1526C20.4981 26.9447 21.1424 27.5889 21.9345 27.5889C22.7266 27.5889 23.3709 26.9447 23.3709 26.1526V24.9868H23.9781C24.2558 24.9868 24.481 24.7617 24.481 24.4839V19.2373C24.481 18.48 24.0015 17.8333 23.3306 17.5835L23.7683 17.1212H25.5346C25.8124 17.1212 26.0375 16.8961 26.0375 16.6183V15.3207C26.0375 15.0429 25.8123 14.8178 25.5346 14.8178ZM9.4452 16.1154H8.46828V15.8236H9.4452V16.1154ZM11.7422 10.9253C11.7422 10.5071 12.0826 10.1667 12.5009 10.1667H20.9992C21.4173 10.1667 21.7576 10.5071 21.7576 10.9253V11.6969H11.7422V10.9253ZM21.7577 12.7026V17.4729H17.2529V12.7026H21.7577ZM11.7422 12.7026H16.2471V17.4729H11.7422V12.7026ZM11.996 26.1525C11.996 26.3898 11.8027 26.5831 11.5655 26.5831C11.3281 26.5831 11.1349 26.3898 11.1349 26.1525V24.9867H11.996V26.1525ZM22.3651 26.1525C22.3651 26.3898 22.1718 26.5831 21.9345 26.5831C21.6972 26.5831 21.5039 26.3898 21.5039 26.1525V24.9867H22.3651V26.1525ZM23.4752 19.2373V23.981H10.0248V19.2373C10.0248 18.8191 10.3652 18.4788 10.7834 18.4788H22.7166C23.1348 18.4788 23.4752 18.8191 23.4752 19.2373ZM25.0317 16.1154H24.0549V15.8236H25.0317V16.1154Z" fill="${healthColor}" stroke="${healthColor}" stroke-width="0.2"/>
-        </g>
-        <defs>
-        <clipPath id="clip0">
-        <rect width="18.375" height="18.375" fill="white" transform="translate(7.5625 9.18748)"/>
-        </clipPath>
-        </defs>
-        </svg>`
-      }
+      //}
+      // else{
+      //   _vehicleIcon = `<svg width="40" height="49" viewBox="0 0 40 49" fill="none" xmlns="http://www.w3.org/2000/svg">
+      //   <path d="M32.5 17.5C32.5 29.75 16.75 40.25 16.75 40.25C16.75 40.25 1 29.75 1 17.5C1 13.3228 2.65937 9.31677 5.61307 6.36307C8.56677 3.40937 12.5728 1.75 16.75 1.75C20.9272 1.75 24.9332 3.40937 27.8869 6.36307C30.8406 9.31677 32.5 13.3228 32.5 17.5Z" stroke="${healthColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      //   <path d="M16.75 39.375C24.1875 33.25 31.625 25.7152 31.625 17.5C31.625 9.28475 24.9652 2.62498 16.75 2.62498C8.53477 2.62498 1.875 9.28475 1.875 17.5C1.875 25.7152 9.75 33.6875 16.75 39.375Z" fill="${healthColor}"/>
+      //   <path d="M16.75 30.1875C23.9987 30.1875 29.875 24.605 29.875 17.7187C29.875 10.8324 23.9987 5.24998 16.75 5.24998C9.50126 5.24998 3.625 10.8324 3.625 17.7187C3.625 24.605 9.50126 30.1875 16.75 30.1875Z" fill="white"/>
+      //   <g clip-path="url(#clip0)">
+      //   <path d="M11.7041 22.8649C10.8917 22.8649 10.2307 22.2039 10.2307 21.3916C10.2307 20.5792 10.8917 19.9183 11.7041 19.9183C12.5164 19.9183 13.1773 20.5792 13.1773 21.3916C13.1773 22.204 12.5164 22.8649 11.7041 22.8649ZM11.7041 20.7241C11.3359 20.7241 11.0365 21.0235 11.0365 21.3916C11.0365 21.7597 11.3359 22.0591 11.7041 22.0591C12.0721 22.0591 12.3715 21.7597 12.3715 21.3916C12.3715 21.0235 12.0721 20.7241 11.7041 20.7241Z" fill="${healthColor}"/>
+      //   <path d="M21.7961 22.8649C20.9838 22.8649 20.3228 22.2039 20.3228 21.3916C20.3228 20.5792 20.9838 19.9183 21.7961 19.9183C22.6085 19.9183 23.2694 20.5792 23.2694 21.3916C23.2694 22.204 22.6085 22.8649 21.7961 22.8649ZM21.7961 20.7241C21.4281 20.7241 21.1285 21.0235 21.1285 21.3916C21.1285 21.7597 21.4281 22.0591 21.7961 22.0591C22.1642 22.0591 22.4637 21.7597 22.4637 21.3916C22.4637 21.0235 22.1642 20.7241 21.7961 20.7241Z" fill="${healthColor}"/>
+      //   <path d="M18.819 11.3345H14.6812C14.4587 11.3345 14.2783 11.1542 14.2783 10.9317C14.2783 10.7092 14.4587 10.5288 14.6812 10.5288H18.819C19.0415 10.5288 19.2219 10.7092 19.2219 10.9317C19.2219 11.1542 19.0415 11.3345 18.819 11.3345Z" fill="${healthColor}"/>
+      //   <path d="M19.6206 23.0272H13.8795C13.6569 23.0272 13.4766 22.8468 13.4766 22.6243C13.4766 22.4018 13.6569 22.2214 13.8795 22.2214H19.6206C19.8431 22.2214 20.0235 22.4018 20.0235 22.6243C20.0235 22.8468 19.8431 23.0272 19.6206 23.0272Z" fill="${healthColor}"/>
+      //   <path d="M19.6206 20.5619H13.8795C13.6569 20.5619 13.4766 20.3815 13.4766 20.159C13.4766 19.9364 13.6569 19.7561 13.8795 19.7561H19.6206C19.8431 19.7561 20.0235 19.9364 20.0235 20.159C20.0235 20.3815 19.8431 20.5619 19.6206 20.5619Z" fill="${healthColor}"/>
+      //   <path d="M19.6206 21.7945H13.8795C13.6569 21.7945 13.4766 21.6142 13.4766 21.3916C13.4766 21.1691 13.6569 20.9887 13.8795 20.9887H19.6206C19.8431 20.9887 20.0235 21.1691 20.0235 21.3916C20.0235 21.6142 19.8431 21.7945 19.6206 21.7945Z" fill="${healthColor}"/>
+      //   <path d="M25.5346 14.8178H23.552C23.2742 14.8178 23.0491 15.0429 23.0491 15.3207V16.4181L22.7635 16.7197V10.9253C22.7635 9.95231 21.9722 9.16096 20.9993 9.16096H12.5009C11.528 9.16096 10.7365 9.9523 10.7365 10.9253V16.7196L10.451 16.4181V15.3207C10.451 15.0429 10.2259 14.8178 9.94814 14.8178H7.96539C7.68767 14.8178 7.4625 15.0429 7.4625 15.3207V16.6183C7.4625 16.8961 7.68767 17.1212 7.96539 17.1212H9.73176L10.1695 17.5835C9.49853 17.8333 9.01905 18.48 9.01905 19.2373V24.4839C9.01905 24.7617 9.24416 24.9868 9.52194 24.9868H10.1291V26.1526C10.1291 26.9447 10.7734 27.5889 11.5655 27.5889C12.3575 27.5889 13.0018 26.9447 13.0018 26.1526V24.9868H20.4981V26.1526C20.4981 26.9447 21.1424 27.5889 21.9345 27.5889C22.7266 27.5889 23.3709 26.9447 23.3709 26.1526V24.9868H23.9781C24.2558 24.9868 24.481 24.7617 24.481 24.4839V19.2373C24.481 18.48 24.0015 17.8333 23.3306 17.5835L23.7683 17.1212H25.5346C25.8124 17.1212 26.0375 16.8961 26.0375 16.6183V15.3207C26.0375 15.0429 25.8123 14.8178 25.5346 14.8178ZM9.4452 16.1154H8.46828V15.8236H9.4452V16.1154ZM11.7422 10.9253C11.7422 10.5071 12.0826 10.1667 12.5009 10.1667H20.9992C21.4173 10.1667 21.7576 10.5071 21.7576 10.9253V11.6969H11.7422V10.9253ZM21.7577 12.7026V17.4729H17.2529V12.7026H21.7577ZM11.7422 12.7026H16.2471V17.4729H11.7422V12.7026ZM11.996 26.1525C11.996 26.3898 11.8027 26.5831 11.5655 26.5831C11.3281 26.5831 11.1349 26.3898 11.1349 26.1525V24.9867H11.996V26.1525ZM22.3651 26.1525C22.3651 26.3898 22.1718 26.5831 21.9345 26.5831C21.6972 26.5831 21.5039 26.3898 21.5039 26.1525V24.9867H22.3651V26.1525ZM23.4752 19.2373V23.981H10.0248V19.2373C10.0248 18.8191 10.3652 18.4788 10.7834 18.4788H22.7166C23.1348 18.4788 23.4752 18.8191 23.4752 19.2373ZM25.0317 16.1154H24.0549V15.8236H25.0317V16.1154Z" fill="${healthColor}" stroke="${healthColor}" stroke-width="0.2"/>
+      //   </g>
+      //   <defs>
+      //   <clipPath id="clip0">
+      //   <rect width="18.375" height="18.375" fill="white" transform="translate(7.5625 9.18748)"/>
+      //   </clipPath>
+      //   </defs>
+      //   </svg>`
+      // }
     
     
     return {icon: _vehicleIcon,alertConfig:_alertConfig};
@@ -931,7 +958,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
     let _fillColor = '#D50017';
     let _level = 'Critical';
     let _type = '';
-      switch (_currentAlert.level) {
+      switch (_currentAlert.warningType) {
         case 'C':
           case 'Critical':{
           _fillColor = '#D50017';
@@ -953,26 +980,70 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
         default:
           break;
       }
-      switch (_currentAlert.categoryType) {
-        case 'L':
-          case 'Logistics Alerts':{
-          _type = 'Logistics Alerts'
-        }
-        break;
-        case 'F':
-          case 'Fuel and Driver Performance':{
-          _type='Fuel and Driver Performance'
-        }
-        break;
-        case 'R':
-          case 'Repair and Maintenance':{
-          _type='Repair and Maintenance'
+      // switch (_currentAlert.categoryType) {
+      //   case 'L':
+      //     case 'Logistics Alerts':{
+      //     _type = 'Logistics Alerts'
+      //   }
+      //   break;
+      //   case 'F':
+      //     case 'Fuel and Driver Performance':{
+      //     _type='Fuel and Driver Performance'
+      //   }
+      //   break;
+      //   case 'R':
+      //     case 'Repair and Maintenance':{
+      //     _type='Repair and Maintenance'
 
-        }
-        break;
-        default:
-          break;
-      }
+      //   }
+      //   break;
+      //   default:
+      //     break;
+      // }
       return {color : _fillColor , level : _level, type : _type};
+  }
+
+  setGeneralFleetValue(){
+    this.fromDisplayDate = this.formStartDate(this.startDateValue);
+    this.toDisplayDate = this.formStartDate(this.endDateValue);
+    this.warningTypeDisplay = this.vehicleHealthForm.get('warningType').value;
+  }
+
+  formStartDate(date: any){
+    let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
+    let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
+    let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
+    let _d = (date.getDate() < 10) ? ('0'+date.getDate()): date.getDate();
+    let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
+    let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
+    let _date: any;
+    let _time: any;
+    if(this.prefTimeFormat == 12){
+      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours()-12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
+    }else{
+      _time = `${h}:${m}:${s}`;
+    }
+    switch(this.prefDateFormat){
+      case 'ddateformat_dd/mm/yyyy': {
+        _date = `${_d}/${_m}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        _date = `${_d}-${_m}-${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        _date = `${_m}-${_d}-${_y} ${_time}`;
+        break;
+      }
+      default:{
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+      }
+    }
+    return _date;
   }
 }

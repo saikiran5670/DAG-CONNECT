@@ -47,6 +47,17 @@ namespace net.atos.daf.ct2.unitconversion
                             break;
                     }
                     break;
+                case SpeedUnit.KmPerHour:
+                    switch (convertTo)
+                    {
+                        case UnitToConvert.Imperial:
+                            result = value / 1.609;
+                            break;
+                        case UnitToConvert.Metric:
+                            result = value;
+                            break;
+                    }
+                    break;
                 default:
                     result = value;
                     break;
@@ -107,7 +118,7 @@ namespace net.atos.daf.ct2.unitconversion
                     switch (convertTo)
                     {
                         case UnitToConvert.Imperial:
-                            result = value / 2.352;
+                            result = value / 2.825;
                             break;
                         case UnitToConvert.Metric:
                             result = value;
@@ -116,6 +127,29 @@ namespace net.atos.daf.ct2.unitconversion
                     break;
                 default:
                     result = value;
+                    break;
+            }
+            return Task.FromResult(Math.Round(result, decimals));
+        }
+
+        public Task<double> GetVolumePer100Km(double distance, double fuelconsumed, VolumeUnit inputUnit, UnitToConvert convertTo, int decimals = 2)
+        {
+            double result = 0;
+            switch (inputUnit)
+            {
+                case VolumeUnit.MilliLiter:
+                    switch (convertTo)
+                    {
+                        case UnitToConvert.Imperial:
+                            result = ((distance / 1609.344) / (fuelconsumed / 4546));
+                            break;
+                        case UnitToConvert.Metric:
+                            result = ((fuelconsumed / 1000) / (distance / 1000)) * 100;
+                            break;
+                    }
+                    break;
+                default:
+                    result = 0;
                     break;
             }
             return Task.FromResult(Math.Round(result, decimals));
@@ -134,6 +168,17 @@ namespace net.atos.daf.ct2.unitconversion
                             break;
                         case UnitToConvert.Metric:
                             result = value / 1000;
+                            break;
+                    }
+                    break;
+                case WeightUnit.Tons:
+                    switch (convertTo)
+                    {
+                        case UnitToConvert.Imperial:
+                            result = value;
+                            break;
+                        case UnitToConvert.Metric:
+                            result = value / 1.102;
                             break;
                     }
                     break;

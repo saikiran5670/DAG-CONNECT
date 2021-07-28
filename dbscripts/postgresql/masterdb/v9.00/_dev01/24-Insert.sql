@@ -1133,3 +1133,71 @@ tr {{ page-break-inside: avoid }}
 	</table>
   </body>
 </html>' where event_name='TripReport';
+
+INSERT INTO master.reportattribute (report_id,data_attribute_id, sub_attribute_ids,type ,key,name) 
+SELECT (SELECT id from MASTER.REPORT WHERE name = 'Fleet Fuel Report'),
+(SELECT id from master.dataattribute WHERE name = 'Report.Driver.VehicleDetails.IdlingWithPTO(%)'),
+null,'S','rp_ff_report_driver_vehicledetails_idlingwithpto(%)',null
+WHERE NOT EXISTS (SELECT 1 FROM master.reportattribute WHERE REPORT_ID = 
+				  (SELECT id from MASTER.REPORT WHERE name = 'Fleet Fuel Report') AND
+				  DATA_ATTRIBUTE_ID = (SELECT id from master.dataattribute WHERE name = 'Report.Driver.VehicleDetails.IdlingWithPTO(%)' ));
+
+INSERT INTO TRANSLATION.TRANSLATION (CODE,TYPE,NAME,VALUE,created_at)  
+SELECT 'EN-GB','L','rp_ff_report_driver_vehicledetails_idlingwithpto(%)','Idling With PTO (%)',
+(select extract(epoch from now()) * 1000)
+WHERE NOT EXISTS (SELECT 1 FROM TRANSLATION.TRANSLATION WHERE name = 'rp_ff_report_driver_vehicledetails_idlingwithpto(%)');
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'rp_ff_report_driver_vehicledetails_idlingwithpto(%)',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'rp_ff_report_driver_vehicledetails_idlingwithpto(%)' 
+and ref_id=0);
+
+INSERT INTO master.reportattribute (report_id,data_attribute_id, sub_attribute_ids,type ,key,name) 
+SELECT (SELECT id from MASTER.REPORT WHERE name = 'Fleet Fuel Report'),
+(SELECT id from master.dataattribute WHERE name = 'Report.Vehicle.VehicleDetails.IdlingWithPTO(%)'),
+null,'S','rp_ff_report_vehicle_vehicledetails_idlingwithpto(%)',null
+WHERE NOT EXISTS (SELECT 1 FROM master.reportattribute WHERE REPORT_ID = 
+				  (SELECT id from MASTER.REPORT WHERE name = 'Fleet Fuel Report') AND
+				  DATA_ATTRIBUTE_ID = (SELECT id from master.dataattribute WHERE name = 'Report.Vehicle.VehicleDetails.IdlingWithPTO(%)' ));
+
+INSERT INTO TRANSLATION.TRANSLATION (CODE,TYPE,NAME,VALUE,created_at)  
+SELECT 'EN-GB','L','rp_ff_report_vehicle_vehicledetails_idlingwithpto(%)','Idling With PTO (%)',
+(select extract(epoch from now()) * 1000)
+WHERE NOT EXISTS (SELECT 1 FROM TRANSLATION.TRANSLATION WHERE name = 'rp_ff_report_vehicle_vehicledetails_idlingwithpto(%)');
+
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   
+SELECT 'rp_ff_report_vehicle_vehicledetails_idlingwithpto(%)',0,'L' 
+WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'rp_ff_report_vehicle_vehicledetails_idlingwithpto(%)' 
+and ref_id=0);
+
+
+
+update master.dataattribute set key='da_report_vehicle_vehicledetails_idlingwithpto(%)'
+--select * from master.dataattribute
+where name='Report.Vehicle.VehicleDetails.IdlingWithPTO(%)';
+
+update master.dataattribute set key='da_report_driver_vehicledetails_idlingwithpto(%)'
+--select * from master.dataattribute
+where name='Report.Driver.VehicleDetails.IdlingWithPTO(%)';
+
+--select * from translation.translation where name='da_report_vehicle_vehicledetails_idlingwithpto(%)'
+
+INSERT INTO TRANSLATION.TRANSLATION (CODE,TYPE,NAME,VALUE,created_at)  
+SELECT 'EN-GB','L','da_report_vehicle_vehicledetails_idlingwithpto(%)','Report.Vehicle.VehicleDetails.IdlingWithPTO(%)',
+(select extract(epoch from now()) * 1000)
+WHERE NOT EXISTS (SELECT 1 FROM TRANSLATION.TRANSLATION WHERE name = 'da_report_vehicle_vehicledetails_idlingwithpto(%)');
+
+INSERT INTO TRANSLATION.TRANSLATION (CODE,TYPE,NAME,VALUE,created_at)  
+SELECT 'EN-GB','L','da_report_driver_vehicledetails_idlingwithpto(%)','Report.Driver.VehicleDetails.IdlingWithPTO(%)',
+(select extract(epoch from now()) * 1000)
+WHERE NOT EXISTS (SELECT 1 FROM TRANSLATION.TRANSLATION WHERE name = 'da_report_driver_vehicledetails_idlingwithpto(%)');
+
+
+update translation.translation set value ='Idling Without PTO (hh:mm:ss)' where name='rp_ff_report_driver_vehicledetails_idlingwithoutpto';
+update translation.translation set value ='Idling With PTO (hh:mm:ss)' where name='rp_ff_report_driver_vehicledetails_idlingwithpto';
+update translation.translation set value ='Idling Without PTO (hh:mm:ss)' where name='rp_ff_report_vehicle_vehicledetails_idlingwithoutpto';
+update translation.translation set value ='Idling With PTO (hh:mm:ss)' where name='rp_ff_report_vehicle_vehicledetails_idlingwithpto';
+
+update master.menu 
+set name='Fleet Overview',key='lblfleetoverview',url='fleetoverview'
+where lower(name)='live fleet';

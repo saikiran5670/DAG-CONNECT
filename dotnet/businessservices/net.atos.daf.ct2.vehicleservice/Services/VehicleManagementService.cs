@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Confluent.Kafka;
 using Grpc.Core;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,9 @@ using net.atos.daf.ct2.vehicleservice.Entity;
 using Newtonsoft.Json;
 using AccountComponent = net.atos.daf.ct2.account;
 using Group = net.atos.daf.ct2.group;
+using net.atos.daf.ct2.confluentkafka;
+using net.atos.daf.ct2.kafkacdc;
+using net.atos.daf.ct2.kafkacdc.entity;
 
 namespace net.atos.daf.ct2.vehicleservice.Services
 {
@@ -31,8 +35,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         private readonly IAuditTraillib _auditlog;
         private readonly AccountComponent.IAccountManager _accountmanager;
         private readonly IConfiguration _configuration;
+        private readonly IVehicleCdcManager _vehicleCdcManager;
 
-        public VehicleManagementService(IVehicleManager vehicelManager, Group.IGroupManager groupManager, IAuditTraillib auditlog, AccountComponent.IAccountManager accountmanager, IConfiguration configuration)
+        public VehicleManagementService(IVehicleManager vehicelManager, Group.IGroupManager groupManager, IAuditTraillib auditlog, AccountComponent.IAccountManager accountmanager, IConfiguration configuration,
+            IVehicleCdcManager vehicleCdcManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _vehicleManager = vehicelManager;
@@ -42,6 +48,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             _mapper = new Mapper();
             _kafkaConfiguration = new KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
+            _vehicleCdcManager = vehicleCdcManager;
         }
 
         public override async Task<VehiclesBySubscriptionDetailsResponse> GetVehicleBySubscriptionId(SubscriptionIdRequest request, ServerCallContext context)
@@ -80,6 +87,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 Objvehicle = await _vehicleManager.Create(Objvehicle);
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Create", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.Info("Create method in vehicle service called.");
+                await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Id }, _kafkaConfiguration)); 
 
                 return await Task.FromResult(new VehicleCreateResponce
                 {
@@ -131,6 +139,8 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Update method in vehicle service", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.Info("Update method in vehicle service called.");
+
+                await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Id }, _kafkaConfiguration));
                 return await Task.FromResult(new VehicleResponce
                 {
                     Message = "Vehicle updated for id:- " + Objvehicle.ID,
@@ -183,7 +193,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         }
 
 
-        public override Task<VehicleOptInOptOutResponce> UpdateStatus(VehicleOptInOptOutRequest request, ServerCallContext context)
+        public override async Task<VehicleOptInOptOutResponce> UpdateStatus(VehicleOptInOptOutRequest request, ServerCallContext context)
         {
             try
             {
@@ -198,7 +208,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 
                 _logger.Info("UpdateStatus method in vehicle service called.");
 
-                return Task.FromResult(new VehicleOptInOptOutResponce
+
+                await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Refid }, _kafkaConfiguration));
+
+
+                return await Task.FromResult(new VehicleOptInOptOutResponce
                 {
                     Message = "Status updated for " + ObjvehicleOptInOptOutResponce.RefId,
                     Code = Responcecode.Success
@@ -207,7 +221,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return Task.FromResult(new VehicleOptInOptOutResponce
+                return await Task.FromResult(new VehicleOptInOptOutResponce
                 {
                     Message = "Exception " + ex.Message,
                     Code = Responcecode.Failed
@@ -336,6 +350,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 bool result = await _groupManager.Delete(request.GroupId, Group.ObjectType.VehicleGroup);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete Vehicle Group ", 1, 2, Convert.ToString(request.GroupId)).Result;
+
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Vehicle Group deleted.",
@@ -743,6 +758,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 bool result = await _vehicleManager.SetOTAStatus(request.IsOta, request.ModifiedBy, request.VehicleId);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "SetOTAStatus", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set OTA status", 1, 2, Convert.ToString(request.VehicleId)).Result;
+                if (result)
+                {
+                    await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.VehicleId }, _kafkaConfiguration));
+                }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Vehicle OTA Status updated.",
@@ -760,13 +779,16 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 });
             }
         }
-
         public override async Task<VehicleGroupDeleteResponce> Terminate(VehicleTerminateRequest request, ServerCallContext context)
         {
             try
             {
                 bool result = await _vehicleManager.Terminate(request.IsTerminate, request.ModifiedBy, request.VehicleId);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Terminate", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set Terminate status", 1, 2, Convert.ToString(request.VehicleId)).Result;
+                if (result)
+                {
+                    await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.VehicleId }, _kafkaConfiguration));
+                }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Vehicle Terminate Status updated.",
@@ -791,6 +813,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 bool result = await _vehicleManager.SetOptInStatus(Convert.ToChar(request.IsOptIn), request.ModifiedBy, request.VehicleId);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "SetOptInStatus", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set Opt In status", 1, 2, Convert.ToString(request.VehicleId)).Result;
+                if (result)
+                {
+                    await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.VehicleId }, _kafkaConfiguration));
+                }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Vehicle Opt In Status updated.",

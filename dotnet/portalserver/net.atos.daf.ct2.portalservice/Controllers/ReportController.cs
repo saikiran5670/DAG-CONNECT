@@ -1232,7 +1232,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         //}
                         if (hs.WarningAddressId == 0 && hs.WarningLat != 0 && hs.WarningLng != 0)
                         {
-                            GetMapRequest getMapRequestStart = _hereMapAddressProvider.GetAddressObject(hs.WarningLat, hs.WarningLng);
+                            GetMapRequest getMapRequestStart = new GetMapRequest();
+                            getMapRequestStart = _hereMapAddressProvider.GetAddressObject(hs.WarningLat, hs.WarningLng);
                             hs.WarningAddressId = getMapRequestStart.Id;
                             hs.WarningAddress = getMapRequestStart.Address;
                         }
@@ -1510,7 +1511,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("fuelbenchmark/timeperiod")]
-        public async Task<IActionResult> GetFuelBenchmarkByTimePeriod([FromBody] Entity.Report.ReportFuelBenchmarkTimePeriodFilter request)
+        public async Task<IActionResult> GetFuelBenchmarkByTimePeriod([FromBody] Entity.Report.ReportFuelBenchmarkFilter request)
         {
             try
             {

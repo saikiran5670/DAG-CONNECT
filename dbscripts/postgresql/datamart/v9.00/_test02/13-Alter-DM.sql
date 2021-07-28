@@ -167,3 +167,4 @@ alter table tripdetail.ecoscoredata  drop column if exists start_fuel ;
 alter table tripdetail.ecoscoredata add column if not exists is_ongoing_trip boolean default false;
 alter table tripdetail.trip_statistics alter column is_ongoing_trip  set default false;
 alter table livefleet.livefleet_warning_statistics add column if not exists message_type int ;
+alter table livefleet.livefleet_current_trip_statistics alter column driving_time type bigint;

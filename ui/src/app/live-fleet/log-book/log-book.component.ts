@@ -332,7 +332,20 @@ ngOnDestroy(){
   }
 
   getReportPreferences(){
-    this.reportService.getReportUserPreference(this.logbookPrefId).subscribe((data : any) => {
+    let reportListData: any = [];
+    this.reportService.getReportDetails().subscribe((reportList: any)=>{
+      reportListData = reportList.reportDetails;
+      this.getLogbookPref(reportListData);
+    }, (error)=>{
+      console.log('Report not found...', error);
+      reportListData = [{name: 'Logbook', id: 13}]; // hard coded
+      this.getLogbookPref(reportListData);
+    });
+  }
+
+  getLogbookPref(prefData: any){
+    let repoId: any = prefData.filter(i => i.name == 'Logbook');
+    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 13).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetTripPrefData();
       this.getTranslatedColumnName(this.reportPrefData);
@@ -1361,6 +1374,7 @@ let prepare = []
   }
 
   backToVehicleDetail(){
+    console.log("backToVehicleDetails works well");
     if(this._state && this._state.data){
     const navigationExtras: NavigationExtras = {
       state: {

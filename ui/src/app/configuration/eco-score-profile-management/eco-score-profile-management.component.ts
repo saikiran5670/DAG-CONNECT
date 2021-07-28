@@ -5,6 +5,8 @@ import { CustomValidators } from '../../shared/custom.validators';
 import { ReportService } from 'src/app/services/report.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { OrganizationService } from 'src/app/services/organization.service';
+import { ReportMapService } from 'src/app/report/report-map.service';
 
 @Component({
   selector: 'app-eco-score-profile-management',
@@ -15,6 +17,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class EcoScoreProfileManagementComponent implements OnInit {
   titleVisible : boolean = false;
   localStLanguage: any;
+  accountOrganizationId: any;
+  accountId: any;
+  accountPrefObj: any;
+  prefTimeFormat: any; //-- coming from pref setting
+  prefTimeZone: any; //-- coming from pref setting
+  prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
+  prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   breadcumMsg: any = '';
   profileCreatedMsg: any ='';   
   actionType: any = "manage";
@@ -63,14 +72,21 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   profileFlag: boolean = false;
   isSelected: boolean= false;
   userType: any = "Admin#Platform";
+  saveButton : boolean = true;
+  deleteButton : boolean = true;
+  inputBox : boolean = true;
+  isData: boolean = false;
   
 
-  constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportService: ReportService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,) { }
+  constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportMapService: ReportMapService,  private organizationService: OrganizationService,private reportService: ReportService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,) { }
 
   ngOnInit(): void {
     this.breadcumMsg = this.getBreadcum(this.actionType);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.userType = localStorage.getItem("userType");
+    this.userType = localStorage.getItem("userType");;
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -82,6 +98,18 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
+      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        }else{ // org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
+        }
+      });
     });
 
     this.ecoScoreProfileForm = this._formBuilder.group({
@@ -96,6 +124,21 @@ export class EcoScoreProfileManagementComponent implements OnInit {
         CustomValidators.specialCharValidationForNameWithoutRequired('profileDescription')
       ]
     });
+  }
+
+  proceedStep(prefData: any, preference: any){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefUnitFormat = prefData.unit[0].name;
+    }
     this.loadProfileData();
   }
 
@@ -110,21 +153,45 @@ export class EcoScoreProfileManagementComponent implements OnInit {
         this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile);  
         this.isSelected = this.selectedElementData[0].organizationId == 0 ? true : false;
         this.loadProfileKpis(this.selectedProfile);
-        this.setDefaultValue()
+        this.setDefaultValue();
+       this.accessCheck();
       }
     });
+  }
+
+  accessCheck(){
+    if(this.userType ==="Admin#Organisation" && this.isSelected) {
+      // disable(edit delete kpis);
+      this.saveButton = false;
+      this.deleteButton = false;
+      this.ecoScoreProfileForm.controls.profileName.disable();
+      // this.inputBox = false;
+     } else if(this.userType ==="Admin#Organisation" && !this.deleteSelection) { 
+      //  disable(edit delete kpis)
+      this.saveButton = false;
+      this.deleteButton = false;
+      this.ecoScoreProfileForm.controls.profileName.disable();
+      // this.inputBox = false;
+     }else if(this.userType ==="Admin#Global" && !this.deleteSelection){
+      // disable(e,d)
+      this.deleteButton = false;
+      this.ecoScoreProfileForm.controls.profileName.disable();
+      // this.inputBox = false;
+     }
+    this.isData = true;
   }
 
   loadProfileKpis(id: any){
     let details = []
     this.reportService.getEcoScoreProfileKPIs(id).subscribe((data: any) => {
+      console.log(data);
       details = data["profile"];
       this.SliderData(details);  
     })
   }
 
   SliderData(data: any){
-  this.lastUpdated = data[0].lastUpdate;
+  this.lastUpdated = data[0].lastUpdate ? this.reportMapService.getStartTime(data[0].lastUpdate, this.prefDateFormat, this.prefTimeFormat, this.prefTimeZone, true ): '';
   this.updatedBy = data[0].updatedBy;
 
   data[0].profileSection.forEach((item) =>{ 
@@ -177,6 +244,8 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   createNewProfile(){
     this.actionType = "create";
+    this.saveButton = true;
+    this.ecoScoreProfileForm.controls.profileName.enable();
     this.onReset();
   }
 
@@ -314,6 +383,10 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   profileSelectionDropDown(filterValue: string){
     // this.selectedElementData = [];    
+    this.saveButton = true;
+    this.ecoScoreProfileForm.controls.profileName.enable();
+    // this.inputBox = true;
+    this.deleteButton = true;
     if(this.actionType =="create"){
       this.isKPI = false;
       this.selectedProfile = filterValue;
@@ -329,6 +402,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
     this.isSelected = this.selectedElementData[0].organizationId == 0 ? true : false;
     this.deleteSelection = this.selectedElementData[0].isDeleteAllowed;
     this.setDefaultValue();
+    this.accessCheck();
     this.loadProfileKpis(this.selectedProfile);
     //this.loadProfileData();
     this.isDAFStandard = false;

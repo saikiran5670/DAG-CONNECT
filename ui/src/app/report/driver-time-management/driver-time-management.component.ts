@@ -245,7 +245,6 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.searchFilterpersistData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
     this.showLoadingIndicator = true;
-    
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -281,14 +280,6 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
             this.proceedStep(prefData, pref);
           });
         }
-        // this.prefTimeFormat = parseInt(prefData.timeformat.filter(i => i.id == this.accountPrefObj.accountPreference.timeFormatId)[0].value.split(" ")[0]);
-        // this.prefTimeZone = prefData.timezone.filter(i => i.id == this.accountPrefObj.accountPreference.timezoneId)[0].value;
-        // this.prefDateFormat = prefData.dateformat.filter(i => i.id == this.accountPrefObj.accountPreference.dateFormatTypeId)[0].name;
-        // this.prefUnitFormat = prefData.unit.filter(i => i.id == this.accountPrefObj.accountPreference.unitId)[0].name;
-        // this.setDefaultStartEndTime();
-        // this.setPrefFormatDate();
-        // this.setDefaultTodayDate();
-        // this.getReportPreferences();
       });
     });
   }
@@ -310,14 +301,19 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
     this.getReportPreferences();
-    // this.setDefaultDriverValue();
   }
 
-    // setDefaultDriverValue() {
-    //   if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "") {
-    //     this.driverTimeForm.get('driver').setValue(this.searchFilterpersistData.driverDropDownValue); //- reset vehicle dropdown
-    //   }
-    // }
+  getReportPreferences(){
+    let reportListData: any = [];
+    this.reportService.getReportDetails().subscribe((reportList: any)=>{
+      reportListData = reportList.reportDetails;
+      this.getDriveTimeReportPreferences(reportListData);
+    }, (error)=>{
+      console.log('Report not found...', error);
+      reportListData = [{name: 'Drive Time Management', id: 9}]; // hard coded
+      this.getDriveTimeReportPreferences(reportListData);
+    });
+  }
 
   setPrefFormatTime(){
     if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "" &&  ((this.searchFilterpersistData.startTimeStamp || this.searchFilterpersistData.endTimeStamp) !== "") ) {
@@ -352,10 +348,11 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
         this.selectedEndTime = "23:59";
       }
     }
-  
   }
-  getReportPreferences(){
-    this.reportService.getReportUserPreference(this.reportId).subscribe((data : any) => {
+
+  getDriveTimeReportPreferences(prefData: any){
+    let repoId: any = prefData.filter(i => i.name == 'Drive Time Management');
+    this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 9).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
       this.resetPref();
       this.preparePrefData(this.reportPrefData);
@@ -787,7 +784,6 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
   }
 
   getOnLoadData(){
-    
     let defaultStartValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
     let defaultEndValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
     // this.startDateValue = defaultStartValue;

@@ -99,13 +99,13 @@ public class MessageProcessing<T> {
 				kafkaRecord.setKey(UUID.randomUUID().toString());
 				kafkaRecord.setValue(jsonMessage);
 
-				log.info("Message: " + kafkaRecord);
+				log.info("Egress Message: " + kafkaRecord);
 				return kafkaRecord;
 			}
 		}).addSink(new FlinkKafkaProducer<KafkaRecord<String>>(
 				properties.getProperty(DAFCT2Constant.SINK_JSON_STRING_TOPIC_NAME),
 				new KafkaMessageSerializeSchema<String>(
 						properties.getProperty(DAFCT2Constant.SINK_JSON_STRING_TOPIC_NAME)),
-				properties, FlinkKafkaProducer.Semantic.AT_LEAST_ONCE));
+				properties, FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
 	}
 }

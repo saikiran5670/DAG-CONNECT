@@ -1033,6 +1033,7 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
     }
   }
 
+  advanceFilterOpen : boolean = false;
   onReset(){
     this.internalSelection = false;
     this.setDefaultStartEndTime();
@@ -1041,9 +1042,10 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
     this.vehicleListData = [];
     // this.vehicleGroupListData = this.vehicleGroupListData;
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    // this.updateDataSource(this.tripData);
-    // this.tableInfoObj = {};
-    // this.selectedPOI.clear();
+    this.updateDataSource(this.tripData);
+    this.tableInfoObj = {};
+    this.advanceFilterOpen = false;
+    //this.selectedPOI.clear();
     this.resetTripFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -1270,31 +1272,18 @@ setVehicleGroupAndVehiclePreSelection() {
 
   getAllSummaryData(){ 
     if(this.initData.length > 0){
-      let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
-      let fuelConsumption = 0; let fuelconsumed = 0;
-      this.initData.forEach(item => {         
-        numberOfTrips += item.numberOfTrips;
-        distanceDone += parseFloat(item.convertedDistance);
-        fuelconsumed += parseFloat(item.fuelconsumed);
-        idleDuration += parseFloat(item.convertedIdleDuration);
-        fuelConsumption += parseFloat(item.fuelConsumption);   
-        
-        // let time: any = 0;
-        // time += (item.convertedIdleDuration);
-        // let data: any = "00:00";
-        // let hours = Math.floor(time / 3600);
-        // time %= 3600;
-        // let minutes = Math.floor(time / 60);
-        // let seconds = time % 60;
-        // data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
-        // idleDuration = data;    
-      });
-     // numbeOfVehicles = this.initData.length;   
-      
-    this.summaryNewObj = [
+     let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
+     let fuelConsumption = 0; let fuelconsumed = 0; let CO2Emission = 0;         
+     numberOfTrips= this.sumOfColumns('noOfTrips');
+     distanceDone= this.sumOfColumns('distance');
+     idleDuration= this.sumOfColumns('idleDuration');
+     fuelConsumption= this.sumOfColumns('fuelconsumed');
+     fuelconsumed= this.sumOfColumns('fuelConsumption');
+     CO2Emission= this.sumOfColumns('co2emission');
+     this.summaryNewObj = [
       ['Fleet Fuel Driver Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
         this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
-        fuelconsumed, idleDuration, fuelConsumption
+        fuelconsumed, idleDuration, fuelConsumption,CO2Emission
       ]
     ];        
     }
@@ -1315,7 +1304,7 @@ setVehicleGroupAndVehiclePreSelection() {
     'Cc Fuel Consumption','fuel Consumption CC Non Active','Idling Consumption','Dpa Score','Dpa AnticipationScore',
     'Dpa Braking Score','Idling PTO Score(hh:mm:ss)','Idling PTO','Idling Without PTO(hh:mm:ss)','Foot Brake',
     'CO2 Emmision(gr/km)', 'Average Traffic Classification Value','Idling Consumption Value'];
-    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed(I)', 'Idle Duration(hh:mm)', 'Fuel Consumption('+unitValkm+')'];
+    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed(I)', 'Idle Duration(hh:mm)', 'Fuel Consumption('+unitValkm+')', 'CO2 Emission'];
     const summaryData= this.summaryNewObj;
     //Create workbook and worksheet
     let workbook = new Workbook();
@@ -1381,8 +1370,9 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   exportAsPDFFile(){
-   
-    var doc = new jsPDF('p', 'mm', 'a4');
+  var doc = new jsPDF('p', 'mm', 'a0');
+ 
+  //var doc = new jsPDF('p', 'mm', 'a4');
   let pdfColumns = [this.displayedColumns];
   let prepare = []
     this.displayData.forEach(e=>{
@@ -1531,7 +1521,6 @@ setVehicleGroupAndVehiclePreSelection() {
           }
         }
       })
-
       prepare.push(tempObj);    
     });
     
@@ -1580,16 +1569,13 @@ setVehicleGroupAndVehiclePreSelection() {
       (doc as any).autoTable({
       head: pdfColumns,
       body: prepare,
-      theme: 'striped',
+      theme: 'striped',     
       didDrawCell: data => {
         //console.log(data.column.index)
       }
-    })
-
-    doc.save('fleetFuelByDriver.pdf');
-       
-    }); 
-    
+    })    
+    doc.save('fleetFuelByDriver.pdf');       
+    });     
     displayHeader.style.display ="block";
   }
 

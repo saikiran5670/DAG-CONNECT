@@ -82,6 +82,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         [StringLength(120, MinimumLength = 0, ErrorMessage = "The field {0} must be a string with a length of {1} characters.")]
         [RegularExpression(@"^[\s\w\p{L}\-\.]{1,100}$", ErrorMessage = "Profile Description Allowed: a-z, A-Z, 0-9, hyphens dash, spaces, periods, international ref. alphabets [e.g. à, è, ì, ò, ù, À, È, Ì, Ò, Ù] and Not allowed: special chars [i.e. !, @, #, $, %, &, *] with maximun length 120.")]
         public string Description { get; set; }
+        public bool IsDAFStandard { get; set; }
         public List<EcoScoreProfileKPI> ProfileKPIs { get; set; }
     }
 
