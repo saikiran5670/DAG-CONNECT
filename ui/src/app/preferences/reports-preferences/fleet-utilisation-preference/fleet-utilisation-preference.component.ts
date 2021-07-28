@@ -506,7 +506,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     let _flag = true;
     if(this.selectionForDetailsColumns.selected.length > 0){
       let _search = this.selectionForDetailsColumns.selected.filter(i => (i.key == 'rp_fu_report_details_vehiclename' || i.key == 'rp_fu_report_details_vin' || i.key == 'rp_fu_report_details_registrationnumber'));
-      if(_search.length){
+      if(_search.length > 0){
         _flag = false;
       }
     }
