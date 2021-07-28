@@ -1354,7 +1354,7 @@ setVehicleGroupAndVehiclePreSelection() {
           this.summaryNewObj = [
            ['Fleet Fuel Vehicle Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
              this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
-             fuelconsumed, idleDuration, fuelConsumption
+             fuelconsumed, idleDuration, fuelConsumption,CO2Emission
           ]
           ];        
          }
