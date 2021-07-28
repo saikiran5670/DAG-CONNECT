@@ -163,6 +163,10 @@ namespace net.atos.daf.ct2.reports
             // Default Profile for basic and advance -	DAF Admin – Not Allowed Update Profile Name , Allowed  Rest profile KPIs modifications  2) Org Admin – nothing Allowed
             // Custom profile(Global) -	DAF Admin – All allowed 2) Org Admin – nothing Allowed
             // Custom profile(Org) – DAF Admin – All allowed  2)Org Admin – Allowed(Based on Role and Subscription)
+            if (ecoScoreProfileDto.IsDAFStandard)
+            {
+                ecoScoreProfileDto.OrganizationId = 0;
+            }
             var isExist = await _reportRepository.CheckEcoScoreProfileIsExist(ecoScoreProfileDto.OrganizationId, ecoScoreProfileDto.Name, ecoScoreProfileDto.Id);
             if (!isExist)// check if profile is avilable in DB or not
             {
@@ -173,7 +177,7 @@ namespace net.atos.daf.ct2.reports
                     if (isAdminRights)// admin rights with level 10 & 20
                     {
                         ecoScoreProfileDto.Name = null;
-                        return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto); // DAF Admin – Not Allowed Update Profile Name 
+                        return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto, isAdminRights); // DAF Admin – Not Allowed Update Profile Name 
                     }
                 }
                 else if (versionType == null)
@@ -182,13 +186,13 @@ namespace net.atos.daf.ct2.reports
                     {
                         if (isAdminRights)
                         {
-                            return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
+                            return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto, isAdminRights);
                         }
                         return -3;
                     }
                     else
                     {
-                        return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
+                        return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto, isAdminRights);
                     }
                 }
                 return -2;
@@ -196,7 +200,6 @@ namespace net.atos.daf.ct2.reports
             else
                 return -1;
         }
-
         /// <summary>
         /// 
         /// </summary>
@@ -335,6 +338,31 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetEcoScoreAverageDrivingSpeedChartData(request);
         }
+        public async Task<List<EcoScoreReportSingleDriver>> GetEcoScoreReportTrendlineData(EcoScoreReportSingleDriverRequest request)
+        {
+            var lstSingleDriver = new List<EcoScoreReportSingleDriver>();
+            try
+            {
+                var objOverallDriver = await _reportRepository.GetEcoScoreReportOverallDriverForTrendline(request);
+                if (objOverallDriver != null)
+                    lstSingleDriver.AddRange(objOverallDriver);
+                var objOverallCompany = await _reportRepository.GetEcoScoreReportOverallCompanyForTrendline(request);
+                if (objOverallCompany != null)
+                    lstSingleDriver.AddRange(objOverallCompany);
+                var lstVINDriver = await _reportRepository.GetEcoScoreReportVINDriverForTrendline(request);
+                if (lstVINDriver.Count > 0)
+                    lstSingleDriver.AddRange(lstVINDriver);
+                var lstVINCompany = await _reportRepository.GetEcoScoreReportVinCompanyForTrendline(request);
+                if (lstVINCompany != null)
+                    lstSingleDriver.AddRange(lstVINCompany);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return lstSingleDriver;
+        }
         #endregion
 
         #endregion
@@ -380,9 +408,9 @@ namespace net.atos.daf.ct2.reports
             List<FleetOverviewDetails> fleetOverviewDetails = await _reportRepository.GetFleetOverviewDetails(fleetOverviewFilter);
             return fleetOverviewDetails;
         }
-        public async Task<List<DriverFilter>> GetDriverList(List<string> vins)
+        public async Task<List<DriverFilter>> GetDriverList(List<string> vins, int organizationId)
         {
-            List<DriverFilter> lstDriver = await _reportRepository.GetDriverList(vins);
+            List<DriverFilter> lstDriver = await _reportRepository.GetDriverList(vins, organizationId);
             return lstDriver;
         }
         public async Task<List<WarningDetails>> GetWarningDetails(List<int> warningClass, List<int> warningNumber, string lngCode)
@@ -526,40 +554,14 @@ namespace net.atos.daf.ct2.reports
 
         public async Task<EcoScoreKPIInfoDataServiceResponse> GetKPIInfo(EcoScoreDataServiceRequest request)
         {
-            dynamic kpiInfo = null;
-            switch (request.AggregationType)
-            {
-                case AggregateType.TRIP:
-                    kpiInfo = await _reportRepository.GetKPIInfoPerTrip(request);
-                    break;
-                case AggregateType.DAY:
-                case AggregateType.WEEK:
-                case AggregateType.MONTH:
-                    var aggregationCount = CalculateAggregationCount(request.AggregationType, request.StartTimestamp, request.EndTimestamp);
-                    kpiInfo = await _reportRepository.GetKPIInfo(request, aggregationCount);
-                    break;
-            }
-
+            var kpiInfo = await _reportRepository.GetKPIInfo(request);
             var response = MapEcoScoreKPIInfoDataReponse(kpiInfo);
             return response;
         }
 
         public async Task<EcoScoreChartInfoDataServiceResponse> GetChartInfo(EcoScoreDataServiceRequest request)
         {
-            dynamic chartInfo = null;
-            switch (request.AggregationType)
-            {
-                case AggregateType.TRIP:
-                    chartInfo = await _reportRepository.GetChartInfoPerTrip(request);
-                    break;
-                case AggregateType.DAY:
-                case AggregateType.WEEK:
-                case AggregateType.MONTH:
-                    var aggregationCount = CalculateAggregationCount(request.AggregationType, request.StartTimestamp, request.EndTimestamp);
-                    chartInfo = await _reportRepository.GetChartInfo(request, aggregationCount);
-                    break;
-            }
-
+            var chartInfo = await _reportRepository.GetChartInfo(request);
             var response = MapEcoScoreChartInfoDataReponse(chartInfo);
             return response;
         }
@@ -656,6 +658,7 @@ namespace net.atos.daf.ct2.reports
                     return result > 12 ? 12 : result;
             }
             return 0;
+
         }
 
         #endregion
@@ -695,6 +698,17 @@ namespace net.atos.daf.ct2.reports
         public async Task<List<AlertCategory>> GetAlertCategoryList(List<string> enums)
         {
             return await _reportRepository.GetAlertCategoryList(enums);
+        }
+        public async Task<IEnumerable<EnumTranslation>> GetAlertCategory()
+        {
+            try
+            {
+                return await _reportRepository.GetAlertCategory();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
         public async Task<List<LogbookDetails>> GetLogbookDetails(LogbookDetailsFilter logbookFilter)
         {

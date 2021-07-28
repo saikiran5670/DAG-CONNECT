@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.notification.repository
                 string accountQuery =
                     @"SELECT preference_id from master.account where lower(email) = @emailId";
 
-                var accountPreferenceId = await _dataAccess.QueryFirstAsync<int?>(accountQuery, parameter);
+                var accountPreferenceId = await _dataAccess.QueryFirstOrDefaultAsync<int?>(accountQuery, parameter);
 
                 if (!accountPreferenceId.HasValue)
                 {
@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.notification.repository
 
                         orgQuery = @"SELECT preference_id from master.organization WHERE id=@orgId";
 
-                        orgPreferenceId = await _dataAccess.QueryFirstAsync<int?>(orgQuery, orgParameter);
+                        orgPreferenceId = await _dataAccess.QueryFirstOrDefaultAsync<int?>(orgQuery, orgParameter);
                     }
                     else
                     {
@@ -47,7 +47,7 @@ namespace net.atos.daf.ct2.notification.repository
                             INNER JOIN master.organization o ON ao.organization_id=o.id
                             where lower(acc.email) = @emailId";
 
-                        orgPreferenceId = await _dataAccess.QueryFirstAsync<int?>(orgQuery, parameter);
+                        orgPreferenceId = await _dataAccess.QueryFirstOrDefaultAsync<int?>(orgQuery, parameter);
                     }
 
                     if (!orgPreferenceId.HasValue)

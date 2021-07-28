@@ -117,7 +117,7 @@ export class TripReportPreferenceComponent implements OnInit {
     let _flag = true;
     if(this.selectionForTripColumns.selected.length > 0){
       let _search = this.selectionForTripColumns.selected.filter(i => (i.key == 'rp_tr_report_tripreportdetails_vehiclename' || i.key == 'rp_tr_report_tripreportdetails_vin' || i.key == 'rp_tr_report_tripreportdetails_platenumber'));
-      if(_search.length){
+      if(_search.length > 0){
         _flag = false;
       }
     }
@@ -173,11 +173,10 @@ export class TripReportPreferenceComponent implements OnInit {
       }
     });
 
+    _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 }); // main parent
     if(this.selectionForTripColumns.selected.length == this.tripPrefData.length){ // parent selected
-       _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
-       _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
     }else{ // parent un-selected
-      _dataArr.push({ dataAttributeId: this.initData.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       _dataArr.push({ dataAttributeId: this.initData.subReportUserPreferences[0].dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
     }
 

@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     {
                         vehicleIdList.Add(item.Vin);
                     }
-                    var driverFilter = await _reportManager.GetDriverList(vehicleIdList.Distinct().ToList());
+                    var driverFilter = await _reportManager.GetDriverList(vehicleIdList.Distinct().ToList(), request.OrganizationId);
                     var resDriverFilter = JsonConvert.SerializeObject(driverFilter);
                     response.DriverList.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<DriverListResponse>>(resDriverFilter)
@@ -144,7 +144,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                         {
                             if (fleetOverviewDetails.LatestWarningClass == warning.WarningClass && fleetOverviewDetails.LatestWarningNumber == warning.WarningNumber)
                             {
-                                fleetOverviewDetails.LatestWarningName = warning.WarningName;
+                                fleetOverviewDetails.LatestWarningName = warning?.WarningName ?? string.Empty;
                             }
 
                         }
@@ -153,9 +153,12 @@ namespace net.atos.daf.ct2.reportservice.Services
                         //opt-in with driver card- Driver Id
                         //opt-out with driver card- *
 
-                        if (driverDetails != null && driverDetails.Count > 0)
+
+                        fleetOverviewDetails.DriverName = (driverDetails.Where(d => d.DriverId == fleetOverviewDetails.Driver1Id).Select(n => n.DriverName).FirstOrDefault()) ?? string.Empty;
+
+                        if (string.IsNullOrEmpty(fleetOverviewDetails.Driver1Id))
                         {
-                            fleetOverviewDetails.DriverName = driverDetails.FirstOrDefault(d => d.DriverId == fleetOverviewDetails.Driver1Id).DriverName;
+                            fleetOverviewDetails.DriverName = "Unknown";
                         }
                         response.FleetOverviewDetailList.Add(_mapper.ToFleetOverviewDetailsResponse(fleetOverviewDetails));
                     }
@@ -222,11 +225,17 @@ namespace net.atos.daf.ct2.reportservice.Services
                                                                                               .Select(x => x.WarningDrivingId).Distinct().ToList(), request.OrganizationId).Result;
                     foreach (var healthStatus in result)
                     {
+                        healthStatus.VehicleName = vehicleDeatilsWithAccountVisibility?.FirstOrDefault(d => d.Vin == healthStatus.WarningVin)?.VehicleName ?? string.Empty;
+                        healthStatus.VehicleRegNo = vehicleDeatilsWithAccountVisibility?.FirstOrDefault(d => d.Vin == healthStatus.WarningVin)?.RegistrationNo ?? string.Empty;
                         if (warningDetails != null && warningDetails.Count > 0)
                         {
-                            var warningDetail = warningDetails.FirstOrDefault(w => w.WarningClass == healthStatus.WarningClass && w.WarningNumber == healthStatus.WarningNumber);
-                            healthStatus.WarningName = warningDetail.WarningName ?? string.Empty;
-                            healthStatus.WarningAdvice = warningDetail.WarningAdvice ?? string.Empty;
+                            var warningDetail = warningDetails?.FirstOrDefault(w => w.WarningClass == healthStatus.WarningClass && w.WarningNumber == healthStatus.WarningNumber);
+                            healthStatus.WarningName = warningDetail?.WarningName ?? string.Empty;
+                            healthStatus.WarningAdvice = warningDetail?.WarningAdvice ?? string.Empty;
+                            healthStatus.Icon = warningDetail?.Icon ?? new Byte[] { };
+                            healthStatus.IconName = warningDetail?.IconName ?? string.Empty;
+                            healthStatus.ColorName = warningDetail?.ColorName ?? string.Empty;
+                            healthStatus.IconId = warningDetail?.IconId ?? 0;
 
                         }
                         //opt-in and no driver card- Unknown - Implemented by UI 
@@ -234,9 +243,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                         //opt-in with driver card- Driver Id
                         //opt-out with driver card- *
 
-                        if (driverDetails != null && driverDetails.Count > 0)
+                        healthStatus.DriverName = (driverDetails.Where(d => d.DriverId == healthStatus.WarningDrivingId).Select(n => n.DriverName).FirstOrDefault()) ?? string.Empty;
+                        if (string.IsNullOrEmpty(healthStatus.WarningDrivingId))
                         {
-                            healthStatus.DriverName = driverDetails.FirstOrDefault(d => d.DriverId == healthStatus.WarningDrivingId).DriverName; ;
+                            healthStatus.DriverName = "Unknown";
                         }
                     }
                     string res = JsonConvert.SerializeObject(result);

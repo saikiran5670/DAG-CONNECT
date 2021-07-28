@@ -8,10 +8,12 @@ import { FleetUtilisationComponent } from './fleet-utilisation/fleet-utilisation
 import { FleetFuelReportComponent } from './fleet-fuel-report/fleet-fuel-report.component';
 import { FuelBenchmarkingComponent } from './fuel-benchmarking/fuel-benchmarking.component';
 import { EcoScoreReportComponent } from './eco-score-report/eco-score-report.component';
-import {DetailDriverReportComponent} from './fleet-fuel-report/detail-driver-report/detail-driver-report.component';
-import {DetailVehicleReportComponent} from './fleet-fuel-report/detail-vehicle-report/detail-vehicle-report.component';
+//import {DetailDriverReportComponent} from './fleet-fuel-report/detail-driver-report/detail-driver-report.component';
+//import {DetailVehicleReportComponent} from './fleet-fuel-report/detail-vehicle-report/detail-vehicle-report.component';
 import { FleetFuelReportVehicleComponent } from './fleet-fuel-report/fleet-fuel-report-vehicle/fleet-fuel-report-vehicle.component';
 import { FleetFuelReportDriverComponent } from './fleet-fuel-report/fleet-fuel-report-driver/fleet-fuel-report-driver.component';
+import { VehicletripComponent } from './fleet-fuel-report/fleet-fuel-report-vehicle/vehicletrip/vehicletrip.component';
+import { FuelDeviationReportComponent } from './fuel-deviation-report/fuel-deviation-report.component';
 
 const routes: Routes = [
   {
@@ -25,10 +27,11 @@ const routes: Routes = [
       { path: "vehicleperformancereport", component: DashboardComponent },
       { path: "drivetimemanagement", component: DriverTimeManagementComponent },
       { path: "ecoscorereport", component: EcoScoreReportComponent },
-      { path: "detaildriverreport",component :DetailDriverReportComponent},
-      { path: "detailvehiclereport",component :DetailVehicleReportComponent},
+      //{ path: "detaildriverreport",component :DetailDriverReportComponent},
+     // { path: "detailvehiclereport",component :DetailVehicleReportComponent},
       { path: "fleetfuelvehicle", component : FleetFuelReportVehicleComponent},
-      { path: "fleetfueldriver", component : FleetFuelReportDriverComponent}
+      { path: "fleetfueldriver", component : FleetFuelReportDriverComponent},
+     { path:  "vehicletrip" , component : VehicletripComponent},
   ]
   }];
 

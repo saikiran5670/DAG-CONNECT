@@ -9,6 +9,7 @@ import {ProgressBarMode} from '@angular/material/progress-bar';
 import { ThemePalette } from '@angular/material/core';
 import { ReportService } from 'src/app/services/report.service';
 
+
 @Component({
   selector: 'app-fuel-benchmarking-table',
   templateUrl: './fuel-benchmarking-table.component.html',
@@ -24,7 +25,8 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   @Input() endDateRange: any;
   @Input() selectionValueBenchmarkBY: any;
   @Input() benchmarkSelectionChange: any;
-  vehicleHeaderCount :any = 0;
+  @Input() vehicleGroupSelected:any;
+  //vehicleHeaderCount :any = 0;
   initData: any = [];
   responseDataTP: any = {}
   headerArray: any = ["Period"];
@@ -80,7 +82,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     if (this.selectionValueBenchmarkBY == "timePeriods") {
       this.tableHeadingwithRange = this.startDateRange + " to " + this.endDateRange;
     } else if (this.selectionValueBenchmarkBY == "vehicleGroups") {
-      this.tableHeadingwithRange = `Vehicle Group ${this.vehicleHeaderCount}`;
+      this.tableHeadingwithRange = this.vehicleGroupSelected;
     }
 
     for (let row of this.test) {
@@ -99,7 +101,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     if (this.displayedColumns.length > 1) {
       this.displayedColumns.splice(index, 1)
     }
-    this.vehicleHeaderCount--;
+    //this.vehicleHeaderCount--;
   }
 
   addColumn(data, column) {
@@ -111,22 +113,26 @@ export class FuelBenchmarkingTableComponent implements OnInit {
         if(this.firstColumn[colIndx] == 'ranking') {
           let rakingSortedData = data.fuelBenchmarkDetails[this.firstColumn[colIndx]].sort((a,b) => (a.fuelConsumption > b.fuelConsumption) ? 1 : ((b.fuelConsumption > a.fuelConsumption) ? -1 : 0));
           for(let row of rakingSortedData) {
-            row["ltrVal"] = row.fuelConsumption/1000;
+            row["ltrVal"] = (row.fuelConsumption/1000).toFixed(2);
           }
           this.dataSource[colIndx][column] = rakingSortedData;
         } else if(this.firstColumn[colIndx] == 'fuelConsumption') {
           let indCol = Number(colIndx) - 1;
           this.dataSource[colIndx][column] = this.updateDoughnutChartData(this.dataSource[indCol][column]);
-        }else {
+        }else if(this.firstColumn[colIndx] == 'numberOfActiveVehicles'){
+          console.log("total vehicles", data);
+          this.dataSource[colIndx][column] = data.fuelBenchmarkDetails.numberOfActiveVehicles + "/" + data.fuelBenchmarkDetails.numberOfTotalVehicles;
+        }
+        else {
           this.dataSource[colIndx][column] = data.fuelBenchmarkDetails[this.firstColumn[colIndx]];
         }
       }
     }
-    this.vehicleHeaderCount++;
+    //this.vehicleHeaderCount++;
   }
   
   getUserPreferenceReport() {
-    this.reportService.getUserPreferenceReport(6, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+    this.reportService.getReportUserPreference(6).subscribe((data: any) => {
       this.reportPrefData = data["userPreferences"];
       this.loadBenchmarkTable();
     });
@@ -135,17 +141,19 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   updateDoughnutChartData(rakingData) {
     let highthresholdValue;
     let lowthresholdValue;
-    for (let pref of this.reportPrefData) {
-      if (pref.key == "da_report_component_highfuelefficiency") {
-        highthresholdValue = pref.thresholdValue;
-      } else if (pref.key == "da_report_component_lowfuelefficiency") {
-        lowthresholdValue = pref.thresholdValue;
-      } else if (pref.key == "rp_fb_chart_fuelconsumption") {
-        if(pref.chartType == "P") {
-          this.doughnutChartType = 'pie';
-         } else {
-          this.doughnutChartType = 'doughnut';
-         }
+    for (let pref1 of this.reportPrefData.subReportUserPreferences) {
+      for (let pref of pref1.subReportUserPreferences) {
+        if (pref.key == "rp_fb_component_highfuelefficiency") {
+          highthresholdValue = pref.thresholdValue;
+        } else if (pref.key == "rp_fb_component_lowfuelefficiency") {
+          lowthresholdValue = pref.thresholdValue;
+        } else if (pref.key == "rp_fb_chart_fuelconsumption") {
+          if(pref.chartType == "P") {
+            this.doughnutChartType = 'pie';
+          } else {
+            this.doughnutChartType = 'doughnut';
+          }
+        }
       }
     }
     let high = 0;
@@ -153,9 +161,9 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     let low = 0;
     if (rakingData && rakingData.length > 0) {
       for (let ranking of rakingData) {
-        if (highthresholdValue <= ranking.ltrVal) {
+        if (highthresholdValue <= parseFloat(ranking.ltrVal)) {
           high++;
-        } else if (lowthresholdValue >= ranking.ltrVal) {
+        } else if (lowthresholdValue >= parseFloat(ranking.ltrVal)) {
           low++;
         } else {
           medium++;

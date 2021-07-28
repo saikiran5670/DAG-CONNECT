@@ -1,36 +1,3 @@
-<!-- <ng-container *ngIf='initData && initData.subReportUserPreferences.length > 0'>
-    <ng-container *ngFor='let section of initData.subReportUserPreferences'>
-        <div fxLayout="row" class='areaWidth full-width padding-10 summaryPref' fxLayoutAlign="left center"
-            style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
-            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <mat-checkbox class='custom-checkbox' [disabled]='!editFlag'><span class='headerFont'>{{
-                        translationData['lbl'+section.name.replace(initData.name, '').replace('.', '')] ||
-                        section.name.replace(initData.name, '').replace('.', '')
-                        }}</span>
-                </mat-checkbox>
-            </div>
-        </div>
-        <ng-container *ngIf='section.subReportUserPreferences.length > 0'>
-            <ng-container *ngInit="let field of section.subReportUserPreferences; let index = index"></ng-container>
-            <div fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="32px" fxLayoutAlign="flex-start">
-                <ng-container *ngFor="let field of section.subReportUserPreferences; let index = index">
-                    <div fxFlex="0 1 calc(33.3% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)" fxFlex.lt-sm="100%"  [ngClass]="{'myStyle': 0 === index % 3}">
-                        <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()' class='custom-checkbox'>
-                            <span>{{
-                                translationData['lbl'+field.name.replace(initData.name, '').replace('.', '')] ||
-                                field.name.replace(initData.name, '').replace('.', '')
-                                }}</span>
-                        </mat-checkbox>
-                    </div>
-                </ng-container>
-            </div>
-        </ng-container>
-    </ng-container>
-</ng-container> -->
-
-<!-- [checked]='selectionForSummaryColumns.hasValue() && isAllSelectedForSummaryColumns()'
-            [indeterminate]='selectionForSummaryColumns.hasValue() && !isAllSelectedForSummaryColumns()'
-            [aria-label]='checkboxLabelForSummaryColumns()' -->
 <form [formGroup]="fleetFuelForm">
     <!-- summary tab -->
     <div *ngIf='summaryColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 summaryPref'
@@ -53,10 +20,6 @@
                     <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()' class='custom-checkbox'
                         (change)='$event ? selectionForSummaryColumns.toggle(field) : null;'
                         [checked]="selectionForSummaryColumns.isSelected(field)">
-                        <!-- <span>{{
-                        translationData['lbl'+field.name.replace(initData.name, '').replace('.', '')] ||
-                        field.name.replace(initData.name, '').replace('.', '')
-                        }}</span> -->
                         <span>
                             {{field.translatedName}}
                         </span>
@@ -81,20 +44,17 @@
         </div>
     </div>
     <ng-container *ngIf='vehicleRankingColumnData.length > 0'>
-        <div fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="32px" fxLayoutAlign="flex-start">
+        <div fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="12px" fxLayoutAlign="flex-start">
             <ng-container *ngFor="let field of vehicleRankingColumnData; let index = index">
-                <div class="padding-10" fxFlex="0 1 calc(33.3% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+                <div class="padding-10" fxFlex="0 1 calc(33.3% - 12px)" fxFlex.lt-md="0 1 calc(50% - 12px)"
                     fxFlex.lt-sm="100%" [ngClass]="{'myStyle': 0 === index % 3}">
                     <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()' class='custom-checkbox'
                         (change)='$event ? selectionForVehicleRankingColumns.toggle(field) : null;'
                         [checked]="selectionForVehicleRankingColumns.isSelected(field)">
-                        <!-- <span>{{
-                        translationData['lbl'+field.name.replace(initData.name, '').replace('.', '')] ||
-                        field.name.replace(initData.name, '').replace('.', '')
-                        }}</span> -->
                         <span>
-                            {{field.translatedName}}
+                            {{ field.translatedName }}
                         </span>
+                        <span *ngIf="field.key == 'rp_ff_report_vehicle_vehicleranking_consumption'">{{ getUnits() }}</span>
                     </mat-checkbox>
                 </div>
             </ng-container>
@@ -117,15 +77,11 @@
     <ng-container *ngIf='chartsColumnData.length > 0'>
         <div fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="5px" fxLayoutAlign="flex-start">
             <ng-container *ngFor="let field of chartsColumnData; let index = index">
-                <div class="padding-10 areaWidth" fxFlex="0 1 calc(33.3% - 5px)" fxFlex.lt-md="0 1 calc(50% - 32px)"
+                <div class="padding-10 areaWidth" fxFlex="0 1 calc(33.3% - 5px)" fxFlex.lt-md="0 1 calc(50% - 5px)"
                     fxFlex.lt-sm="100%" [ngClass]="{'myStyle': 0 === index % 3}">
-                    <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()' class='custom-checkbox'
+                    <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()' class='chart-custom-checkbox'
                         (change)='$event ? selectionForChartsColumns.toggle(field) : null;'
                         [checked]="selectionForChartsColumns.isSelected(field)">
-                        <!-- <span>{{
-                        translationData['lbl'+field.name.replace(initData.name, '').replace('.', '')] ||
-                        field.name.replace(initData.name, '').replace('.', '')
-                        }}</span> -->
                         <span>
                             {{field.translatedName}}
                         </span>
@@ -166,16 +122,17 @@
                     <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()' class='custom-checkbox'
                         (change)='$event ? selectionForVehicleDetailsColumns.toggle(field) : null;'
                         [checked]="selectionForVehicleDetailsColumns.isSelected(field)">
-                        <!-- <span>{{
-                        translationData['lbl'+field.name.replace(initData.name, '').replace('.', '')] ||
-                        field.name.replace(initData.name, '').replace('.', '')
-                        }}</span> -->
                         <span>
                             {{field.translatedName}}
                         </span>
                     </mat-checkbox>
                 </div>
             </ng-container>
+            <!-- error msg -->
+            <div *ngIf='editFlag && validateRequiredField("VehicleDetails")' fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start">
+                <span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN,
+                    Registration Number' }}</span>
+            </div>
         </div>
     </ng-container>
 
@@ -202,16 +159,17 @@
                     <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()' class='custom-checkbox'
                         (change)='$event ? selectionForSingleVehicleDetailsColumns.toggle(field) : null;'
                         [checked]="selectionForSingleVehicleDetailsColumns.isSelected(field)">
-                        <!-- <span>{{
-                        translationData['lbl'+field.name.replace(initData.name, '').replace('.', '')] ||
-                        field.name.replace(initData.name, '').replace('.', '')
-                        }}</span> -->
                         <span>
                             {{field.translatedName}}
                         </span>
                     </mat-checkbox>
                 </div>
             </ng-container>
+            <!-- error msg -->
+            <div *ngIf='editFlag && validateRequiredField("SingleVehicleDetails")' fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start">
+                <span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN,
+                    Registration Number' }}</span>
+            </div>
         </div>
     </ng-container>
 

@@ -9,6 +9,16 @@ namespace net.atos.daf.ct2.reportservice.entity
 {
     public class Mapper
     {
+        public EnumTranslation MapEnumTranslation(reports.entity.EnumTranslation enumTrans)
+        {
+            EnumTranslation objenumtrans = new EnumTranslation();
+            objenumtrans.Id = enumTrans.Id;
+            objenumtrans.Type = string.IsNullOrEmpty(enumTrans.Type) ? string.Empty : enumTrans.Type;
+            objenumtrans.Enum = string.IsNullOrEmpty(enumTrans.Enum) ? string.Empty : enumTrans.Enum;
+            objenumtrans.ParentEnum = string.IsNullOrEmpty(enumTrans.ParentEnum) ? string.Empty : enumTrans.ParentEnum;
+            objenumtrans.Key = string.IsNullOrEmpty(enumTrans.Key) ? string.Empty : enumTrans.Key;
+            return objenumtrans;
+        }
         internal IEnumerable<UserPreferenceDataColumn> MapUserPreferences(IEnumerable<UserPreferenceReportDataColumn> userPreferences)
         {
             var userPreferenceResult = new List<UserPreferenceDataColumn>();
@@ -311,43 +321,43 @@ namespace net.atos.daf.ct2.reportservice.entity
         {
             FleetOverviewDetails response = new FleetOverviewDetails
             {
-                Id = fleetOverviewEntity.Id,
-                TripId = fleetOverviewEntity.TripId,
-                Vin = fleetOverviewEntity.Vin,
-                StartTimeStamp = fleetOverviewEntity.StartTimeStamp,
-                EndTimeStamp = fleetOverviewEntity.EndTimeStamp,
-                Driver1Id = fleetOverviewEntity.Driver1Id,
-                TripDistance = fleetOverviewEntity.TripDistance,
-                DrivingTime = fleetOverviewEntity.DrivingTime,
-                FuelConsumption = fleetOverviewEntity.FuelConsumption,
-                VehicleDrivingStatusType = fleetOverviewEntity.VehicleDrivingStatusType,
-                OdometerVal = fleetOverviewEntity.OdometerVal,
-                DistanceUntilNextService = fleetOverviewEntity.DistanceUntilNextService,
-                LatestReceivedPositionLattitude = fleetOverviewEntity.LatestReceivedPositionLattitude,
-                LatestReceivedPositionLongitude = fleetOverviewEntity.LatestReceivedPositionLongitude,
-                LatestReceivedPositionHeading = fleetOverviewEntity.LatestReceivedPositionHeading,
-                StartPositionLattitude = fleetOverviewEntity.StartPositionLattitude,
-                StartPositionLongitude = fleetOverviewEntity.StartPositionLongitude,
-                StartPositionHeading = fleetOverviewEntity.StartPositionHeading,
-                LatestProcessedMessageTimeStamp = fleetOverviewEntity.LatestProcessedMessageTimeStamp,
-                VehicleHealthStatusType = fleetOverviewEntity.VehicleHealthStatusType,
-                LatestWarningClass = fleetOverviewEntity.LatestWarningClass,
-                LatestWarningNumber = fleetOverviewEntity.LatestWarningNumber,
-                LatestWarningType = fleetOverviewEntity.LatestWarningType,
-                LatestWarningTimestamp = fleetOverviewEntity.LatestWarningTimestamp,
-                LatestWarningPositionLatitude = fleetOverviewEntity.LatestWarningPositionLatitude,
-                LatestWarningPositionLongitude = fleetOverviewEntity.LatestWarningPositionLongitude,
-                Vid = fleetOverviewEntity.Vid,
-                RegistrationNo = fleetOverviewEntity.RegistrationNo,
-                DriverName = fleetOverviewEntity.DriverName,
-                LatestGeolocationAddressId = fleetOverviewEntity.LatestGeolocationAddressId,
-                LatestGeolocationAddress = fleetOverviewEntity.LatestGeolocationAddress,
-                StartGeolocationAddressId = fleetOverviewEntity.StartGeolocationAddressId,
-                StartGeolocationAddress = fleetOverviewEntity.StartGeolocationAddress,
-                LatestWarningGeolocationAddressId = fleetOverviewEntity.LatestWarningGeolocationAddressId,
-                LatestWarningGeolocationAddress = fleetOverviewEntity.LatestWarningGeolocationAddress,
-                LatestWarningName = fleetOverviewEntity.LatestWarningName,
-                VehicleName = fleetOverviewEntity.VehicleName
+                Id = fleetOverviewEntity?.Id ?? 0,
+                TripId = fleetOverviewEntity?.TripId ?? string.Empty,
+                Vin = fleetOverviewEntity?.Vin ?? string.Empty,
+                StartTimeStamp = fleetOverviewEntity?.StartTimeStamp ?? 0,
+                EndTimeStamp = fleetOverviewEntity?.EndTimeStamp ?? 0,
+                Driver1Id = fleetOverviewEntity?.Driver1Id ?? string.Empty,
+                TripDistance = fleetOverviewEntity?.TripDistance ?? 0,
+                DrivingTime = fleetOverviewEntity?.DrivingTime ?? 0,
+                FuelConsumption = fleetOverviewEntity?.FuelConsumption ?? 0,
+                VehicleDrivingStatusType = fleetOverviewEntity?.VehicleDrivingStatusType,
+                OdometerVal = fleetOverviewEntity?.OdometerVal ?? 0,
+                DistanceUntilNextService = fleetOverviewEntity?.DistanceUntilNextService ?? 0,
+                LatestReceivedPositionLattitude = fleetOverviewEntity?.LatestReceivedPositionLattitude ?? 0,
+                LatestReceivedPositionLongitude = fleetOverviewEntity?.LatestReceivedPositionLongitude ?? 0,
+                LatestReceivedPositionHeading = fleetOverviewEntity?.LatestReceivedPositionHeading ?? 0,
+                StartPositionLattitude = fleetOverviewEntity?.StartPositionLattitude ?? 0,
+                StartPositionLongitude = fleetOverviewEntity?.StartPositionLongitude ?? 0,
+                StartPositionHeading = fleetOverviewEntity?.StartPositionHeading ?? 0,
+                LatestProcessedMessageTimeStamp = fleetOverviewEntity?.LatestProcessedMessageTimeStamp ?? 0,
+                VehicleHealthStatusType = fleetOverviewEntity?.VehicleHealthStatusType ?? string.Empty,
+                LatestWarningClass = fleetOverviewEntity?.LatestWarningClass ?? 0,
+                LatestWarningNumber = fleetOverviewEntity?.LatestWarningNumber ?? 0,
+                LatestWarningType = fleetOverviewEntity?.LatestWarningType ?? string.Empty,
+                LatestWarningTimestamp = fleetOverviewEntity?.LatestWarningTimestamp ?? 0,
+                LatestWarningPositionLatitude = fleetOverviewEntity?.LatestWarningPositionLatitude ?? 0,
+                LatestWarningPositionLongitude = fleetOverviewEntity?.LatestWarningPositionLongitude ?? 0,
+                Vid = fleetOverviewEntity?.Vid ?? string.Empty,
+                RegistrationNo = fleetOverviewEntity?.RegistrationNo ?? string.Empty,
+                DriverName = fleetOverviewEntity?.DriverName ?? string.Empty,
+                LatestGeolocationAddressId = fleetOverviewEntity?.LatestGeolocationAddressId ?? 0,
+                LatestGeolocationAddress = fleetOverviewEntity?.LatestGeolocationAddress ?? string.Empty,
+                StartGeolocationAddressId = fleetOverviewEntity?.StartGeolocationAddressId ?? 0,
+                StartGeolocationAddress = fleetOverviewEntity?.StartGeolocationAddress ?? string.Empty,
+                LatestWarningGeolocationAddressId = fleetOverviewEntity?.LatestWarningGeolocationAddressId ?? 0,
+                LatestWarningGeolocationAddress = fleetOverviewEntity?.LatestWarningGeolocationAddress ?? string.Empty,
+                LatestWarningName = fleetOverviewEntity?.LatestWarningName ?? string.Empty,
+                VehicleName = fleetOverviewEntity?.VehicleName ?? string.Empty
             };
             if (fleetOverviewEntity.LiveFleetPositions != null && fleetOverviewEntity.LiveFleetPositions.Count > 0)
             {
@@ -370,14 +380,14 @@ namespace net.atos.daf.ct2.reportservice.entity
         {
             LiveFleetPosition liveFleetPosition = new LiveFleetPosition
             {
-                Id = fleetOverviewEntity.Id,
+                Id = fleetOverviewEntity?.Id ?? 0,
                 //TripId = fleetOverviewEntity.TripId,
-                GpsAltitude = fleetOverviewEntity.GpsAltitude,
-                GpsHeading = fleetOverviewEntity.GpsHeading,
-                GpsLatitude = fleetOverviewEntity.GpsLatitude,
-                GpsLongitude = fleetOverviewEntity.GpsLongitude,
-                Co2Emission = fleetOverviewEntity.Co2emission,
-                Fuelconsumtion = fleetOverviewEntity.Fuelconsumtion,
+                GpsAltitude = fleetOverviewEntity?.GpsAltitude ?? 0,
+                GpsHeading = fleetOverviewEntity?.GpsHeading ?? 0,
+                GpsLatitude = fleetOverviewEntity?.GpsLatitude ?? 0,
+                GpsLongitude = fleetOverviewEntity?.GpsLongitude ?? 0,
+                Co2Emission = fleetOverviewEntity?.Co2emission ?? 0,
+                Fuelconsumtion = fleetOverviewEntity?.Fuelconsumtion ?? 0,
             };
             return liveFleetPosition;
         }
@@ -612,6 +622,143 @@ namespace net.atos.daf.ct2.reportservice.entity
             }
             return avgDrivingSpeed;
         }
-    }
 
+        internal List<EcoScoreTrendlines> MapEcoScoreReportTrendlines(IEnumerable<reports.entity.EcoScoreReportSingleDriver> result, IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> reportAttributes, UoM unit)
+        {
+            var trendlines = new List<EcoScoreTrendlines>();
+            var vins = result.Select(x => x.VIN).Distinct();
+            foreach (var item in vins)
+            {
+                var objTrendline = new EcoScoreTrendlines();
+                objTrendline.VIN = item;
+
+                var lstKPIDetails = result.Where(x => x.VIN == item).ToList();
+                if (lstKPIDetails != null)
+                {
+                    objTrendline.VehicleName = lstKPIDetails.FirstOrDefault().VehicleName;
+
+                    #region Get Report Attribute Details for each KPI
+
+                    var objKPIInfo = new EcoScoreTrendlinesKPIInfo();
+                    objKPIInfo.EcoScoreCompany = GetEcoScoreTrendlineKPIData(TrendlinesKPI.EcoScoreCompany, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.EcoScore = GetEcoScoreTrendlineKPIData(TrendlinesKPI.EcoScore, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.FuelConsumption = GetEcoScoreTrendlineKPIData(TrendlinesKPI.FuelConsumption, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.CruiseControlUsage = GetEcoScoreTrendlineKPIData(TrendlinesKPI.CruiseControlUsage, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.CruiseControlUsage3050 = GetEcoScoreTrendlineKPIData(TrendlinesKPI.CruiseControlUsage30, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.CruiseControlUsage5075 = GetEcoScoreTrendlineKPIData(TrendlinesKPI.CruiseControlUsage50, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.CruiseControlUsage75 = GetEcoScoreTrendlineKPIData(TrendlinesKPI.CruiseControlUsage75, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.PTOUsage = GetEcoScoreTrendlineKPIData(TrendlinesKPI.PTOUsage, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.PTODuration = GetEcoScoreTrendlineKPIData(TrendlinesKPI.PTODuration, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.AverageDrivingSpeed = GetEcoScoreTrendlineKPIData(TrendlinesKPI.AverageDrivingSpeed, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.AverageSpeed = GetEcoScoreTrendlineKPIData(TrendlinesKPI.AverageSpeed, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.HeavyThrottling = GetEcoScoreTrendlineKPIData(TrendlinesKPI.HeavyThrottling, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.HeavyThrottleDuration = GetEcoScoreTrendlineKPIData(TrendlinesKPI.HeavyThrottleDuration, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.Idling = GetEcoScoreTrendlineKPIData(TrendlinesKPI.Idling, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.IdleDuration = GetEcoScoreTrendlineKPIData(TrendlinesKPI.IdleDuration, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.BrakingScore = GetEcoScoreTrendlineKPIData(TrendlinesKPI.BrakingScore, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.HarshBraking = GetEcoScoreTrendlineKPIData(TrendlinesKPI.HarshBraking, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.HarshBrakeDuration = GetEcoScoreTrendlineKPIData(TrendlinesKPI.HarshBrakeDuration, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.Braking = GetEcoScoreTrendlineKPIData(TrendlinesKPI.Braking, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.BrakeDuration = GetEcoScoreTrendlineKPIData(TrendlinesKPI.BrakeDuration, unit, lstKPIDetails, reportAttributes);
+                    objKPIInfo.AnticipationScore = GetEcoScoreTrendlineKPIData(TrendlinesKPI.AnticipationScore, unit, lstKPIDetails, reportAttributes);
+
+                    #endregion
+
+                    objTrendline.KPIInfo = objKPIInfo;
+                }
+                trendlines.Add(objTrendline);
+            }
+            return trendlines;
+        }
+
+        private static EcoScoreTrendlinesKPI GetEcoScoreTrendlineKPIData(TrendlinesKPI kpiName, UoM unit, IEnumerable<reports.entity.EcoScoreReportSingleDriver> result, IEnumerable<reports.entity.EcoScoreCompareReportAtttributes> reportAttributes)
+        {
+            var trendline = new EcoScoreTrendlinesKPI();
+            string headerType = string.Empty;
+            string vin = result.FirstOrDefault().VIN;
+            if (vin == "Overall" && kpiName == TrendlinesKPI.EcoScoreCompany)
+                headerType = "Overall_Company";
+            else if (vin == "Overall" && kpiName != TrendlinesKPI.EcoScoreCompany)
+                headerType = "Overall_Driver";
+            else if (vin != "Overall" && kpiName == TrendlinesKPI.EcoScoreCompany)
+                headerType = "VIN_Company";
+            else if (vin != "Overall" && kpiName != TrendlinesKPI.EcoScoreCompany)
+                headerType = "VIN_Driver";
+
+            if (kpiName == TrendlinesKPI.EcoScoreCompany)
+                kpiName = TrendlinesKPI.EcoScore;
+
+            var attribute = reportAttributes.Where(x => x.DBColumnName == kpiName.ToString()).FirstOrDefault();
+            trendline.Name = attribute.Name;
+            trendline.Key = attribute.Key;
+            trendline.UoM = GetKPIUnitAndConversionFactor(kpiName, unit, string.Empty).Item1;
+
+            var dictDaywiseValue = new Dictionary<string, string>();
+            var lstKPI = result.Where(x => x.HeaderType == headerType).OrderBy(x => x.Day).ToList();
+            foreach (var kpi in lstKPI)
+            {
+                dictDaywiseValue.Add(kpi.Day.ToString("MM/dd/yyyy"), GetKPIUnitAndConversionFactor(kpiName, unit, Convert.ToString(kpi.GetType().GetProperties().Where(y => y.Name.Equals(kpiName.ToString())).Select(x => x.GetValue(kpi)).FirstOrDefault())).Item2);
+            }
+            trendline.Data.Add(dictDaywiseValue);
+            return trendline;
+        }
+
+        private static Tuple<string, string> GetKPIUnitAndConversionFactor(TrendlinesKPI kpiName, UoM unit, string score)
+        {
+            switch (kpiName)
+            {
+                //Count
+                case TrendlinesKPI.EcoScoreCompany:
+                case TrendlinesKPI.EcoScore:
+                case TrendlinesKPI.BrakingScore:
+                case TrendlinesKPI.AnticipationScore:
+                    return Tuple.Create(string.Empty, string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score)));
+
+                //Ltrs /100 km OR mpg
+                case TrendlinesKPI.FuelConsumption:
+                    if (unit == UoM.Imperial)
+                        return Tuple.Create("mpg", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", (100 / Convert.ToDouble(score)) * (3.785 / 1.609)));
+                    else
+                        return Tuple.Create("Ltrs /100 km", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score)));
+
+                //%
+                case TrendlinesKPI.CruiseControlUsage:
+                case TrendlinesKPI.PTOUsage:
+                case TrendlinesKPI.HeavyThrottling:
+                case TrendlinesKPI.Idling:
+                case TrendlinesKPI.HarshBraking:
+                case TrendlinesKPI.Braking:
+                    return Tuple.Create("%", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score)));
+
+                //km/h(%) OR mph(%)
+                case TrendlinesKPI.CruiseControlUsage30:
+                case TrendlinesKPI.CruiseControlUsage50:
+                case TrendlinesKPI.CruiseControlUsage75:
+                    if (unit == UoM.Imperial)
+                        return Tuple.Create("mph(%)", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score)));
+                    else
+                        return Tuple.Create("km/h(%)", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score)));
+
+                //km/h OR mph
+                case TrendlinesKPI.AverageDrivingSpeed:
+                case TrendlinesKPI.AverageSpeed:
+                    if (unit == UoM.Imperial)
+                        return Tuple.Create("mph", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score) * 0.6213));
+                    else
+                        return Tuple.Create("km/h", string.IsNullOrEmpty(score) ? string.Empty : String.Format("{0:0.0}", Convert.ToDouble(score)));
+
+                //hh:mm:ss
+                case TrendlinesKPI.PTODuration:
+                case TrendlinesKPI.HeavyThrottleDuration:
+                case TrendlinesKPI.IdleDuration:
+                case TrendlinesKPI.HarshBrakeDuration:
+                case TrendlinesKPI.BrakeDuration:
+                    TimeSpan time = TimeSpan.FromSeconds(string.IsNullOrEmpty(score) ? 0 : Convert.ToInt64(Convert.ToDouble(score)));
+                    return Tuple.Create("hh:mm:ss", time.ToString(@"hh\:mm\:ss"));
+
+                default:
+                    return Tuple.Create(string.Empty, string.Empty);
+            }
+        }
+    }
 }

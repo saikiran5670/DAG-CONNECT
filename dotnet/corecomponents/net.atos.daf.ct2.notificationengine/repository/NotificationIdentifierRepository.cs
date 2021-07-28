@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.notificationengine.repository
                 tripAlert.VehicleId = vehicleId;
                 return tripAlert;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -111,12 +111,14 @@ namespace net.atos.daf.ct2.notificationengine.repository
 	                                            FROM master.notificationhistory 	                                           
 	                                            where alert_id=@alert_id
                                                     and vehicle_id=@vehicle_id
-                                                    and trip_id=@trip_id;";
+                                                    and trip_id=@trip_id
+                                                    and status<>@status;";
 
             var parameter = new DynamicParameters();
             parameter.Add("@alert_id", tripAlert.Alertid);
             parameter.Add("@vehicle_id", tripAlert.VehicleId);
             parameter.Add("@trip_id", tripAlert.Tripid);
+            parameter.Add("@status", ((char)NotificationSendType.Failed).ToString());
 
             List<NotificationHistory> notificationHistoryOutput = (List<NotificationHistory>)await _dataAccess.QueryAsync<NotificationHistory>(queryStatement, parameter);
             return notificationHistoryOutput;

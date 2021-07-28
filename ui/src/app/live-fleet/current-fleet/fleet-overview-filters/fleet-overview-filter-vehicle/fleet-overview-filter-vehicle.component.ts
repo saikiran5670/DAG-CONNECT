@@ -10,7 +10,6 @@ import { DataInterchangeService } from '../../../../services/data-interchange.se
 })
 export class FleetOverviewFilterVehicleComponent implements OnInit {
 @Input() translationData: any;
-@Input() detailsData: any;
 @Input() groupList: any;
 @Input() categoryList: any;
 @Input() levelList: any;
@@ -18,10 +17,13 @@ export class FleetOverviewFilterVehicleComponent implements OnInit {
 @Input() otherList: any;
 @Input() noRecordFlag: any;
 @Input() vehicleListData: any;
+@Input() fromVehicleHealth: any;
+@Input() vehInfoPrefData: any;
 @Output() vehicleFilterComponentEmit =  new EventEmitter<object>();
+@Output() vehicleDetailsInfoEmit =  new EventEmitter<object>();
 @Output() tabvisibility : EventEmitter<boolean> =  new EventEmitter<boolean>()
 vehicleFilterComponentEmitFlag: boolean =false;
-todayFlagClicked : boolean =true;
+todayFlagClicked : boolean = true;
 isVehicleDetails : boolean = false;
 selectedElementData: any = [];
 
@@ -30,9 +32,16 @@ constructor(private dataInterchangeService: DataInterchangeService) { }
 
   ngOnInit(): void {
     this.vehicleFilterComponentEmitFlag= true;
+    if(this.fromVehicleHealth && this.fromVehicleHealth.fromVehicleHealth && this.fromVehicleHealth.selectedElementData){
+      this.onChangetodayCheckbox(!this.fromVehicleHealth.fromVehicleHealth);
+      this.openVehicleDetails(this.fromVehicleHealth.selectedElementData);
+    }
+    else{
+      this.onChangetodayCheckbox(this.todayFlagClicked);
+    }
   }
 
-  onChangetodayCheckbox(event){
+  onChangetodayCheckbox(flag){
   //   if(event.checked){
   //  this.todayFlagClicked = true;
   //  this.getFilterData();
@@ -42,10 +51,10 @@ constructor(private dataInterchangeService: DataInterchangeService) { }
     //  this.todayFlagClicked = false;
     //  this.getFilterData();
     //  this.loadVehicleData();
-    
-let emitObj = {
-  todayFlagClicked  : event.checked,
-}
+    this.todayFlagClicked = flag
+  let emitObj = {
+  todayFlagClicked  : flag,
+ }
  this.vehicleFilterComponentEmit.emit(emitObj);
   }
 
@@ -56,8 +65,12 @@ let emitObj = {
     let obj ={
       vehicleDetailsFlag : this.isVehicleDetails
     }
-    this.dataInterchangeService.getVehicleData(data); //change as per selected vehicle
-    //this.vehicleFilterComponentEmit.emit(obj);
+    let _dataObj ={
+      vehicleDetailsFlag : this.isVehicleDetails,
+      data:data
+    }
+    this.vehicleDetailsInfoEmit.emit(obj);
+    this.dataInterchangeService.getVehicleData(_dataObj); //change as per selected vehicle
   }
 
   checkCreationForVehicleDetails(item: any){
@@ -66,7 +79,11 @@ let emitObj = {
     let obj ={
       vehicleDetailsFlag : this.isVehicleDetails
     }
-    this.dataInterchangeService.getVehicleData(null); // when back clicked 
+    let _dataObj ={
+      vehicleDetailsFlag : this.isVehicleDetails,
+      data:null
+    }
+   // this.dataInterchangeService.getVehicleData(_dataObj); // when back clicked 
 
     this.vehicleFilterComponentEmit.emit(obj);
   }

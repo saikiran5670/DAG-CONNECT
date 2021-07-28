@@ -25,6 +25,9 @@ import { Router, NavigationExtras } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
+import {VehicletripComponent} from 'src/app/report/fleet-fuel-report/fleet-fuel-report-vehicle/vehicletrip/vehicletrip.component'
+import * as fs from 'file-saver';
+import { Workbook } from 'exceljs';
 
 
 
@@ -42,14 +45,20 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
   'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
   'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
+  detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
+  'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
+  'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
+  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
   rankingColumns = ['ranking','vehicleName','vin','vehicleRegistrationNo','fuelConsumption'];
   tripForm: FormGroup;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   searchExpandPanel: boolean = true;
+  @ViewChild('fleetfuelvehicle') fleetfuelvehicle: VehicletripComponent;
   initData: any = [];
   FuelData: any;
+  graphData: any;
   selectedTrip = new SelectionModel(true, []);
   dataSource: any = new MatTableDataSource([]);
   dataSource2: any = new MatTableDataSource([]);
@@ -95,7 +104,6 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   chartExportFlag: boolean = false;
   tableInfoObj: any ;
   summaryObj: any;
-  detailSummaryObj: any;
   color: ThemePalette = 'primary';
   mode: ProgressBarMode = 'determinate';
   bufferValue = 75;
@@ -154,7 +162,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'values()'    
+          labelString: 'No of Trips'    
         }
       }]
     }
@@ -337,6 +345,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   fromTripPageBack: boolean = false;
   displayData : any = [];
   showDetailedReport : boolean = false;
+  state :any;
   
   constructor(private _formBuilder: FormBuilder, 
               private translationService: TranslationService,
@@ -344,7 +353,12 @@ export class FleetFuelReportVehicleComponent implements OnInit {
               private reportService: ReportService,
               private router: Router,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
-              private reportMapService: ReportMapService) { }
+              private reportMapService: ReportMapService) {}
+               defaultTranslation(){
+                this.translationData = {
+                  lblSearchReportParameters: 'Search Report Parameters'
+                }
+               }
 
   ngOnInit(): void {
     this.fleetFuelSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
@@ -387,6 +401,12 @@ export class FleetFuelReportVehicleComponent implements OnInit {
 
 
   }
+
+  setGlobalSearchData(globalSearchFilterData:any) {
+    this.fleetFuelSearchData["modifiedFrom"] = "vehicletrip";
+    localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
+  }
+  
   loadfleetFuelDetails(_vinData: any){
     let _startTime = Util.convertDateToUtc(this.startDateValue);
     let _endTime = Util.convertDateToUtc(this.endDateValue);
@@ -477,17 +497,17 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   onSearch(){
     this.isChartsOpen = true;
     if (this.reportPrefData.length != 0) {
-      let filterData = this.reportPrefData.filter(item => item.key.includes('chart_fuelconsumed'));
+      let filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumed'));
       this.ConsumedChartType = filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('chart_numberoftrips'));
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_numberoftrips'));
       this.TripsChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('chart_co2emission'));
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_co2emission'));
       this.Co2ChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('chart_distance'));
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_distance'));
       this.DistanceChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('chart_fuelconsumption'));
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_fuelconsumption'));
       this.ConsumptionChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
-      filterData = this.reportPrefData.filter(item => item.key.includes('chart_idledurationtotaltime'));
+      filterData = this.reportPrefData.filter(item => item.key.includes('vehicle_chart_idledurationtotaltime'));
       this.DurationChartType= filterData[0].chartType == 'L' ? 'Line' : 'Bar';
     } else {
       this.ConsumedChartType = 'Line';
@@ -545,6 +565,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
     }
     this.reportService.getGraphDetails(searchDataParam).subscribe((graphData: any) => {
       this.setChartData(graphData["fleetfuelGraph"]);
+      this.graphData= graphData;
     });
   }
   
@@ -579,9 +600,12 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   }
 
  
+  detailSummaryObj: any;
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';
+    let driverName : any ='';
+    let driverID : any ='';
     let vin: any = '';
     let plateNo: any = '';
     // this.vehicleGroupListData.forEach(element => {
@@ -619,7 +643,21 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       vehicleName: vehName,
       vin : vin,
       plateNo : plateNo,
-    }    
+    }  
+    this.detailSummaryObj={
+      fromDate: this.formStartDate(this.startDateValue),
+      endDate: this.formStartDate(this.endDateValue),
+      vehGroupName: vehGrpName,
+      vehicleName: vehName,
+     // driverName : this.displayData.driverName,
+     // driverID : this.displayData.driverID,
+      noOfTrips: this.FuelData[0].numberOfTrips,
+      distance:  this.FuelData[0].convertedDistance,
+      fuelconsumed:  this.FuelData[0].convertedFuelConsumed100Km,
+      idleDuration: this.FuelData[0].convertedIdleDuration,
+      fuelConsumption: this.FuelData[0].fuelConsumption,
+      co2emission: this.FuelData[0].cO2Emission,
+      }   
   }
 
   formStartDate(date: any){
@@ -1035,6 +1073,10 @@ getLast3MonthDate(){
   }
 
   onReset(){
+    this.isSummaryOpen= false;
+    this.isRankingOpen=  false;
+    this.isDetailsOpen=false;
+    this.isChartsOpen= false;
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
@@ -1276,9 +1318,108 @@ setVehicleGroupAndVehiclePreSelection() {
     this.dataSource2.filter = filterValue;
   }
 
+  summaryNewObj: any;
+
+  getAllSummaryData(){ 
+          if(this.initData.length > 0){
+            let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
+            let fuelConsumption = 0; let fuelconsumed = 0; let CO2Emission = 0; 
+            numberOfTrips= this.sumOfColumns('noOfTrips');
+     distanceDone= this.sumOfColumns('distance');
+     idleDuration= this.sumOfColumns('idleDuration');
+     fuelConsumption= this.sumOfColumns('fuelconsumed');
+     fuelconsumed= this.sumOfColumns('fuelConsumption');
+     CO2Emission= this.sumOfColumns('co2emission');
+          // numbeOfVehicles = this.initData.length;   
+            
+          this.summaryNewObj = [
+           ['Fleet Fuel Vehicle Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+             this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
+             fuelconsumed, idleDuration, fuelConsumption
+          ]
+          ];        
+         }
+       }
   exportAsExcelFile(){
-    this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Vehicle', sheet: 'sheet_name'});
+    this.getAllSummaryData();
+    const title = 'Fleet Fuel Vehicle Report';
+    const summary = 'Summary Section';
+    const detail = 'Detail Section';
+    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
+    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+
+    const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Distance', 'Average Distance Per Day('+unitValkmh+')', 'Average Speed('+unitValkmh+')',
+    'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb','fuelConsumed', 'fuelConsumption',  
+    'Idle Duration','Pto Duration','HarshBrakeDuration','Heavy Throttle Duration','Cruise Control Distance 30-50('+unitValkmh+')',
+    'Cruise Control Distance 50-75('+unitValkmh+')','Cruise Control Distance>75('+unitValkmh+')', 'Average Traffic Classification',
+    'Cc Fuel Consumption','fuel Consumption CC Non Active','Idling Consumption','Dpa Score','Dpa AnticipationScore',
+    'Dpa Braking Score','Idling PTO Score(hh:mm:ss)','Idling PTO','Idling Without PTO(hh:mm:ss)','Foot Brake',
+    'CO2 Emmision(gr/km)', 'Average Traffic Classification Value','Idling Consumption Value'];
+    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed(I)', 'Idle Duration(hh:mm)', 'Fuel Consumption('+unitValkm+')', 'CO2 Emission'];
+    const summaryData= this.summaryNewObj;
+    //Create workbook and worksheet
+    let workbook = new Workbook();
+    let worksheet = workbook.addWorksheet('Fleet Fuel Driver Report');
+    //Add Row and formatting
+    let titleRow = worksheet.addRow([title]);
+    worksheet.addRow([]);
+    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+
+    worksheet.addRow([]);
+    let subTitleRow = worksheet.addRow([summary]);
+    let summaryRow = worksheet.addRow(summaryHeader);
+    summaryData.forEach(element => {
+      worksheet.addRow(element);
+    });
+    worksheet.addRow([]);
+    summaryRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })
+    worksheet.addRow([]);
+    let subTitleDetailRow = worksheet.addRow([detail]);
+    let headerRow = worksheet.addRow(header);
+    headerRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })    
+    this.initData.forEach(item => {
+      worksheet.addRow([item.vehicleName,item.vin, item.vehicleRegistrationNo, item.convertedDistance,
+      item.convertedAverageDistance, item.convertedAverageSpeed, item.maxSpeed, item.numberOfTrips,
+      item.averageGrossWeightComb, item.fuelConsumed, item.fuelConsumption,item.convertedIdleDuration, item.ptoDuration,
+      item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
+      item.cruiseControlDistance75, item.averageTrafficClassification, item.ccFuelConsumption, item.fuelconsumptionCCnonactive,
+      item.idlingConsumption, item.dpaScore, item.dpaAnticipationScore, item.dpaBrakingScore,item.idlingPTOScore, item.idlingPTO, item.idlingWithoutPTOpercent,
+      item.footBrake, item.cO2Emmision, item.averageTrafficClassificationValue, item.idlingConsumptionValue
+    ]);
+    });
+
+    worksheet.mergeCells('A1:D2');
+    subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    for (var i = 0; i < header.length; i++) {
+      worksheet.columns[i].width = 20;
+    }
+    for (var j = 0; j < summaryHeader.length; j++) {
+      worksheet.columns[j].width = 20;
+    }
+    worksheet.addRow([]);
+    workbook.xlsx.writeBuffer().then((data) => {
+      let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      fs.saveAs(blob, 'Fleet_Fuel_Vehicle.xlsx');
+    })    
   }
+
 
   exportAsPDFFile(){
    
@@ -1537,14 +1678,30 @@ doc.addPage();
     displayHeader.style.display ="block";
   }
 
-  gotoTrip(vehData:any){
-    const navigationExtras: NavigationExtras = {
-      state: {
-        fromFleetfuelReport: true,
-        vehicleData: vehData
-      }
-    };
-    this.router.navigate(['report/detailvehiclereport'], navigationExtras);
+  backToMainPage(){
+
+  }
+  vehicleSelected : boolean = false;
+  vehicleInfo : any ={};
+  dateInfo : any ={};
+  onVehicleSelected(vehData:any){
+    let s = this.vehicleGrpDD.filter(i=>i.vehicleGroupId==this.tripForm.controls.vehicleGroup.value)
+    let _s = this.vehicleDD.filter(i=>i.vin==vehData.vin)
+    this.tripForm.get('vehicle').setValue(_s.length>0 ?  _s[0].vehicleId : 0)
+    let currentStartTime = Util.convertDateToUtc(this.startDateValue);
+    let currentEndTime = Util.convertDateToUtc(this.endDateValue); 
+    this.dateInfo={
+      startTime: currentStartTime,
+      endTime : currentEndTime,
+      fromDate: this.formStartDate(this.startDateValue),
+      endDate: this.formStartDate(this.endDateValue),
+      vehGroupName : s.length>0 ?  s[0].vehicleGroupName : 'All' 
+    }
+    this.vehicleInfo = vehData;
+    this.vehicleSelected=true;
+    // if(this.fleetfuelvehicle){
+    //   this.fleetfuelvehicle.ngAfterViewInit();
+    // }
   }
 
 

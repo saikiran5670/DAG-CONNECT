@@ -106,6 +106,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   periodForm: any;
   alertFilterRefs: any = [];
   ui: any;
+  isNotificationFormValid: boolean= true;
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
 
@@ -1372,6 +1373,16 @@ PoiCheckboxClicked(event: any, row: any) {
     this.openAdvancedFilter = !this.openAdvancedFilter;
   }
 
+  onBackToPage(objData){
+    // this.createEditStatus = objData.actionFlag;
+    // this.viewStatus = objData.actionFlag;
+    // if(objData.successMsg && objData.successMsg != ''){
+    //   this.successMsgBlink(objData.successMsg);
+    // }
+    // this.loadScheduledReports();
+    this.isNotificationFormValid= objData.isValidInput;
+  }
+
   onCreateUpdate(){
     let urgencylevelStartDate = 0;
     let urgencylevelEndDate = 0;
@@ -1708,9 +1719,9 @@ PoiCheckboxClicked(event: any, row: any) {
             const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'alertName' + '"]');
             invalidControl.focus();
           }
-          // else if(error.status == 409 && error.error == 'Duplicate notification recipient label'){
-          //   this.notificationComponent.duplicateRecipientLabel();
-          // }
+          else if(error.status == 409 && error.error.includes('Duplicate notification recipient label')){
+            this.notificationComponent.duplicateRecipientLabel();
+          }
         })
     }
     else if(this.actionType == 'edit'){

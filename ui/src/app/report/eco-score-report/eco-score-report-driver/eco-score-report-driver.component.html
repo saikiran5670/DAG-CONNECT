@@ -1,11 +1,11 @@
-<p>eco-score-report-driver works!</p>
 <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
   <mat-expansion-panel [(expanded)]="overallPerformancePanel" class="full-width" fxLayoutGap="10px">
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
         <div fxLayout="row" fxLayoutAlign='center center'>
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverName || 'Driver Name' }}: -{{ translationData.lblOverallPerformance || 'Overall Performance'}}</span>
-          <mat-icon class='margin-right-10'>info</mat-icon>
+          <span matTooltip="{{ translationData.lblOverallPerformanceInfo || 'The Eco-Score represents the Overall Performance of the driver. The Eco-Score is the rounded down average of the Anticipation and Braking Scores. The Fuel Consumption is not part of the Eco-Score calculation.'}}">
+            <mat-icon class='margin-right-10'>info</mat-icon></span>
         </div>
       </mat-panel-title>
     </mat-expansion-panel-header>
@@ -70,7 +70,53 @@
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedDriverOption }}</span>
               </div>
             </div>
-          </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
+              <div style="display: block">
+                <div class="text-center"><span><b>{{ translationData.lblEcoScore || 'Eco-Score' }}</b></span></div>
+                <canvas #chart1 baseChart
+                  [data]="doughnutChartDataEcoScore"
+                  [labels]="doughnutChartLabelsEcoScore"
+                  [chartType]="doughnutChartType"
+                  [options]="doughnutChartOptions"
+                  [plugins]="doughnutChartPlugins"
+                  [colors]="doughnutColors">
+                </canvas>
+              </div>
+              <div style="display: block" class="relative">
+                <div class="text-center"><span><b>{{ translationData.lblFuelConsumption || 'FuelConsumption' }}</b></span></div>
+                <canvas baseChart
+                  [data]="doughnutChartDataFuelConsumption"
+                  [labels]="doughnutChartLabelsFuelConsumption"
+                  [chartType]="doughnutChartType"
+                  [options]="doughnutChartOptions"
+                  [plugins]="pluginsFuelConsumption"
+                  [colors]="doughnutColors">
+                </canvas>
+              </div>
+              <div style="display: block" class="relative">
+                <div class="text-center"><span><b>{{ translationData.lblAnticipationScore || 'Anticipation Score' }}</b></span></div>
+                <canvas baseChart
+                  [data]="doughnutChartDataAnticipationScore"
+                  [labels]="doughnutChartLabelsAnticipationScore"
+                  [chartType]="doughnutChartType"
+                  [options]="doughnutChartOptionsA"
+                  [plugins]="pluginsAnticipationScore"
+                  [colors]="doughnutColorsAnticipationScore">
+                </canvas>
+              </div>
+               <div style="display: block" class="relative">
+                <div class="text-center"><span><b>{{ translationData.lblBrakingScore || 'Braking Score' }}</b></span></div>
+                <canvas baseChart
+                  [data]="doughnutChartDataBrakingScore"
+                  [labels]="doughnutChartLabelsBrakingScore"
+                  [chartType]="doughnutChartType"
+                  [options]="doughnutChartOptions"
+                  [plugins]="pluginsBrakingScore"
+                  [colors]="doughnutColors">
+                </canvas>
+              </div>
+            </div>
           </mat-expansion-panel>
           </mat-card>
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
@@ -79,10 +125,36 @@
                 <mat-panel-title>
                   <div fxLayout="row" fxLayoutAlign='center center'>
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTrendlines || 'Trendlines' }}</span>
-                    <mat-icon class='margin-right-10'>info</mat-icon>
+                    <span matTooltip="{{ trendLinesInfo }}">
+                      <mat-icon class='margin-right-10'>info</mat-icon>
+                    </span>
                   </div>
                 </mat-panel-title>
               </mat-expansion-panel-header>
+              <div id="wrapper">
+                <div id="chart-line">
+                  <apx-chart
+                    [series]="chartOptions1.series"
+                    [chart]="chartOptions1.chart"
+                    [xaxis]="chartOptions1.xaxis"
+                    [yaxis]="chartOptions1.yaxis"
+                    [dataLabels]="chartOptions1.dataLabels"
+                    [fill]="chartOptions1.fill"
+                    [markers]="chartOptions1.markers"
+                    [stroke]="chartOptions1.stroke"
+                  ></apx-chart>
+                </div>
+                <div id="chart-line2">
+                  <apx-chart
+                    [series]="chartOptions2.series"
+                    [chart]="chartOptions2.chart"
+                    [xaxis]="chartOptions2.xaxis"
+                    [fill]="chartOptions2.fill"
+                    [yaxis]="chartOptions2.yaxis"
+                  ></apx-chart>
+                </div>
+              </div>
+              
             </mat-expansion-panel>
           </mat-card>
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
@@ -91,7 +163,8 @@
                 <mat-panel-title>
                   <div fxLayout="row" fxLayoutAlign='center center'>
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneral || 'General' }} </span>
-                    <mat-icon class='margin-right-10'>info</mat-icon>
+                    <span matTooltip="{{ translationData.lblGeneralInfo || 'The General pane represents the general elements. This provides context on how the driver was assigned, so that its performance details can be better understood. The Overall column represents the results of all vehicles per general element based on the selections made in the search filters. The vehicle name column represents the results of that specific vehicle per general element. By hovering over the vehicle name, it is possible to see the Vehicle Identification Number (VIN) and the Registration Number.' }}">
+                      <mat-icon class='margin-right-10'>info</mat-icon></span>
                   </div>
                 </mat-panel-title>
               </mat-expansion-panel-header>
@@ -114,7 +187,9 @@
                 <mat-panel-title>
                   <div fxLayout="row" fxLayoutAlign='center center'>
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverPerformance || 'Driver Performance' }}</span>
-                    <mat-icon class='margin-right-10'>info</mat-icon>
+                    <span matTooltip="{{ translationData.lblGeneralInfo || 'User can see an information icon and below information must be shown in tooltip-
+                    The Driver Performance pane represents the elements the driver can influence by its driving style. The Overall column represents the results of all vehicles per Driver Performance element. This is based on the selections made in the search filters. The vehicle name column represents the results of that specific vehicle per Driver Performance element. By hovering over the vehicle name, it is possible to see the Vehicle Identification Number (VIN) and the Registration Number.' }}">
+                      <mat-icon class='margin-right-10'>info</mat-icon></span>
                   </div>
                 </mat-panel-title>
               </mat-expansion-panel-header>
@@ -129,6 +204,22 @@
                   </span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
+              <!-- <div id="chart">
+                <apx-chart
+                  [series]="chartOptionsApex.series"
+                  [chart]="chartOptionsApex.chart"
+                  [xaxis]="chartOptionsApex.xaxis"
+                  [markers]="chartOptionsApex.markers"
+                  [stroke]="chartOptionsApex.stroke"
+                  [yaxis]="chartOptionsApex.yaxis"
+                  [dataLabels]="chartOptionsApex.dataLabels"
+                  [title]="chartOptionsApex.title"
+                  [fill]="chartOptionsApex.fill"
+                  [tooltip]="chartOptionsApex.tooltip"
+                  [legend]="chartOptionsApex.legend"
+                ></apx-chart>
+              </div> -->
+              
             </mat-expansion-panel>
           </mat-card>
-          
+          <app-spinner *ngIf="showLoadingIndicator"></app-spinner>

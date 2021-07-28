@@ -1,4 +1,4 @@
-import { Input, ViewChild } from '@angular/core';
+import { ElementRef, Input, Output, ViewChild, EventEmitter } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { EmailValidator, FormArray, FormBuilder } from '@angular/forms';
@@ -46,6 +46,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
   notificationReceipients: any = [];
   notifications: any = [];
   openAdvancedFilter: boolean = false;
+  phoneNumber= '';
   contactModes: any = [
     {
       id: 'W',
@@ -125,11 +126,13 @@ export class CreateNotificationsAlertComponent implements OnInit {
   // TooltipLabel = TooltipLabel;
   CountryISO;
   preferredCountries: CountryISO[];
+  isDuplicateRecipientLabel: boolean= false;
+  @Output() backToPage = new EventEmitter<any>();
 
   @ViewChild(NotificationAdvancedFilterComponent)
   notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
 
-  constructor(private _formBuilder: FormBuilder, private alertService: AlertService) { }
+  constructor(private _formBuilder: FormBuilder, private alertService: AlertService, private el: ElementRef) { }
 
   ngOnInit(): void {
     console.log("action type=" + this.actionType);
@@ -226,6 +229,11 @@ export class CreateNotificationsAlertComponent implements OnInit {
       smsEach: ['1'],
       smsMinutes: ['1'],
       smslimitId: []
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForMail('smsDescription'),
+      ]
     });
 
   }
@@ -359,6 +367,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
     }
     //for edit or duplicate functionality
     else {
+      this.notificationForm.get("recipientLabel").reset();
       this.contactModeType = data.notificationModeType;
       this.weblimitButton = data.notificationLimits[0].notificationModeType;
       this.limitButton = data.notificationLimits[0].notificationModeType;
@@ -449,6 +458,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
         if (!this.FormSMSArray) {
           this.FormSMSArray = this.notificationForm.get("FormSMSArray") as FormArray;
           this.FormSMSArray.at(this.smsIndex).get("mobileNumber").setValue(data.phoneNo);
+          this.phoneNumber= data.phoneNo;
           this.FormSMSArray.at(this.smsIndex).get("smsRecipientLabel").setValue(data.recipientLabel);
           this.FormSMSArray.at(this.smsIndex).get("smsDescription").setValue(data.sms);
           this.FormSMSArray.at(this.smsIndex).get("smsReceipientId").setValue(data.id);
@@ -463,6 +473,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.smsIndex = this.smsIndex + 1;
           this.FormSMSArray.push(this.initSMSItems());
           this.FormSMSArray.at(this.smsIndex).get("mobileNumber").setValue(data.phoneNo);
+          this.phoneNumber= data.phoneNo;
           this.FormSMSArray.at(this.smsIndex).get("smsRecipientLabel").setValue(data.recipientLabel);
           this.FormSMSArray.at(this.smsIndex).get("smsDescription").setValue(data.sms);
           this.FormSMSArray.at(this.smsIndex).get("smsReceipientId").setValue(data.id);
@@ -544,7 +555,37 @@ export class CreateNotificationsAlertComponent implements OnInit {
 
   }
 
+  duplicateRecipientLabel(){
+    this.isDuplicateRecipientLabel= true;
+    const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'contactMode' + '"]');
+    invalidControl.focus();
+  }
+
+  validateMobileNumber(index){
+    // console.log(this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber.number);
+    if(this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber != null){
+      let phone= (this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber.number);
+      if(phone!= undefined && phone.length > 0){
+        phone= phone.replace(/\s/g, "");
+      }
+      if(phone!= undefined && phone.length > 10){
+        this.notificationForm.controls['FormSMSArray']['controls'][index]['controls']['mobileNumber'].setErrors({ tenDigitNumberAllowed: true });
+        let emitObj = {
+          isValidInput: false
+        }  
+        this.backToPage.emit(emitObj);
+      }
+      else{
+        let emitObj = {
+          isValidInput: true
+        }  
+        this.backToPage.emit(emitObj);
+      }
+    }
+  }
+
   getNotificationDetails(): any {
+    this.isDuplicateRecipientLabel= false;
     this.notificationReceipients = [];
     let WsData;
     let EmailData;

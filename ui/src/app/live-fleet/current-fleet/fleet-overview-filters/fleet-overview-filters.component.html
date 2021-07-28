@@ -26,7 +26,7 @@
         <mat-form-field appearance="outline" class="full-width dropdown-filters">
             <mat-select placeholder="All" (selectionChange)="onChangeGroup($event.value)" formControlName="group">
                 <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
-                <mat-option *ngFor="let item of groupList" [value]="item.vehicleId">
+                <mat-option *ngFor="let item of groupList" [value]="item.vehicleGroupId">
                     {{item.vehicleGroupName}}
                 </mat-option>
             </mat-select>
@@ -35,7 +35,7 @@
     <div fxLayout="column" fxLayoutAlign="space-between">
         <mat-label>{{ translationData.lblAlertLevel || 'Alert Level' }} </mat-label>
         <mat-form-field appearance="outline" class="full-width dropdown-filters">
-            <mat-select placeholder="All" (selectionChange)="onChangeLevel($event.value)" formControlName="level">
+            <mat-select placeholder="All" multiple [(ngModel)]="selection3" (selectionChange)="onChangeLevel($event.value)" formControlName="level">
                 <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
                 <mat-option *ngFor="let item of levelList" [value]="item.value">
                     {{item.name}}
@@ -83,19 +83,19 @@
       <form [formGroup]="driverVehicleForm">
       <div fxLayout="row" fxLayoutAlign="space-between" style="padding-top: 20px;">
           <mat-form-field appearance="outline">
-              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+              <input matInput (keyup)="applyFilterDriver($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
               <span matPrefix><mat-icon>search</mat-icon></span>
           </mat-form-field>        
      </div>
      <div  fxLayout="column" fxLayoutAlign="left">
       <mat-label style='display: flex; place-content: space-between;'>
-          {{ translationData.lbl || 'Select Driver' }}
+          {{ translationData.lblSelectDriver || 'Select Driver' }}
       </mat-label>
       <mat-form-field appearance="outline" class="full-width">
-          <mat-select (selectionChange)="onChangeGroup($event.value)" formControlName="group" placeholder="{{ translationData.lblSelectUserRole || 'Select Vehicle Group' }}" >
-              <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
-              <mat-option *ngFor="let item of groupList" [value]="item.vehicleId">
-                  {{item.vehicleGroupName}}
+          <mat-select (selectionChange)="onChangeDriver($event.value)" formControlName="driver" placeholder="{{ translationData.lblSelectDriver || 'Select Driver' }}" >
+              <mat-option value='all'>{{ translationData.lblAll || 'All' }}</mat-option>
+              <mat-option *ngFor="let item of driverList" [value]="item.driverId">
+                  {{item.firstName + ' ' + item.lastName}}
               </mat-option>
           </mat-select>
       </mat-form-field>
@@ -104,11 +104,11 @@
 </div>
 </div>
 </mat-expansion-panel>
-<div *ngIf="selectedIndex == 0">
+<div >
     <app-fleet-overview-filter-vehicle 
     (tabVisibility)="tabVisibilityHandler($event)" 
     [translationData]='translationData' 
-    [detailsData] ="detailsData"
+    [fromVehicleHealth] = "fromVehicleHealth"
     [groupList] = "groupList"
     [categoryList] = "categoryList"
     [levelList] = "levelList"
@@ -116,20 +116,19 @@
     [otherList] = "otherList"
     [noRecordFlag] ="noRecordFlag"
     [vehicleListData] ="vehicleListData"
-    (vehicleFilterComponentEmit)='checkCreationForVehicle($event)'>
+    (vehicleFilterComponentEmit)='checkCreationForVehicle($event)'
+    (vehicleDetailsInfoEmit)='checkToHideFilter($event)'
+    [vehInfoPrefData]='vehInfoPrefData'>
 </app-fleet-overview-filter-vehicle>
 </div>
 
-<div *ngIf="selectedIndex == 1"> 
+<!-- <div *ngIf="selectedIndex == 1"> 
     <app-fleet-overview-filter-driver *ngIf="selectedIndex == 1" 
     (tabVisibility)="tabVisibilityHandler($event)" 
     [translationData]='translationData' 
-    [detailsData] ="detailsData" 
-    [filterData]="filterData"
     [noRecordFlag] ="noRecordFlag"
-    [vehicleListData] ="vehicleListData"
+    [driverListData] ="driverListData"
     (driverFilterComponentEmit)="checkCreationForDriver($event)">
 </app-fleet-overview-filter-driver>
+</div> -->
 </div>
-</div>
-

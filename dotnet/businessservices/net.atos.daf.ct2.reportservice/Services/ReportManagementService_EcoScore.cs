@@ -228,7 +228,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             objProfile.ProfileName = result.Name ?? string.Empty;
             objProfile.ProfileDescription = result.Description ?? string.Empty;
             objProfile.UpdatedBy = result.ActionedBy ?? string.Empty;
-            objProfile.LastUpdate = result.LastUpdate.ToString("MM/dd/yyyy HH:mm:ss");
+            objProfile.LastUpdate = result.LastUpdate;
 
             if (result.ProfileKPIs != null)
             {
@@ -283,6 +283,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 obj.Name = request.Name;
                 obj.OrganizationId = request.OrgId;
                 obj.Description = request.Description;
+                obj.IsDAFStandard = request.IsDAFStandard;
                 obj.ActionedBy = Convert.ToString(request.AccountId);
                 obj.ProfileKPIs = new List<EcoScoreProfileKPI>();
                 foreach (var item in request.ProfileKPIs)
@@ -295,8 +296,25 @@ namespace net.atos.daf.ct2.reportservice.Services
                     data.UpperValue = item.UpperValue;
                     obj.ProfileKPIs.Add(data);
                 }
+                var result = 0;
+                if (request.OrgId > 0)
+                {
+                    var countByOrg = await _reportManager.GetEcoScoreProfilesCount(request.OrgId);
+                    var maxLimit = Convert.ToInt32(_configuration["MaxAllowedEcoScoreProfiles"]);
 
-                var result = await _reportManager.UpdateEcoScoreProfile(obj, isAdminRights);
+                    if (countByOrg < maxLimit)
+                    {
+                        result = await _reportManager.UpdateEcoScoreProfile(obj, isAdminRights);
+                    }
+                    else
+                    {
+                        result = -4;
+                    }
+                }
+                else
+                {
+                    result = await _reportManager.UpdateEcoScoreProfile(obj, isAdminRights);
+                }
 
                 if (result > 0)
                 {
@@ -318,6 +336,11 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     response.Message = entity.ReportConstants.ECOSCORE_PROFILE_NOT_AUTH_MSG;
                     response.Code = Responsecode.Failed;
+                }
+                else if (result == -4)
+                {
+                    response.Code = Responsecode.Forbidden;
+                    response.Message = "Max limit has reached for the creation of Eco-Score profile of requested organization. New profile cannot be created.";
                 }
                 else
                 {
@@ -480,7 +503,7 @@ namespace net.atos.daf.ct2.reportservice.Services
         #region Eco Score Report Single Driver
 
         /// <summary>
-        /// Get Eco Score Report Compare Drivers
+        /// Get Eco Score Report Single Driver
         /// </summary>
         /// <param name="request"> Search Parameter object</param>
         /// <param name="context"> GRPC context</param>
@@ -530,6 +553,43 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     Code = Responsecode.Failed,
                     Message = "GetEcoScoreReportSingleDriverResponse get failed due to - " + ex.Message
+                });
+            }
+        }
+
+        /// <summary>
+        /// Get Eco Score Report Single Driver - Trendlines
+        /// </summary>
+        /// <param name="request"> Search Parameter object</param>
+        /// <param name="context"> GRPC context</param>
+        /// <returns></returns>
+        public override async Task<GetEcoScoreReportTrendlinesResponse> GetEcoScoreReportTrendlines(GetEcoScoreReportSingleDriverRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var resultDataMart = await _reportManager.GetEcoScoreReportTrendlineData(_mapper.MapEcoScoreReportSingleDriverRequest(request));
+                var reportAttributes = await _reportManager.GetEcoScoreCompareReportAttributes(request.ReportId, request.TargetProfileId);
+                var response = new GetEcoScoreReportTrendlinesResponse();
+                if (resultDataMart?.Count > 0)
+                {
+                    response.Trendlines.AddRange(_mapper.MapEcoScoreReportTrendlines(resultDataMart, reportAttributes, (UoM)Enum.Parse(typeof(UoM), request.UoM)));
+                    response.Code = Responsecode.Success;
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_TRENDLINE_SUCCESS_MSG;
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_NOTFOUND_MSG;
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GetEcoScoreReportTrendlinesResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetEcoScoreReportTrendlinesResponse get failed due to - " + ex.Message
                 });
             }
         }

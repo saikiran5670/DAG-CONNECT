@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using net.atos.daf.ct2.reportscheduler.entity;
+using net.atos.daf.ct2.reportscheduler.ENUM;
 
 namespace net.atos.daf.ct2.reportscheduler.helper
 {
@@ -97,10 +98,6 @@ namespace net.atos.daf.ct2.reportscheduler.helper
             //put a breakpoint here and check datatable
             return GenerateHTMLString(dataTable);
         }
-        private static string GetColumnName(string displayNamKey, IEnumerable<ReportColumnName> reporyColumns, PropertyInfo prop)
-        {
-            return reporyColumns.Where(w => w.Key == displayNamKey).FirstOrDefault()?.Value ?? prop.Name;
-        }
 
         public static string GenerateHTMLString(DataTable reportData)
         {
@@ -140,6 +137,37 @@ namespace net.atos.daf.ct2.reportscheduler.helper
                 sb.Append("No Records Found.");
                 return sb.ToString();
             }
+        }
+
+        private static string GetColumnName(string displayNamKey, IEnumerable<ReportColumnName> reporyColumns, PropertyInfo prop)
+        {
+            return reporyColumns.Where(w => w.Key == displayNamKey).FirstOrDefault()?.Value ?? prop.Name;
+        }
+
+        public static string GetFuelDeviationType(FuelType fuelype, VehicleActvityType vehicleActvityType)
+        {
+            switch (fuelype)
+            {
+                case FuelType.Increase:
+                    switch (vehicleActvityType)
+                    {
+                        case VehicleActvityType.RUN:
+                            return FuelDeviationTypeConstants.FUEL_INCREASE_RUN;
+                        case VehicleActvityType.STOP:
+                            return FuelDeviationTypeConstants.FUEL_INCREASE_STOP;
+                    }
+                    break;
+                case FuelType.Decrease:
+                    switch (vehicleActvityType)
+                    {
+                        case VehicleActvityType.RUN:
+                            return FuelDeviationTypeConstants.FUEL_DECREASE_RUN;
+                        case VehicleActvityType.STOP:
+                            return FuelDeviationTypeConstants.FUEL_DECREASE_STOP;
+                    }
+                    break;
+            }
+            return string.Empty;
         }
     }
 }

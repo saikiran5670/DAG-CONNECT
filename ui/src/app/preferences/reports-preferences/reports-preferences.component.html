@@ -143,13 +143,13 @@
           <mat-tab label="{{ translationData.lblVehicle || 'Vehicle' }}">
             <app-fleet-fuel-preferences *ngIf='showFleetFuelPerferences' tabName='Vehicle'
               [editFlag]='editFleetFuelPerferencesFlag' [reportListData]='reportListData'
-              [translationData]='translationData' (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)" #fleetFuelPerferencesVehicle>
+              [translationData]='translationData' [generalPreferences]="generalPreferences" (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)" #fleetFuelPerferencesVehicle>
             </app-fleet-fuel-preferences>
           </mat-tab>
           <mat-tab label="{{ translationData.lblDriver || 'Driver' }}">
             <app-fleet-fuel-preferences *ngIf='showFleetFuelPerferences' tabName='Driver'
               [editFlag]='editFleetFuelPerferencesFlag' [reportListData]='reportListData'
-              [translationData]='translationData' (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)" #fleetFuelPerferencesDriver>
+              [translationData]='translationData' [generalPreferences]="generalPreferences" (setFuelFleetFlag)="updateFleetFuelPerferencesFlag($event)" #fleetFuelPerferencesDriver>
             </app-fleet-fuel-preferences>
           </mat-tab>
         </mat-tab-group>
@@ -161,7 +161,7 @@
             translationData.lblCancel || 'Cancel' }}</button>
           <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
             translationData.lblReset || 'Reset' }}</button>
-          <button class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
+          <button [disabled]="validateRequiredField()" class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
             'Confirm') }}</button>
         </div>
       </div>

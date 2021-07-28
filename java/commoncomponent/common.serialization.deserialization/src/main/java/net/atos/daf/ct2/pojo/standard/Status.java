@@ -86,7 +86,7 @@ public class Status implements Serializable {
   @JsonProperty(value = "VCruiseControlDist")
   private Long vCruiseControlDist;
   @JsonProperty(value = "VHarshBrakeDuration")
-  private Integer vHarshBrakeDuration;
+  private Long vHarshBrakeDuration;
   @JsonProperty(value = "VIdleDuration")
   private Long vIdleDuration;
   @JsonProperty(value = "VPosAltitudeVariation")

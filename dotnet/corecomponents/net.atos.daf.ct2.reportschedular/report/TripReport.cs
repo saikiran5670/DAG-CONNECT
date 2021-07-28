@@ -107,18 +107,18 @@ namespace net.atos.daf.ct2.account.report
                         StartDate = TimeZoneHelper.GetDateTimeFromUTC(tripData.StartTimeStamp, TimeZoneName, DateTimeFormat),
                         EndDate = TimeZoneHelper.GetDateTimeFromUTC(tripData.EndTimeStamp, TimeZoneName, DateTimeFormat),
                         //VIN = tripData.VIN,
-                        Distance = (int)await _unitConversionManager.GetDistance(tripData.Distance, DistanceUnit.Meter, UnitToConvert),
+                        Distance = await _unitConversionManager.GetDistance(tripData.Distance, DistanceUnit.Meter, UnitToConvert),
                         IdleDuration = await _unitConversionManager.GetTimeSpan(tripData.IdleDuration, TimeUnit.Seconds, UnitToConvert),
-                        AverageSpeed = (int)await _unitConversionManager.GetSpeed(tripData.AverageSpeed, SpeedUnit.MeterPerMilliSec, UnitToConvert),
-                        AverageWeight = (int)await _unitConversionManager.GetWeight(tripData.AverageWeight, WeightUnit.KiloGram, UnitToConvert),
-                        Odometer = (int)await _unitConversionManager.GetDistance(tripData.Odometer, DistanceUnit.Meter, UnitToConvert),
+                        AverageSpeed = await _unitConversionManager.GetSpeed(tripData.AverageSpeed, SpeedUnit.MeterPerMilliSec, UnitToConvert),
+                        AverageWeight = await _unitConversionManager.GetWeight(tripData.AverageWeight, WeightUnit.KiloGram, UnitToConvert),
+                        Odometer = await _unitConversionManager.GetDistance(tripData.Odometer, DistanceUnit.Meter, UnitToConvert),
                         StartPosition = tripData.StartPosition,
                         EndPosition = tripData.EndPosition,
                         //FuelConsumed = tripData.FuelConsumed,
                         DrivingTime = await _unitConversionManager.GetTimeSpan(tripData.DrivingTime, TimeUnit.Seconds, UnitToConvert),
                         Alerts = tripData.Alert,
                         Events = tripData.Events,
-                        FuelConsumed100km = await _unitConversionManager.GetVolumePerDistance(tripData.FuelConsumed100km, VolumePerDistanceUnit.MilliLiterPerMeter, UnitToConvert),
+                        FuelConsumed100km = await _unitConversionManager.GetVolumePer100Km(tripData.Distance, tripData.FuelConsumed, VolumeUnit.MilliLiter, UnitToConvert)
                     });
             }
             var html = ReportHelper

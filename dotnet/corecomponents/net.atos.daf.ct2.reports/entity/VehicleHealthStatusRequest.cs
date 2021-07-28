@@ -18,6 +18,11 @@
         public int WarningNumber { get; set; }
         public string WarningName { get; set; }
         public string WarningAdvice { get; set; }
+        public byte[] Icon { get; set; }
+        public int IconId { get; set; }
+        public string IconName { get; set; }
+        public string ColorName { get; set; }
+        public string LngCode { get; set; }
 
     }
     public class DriverDetails

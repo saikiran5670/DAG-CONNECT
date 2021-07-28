@@ -66,4 +66,20 @@ public class DAFCT2Constant {
     
     //Bosch
     public static final String SOURCE_BOSCH_TOPIC_NAME = "source.bosch.topic.name";
+    
+    //KAFKA CONFIG
+    public static final String AUTO_OFFSET_RESET_CONFIG = "auto.offset.reset";
+    
+    //Streaming environment 
+  	public static final String PARALLELISM = "parallelism";
+  	public static final String CHECKPOINT_INTERVAL = "checkpoint.interval";
+  	public static final String MINIMUM_PAUSE_BETWEEN_CHECKPOINTS = "min.checkpoint.pause";
+  	public static final String CHECKPOINT_TIMEOUT = "checkpoint.timeout";
+  	public static final String MAX_CONCURRENT_CHECKPOINTS = "max.concurrent.checkpoints";
+  	public static final String CHECKPOINT_DIRECTORY = "checkpoint.directory";
+  	public static final String RESTART_ATTEMPS = "restart.attempts";
+  	public static final String RESTART_INTERVAL = "restart.interval";
+  	public static final String RESTART_FLAG = "restart.flag";
+  		
+
 }

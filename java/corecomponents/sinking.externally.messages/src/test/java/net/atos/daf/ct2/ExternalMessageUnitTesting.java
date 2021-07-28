@@ -197,6 +197,7 @@ public class ExternalMessageUnitTesting {
     SinkMessages.FILE_PATH = FILE_PATH;
     Properties properties1 = SinkMessages.configuration();
 
+    //final StreamExecutionEnvironment env = sinkMessages.flinkConnection();
     sinkMessages.flinkConnection();
 
     List<String> listTopics =
@@ -209,16 +210,16 @@ public class ExternalMessageUnitTesting {
         ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
         this.embeddedSingleNodeKafkaZookeeperCluster.bootstrapServers());
 
-    sinkMessages.processing(properties1, listTopics);
+    sinkMessages.processing( properties1, listTopics);
 
     StreamExecutionEnvironment streamExecutionEnvironment =
         sinkMessages.getstreamExecutionEnvironment();
-
+     
     CompletableFuture<Void> handle =
         CompletableFuture.runAsync(
             () -> {
               try {
-                streamExecutionEnvironment.execute("Testing");
+            	  streamExecutionEnvironment.execute("Testing");
 
               } catch (Exception e) {
                 e.printStackTrace();

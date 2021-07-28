@@ -1,5 +1,6 @@
 package net.atos.daf.ct2.main;
 
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -16,6 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.atos.daf.common.AuditETLJobClient;
+import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.constant.DAFCT2Constant;
 import net.atos.daf.ct2.exception.DAFCT2Exception;
@@ -32,10 +34,11 @@ public class SinkMessages<T> {
 
   public static Properties configuration() throws DAFCT2Exception {
     Properties properties = new Properties();
-    properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-
+    
     try {
       properties.load(new FileReader(FILE_PATH));
+          
+      properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, properties.getProperty(DAFCT2Constant.AUTO_OFFSET_RESET_CONFIG));
       log.info("Configuration Loaded for Connecting Kafka inorder to Perform Mapping.");
 
     } catch (IOException e) {
@@ -55,12 +58,15 @@ public class SinkMessages<T> {
       properties = configuration();
       auditTrail(properties, "Sink external message job started");
       
+    // final StreamExecutionEnvironment env = sinkMessages.flinkConnection(properties);
       sinkMessages.flinkConnection();
       
       List<String> listTopics = sinkMessages.topicList(properties);
+      log.info(" listTopics :: "+listTopics);
       System.out.println(" listTopics :: "+listTopics);
       if(listTopics != null)
     	  sinkMessages.processing(properties, listTopics);
+      
       sinkMessages.startExecution();
 
     } catch (Exception e) {
@@ -71,9 +77,11 @@ public class SinkMessages<T> {
     }
   }
 
-  public void flinkConnection() {
+  public void flinkConnection() throws TechnicalException {
 
     this.streamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment();
+	  
+	//  return FlinkUtil.createStreamExecutionEnvironment(properties);
    // this.streamExecutionEnvironment.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
     /*this.streamExecutionEnvironment.enableCheckpointing(5000);
     this.streamExecutionEnvironment.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
@@ -83,7 +91,6 @@ public class SinkMessages<T> {
             CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);*/
     // this.streamExecutionEnvironment.setStateBackend(new FsStateBackend(""));
 
-    log.info("Flink Processing Started.");
   }
 
   public static void auditTrail(Properties properties, String msg) {
@@ -107,21 +114,23 @@ public class SinkMessages<T> {
 		    auditMap.put(DAFCT2Constant.AUDIT_TARGET_OBJECT_ID, DAFCT2Constant.DEFAULT_OBJECT_ID);
 
 		    auditETLJobClient.auditTrialGrpcCall(auditMap);
+		    auditETLJobClient.closeChannel();
 
 		    log.info("Audit Trial Started");
 	  }catch(Exception e){
 		  log.error("Issue while auditing sinking external message Job :: ");
-	  }finally{
+	  }/*finally{
 	      auditETLJobClient.closeChannel();
-	  }
+	  }*/
  }
 
   private List<String> topicList(Properties properties)
   {
 	 List<String> listTopics = null;
 	  String sourceSystem = properties.getProperty(DAFCT2Constant.EGRESS_DATA_FOR_SOURCE_SYSTEM);
-	  System.out.println(" sourceSystem :: "+sourceSystem);
-	 
+	  log.info(" sourceSystem :: "+sourceSystem);
+	 System.out.println(" sourceSystem :: "+sourceSystem);
+		 
 	  if(properties.getProperty(DAFCT2Constant.CONTI_SOURCE_SYSTEM).equals(sourceSystem)){
 		  listTopics =
 		          Arrays.asList(
@@ -153,10 +162,10 @@ public class SinkMessages<T> {
 	 return null;
   }
   
-  public void processing(Properties properties, List<String> listTopics) {
+  public void processing( Properties properties, List<String> listTopics) {
  
     DataStream<KafkaRecord<Object>> sourceInputStream =
-        this.streamExecutionEnvironment.addSource(
+    		this.streamExecutionEnvironment.addSource(
             new FlinkKafkaConsumer<KafkaRecord<Object>>(
                 listTopics, new KafkaMessageDeSerializeSchema<Object>(), properties));
     sourceInputStream.print();
@@ -172,7 +181,9 @@ public class SinkMessages<T> {
   public void startExecution() throws DAFCT2Exception {
 
     try {
+      //env.execute("External Records");
       this.streamExecutionEnvironment.execute("External Records");
+
 
     } catch (Exception e) {
       log.error("Unable to process Sink Message using Flink ", e);

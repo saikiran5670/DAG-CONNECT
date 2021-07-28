@@ -41,6 +41,7 @@ export class MaxTargetScoreComponent implements OnInit {
     this.options.floor = this.kpiData.lowerValue;
     this.options.ceil = this.kpiData.upperValue;
     this.options.step = this.kpiData.upperValue/10,  
+    //this.options.step = this.kpiData.upperValue > 50 ? this.kpiData.upperValue/100 : this.kpiData.upperValue/10,  
     this.options.showTicks = true
     
     this.SliderData();

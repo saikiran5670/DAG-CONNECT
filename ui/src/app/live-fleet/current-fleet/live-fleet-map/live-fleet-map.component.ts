@@ -19,6 +19,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FleetMapService } from '../fleet-map.service'
 import { DataInterchangeService } from '../../../services/data-interchange.service';
+import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
+
 declare var H: any;
 
 @Component({
@@ -45,16 +47,25 @@ export class LiveFleetMapComponent implements OnInit {
   dataSource: any = new MatTableDataSource([]);
   selectedTrip = new SelectionModel(true, []);
   selectedPOI = new SelectionModel(true, []);
+  selectedGlobalPOI = new SelectionModel(true, []);
   selectedHerePOI = new SelectionModel(true, []);
   trackType: any = 'snail';
   displayRouteView: any = 'C';
   @Input() translationData:any;
   @Input()  detailsData : any;
+  @Input() preferenceObject : any;
   @ViewChild("map") public mapElement: ElementRef;
   accountId:any;
   accountPrefObj : any;
   tripTraceArray = [];
   searchMarker: any = {};
+  dataService: any;
+  searchStr: null;
+  suggestionData : any;
+  @Input() filterData : any;
+  globalPOIList : any = [];
+  displayGlobalPOIList : any =[];
+
   constructor(
     private translationService: TranslationService,
     private _formBuilder: FormBuilder,
@@ -66,35 +77,36 @@ export class LiveFleetMapComponent implements OnInit {
     private _configService: ConfigService,
     private hereService: HereService,
     private fleetMapService:FleetMapService,
-    private dataInterchangeService:DataInterchangeService) {
+    private dataInterchangeService:DataInterchangeService,
+    private completerService: CompleterService) {
     this.map_key = _configService.getSettings("hereMap").api_key;
     //Add for Search Fucntionality with Zoom
     ///this.query = "starbucks";
     this.platform = new H.service.Platform({
       "apikey": this.map_key // "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
-    //this.configureAutoSuggest();
+    this.configureAutoSuggest();
     //this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
-    this.dataInterchangeService.detailDataInterface$.subscribe(data => {
+    this.dataInterchangeService.detailDataInterface$.subscribe(vehicleResponse => {
     this.tripTraceArray = [];
 
-      if (data) {
-        if(data.length){
-          this.tripTraceArray = data;
-          this.showIcons = true;
-
-        }
-        else{
-          this.tripTraceArray.push(data);
-          this.showIcons = false;
-
-        }
-      }
-      else {
+    if (vehicleResponse) {
+      if(!vehicleResponse.vehicleDetailsFlag){
+        this.tripTraceArray = vehicleResponse.data;
         this.showIcons = true;
+
       }
-      
+      else{
+        this.tripTraceArray.push(vehicleResponse.data);
+        this.showIcons = false;
+
+      }
+    }
+    else {
+      this.showIcons = true;
+    }
+    
       this.mapIconData();
     })
   }
@@ -116,6 +128,7 @@ export class LiveFleetMapComponent implements OnInit {
       this.tripTraceArray = this.detailsData;
     this.makeHerePOIList();
     this.loadUserPOI();
+    this.loadGlobalPOI();
     this.mapIconData();
     }, 0);
   }
@@ -128,7 +141,7 @@ export class LiveFleetMapComponent implements OnInit {
     let _ui = this.fleetMapService.getUI();
    // this.fleetMapService.setIconsOnMap(this.detailsData);
  
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
 
     //this.fleetMapService.setIconsOnMap();
     //this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
@@ -136,10 +149,45 @@ export class LiveFleetMapComponent implements OnInit {
 
   }
 
+ 
+  private configureAutoSuggest(){
+    let searchParam = this.searchStr != null ? this.searchStr : '';
+    let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?'+'apiKey='+this.map_key +'&limit=5'+'&q='+searchParam ;
+  // let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
+    this.suggestionData = this.completerService.remote(
+    URL,'title','title');
+    this.suggestionData.dataField("items");
+    this.dataService = this.suggestionData;
+  }
+
+  onSearchFocus(){
+    this.searchStr = null;
+  }
+
+  onSearchSelected(selectedAddress: CompleterItem){
+    if(selectedAddress){
+      let id = selectedAddress["originalObject"]["id"];
+      let qParam = 'apiKey='+this.map_key + '&id='+ id;
+      this.hereService.lookUpSuggestion(qParam).subscribe((data: any) => {
+        this.searchMarker = {};
+        if(data && data.position && data.position.lat && data.position.lng){
+          let searchMarker = {
+            lat: data.position.lat,
+            lng: data.position.lng,
+            from: 'search'
+          }
+          this.fleetMapService.setMapToLocation(searchMarker);
+          //let _ui = this.fleetMapService.getUI();
+          //this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
+        }
+      });
+    }
+  }
+
   changeAlertSelection(_event){
     this.alertsChecked = _event.checked
     let _ui = this.fleetMapService.getUI();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
   }
   makeHerePOIList(){
     this.herePOIList = [{
@@ -161,11 +209,30 @@ export class LiveFleetMapComponent implements OnInit {
   }
 
   loadUserPOI() {
-    this.landmarkCategoryService.getCategoryWisePOI(this.accountOrganizationId).subscribe((poiData: any) => {
-      this.userPOIList = this.makeUserCategoryPOIList(poiData);
-    }, (error) => {
-      this.userPOIList = [];
-    });
+    if(this.filterData){
+      if(this.filterData['userPois']){
+        this.userPOIList = this.makeUserCategoryPOIList(this.filterData['userPois']);
+      }
+      else{
+        this.userPOIList = [];
+      }
+    }
+    // this.landmarkCategoryService.getCategoryWisePOI(this.accountOrganizationId).subscribe((poiData: any) => {
+    //   this.userPOIList = this.makeUserCategoryPOIList(poiData);
+    // }, (error) => {
+    //   this.userPOIList = [];
+    // });
+  }
+
+  loadGlobalPOI(){
+    if(this.filterData){
+      if(this.filterData['globalPois']){
+        this.globalPOIList = this.makeUserCategoryPOIList(this.filterData['globalPois']);
+      }
+      else{
+        this.globalPOIList = [];
+      }
+    }
   }
 
   makeUserCategoryPOIList(poiData: any) {
@@ -208,6 +275,117 @@ export class LiveFleetMapComponent implements OnInit {
     return categoryArr;
   }
 
+
+   // Global Poi selection //
+
+  changeGlobalPOISelection(event: any, poiData: any, index: any){
+    if (event.checked){ // checked
+      this.globalPOIList[index].subCategoryPOIList.forEach(element => {
+        element.checked = true;
+      });
+      this.globalPOIList[index].poiList.forEach(_elem => {
+        _elem.checked = true;
+      });
+      this.globalPOIList[index].parentChecked = true;
+    }else{ // unchecked
+      this.globalPOIList[index].subCategoryPOIList.forEach(element => {
+        element.checked = false;
+      });
+      this.globalPOIList[index].poiList.forEach(_elem => {
+        _elem.checked = false;
+      });
+      this.globalPOIList[index].parentChecked = false;
+    }
+    this.displayGlobalPOIList = [];
+    this.selectedGlobalPOI.selected.forEach(item => {
+      if(item.poiList && item.poiList.length > 0){
+        item.poiList.forEach(element => {
+          if(element.checked){ // only checked
+            this.displayGlobalPOIList.push(element);
+          }
+        });
+      }
+    });
+    let _ui = this.fleetMapService.getUI();
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
+
+    //this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
+  }
+
+  openClosedGlobalPOI(index: any) {
+    this.globalPOIList[index].open = !this.globalPOIList[index].open;
+  }
+  changeGlobalSubCategory(event: any, subCatPOI: any, _index: any) {
+    let _uncheckedCount: any = 0;
+    this.globalPOIList[_index].subCategoryPOIList.forEach(element => {
+      if (element.subCategoryId == subCatPOI.subCategoryId) {
+        element.checked = event.checked ? true : false;
+      }
+
+      if (!element.checked) { // unchecked count
+        _uncheckedCount += element.poiList.length;
+      }
+    });
+
+    if (this.globalPOIList[_index].poiList.length == _uncheckedCount) {
+      this.globalPOIList[_index].parentChecked = false; // parent POI - unchecked
+      let _s: any = this.selectedGlobalPOI.selected;
+      if (_s.length > 0) {
+        this.selectedGlobalPOI.clear(); // clear parent category data
+        _s.forEach(element => {
+          if (element.categoryId != this.globalPOIList[_index].categoryId) { // exclude parent category data
+            this.selectedGlobalPOI.select(element);
+          }
+        });
+      }
+    } else {
+      this.globalPOIList[_index].parentChecked = true; // parent POI - checked
+      let _check: any = this.selectedGlobalPOI.selected.filter(k => k.categoryId == this.globalPOIList[_index].categoryId); // already present
+      if (_check.length == 0) { // not present, add it
+        let _s: any = this.selectedGlobalPOI.selected;
+        if (_s.length > 0) { // other element present
+          this.selectedGlobalPOI.clear(); // clear all
+          _s.forEach(element => {
+            this.selectedGlobalPOI.select(element);
+          });
+        }
+        this.globalPOIList[_index].poiList.forEach(_el => {
+          if (_el.subCategoryId == 0) {
+            _el.checked = true;
+          }
+        });
+        this.selectedGlobalPOI.select(this.userPOIList[_index]); // add parent element
+      }
+    }
+
+    this.displayGlobalPOIList = [];
+    //if(this.selectedPOI.selected.length > 0){
+    this.selectedGlobalPOI.selected.forEach(item => {
+      if (item.poiList && item.poiList.length > 0) {
+        item.poiList.forEach(element => {
+          if (element.subCategoryId == subCatPOI.subCategoryId) { // element match
+            if (event.checked) { // event checked
+              element.checked = true;
+              this.displayGlobalPOIList.push(element);
+            } else { // event unchecked
+              element.checked = false;
+            }
+          } else {
+            if (element.checked) { // element checked
+              this.displayGlobalPOIList.push(element);
+            }
+          }
+        });
+      }
+    });
+    let _ui = this.fleetMapService.getUI();
+    //this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
+    //}
+  }
+
+ // user POI
+  
   changeUserPOISelection(event: any, poiData: any, index: any){
     if (event.checked){ // checked
       this.userPOIList[index].subCategoryPOIList.forEach(element => {
@@ -245,7 +423,7 @@ export class LiveFleetMapComponent implements OnInit {
       }
     });
     let _ui = this.fleetMapService.getUI();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
 
     //this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
   }
@@ -253,6 +431,7 @@ export class LiveFleetMapComponent implements OnInit {
   openClosedUserPOI(index: any) {
     this.userPOIList[index].open = !this.userPOIList[index].open;
   }
+
   changeSubCategory(event: any, subCatPOI: any, _index: any) {
     let _uncheckedCount: any = 0;
     this.userPOIList[_index].subCategoryPOIList.forEach(element => {
@@ -318,10 +497,11 @@ export class LiveFleetMapComponent implements OnInit {
     });
     let _ui = this.fleetMapService.getUI();
     //this.fleetMapService.showCategoryPOI(this.displayPOIList,_ui);
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
     //}
   }
 
+  ///////////////////////////////
   changeHerePOISelection(event: any, hereData: any){
     this.herePOIArr = [];
     this.selectedHerePOI.selected.forEach(item => {
@@ -332,7 +512,7 @@ export class LiveFleetMapComponent implements OnInit {
 
   searchPlaces() {
     let _ui = this.fleetMapService.getUI();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons); 
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList); 
   }
 
   onMapRepresentationChange(event: any) {
@@ -348,7 +528,7 @@ export class LiveFleetMapComponent implements OnInit {
   onDisplayChange(event: any) {
     this.displayRouteView = event.value;
     let _ui = this.fleetMapService.getUI();
-    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons);
+    this.fleetMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr,this.alertsChecked,this.showIcons, this.displayGlobalPOIList);
   }
 
 }

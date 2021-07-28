@@ -173,6 +173,7 @@
   
   <!-- </div> -->
   <!-- Summary Section -->
+  <div *ngIf= '!driverSelected'>
   <div *ngIf='!showDetailedReport'>
   <div id="charts">
     <div *ngIf='!showDetailedReport'>
@@ -280,7 +281,9 @@
   
               <span>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</span>
   
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}} I</span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelconsumed')}}{{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
+                l') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || 'gal') :
+                (translationData.lblgallonmile || ' gal') }} </span>
   
             </div>
   
@@ -297,8 +300,8 @@
               <span>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
   
               <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelConsumption')}}{{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
-                ltr/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || 'gallon/100mile') :
-                (translationData.lblgallonmile || ' gallon/100mile') }}</span>
+                ltr/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') :
+                (translationData.lblgallonmile || ' mpg') }}</span>
   
             </div>
   
@@ -673,7 +676,7 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_averagedistanceperday')">{{ translationData.lblAverageDistancePerDay || 'Average Distance Per Day' }}
   
                 <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
-                  ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})</span>
+                  ? (translationData.lblmileh || 'mph') : (translationData.lblmileh || 'mph') }})</span>
               </mat-header-cell>
   
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_averagedistanceperday')">
@@ -691,7 +694,7 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_averagespeed')">{{ translationData.lblAverageSpeed || 'Average Speed' }}
   
                 <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
-                  ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})</span>
+                  ? (translationData.lblmileh || 'mph') : (translationData.lblmileh || 'mph') }})</span>
               </mat-header-cell>
   
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_averagespeed')">
@@ -709,7 +712,7 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_maxspeed')">{{ translationData.lblMaxSpeed || 'Max Speed' }}
   
                 <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
-                  ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})</span>
+                  ? (translationData.lblmileh || 'mph') : (translationData.lblmileh || 'mph') }})</span>
               </mat-header-cell>
   
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_maxspeed')">
@@ -740,7 +743,7 @@
   
             <ng-container matColumnDef="averageGrossWeightComb">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_averagegrossweightcomb')">{{ translationData.lblAverageGrossWeightComb || 'Average Gross Weight Comb' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_averagegrossweightcomb')">{{ translationData.lblAverageGrossWeightComb || 'Average Gross Weight Comb(Ton)' }}
   
               </mat-header-cell>
   
@@ -758,11 +761,9 @@
   
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_fuelconsumed')">{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}
   
-                <!-- <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h')
-  
-            : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh
-  
-            || 'mile/h') }})</span> -->
+                <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
+                  l') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || 'gal') :
+                  (translationData.lblgallonmile || ' gal') }})</span>
   
               </mat-header-cell>
   
@@ -780,11 +781,9 @@
   
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_fuelconsumption')">{{ translationData.lblFuelConsumption || ' Fuel Consumption' }}
   
-                <!-- <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg ||
-  
-            'kg') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') :
-  
-            (translationData.lblpound || 'pound') }})</span> -->
+                <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || '
+                  ltr/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') :
+                  (translationData.lblgallonmile || ' mpg') }})</span>
   
               </mat-header-cell>
   
@@ -800,7 +799,7 @@
   
             <ng-container matColumnDef="cO2Emission">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_co2emission')">{{ translationData.lblCO2Emission || 'CO2 Emission' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_co2emission')">{{ translationData.lblCO2Emission || 'CO2 Emission(Ton)' }}
   
                 <!-- <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ||
   
@@ -822,7 +821,7 @@
   
             <ng-container matColumnDef="idleDuration">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idleduration')">{{ translationData.lblIdleDuration || 'Idle Duration' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idleduration')">{{ translationData.lblIdleDuration || 'Idle Duration(hh:mm)%' }}
   
                 <!-- <span
   
@@ -846,7 +845,7 @@
   
             <ng-container matColumnDef="ptoDuration">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_ptoduration')">{{ translationData.lblPTODuration || 'PTO Duration' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_ptoduration')">{{ translationData.lblPTODuration || 'PTO Duration%' }}
   
               </mat-header-cell>
   
@@ -860,7 +859,7 @@
   
             <ng-container matColumnDef="harshBrakeDuration">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_harshbrakeduration')">{{ translationData.lblHarshBrakeDuration || 'Harsh Brake Duration' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_harshbrakeduration')">{{ translationData.lblHarshBrakeDuration || 'Harsh Brake Duration%' }}
   
               </mat-header-cell>
   
@@ -874,7 +873,7 @@
   
             <ng-container matColumnDef="heavyThrottleDuration">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_heavythrottleduration')">{{ translationData.lblHeavyThrottleDuration || 'Heavy Throttle Duration' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_heavythrottleduration')">{{ translationData.lblHeavyThrottleDuration || 'Heavy Throttle Duration%' }}
   
               </mat-header-cell>
   
@@ -891,7 +890,7 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance3050')">{{ translationData.lblCruiseControlDistance30-50 || 'Cruise Control Distance 30-50' }}
   
                 <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
-                  ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})</span>
+                  ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})(%)</span>
   
               </mat-header-cell>
   
@@ -908,7 +907,7 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance5075')">{{ translationData.lblCruiseControlDistance50-75 || 'Cruise Control Distance 50-75' }}
   
                 <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
-                  ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})</span>
+                  ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})(%)</span>
   
               </mat-header-cell>
   
@@ -925,7 +924,7 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_cruisecontroldistance75')">{{ translationData.lblCruiseControlDistance>75 || 'Cruise Control Distance >75' }}
   
                 <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial')
-                  ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})</span>
+                  ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h') }})(%)</span>
   
               </mat-header-cell>
   
@@ -1037,7 +1036,7 @@
   
             <ng-container matColumnDef="idlingPTOScore">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore || 'Idling with PTO(hh:mm:ss) score' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore || 'Idling with PTO(hh:mm:ss) score%' }}
   
               </mat-header-cell>
   
@@ -1051,7 +1050,7 @@
   
             <ng-container matColumnDef="idlingPTO">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO || 'Idling without PTO (hh:mm:ss)' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO || 'Idling without PTO (hh:mm:ss)%' }}
   
               </mat-header-cell>
   
@@ -1065,7 +1064,7 @@
   
             <ng-container matColumnDef="idlingWithoutPTOpercent">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto(%)')">{{ translationData.lblIdlingWithoutPTO || 'Idling without PTO' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto(%)')">{{ translationData.lblIdlingWithoutPTO || 'Idling without PTO%' }}
   
               </mat-header-cell>
   
@@ -1115,11 +1114,11 @@
   
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('averageTrafficClassificationValue')">{{ translationData.lblaverageTrafficClassificationValue || 'average TrafficClassification Value' }}
   
-                <!-- <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
+                <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
   
             (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||
   
-            'pound') }})</span> -->
+            'pound') }})</span> 
   
               </mat-header-cell>
   
@@ -1136,11 +1135,11 @@
   
               <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingconsumptionwithpto')">{{ translationData.lblidlingConsumptionValue || 'idling Consumption Value' }}
   
-                <!-- <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
+                <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
   
             (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||
   
-            'pound') }})</span> -->
+            'pound') }})</span>
   
               </mat-header-cell>
   
@@ -1170,6 +1169,19 @@
       </mat-expansion-panel>
   
     </mat-card>
+    </div>
+    </div>
+    <div *ngIf="driverSelected">
+      <app-detail-driver-report 
+      [translationData]='translationData' 
+      [driverDetails]='driverInfo' 
+      [dateDetails]='dateInfo' 
+      [displayedColumns]='detaildisplayedColumns' 
+      (backToMainPage)="backToMainPage()" 
+      [startDateValue] ='startDateValue'
+      [endDateValue] = 'endDateValue'
+      [graphData] = 'graphData'
+      ></app-detail-driver-report>
     </div>
 
    
