@@ -162,34 +162,38 @@ subscription: Subscription;
 
   loadDriverData(){  
     let newAlertCat=[];
-    if(!this.todayFlagClicked && this.selectedIndex == 1)
-    {
-      this.objData = {
-        "groupId": ['all'],
-        "alertLevel": ['all'],
-        "alertCategory": ['all'],
-        "healthStatus": ['all'],
-        "otherFilter": ['all'],
-        "driverId": ['all'],
-        "days": 90,
-        "languagecode":"cs-CZ"
-    }}
-    if(this.todayFlagClicked && this.selectedIndex == 1)
-    {
-      this.objData = {
-        "groupId": ['all'],
-        "alertLevel": ['all'],
-        "alertCategory": ['all'],
-        "healthStatus": ['all'],
-        "otherFilter": ['all'],
-        "driverId": [this.driverVehicleForm.controls.driver.value.toString()],
-        "days": 0,
-        "languagecode":"cs-CZ"
+    let selectedDriverId:any;
+    let selectedDriverDays:any;   
+    if(this.selectedIndex == 1){
+      if(!this.todayFlagClicked)
+      {
+        selectedDriverId=this.driverVehicleForm.controls.driver.value.toString();
+        selectedDriverDays=90;
+      }
+      else{
+        selectedDriverId=this.driverVehicleForm.controls.driver.value.toString();
+        selectedDriverDays=0;
       }
     }
-    let driverSelected = this.driverList.filter((elem)=> elem.driver1Id === this.driverVehicleForm.get("driver").value);
+    this.objData = {
+      "groupId": ['all'],
+      "alertLevel": ['all'],
+      "alertCategory": ['all'],
+      "healthStatus": ['all'],
+      "otherFilter": ['all'],
+      "driverId": [selectedDriverId],
+      "days": selectedDriverDays,
+      "languagecode":"cs-CZ"
+    }   
+    let driverSelected = this.driverList.filter((elem)=> elem.driverId === this.driverVehicleForm.get("driver").value);
     this.reportService.getFleetOverviewDetails(this.objData).subscribe((data:any) => {
-      let val = [{driver : driverSelected.vehicleGroupName, data : data}];
+      let val:any;
+     if(driverSelected.length>0){
+      val = [{driver : driverSelected[0].driverId, data : data}];
+      }
+      else{
+        val = [{driver : 'all', data : data}];
+      }
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
       this.drawIcons(data);
@@ -206,14 +210,7 @@ subscription: Subscription;
            item.vehicleDrivingStatusType = this.translationData[element.name];
           }
          });         
-      //    if(this.categoryList.length>0){
-      //    item.fleetOverviewAlert.forEach(e => {
-      //    let alertCategory = this.categoryList.filter((ele)=> ele.value == e.categoryType);
-      //    if(alertCategory.length>0){
-      //    newAlertCat.push(alertCategory[0]);
-      //    }          
-      //   });  
-      //  }
+    
       });    
     //  this.categoryList = this.removeDuplicates(newAlertCat, "value");
     //  console.log(newAlertCat);    
@@ -225,7 +222,7 @@ subscription: Subscription;
       this.dataInterchangeService.getVehicleData(_dataObj);//change as per filter data
           
     }, (error) => {
-      let val = [{vehicleGroup : driverSelected.driver, data : error}];
+      let val = [{vehicleGroup : driverSelected[0].driverId, data : error}];
       this.messageService.sendMessage(val);
       this.messageService.sendMessage("refreshTimer");
       if (error.status == 404) {
