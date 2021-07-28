@@ -1,4 +1,4 @@
-import { ElementRef, Input, ViewChild } from '@angular/core';
+import { ElementRef, Input, Output, ViewChild, EventEmitter } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { EmailValidator, FormArray, FormBuilder } from '@angular/forms';
@@ -46,6 +46,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
   notificationReceipients: any = [];
   notifications: any = [];
   openAdvancedFilter: boolean = false;
+  mobileNumber= '';
   contactModes: any = [
     {
       id: 'W',
@@ -126,6 +127,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
   CountryISO;
   preferredCountries: CountryISO[];
   isDuplicateRecipientLabel: boolean= false;
+  @Output() backToPage = new EventEmitter<any>();
 
   @ViewChild(NotificationAdvancedFilterComponent)
   notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
@@ -560,9 +562,22 @@ export class CreateNotificationsAlertComponent implements OnInit {
   validateMobileNumber(index){
     // console.log(this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber.number);
     if(this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber != null){
-      let phone= (this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber.number).replace(/\s/g, "")
-      if(phone.length > 10){
+      let phone= (this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber.number);
+      if(phone!= undefined && phone.length > 0){
+        phone= phone.replace(/\s/g, "");
+      }
+      if(phone!= undefined && phone.length > 10){
         this.notificationForm.controls['FormSMSArray']['controls'][index]['controls']['mobileNumber'].setErrors({ tenDigitNumberAllowed: true });
+        let emitObj = {
+          isValidInput: false
+        }  
+        this.backToPage.emit(emitObj);
+      }
+      else{
+        let emitObj = {
+          isValidInput: true
+        }  
+        this.backToPage.emit(emitObj);
       }
     }
   }

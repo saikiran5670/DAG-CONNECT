@@ -58,6 +58,7 @@ export class RouteCalculatingComponent implements OnInit {
   max : number = 10000;
   map_key : string = "";
   map_id: string = "";
+  showLoadingIndicator : boolean = false;
   map_code : string="";
   mapGroup ;
   searchStr : string = "";
@@ -148,7 +149,8 @@ export class RouteCalculatingComponent implements OnInit {
 
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
-     this.map_key =  config.getSettings("hereMap").api_key;
+      this.showLoadingIndicator = true;
+      this.map_key =  config.getSettings("hereMap").api_key;
      this.map_id =  config.getSettings("hereMap").app_id;
      this.map_code =  config.getSettings("hereMap").app_code;
 
@@ -156,7 +158,11 @@ export class RouteCalculatingComponent implements OnInit {
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });
-    this.configureAutoSuggest()
+    this.configureAutoSuggest();
+    setTimeout(()=>{   
+      this.hideloader();
+        }); 
+    
    }
 
   ngOnInit(){
@@ -1106,7 +1112,10 @@ export class RouteCalculatingComponent implements OnInit {
     }
   }
 
-
+  hideloader() {
+    // Setting display of spinner
+    this.showLoadingIndicator = false;
+  }
 
 
   //////////////////////////////////////////////////////////////
