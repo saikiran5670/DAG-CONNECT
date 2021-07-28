@@ -785,7 +785,7 @@ export class FleetMapService {
     let _drivingStatus = false;
     let healthColor = '#606060';
     let _alertConfig = undefined;
-    element.vehicleDrivingStatusType = 'D'
+    //element.vehicleDrivingStatusType = 'D'
     if (element.vehicleDrivingStatusType === 'D' || element.vehicleDrivingStatusType === 'Driving') {
       _drivingStatus = true
     }
