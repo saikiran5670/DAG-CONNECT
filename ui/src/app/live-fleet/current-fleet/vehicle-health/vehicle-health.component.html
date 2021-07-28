@@ -119,13 +119,13 @@
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblFrom || 'From' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>19/07/2021 00:00:00</span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ fromDisplayDate }}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblVehicleGroup || 'Warning Type' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>All Warnings</span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ warningTypeDisplay }}</span>
                   </span>
                 </div>
               </div>
@@ -133,7 +133,7 @@
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblTo || 'To' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>19/07/2021 23:59:59</span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ toDisplayDate }}</span>
                   </span>
                 </div>
               </div>
