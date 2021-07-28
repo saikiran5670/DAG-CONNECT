@@ -1511,7 +1511,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("fuelbenchmark/timeperiod")]
-        public async Task<IActionResult> GetFuelBenchmarkByTimePeriod([FromBody] Entity.Report.ReportFuelBenchmarkTimePeriodFilter request)
+        public async Task<IActionResult> GetFuelBenchmarkByTimePeriod([FromBody] Entity.Report.ReportFuelBenchmarkFilter request)
         {
             try
             {
