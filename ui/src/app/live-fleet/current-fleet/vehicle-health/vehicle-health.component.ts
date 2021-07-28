@@ -290,7 +290,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   }
 
   onChangeWarningType(warning: any){
-    this.getHistoryData(this.healthData.tripId);
+    this.getHistoryData(this.tripId);
     this.changeWarningFlag = true;
     this.warningEvent = warning;
   }
@@ -652,7 +652,7 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       if(this.warningEvent.value =='Active'){
         this.historyHealthData = this.historyHealthData.filter((item: any) => item.warningType == 'A');
       }
-      else if(this.warningEvent.warning.value =='Deactive'){
+      else if(this.warningEvent.value =='Deactive'){
         this.historyHealthData = this.historyHealthData.filter((item: any) => item.warningType == 'D');
       }
       else{
