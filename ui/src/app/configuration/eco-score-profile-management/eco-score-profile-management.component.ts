@@ -72,6 +72,10 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   profileFlag: boolean = false;
   isSelected: boolean= false;
   userType: any = "Admin#Platform";
+  saveButton : boolean = true;
+  deleteButton : boolean = true;
+  inputBox : boolean = true;
+  isData: boolean = false;
   
 
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportMapService: ReportMapService,  private organizationService: OrganizationService,private reportService: ReportService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,) { }
@@ -149,9 +153,32 @@ export class EcoScoreProfileManagementComponent implements OnInit {
         this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile);  
         this.isSelected = this.selectedElementData[0].organizationId == 0 ? true : false;
         this.loadProfileKpis(this.selectedProfile);
-        this.setDefaultValue()
+        this.setDefaultValue();
+       this.accessCheck();
       }
     });
+  }
+
+  accessCheck(){
+    if(this.userType ==="Admin#Organisation" && this.isSelected) {
+      // disable(edit delete kpis);
+      this.saveButton = false;
+      this.deleteButton = false;
+      this.ecoScoreProfileForm.controls.profileName.disable();
+      // this.inputBox = false;
+     } else if(this.userType ==="Admin#Organisation" && !this.deleteSelection) { 
+      //  disable(edit delete kpis)
+      this.saveButton = false;
+      this.deleteButton = false;
+      this.ecoScoreProfileForm.controls.profileName.disable();
+      // this.inputBox = false;
+     }else if(this.userType ==="Admin#Global" && !this.deleteSelection){
+      // disable(e,d)
+      this.deleteButton = false;
+      this.ecoScoreProfileForm.controls.profileName.disable();
+      // this.inputBox = false;
+     }
+    this.isData = true;
   }
 
   loadProfileKpis(id: any){
@@ -217,6 +244,8 @@ export class EcoScoreProfileManagementComponent implements OnInit {
 
   createNewProfile(){
     this.actionType = "create";
+    this.saveButton = true;
+    this.ecoScoreProfileForm.controls.profileName.enable();
     this.onReset();
   }
 
@@ -364,11 +393,16 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       this.loadProfileKpis(this.selectedProfile);
     }else{
     this.isKPI = false;
+    this.saveButton = true;
+    this.ecoScoreProfileForm.controls.profileName.enable();
+    // this.inputBox = true;
+    this.deleteButton = true;
     this.selectedProfile = filterValue;
     this.selectedElementData = this.profileList.filter(element => element.profileId == this.selectedProfile); 
     this.isSelected = this.selectedElementData[0].organizationId == 0 ? true : false;
     this.deleteSelection = this.selectedElementData[0].isDeleteAllowed;
     this.setDefaultValue();
+    this.accessCheck();
     this.loadProfileKpis(this.selectedProfile);
     //this.loadProfileData();
     this.isDAFStandard = false;
