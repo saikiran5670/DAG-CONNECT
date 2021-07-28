@@ -30,6 +30,8 @@ import { ConfigService } from '@ngx-config/core';
 import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service'; 
 import { CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData } from 'ng2-completer';
 import { MapService } from '../../../fleet-fuel-report/report-mapservice';
+import * as fs from 'file-saver';
+import { Workbook } from 'exceljs';
 
 declare var H: any;
 
@@ -1289,7 +1291,7 @@ createEndMarker(){
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+      this.dataSource.sort = this.sort[1];
     });
   }
 
@@ -2010,9 +2012,105 @@ setVehicleGroupAndVehiclePreSelection() {
     this.dataSource2.filter = filterValue;
   }
 
-  exportAsExcelFile(){
-    this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Driver', sheet: 'sheet_name'});
-  }
+
+  summaryNewObj: any;
+
+  getAllSummaryData(){ 
+          if(this.initData.length > 0){
+            let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
+            let fuelConsumption = 0; let fuelconsumed = 0; let CO2Emission = 0; 
+            numberOfTrips= this.sumOfColumns('noOfTrips');
+     distanceDone= this.sumOfColumns('distance');
+     idleDuration= this.sumOfColumns('idleDuration');
+     fuelConsumption= this.sumOfColumns('fuelconsumed');
+     fuelconsumed= this.sumOfColumns('fuelConsumption');
+     CO2Emission= this.sumOfColumns('co2emission');
+          // numbeOfVehicles = this.initData.length;   
+            
+          this.summaryNewObj = [
+           ['Fleet Fuel Driver Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+             this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
+             fuelconsumed, idleDuration, fuelConsumption
+          ]
+          ];        
+         }
+       }
+         
+       exportAsExcelFile() {
+        this.getAllSummaryData();
+        const title = 'Fleet Fuel Vehicle Trip Report';
+        const summary = 'Summary Section';
+        const detail = 'Detail Section';
+        let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
+        let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+    
+        const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No','Average Speed('+unitValkmh+')','Max Speed('+unitValkmh+')', 'Distance','startPosition', 'endPosition',
+        'fuelConsumed', 'fuelConsumption','cO2Emission',  'Idle Duration','Pto Duration','Cruise Control Distance 30-50('+unitValkmh+')',
+        'Cruise Control Distance 50-75('+unitValkmh+')','Cruise Control Distance>75('+unitValkmh+')','Heavy Throttle Duration','HarshBrakeDuration', 'averageGrossWeightComb', 'averageTrafficClassification',
+        'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
+        const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed(I)', 'Idle Duration(hh:mm)', 'Fuel Consumption('+unitValkm+')'];
+        const summaryData= this.summaryNewObj;
+        //Create workbook and worksheet
+        let workbook = new Workbook();
+        let worksheet = workbook.addWorksheet('Fleet Fuel Driver Report');
+        //Add Row and formatting
+        let titleRow = worksheet.addRow([title]);
+        worksheet.addRow([]);
+        titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+  
+        worksheet.addRow([]);
+        let subTitleRow = worksheet.addRow([summary]);
+        let summaryRow = worksheet.addRow(summaryHeader);
+        summaryData.forEach(element => {
+          worksheet.addRow(element);
+        });
+        worksheet.addRow([]);
+        summaryRow.eachCell((cell, number) => {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFFFF00' },
+            bgColor: { argb: 'FF0000FF' }
+          }
+          cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+        })
+        worksheet.addRow([]);
+        let subTitleDetailRow = worksheet.addRow([detail]);
+        let headerRow = worksheet.addRow(header);
+        headerRow.eachCell((cell, number) => {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFFFF00' },
+            bgColor: { argb: 'FF0000FF' }
+          }
+          cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+        })    
+        this.initData.forEach(item => {
+          worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.averageSpeed,
+            item.maxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.fuelConsumed,item.fuelConsumption,item.cO2Emission,item.idleDuration,
+            item.ptoDuration,item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
+            item.heavyThrottleDuration,item.harshBrakeDuration,item.averageGrossWeightComb,item.averageTrafficClassification,
+            item.ccFuelConsumption,item.fuelconsumptionCCnonactive,item.idlingConsumption,item.dpaScore]);
+        });
+  
+    //  exportAsExcelFile(){
+    //   this.matTableExporter.exportTable('xlsx', {fileName:'Fleet_Fuel_Driver', sheet: 'sheet_name'});
+        worksheet.mergeCells('A1:D2');
+        subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+        subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+        for (var i = 0; i < header.length; i++) {
+          worksheet.columns[i].width = 20;
+        }
+        for (var j = 0; j < summaryHeader.length; j++) {
+          worksheet.columns[j].width = 20;
+        }
+        worksheet.addRow([]);
+        workbook.xlsx.writeBuffer().then((data) => {
+          let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          fs.saveAs(blob, 'Fleet_Fuel_Vehicle_Trip.xlsx');
+        })    
+    }
 
   exportAsPDFFile(){
    

@@ -1109,9 +1109,11 @@ namespace net.atos.daf.ct2.alert.repository
                                         on notirec.id= notiref.recipient_id
                                         inner join master.alert alert
                                         on alert.id=notiref.alert_id
-                                        where notiref.state=@state
-                                        and alert.state=@state
-                                        and notirec.state=@state
+                                        where 
+                                        --notiref.state=@state
+                                        --and alert.state=@state
+                                        --and 
+                                            notirec.state=@state
                                         and notiref.recipient_id=@id
                                         and alert.organization_id=@organization_id ";
                 parameter.Add("@state", Convert.ToChar(AlertState.Active));

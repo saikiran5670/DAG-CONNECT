@@ -2049,25 +2049,14 @@ setVehicleGroupAndVehiclePreSelection() {
 
   getAllSummaryData(){ 
           if(this.initData.length > 0){
-           let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
-            let fuelConsumption = 0; let fuelconsumed = 0;
-            this.initData.forEach(item => {         
-              numberOfTrips += item.numberOfTrips;
-              distanceDone += parseFloat(item.convertedDistance);
-              fuelconsumed += parseFloat(item.fuelconsumed);
-              idleDuration += parseFloat(item.convertedIdleDuration);
-              fuelConsumption += parseFloat(item.fuelConsumption);   
-            
-            // let time: any = 0;
-            // time += (item.convertedIdleDuration);
-             // let data: any = "00:00";
-              // let hours = Math.floor(time / 3600);
-            // time %= 3600;
-              // let minutes = Math.floor(time / 60);
-              // let seconds = time % 60;
-            // data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
-             // idleDuration = data;    
-          });
+            let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
+            let fuelConsumption = 0; let fuelconsumed = 0; let CO2Emission = 0; 
+            numberOfTrips= this.sumOfColumns('noOfTrips');
+     distanceDone= this.sumOfColumns('distance');
+     idleDuration= this.sumOfColumns('idleDuration');
+     fuelConsumption= this.sumOfColumns('fuelconsumed');
+     fuelconsumed= this.sumOfColumns('fuelConsumption');
+     CO2Emission= this.sumOfColumns('co2emission');
           // numbeOfVehicles = this.initData.length;   
             
           this.summaryNewObj = [
@@ -2078,23 +2067,22 @@ setVehicleGroupAndVehiclePreSelection() {
           ];        
          }
        }
-          
+         
+ 
+
 
        exportAsExcelFile() {
         this.getAllSummaryData();
-        const title = 'Fleet Fuel Driver Report';
+        const title = 'Fleet Fuel Driver Trip Report';
         const summary = 'Summary Section';
         const detail = 'Detail Section';
         let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
         let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
     
-        const header =  ['Driver Name','Driver ID','Vehicle Name', 'VIN', 'Vehicle Registration No', 'Distance', 'Average Distance Per Day('+unitValkmh+')', 'Average Speed('+unitValkmh+')',
-        'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb',  
-        'Idle Duration','Pto Duration','HarshBrakeDuration','Heavy Throttle Duration','Cruise Control Distance 30-50('+unitValkmh+')',
-        'Cruise Control Distance 50-75('+unitValkmh+')','Cruise Control Distance>75('+unitValkmh+')', 'Average Traffic Classification',
-        'Cc Fuel Consumption','fuel Consumption CC Non Active','Idling Consumption','Dpa Score','Dpa AnticipationScore',
-        'Dpa Braking Score','Idling PTO Score(hh:mm:ss)','Idling PTO','Idling Without PTO(hh:mm:ss)','Foot Brake',
-        'CO2 Emmision(gr/km)', 'Average Traffic Classification Value','Idling Consumption Value'];
+        const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No','Average Speed('+unitValkmh+')','Max Speed('+unitValkmh+')', 'Distance','startPosition', 'endPosition',
+        'fuelConsumed', 'fuelConsumption','cO2Emission',  'Idle Duration','Pto Duration','Cruise Control Distance 30-50('+unitValkmh+')',
+        'Cruise Control Distance 50-75('+unitValkmh+')','Cruise Control Distance>75('+unitValkmh+')','Heavy Throttle Duration','HarshBrakeDuration', 'averageGrossWeightComb', 'averageTrafficClassification',
+        'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
         const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed(I)', 'Idle Duration(hh:mm)', 'Fuel Consumption('+unitValkm+')'];
         const summaryData= this.summaryNewObj;
         //Create workbook and worksheet
@@ -2134,14 +2122,11 @@ setVehicleGroupAndVehiclePreSelection() {
           cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
         })    
         this.initData.forEach(item => {
-          worksheet.addRow([item.driverName, item.driverID, item.vehicleName,item.vin, item.vehicleRegistrationNo, item.convertedDistance,
-          item.convertedAverageDistance, item.convertedAverageSpeed, item.maxSpeed, item.numberOfTrips,
-          item.averageGrossWeightComb, item.convertedIdleDuration, item.ptoDuration,
-          item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
-        item.cruiseControlDistance75, item.averageTrafficClassification, item.ccFuelConsumption, item.fuelconsumptionCCnonactive,
-          item.idlingConsumption, item.dpaScore, item.dpaAnticipationScore, item.dpaBrakingScore,item.idlingPTOScore, item.idlingPTO, item.idlingWithoutPTOpercent,
-          item.footBrake, item.cO2Emmision, item.averageTrafficClassificationValue, item.idlingConsumptionValue
-        ]);
+          worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.averageSpeed,
+            item.maxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.fuelConsumed,item.fuelConsumption,item.cO2Emission,item.idleDuration,
+            item.ptoDuration,item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
+            item.heavyThrottleDuration,item.harshBrakeDuration,item.averageGrossWeightComb,item.averageTrafficClassification,
+            item.ccFuelConsumption,item.fuelconsumptionCCnonactive,item.idlingConsumption,item.dpaScore]);
         });
   
     //  exportAsExcelFile(){
@@ -2158,7 +2143,7 @@ setVehicleGroupAndVehiclePreSelection() {
         worksheet.addRow([]);
         workbook.xlsx.writeBuffer().then((data) => {
           let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-          fs.saveAs(blob, 'Fleet_Fuel_Driver.xlsx');
+          fs.saveAs(blob, 'Fleet_Fuel_Driver_Trip.xlsx');
         })    
     }
 

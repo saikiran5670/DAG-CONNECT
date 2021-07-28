@@ -723,7 +723,8 @@
       [labelForThreshold] = 'labelForThreshold'
       [isCriticalLevelSelected] = 'isCriticalLevelSelected'
       [isWarningLevelSelected] = 'isWarningLevelSelected'
-      [isAdvisoryLevelSelected] = 'isAdvisoryLevelSelected'>
+      [isAdvisoryLevelSelected] = 'isAdvisoryLevelSelected'
+      (backToPage)='onBackToPage($event)'>
     </app-create-notifications-alert>
     </mat-expansion-panel>
   </mat-card>
@@ -736,7 +737,7 @@
           <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
             (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
           <button class='no-margin' 
-          [disabled]="!alertForm.valid || (selectedApplyOn == 'G' ? 
+          [disabled]="!alertForm.valid || !isNotificationFormValid || (selectedApplyOn == 'G' ? 
           ((alertForm.controls.vehicleGroup.value == '' || 
             alertForm.controls.vehicleGroup.value == 'ALL') ? true : false) : 
             ((alertForm.controls.vehicle.value == '' || isUnsubscribedVehicle) ? true : false)) ||
