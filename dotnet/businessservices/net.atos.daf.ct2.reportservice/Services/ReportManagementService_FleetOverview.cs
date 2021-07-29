@@ -147,7 +147,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                         {
                             warning = warningDetails?.Where(w => w.WarningClass == fleetOverviewDetails.LatestWarningClass
                                                                        && w.WarningNumber == fleetOverviewDetails.LatestWarningNumber
-                                                                       && w.LngCode == ReportConstants.DEFAULTLANGUAGE.ToLower()).FirstOrDefault();
+                                                                       && w.LngCode == ReportConstants.DEFAULT_LANGUAGE.ToLower()).FirstOrDefault();
                         }
                         fleetOverviewDetails.LatestWarningName = warning?.WarningName ?? string.Empty;
                         //foreach (WarningDetails warning in warningDetails)
@@ -247,7 +247,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                             {
                                 warningDetail = warningDetails?.Where(w => w.WarningClass == healthStatus.WarningClass
                                                                            && w.WarningNumber == healthStatus.WarningNumber
-                                                                           && w.LngCode.ToLower() == ReportConstants.DEFAULTLANGUAGE.ToLower()).FirstOrDefault();
+                                                                           && w.LngCode.ToLower() == ReportConstants.DEFAULT_LANGUAGE.ToLower()).FirstOrDefault();
                             }
                             if (warningDetail != null)
                             {
