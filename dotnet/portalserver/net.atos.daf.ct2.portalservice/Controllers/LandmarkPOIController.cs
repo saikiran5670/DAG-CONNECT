@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Alert.AlertService.AlertServiceClient _alertServiceClient;
         public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper,
             AccountPrivilegeChecker privilegeChecker, Alert.AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper,
-                                    MapService.MapServiceClient mapServiceClient) : base(httpContextAccessor, sessionHelper)
+                                    MapService.MapServiceClient mapServiceClient) : base(httpContextAccessor, sessionHelper, privilegeChecker)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiServiceClient = poiServiceClient;

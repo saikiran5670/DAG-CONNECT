@@ -567,20 +567,27 @@ export class CreateNotificationsAlertComponent implements OnInit {
       let phone= (this.notificationForm.controls['FormSMSArray']['controls'][index].value.mobileNumber.number);
       if(phone!= undefined && phone.length > 0){
         phone= phone.replace(/\s/g, "");
+        if(phone!= undefined && phone.length > 10){
+          this.notificationForm.controls['FormSMSArray']['controls'][index]['controls']['mobileNumber'].setErrors({ tenDigitNumberAllowed: true });
+          let emitObj = {
+            isValidInput: false
+          }  
+          this.backToPage.emit(emitObj);
+        }
+        else{
+          let emitObj = {
+            isValidInput: true
+          }  
+          this.backToPage.emit(emitObj);
+        }
       }
-      if(phone!= undefined && phone.length > 10){
-        this.notificationForm.controls['FormSMSArray']['controls'][index]['controls']['mobileNumber'].setErrors({ tenDigitNumberAllowed: true });
+      else{
         let emitObj = {
           isValidInput: false
         }  
         this.backToPage.emit(emitObj);
       }
-      else{
-        let emitObj = {
-          isValidInput: true
-        }  
-        this.backToPage.emit(emitObj);
-      }
+      
     }
   }
 
