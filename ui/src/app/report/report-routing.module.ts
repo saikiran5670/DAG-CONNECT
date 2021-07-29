@@ -23,7 +23,7 @@ const routes: Routes = [
       { path: "fleetfuelreport", component: FleetFuelReportComponent },
       { path: "fleetutilisation", component: FleetUtilisationComponent },
       { path: "fuelbenchmarking", component: FuelBenchmarkingComponent },
-      { path: "fueldeviationreport", component: DashboardComponent },
+      { path: "fueldeviationreport", component: FuelDeviationReportComponent },
       { path: "vehicleperformancereport", component: DashboardComponent },
       { path: "drivetimemanagement", component: DriverTimeManagementComponent },
       { path: "ecoscorereport", component: EcoScoreReportComponent },
