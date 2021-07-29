@@ -44,7 +44,7 @@ public class User extends CommonFunctionLib{
 			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
 			String GRP_ROW = getTextFromOR("GRP_ROW");
 			String CELL = "/div/div";
-			CommonFunctionLib.selectCheckBoxInTbl(GRPTBL, COLHEAD, GRP_ROW, CELL);
+			CommonFunctionLib.selectCheckBoxInTbl(GRPTBL, COLHEAD, GRP_ROW, CELL,"");
 			
 				
 			}catch (Exception e) {
@@ -62,7 +62,7 @@ public class User extends CommonFunctionLib{
 			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
 			String GRP_ROW = getTextFromOR("GRP_ROW");
 			String CELL = "/div";
-			CommonFunctionLib.selectCheckBoxInTbl(GRPTBL, COLHEAD, GRP_ROW, CELL);
+			CommonFunctionLib.selectCheckBoxInTbl(GRPTBL, COLHEAD, GRP_ROW, CELL, "");
 			
 				
 			}catch (Exception e) {
@@ -81,7 +81,7 @@ public class User extends CommonFunctionLib{
 			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
 			String GRP_ROW = getTextFromOR("GRP_ROW");
 			String CELL = "";
-			CommonFunctionLib.selectCheckBoxInTbl(GRPTBL+Tbl, COLHEAD, GRP_ROW, CELL);
+			CommonFunctionLib.selectCheckBoxInTbl(GRPTBL+Tbl, COLHEAD, GRP_ROW, CELL,"");
 			
 				
 			}catch (Exception e) {

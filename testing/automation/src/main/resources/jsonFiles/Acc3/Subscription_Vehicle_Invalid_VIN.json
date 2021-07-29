@@ -1,0 +1,12 @@
+{
+  "SubscribeEvent": {
+  "organizationID": "RT12345",
+  "packageId": "TestPackage",
+  "viNs": [ 
+      "ATOSSH76128G364821qq",
+      "ATOSSH54793G657943qq"
+
+  ],
+  "startdatetime": ""
+  }
+}

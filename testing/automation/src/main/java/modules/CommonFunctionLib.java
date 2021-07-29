@@ -485,6 +485,33 @@ public static void enterText() throws Exception
 	  }
   }
 //*********************Enter Text in TextBox***************************************************  
+public static void SelectTextFrmAutoComplete() throws Exception
+{
+	  try
+	  {
+		  test.log(LogStatus.INFO, "Enter the text in the field");
+		  Log.info("Enter the value into textfield");		  
+		  String object = ExcelSheet.getCellData(TestStep, Constants.Col_PageObject, Constants.Sheet_TestSteps);
+		  String txt = ExcelSheet.getCellData(TestStep, Constants.Col_Parm1, Constants.Sheet_TestSteps);		  
+		  WebDriverWait wait = new WebDriverWait(CommonFunctionLib.driver, 30);
+		  wait.until(ExpectedConditions.visibilityOfElementLocated(getLocator(object)));		  
+		  WebElement textbox = driver.findElement(getLocator(object));
+		  textbox.clear();		  
+		  textbox.sendKeys(txt);
+		  //Thread.sleep(100);
+		  textbox.sendKeys(Keys.DOWN, Keys.RETURN);
+	  }
+	  catch (Exception e)
+	  {
+		  test.log(LogStatus.FAIL, e.getMessage());
+		  Log.error("Not able to Enter Text..." + e.getMessage());		  
+		  String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+		  test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));		  
+		  ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		  
+		  DriverScript.bResult = false;
+	  }
+}
+//*********************Enter Text in TextBox***************************************************  
 public static void enterBSpace() throws Exception
 {
 	  try
@@ -1026,7 +1053,7 @@ waitForLoadingImage();
 break;
 }
 }
-driver.navigate().refresh();
+//driver.navigate().refresh();
 waitforPageLoad(driver);
 waitForLoadingImage();
 Thread.sleep(5000);
@@ -1490,8 +1517,9 @@ public static boolean checkIconInTbl(String GRPTBL, String COLHEAD, String GRP_R
 	return false;
 	}
 //*********************Click On Check box in TBL************************************************************
-public static boolean selectCheckBoxInTbl(String GRPTBL, String COLHEAD, String GRP_ROW, String CELL) throws Exception {
+public static boolean selectCheckBoxInTbl(String GRPTBL, String COLHEAD, String GRP_ROW, String CELL,String page) throws Exception {
 Thread.sleep(3000);
+
 try 
 {
 Actions actions = new Actions(driver);
@@ -1502,7 +1530,15 @@ List<WebElement> goptions = driver.findElements(By.xpath(GRPTBL + COLHEAD));
 boolean temp = false;
 Thread.sleep(3001);
 String table = getTextFromOR("GRP_STEP1_TBL");
-for (int i = 2; i <= goptions.size(); i++) 
+String Temp = getTextFromOR("LM_GRP_POI_TBL");
+int i =0;
+if((Temp.equalsIgnoreCase(GRPTBL)) ||(page.equalsIgnoreCase("LM"))){
+	i=3;
+}else {
+	i=2;
+}
+
+for (;i <= goptions.size(); i++) 
 {
 String colnameF = driver.findElement(By.xpath(GRPTBL + table + COLHEAD + "["+i+"]" + CELL)).getText();
 String colname = colnameF.trim();
@@ -1998,12 +2034,15 @@ Thread.sleep(3000);
 try 
 {
 	int Cols;
-	if(main.equals("Main"))
-	{ 
+	
+	if(main.equals("Main")) {
 		Cols =1;
-	}else{
-		Cols=2;
-	}
+		} else if (main.equals("LM")){
+			Cols =3;
+		} else {
+			Cols =2;
+		}
+	
 	Actions actions = new Actions(driver);
 	actions.sendKeys(Keys.PAGE_UP).perform();
 	String column = ExcelSheet.getCellData(TestStep, Constants.Col_Parm1, Constants.Sheet_TestSteps);	
@@ -2373,7 +2412,48 @@ public static void verifyPartialText() throws Exception {
 	}
 }
 
-//********************Verifying Partial Text************************************************   	
+//********************Verifying Map click on Geofence poly************************************************   	
+public static void ClickOnGeoMap() throws Exception {
+	try {
+		waitforPageLoad(driver);
+		Thread.sleep(2000);
+		test.log(LogStatus.INFO, "Clicking on Map");
+		Log.info("Clicking on Map" );
+		 WebElement we = driver.findElement(By.xpath("//canvas"));
+		    int x = we.getSize().width/2;
+		    int y = we.getSize().height/2;
+
+		    Actions builder = new Actions(driver).moveToElement(new WebDriverWait(driver,20)
+		                .until(ExpectedConditions.elementToBeClickable(we)));
+
+		    System.out.println("width:" + x + "\theight:" + y);
+		    builder.click().build().perform();
+		    System.out.println("clicked:1");
+		    Thread.sleep(2000);
+		Actions clickAt = new Actions(getDriver());
+		clickAt.moveToElement(getDriver().findElement(By.xpath("//canvas")), 80, 1).click(); 
+		clickAt.build().perform();
+		Thread.sleep(2000);
+		Actions clickAt1 = new Actions(getDriver());
+		clickAt1.moveToElement(getDriver().findElement(By.xpath("//canvas")), 20, 70).click(); 
+		clickAt1.build().perform();
+		Thread.sleep(2000);
+	} catch (Exception e) {
+		test.log(LogStatus.FAIL, e.getMessage());
+		Log.error("Text Not found..." + e.getMessage());
+		String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+		test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
+		ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+		DriverScript.bResult = false;
+	}
+}
+/**
+* @return
+*/
+private static WebDriver getDriver() {	
+	return driver;
+}
+//********************Verifying Click on Map ************************************************   	
 public static void ClickOnMap() throws Exception {
 	try {
 		test.log(LogStatus.INFO, "Clicking on Map");
@@ -2389,12 +2469,12 @@ public static void ClickOnMap() throws Exception {
 		    builder.click().build().perform();
 		    System.out.println("clicked:1");
 
-		Actions clickAt = new Actions(getDriver());
-		clickAt.moveToElement(getDriver().findElement(By.xpath("//canvas")), 40, 1).click(); 
-		clickAt.build().perform();
-		Actions clickAt1 = new Actions(getDriver());
-		clickAt1.moveToElement(getDriver().findElement(By.xpath("//canvas")), 20, 30).click(); 
-		clickAt1.build().perform();
+//		Actions clickAt = new Actions(getDriver());
+//		clickAt.moveToElement(getDriver().findElement(By.xpath("//canvas")), 40, 1).click(); 
+//		clickAt.build().perform();
+//		Actions clickAt1 = new Actions(getDriver());
+//		clickAt1.moveToElement(getDriver().findElement(By.xpath("//canvas")), 20, 30).click(); 
+//		clickAt1.build().perform();
 	} catch (Exception e) {
 		test.log(LogStatus.FAIL, e.getMessage());
 		Log.error("Text Not found..." + e.getMessage());
@@ -2404,13 +2484,5 @@ public static void ClickOnMap() throws Exception {
 		DriverScript.bResult = false;
 	}
 }
-/**
- * @return
- */
-private static WebDriver getDriver() {	
-	return driver;
-}
-
-
-//******************************************************************************  
+//*****************************************************************************  
 }

@@ -1,0 +1,11 @@
+{
+  "SubscribeEvent": {
+  "organizationID": "C0720568",
+  "packageId": "JTCAPackage12345",
+  "viNs": [ 
+     "XLR0998HGFFT76638",
+      "XLR0998HGFFT74597"
+  ],
+  "startdatetime": ""
+  }
+}
