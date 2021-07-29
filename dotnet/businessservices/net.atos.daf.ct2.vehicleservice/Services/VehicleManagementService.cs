@@ -87,7 +87,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 Objvehicle = await _vehicleManager.Create(Objvehicle);
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Create", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.Info("Create method in vehicle service called.");
-                await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Id }, _kafkaConfiguration)); 
+                await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { Objvehicle.ID }, _kafkaConfiguration));
 
                 return await Task.FromResult(new VehicleCreateResponce
                 {

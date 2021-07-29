@@ -5,9 +5,10 @@ import { DashboardComponent } from './dashboard.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { ChartsModule } from 'ng2-charts';
+import { DashboardVehicleUtilisationComponent } from './dashboard-vehicle-utilisation/dashboard-vehicle-utilisation.component';
 
 @NgModule({
-  declarations: [DashboardComponent],
+  declarations: [DashboardComponent, DashboardVehicleUtilisationComponent],
   imports: [
     CommonModule,
     SharedModule,

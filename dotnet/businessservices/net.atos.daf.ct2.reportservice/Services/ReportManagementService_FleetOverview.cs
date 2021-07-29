@@ -140,14 +140,25 @@ namespace net.atos.daf.ct2.reportservice.Services
                     foreach (var fleetOverviewDetails in result)
                     {
                         fleetOverviewDetails.VehicleName = vehicleDeatilsWithAccountVisibility?.FirstOrDefault(d => d.Vin == fleetOverviewDetails.Vin)?.VehicleName ?? string.Empty;
-                        foreach (WarningDetails warning in warningDetails)
+                        var warning = warningDetails?.Where(w => w.WarningClass == fleetOverviewDetails.LatestWarningClass
+                                                                          && w.WarningNumber == fleetOverviewDetails.LatestWarningNumber
+                                                                          && w.LngCode == request.LanguageCode).FirstOrDefault();
+                        if (string.IsNullOrEmpty(warning?.WarningName))
                         {
-                            if (fleetOverviewDetails.LatestWarningClass == warning.WarningClass && fleetOverviewDetails.LatestWarningNumber == warning.WarningNumber)
-                            {
-                                fleetOverviewDetails.LatestWarningName = warning?.WarningName ?? string.Empty;
-                            }
-
+                            warning = warningDetails?.Where(w => w.WarningClass == fleetOverviewDetails.LatestWarningClass
+                                                                       && w.WarningNumber == fleetOverviewDetails.LatestWarningNumber
+                                                                       && w.LngCode == ReportConstants.DEFAULT_LANGUAGE.ToLower()).FirstOrDefault();
                         }
+                        fleetOverviewDetails.LatestWarningName = warning?.WarningName ?? string.Empty;
+                        //foreach (WarningDetails warning in warningDetails)
+                        //{
+                        //    if (fleetOverviewDetails.LatestWarningClass == warning.WarningClass && fleetOverviewDetails.LatestWarningNumber == warning.WarningNumber)
+                        //    {
+
+                        //        fleetOverviewDetails.LatestWarningName = warning?.WarningName ?? string.Empty;
+                        //    }
+
+                        //}
                         //opt-in and no driver card- Unknown - Implemented by UI 
                         // Opt-out and no driver card- Unknown-Implemented by UI 
                         //opt-in with driver card- Driver Id
@@ -229,13 +240,24 @@ namespace net.atos.daf.ct2.reportservice.Services
                         healthStatus.VehicleRegNo = vehicleDeatilsWithAccountVisibility?.FirstOrDefault(d => d.Vin == healthStatus.WarningVin)?.RegistrationNo ?? string.Empty;
                         if (warningDetails != null && warningDetails.Count > 0)
                         {
-                            var warningDetail = warningDetails?.FirstOrDefault(w => w.WarningClass == healthStatus.WarningClass && w.WarningNumber == healthStatus.WarningNumber);
-                            healthStatus.WarningName = warningDetail?.WarningName ?? string.Empty;
-                            healthStatus.WarningAdvice = warningDetail?.WarningAdvice ?? string.Empty;
-                            healthStatus.Icon = warningDetail?.Icon ?? new Byte[] { };
-                            healthStatus.IconName = warningDetail?.IconName ?? string.Empty;
-                            healthStatus.ColorName = warningDetail?.ColorName ?? string.Empty;
-                            healthStatus.IconId = warningDetail?.IconId ?? 0;
+                            var warningDetail = warningDetails?.Where(w => w.WarningClass == healthStatus.WarningClass
+                                                                           && w.WarningNumber == healthStatus.WarningNumber
+                                                                           && w.LngCode.ToLower() == request.LngCode.ToLower()).FirstOrDefault();
+                            if (string.IsNullOrEmpty(warningDetail?.WarningName))
+                            {
+                                warningDetail = warningDetails?.Where(w => w.WarningClass == healthStatus.WarningClass
+                                                                           && w.WarningNumber == healthStatus.WarningNumber
+                                                                           && w.LngCode.ToLower() == ReportConstants.DEFAULT_LANGUAGE.ToLower()).FirstOrDefault();
+                            }
+                            if (warningDetail != null)
+                            {
+                                healthStatus.WarningName = warningDetail.WarningName ?? string.Empty;
+                                healthStatus.WarningAdvice = warningDetail.WarningAdvice ?? string.Empty;
+                                healthStatus.Icon = warningDetail.Icon ?? new Byte[] { };
+                                healthStatus.IconName = warningDetail.IconName ?? string.Empty;
+                                healthStatus.ColorName = warningDetail.ColorName ?? string.Empty;
+                                healthStatus.IconId = warningDetail?.IconId ?? 0;
+                            }
 
                         }
                         //opt-in and no driver card- Unknown - Implemented by UI 
