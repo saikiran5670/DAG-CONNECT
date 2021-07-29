@@ -1,0 +1,94 @@
+{
+	"VehicleUpdatedEvent": {
+		"Vehicle": {
+			"VehicleID": {
+				"VIN": "XLRAS47MS0E808086",
+				"LicensePlate": null,
+				"ManufactureDate": null
+			},
+			"VehicleClassification": {
+				"Make": null,
+				"Series": {
+					"ID": null
+				},
+				"Type": {
+					"ID": null
+				}
+			},
+			"VehicleNamedStructure": {
+				"Chassis": {
+					"ID": null,
+					"RearOverhang": null
+				},
+				"Engine": {
+					"ID": null,
+					"Type": null,
+					"Fuel": null,
+					"Power": null,
+					"Coolant": null,
+					"EmissionLevel": null
+				},
+				"Transmission": {
+					"GearBox": {
+						"Type": null
+					}
+				},
+				"DriveLine": {
+					"AxleConfiguration": null,
+					"WheelBase": null,
+					"Wheels": {
+						"Tire": {
+							"Size": null
+						}
+					},
+					"FrontAxle": [
+						{
+							"position": null,
+							"Type": null,
+							"Springs": null,
+							"AxleSpecificWheels": {
+								"Tire": {
+									"Size": null
+								}
+							}
+						}
+					],
+					"RearAxle": [
+						{
+							"position": null,
+							"Load": null,
+							"Ratio": null,
+							"AxleSpecificWheels": {
+								"Tire": {
+									"Size": null
+								}
+							}
+						},
+						{
+							"position": null,
+							"Load": null,
+							"AxleSpecificWheels": {
+								"Tire": {
+									"Size": null
+								}
+							}
+						}
+					]
+				},
+				"Cabin": {
+					"ID": null,
+					"Type": null,
+					"RoofSpoiler": null
+				}
+			},
+			"VehicleDimensions": {
+				"Weights": {
+					"Weight": {
+						"type": null,
+						"value": null
+					}
+				}
+			}
+		}
+	}
+}
