@@ -3172,6 +3172,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinDistance);
                 parameters.Add("@AggregationType", Enum.GetName(typeof(AggregateType), request.AggregationType));
                 parameters.Add("@Limit", request.EcoScoreRecordsLimit);
+                parameters.Add("@UserPrefTimeZone", GetUserTimeZonePreference(request.AccountEmail, request.OrganizationId));
 
                 string query =
                     @"WITH 
@@ -3183,7 +3184,7 @@ namespace net.atos.daf.ct2.reports.repository
 				                    eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75,
 				                    eco.tacho_gross_weight_combination,
                                     CASE WHEN @AggregationType = 'TRIP' THEN CAST(eco.trip_id AS TEXT)
-					                     ELSE CAST(date_trunc(@AggregationType, to_timestamp(eco.end_time/1000)) AS TEXT) 
+					                     ELSE CAST(date_trunc(@AggregationType, to_timestamp(eco.end_time/1000) AT TIME ZONE @UserPrefTimeZone) AS TEXT) 
                                     END as aggregation_type
 	                    FROM tripdetail.ecoscoredata eco
 	                    INNER JOIN master.driver dr ON dr.driver_id = eco.driver1_id
@@ -3474,6 +3475,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinDistance);
                 parameters.Add("@AggregationType", Enum.GetName(typeof(AggregateType), request.AggregationType));
                 parameters.Add("@Limit", request.EcoScoreRecordsLimit);
+                parameters.Add("@UserPrefTimeZone", GetUserTimeZonePreference(request.AccountEmail, request.OrganizationId));
 
                 string query =
                     @"WITH 
@@ -3482,7 +3484,7 @@ namespace net.atos.daf.ct2.reports.repository
 								eco.dpa_anticipation_score, eco.dpa_anticipation_count, 
 								eco.used_fuel,eco.end_time,eco.start_time,
 								CASE WHEN @AggregationType = 'TRIP' THEN CAST(eco.trip_id AS TEXT)
-									 ELSE CAST(date_trunc(@AggregationType, to_timestamp(eco.end_time/1000)) AS TEXT) 
+									 ELSE CAST(date_trunc(@AggregationType, to_timestamp(eco.end_time/1000) AT TIME ZONE @UserPrefTimeZone) AS TEXT) 
 								END as aggregation_type
 	                    FROM tripdetail.ecoscoredata eco
 	                    INNER JOIN master.driver dr ON dr.driver_id = eco.driver1_id
@@ -3545,6 +3547,78 @@ namespace net.atos.daf.ct2.reports.repository
                     order by StartTimestamp LIMIT @Limit";
 
                 return await _dataMartdataAccess.QueryAsync<dynamic>(query, parameters);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private async Task<string> GetUserTimeZonePreference(string emailId, string orgCode)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@emailId", emailId.ToLower());
+
+                string accountQuery =
+                    @"SELECT preference_id from master.account where lower(email) = @emailId";
+
+                var accountPreferenceId = await _dataAccess.QueryFirstAsync<int?>(accountQuery, parameter);
+
+                if (!accountPreferenceId.HasValue)
+                {
+                    string orgQuery = string.Empty;
+                    int? orgPreferenceId = null;
+                    if (!string.IsNullOrEmpty(orgCode))
+                    {
+                        var orgParameter = new DynamicParameters();
+                        orgParameter.Add("@orgCode", orgCode);
+
+                        orgQuery = @"SELECT preference_id from master.organization WHERE org_id=@orgCode";
+
+                        orgPreferenceId = await _dataAccess.QueryFirstAsync<int?>(orgQuery, orgParameter);
+                    }
+                    else
+                    {
+                        orgQuery =
+                            @"SELECT o.preference_id from master.account acc
+                            INNER JOIN master.accountOrg ao ON acc.id=ao.account_id
+                            INNER JOIN master.organization o ON ao.organization_id=o.id
+                            where lower(acc.email) = @emailId";
+
+                        orgPreferenceId = await _dataAccess.QueryFirstAsync<int?>(orgQuery, parameter);
+                    }
+
+                    if (!orgPreferenceId.HasValue)
+                        return "Europe/Amsterdam";
+                    else
+                        return await GetTimeZoneByPreferenceId(orgPreferenceId.Value);
+                }
+                return await GetTimeZoneByPreferenceId(accountPreferenceId.Value);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private async Task<string> GetTimeZoneByPreferenceId(int preferenceId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@preferenceId", preferenceId);
+
+                string query =
+                    @"SELECT tz.name from master.accountpreference ap
+                    INNER JOIN master.timezone tz ON ap.id = @preferenceId AND ap.timezone_id=tz.id";
+
+                var timeZone = await _dataAccess.QueryFirstAsync<string>(query, parameter);
+
+                return timeZone;
             }
             catch (Exception)
             {
