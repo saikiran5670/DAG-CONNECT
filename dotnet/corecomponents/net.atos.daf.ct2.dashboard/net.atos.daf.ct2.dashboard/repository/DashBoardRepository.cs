@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.dashboard.entity;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.dashboard.repository
 {
@@ -71,6 +73,24 @@ namespace net.atos.daf.ct2.dashboard.repository
             {
                 throw ex;
             }
+        }
+        public async Task<List<Alert24Hours>> GetLastAlert24Hours(Alert24HoursFilter alert24HoursFilter)
+        {
+            try
+            {
+                var parameterOfFilters = new DynamicParameters();
+                var tempdate = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddDays(-1));
+                parameterOfFilters.Add("@Vins", alert24HoursFilter.VINs);
+                string queryAlert = @"select * from alert";
+                List<Alert24Hours> lstAlert = (List<Alert24Hours>)await _dataMartdataAccess.QueryAsync<Alert24Hours>(queryAlert, parameterOfFilters);
+                return lstAlert;
+            }
+            catch (System.Exception ex)
+            {
+
+                throw ex;
+            }
+
         }
 
     }
