@@ -18,6 +18,7 @@
 
         public const string GET_REPORT_DETAILS_SUCCESS_MSG = "Report details fetched successfully.";
         public const string GET_REPORT_DETAILS_FAILURE_MSG = "Report details fetched failed. With Error : {0}";
+        public const string DEFAULT_LANGUAGE = "EN-GB";
 
         #region Eco-Score Report
         public const string GET_ECOSCORE_PROFILE_SUCCESS_MSG = "Eco-Score profiles fetched successfully.";
