@@ -185,9 +185,9 @@ tr {{ page-break-inside: avoid }}
 			<th>PTO Duration ({26})</th>
 			<th>Harsh Brake Duration ({27})</th>
 			<th>Heavy Throttle Duration ({28})</th>
-			<th>Cruise Control Distance 30-50 km/h %</th>
-			<th>Cruise Control Distance 50-75 km/h %</th>
-			<th>Cruise Control Distance >75 km/h %</th>
+			<th>Cruise Control Distance 30-50 km/h</th>
+			<th>Cruise Control Distance 50-75 km/h</th>
+			<th>Cruise Control Distance >75 km/h</th>
 			<th>Average Traffic Classification</th>
 			<th>CC Fuel Consumption ({29})</th>
 			<th>Fuel Consumption CC Non Active ({30})</th>

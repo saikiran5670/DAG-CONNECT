@@ -841,7 +841,10 @@ message FleetFuelDetails {
     double Endpositionlattitude = 42;
     double endpositionlongitude=44;
     repeated LiveFleetPosition LiveFleetPosition=39;
-   
+    int64 CCFuelDistance = 45;
+    double CCFuelConsumed = 46;
+    int64 CCFuelDistanceNotActive = 47;
+    double CCFuelConsumedNotActive = 48;
 }
 message FleetFuelDetailsByDriver {
     google.protobuf.StringValue VehicleName = 1;
