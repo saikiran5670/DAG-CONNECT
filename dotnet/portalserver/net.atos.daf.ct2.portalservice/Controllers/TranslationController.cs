@@ -465,24 +465,28 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
 
                 var dtcRequest = _mapper.ToImportDTCWarning(request);
-                var DTCResponse = await _translationServiceClient.ImportDTCWarningDataAsync(dtcRequest);
+                var dtcResponse = await _translationServiceClient.ImportDTCWarningDataAsync(dtcRequest);
 
-                if (DTCResponse != null
-                   && DTCResponse.Message == "There is an error importing dtc Warning Data.")
+                if (dtcResponse != null
+                   && dtcResponse.Message == "There is an error importing dtc Warning Data.")
                 {
                     return StatusCode(500, "There is an error importing  dtc Warning Data.");
                 }
-                else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success)
+                else if (dtcResponse != null && dtcResponse.Code == Responcecode.Success)
                 {
                     await _audit.AddLogs(DateTime.Now, "Translation Component",
                           "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                           "ImportDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
                            _userDetails);
-                    return Ok(DTCResponse);
+                    return Ok(dtcResponse);
                 }
-                else if (DTCResponse != null && DTCResponse.Message == "violates foreign key constraint for Icon_ID , Please enter valid data for Warning_Class and Warning_Number")
+                else if (dtcResponse != null && dtcResponse.Message == "violates foreign key constraint for Icon_ID , Please enter valid data for Warning_Class and Warning_Number")
                 {
-                    return StatusCode(400, DTCResponse.Message);
+                    return StatusCode(400, dtcResponse.Message);
+                }
+                else if (dtcResponse != null && dtcResponse.Code == Responcecode.Failed)
+                {
+                    return Ok(dtcResponse);
                 }
                 else
                 {

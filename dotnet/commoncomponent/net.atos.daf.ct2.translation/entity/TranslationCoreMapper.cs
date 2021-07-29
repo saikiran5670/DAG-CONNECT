@@ -43,93 +43,118 @@ namespace net.atos.daf.ct2.translation.entity
 
         }
 
-        public string MapDTCTLanguageCode(string LanguageCode)
+        public string MapDTCTLanguageCode(string languageCode)
         {
-            string Code = string.Empty;
+            string code;
 
-            switch (LanguageCode)
+            switch (languageCode.ToUpper())
             {
                 case "BG":
-                    Code = "bg-BG";
+                case "BG-BG":
+                    code = "bg-BG";
                     break;
                 case "CS":
-                    Code = "cs-CZ";
+                case "CS-CZ":
+                    code = "cs-CZ";
                     break;
                 case "DA":
-                    Code = "da-DK";
+                case "DA-DK":
+                    code = "da-DK";
                     break;
                 case "DE":
-                    Code = "de-DE";
+                case "DE-DE":
+                    code = "de-DE";
                     break;
                 case "EL":
-                    Code = "EL";
+                case "EL-EL":
+                    code = "el-EL";
                     break;
                 case "EN":
-                    Code = "EN-GB";
+                case "EN-GB":
+                    code = "EN-GB";
                     break;
                 case "ES":
-                    Code = "es-ES";
+                case "ES-ES":
+                    code = "es-ES";
                     break;
                 case "ET":
-                    Code = "et-EE";
+                case "ET-EE":
+                    code = "et-EE";
                     break;
                 case "FI":
-                    Code = "fi-FI";
+                case "FI-FI":
+                    code = "fi-FI";
                     break;
                 case "FR":
-                    Code = "fr-FR";
+                case "FR-FR":
+                    code = "fr-FR";
                     break;
                 case "HR":
-                    Code = "hr-HR";
+                case "HR-HR":
+                    code = "hr-HR";
                     break;
                 case "HU":
-                    Code = "hu-HU";
+                case "HU-HU":
+                    code = "hu-HU";
                     break;
                 case "IT":
-                    Code = "it-IT";
+                case "IT-IT":
+                    code = "it-IT";
                     break;
                 case "LT":
-                    Code = "lt-LT";
+                case "LT-LT":
+                    code = "lt-LT";
                     break;
                 case "LV":
-                    Code = "lv-LV";
+                case "LV-LV":
+                    code = "lv-LV";
                     break;
                 case "NL":
-                    Code = "nl-NL";
+                case "NL-NL":
+                    code = "nl-NL";
                     break;
                 case "NO":
-                    Code = "nb-NO";
+                case "NB-NO":
+                    code = "nb-NO";
                     break;
                 case "PL":
-                    Code = "pl-PL";
+                case "PL-PL":
+                    code = "pl-PL";
                     break;
                 case "PT":
-                    Code = "pt-PT";
+                case "PT-PT":
+                    code = "pt-PT";
                     break;
                 case "RO":
-                    Code = "ro-RO";
+                case "RO-RO":
+                    code = "ro-RO";
                     break;
                 case "RU":
-                    Code = "RU";
+                case "RU-RU":
+                    code = "ru-RU";
                     break;
                 case "SK":
-                    Code = "sk-SK";
+                case "SK-SK":
+                    code = "sk-SK";
                     break;
                 case "SL":
-                    Code = "sl-SI";
+                case "SL-SI":
+                    code = "sl-SI";
                     break;
                 case "SV":
-                    Code = "sv-SE";
+                case "SV-SE":
+                    code = "sv-SE";
                     break;
                 case "TR":
-                    Code = "Tr-tr";
+                case "Tr-TR":
+                    code = "Tr-tr";
                     break;
-                    //default:
-                    //    Code = "";
-                    //    break;
+                default:
+                    code = "Unknown";
+                    break;
 
             }
-            return Code;
+            return code;
 
         }
     }

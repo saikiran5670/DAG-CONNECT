@@ -5,11 +5,54 @@ option csharp_namespace = "net.atos.daf.ct2.dashboardservice";
 package net.atos.daf.ct2.dashboardservice;
 
 service DashBoardGRPCService {  
+
+rpc GetFleetKPIDetails(FleetKpiFilterRequest) returns (FleetKpiResponse);
+rpc GetLastAlert24Hours(Alert24HoursFilterRequest) returns (Alert24HoursResponse);
 }
 
 enum Responsecode{
-  Success = 0;
-  Failed = 1;
-  Conflict = 2;
-  NotFound = 3;
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Forbidden = 403;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
 }
+message FleetKpiFilterRequest {
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    repeated string VINs = 3;
+}
+message FleetKpiResponse {
+    repeated FleetKpi FleetKpis = 1;
+    Responsecode code = 2;
+    string message = 3;
+}
+message FleetKpi {
+    int32 VehicleCount = 1;
+    double Co2Emission = 2;
+    double IdlingTime = 3;
+    double DrivingTime = 4;
+    double Distance  = 5;
+    double FuelConsumption = 6;
+    double Idlingfuelconsumption = 7;
+}
+// Start For the Alert24Hours
+message Alert24HoursFilterRequest {
+       repeated string VINs = 1;
+}
+message Alert24HoursResponse {
+   repeated Alert24Hour Alert24Hours = 1;
+    Responsecode code = 2;
+    string message = 3;
+}
+message Alert24Hour{
+    int32 Logistic = 1;
+    int32 FuelAndDriver = 2;
+    int32 RepairAndMaintenance = 3;
+    int32 Critical = 4;
+    int32 Warning = 5;
+    int32 Advisory = 6;
+}
+//End for the Alert24Hours

@@ -10,7 +10,7 @@ using net.atos.daf.ct2.confluentkafka.entity;
 using net.atos.daf.ct2.kafkacdc.entity;
 using net.atos.daf.ct2.kafkacdc.repository;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
@@ -24,22 +24,28 @@ namespace net.atos.daf.ct2.kafkacdc
         }
         internal Task<string> PrepareVehicleKafkaJSON(VehicleCdc vehicleCdc, string operation)
         {
-            //vehicleCdc.State = "A";
-            VehicleMgmtPayload payload = new VehicleMgmtPayload()
+            DefaultContractResolver contractResolver = new DefaultContractResolver
             {
-                Data = vehicleCdc,
+                NamingStrategy = new CamelCaseNamingStrategy()
+            };
+            VehicleMgmtKafkaMessage vehicleMgmtKafkaMessage = new VehicleMgmtKafkaMessage()
+            {
+                Payload = JsonConvert.SerializeObject(vehicleCdc, new JsonSerializerSettings
+                {
+                    ContractResolver = contractResolver
+                }),
+                Schema = "master.Vehicle",
                 Operation = operation,
                 Namespace = "vehicleManagement",
                 Timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds()
             };
-            VehicleMgmtKafkaMessage vehicleMgmtKafkaMessage = new VehicleMgmtKafkaMessage()
+
+
+            return Task.FromResult(JsonConvert.SerializeObject(vehicleMgmtKafkaMessage, new JsonSerializerSettings
             {
-                Payload = payload,
-                Schema = "master.Vehicle"
-            };
-
-
-            return Task.FromResult(JsonConvert.SerializeObject(vehicleMgmtKafkaMessage, Formatting.Indented));
+                ContractResolver = contractResolver,
+                Formatting = Formatting.Indented
+            }));
         }
         public async Task VehicleCdcProducer(List<int> vehicleIds, KafkaConfiguration kafkaConfiguration)
         {
