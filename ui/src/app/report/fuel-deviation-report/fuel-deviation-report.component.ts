@@ -17,6 +17,11 @@ import { ConfigService } from '@ngx-config/core';
 import { HereService } from '../../services/here.service';
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from '@angular/platform-browser';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import html2canvas from 'html2canvas';
+import { Workbook } from 'exceljs';
+import * as fs from 'file-saver';
 
 declare var H: any;
 
@@ -238,7 +243,7 @@ export class FuelDeviationReportComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 6 //-- for Fuel Deviation Report
+      menuId: 12 //-- for Fuel Deviation Report
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
@@ -986,12 +991,230 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.dataSource.filter = filterValue;
   }
 
-  exportAsExcelFile() {
-
+  excelSummaryData: any = [];
+  getAllSummaryData() { 
+    this.excelSummaryData = [
+      [ this.translationData.lblFuelDeviationReport || 'Fuel Deviation Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+        this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, this.summarySectionData.totalIncCount, 
+        this.summarySectionData.totalDecCount, this.summarySectionData.totalVehCount
+      ]
+    ];
   }
 
-  exportAsPDFFile() {
+  exportAsExcelFile(){    
+    this.getAllSummaryData();
+    const title = this.translationData.lblFuelDeviationReport || 'Fuel Deviation Report';
+    const summary = this.translationData.lblSummarySection || 'Summary Section';
+    const detail = this.translationData.lblDetailSection || 'Detail Section';
+    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmile || 'mile');
+    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
+    let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.translationData.lblpound || 'pound');
+    let unitValton = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblton || 'ton');
+    let unitValgallon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.translationData.lblgallon || 'gallon');
+    
+    const header = ['Type', 'Difference (%)', 'Vehicle Name', 'VIN', 'Reg. Plate Number', 'Date', 'Odometer ('+ unitValkm + ')', 'Start Date', 'End Date', 'Distance ('+ unitValkm + ')', 'Idle Duration (hh:mm)', 'Average Speed ('+ unitValkmh + ')', 'Average Weight ('+ unitValton + ')', 'Start Position', 'End Position', 'Fuel Consumed ('+ unitValgallon + ')', 'Driving Time (hh:mm)', 'Alerts'];
+    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Fuel Increase Events', 'Fuel decrease Events', 'Vehicles With Fuel Events'];
+    const summaryData= this.excelSummaryData;
+    
+    //Create workbook and worksheet
+    let workbook = new Workbook();
+    let worksheet = workbook.addWorksheet('Fuel Deviation Report');
+    //Add Row and formatting
+    let titleRow = worksheet.addRow([title]);
+    worksheet.addRow([]);
+    titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+   
+    worksheet.addRow([]);  
+    let subTitleRow = worksheet.addRow([summary]);
+    let summaryRow = worksheet.addRow(summaryHeader);  
+    summaryData.forEach(element => {  
+      worksheet.addRow(element);   
+    });      
+    worksheet.addRow([]);
+    summaryRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }      
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })  
+    worksheet.addRow([]);   
+    let subTitleDetailRow = worksheet.addRow([detail]);
+    let headerRow = worksheet.addRow(header);
+    headerRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })
+  
+   this.initData.forEach(item => {     
+      worksheet.addRow([item.eventTooltip, item.fuelDiffernce, item.vehicleName, item.vin,
+        item.registrationNo, item.eventDate, item.convertedOdometer, item.convertedStartDate,
+        item.convertedEndDate, item.convertedDistance, item.convertedIdleDuration,
+        item.convertedAverageSpeed, item.convertedAverageWeight, item.startPosition, item.endPosition, item.convertedFuelConsumed,
+        item.convertedDrivingTime, item.alerts]);   
+    }); 
+    worksheet.mergeCells('A1:D2'); 
+    subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
+    for (var i = 0; i < header.length; i++) {    
+      worksheet.columns[i].width = 20;      
+    }
+    for (var j = 0; j < summaryHeader.length; j++) {  
+      worksheet.columns[j].width = 20; 
+    }
+    worksheet.addRow([]); 
+    workbook.xlsx.writeBuffer().then((data) => {
+      let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      fs.saveAs(blob, 'Fuel_Deviation_Report.xlsx');
+   })
+  }
 
+  getPDFHeaders(){
+    let displayArray: any = [];
+    this.displayedColumns.forEach(i => {
+      let _s = this.prefMapData.filter(item => item.value == i);
+      if (_s.length > 0){          
+        displayArray.push(this.translationData[_s[0].key] ? this.translationData[_s[0].key] : _s[0].value);
+      }
+    })
+    return [displayArray];
+  }
+
+  exportAsPDFFile(){
+  var doc = new jsPDF('p', 'mm', 'a4');
+  let pdfColumns = this.getPDFHeaders();
+  let prepare = []
+    this.initData.forEach(e=>{
+      var tempObj = [];
+      this.displayedColumns.forEach(element => {
+        switch(element){
+          case 'fuelEventType' :{
+            tempObj.push(e.eventTooltip);
+            break;
+          }
+          case 'fuelDiffernce' :{
+            tempObj.push(e.fuelDiffernce);
+            break;
+          }
+          case 'vehicleName' :{
+            tempObj.push(e.vehicleName);
+            break;
+          }
+          case 'vin' :{
+            tempObj.push(e.vin);
+            break;
+          }
+          case 'registrationNo' :{
+            tempObj.push(e.registrationNo);
+            break;
+          }
+          case 'eventTime' :{
+            tempObj.push(e.eventDate);
+            break;
+          }
+          case 'odometer' :{
+            tempObj.push(e.convertedOdometer);
+            break;
+          }
+          case 'startTimeStamp' :{
+            tempObj.push(e.convertedStartDate);
+            break;
+          }
+          case 'endTimeStamp' :{
+            tempObj.push(e.convertedEndDate);
+            break;
+          }
+          case 'distance' :{
+            tempObj.push(e.convertedDistance);
+            break;
+          }
+          case 'idleDuration' :{
+            tempObj.push(e.convertedIdleDuration);
+            break;
+          }
+          case 'averageSpeed' :{
+            tempObj.push(e.convertedAverageSpeed);
+            break;
+          }
+          case 'averageWeight' :{
+            tempObj.push(e.convertedAverageWeight);
+            break;
+          }
+          case 'startPosition' :{
+            tempObj.push(e.startPosition);
+            break;
+          }
+          case 'endPosition' :{
+            tempObj.push(e.endPosition);
+            break;
+          }
+          case 'fuelConsumed' :{
+            tempObj.push(e.convertedFuelConsumed);
+            break;
+          }
+          case 'drivingTime' :{
+            tempObj.push(e.convertedDrivingTime);
+            break;
+          }
+          case 'alerts' :{
+            tempObj.push(e.alerts);
+            break;
+          }
+        }
+      })
+      prepare.push(tempObj);    
+    });
+    
+    let DATA = document.getElementById('fuelSummaryCharts');
+    html2canvas( DATA)
+    .then(canvas => {  
+      (doc as any).autoTable({
+        styles: {
+            cellPadding: 0.5,
+            fontSize: 12
+        },       
+        didDrawPage: function(data) {     
+            // Header
+            doc.setFontSize(14);
+            var fileTitle = "Fuel Deviation Details";
+            var img = "/assets/logo.png";
+            doc.addImage(img, 'JPEG',10,10,0,0);
+  
+            var img = "/assets/logo_daf.png"; 
+            doc.text(fileTitle, 14, 35);
+            doc.addImage(img, 'JPEG',150, 10, 0, 10);            
+        },
+        margin: {
+            bottom: 20, 
+            top:30 
+        }  
+      });
+        let fileWidth = 170;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
+        
+        const FILEURI = canvas.toDataURL('image/png')
+        // let PDF = new jsPDF('p', 'mm', 'a4');
+        let position = 0;
+        doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
+        doc.addPage();
+
+      (doc as any).autoTable({
+      head: pdfColumns,
+      body: prepare,
+      theme: 'striped',
+      didDrawCell: data => {
+        //console.log(data.column.index)
+      }
+    })
+    doc.save('FuelDeviationReport.pdf');
+    });     
   }
 
   drawEventMarkersOnMap(markerData: any){

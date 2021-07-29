@@ -1119,7 +1119,7 @@ export class ReportMapService {
   }
 
   // trip report data-conversion
-  getConvertedDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
+  convertTripReportDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
       element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone,true);
       element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone,true);

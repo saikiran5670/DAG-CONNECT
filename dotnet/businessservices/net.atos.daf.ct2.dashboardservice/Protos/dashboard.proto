@@ -5,11 +5,35 @@ option csharp_namespace = "net.atos.daf.ct2.dashboardservice";
 package net.atos.daf.ct2.dashboardservice;
 
 service DashBoardGRPCService {  
+
+rpc GetFleetKPIDetails(FleetKpiFilterRequest) returns (FleetKpiResponse);
 }
 
 enum Responsecode{
-  Success = 0;
-  Failed = 1;
-  Conflict = 2;
-  NotFound = 3;
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Forbidden = 403;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}
+message FleetKpiFilterRequest {
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    repeated string VINs = 3;
+}
+message FleetKpiResponse {
+    repeated FleetKpi FleetKpis = 1;
+    Responsecode code = 2;
+    string message = 3;
+}
+message FleetKpi {
+    int32 VehicleCount = 1;
+    double Co2Emission = 2;
+    double IdlingTime = 3;
+    double DrivingTime = 4;
+    double Distance  = 5;
+    double FuelConsumption = 6;
+    double Idlingfuelconsumption = 7;
 }

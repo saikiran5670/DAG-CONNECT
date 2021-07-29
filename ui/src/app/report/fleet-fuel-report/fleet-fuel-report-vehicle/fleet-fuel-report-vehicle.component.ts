@@ -1319,7 +1319,26 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   summaryNewObj: any;
+  // rankingNewObj : any;
+  // getAllRankingData(){
+  //   if(this.initData.length > 0){
+  //     let ranking=0;
+  //     let vehicleName = 0;
+  //     let vin=0;
+  //     let plateNo = 0;
+  //     let Consumption = 0;
+  //     ranking = this.ranking('ranking');
+  //     vehicleName = this.vehicleName('vehicleName');
+  //     vin = this.vin('vin');
+  //     plateNo = this.plateNo('plateNo');
+  //     Consumption = this.Consumption('Consumption');
 
+  //     this.rankingNewObj =['Fleet Fuel Vehicle Report', new Date(),this.ranking,this.vehicleName,
+  //     this.vin,this.vehicleRegistrationNo,this.Consumption
+  //     ]
+  //   }
+
+  // }
   getAllSummaryData(){ 
           if(this.initData.length > 0){
             let numberOfTrips = 0 ; let distanceDone = 0; let idleDuration = 0; 
@@ -1335,7 +1354,7 @@ setVehicleGroupAndVehiclePreSelection() {
           this.summaryNewObj = [
            ['Fleet Fuel Vehicle Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
              this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
-             fuelconsumed, idleDuration, fuelConsumption
+             fuelconsumed, idleDuration, fuelConsumption,CO2Emission
           ]
           ];        
          }
@@ -1343,11 +1362,13 @@ setVehicleGroupAndVehiclePreSelection() {
   exportAsExcelFile(){
     this.getAllSummaryData();
     const title = 'Fleet Fuel Vehicle Report';
+    const ranking = 'Ranking Section'
     const summary = 'Summary Section';
     const detail = 'Detail Section';
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
 
+    const rankingHeader = ['ranking','vehicleName','vin','vehicleRegistrationNo','fuelConsumption']
     const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Distance', 'Average Distance Per Day('+unitValkmh+')', 'Average Speed('+unitValkmh+')',
     'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb','fuelConsumed', 'fuelConsumption',  
     'Idle Duration','Pto Duration','HarshBrakeDuration','Heavy Throttle Duration','Cruise Control Distance 30-50('+unitValkmh+')',
@@ -1365,6 +1386,27 @@ setVehicleGroupAndVehiclePreSelection() {
     worksheet.addRow([]);
     titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
 
+
+    worksheet.addRow([]);
+    let subTitleRankingRow = worksheet.addRow([ranking]);
+    let RankingRow = worksheet.addRow(rankingHeader);
+    worksheet.addRow([]);
+    RankingRow.eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    })
+    this.initData.forEach(item => {
+      worksheet.addRow([item.ranking,item.vehicleName,item.vin,item.vehicleRegistrationNo,item.convertedFuelConsumed100Km
+      ]);
+    });
+
+
+    
     worksheet.addRow([]);
     let subTitleRow = worksheet.addRow([summary]);
     let summaryRow = worksheet.addRow(summaryHeader);
@@ -1405,6 +1447,7 @@ setVehicleGroupAndVehiclePreSelection() {
     });
 
     worksheet.mergeCells('A1:D2');
+    subTitleRankingRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
     subTitleRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
     subTitleDetailRow.font = { name: 'sans-serif', family: 4, size: 11, bold: true }
     for (var i = 0; i < header.length; i++) {
