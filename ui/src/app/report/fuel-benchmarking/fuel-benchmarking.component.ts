@@ -275,16 +275,16 @@ export class FuelBenchmarkingComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
-    if (this.selectedBenchmarking == 'timePeriods') {
-      this.fuelBenchmarkingForm = this._formBuilder.group({
-        vehicleGroup: ['', []],
-        vehicle: ['', []],
-        startDate: ['', []],
-        endDate: ['', []],
-        startTime: ['', []],
-        endTime: ['', []]
-      });
-    } else {
+    // if (this.selectedBenchmarking == 'timePeriods') {
+    //   this.fuelBenchmarkingForm = this._formBuilder.group({
+    //     vehicleGroup: ['', []],
+    //     vehicle: ['', []],
+    //     startDate: ['', []],
+    //     endDate: ['', []],
+    //     startTime: ['', []],
+    //     endTime: ['', []]
+    //   });
+    // } else {
       this.fuelBenchmarkingForm = this._formBuilder.group({
         vehicleGroup: ['', [Validators.required]],
         vehicle: ['', []],
@@ -293,7 +293,7 @@ export class FuelBenchmarkingComponent implements OnInit {
         startTime: ['', []],
         endTime: ['', []]
       });
-    }
+    
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
