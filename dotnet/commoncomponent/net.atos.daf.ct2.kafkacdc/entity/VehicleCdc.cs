@@ -16,11 +16,14 @@ namespace net.atos.daf.ct2.kafkacdc.entity
     class VehicleMgmtKafkaMessage
     {
         public string Schema { get; set; }
-        public VehicleMgmtPayload Payload { get; set; }
+        public string Payload { get; set; }
+        public string Operation { get; set; }
+        public string Namespace { get; set; }
+        public long Timestamp { get; set; }
     }
     public class VehicleMgmtPayload
     {
-        public VehicleCdc Data { get; set; }
+        public string Data { get; set; }
         public string Operation { get; set; }
         public string Namespace { get; set; }
         public long Timestamp { get; set; }
