@@ -114,7 +114,7 @@ metadata:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
     traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
     traefik.ingress.kubernetes.io/service.sticky.cookie.secure: "true"
-    #traefik.ingress.kubernetes.io/service.sticky.cookie.name: "IPTrackingCookie"
+    traefik.ingress.kubernetes.io/service.sticky.cookie.name: "IPTrackingCookie"
     traefik.ingress.kubernetes.io/session-cookie-name: "sticky"
 spec:
   type: LoadBalancer
