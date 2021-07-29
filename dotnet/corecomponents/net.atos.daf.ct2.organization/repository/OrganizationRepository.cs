@@ -520,6 +520,11 @@ namespace net.atos.daf.ct2.organization.repository
             return customer;
         }
 
+        /// <summary>
+        /// This method is used to create default groups on organization creation
+        /// </summary>
+        /// <param name="organizationId"></param>
+        /// <returns></returns>
         public async Task<int> CreateDefaultGroups(int organizationId)
         {
             try
@@ -528,7 +533,7 @@ namespace net.atos.daf.ct2.organization.repository
                 groupAccount.ObjectType = ObjectType.AccountGroup;
                 groupAccount.GroupType = GroupType.Dynamic;
                 groupAccount.Argument = "";
-                groupAccount.FunctionEnum = FunctionEnum.All;
+                groupAccount.FunctionEnum = FunctionEnum.All;  // As per requirement change none to all
                 groupAccount.OrganizationId = organizationId;
                 groupAccount.RefId = 0;
                 groupAccount.Name = "DefaultAccountGroup";
@@ -541,7 +546,7 @@ namespace net.atos.daf.ct2.organization.repository
                 groupVehicle.ObjectType = ObjectType.VehicleGroup;
                 groupVehicle.GroupType = GroupType.Dynamic;
                 groupVehicle.Argument = "";
-                groupVehicle.FunctionEnum = FunctionEnum.All;
+                groupVehicle.FunctionEnum = FunctionEnum.All;   // As per requirement change none to all
                 groupVehicle.OrganizationId = organizationId;
                 groupVehicle.RefId = 0;
                 groupVehicle.Name = "DefaultVehicleGroup";
