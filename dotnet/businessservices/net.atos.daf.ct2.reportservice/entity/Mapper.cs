@@ -470,6 +470,8 @@ namespace net.atos.daf.ct2.reportservice.entity
             {
                 dataAttribute = reportAttributes.Where(x => x.DBColumnName == kpiName).FirstOrDefault();
                 objKPI.DataAttributeId = dataAttribute.DataAttributeId;
+                objKPI.Name = dataAttribute.Name;
+                objKPI.Key = dataAttribute.Key;
                 objKPI.LimitType = dataAttribute.LimitType;
                 objKPI.LimitValue = dataAttribute.LimitValue;
                 objKPI.TargetValue = dataAttribute.TargetValue;

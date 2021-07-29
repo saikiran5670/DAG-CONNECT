@@ -667,7 +667,7 @@ namespace net.atos.daf.ct2.translation.repository
                                 dtcwarningLists.Add(item);
                             }
                         }
-                        else
+                        else if (warningId != -1)
                         {
                             //Update
 
@@ -775,18 +775,24 @@ namespace net.atos.daf.ct2.translation.repository
         public int CheckDtcWarningClassExist(int warningClass, int warningNumber, string excelLanguageCode)
         {
             var languageCode = _translationCoreMapper.MapDTCTLanguageCode(excelLanguageCode);
-            var queryStatement = @"select id 
+            if (languageCode != "Unknown")
+            {
+                var queryStatement = @"select id 
                                     from master.dtcwarning
                                    where class=@class and number=@number and code = @code";
-            var parameter = new DynamicParameters();
+                var parameter = new DynamicParameters();
 
-            parameter.Add("@class", warningClass);
-            parameter.Add("@number", warningNumber);
-            parameter.Add("@code", languageCode);
+                parameter.Add("@class", warningClass);
+                parameter.Add("@number", warningNumber);
+                parameter.Add("@code", languageCode);
 
-            int resultWarningId = _dataAccess.ExecuteScalar<int>(queryStatement, parameter);
-            return resultWarningId;
-
+                int resultWarningId = _dataAccess.ExecuteScalar<int>(queryStatement, parameter);
+                return resultWarningId;
+            }
+            else
+            {
+                return -1;
+            }
         }
 
         public async Task<List<DTCwarning>> UpdateDTCWarningData(List<DTCwarning> dtcwarningList)
