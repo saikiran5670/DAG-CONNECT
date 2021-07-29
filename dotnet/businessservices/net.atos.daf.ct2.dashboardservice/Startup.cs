@@ -35,6 +35,11 @@ namespace net.atos.daf.ct2.dashboardservice
             {
                 return new PgSQLDataAccess(connectionString);
             });
+            string dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
+            services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
+            {
+                return new PgSQLDataMartDataAccess(dataMartconnectionString);
+            });
             //services.AddTransient<IDashBoardManager, DashBoardManager>();
             //services.AddTransient<IDashBoardRepository, DashBoardRepository>();
         }

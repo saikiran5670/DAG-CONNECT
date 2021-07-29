@@ -213,7 +213,22 @@
                 'Charts' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <div>
+          <div fxLayout="row" fxLayoutAlign="start" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+            <div class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblEventIncreaseEvent || 'Event Increase Event' }}</span>
+              <div class="chart-wrapper"></div>
+            </div>
+            <div class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblEventDecreaseEvent || 'Event Decrease Event' }}</span>
+              <div class="chart-wrapper"></div>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+            <div class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblFuelDeviationEvent || 'Fuel Deviation Event' }}</span>
+              <div class="chart-wrapper"></div>
+            </div>
+            <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left"></div>
           </div>
         </mat-expansion-panel>
       </mat-card>

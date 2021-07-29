@@ -95,7 +95,8 @@ namespace net.atos.daf.ct2.notificationengine.repository
 
         public async Task<List<NotificationHistory>> GetNotificationHistory(TripAlert tripAlert)
         {
-            string queryStatement = @"SELECT id as Id
+            StringBuilder queryStatement = new StringBuilder();
+            queryStatement.Append(@"SELECT id as Id
                                             , organization_id as OrganizationId
                                             , trip_id as TripId
                                             , vehicle_id as VehicleId
@@ -110,15 +111,18 @@ namespace net.atos.daf.ct2.notificationengine.repository
                                             , status as Status
 	                                            FROM master.notificationhistory 	                                           
 	                                            where alert_id=@alert_id
-                                                    and vehicle_id=@vehicle_id
-                                                    and trip_id=@trip_id
-                                                    and status<>@status;";
+                                                    and vehicle_id=@vehicle_id                                                    
+                                                    and status<>@status");
 
             var parameter = new DynamicParameters();
             parameter.Add("@alert_id", tripAlert.Alertid);
             parameter.Add("@vehicle_id", tripAlert.VehicleId);
-            parameter.Add("@trip_id", tripAlert.Tripid);
             parameter.Add("@status", ((char)NotificationSendType.Failed).ToString());
+            if ((tripAlert.Type.IndexOfAny(new char[] { 'N', 'X', 'c', 'Y', 'D' }) >= 0))
+            {
+                queryStatement.Append(" and trip_id = @trip_id");
+                parameter.Add("@trip_id", tripAlert.Tripid);
+            }
 
             List<NotificationHistory> notificationHistoryOutput = (List<NotificationHistory>)await _dataAccess.QueryAsync<NotificationHistory>(queryStatement, parameter);
             return notificationHistoryOutput;
@@ -126,27 +130,59 @@ namespace net.atos.daf.ct2.notificationengine.repository
 
         public async Task<List<TripAlert>> GetGeneratedTripAlert(TripAlert tripAlert)
         {
-            string queryStatement = @"SELECT id as Id
-                                            , trip_id as Tripid
-                                            , vin as Vin
-                                            , category_type as CategoryType
-                                            , type as Type
-                                            , name as Name
-                                            , alert_id as Alertid
-                                            , latitude as Latitude 
-                                            , longitude as Longitude
-                                            , alert_generated_time as AlertGeneratedTime
-                                            , processed_message_time_stamp as MessageTimestamp
-                                            , created_at as CreatedAt
-                                            , modified_at as ModifiedAt
-                                            , urgency_level_type as UrgencyLevelType
-	                                            FROM tripdetail.tripalert
-	                                            where alert_id = @alert_id
-	                                            and vin= @vin";
+            string queryStatement = @"SELECT SELECT triale.id as Id
+                                            , triale.trip_id as Tripid
+                                            , triale.vin as Vin
+                                            , triale.category_type as CategoryType
+                                            , triale.type as Type
+                                            , triale.name as Name
+                                            , triale.alert_id as Alertid
+                                            , triale.latitude as Latitude 
+                                            , triale.longitude as Longitude
+                                            , triale.alert_generated_time as AlertGeneratedTime
+                                            , triale.processed_message_time_stamp as MessageTimestamp
+                                            , triale.created_at as CreatedAt
+                                            , triale.modified_at as ModifiedAt
+                                            , triale.urgency_level_type as UrgencyLevelType
+                                            , triday.from_date_threshold_value as FromDateThresholdValue
+                                            , triday.to_date_threshold_value as ToDateThresholdValue
+                                            , triday.timeperiod_type as TimePeriodType
+                                            , triday.day_threshold_value as DayThresholdValue
+                                            , triday.from_daytime_threshold_value as FromDayTimeThresholdValue
+                                            , triday.to_daytime_threshold_value as ToDayTimeThresholdValue
+                                            , triday.date_breached_value as DateBreachedValue
+                                            , triday.day_breached_value as DayBreachedValue
+                                            , triday.daytime_breached_value as DayTimeBreachedValue
+                                            , trigen.param_type as ParamType
+                                            , trigen.threshold_value as TrigenThresholdValue
+                                            , trigen.threshold_value_unit_type as TrigenThresholdValueUnitType
+                                            , trigen.breached_value as BreachedValue
+                                            , trilan.landmark_type as LandmarkType
+                                            , trilan.landmark_id as LandmarkId
+                                            , trilan.landmark_name as LandmarkName
+                                            , trilan.landmark_position_type as LandmarkPositionType
+                                            , trilan.landmark_threshold_value as LandmarkThresholdValue
+                                            , trilan.landmark_threshold_value_unit_type as LandmarkThresholdValueUnitType
+                                            , trilan.landmark_breached_value as LandmarkBreachedValue
+	                                            FROM tripdetail.tripalert triale
+	                                            left join tripdetail.tripalertdaytimeconfigparam triday
+	                                            on triale.alert_id=triday.trip_alert_id
+	                                            left join tripdetail.tripalertgenconfigparam trigen
+	                                            on triale.alert_id=trigen.trip_alert_id
+	                                            left join tripdetail.tripalertlandmarkconfigparam trilan
+	                                            on triale.alert_id=trilan.trip_alert_id
+	                                            where triale.alert_id = @alert_id
+	                                            and triale.vin= @vin";
             var parameter = new DynamicParameters();
             parameter.Add("@alert_id", tripAlert.Alertid);
             parameter.Add("@vin", tripAlert.Vin);
             List<TripAlert> generatedAlertOutput = (List<TripAlert>)await _dataMartdataAccess.QueryAsync<TripAlert>(queryStatement, parameter);
+            foreach (var item in generatedAlertOutput)
+            {
+                item.AlertCategoryKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type=@type and enum=@categoryEnum", new { type = 'C', categoryEnum = item.CategoryType });
+                item.AlertTypeKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where parent_enum=@parentEnum and enum=@typeEnum", new { parentEnum = item.CategoryType, typeEnum = item.Type });
+                item.UrgencyTypeKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type =@type and enum=@urgencyEnum", new { type = 'U', urgencyEnum = item.UrgencyLevelType });
+            }
             return generatedAlertOutput;
         }
 
