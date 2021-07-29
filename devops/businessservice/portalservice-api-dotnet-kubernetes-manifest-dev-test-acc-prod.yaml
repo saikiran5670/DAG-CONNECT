@@ -115,6 +115,7 @@ metadata:
     traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
     traefik.ingress.kubernetes.io/service.sticky.cookie.secure: "true"
     #traefik.ingress.kubernetes.io/service.sticky.cookie.name: "IPTrackingCookie"
+    traefik.ingress.kubernetes.io/session-cookie-name: "sticky"
 spec:
   type: LoadBalancer
   ports:
