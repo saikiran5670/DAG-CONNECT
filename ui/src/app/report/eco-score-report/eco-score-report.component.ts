@@ -574,9 +574,11 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
     }
     if(this.ecoScoreForm.get('minTripCheck').value){
       _minTripVal = Number(this.ecoScoreForm.get('minTripValue').value);
+      _minTripVal = this.checkForConversion(_minTripVal);
     }
     if(this.ecoScoreForm.get('minDriverCheck').value){
       _minDriverDist = Number(this.ecoScoreForm.get('minDriverValue').value);
+      _minDriverDist = this.checkForConversion(_minDriverDist);
     }
  
     if(_vehicelIds.length > 0){
@@ -1457,5 +1459,11 @@ let finalGroupDataList = [];
       this.minDriverInputCheck = true;
     else
       this.minDriverInputCheck = false;
+  }
+
+  checkForConversion(val){
+    if(this.prefUnitFormat === 'dunit_Imperial')
+      return (val * 0.621371).toFixed(2);
+    return val;
   }
 }
