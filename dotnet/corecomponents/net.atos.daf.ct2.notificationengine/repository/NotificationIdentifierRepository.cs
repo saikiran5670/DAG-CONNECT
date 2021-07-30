@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.notificationengine.repository
         public async Task<List<NotificationHistory>> GetNotificationHistory(TripAlert tripAlert)
         {
             StringBuilder queryStatement = new StringBuilder();
-            queryStatement.Append(@"SELECT id as Id
+            queryStatement.Append(@" SELECT id as Id
                                             , organization_id as OrganizationId
                                             , trip_id as TripId
                                             , vehicle_id as VehicleId
@@ -118,7 +118,7 @@ namespace net.atos.daf.ct2.notificationengine.repository
             parameter.Add("@alert_id", tripAlert.Alertid);
             parameter.Add("@vehicle_id", tripAlert.VehicleId);
             parameter.Add("@status", ((char)NotificationSendType.Failed).ToString());
-            if ((tripAlert.Type.IndexOfAny(new char[] { 'N', 'X', 'c', 'Y', 'D' }) >= 0))
+            if (tripAlert.Type.IndexOfAny(new char[] { 'N', 'X', 'c', 'Y', 'D', 'G', 'S' }) >= 0)
             {
                 queryStatement.Append(" and trip_id = @trip_id");
                 parameter.Add("@trip_id", tripAlert.Tripid);
@@ -130,7 +130,7 @@ namespace net.atos.daf.ct2.notificationengine.repository
 
         public async Task<List<TripAlert>> GetGeneratedTripAlert(TripAlert tripAlert)
         {
-            string queryStatement = @"SELECT SELECT triale.id as Id
+            string queryStatement = @" SELECT triale.id as Id
                                             , triale.trip_id as Tripid
                                             , triale.vin as Vin
                                             , triale.category_type as CategoryType
@@ -230,6 +230,20 @@ namespace net.atos.daf.ct2.notificationengine.repository
             notificationHistory.Id = notificationSentId;
             return notificationHistory;
 
+        }
+
+        public async Task<string> GetTranslateValue(string languageCode, string key)
+        {
+            try
+            {
+                string translateValue = await _dataAccess.QuerySingleAsync<string>("Select coalesce((select t.value from translation.translation as t where t.name =@key and t.code=@laguageCode), (select t.value from translation.translation as t where t.name =@key and t.code='EN-GB')) as Key", new { key = key, laguageCode = languageCode });
+
+                return translateValue;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

@@ -10,6 +10,8 @@ using net.atos.daf.ct2.notification;
 using net.atos.daf.ct2.notification.entity;
 using net.atos.daf.ct2.notificationengine.entity;
 using net.atos.daf.ct2.notificationengine.repository;
+using net.atos.daf.ct2.sms;
+using net.atos.daf.ct2.sms.entity;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.webservice;
 using net.atos.daf.ct2.webservice.entity;
@@ -20,10 +22,12 @@ namespace net.atos.daf.ct2.notificationengine
     {
         private readonly INotificationIdentifierRepository _notificationIdentifierRepository;
         private readonly IEmailNotificationManager _emailNotificationManager;
-        public NotificationIdentifierManager(INotificationIdentifierRepository notificationIdentifierRepository, IEmailNotificationManager emailNotificationManager)
+        private readonly ISMSManager _smsManager;
+        public NotificationIdentifierManager(INotificationIdentifierRepository notificationIdentifierRepository, IEmailNotificationManager emailNotificationManager, ISMSManager smsManager)
         {
             _notificationIdentifierRepository = notificationIdentifierRepository;
             _emailNotificationManager = emailNotificationManager;
+            _smsManager = smsManager;
         }
         public async Task<List<Notification>> GetNotificationDetails(TripAlert tripAlert)
         {
@@ -145,6 +149,10 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.AlertTypeEnum = generatedAlertForVehicle[0].Type;
                         notificationHistory.UrgencyTypeKey = generatedAlertForVehicle[0].UrgencyTypeKey;
                         notificationHistory.UrgencyTypeEnum = generatedAlertForVehicle[0].UrgencyLevelType;
+                        notificationHistory.ThresholdValue = tripAlert.ThresholdValue;
+                        notificationHistory.ThresholdValueUnitType = tripAlert.ThresholdValueUnitType;
+                        notificationHistory.ValueAtAlertTime = tripAlert.ValueAtAlertTime;
+                        notificationHistory.SMS = item.Notrec_sms;
 
                         identifiedNotificationRec.Add(notificationHistory);
                     }
@@ -157,7 +165,7 @@ namespace net.atos.daf.ct2.notificationengine
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
                 {
-
+                    //await SendSMS(identifiedNotificationRec);
                 }
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").Count() > 0)
@@ -204,7 +212,7 @@ namespace net.atos.daf.ct2.notificationengine
                         EventType = EmailEventType.AlertNotificationEmail
                     };
 
-                    isResult = await _emailNotificationManager.TriggerSendEmail(mailNotification);
+                    //isResult = await _emailNotificationManager.TriggerSendEmail(mailNotification);
                     item.Status = isResult ? ((char)NotificationSendType.Successful).ToString() : ((char)NotificationSendType.Failed).ToString();
                     await InsertNotificationSentHistory(item);
                 }
@@ -242,6 +250,38 @@ namespace net.atos.daf.ct2.notificationengine
             {
                 throw;
             }
+        }
+
+        public async Task<bool> SendSMS(List<NotificationHistory> notificationHistory)
+        {
+            try
+            {
+                bool isResult = false;
+                foreach (var item in notificationHistory)
+                {
+                    string alertTypeValue = await GetTranslateValue(string.Empty, item.AlertTypeKey);
+                    string urgencyTypeValue = await GetTranslateValue(string.Empty, item.UrgencyTypeKey);
+                    string smsDescription = string.IsNullOrEmpty(item.SMS) ? item.SMS : item.SMS.Substring(0, 50);
+                    string smsBody = alertTypeValue + " " + item.ThresholdValue + " " + item.ThresholdValueUnitType + " " + item.ValueAtAlertTime + " " + urgencyTypeValue + " " + smsDescription;
+                    SMS sms = new SMS();
+                    sms.ToPhoneNumber = item.PhoneNo;
+                    sms.Body = smsBody;
+                    string status = await _smsManager.SendSMS(sms);
+                    item.Status = status.ToString();
+                    await InsertNotificationSentHistory(item);
+                    isResult = true;
+                }
+
+                return isResult;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<string> GetTranslateValue(string languageCode, string key)
+        {
+            return await _notificationIdentifierRepository.GetTranslateValue(languageCode, key);
         }
     }
 }

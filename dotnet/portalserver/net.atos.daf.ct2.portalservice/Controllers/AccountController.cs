@@ -1836,7 +1836,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 int sAccountId = _userDetails.AccountId;
                 int sRoleId = _userDetails.RoleId;
                 int sOrgId = _userDetails.OrgId;
-                int sContextOrgId = _userDetails.ContextOrgId;
 
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                               "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
@@ -1853,44 +1852,40 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (level >= 30)
                     return Unauthorized("Unauthorized access");
 
-                if (sContextOrgId != request.ContextOrgId)
+                _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.ContextOrgId);
+
+                //return menu items
+                var response = await _accountClient.GetMenuFeaturesAsync(new AccountBusinessService.MenuFeatureRequest()
                 {
-                    _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.ContextOrgId);
+                    AccountId = sAccountId,
+                    OrganizationId = sOrgId,
+                    RoleId = sRoleId,
+                    LanguageCode = request.LanguageCode,
+                    ContextOrgId = request.ContextOrgId
+                });
 
-                    //return menu items
-                    var response = await _accountClient.GetMenuFeaturesAsync(new AccountBusinessService.MenuFeatureRequest()
-                    {
-                        AccountId = sAccountId,
-                        OrganizationId = sOrgId,
-                        RoleId = sRoleId,
-                        LanguageCode = request.LanguageCode,
-                        ContextOrgId = request.ContextOrgId
-                    });
-
-                    //Set logged in user allowed features in the session
-                    if (response?.MenuFeatures?.Features != null && response?.MenuFeatures?.Features.Count > 0)
-                    {
-                        _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
-                            response.MenuFeatures.Features.Select(x => x.Name).ToArray());
-                    }
-                    else
-                    {
-                        _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
-                            new string[] { });
-                    }
-
-                    if (response.Code == AccountBusinessService.Responcecode.Success)
-                    {
-                        return Ok(response.MenuFeatures);
-                    }
-                    else if (response.Code == AccountBusinessService.Responcecode.NotFound)
-                    {
-                        return Ok(new AccountBusinessService.MenuFeatureList());
-                    }
-                    else
-                        return StatusCode(500, "Error occurred while fetching menu items and features for the context.");
+                //Set logged in user allowed features in the session
+                if (response?.MenuFeatures?.Features != null && response?.MenuFeatures?.Features.Count > 0)
+                {
+                    _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
+                        response.MenuFeatures.Features.Select(x => x.Name).ToArray());
                 }
-                return NoContent();
+                else
+                {
+                    _httpContextAccessor.HttpContext.Session.SetObject(SessionConstants.FeaturesKey,
+                        new string[] { });
+                }
+
+                if (response.Code == AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(response.MenuFeatures);
+                }
+                else if (response.Code == AccountBusinessService.Responcecode.NotFound)
+                {
+                    return Ok(new AccountBusinessService.MenuFeatureList());
+                }
+                else
+                    return StatusCode(500, "Error occurred while fetching menu items and features for the context.");
             }
             catch (Exception ex)
             {

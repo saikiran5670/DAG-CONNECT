@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.dashboardservice
 {
-    public class DashBoardManagementService : DashBoardGRPCService.DashBoardGRPCServiceBase
+    public class DashBoardManagementService : DashboardService.DashboardServiceBase
     {
         private readonly ILog _logger;
         private readonly IDashBoardManager _dashBoardManager;
@@ -33,14 +33,14 @@ namespace net.atos.daf.ct2.dashboardservice
                     EndDateTime = request.EndDateTime,
                     VINs = request.VINs.ToList<string>()
                 };
-                List<dashboard.entity.FleetKpi> reportDetails = await _dashBoardManager.GetFleetKPIDetails(fleetKpiFilter);
+                dashboard.entity.FleetKpi reportDetails = await _dashBoardManager.GetFleetKPIDetails(fleetKpiFilter);
                 FleetKpiResponse fleetKpiResponse = new FleetKpiResponse
                 {
                     Code = Responsecode.Success,
                     Message = DashboardConstants.GET_FLEETKPI_DETAILS_SUCCESS_MSG
                 };
-                var res = JsonConvert.SerializeObject(reportDetails);
-                fleetKpiResponse.FleetKpis.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetKpi>>(res));
+                string serializeDetails = JsonConvert.SerializeObject(reportDetails);
+                fleetKpiResponse.FleetKpis = (JsonConvert.DeserializeObject<FleetKpi>(serializeDetails));
                 return await Task.FromResult(fleetKpiResponse);
             }
             catch (Exception ex)

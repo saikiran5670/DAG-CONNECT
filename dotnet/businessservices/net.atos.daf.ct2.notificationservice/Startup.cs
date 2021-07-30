@@ -16,6 +16,7 @@ using net.atos.daf.ct2.notification;
 using net.atos.daf.ct2.notification.repository;
 using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.sms;
 
 namespace net.atos.daf.ct2.notificationservice
 {
@@ -49,7 +50,7 @@ namespace net.atos.daf.ct2.notificationservice
             services.AddTransient<IEmailRepository, EmailRepository>();
             services.AddTransient<ITranslationManager, TranslationManager>();
             services.AddTransient<ITranslationRepository, TranslationRepository>();
-
+            services.AddTransient<ISMSManager, SMSManager>();
             services.AddGrpc();
         }
 

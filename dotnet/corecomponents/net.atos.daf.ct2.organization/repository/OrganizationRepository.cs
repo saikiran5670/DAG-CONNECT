@@ -83,8 +83,8 @@ namespace net.atos.daf.ct2.organization.repository
                     groupAccount.FunctionEnum = FunctionEnum.All;
                     groupAccount.OrganizationId = orgid;
                     groupAccount.RefId = 0;
-                    groupAccount.Name = "DefaultAccountGroup";
-                    groupAccount.Description = "DefaultAccountGroup";
+                    groupAccount.Name = "All accounts";
+                    groupAccount.Description = "All accounts";
                     groupAccount.CreatedAt = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                     groupAccount = await _groupManager.Create(groupAccount);
 
@@ -96,8 +96,8 @@ namespace net.atos.daf.ct2.organization.repository
                     groupVehicle.FunctionEnum = FunctionEnum.All;
                     groupVehicle.OrganizationId = orgid;
                     groupVehicle.RefId = 0;
-                    groupVehicle.Name = "DefaultVehicleGroup";
-                    groupVehicle.Description = "DefaultVehicleGroup";
+                    groupVehicle.Name = "Fleet";
+                    groupVehicle.Description = "Fleet";
                     groupVehicle.CreatedAt = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                     groupVehicle = await _groupManager.Create(groupVehicle);
 
@@ -536,8 +536,8 @@ namespace net.atos.daf.ct2.organization.repository
                 groupAccount.FunctionEnum = FunctionEnum.All;  // As per requirement change none to all
                 groupAccount.OrganizationId = organizationId;
                 groupAccount.RefId = 0;
-                groupAccount.Name = "DefaultAccountGroup";
-                groupAccount.Description = "DefaultAccountGroup";
+                groupAccount.Name = "All accounts";
+                groupAccount.Description = "All accounts";
                 groupAccount.CreatedAt = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                 groupAccount = await _groupManager.Create(groupAccount);
 
@@ -549,8 +549,8 @@ namespace net.atos.daf.ct2.organization.repository
                 groupVehicle.FunctionEnum = FunctionEnum.All;   // As per requirement change none to all
                 groupVehicle.OrganizationId = organizationId;
                 groupVehicle.RefId = 0;
-                groupVehicle.Name = "DefaultVehicleGroup";
-                groupVehicle.Description = "DefaultVehicleGroup";
+                groupVehicle.Name = "Fleet";
+                groupVehicle.Description = "Fleet";
                 groupVehicle.CreatedAt = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                 groupVehicle = await _groupManager.Create(groupVehicle);
             }
