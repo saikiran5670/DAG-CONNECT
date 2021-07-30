@@ -334,5 +334,33 @@ namespace net.atos.daf.ct2.driver
                 throw;
             }
         }
+
+        #region Provisioning Data Service
+
+        public Task<bool> GetCurrentDriver(ProvisioningDriverDataServiceRequest request)
+        {
+            try
+            {
+                return Task.FromResult(true);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public Task<bool> GetDriverList(ProvisioningDriverDataServiceRequest request)
+        {
+            try
+            {
+                return Task.FromResult(true);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        #endregion
     }
 }

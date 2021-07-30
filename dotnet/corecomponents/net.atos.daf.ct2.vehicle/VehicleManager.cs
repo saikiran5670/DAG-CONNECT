@@ -507,6 +507,21 @@ namespace net.atos.daf.ct2.vehicle
                 throw;
             }
         }
+
+        #endregion
+
+        #region Provisioning Data Service
+
+        public async Task<bool> GetCurrentVehicle(ProvisioningVehicleDataServiceRequest request)
+        {
+            return await _vehicleRepository.GetCurrentVehicle(request);
+        }
+
+        public async Task<bool> GetVehicleList(ProvisioningVehicleDataServiceRequest request)
+        {
+            return await _vehicleRepository.GetVehicleList(request);
+        }
+
         #endregion
     }
 

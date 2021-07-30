@@ -36,5 +36,19 @@ namespace net.atos.daf.ct2.driver
         {
             return await _driverRepository.UpdateOptinOptout(organizationId, optoutStatus);
         }
+
+        #region Provisioning Data Service
+
+        public async Task<bool> GetCurrentDriver(ProvisioningDriverDataServiceRequest request)
+        {
+            return await _driverRepository.GetCurrentDriver(request);
+        }
+
+        public async Task<bool> GetDriverList(ProvisioningDriverDataServiceRequest request)
+        {
+            return await _driverRepository.GetDriverList(request);
+        }
+
+        #endregion
     }
 }

@@ -1259,5 +1259,21 @@ namespace net.atos.daf.ct2.organization.repository
                 throw;
             }
         }
+
+        #region Provisioning Data Service
+
+        public Task<bool> GetOrganisationList(ProvisioningOrganisationDataServiceRequest request)
+        {
+            try
+            {
+                return Task.FromResult(true);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        #endregion
     }
 }
