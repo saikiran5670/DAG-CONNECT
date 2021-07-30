@@ -56,6 +56,9 @@ namespace net.atos.daf.ct2.notificationengine.test
             tripAlert.Latitude = 51.12768896;
             tripAlert.Longitude = 4.935644520;
             tripAlert.AlertGeneratedTime = 1626965785;
+            tripAlert.ThresholdValue = 8766;
+            tripAlert.ValueAtAlertTime = 8767;
+            tripAlert.ThresholdValueUnitType = "M";
 
 
             var notificationDetails = _inotificationIdentifierManager.GetNotificationDetails(tripAlert).Result;
