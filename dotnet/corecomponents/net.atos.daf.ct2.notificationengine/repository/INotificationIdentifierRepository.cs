@@ -13,5 +13,6 @@ namespace net.atos.daf.ct2.notificationengine.repository
         Task<List<TripAlert>> GetGeneratedTripAlert(TripAlert tripAlert);
         Task<NotificationHistory> InsertNotificationSentHistory(NotificationHistory notificationHistory);
         Task<TripAlert> GetVehicleIdForTrip(TripAlert tripAlert);
+        Task<string> GetTranslateValue(string languageCode, string key);
     }
 }
