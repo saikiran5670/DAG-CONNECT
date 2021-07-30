@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _auditHelper = auditHelper;
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("fleetkpi")]
         public async Task<IActionResult> GetFleetKpi([FromBody] Entity.Dashboard.DashboardFilter request)
         {
