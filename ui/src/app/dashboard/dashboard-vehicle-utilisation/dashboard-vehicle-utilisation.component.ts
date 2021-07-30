@@ -151,7 +151,6 @@ public alertPieChartData: SingleDataSet = [];
   ngOnInit(): void {
     this.setChartData();
     this.selectionTimeRange('week');
-    this.toggle(this.clickButton);
   }
 
   setChartData(){
@@ -273,11 +272,6 @@ public alertPieChartData: SingleDataSet = [];
       }
     };
     this.router.navigate(['fleetoverview/logbook'], navigationExtras);
-  }
-
-  toggle(clickbutton){
-    this.clickButton = !this.clickButton
-    event.stopPropagation();
   }
 
   selectionTimeRange(selection: any){

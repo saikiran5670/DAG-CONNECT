@@ -41,22 +41,26 @@
     min-width: 35%;
 }
 
-.mat-expansion-indicator::after {
-    transform: rotate(225deg) !important;
- }
- 
- // for the mat-expansion indicator to displayed when it is disabled
- .mat-expansion-indicator {
-    position: absolute;
-    // right: 75px;
-    padding-left: 95%;
- }
-
  .selectedBtn {
     background: #e4e4e4 !important;
     color: #000 !important;
 }
 
-::ng-deep .mat-expansion-panel-header[aria-disabled=true] {
-    color: rgba(0,0,0,.87);
+.moreButton{
+    position: absolute;
+    right: 50px;
+    top: 11px;
+}
+
+
+.monthButton{
+    position: absolute;
+    right: 180px;
+    top: 11px;
+}
+
+.weekButton{
+    position: absolute;
+    right: 310px;
+    top: 11px;
 }

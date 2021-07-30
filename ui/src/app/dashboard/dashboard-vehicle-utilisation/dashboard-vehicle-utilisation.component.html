@@ -1,22 +1,22 @@
-<mat-expansion-panel class="full-width margin-bottom-20m" fxLayoutGap="10px" hideToggle = "false" [expanded]="true" [disabled]="clickButton" (click)="toggle(clickButton)">
+<mat-expansion-panel class="full-width margin-bottom-20m" fxLayoutGap="10px" [expanded]="true">
   <mat-expansion-panel-header class="full-width">
     <mat-panel-title>
       <span *ngIf="clickButton"  class="mat-expansion-indicator"></span>
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehiclesUtilisation
         || 'Vehicles Utilisation' }}</span>
-      <div style='padding-left: 52%;' fxLayoutAlign="end">
-        <button class='margin-right-10 no-margin margin-bottom-sm' 
-        (click)="selectionTimeRange('week')" [ngClass]="{'selectedBtn': selectionTab == 'week'}"  mat-raised-button
-          color="primary">{{translationData.lblLast7days|| 'Last 7 days' }}</button>
-        <button class='margin-right-10 no-margin margin-bottom-sm' 
-        (click)="selectionTimeRange('month')" [ngClass]="{'selectedBtn': selectionTab == 'month'}" mat-raised-button
-          color="primary">{{translationData.lblLast30days|| 'Last 30 days' }}</button>
-        <button class='margin-right-10 no-margin margin-bottom-sm' 
-        (click)="selectionTimeRange('3months')" [ngClass]="{'selectedBtn': selectionTab == '3months'}" mat-raised-button
-          color="primary">{{translationData.lblLastWeek || 'Last 90 days' }}</button>
-      </div>
     </mat-panel-title>
   </mat-expansion-panel-header>
+  <!-- <div style='padding-left: 52%;' fxLayoutAlign="end"> -->
+    <button class="weekButton"
+    (click)="selectionTimeRange('week')" [ngClass]="{'selectedBtn': selectionTab == 'week'}"  mat-raised-button
+      color="primary">{{translationData.lblLast7days|| 'Last 7 days' }}</button>
+    <button class="monthButton" 
+    (click)="selectionTimeRange('month')" [ngClass]="{'selectedBtn': selectionTab == 'month'}" mat-raised-button
+      color="primary">{{translationData.lblLast30days|| 'Last 30 days' }}</button>
+    <button class="moreButton"
+    (click)="selectionTimeRange('3months')" [ngClass]="{'selectedBtn': selectionTab == '3months'}" mat-raised-button
+      color="primary">{{translationData.lblLastWeek || 'Last 90 days' }}</button>
+  <!-- </div> -->
   <div fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistancePerDay ||
@@ -83,17 +83,18 @@
   </div>
 </mat-expansion-panel>
 
-<mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true" [disabled]="clickButton" (click)="toggle(clickButton)">
+<mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
   <mat-expansion-panel-header class="full-width">
     <mat-panel-title>
       <!-- <span *ngIf="clickButton"  class="mat-expansion-indicator"></span> -->
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlertsLast24Hours || 'Alerts Last 24 Hours' }}</span>
       <div style='padding-left: 76%;' fxLayoutAlign="end">
-        <button class='margin-right-10 no-margin margin-bottom-sm' (click)="gotoLogBook()" mat-raised-button
-          color="primary">{{translationData.lblMoreInfo|| 'More Info' }}</button>
       </div>
     </mat-panel-title>
   </mat-expansion-panel-header>
+  <button class="moreButton" (click)="gotoLogBook()" mat-raised-button
+  color="primary">{{translationData.lblMoreInfo|| 'More Info' }}</button>
+
   <div fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
     <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblLevelsOfAlertsTriggered ||
