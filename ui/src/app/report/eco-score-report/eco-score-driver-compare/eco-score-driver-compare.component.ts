@@ -174,11 +174,11 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     this.columnDefinitions = [
       {
         id: 'category', name: (this.translationData.lblCategory || 'Category'), field: 'key',
-        type: FieldType.string, width: 150, maxWidth: 400, formatter: this.treeFormatter, excludeFromHeaderMenu: true
+        type: FieldType.string, minWidth: 150, maxWidth: 400, formatter: this.treeFormatter, excludeFromHeaderMenu: true
       },
       {
-        id: 'target', name: (this.translationData.lblTarget || 'Target'), field: 'target',
-        type: FieldType.string, minWidth: 90, maxWidth: 175, excludeFromHeaderMenu: true
+        id: 'target', name: (this.translationData.lblTarget || 'Target'), field: 'targetValue',
+        type: FieldType.string, formatter: this.targetValue, minWidth: 90, maxWidth: 275, excludeFromHeaderMenu: true
       }
     ];
     this.columnDefinitionsGen = [
@@ -364,7 +364,8 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   
   getScore0: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
     if(value !== undefined && value !== null && value.length > 0){
-      let color = value[0].color === 'Amber'?'Orange':value[0].color;
+      // let color = value[0].color === 'Amber'?'Orange':value[0].color;
+      let color = this.getColor(dataContext, value[0].value);
       return '<span style="color:' + color + '">' + value[0].value + "</span>";
     }
     return '';
@@ -372,7 +373,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   
   getScore1: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
     if(value !== undefined && value !== null && value.length > 1){
-      let color = value[1].color === 'Amber'?'Orange':value[1].color;
+      let color = this.getColor(dataContext, value[0].value);
       return '<span style="color:' + color + '">' + value[1].value + "</span>";
     }
     return '';
@@ -380,7 +381,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
 
   getScore2: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
     if(value !== undefined && value !== null && value.length > 2){
-      let color = value[2].color === 'Amber'?'Orange':value[2].color;
+      let color = this.getColor(dataContext, value[0].value);
       return '<span style="color:' + color + '">' + value[2].value + "</span>";
     }
     return '';
@@ -388,10 +389,35 @@ export class EcoScoreDriverCompareComponent implements OnInit {
 
   getScore3: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
     if(value !== undefined && value !== null && value.length > 3){
-      let color = value[3].color === 'Amber'?'Orange':value[3].color;
+      let color = this.getColor(dataContext, value[0].value);
       return '<span style="color:' + color + '">' + value[3].value + "</span>";
     }
     return '';
+  }
+
+  targetValue: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+    return '<span style="color: black">' + value + "</span>";
+  }
+  getColor(dataContext: any, val: string){
+    if(dataContext.limitType && val){
+      let valTemp = Number.parseFloat(val);
+      if(dataContext.limitType == 'N'){
+        if(valTemp < dataContext.limitValue)
+          return "Red";
+        else if(valTemp > dataContext.limitValue && valTemp < dataContext.targetValue)
+          return "Orange";
+        else
+          return "Green";
+      } else if(dataContext.limitType == 'X'){
+        if(valTemp < dataContext.targetValue)
+          return "Red";
+        else if(valTemp > dataContext.targetValue && valTemp < dataContext.limitValue)
+          return "Orange";
+        else
+          return "Green";
+      }
+      return "Black";
+    }
   }
 
   loadData() {
