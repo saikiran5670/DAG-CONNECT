@@ -25,7 +25,7 @@ public class FlinkKafkaStatusMsgConsumer implements Serializable{
 
 		Properties properties = new Properties();
 
-		properties.setProperty("client.id", envParams.get(ETLConstants.CLIENT_ID));
+		properties.setProperty(ETLConstants.CLIENT_ID, envParams.get(ETLConstants.CLIENT_ID));
 		// properties.setProperty(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG,"6000");
 		properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, envParams.get(ETLConstants.AUTO_OFFSET_RESET_CONFIG));
 		properties.setProperty(ETLConstants.GROUP_ID, envParams.get(ETLConstants.GROUP_ID));
