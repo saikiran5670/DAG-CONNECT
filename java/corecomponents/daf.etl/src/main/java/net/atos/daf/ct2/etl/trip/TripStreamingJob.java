@@ -73,6 +73,20 @@ public class TripStreamingJob {
 							logger.info("Data Issue TripId is null, ignoring :: "+ rec); 
 							System.out.println("Data Issue TripId is null, ignoring :: "+ rec);}
 						return null !=  rec.getTripId();});
+					/*.assignTimestampsAndWatermarks(
+							WatermarkStrategy.<TripStatusData>forBoundedOutOfOrderness(Duration.ofSeconds(1))
+							.withTimestampAssigner(new SerializableTimestampAssigner<TripStatusData>() {
+
+								private static final long serialVersionUID = 1L;
+
+								@Override
+								public long extractTimestamp(TripStatusData element, long recordTimestamp) {
+									if(element.getEndDateTime() != null)
+										return element.getEndDateTime();
+									else
+										return 0L;
+								}
+							}));*/
 			
 			logger.info(" completed reading the streaming data !!!!!!!!!!!!!! ");
 

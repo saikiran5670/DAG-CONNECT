@@ -148,6 +148,7 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.ThresholdValue = tripAlert.ThresholdValue;
                         notificationHistory.ThresholdValueUnitType = tripAlert.ThresholdValueUnitType;
                         notificationHistory.ValueAtAlertTime = tripAlert.ValueAtAlertTime;
+                        notificationHistory.SMS = item.Notrec_sms;
 
                         identifiedNotificationRec.Add(notificationHistory);
                     }
@@ -207,7 +208,7 @@ namespace net.atos.daf.ct2.notificationengine
                         EventType = EmailEventType.AlertNotificationEmail
                     };
 
-                    isResult = await _emailNotificationManager.TriggerSendEmail(mailNotification);
+                    //isResult = await _emailNotificationManager.TriggerSendEmail(mailNotification);
                     item.Status = isResult ? ((char)NotificationSendType.Successful).ToString() : ((char)NotificationSendType.Failed).ToString();
                     await InsertNotificationSentHistory(item);
                 }

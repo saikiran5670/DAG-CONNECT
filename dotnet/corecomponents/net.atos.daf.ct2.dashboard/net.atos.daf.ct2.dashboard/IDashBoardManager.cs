@@ -6,7 +6,7 @@ namespace net.atos.daf.ct2.dashboard
 {
     public interface IDashBoardManager
     {
-        Task<List<FleetKpi>> GetFleetKPIDetails(FleetKpiFilter fleetFuelFilters);
+        Task<FleetKpi> GetFleetKPIDetails(FleetKpiFilter fleetFuelFilters);
         Task<List<Alert24Hours>> GetLastAlert24Hours(Alert24HoursFilter alert24HoursFilter);
     }
 }

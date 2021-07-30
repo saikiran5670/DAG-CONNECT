@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.dashboard.repository
         /// </summary>
         /// <param name="fleetKpiFilter"></param>
         /// <returns></returns>
-        public async Task<List<FleetKpi>> GetFleetKPIDetails(FleetKpiFilter fleetKpiFilter)
+        public async Task<FleetKpi> GetFleetKPIDetails(FleetKpiFilter fleetKpiFilter)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                         FROM cte_filteredTrip 
                                                         GROUP BY isongoingtrip";
 
-                List<FleetKpi> lstFleetKpiDetails = (List<FleetKpi>)await _dataMartdataAccess.QueryAsync<FleetKpi>(queryFleetUtilization, parameterOfFilters);
+                FleetKpi lstFleetKpiDetails = (FleetKpi)await _dataMartdataAccess.QueryAsync<FleetKpi>(queryFleetUtilization, parameterOfFilters);
 
                 return lstFleetKpiDetails;
             }
@@ -81,8 +81,19 @@ namespace net.atos.daf.ct2.dashboard.repository
                 var parameterOfFilters = new DynamicParameters();
                 var tempdate = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddDays(-1));
                 parameterOfFilters.Add("@Vins", alert24HoursFilter.VINs);
-                string queryAlert = @"select * from alert";
-                List<Alert24Hours> lstAlert = (List<Alert24Hours>)await _dataMartdataAccess.QueryAsync<Alert24Hours>(queryAlert, parameterOfFilters);
+                string queryAlert24Hours = @"select                                       
+	                 COUNT(CASE WHEN tra.category_type = 'L' then 1 ELSE NULL END) as Logistic,
+                     COUNT(CASE WHEN tra.category_type = 'F' then 1 ELSE NULL END) as FuelAndDriver,
+	                 COUNT(CASE WHEN tra.category_type = 'R' then 1 ELSE NULL END) as RepairAndMaintenance,
+	                 COUNT(CASE WHEN tra.urgency_level_type = 'A' then 1 ELSE NULL END) as Advisory,
+	                 COUNT(CASE WHEN tra.urgency_level_type = 'C' then 1 ELSE NULL END) as Critical,
+	                 COUNT(CASE WHEN tra.urgency_level_type = 'W' then 1 ELSE NULL END) as Warning
+                from tripdetail.trip_statistics trs
+                inner JOIN tripdetail.tripalert tra ON trs.trip_id = tra.trip_id
+                where trs.vin = Any(@vins) and
+                to_timestamp(tra.alert_generated_time/1000)::date >= (now()::date - 1)";
+
+                List<Alert24Hours> lstAlert = (List<Alert24Hours>)await _dataMartdataAccess.QueryAsync<Alert24Hours>(queryAlert24Hours, parameterOfFilters);
                 return lstAlert;
             }
             catch (System.Exception ex)
