@@ -14,7 +14,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Dashboard
         public long EndDateTime { get; set; }
         [Required]
         public List<string> VINs { get; set; }
+    }
+    public class Alert24HoursFilter
+    {
         [Required]
-        public string LanguageCode { get; set; }
+        public List<string> VINs { get; set; }
     }
 }
