@@ -34,5 +34,6 @@ namespace net.atos.daf.ct2.notificationengine.entity
         public double ThresholdValue { get; set; }
         public string ThresholdValueUnitType { get; set; }
         public double ValueAtAlertTime { get; set; }
+        public string SMS { get; set; }
     }
 }

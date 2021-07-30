@@ -27,6 +27,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             while (true)
             {
                 OnStarted(); //_appLifetime.ApplicationStarted.Register(OnStarted);
+                Thread.Sleep(60000);
             }
             return Task.CompletedTask;
         }
