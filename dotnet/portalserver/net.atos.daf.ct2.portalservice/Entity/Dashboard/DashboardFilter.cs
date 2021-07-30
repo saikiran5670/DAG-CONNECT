@@ -14,7 +14,5 @@ namespace net.atos.daf.ct2.portalservice.Entity.Dashboard
         public long EndDateTime { get; set; }
         [Required]
         public List<string> VINs { get; set; }
-        [Required]
-        public string LanguageCode { get; set; }
     }
 }
