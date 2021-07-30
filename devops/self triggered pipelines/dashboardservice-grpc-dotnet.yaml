@@ -5,6 +5,7 @@ trigger:
 #    - development
 #    - release
 #    - testing
+#    - master
 #  paths:
 #    include:
 #    - dotnet/businessservices/net.atos.daf.ct2.dashboardservice

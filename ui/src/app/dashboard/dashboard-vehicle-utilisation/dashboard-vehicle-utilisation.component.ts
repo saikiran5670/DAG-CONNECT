@@ -2,6 +2,8 @@ import { Input } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { MultiDataSet, Label, Color, SingleDataSet} from 'ng2-charts';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
+import { NavigationExtras, Router } from '@angular/router';
+import { ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard-vehicle-utilisation',
@@ -11,12 +13,19 @@ import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 export class DashboardVehicleUtilisationComponent implements OnInit {
   @Input() translationData: any;
   timeDChartType: any;
-  mileageDChartType: any
+  mileageDChartType: any;
+  selectionTab: any;
+  logisticFlag: boolean = true;
+  fromDashboard:boolean = true;
+  clickButton:boolean = true;
+  fuelFlag: boolean = true;
+  repairFlag: boolean = true;
   chartsLabelsdefined: any = [];
   barChartOptions: any = {
     responsive: true,
     legend: {
       position: 'bottom',
+      display: false
     },
     scales: {
       yAxes: [{
@@ -53,6 +62,7 @@ lineChartOptions = {
   responsive: true,
   legend: {
     position: 'bottom',
+    display: false,
     labels: {
       usePointStyle: true, // show legend as point instead of box
       fontSize: 10 // legend point size is based on fontsize
@@ -136,10 +146,12 @@ vehicleChartType: any;
 public alertPieChartLabels: Label[] = [];
 public alertPieChartData: SingleDataSet = [];
 
-  constructor() { }
+  constructor(private router: Router,private elRef: ElementRef) { }
 
   ngOnInit(): void {
     this.setChartData();
+    this.selectionTimeRange('week');
+    this.toggle(this.clickButton);
   }
 
   setChartData(){
@@ -152,13 +164,13 @@ public alertPieChartData: SingleDataSet = [];
     if(this.distanceChartType == 'bar'){
     this.barChartLabels1= [['23 July', '2020'], ['24 July', '2020'], ['25 July','2020'], ['26 July','2020'], ['27 July','2020'], ['28 July','2020']];
     this.barChartData1= [
-      { data: [30, 33, 45, 40, 25, 30], label: 'Distance Per Day' , backgroundColor: '#7BC5EC',
+      { data: [30, 33, 45, 40, 25, 30] , backgroundColor: '#7BC5EC',
       hoverBackgroundColor: '#7BC5EC',}
     ];
     }
   else{
     this.lineChartData1= [
-      { data: [30, 33, 45, 40, 25, 30], label: 'Distance Per Day',
+      { data: [30, 33, 45, 40, 25, 30],
         lineTension: 0, 
         pointBorderColor: "orange", // orange point border
       pointBackgroundColor: "white", // wite point fill
@@ -223,4 +235,76 @@ public alertPieChartData: SingleDataSet = [];
   this.alertPieChartLabels=  ['Critical','Warning','Advisory'];
   }
 
+    gotoLogBook(){
+      this.clickButton = true;
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromDashboard: true
+      }
+    };
+    this.router.navigate(['fleetoverview/logbook'], navigationExtras);
+  }
+  
+  gotoLogBookFromLogistic(){
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromDashboard: true,
+        logisticFlag: true
+      }
+    };
+    this.router.navigate(['fleetoverview/logbook'], navigationExtras);
+  }
+
+  gotoLogBookFromFuel(){
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromDashboard: true,
+        fuelFlag: true,
+      }
+    };
+    this.router.navigate(['fleetoverview/logbook'], navigationExtras);
+  }
+
+  gotoLogBookFromRepair(){
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromDashboard: true,
+        repairFlag: true,
+      }
+    };
+    this.router.navigate(['fleetoverview/logbook'], navigationExtras);
+  }
+
+  toggle(clickbutton){
+    this.clickButton = !this.clickButton
+    event.stopPropagation();
+  }
+
+  selectionTimeRange(selection: any){
+    // this.internalSelection = true;
+    this.clickButton = true;
+    switch(selection){
+      case 'week': {
+        this.selectionTab = 'week';
+        // this.setDefaultStartEndTime();
+        // this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+        // this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        break;
+      }
+      case 'month': {
+        this.selectionTab = 'month';
+        // this.setDefaultStartEndTime();
+        // this.startDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start');
+        // this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        break;
+      }
+      case '3months': {
+        this.selectionTab = '3months';
+        // this.setDefaultStartEndTime();
+        // this.startDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start');
+        // this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        break;
+      }
+    }
+  }
 }

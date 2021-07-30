@@ -277,7 +277,9 @@ ngOnDestroy(){
         }
       });
     });
-    //this.selectionTimeRange('today');
+    if(this._state.fromDashboard == true){
+    this.selectionTimeRange('today');
+    }
   }
 
   changeHerePOISelection(event: any, hereData: any){
@@ -837,6 +839,15 @@ ngOnDestroy(){
             if(_v.length > 0){
               let id =_v[0].vehicleId;
               this.logBookForm.get('vehicle').setValue(id);
+              if(this._state.fromDashboard == true && this._state.logisticFlag == true){
+                this.logBookForm.get('alertCategory').setValue("L");
+              }
+              if(this._state.fromDashboard == true && this._state.fuelFlag == true){
+                this.logBookForm.get('alertCategory').setValue("F");
+              }
+              if(this._state.fromDashboard == true && this._state.repairFlag == true){
+                this.logBookForm.get('alertCategory').setValue("R");
+              }
             }
         }
         }else{
