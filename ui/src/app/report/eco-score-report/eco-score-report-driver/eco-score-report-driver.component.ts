@@ -38,6 +38,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   @Input() ecoScoreDriverDetails: any;
   @Input() ecoScoreForm: any;
   @Input() translationData: any=[];
+  @Input() prefUnitFormat: any;
   fromDisplayDate: any;
   toDisplayDate : any;
   selectedVehicleGroup : string;
