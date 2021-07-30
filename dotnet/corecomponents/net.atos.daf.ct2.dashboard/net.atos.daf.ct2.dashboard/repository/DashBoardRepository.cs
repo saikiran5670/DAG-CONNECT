@@ -105,5 +105,43 @@ namespace net.atos.daf.ct2.dashboard.repository
 
         }
 
+        public async Task<TodayLiveVehicleResponse> GetTodayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                var filter = DateTime.Now;
+                var datetime = DateTime.Now.AddHours(-filter.Hour).AddMinutes(-filter.Minute).AddSeconds(-filter.Second);
+                long str = UTCHandling.GetUTCFromDateTime(datetime, "UTC");
+                parameter.Add("@Vins", objTodayLiveVehicleRequest.VINs);
+                string query = @"WITH cte_vintodaydata as
+                                     (
+                                SELECT  lcts.vin,
+		                                SUM(lcts.trip_distance) AS distance ,
+		                                SUM(lcts.driving_time) AS drivingtime,
+		                                COUNT(lcts.driver1_id) AS driverid,
+		                                Count(ta.urgency_level_type) As criticlealertcount
+                                FROM  livefleet.livefleet_current_trip_statistics lcts
+                                LEFT JOIN tripdetail.tripalert ta ON lcts.vin = ta.vin
+		                                 WHERE lcts.vin  ANY(@Vins) AND LCTS.START_TIME_STAMP = @startdatetime
+                                GROUP BY lcts.vin,lcts.start_time_stamp
+	                                 )
+	                                 SELECT  
+	                                 Count(vin) AS vehiclecount,
+		                                SUM(distance) AS distance ,
+		                                SUM(drivingtime) AS drivingtime,
+		                                COUNT(drivingtime) AS drivingtime,
+		                                Count(criticlealertcount) As criticlealertcount
+                                FROM  cte_vintodaydata
+                                GROUP BY vin";
+                var data = await _dataMartdataAccess.QueryAsync<TodayLiveVehicleResponse>(query, parameter);
+                return data.FirstOrDefault();
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+
+        }
     }
 }
