@@ -243,7 +243,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , round(fd.fuel_consumed,2)                              As FuelConsumed
                                                		  , round(fd.fuel_consumption,2)                           As FuelConsumption
                                                		  , round(fd.co2_emission,2)                               As CO2Emission
-                                               		  , fd.idle_duration                                       as IdleDuration
+                                               		  , round(fd.idle_duration,2)                                       as IdleDuration
                                                		  , round(fd.pto_duration,2)                               as PTODuration
                                                		  , round(fd.harsh_brake_duration,2)                       As HarshBrakeDuration
                                                		  , round(fd.heavy_throttle_duration,2)                    As HeavyThrottleDuration
