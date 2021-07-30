@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, HostListener, Inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 // import * as data from './shared/menuData.json';
 // import * as data from './shared/navigationMenuData.json';
@@ -363,6 +363,15 @@ export class AppComponent {
     });
   }
 
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+    if(this.isLogedIn) {
+      localStorage.setItem("pageRefreshed", 'true');
+    } else {
+      localStorage.removeItem("pageRefreshed");
+    }
+  }
+
   getNavigationMenu() {
     let parseLanguageCode = JSON.parse(localStorage.getItem("language"))
     //--- accessing getmenufeature api from account --//
@@ -372,18 +381,24 @@ export class AppComponent {
     //  "organizationId": 1,
     //  "languageCode": "EN-GB"
     // }
-    let featureMenuObj = {
-      "accountId": parseInt(localStorage.getItem("accountId")),
-      "roleId": parseInt(localStorage.getItem("accountRoleId")),
-      "organizationId": parseInt(localStorage.getItem("accountOrganizationId")),
-      "languageCode": parseLanguageCode.code
+    let refresh = localStorage.getItem('pageRefreshed') == 'true';
+    debugger;
+    if(refresh) {
+      this.applyFilterOnOrganization(localStorage.getItem("contextOrgId"))
+    } else {
+      let featureMenuObj = {
+        "accountId": parseInt(localStorage.getItem("accountId")),
+        "roleId": parseInt(localStorage.getItem("accountRoleId")),
+        "organizationId": parseInt(localStorage.getItem("accountOrganizationId")),
+        "languageCode": parseLanguageCode.code
+      }
+      this.accountService.getMenuFeatures(featureMenuObj).subscribe((result: any) => {
+        this.getMenu(result, 'orgRoleChange');
+        this.getReportDetails();
+      }, (error) => {
+        console.log(error);
+      });
     }
-    this.accountService.getMenuFeatures(featureMenuObj).subscribe((result: any) => {
-      this.getMenu(result, 'orgRoleChange');
-      this.getReportDetails();
-    }, (error) => {
-      console.log(error);
-    });
 
     // // For checking Access of the User
     // let accessNameList = [];
@@ -949,7 +964,7 @@ export class AppComponent {
     }
     let switchObj = {
       accountId: this.accountID,
-      contextOrgId: filterValue,
+      contextOrgId: parseInt(filterValue),
       languageCode: this.localStLanguage.code
     }
     this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {

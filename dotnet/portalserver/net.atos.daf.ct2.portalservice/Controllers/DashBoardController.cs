@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _auditHelper = auditHelper;
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("fleetkpi")]
         public async Task<IActionResult> GetFleetKpi([FromBody] Entity.Dashboard.DashboardFilter request)
         {
@@ -62,6 +62,39 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
+        }
+
+        [HttpGet]
+        [Route("dashboard/alert24hours")]
+        public async Task<IActionResult> GetAlert24Hours([FromBody] Entity.Dashboard.Alert24HoursFilter request)
+        {
+            try
+            {
+
+                if (request.VINs.Count <= 0)
+                {
+                    return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_VINREQUIRED_MSG);
+                }
+                string filters = JsonConvert.SerializeObject(request);
+                Alert24HoursFilterRequest objAlertFilter = JsonConvert.DeserializeObject<Alert24HoursFilterRequest>(filters);
+                _logger.Info("GetAlert24hours method in dashboard API called.");
+                var data = await _dashboarClient.GetLastAlert24HoursAsync(objAlertFilter);
+                if (data != null)
+                {
+                    data.Message = DashboardConstant.GET_DASBHOARD_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, DashboardConstant.GET_DASBHOARD_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+
         }
 
     }

@@ -15,4 +15,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Dashboard
         [Required]
         public List<string> VINs { get; set; }
     }
+    public class Alert24HoursFilter
+    {
+        [Required]
+        public List<string> VINs { get; set; }
+    }
 }
