@@ -6,6 +6,7 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.runtime.state.StateBackend;
 import org.apache.flink.runtime.state.filesystem.FsStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
+import org.apache.flink.streaming.api.environment.CheckpointConfig.ExternalizedCheckpointCleanup;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.slf4j.Logger;
@@ -50,12 +51,12 @@ public class FlinkUtil {
 				(StateBackend) new FsStateBackend(envParams.get(ETLConstants.CHECKPOINT_DIRECTORY), true));
 
 		// enable externalized checkpoints which are retained after job cancellation
-		// env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+		env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
 		// sets the checkpoint storage where checkpoint snapshots will be written
 		// env.getCheckpointConfig().setsetCheckpointStorage("hdfs:///my/checkpoint/dir");
 
-		// TODO  enable only in QA and Prod
+		//  enable only in QA and Prod
 		logger.info("RESTART_FLAG :: "+envParams.get(ETLConstants.RESTART_FLAG));
 		if("true".equals(envParams.get(ETLConstants.RESTART_FLAG))){
 			env.setRestartStrategy(

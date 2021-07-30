@@ -75,8 +75,11 @@ public class MileageStreamingJob {
 		try {
 
 			vMileageObj.setVid(stsMsg.getVid());
-			vMileageObj.setVin(stsMsg.getVin());
-
+			if(stsMsg.getVin() != null)
+				vMileageObj.setVin(stsMsg.getVin());
+			else
+				vMileageObj.setVin(stsMsg.getVid());
+			
 			if (stsMsg.getGpsStopVehDist() != null) {
 				vMileageObj.setOdoMileage(Long.valueOf(stsMsg.getGpsStopVehDist()));
 			} else
