@@ -10,10 +10,11 @@ using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.subscription.entity;
 using Newtonsoft.Json;
 using DashboardService = net.atos.daf.ct2.dashboardservice;
+
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
-    [Route("subscribe")]
+    [Route("dashboard")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class DashBoardController : BaseController
     {
@@ -35,7 +36,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
 
+        [HttpGet]
+        [Route("fleetkpi")]
+        public async Task<IActionResult> GetFleetKpi()
+        {
+            throw NotImplementedException();
+        }
 
-
+        private Exception NotImplementedException() => throw new NotImplementedException();
     }
 }
