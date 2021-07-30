@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.dashboard.repository
         /// </summary>
         /// <param name="fleetKpiFilter"></param>
         /// <returns></returns>
-        public async Task<List<FleetKpi>> GetFleetKPIDetails(FleetKpiFilter fleetKpiFilter)
+        public async Task<FleetKpi> GetFleetKPIDetails(FleetKpiFilter fleetKpiFilter)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                         FROM cte_filteredTrip 
                                                         GROUP BY isongoingtrip";
 
-                List<FleetKpi> lstFleetKpiDetails = (List<FleetKpi>)await _dataMartdataAccess.QueryAsync<FleetKpi>(queryFleetUtilization, parameterOfFilters);
+                FleetKpi lstFleetKpiDetails = (FleetKpi)await _dataMartdataAccess.QueryAsync<FleetKpi>(queryFleetUtilization, parameterOfFilters);
 
                 return lstFleetKpiDetails;
             }
