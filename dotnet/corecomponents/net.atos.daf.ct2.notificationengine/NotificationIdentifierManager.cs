@@ -145,6 +145,9 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.AlertTypeEnum = generatedAlertForVehicle[0].Type;
                         notificationHistory.UrgencyTypeKey = generatedAlertForVehicle[0].UrgencyTypeKey;
                         notificationHistory.UrgencyTypeEnum = generatedAlertForVehicle[0].UrgencyLevelType;
+                        notificationHistory.ThresholdValue = tripAlert.ThresholdValue;
+                        notificationHistory.ThresholdValueUnitType = tripAlert.ThresholdValueUnitType;
+                        notificationHistory.ValueAtAlertTime = tripAlert.ValueAtAlertTime;
 
                         identifiedNotificationRec.Add(notificationHistory);
                     }
