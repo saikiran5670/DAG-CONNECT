@@ -24,7 +24,10 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
         public Task StartAsync(CancellationToken cancellationToken)
         {
             // _server.Start();
-            OnStarted(); //_appLifetime.ApplicationStarted.Register(OnStarted);
+            while (true)
+            {
+                OnStarted(); //_appLifetime.ApplicationStarted.Register(OnStarted);
+            }
             return Task.CompletedTask;
         }
         public Task StopAsync(CancellationToken cancellationToken) => throw new NotImplementedException();

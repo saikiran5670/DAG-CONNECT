@@ -64,20 +64,22 @@ export class EcoScoreReportDriverComponent implements OnInit {
 
   ngOnInit(): void {
     console.log(this.ecoScoreDriverDetails);
-    console.log(this.ecoScoreForm);
-    console.log(this.translationData);
-    console.log(this.ecoScoreForm.get('vehicle').value);
-    console.log(this.ecoScoreForm.get('vehicleGroup').value);
-    console.log(this.ecoScoreForm.get('driver').value);
-    console.log(this.ecoScoreForm.get('startDate').value);
-    console.log(this.ecoScoreForm.get('endDate').value);
-    console.log(this.ecoScoreForm.get('minTripValue').value);
-    console.log(this.ecoScoreForm.get('minDriverValue').value);
-    this.fromDisplayDate = this.ecoScoreForm.get('startDate').value;
-    this.toDisplayDate = this.ecoScoreForm.get('endDate').value;
-    this.selectedVehicleGroup = this.ecoScoreForm.get('vehicleGroup').value;
-    this.selectedVehicle = this.ecoScoreForm.get('vehicle').value;
-    this.selectedDriverId = this.ecoScoreForm.get('driver').value;
+    // console.log(this.ecoScoreForm);
+    // console.log(this.translationData);
+    // console.log(this.ecoScoreForm.get('vehicle').value);
+    // console.log(this.ecoScoreForm.get('vehicleGroup').value);
+    // console.log(this.ecoScoreForm.get('driver').value);
+    // console.log(this.ecoScoreForm.get('startDate').value);
+    // console.log(this.ecoScoreForm.get('endDate').value);
+    // console.log(this.ecoScoreForm.get('minTripValue').value);
+    // console.log(this.ecoScoreForm.get('minDriverValue').value);
+    this.fromDisplayDate = this.ecoScoreDriverDetails.startDate;
+    this.toDisplayDate = this.ecoScoreDriverDetails.endDate;
+    this.selectedVehicleGroup = this.ecoScoreDriverDetails.vehicleGroup;
+    this.selectedVehicle = this.ecoScoreDriverDetails.vehicleName;
+    this.selectedDriverId = this.ecoScoreDriverDetails.driverId;
+    this.selectedDriverName = this.ecoScoreDriverDetails.driverName;
+    this.selectedDriverOption = this.ecoScoreDriverDetails.driverOption;
     this.showLoadingIndicator = true;
     let searchDataParam = {
       "startDateTime":1619548200088,

@@ -31,5 +31,8 @@ namespace net.atos.daf.ct2.notificationengine.entity
         public string AlertTypeEnum { get; set; }
         public string UrgencyTypeKey { get; set; }
         public string UrgencyTypeEnum { get; set; }
+        public double ThresholdValue { get; set; }
+        public string ThresholdValueUnitType { get; set; }
+        public double ValueAtAlertTime { get; set; }
     }
 }

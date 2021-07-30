@@ -124,7 +124,7 @@ namespace net.atos.daf.ct2.notificationengine.repository
                 parameter.Add("@trip_id", tripAlert.Tripid);
             }
 
-            List<NotificationHistory> notificationHistoryOutput = (List<NotificationHistory>)await _dataAccess.QueryAsync<NotificationHistory>(queryStatement, parameter);
+            List<NotificationHistory> notificationHistoryOutput = (List<NotificationHistory>)await _dataAccess.QueryAsync<NotificationHistory>(queryStatement.ToString(), parameter);
             return notificationHistoryOutput;
         }
 
