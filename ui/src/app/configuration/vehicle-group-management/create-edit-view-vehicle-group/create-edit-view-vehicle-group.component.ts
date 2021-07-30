@@ -208,9 +208,16 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
         }
       });
     }
+    if(this.actionType == 'edit'){ 
+    let vehGrpName = `${this.vehicleGroupForm.controls.vehicleGroupName.value}`;
+        if(vehGrpName==this.selectedRowData.groupName){
+          this.duplicateVehicleGroupMsg = true;
+        }
+    }
   }
 
   getVehicleGroupData(){
+    if(!this.duplicateVehicleGroupMsg){
     this.vehicleService.getVehicleGroupList(this.accountOrganizationId).subscribe((vehGrpData: any) => {
       this.goToLandingPage(vehGrpData);
     }, (error) => {
@@ -219,6 +226,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
         this.goToLandingPage(vehGrpData);
       }
     });
+   }
   }
 
   goToLandingPage(tableData: any){
