@@ -14,9 +14,12 @@ namespace net.atos.daf.ct2.dashboard
             _dashboardRepository = dashboardRepository;
         }
 
-        public async Task<List<FleetKpi>> GetFleetKPIDetails(FleetKpiFilter fleetFuelFilters)
+        public async Task<FleetKpi> GetFleetKPIDetails(FleetKpiFilter fleetFuelFilters)
         {
-            List<FleetKpi> lstFleetFuelTripDetails = await _dashboardRepository.GetFleetKPIDetails(fleetFuelFilters);
+            FleetKpi lstFleetFuelTripDetails = await _dashboardRepository.GetFleetKPIDetails(fleetFuelFilters);
+            // TODO:: Update fleetFuelFilter with last change date
+            // Calculate last change duration from current filters
+            lstFleetFuelTripDetails.LastChangeKpi = await _dashboardRepository.GetFleetKPIDetails(fleetFuelFilters);
             return lstFleetFuelTripDetails;
         }
 

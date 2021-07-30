@@ -27,6 +27,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             while (true)
             {
                 OnStarted(); //_appLifetime.ApplicationStarted.Register(OnStarted);
+                Thread.Sleep(60000);
             }
             return Task.CompletedTask;
         }
@@ -43,6 +44,9 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             tripAlert.Latitude = 51.12768896;
             tripAlert.Longitude = 4.935644520;
             tripAlert.AlertGeneratedTime = 1626965785;
+            tripAlert.ThresholdValue = 8766;
+            tripAlert.ValueAtAlertTime = 8767;
+            tripAlert.ThresholdValueUnitType = "M";
             _notificationIdentifierManager.GetNotificationDetails(tripAlert);
         }
     }
