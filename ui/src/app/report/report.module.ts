@@ -32,6 +32,8 @@ import { FuelBenchmarkingTableComponent } from './fuel-benchmarking/fuel-benchma
 import { VehicletripComponent } from './fleet-fuel-report/fleet-fuel-report-vehicle/vehicletrip/vehicletrip.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { FuelDeviationReportComponent } from './fuel-deviation-report/fuel-deviation-report.component';
+import { VehiclePerformanceReportComponent } from './vehicle-performance-report/vehicle-performance-report.component';
+import { SearchCriteriaComponent } from './vehicle-performance-report/search-criteria/search-criteria.component';
 
 // import interactionPlugin from '@fullcalendar/interaction';
 
@@ -49,7 +51,7 @@ export const MY_DATE_FORMAT = {
 }
 
 @NgModule({
-  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent, EcoScoreReportComponent, EcoScoreDriverCompareComponent, EcoScoreReportDriverComponent, FuelBenchmarkingComponent, DetailDriverReportComponent, FuelBenchmarkingTableComponent, VehicletripComponent, FuelDeviationReportComponent],
+  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent, EcoScoreReportComponent, EcoScoreDriverCompareComponent, EcoScoreReportDriverComponent, FuelBenchmarkingComponent, DetailDriverReportComponent, FuelBenchmarkingTableComponent, VehicletripComponent, FuelDeviationReportComponent, VehiclePerformanceReportComponent, SearchCriteriaComponent],
   imports: [
     CommonModule,
     ReportRoutingModule,

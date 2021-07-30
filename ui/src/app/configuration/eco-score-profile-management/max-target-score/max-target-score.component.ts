@@ -25,11 +25,12 @@ export class MaxTargetScoreComponent implements OnInit {
   value: number = this.kpiData.limitValue;  
   maxvalue: number = this.kpiData.targetValue;
   options: Options = {  
-        floor: this.kpiData.lowerValue,  
-        ceil: this.kpiData.upperValue,
-        step: 4,  
-        showTicks: true,
-        showOuterSelectionBars: true,
+    floor: 0.01,  
+    ceil: 0.01,
+    step: 0.01,  
+    showTicks: true,
+    tickStep: 0,
+    showOuterSelectionBars: true,
   };  
 
   constructor(private _formBuilder: FormBuilder) { }
@@ -40,9 +41,11 @@ export class MaxTargetScoreComponent implements OnInit {
     this.maxvalue =  this.kpiData.targetValue;
     this.options.floor = this.kpiData.lowerValue;
     this.options.ceil = this.kpiData.upperValue;
-    this.options.step = this.kpiData.upperValue/10,  
     //this.options.step = this.kpiData.upperValue > 50 ? this.kpiData.upperValue/100 : this.kpiData.upperValue/10,  
-    this.options.showTicks = true
+    this.options.step = 0.01,  
+    this.options.showTicks= true,
+    this.options.tickStep = this.kpiData.upperValue - this.kpiData.lowerValue > 10000 ? 500 : this.kpiData.upperValue - this.kpiData.lowerValue > 1000 && this.kpiData.upperValue - this.kpiData.lowerValue < 10000 ? 100 : this.kpiData.upperValue - this.kpiData.lowerValue> 100  && this.kpiData.upperValue - this.kpiData.lowerValue < 1000 ? 50 : this.kpiData.upperValue - this.kpiData.lowerValue  > 50  && this.kpiData.upperValue - this.kpiData.lowerValue <= 100 ? 10 : 1 ; 
+    // this.options.showTicks = true  
     
     this.SliderData();
   // if(this.isCreate){
@@ -123,7 +126,7 @@ export class MaxTargetScoreComponent implements OnInit {
    changeLower(changedVal: any){
      // this.options.floor = changedVal;
      const newOptions: Options = Object.assign({}, this.options);
-     newOptions.floor = parseInt(changedVal);
+     newOptions.floor = parseFloat(changedVal);
      this.options = newOptions;
     this.sendData();
     this.SliderData();
@@ -131,7 +134,7 @@ export class MaxTargetScoreComponent implements OnInit {
  
    changeUpper(changedVal: any){
      const newOptions: Options = Object.assign({}, this.options);
-     newOptions.ceil = parseInt(changedVal);
+     newOptions.ceil = parseFloat(changedVal);
      this.options = newOptions;
     this.sendData();
     this.SliderData();
