@@ -913,7 +913,7 @@ calendarOptions: CalendarOptions = {
   calendarSelectedValues(element: any){
       switch(this.calendarpreferenceOption){
       case "rp_fu_report_calendarview_averageweight": {  // avg weight
-        this.calendarOptions.events =[ {title : `${this.reportMapService.getAvrgWeight(element.averageweight, this.prefUnitFormat)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        this.calendarOptions.events =[ {title : `${this.reportMapService.convertWeightUnits(element.averageweight, this.prefUnitFormat, true)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         //console.log(this.calendarOptions.events);
         break;
       }
@@ -922,7 +922,7 @@ calendarOptions: CalendarOptions = {
         break;
       }
       case "rp_fu_report_calendarview_distance": { // distance
-        this.calendarOptions.events =[ {title : `${this.reportMapService.getDistance(element.averagedistanceperday,  this.prefUnitFormat)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        this.calendarOptions.events =[ {title : `${this.reportMapService.convertDistanceUnits(element.averagedistanceperday,  this.prefUnitFormat)}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
         break;
       }
       case "rp_fu_report_calendarview_activevehicles": { // active vehicles
