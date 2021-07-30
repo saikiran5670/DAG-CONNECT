@@ -1,0 +1,41 @@
+<mat-expansion-panel class="full-width margin-bottom-20m mb-10" fxLayoutGap="10px" [expanded]="true">
+    <mat-expansion-panel-header class="full-width">
+      <mat-panel-title>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTodaysLiveVehicle
+          || 'Todays Live Vehicles' }}</span>
+       
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <button class='reportButton' mat-flat-button color="primary" (click)="navigateToReport()">
+        {{ translationData.lblShowReport || 'Show Report'}}
+    </button>
+    <!-- block data -->
+    <div style='margin-bottom: 10px;' >
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+          <div class="areaWidth  divTile" fxLayout="column" fxLayoutAlign="left" ngClass='[thresholdClass]'>
+            <span>
+              <div>{{ translationData.lblDistance || 'Distance' }}: </div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>--</div>
+            </span>
+          </div>
+          <div class="areaWidth  divTile" fxLayout="column" fxLayoutAlign="left">
+            <span>
+              <div>{{ translationData.lblDrivingTime || 'Driving Time' }}: </div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>--</div>
+            </span>
+          </div>
+            <div class="areaWidth  divTile" fxLayout="column" fxLayoutAlign="left">
+              <span>
+                <div>{{ translationData.lblDrivers || 'Drivers' }}: </div>
+                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>--</div>
+              </span>
+            </div>
+            <div class="areaWidth  divTile" fxLayout="column" fxLayoutAlign="left">
+              <span>
+                <div>{{ translationData.lblCriticalAlerts || 'Critical Alerts' }}: </div>
+                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>--</div>
+              </span>
+            </div>
+        </div>
+      </div>
+  </mat-expansion-panel>
