@@ -2,20 +2,24 @@ package net.atos.daf.ct2.common.util;
 
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.runtime.state.StateBackend;
+import org.apache.flink.runtime.state.filesystem.FsStateBackend;
+import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.atos.daf.ct2.common.realtime.dataprocess.MonitorDataProcess;
 
+
 public class FlinkUtil {
 
 	public static StreamExecutionEnvironment createStreamExecutionEnvironment(ParameterTool envParams, String jobName) {
 
-		Logger log = LoggerFactory.getLogger(MonitorDataProcess.class);
+		Logger logger = LoggerFactory.getLogger(MonitorDataProcess.class);
 		StreamExecutionEnvironment env;
 
-		log.info("Start of FLINK UTIL...");
+		logger.info("Start of FLINK UTIL...");
 		env = StreamExecutionEnvironment.getExecutionEnvironment();
 		/*
 		 * env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime); // TODO
@@ -75,18 +79,42 @@ public class FlinkUtil {
 		 * true)); System.out.println("MonitorJob" + jobName); }
 		 */
 
-		// TODO Need to check if restartStrategy enabled and the set
-		env.setRestartStrategy(
-				RestartStrategies.fixedDelayRestart(Integer.parseInt(envParams.get(DafConstants.RESTART_ATTEMPS)), // no
-																													// of
-																													// restart
-																													// attempts
-						Long.parseLong(envParams.get(DafConstants.RESTART_INTERVAL))) // time in milliseconds between
-																						// restarts
-		);
+		// start a checkpoint every 1000 ms and mode set to EXACTLY_ONCE
+				env.enableCheckpointing(Long.parseLong(envParams.get(DafConstants.CHECKPOINT_INTERVAL)),
+						CheckpointingMode.EXACTLY_ONCE);
 
-		log.info("End of Flink UTIL.");
-		return env;
-	}
+				// make sure 500 ms of progress happen between checkpoints
+				env.getCheckpointConfig().setMinPauseBetweenCheckpoints(
+						Long.parseLong(envParams.get(DafConstants.MINIMUM_PAUSE_BETWEEN_CHECKPOINTS)));
+
+				// checkpoints have to complete within one minute, or are discarded
+				env.getCheckpointConfig()
+						.setCheckpointTimeout(Long.parseLong(envParams.get(DafConstants.CHECKPOINT_TIMEOUT)));
+
+				// allow only one checkpoint to be in progress at the same time
+				env.getCheckpointConfig().setMaxConcurrentCheckpoints(
+						Integer.parseInt(envParams.get(DafConstants.MAX_CONCURRENT_CHECKPOINTS)));
+
+				env.setStateBackend(
+						(StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY_MONITORING), true));
+
+				// enable externalized checkpoints which are retained after job cancellation
+				// env.getCheckpointConfig().enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+
+				// sets the checkpoint storage where checkpoint snapshots will be written
+				// env.getCheckpointConfig().setsetCheckpointStorage("hdfs:///my/checkpoint/dir");
+
+				// TODO  enable only in QA and Prod
+				logger.info("RESTART_FLAG :: "+envParams.get(DafConstants.RESTART_FLAG));
+				if("true".equals(envParams.get(DafConstants.RESTART_FLAG))){
+					env.setRestartStrategy(
+							RestartStrategies.fixedDelayRestart(Integer.parseInt(envParams.get(DafConstants.RESTART_ATTEMPS)), //no of restart attempts
+									Long.parseLong(envParams.get(DafConstants.RESTART_INTERVAL))) //time in milliseconds between restarts
+								);			
+				}else{
+					env.setRestartStrategy(RestartStrategies.noRestart());
+				}
+				return env;
+			}
 
 }
