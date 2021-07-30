@@ -3172,7 +3172,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinDistance);
                 parameters.Add("@AggregationType", Enum.GetName(typeof(AggregateType), request.AggregationType));
                 parameters.Add("@Limit", request.EcoScoreRecordsLimit);
-                parameters.Add("@UserPrefTimeZone", GetUserTimeZonePreference(request.AccountEmail, request.OrganizationId));
+                parameters.Add("@UserPrefTimeZone", await GetUserTimeZonePreference(request.AccountEmail, request.OrganizationId));
 
                 string query =
                     @"WITH 
@@ -3475,7 +3475,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinDistance);
                 parameters.Add("@AggregationType", Enum.GetName(typeof(AggregateType), request.AggregationType));
                 parameters.Add("@Limit", request.EcoScoreRecordsLimit);
-                parameters.Add("@UserPrefTimeZone", GetUserTimeZonePreference(request.AccountEmail, request.OrganizationId));
+                parameters.Add("@UserPrefTimeZone", await GetUserTimeZonePreference(request.AccountEmail, request.OrganizationId));
 
                 string query =
                     @"WITH 
