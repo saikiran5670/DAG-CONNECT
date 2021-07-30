@@ -118,7 +118,7 @@ namespace net.atos.daf.ct2.notificationengine.repository
             parameter.Add("@alert_id", tripAlert.Alertid);
             parameter.Add("@vehicle_id", tripAlert.VehicleId);
             parameter.Add("@status", ((char)NotificationSendType.Failed).ToString());
-            if (tripAlert.Type.IndexOfAny(new char[] { 'N', 'X', 'c', 'Y', 'D', 'G' }) >= 0)
+            if (tripAlert.Type.IndexOfAny(new char[] { 'N', 'X', 'c', 'Y', 'D', 'G', 'S' }) >= 0)
             {
                 queryStatement.Append(" and trip_id = @trip_id");
                 parameter.Add("@trip_id", tripAlert.Tripid);
