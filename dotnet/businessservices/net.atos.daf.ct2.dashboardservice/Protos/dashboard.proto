@@ -2,10 +2,9 @@
 
 option csharp_namespace = "net.atos.daf.ct2.dashboardservice";
 
-package net.atos.daf.ct2.dashboardservice;
+package Dashboard;
 
-service DashBoardGRPCService {  
-
+service DashboardService {  
 rpc GetFleetKPIDetails(FleetKpiFilterRequest) returns (FleetKpiResponse);
 rpc GetLastAlert24Hours(Alert24HoursFilterRequest) returns (Alert24HoursResponse);
 }

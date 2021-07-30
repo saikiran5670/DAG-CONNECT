@@ -14,19 +14,19 @@
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
           <div class="areaWidth  divTile" fxLayout="column" fxLayoutAlign="left" ngClass='[thresholdClass]'>
             <span>
-              <div>{{ translationData.lblDistance || 'Distance' }}: </div>
+              <div>{{ translationData.lblDistance || 'Distance' }} </div>
               <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>--</div>
             </span>
           </div>
           <div class="areaWidth  divTile" fxLayout="column" fxLayoutAlign="left">
             <span>
-              <div>{{ translationData.lblDrivingTime || 'Driving Time' }}: </div>
+              <div>{{ translationData.lblDrivingTime || 'Driving Time' }} </div>
               <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>--</div>
             </span>
           </div>
             <div class="areaWidth  divTile" fxLayout="column" fxLayoutAlign="left">
               <span>
-                <div>{{ translationData.lblDrivers || 'Drivers' }}: </div>
+                <div>{{ translationData.lblDrivers || 'Drivers' }} </div>
                 <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>--</div>
               </span>
             </div>
@@ -37,5 +37,58 @@
               </span>
             </div>
         </div>
-      </div>
+    </div>
+
+    <div style='margin-bottom: 10px;' >
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+          <div class="areaWidth chartTile" fxLayout="column" fxLayoutAlign="left" ngClass='[thresholdClass]'>
+            <div fxLayout="column">
+              <div>{{ translationData.lblActiveVehicles || 'Active Vehicles' }}</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>--</div>
+            </div>
+            
+            <span>
+                <canvas #chart1 baseChart]
+                  [data]="doughnutChartActiveVehicleData"
+                  [labels]="doughnutChartLabels"
+                  [chartType]="doughnutChartType"
+                  [options]="doughnutChartOptions"
+                  [colors]="doughnutColors">
+                </canvas>
+            </span>
+          </div>
+          <div class="areaWidth  chartTile" fxLayout="column" fxLayoutAlign="left">
+            <span>
+              <div>{{ translationData.lblTimeBased || 'Time Based UtiliSation Rate' }} </div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>--</div>
+            </span>
+            
+            <span>
+                <canvas #chart1 baseChart
+                  [data]="doughnutChartActiveVehicleData"
+                  [labels]="doughnutChartLabels"
+                  [chartType]="doughnutChartType"
+                  [options]="doughnutChartOptions"
+                  [colors]="doughnutColors">
+                </canvas>
+            </span>
+          </div>
+            <div class="areaWidth  chartTile" fxLayout="column" fxLayoutAlign="left">
+              <span>
+                <div>{{ translationData.lblDistanceBased || 'Distance Based Utilisation Rate' }} </div>
+                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>--</div>
+              </span>
+              
+            <span>
+                <canvas #chart1 baseChart
+                  [data]="doughnutChartActiveVehicleData"
+                  [labels]="doughnutChartLabels"
+                  [chartType]="doughnutChartType"
+                  [options]="doughnutChartOptions"
+                  [colors]="doughnutColors">
+                </canvas>
+            </span>
+            </div>
+        </div>
+    </div>
   </mat-expansion-panel>

@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.dashboardservice
 {
-    public class DashBoardManagementService : DashBoardGRPCService.DashBoardGRPCServiceBase
+    public class DashBoardManagementService : DashboardService.DashboardServiceBase
     {
         private readonly ILog _logger;
         private readonly IDashBoardManager _dashBoardManager;

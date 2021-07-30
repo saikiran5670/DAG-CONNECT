@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.dashboard.entity;
@@ -55,19 +56,19 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                            )
                                                         SELECT
                                                             isongoingtrip
-                                                          , count(vin)			  as vincount
-                                                          , sum(co2emission)     as co2emission
-                                                          , sum(distance)        as distance
-                                                          , sum(drivingtime)     as drivingtime
+                                                          , count(vin)			       as vincount
+                                                          , sum(co2emission)           as co2emission
+                                                          , sum(distance)              as distance
+                                                          , sum(drivingtime)           as drivingtime
                                                           , sum(idlingfuelconsumption) as idlingfuelconsumption
-                                                          , sum(fuelwasted)      as fuelwasted
-                                                          , sum(idlingtime)      as idlingtime
+                                                          , sum(fuelconsumption)       as fuelconsumption
+                                                          , sum(idlingtime)            as idlingtime
                                                         FROM cte_filteredTrip 
                                                         GROUP BY isongoingtrip";
 
-                FleetKpi lstFleetKpiDetails = (FleetKpi)await _dataMartdataAccess.QueryAsync<FleetKpi>(queryFleetUtilization, parameterOfFilters);
+                List<FleetKpi> lstFleetKpiDetails = (List<FleetKpi>)await _dataMartdataAccess.QueryAsync<FleetKpi>(queryFleetUtilization, parameterOfFilters);
 
-                return lstFleetKpiDetails;
+                return lstFleetKpiDetails.FirstOrDefault();
             }
             catch (System.Exception ex)
             {
