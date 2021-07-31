@@ -72,6 +72,13 @@ namespace net.atos.daf.ct2.notificationengine.repository
 	                                    ,nottim.end_date as Aletimenoti_end_date
 	                                    ,nottim.state as Aletimenoti_state
                                         ,ale.organization_id as Ale_organization_id
+                                        ,ale.name as Ale_name
+	                                    ,vgrp.name as Vehicle_group_name
+										,vgrp.group_type as vehiclegroup
+										, case when vgrp.group_type ='S' then 
+											(select name from master.vehicle where id=vgrp.ref_id)
+											else vgrp.name
+											end Vehicle_group_vehicle_name
                                     from master.notificationrecipientref notref
                                     inner join master.notificationrecipient notrec
                                     on notref.recipient_id=notrec.id and notrec.state=@state and notref.state=@state
@@ -83,6 +90,8 @@ namespace net.atos.daf.ct2.notificationengine.repository
                                     on notrec.id=notlim.recipient_id and notlim.state=@state
                                     left join master.alerttimingdetail nottim
                                     on noti.id=nottim.ref_id and nottim.type=@adFilterType and nottim.state=@state
+                                    inner join master.group vgrp
+									on vgrp.id=ale.vehicle_group_id
                                     where notref.alert_id=@alert_id";
             var parameter = new DynamicParameters();
             parameter.Add("@alert_id", tripAlert.Alertid);
@@ -95,7 +104,8 @@ namespace net.atos.daf.ct2.notificationengine.repository
 
         public async Task<List<NotificationHistory>> GetNotificationHistory(TripAlert tripAlert)
         {
-            string queryStatement = @"SELECT id as Id
+            StringBuilder queryStatement = new StringBuilder();
+            queryStatement.Append(@" SELECT id as Id
                                             , organization_id as OrganizationId
                                             , trip_id as TripId
                                             , vehicle_id as VehicleId
@@ -110,43 +120,79 @@ namespace net.atos.daf.ct2.notificationengine.repository
                                             , status as Status
 	                                            FROM master.notificationhistory 	                                           
 	                                            where alert_id=@alert_id
-                                                    and vehicle_id=@vehicle_id
-                                                    and trip_id=@trip_id
-                                                    and status<>@status;";
+                                                    and vehicle_id=@vehicle_id                                                    
+                                                    and status<>@status");
 
             var parameter = new DynamicParameters();
             parameter.Add("@alert_id", tripAlert.Alertid);
             parameter.Add("@vehicle_id", tripAlert.VehicleId);
-            parameter.Add("@trip_id", tripAlert.Tripid);
             parameter.Add("@status", ((char)NotificationSendType.Failed).ToString());
+            //await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type=@type and enum=@categoryEnum", new { type = 'C', categoryEnum = item.CategoryType });
+            if (tripAlert.Type.IndexOfAny(new char[] { 'N', 'X', 'C', 'Y', 'D', 'G', 'S', 'U', 'A', 'H', 'I', 'O', 'T', 'L', 'P', 'F' }) >= 0)
+            {
+                queryStatement.Append(" and trip_id = @trip_id");
+                parameter.Add("@trip_id", tripAlert.Tripid);
+            }
 
-            List<NotificationHistory> notificationHistoryOutput = (List<NotificationHistory>)await _dataAccess.QueryAsync<NotificationHistory>(queryStatement, parameter);
+            List<NotificationHistory> notificationHistoryOutput = (List<NotificationHistory>)await _dataAccess.QueryAsync<NotificationHistory>(queryStatement.ToString(), parameter);
             return notificationHistoryOutput;
         }
 
         public async Task<List<TripAlert>> GetGeneratedTripAlert(TripAlert tripAlert)
         {
-            string queryStatement = @"SELECT id as Id
-                                            , trip_id as Tripid
-                                            , vin as Vin
-                                            , category_type as CategoryType
-                                            , type as Type
-                                            , name as Name
-                                            , alert_id as Alertid
-                                            , latitude as Latitude 
-                                            , longitude as Longitude
-                                            , alert_generated_time as AlertGeneratedTime
-                                            , processed_message_time_stamp as MessageTimestamp
-                                            , created_at as CreatedAt
-                                            , modified_at as ModifiedAt
-                                            , urgency_level_type as UrgencyLevelType
-	                                            FROM tripdetail.tripalert
-	                                            where alert_id = @alert_id
-	                                            and vin= @vin";
+            string queryStatement = @" SELECT triale.id as Id
+                                            , triale.trip_id as Tripid
+                                            , triale.vin as Vin
+                                            , triale.category_type as CategoryType
+                                            , triale.type as Type
+                                            , triale.name as Name
+                                            , triale.alert_id as Alertid
+                                            , triale.latitude as Latitude 
+                                            , triale.longitude as Longitude
+                                            , triale.alert_generated_time as AlertGeneratedTime
+                                            , triale.processed_message_time_stamp as MessageTimestamp
+                                            , triale.created_at as CreatedAt
+                                            , triale.modified_at as ModifiedAt
+                                            , triale.urgency_level_type as UrgencyLevelType
+                                            , triday.from_date_threshold_value as FromDateThresholdValue
+                                            , triday.to_date_threshold_value as ToDateThresholdValue
+                                            , triday.timeperiod_type as TimePeriodType
+                                            , triday.day_threshold_value as DayThresholdValue
+                                            , triday.from_daytime_threshold_value as FromDayTimeThresholdValue
+                                            , triday.to_daytime_threshold_value as ToDayTimeThresholdValue
+                                            , triday.date_breached_value as DateBreachedValue
+                                            , triday.day_breached_value as DayBreachedValue
+                                            , triday.daytime_breached_value as DayTimeBreachedValue
+                                            , trigen.param_type as ParamType
+                                            , trigen.threshold_value as TrigenThresholdValue
+                                            , trigen.threshold_value_unit_type as TrigenThresholdValueUnitType
+                                            , trigen.breached_value as BreachedValue
+                                            , trilan.landmark_type as LandmarkType
+                                            , trilan.landmark_id as LandmarkId
+                                            , trilan.landmark_name as LandmarkName
+                                            , trilan.landmark_position_type as LandmarkPositionType
+                                            , trilan.landmark_threshold_value as LandmarkThresholdValue
+                                            , trilan.landmark_threshold_value_unit_type as LandmarkThresholdValueUnitType
+                                            , trilan.landmark_breached_value as LandmarkBreachedValue
+	                                            FROM tripdetail.tripalert triale
+	                                            left join tripdetail.tripalertdaytimeconfigparam triday
+	                                            on triale.alert_id=triday.trip_alert_id
+	                                            left join tripdetail.tripalertgenconfigparam trigen
+	                                            on triale.alert_id=trigen.trip_alert_id
+	                                            left join tripdetail.tripalertlandmarkconfigparam trilan
+	                                            on triale.alert_id=trilan.trip_alert_id
+	                                            where triale.alert_id = @alert_id
+	                                            and triale.vin= @vin";
             var parameter = new DynamicParameters();
             parameter.Add("@alert_id", tripAlert.Alertid);
             parameter.Add("@vin", tripAlert.Vin);
             List<TripAlert> generatedAlertOutput = (List<TripAlert>)await _dataMartdataAccess.QueryAsync<TripAlert>(queryStatement, parameter);
+            foreach (var item in generatedAlertOutput)
+            {
+                item.AlertCategoryKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type=@type and enum=@categoryEnum", new { type = 'C', categoryEnum = item.CategoryType });
+                item.AlertTypeKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where parent_enum=@parentEnum and enum=@typeEnum", new { parentEnum = item.CategoryType, typeEnum = item.Type });
+                item.UrgencyTypeKey = await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type =@type and enum=@urgencyEnum", new { type = 'U', urgencyEnum = item.UrgencyLevelType });
+            }
             return generatedAlertOutput;
         }
 
@@ -194,6 +240,81 @@ namespace net.atos.daf.ct2.notificationengine.repository
             notificationHistory.Id = notificationSentId;
             return notificationHistory;
 
+        }
+
+        public async Task<string> GetTranslateValue(string languageCode, string key)
+        {
+            try
+            {
+                string translateValue = await _dataAccess.QuerySingleAsync<string>("Select coalesce((select t.value from translation.translation as t where t.name =@key and t.code=@laguageCode), (select t.value from translation.translation as t where t.name =@key and t.code='EN-GB')) as Key", new { key = key, laguageCode = languageCode });
+
+                return translateValue;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<string> GetLanguageCodePreference(string emailId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@emailId", emailId.ToLower());
+
+                string accountQuery =
+                    @"SELECT preference_id from master.account where lower(email) = @emailId";
+
+                var accountPreferenceId = await _dataAccess.QueryFirstOrDefaultAsync<int?>(accountQuery, parameter);
+
+                if (!accountPreferenceId.HasValue)
+                {
+                    string orgQuery = string.Empty;
+                    int? orgPreferenceId = null;
+
+                    orgQuery =
+                        @"SELECT o.preference_id from master.account acc
+                            INNER JOIN master.accountOrg ao ON acc.id=ao.account_id
+                            INNER JOIN master.organization o ON ao.organization_id=o.id
+                            where lower(acc.email) = @emailId";
+
+                    orgPreferenceId = await _dataAccess.QueryFirstOrDefaultAsync<int?>(orgQuery, parameter);
+
+                    if (!orgPreferenceId.HasValue)
+                        return "EN-GB";
+                    else
+                        return await GetCodeByPreferenceId(orgPreferenceId.Value);
+                }
+                return await GetCodeByPreferenceId(accountPreferenceId.Value);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<string> GetCodeByPreferenceId(int preferenceId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@preferenceId", preferenceId);
+
+                string query =
+                    @"SELECT l.code from master.accountpreference ap
+                    INNER JOIN translation.language l ON ap.id = @preferenceId AND ap.language_id=l.id";
+
+                var languageCode = await _dataAccess.QueryFirstAsync<string>(query, parameter);
+
+                return languageCode;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

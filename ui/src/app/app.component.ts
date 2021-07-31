@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, HostListener, Inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 // import * as data from './shared/menuData.json';
 // import * as data from './shared/navigationMenuData.json';
@@ -24,6 +24,7 @@ import { ReportService } from './services/report.service';
 })
 
 export class AppComponent {
+  appUrlLink: any = '';
   public deviceInfo = null;
   // public isMobilevar = false;
   // public isTabletvar = false;
@@ -308,6 +309,7 @@ export class AppComponent {
 
     router.events.subscribe((val: any) => {
       if (val instanceof NavigationEnd) {
+        this.appUrlLink = val.url;
         this.isLogedIn = true;
         let PageName = val.url.split('/')[1];
         this.pageName = PageName;
@@ -363,6 +365,17 @@ export class AppComponent {
     });
   }
 
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+    if(this.isLogedIn) {
+      localStorage.setItem("pageRefreshed", 'true');
+      localStorage.setItem("appRouterUrl", this.appUrlLink);
+    } else {
+      localStorage.removeItem("pageRefreshed");
+      localStorage.removeItem("appRouterUrl");
+    }
+  }
+
   getNavigationMenu() {
     let parseLanguageCode = JSON.parse(localStorage.getItem("language"))
     //--- accessing getmenufeature api from account --//
@@ -372,18 +385,27 @@ export class AppComponent {
     //  "organizationId": 1,
     //  "languageCode": "EN-GB"
     // }
-    let featureMenuObj = {
-      "accountId": parseInt(localStorage.getItem("accountId")),
-      "roleId": parseInt(localStorage.getItem("accountRoleId")),
-      "organizationId": parseInt(localStorage.getItem("accountOrganizationId")),
-      "languageCode": parseLanguageCode.code
+    let refresh = localStorage.getItem('pageRefreshed') == 'true';
+    if(refresh) {
+      this.applyFilterOnOrganization(localStorage.getItem("contextOrgId"));
+      let _orgContextStatus = localStorage.getItem("orgContextStatus");
+      if(_orgContextStatus){
+        this.orgContextType = true;
+      }
+    } else {
+      let featureMenuObj = {
+        "accountId": parseInt(localStorage.getItem("accountId")),
+        "roleId": parseInt(localStorage.getItem("accountRoleId")),
+        "organizationId": parseInt(localStorage.getItem("accountOrganizationId")),
+        "languageCode": parseLanguageCode.code
+      }
+      this.accountService.getMenuFeatures(featureMenuObj).subscribe((result: any) => {
+        this.getMenu(result, 'orgRoleChange');
+        this.getReportDetails();
+      }, (error) => {
+        console.log(error);
+      });
     }
-    this.accountService.getMenuFeatures(featureMenuObj).subscribe((result: any) => {
-      this.getMenu(result, 'orgRoleChange');
-      this.getReportDetails();
-    }, (error) => {
-      console.log(error);
-    });
 
     // // For checking Access of the User
     // let accessNameList = [];
@@ -499,7 +521,17 @@ export class AppComponent {
     })
     //console.log("accountNavMenu:: ", landingPageMenus)
     localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
-    localStorage.setItem("accountFeatures", JSON.stringify(this.menuPages));
+    let refreshPage = localStorage.getItem('pageRefreshed') == 'true';
+    if(refreshPage || from == 'orgContextSwitch'){
+      let _feature: any = JSON.parse(localStorage.getItem("accountFeatures"));
+      if(_feature && _feature.features && _feature.features.length > 0){
+        _feature.menus = this.menuPages.menus; 
+        localStorage.setItem("accountFeatures", JSON.stringify(_feature));  
+      }
+      localStorage.removeItem('pageRefreshed');
+    }else{
+      localStorage.setItem("accountFeatures", JSON.stringify(this.menuPages));
+    }
     //-- For checking Access of the User --//
     let accessNameList = [];
     
@@ -546,12 +578,18 @@ export class AppComponent {
     }else{
       if (from && from == 'orgContextSwitch') {
         let _menu = this.menuPages.menus;
-        if (_menu.length > 0) {
-          let _routerLink = _menu[0].subMenus.length > 0 ? `/${_menu[0].url}/${_menu[0].subMenus[0].url}` : `/${_menu[0].url}`;
-          this.router.navigate([_routerLink]);
-        } else {
-          this.router.navigate(['/dashboard']);
+        let _routerUrl = localStorage.getItem('appRouterUrl'); 
+        if(_routerUrl){ // from refresh page
+          this.router.navigate([_routerUrl]);
+        }else{
+          if (_menu.length > 0) {
+            let _routerLink = _menu[0].subMenus.length > 0 ? `/${_menu[0].url}/${_menu[0].subMenus[0].url}` : `/${_menu[0].url}`;
+            this.router.navigate([_routerLink]);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
         }
+        localStorage.removeItem('appRouterUrl'); 
       }
     }
   }
@@ -853,8 +891,17 @@ export class AppComponent {
     this.openUserRoleDialog = !this.openUserRoleDialog;
   }
 
+  setLocalContext(_orgId: any){
+    let _searchOrg = this.organizationList.filter(i => i.id == _orgId);
+    if (_searchOrg.length > 0) {
+      localStorage.setItem("contextOrgId", _searchOrg[0].id);
+      this.appForm.get("contextOrgSelection").setValue(_searchOrg[0].id); //-- set context org dropdown
+    }
+  }
+
   onOrgChange(value: any) {
     localStorage.setItem("accountOrganizationId", value);
+    this.setLocalContext(value);
     let orgname = this.organizationDropdown.filter(item => parseInt(item.id) === parseInt(value));
     this.userOrg = orgname[0].name;
     localStorage.setItem("organizationName", this.userOrg);
@@ -868,6 +915,7 @@ export class AppComponent {
     localStorage.setItem("accountRoleId", value);
     let rolename = this.roleDropdown.filter(item => parseInt(item.id) === parseInt(value));
     this.userRole = rolename[0].name;
+    this.setLocalContext(localStorage.getItem("accountOrganizationId"));
     this.filterOrgBasedRoles(localStorage.getItem("accountOrganizationId"), true);
     this.router.navigate(['/dashboard']);
   }
@@ -949,7 +997,7 @@ export class AppComponent {
     }
     let switchObj = {
       accountId: this.accountID,
-      contextOrgId: filterValue,
+      contextOrgId: parseInt(filterValue),
       languageCode: this.localStLanguage.code
     }
     this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {

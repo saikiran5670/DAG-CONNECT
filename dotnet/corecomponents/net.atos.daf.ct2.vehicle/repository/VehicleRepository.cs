@@ -2234,6 +2234,34 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
         }
         #endregion
+
+        #region Provisioning Data Service
+
+        public Task<bool> GetCurrentVehicle(ProvisioningVehicleDataServiceRequest request)
+        {
+            try
+            {
+                return Task.FromResult(true);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public Task<bool> GetVehicleList(ProvisioningVehicleDataServiceRequest request)
+        {
+            try
+            {
+                return Task.FromResult(true);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        #endregion
     }
 }
 

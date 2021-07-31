@@ -8,7 +8,8 @@ using net.atos.daf.ct2.confluentkafka;
 using net.atos.daf.ct2.confluentkafka.entity;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-
+using System.Linq;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
@@ -27,77 +28,99 @@ namespace net.atos.daf.ct2.kafkacdc
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
         }
 
-        public Task<List<VehicleAlertRef>> GetVehicleAlertRefFromAlertConfiguration(int alertId) => ExtractAndSyncVehicleAlertRefByAlertIds(alertId);
+        public Task<List<VehicleAlertRef>> GetVehicleAlertRefFromAlertConfiguration(int alertId, string operation) => ExtractAndSyncVehicleAlertRefByAlertIds(alertId, operation);
         public Task GetVehicleAlertRefFromAccountVehicleGroupMapping(List<int> vins, List<int> accounts) => Task.CompletedTask;
         public Task GetVehicleAlertRefFromSubscriptionManagement(List<int> subscriptionIds) => Task.CompletedTask;
         public Task GetVehicleAlertRefFromVehicleManagement(List<int> vins) => Task.CompletedTask;
-        internal async Task<List<VehicleAlertRef>> ExtractAndSyncVehicleAlertRefByAlertIds(int alertId)
+        internal async Task<List<VehicleAlertRef>> ExtractAndSyncVehicleAlertRefByAlertIds(int alertId, string operation)
         {
             List<int> alertIds = new List<int>();
+            List<VehicleAlertRef> unmodifiedMapping = new List<VehicleAlertRef>();
+            List<VehicleAlertRef> insertionMapping = new List<VehicleAlertRef>();
+            List<VehicleAlertRef> deletionMapping = new List<VehicleAlertRef>();
+            List<VehicleAlertRef> finalmapping = new List<VehicleAlertRef>();
             alertIds.Add(alertId);
             // get all the vehicles & alert mapping under the vehicle group for given alert id
-            List<VehicleAlertRef> masterVehicleAlerts = await _vehicleAlertRepository.GetVehiclesFromAlertConfiguration(alertIds);
-            //Update datamart table vehiclealertref based on latest modification.
-            await _vehicleAlertRepository.DeleteVehicleAlertRef(alertIds);
-            if (masterVehicleAlerts.Count > 0)
+            List<VehicleAlertRef> masterDBVehicleAlerts = await _vehicleAlertRepository.GetVehiclesFromAlertConfiguration(alertIds);
+            List<VehicleAlertRef> datamartVehicleAlerts = await _vehicleAlertRepository.GetVehicleAlertRefByAlertIds(alertIds);
+            // Preparing data for sending to kafka topic
+            unmodifiedMapping = datamartVehicleAlerts.Where(datamart => masterDBVehicleAlerts.Any(master => master.VIN == datamart.VIN && master.AlertId == datamart.AlertId)).ToList().Distinct().ToList();
+
+            if (masterDBVehicleAlerts.Count > 0)
             {
-                await _vehicleAlertRepository.InsertVehicleAlertRef(masterVehicleAlerts);
+                //Identify mapping for deletion i.e. present in datamart but not in master database 
+                deletionMapping = datamartVehicleAlerts.Where(datamart => !masterDBVehicleAlerts.Any(master => master.VIN == datamart.VIN && master.AlertId == datamart.AlertId))
+                                                       .Select(obj => new VehicleAlertRef { VIN = obj.VIN, AlertId = obj.AlertId, Op = "D" })
+                                                       .ToList();
             }
-            await ProduceMessageToKafka(masterVehicleAlerts, alertId);
-            return masterVehicleAlerts;
+            else
+            {
+                //all are eligible for deletion  //break the deep copy (reference of list) while coping from one list to another 
+                deletionMapping = datamartVehicleAlerts.Select(obj => new VehicleAlertRef { VIN = obj.VIN, AlertId = obj.AlertId, Op = "D" }).ToList();
+            }
+            //removing duplicate records if any 
+            deletionMapping = deletionMapping.GroupBy(c => c.VIN, (key, c) => c.FirstOrDefault()).ToList();
+
+            if (datamartVehicleAlerts.Count > 0)
+            {
+                //Identify mapping for insertion i.e. present in master but not in datamart database 
+                insertionMapping = masterDBVehicleAlerts.Where(master => !datamartVehicleAlerts.Any(datamart => master.VIN == datamart.VIN && master.AlertId == datamart.AlertId))
+                                                        .Select(obj => new VehicleAlertRef { VIN = obj.VIN, AlertId = obj.AlertId, Op = "I" })
+                                                        .ToList();
+            }
+            else
+            {
+                //all are eligible for insertion  //break the deep copy (reference of list) while coping from one list to another 
+                insertionMapping = masterDBVehicleAlerts.Select(obj => new VehicleAlertRef { VIN = obj.VIN, AlertId = obj.AlertId, Op = "I" }).ToList();
+            }
+            //removing duplicate records if any 
+            insertionMapping = insertionMapping.GroupBy(c => c.VIN, (key, c) => c.FirstOrDefault()).ToList();
+
+            //Update datamart with lastest mapping 
+            //set alert operation for state column into datamart
+            masterDBVehicleAlerts.ForEach(s => s.Op = operation);
+            //Update datamart table vehiclealertref based on latest modification.
+            await _vehicleAlertRepository.DeleteAndInsertVehicleAlertRef(alertIds, masterDBVehicleAlerts);
+            //sent message to Kafka topic 
+            //Union mapping for sending to kafka topic
+            finalmapping = insertionMapping.Union(deletionMapping).ToList();
+            //sending only states I & D with combined mapping of vehicle and alertid
+            await ProduceMessageToKafka(finalmapping, alertId, operation);
+            return masterDBVehicleAlerts;
         }
-        internal Task<string> PrepareKafkaJSON(VehicleAlertRef vehicleAlertRef, string operation)
+        internal async Task ProduceMessageToKafka(List<VehicleAlertRef> vehicleAlertRefList, int alertId, string operation)
         {
-            vehicleAlertRef.State = "A";
+            KafkaEntity kafkaEntity = new KafkaEntity()
+            {
+                BrokerList = _kafkaConfig.EH_FQDN,
+                ConnString = _kafkaConfig.EH_CONNECTION_STRING,
+                Topic = _kafkaConfig.EH_NAME,
+                Cacertlocation = _kafkaConfig.CA_CERT_LOCATION,
+                ProducerMessage = PrepareKafkaJSON(vehicleAlertRefList, alertId, operation).Result
+            };
+            //Pushing message to kafka topic
+            await KafkaConfluentWorker.Producer(kafkaEntity);
+        }
+        internal Task<string> PrepareKafkaJSON(List<VehicleAlertRef> vehicleAlertRefList, int alertId, string operation)
+        {
+            VehicleAlertRefMsgFormat data = new VehicleAlertRefMsgFormat();
+            data.AlertId = alertId;
+            data.VinOps = new List<VehicleStateMsgFormat>();
+            data.VinOps = vehicleAlertRefList.Select(result => new VehicleStateMsgFormat() { VIN = result.VIN, Op = result.Op }).ToList();
+
             Payload payload = new Payload()
             {
-                Data = JsonConvert.SerializeObject(vehicleAlertRef),
-                Op = operation,
-                Namespace = "master.vehiclealertref",
-                Ts_ms = 0
+                Data = JsonConvert.SerializeObject(data),
+                Operation = operation,
+                Namespace = "alerts",
+                Ts_ms = UTCHandling.GetUTCFromDateTime(DateTime.Now)
             };
             VehicleAlertRefKafkaMessage vehicleAlertRefKafkaMessage = new VehicleAlertRefKafkaMessage()
             {
                 Payload = payload,
-                Schema = new List<object>()
+                Schema = "master.vehiclealertref"
             };
             return Task.FromResult(JsonConvert.SerializeObject(vehicleAlertRefKafkaMessage));
-        }
-        internal async Task ProduceMessageToKafka(List<VehicleAlertRef> vehicleAlertRefList, int alertId)
-        {
-            if (vehicleAlertRefList.Count > 0)
-            {
-                foreach (VehicleAlertRef vlr in vehicleAlertRefList)
-                {
-                    KafkaEntity kafkaEntity = new KafkaEntity()
-                    {
-                        BrokerList = _kafkaConfig.EH_FQDN,
-                        ConnString = _kafkaConfig.EH_CONNECTION_STRING,
-                        Topic = _kafkaConfig.EH_NAME,
-                        Cacertlocation = _kafkaConfig.CA_CERT_LOCATION,
-                        ProducerMessage = PrepareKafkaJSON(vlr, "I").Result
-                    };
-                    await KafkaConfluentWorker.Producer(kafkaEntity);
-                }
-            }
-            else
-            {
-                VehicleAlertRef vehicleAlertRefDeleted = new VehicleAlertRef()
-                {
-                    AlertId = alertId,
-                    VIN = string.Empty,
-                    State = "D"
-                };
-                KafkaEntity kafkaEntityDeleted = new KafkaEntity()
-                {
-                    BrokerList = _kafkaConfig.EH_FQDN,
-                    ConnString = _kafkaConfig.EH_CONNECTION_STRING,
-                    Topic = _kafkaConfig.EH_NAME,
-                    Cacertlocation = _kafkaConfig.CA_CERT_LOCATION,
-                    ProducerMessage = PrepareKafkaJSON(vehicleAlertRefDeleted, "D").Result
-                };
-                await KafkaConfluentWorker.Producer(kafkaEntityDeleted);
-            }
         }
     }
 }

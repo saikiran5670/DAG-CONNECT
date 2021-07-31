@@ -650,6 +650,7 @@ export class RouteCalculatingComponent implements OnInit {
               booleanFlag: false,
               successMsg: "create",
               fromCreate:true,
+              CreateCorridorName:this.corridorFormGroup.controls.label.value,
             }  
             this.backToCreate.emit(emitObj);
         }

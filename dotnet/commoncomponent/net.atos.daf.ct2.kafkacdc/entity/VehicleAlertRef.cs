@@ -8,6 +8,6 @@ namespace net.atos.daf.ct2.kafkacdc.entity
     {
         public string VIN { get; set; }
         public int AlertId { get; set; }
-        public string State { get; set; }
+        public string Op { get; set; }
     }
 }

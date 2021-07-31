@@ -87,7 +87,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 Objvehicle = await _vehicleManager.Create(Objvehicle);
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Create", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.Info("Create method in vehicle service called.");
-                await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Id }, _kafkaConfiguration)); 
+                if (Convert.ToBoolean(_kafkaConfiguration.IsVehicleCDCEnable))
+                {
+                    await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { Objvehicle.ID }, _kafkaConfiguration));
+                }
 
                 return await Task.FromResult(new VehicleCreateResponce
                 {
@@ -139,8 +142,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Update method in vehicle service", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.Info("Update method in vehicle service called.");
-
-                await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Id }, _kafkaConfiguration));
+                if (Convert.ToBoolean(_kafkaConfiguration.IsVehicleCDCEnable))
+                {
+                    await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Id }, _kafkaConfiguration));
+                }
                 return await Task.FromResult(new VehicleResponce
                 {
                     Message = "Vehicle updated for id:- " + Objvehicle.ID,
@@ -208,10 +213,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 
                 _logger.Info("UpdateStatus method in vehicle service called.");
 
+                if (Convert.ToBoolean(_kafkaConfiguration.IsVehicleCDCEnable))
+                {
+                    await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Refid }, _kafkaConfiguration));
 
-                await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Refid }, _kafkaConfiguration));
-
-
+                }
                 return await Task.FromResult(new VehicleOptInOptOutResponce
                 {
                     Message = "Status updated for " + ObjvehicleOptInOptOutResponce.RefId,
@@ -758,7 +764,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 bool result = await _vehicleManager.SetOTAStatus(request.IsOta, request.ModifiedBy, request.VehicleId);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "SetOTAStatus", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set OTA status", 1, 2, Convert.ToString(request.VehicleId)).Result;
-                if (result)
+                if (result && Convert.ToBoolean(_kafkaConfiguration.IsVehicleCDCEnable))
                 {
                     await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.VehicleId }, _kafkaConfiguration));
                 }
@@ -785,7 +791,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 bool result = await _vehicleManager.Terminate(request.IsTerminate, request.ModifiedBy, request.VehicleId);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Terminate", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set Terminate status", 1, 2, Convert.ToString(request.VehicleId)).Result;
-                if (result)
+                if (result && Convert.ToBoolean(_kafkaConfiguration.IsVehicleCDCEnable))
                 {
                     await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.VehicleId }, _kafkaConfiguration));
                 }
@@ -813,7 +819,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 bool result = await _vehicleManager.SetOptInStatus(Convert.ToChar(request.IsOptIn), request.ModifiedBy, request.VehicleId);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "SetOptInStatus", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set Opt In status", 1, 2, Convert.ToString(request.VehicleId)).Result;
-                if (result)
+                if (result && Convert.ToBoolean(_kafkaConfiguration.IsVehicleCDCEnable))
                 {
                     await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.VehicleId }, _kafkaConfiguration));
                 }
