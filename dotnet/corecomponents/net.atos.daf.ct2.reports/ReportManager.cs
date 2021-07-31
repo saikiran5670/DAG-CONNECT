@@ -745,5 +745,13 @@ namespace net.atos.daf.ct2.reports
             return fuelBenchmarkDetails;
         }
         #endregion
+
+        #region Vehicle Performance
+
+        public async Task<IEnumerable<VehiclePerformanceRequest>> GetSummaryDetails(string vin)
+        {
+            return await _reportRepository.GetSummaryDetails(vin);
+        }
+        #endregion
     }
 }
