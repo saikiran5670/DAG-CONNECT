@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using log4net;
@@ -97,5 +98,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         }
 
+        [HttpPost]
+        [Route("todaylive")]
+        public async Task<IActionResult> GetTodayLiveVinData([FromBody] Entity.Dashboard.TodayLiveVehicleRequest request)
+        {
+            try
+            {
+                string filters = JsonConvert.SerializeObject(request);
+                _logger.Info("GetTodayLiveVinData method in dashboard API called.");
+                var data = await _dashboarClient.GetTodayLiveVinDataAsync(JsonConvert.DeserializeObject<dashboardservice.TodayLiveVehicleRequest>(filters));
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, string.Format("{0} {1}", ex.Message, ex.StackTrace));
+            }
+        }
     }
 }

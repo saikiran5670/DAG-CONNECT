@@ -13,5 +13,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Dashboard
         public const string GET_DASBHOARD_VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
         public const string GET_DASBHOARD_SUCCESS_MSG = "Dashboard details fetched successfully";
         public const string GET_DASBHOARD_FAILURE_MSG = "No Result Found";
+
+        public const string GET_TODAY_LIVE_VEHICLE_SUCCESS_MSG = "Dashboard details fetched successfully";
     }
 }
