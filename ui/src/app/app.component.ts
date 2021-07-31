@@ -382,9 +382,12 @@ export class AppComponent {
     //  "languageCode": "EN-GB"
     // }
     let refresh = localStorage.getItem('pageRefreshed') == 'true';
-    debugger;
     if(refresh) {
-      this.applyFilterOnOrganization(localStorage.getItem("contextOrgId"))
+      this.applyFilterOnOrganization(localStorage.getItem("contextOrgId"));
+      let _orgContextStatus = localStorage.getItem("orgContextStatus");
+      if(_orgContextStatus){
+        this.orgContextType = true;
+      }
     } else {
       let featureMenuObj = {
         "accountId": parseInt(localStorage.getItem("accountId")),
@@ -514,7 +517,17 @@ export class AppComponent {
     })
     //console.log("accountNavMenu:: ", landingPageMenus)
     localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
-    localStorage.setItem("accountFeatures", JSON.stringify(this.menuPages));
+    let refreshPage = localStorage.getItem('pageRefreshed') == 'true';
+    if(refreshPage || from == 'orgContextSwitch'){
+      let _feature: any = JSON.parse(localStorage.getItem("accountFeatures"));
+      if(_feature && _feature.features && _feature.features.length > 0){
+        _feature.menus = this.menuPages.menus; 
+        localStorage.setItem("accountFeatures", JSON.stringify(_feature));  
+      }
+      localStorage.removeItem('pageRefreshed');
+    }else{
+      localStorage.setItem("accountFeatures", JSON.stringify(this.menuPages));
+    }
     //-- For checking Access of the User --//
     let accessNameList = [];
     
