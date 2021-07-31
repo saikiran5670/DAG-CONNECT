@@ -12,6 +12,7 @@ namespace net.atos.daf.ct2.dashboard.entity
         public double DrivingTime { get; set; }
         public double Distance { get; set; }
         public double FuelConsumption { get; set; }
-        public double FuelWasted { get; set; }
+        public double Idlingfuelconsumption { get; set; }
+        public FleetKpi LastChangeKpi { get; set; }
     }
 }

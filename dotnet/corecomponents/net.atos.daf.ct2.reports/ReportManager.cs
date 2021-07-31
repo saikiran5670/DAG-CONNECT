@@ -454,9 +454,9 @@ namespace net.atos.daf.ct2.reports
             return lstFleetFuelDetails;
         }
 
-        public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters)
+        public async Task<List<FleetFuelDetails>> GetFleetFuelTripDetailsByVehicle(FleetFuelFilter fleetFuelFilters, bool isLiveFleetRequired = true)
         {
-            List<FleetFuelDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByVehicle(fleetFuelFilters);
+            List<FleetFuelDetails> lstFleetFuelTripDetails = await _reportRepository.GetFleetFuelTripDetailsByVehicle(fleetFuelFilters, isLiveFleetRequired);
             return lstFleetFuelTripDetails;
         }
 
@@ -744,6 +744,24 @@ namespace net.atos.daf.ct2.reports
             }
             return fuelBenchmarkDetails;
         }
+        #endregion
+
+
+
+        #region Vehicle Performance Report
+        public async Task<EngineLoadDistributionTemplate> GetEngineLoadTemplate(int enginetypeid)
+        {
+            var enginetemplate = await _reportRepository.GetEngineLoadDistribution(enginetypeid);
+
+            EngineLoadDistributionTemplate engineloadtemplate = new EngineLoadDistributionTemplate();
+            //We will bind data here
+            return engineloadtemplate;
+        }
+
+
+
+
+
         #endregion
     }
 }

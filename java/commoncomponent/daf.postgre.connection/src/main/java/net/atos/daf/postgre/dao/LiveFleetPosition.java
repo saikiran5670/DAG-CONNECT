@@ -20,7 +20,7 @@ public class LiveFleetPosition implements Serializable {
 	private Connection connection;
 
 	private static final String READ_LIVEFLEET_POSITION = "SELECT distance_until_next_service from livefleet.livefleet_position_statistics WHERE vin = ? ORDER BY created_at_m2m DESC limit 1";
-	private static final String INSERT_LIVEFLEET_POSITION = "INSERT INTO livefleet.livefleet_position_statistics ( trip_id    , vin    ,message_time_stamp    ,gps_altitude    ,gps_heading    ,gps_latitude    ,gps_longitude    ,co2_emission    ,fuel_consumption    , last_odometer_val  ,distance_until_next_service    , created_at_m2m    ,created_at_kafka    ,created_at_dm    ) VALUES (?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    )";
+	private static final String INSERT_LIVEFLEET_POSITION = "INSERT INTO livefleet.livefleet_position_statistics ( trip_id    , vin    ,message_time_stamp    ,gps_altitude    ,gps_heading    ,gps_latitude    ,gps_longitude    ,co2_emission    ,fuel_consumption    , last_odometer_val  ,distance_until_next_service    , created_at_m2m    ,created_at_kafka    ,created_at_dm , veh_message_type   ) VALUES (?,	?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    )";
 
 		public boolean insert(LiveFleetPojo currentPosition)
 			throws TechnicalException, SQLException {
@@ -161,6 +161,9 @@ public class LiveFleetPosition implements Serializable {
 			stmt_insert_livefleet_position.setDouble(14, currentPosition.getCreated_at_dm());
 		else
 			stmt_insert_livefleet_position.setDouble(14, 0);
+		
+		stmt_insert_livefleet_position.setString(15, "I");
+		
 		System.out.println("Inside fillstatement End");
 		return stmt_insert_livefleet_position;
 	}

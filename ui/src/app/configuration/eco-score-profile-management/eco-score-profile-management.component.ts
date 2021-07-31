@@ -306,6 +306,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   } else {
     this.ecoScoreProfileForm.get("profileDescription").setValue(this.selectedElementData[0].profileDescription);
     this.ecoScoreProfileForm.get("profileName").setValue(this.selectedElementData[0].profileName);
+    this.isKPI = false;
   }
   this.loadProfileKpis(this.selectedProfile);
   }

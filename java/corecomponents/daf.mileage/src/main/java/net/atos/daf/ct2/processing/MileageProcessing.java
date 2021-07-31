@@ -48,7 +48,7 @@ public class MileageProcessing implements Serializable {
 								return element.getEvtDateTime();
 							}
 						}))
-				.keyBy(value -> value.getVid()).window(TumblingProcessingTimeWindows.of(Time.seconds(mileageTime)))
+				.keyBy(value -> value.getVin()).window(TumblingProcessingTimeWindows.of(Time.seconds(mileageTime)))
 				.process(new MileageDataCalculation());
 	}
 

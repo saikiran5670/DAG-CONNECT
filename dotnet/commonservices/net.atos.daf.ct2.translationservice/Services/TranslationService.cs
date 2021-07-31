@@ -542,7 +542,7 @@ namespace net.atos.daf.ct2.translationservice
 
                 dtcWarning.AddRange(request.DtcData.Select(x => new DTCwarning()
                 {
-                    Code = x.Code,
+                    Code = x.Code.Trim(),
                     Type = x.Type,
                     VehType = x.VehType,
                     WarningClass = x.WarningClass,
@@ -554,9 +554,9 @@ namespace net.atos.daf.ct2.translationservice
 
                 }).ToList());
 
-                var DTCData = await _translationManager.ImportDTCWarningData(dtcWarning);
+                var dtcData = await _translationManager.ImportDTCWarningData(dtcWarning);
 
-                foreach (var item in DTCData)
+                foreach (var item in dtcData)
                 {
                     if (item.Message == "violates foreign key constraint for Icon_ID")
                         foreignkeymessage = item.Message;
@@ -568,9 +568,9 @@ namespace net.atos.daf.ct2.translationservice
                     response.Message = "violates foreign key constraint for Icon_ID , Please enter valid data for Warning_Class and Warning_Number";
                     return await Task.FromResult(response);
                 }
-                else
+                else if (dtcData.Count > 0)
                 {
-                    response.DtcDataResponse.AddRange(DTCData
+                    response.DtcDataResponse.AddRange(dtcData
                                   .Select(x => new dtcwarning()
                                   {
                                       Id = x.Id,
@@ -588,9 +588,13 @@ namespace net.atos.daf.ct2.translationservice
 
                     response.Code = Responcecode.Success;
                     response.Message = "DTC warning Data imported successfully.";
-                    return await Task.FromResult(response);
                 }
-
+                else
+                {
+                    response.Code = Responcecode.Failed;
+                    response.Message = "Language Code Not Found, Please Enter Valid Code.";
+                }
+                return await Task.FromResult(response);
             }
             catch (Exception ex)
             {

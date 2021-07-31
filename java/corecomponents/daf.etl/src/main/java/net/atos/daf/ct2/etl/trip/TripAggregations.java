@@ -215,6 +215,7 @@ public class TripAggregations implements Serializable{
 								"tripPrevVDist", TypeInformation.of(new TypeHint<Tuple2<String, Long>>() {
 								}));
 						prevVDistState = getRuntimeContext().getState(descriptor);
+						logger.info("Created the value state for tripStreaming Job ");
 					}
 					});
 	}

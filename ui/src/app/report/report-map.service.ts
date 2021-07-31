@@ -1119,7 +1119,7 @@ export class ReportMapService {
   }
 
   // trip report data-conversion
-  getConvertedDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
+  convertTripReportDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
       element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone,true);
       element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone,true);
@@ -1293,13 +1293,14 @@ export class ReportMapService {
     return mile.toFixed(2);
   }
 
+  // Fleet utilisation data conversions
   getConvertedFleetDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
       element.convertedStopTime = this.getStartTime(element.StopTime, dateFormat, timeFormat, timeZone,true);
-      element.convertedAverageWeight = this.getAvrgWeight(element.averageWeightPerTrip, unitFormat);
-      element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
-      element.convertedAverageDistance = this.getDistance(element.averageDistancePerDay, unitFormat);
-      element.convertedDistance = this.getDistance(element.distance, unitFormat);
+      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeightPerTrip, unitFormat, true);
+      element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
+      element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
+      element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
       element.convertedTripTime = this.getHhMmTime(element.tripTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);

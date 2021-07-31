@@ -44,6 +44,21 @@ public class User_Group extends CommonFunctionLib {
 				DriverScript.bResult = false;				
 				}	
 	}
+	
+	public static void verifySearchTxtValue() throws Exception {
+		try {
+			CommonFunctionLib.VerifyCSSValue("placeholder");
+			DriverScript.bResult = true;
+				
+			}catch (Exception e) {
+				test.log(LogStatus.FAIL, e.getMessage());
+				Log.error("Data is not present in table..." + e.getMessage());
+				String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+				test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
+				ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+				DriverScript.bResult = false;				
+				}	
+	} 
 	public static void verifyUserPopUpColumnName() throws Exception {
 		try {
 			String GRPTBL = getTextFromOR("GRP_POPUP_TBL"); 
@@ -67,7 +82,7 @@ public class User_Group extends CommonFunctionLib {
 			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
 			String GRP_ROW = getTextFromOR("GRP_ROW");
 			String CELL = "/div";
-			CommonFunctionLib.selectCheckBoxInTbl("", COLHEAD, GRP_ROW, CELL);
+			CommonFunctionLib.selectCheckBoxInTbl("", COLHEAD, GRP_ROW, CELL,"");
 			
 				
 			}catch (Exception e) {

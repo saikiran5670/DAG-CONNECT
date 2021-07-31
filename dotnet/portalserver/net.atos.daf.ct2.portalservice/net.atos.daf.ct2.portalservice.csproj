@@ -44,6 +44,7 @@
     <Protobuf Include="Protos\organization.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\role.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\driver.proto" GrpcServices="Client" />
+	<Protobuf Include="Protos\dashboard.proto" GrpcServices="Client" />
     <!--<Protobuf Include="Protos\poigeofence.proto" GrpcServices="Client" />-->
     <Protobuf Include="Protos\category.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\poi.proto" GrpcServices="Client" />
@@ -53,6 +54,7 @@
     <Protobuf Include="Protos\map.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\reportscheduler.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\pushnotification.proto" GrpcServices="Client" />
+	<Protobuf Include="Protos\Greeter.proto" GrpcServices="Client" />
 
   </ItemGroup>
   <ItemGroup>

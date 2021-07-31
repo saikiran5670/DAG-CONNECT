@@ -3,13 +3,13 @@
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
         <div fxLayout="row" fxLayoutAlign='center center'>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverName || 'Driver Name' }}: -{{ translationData.lblOverallPerformance || 'Overall Performance'}}</span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverName || 'Driver Name' }}: {{ selectedDriverName }} -{{ translationData.lblOverallPerformance || 'Overall Performance'}}</span>
           <span matTooltip="{{ translationData.lblOverallPerformanceInfo || 'The Eco-Score represents the Overall Performance of the driver. The Eco-Score is the rounded down average of the Anticipation and Braking Scores. The Fuel Consumption is not part of the Eco-Score calculation.'}}">
             <mat-icon class='margin-right-10'>info</mat-icon></span>
         </div>
       </mat-panel-title>
     </mat-expansion-panel-header>
-<div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+      <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
             <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
               <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
@@ -31,14 +31,9 @@
                   <span>{{ translationData.lblVehicleGroup|| 'Vehicle Group' }} </span>
                 </span>
               </div>
-              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+              <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
                 <span>
                   <span>{{ translationData.lblVehicleGroup|| 'Driver ID' }} </span>
-                </span>
-              </div>
-              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <span>
-                  <span>{{ translationData.lblVehicleGroup|| 'Driver Name' }} </span>
                 </span>
               </div>
               <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
@@ -60,11 +55,8 @@
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedVehicleGroup }}</span>
               </div>
-              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+              <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedDriverId }}</span>
-              </div>
-              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedDriverName }}</span>
               </div>
               <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedDriverOption }}</span>

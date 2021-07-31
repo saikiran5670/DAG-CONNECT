@@ -598,7 +598,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
         //console.log(_tripData);
         this.hideloader();
-        this.tripData = this.reportMapService.getConvertedDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
+        this.tripData = this.reportMapService.convertTripReportDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
         this.setTableInfo();
         this.updateDataSource(this.tripData);
       }, (error) => {

@@ -11,6 +11,7 @@ namespace net.atos.daf.ct2.driver
         Task<Driver> UpdateDriver(Driver driver);
         Task<bool> DeleteDriver(int OrganizationId, int DriverId);
         Task<bool> UpdateOptinOptout(int organizationId, string optoutStatus);
-
+        Task<bool> GetCurrentDriver(ProvisioningDriverDataServiceRequest request);
+        Task<bool> GetDriverList(ProvisioningDriverDataServiceRequest request);
     }
 }

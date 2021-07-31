@@ -148,23 +148,23 @@
             </mat-panel-title>
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ fuelConsumption.kpiName }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ fuelConsumption.kpiName }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblLtr100Km || 'Ltr/100Km') }})</span>
                 <app-max-target-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='fuelConsumption' [kpiId] = 2 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsage.kpiName }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsage.kpiName }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmph || 'mph') : (translationData.lblkmph || 'kmph') }})</span>
                 <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='cruiseControlUsage' [kpiId] = 3 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsage30_50.kpiName }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsage30_50.kpiName }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmph || 'mph') : (translationData.lblkmph || 'kmph') }})</span>
                 <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='cruiseControlUsage30_50' [kpiId] = 4 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsage50_75.kpiName }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsage50_75.kpiName }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmph || 'mph') : (translationData.lblkmph || 'kmph') }})</span>
                 <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='cruiseControlUsage50_75'  [kpiId] = 5 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsageGreaterThan75.kpiName }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ cruiseControlUsageGreaterThan75.kpiName }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmph || 'mph') : (translationData.lblkmph || 'kmph') }})</span>
                 <app-breaking-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='cruiseControlUsageGreaterThan75' [kpiId] = 6 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ PTOUsage.kpiName }}</span>
                 <app-max-target-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='PTOUsage' [kpiId] = 7 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ PTODuration.kpiName }}</span>
                 <app-max-target-score *ngIf = "isKPI" [actionType]='actionType'[selectedElementData]='PTODuration' [kpiId] = 8 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ averageDrivingSpeed.kpiName }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ averageDrivingSpeed.kpiName }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmph || 'mph') : (translationData.lblkmph || 'kmph') }})</span>
                 <app-max-target-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='averageDrivingSpeed' [kpiId] = 9 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ averageSpeed.kpiName }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ averageSpeed.kpiName }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmph || 'mph') : (translationData.lblkmph || 'kmph') }})</span>
                 <app-max-target-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='averageSpeed'  [kpiId] = 10 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ heavyThrottling.kpiName }}</span>
                 <app-max-target-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='heavyThrottling' [kpiId] = 11 (createKPIEmit)='createKPIEmit($event)'></app-max-target-score>
@@ -220,9 +220,9 @@
             </mat-panel-title>
         </mat-expansion-panel-header>
             <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ otherWtKpiData.kpiName }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ otherWtKpiData.kpiName }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblkg || 'kg') }})</span>
                 <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='otherWtKpiData'[kpiId] = 21 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ otherDistanceKpiData.kpiName }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ otherDistanceKpiData.kpiName }} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblkm || 'km') }})</span>
                 <app-breaking-score *ngIf = "isKPI"[actionType]='actionType' [selectedElementData]='otherDistanceKpiData' [kpiId] = 22 (createKPIEmit)='createKPIEmit($event)'></app-breaking-score>
             </div>
     </mat-expansion-panel> 

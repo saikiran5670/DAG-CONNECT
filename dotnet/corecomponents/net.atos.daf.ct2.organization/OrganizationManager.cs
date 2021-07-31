@@ -93,5 +93,15 @@ namespace net.atos.daf.ct2.organization
         {
             return await _organizationRepository.GetOrganizationByOrgCode(organizationCode);
         }
+
+        #region Provisioning Data Service
+
+        public async Task<bool> GetOrganisationList(ProvisioningOrganisationDataServiceRequest request)
+        {
+            return await _organizationRepository.GetOrganisationList(request);
+        }
+
+        #endregion
+
     }
 }
