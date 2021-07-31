@@ -64,7 +64,7 @@ namespace net.atos.daf.ct2.notificationengine
                     var nGenAlertDetails = generatedAlertForVehicle.OrderBy(o => o.AlertGeneratedTime).GroupBy(e => new { e.Alertid, e.Vin }); //order by alert generated time  //.Where(e => e.Count() == item.Noti_frequency_threshhold_value);
                     for (int i = 1; i <= nGenAlertDetails.Count(); i++)
                     {
-                        if (i / frequencyThreshold == 0)
+                        if (i % frequencyThreshold == 0)
                         {
                             //index = 0;
                             index = i;
@@ -153,6 +153,10 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.ThresholdValueUnitType = tripAlert.ThresholdValueUnitType;
                         notificationHistory.ValueAtAlertTime = tripAlert.ValueAtAlertTime;
                         notificationHistory.SMS = item.Notrec_sms;
+                        notificationHistory.AlertName = item.Ale_name;
+                        notificationHistory.Vehicle_group_vehicle_name = item.Vehicle_group_vehicle_name;
+                        notificationHistory.Vin = tripAlert.Vin;
+                        notificationHistory.AlertGeneratedTime = tripAlert.AlertGeneratedTime;
 
                         identifiedNotificationRec.Add(notificationHistory);
                     }
@@ -160,7 +164,7 @@ namespace net.atos.daf.ct2.notificationengine
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "E").Count() > 0)
                 {
-                    await SendEmailNotification(identifiedNotificationRec);
+                    //await SendEmailNotification(identifiedNotificationRec);
                 }
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
@@ -192,8 +196,12 @@ namespace net.atos.daf.ct2.notificationengine
             try
             {
                 bool isResult = false;
+
                 foreach (var item in notificationHistoryEmail)
                 {
+                    string alertCategoryValue = await GetTranslateValue(string.Empty, item.AlertCategoryKey);
+                    string urgencyTypeValue = await GetTranslateValue(string.Empty, item.UrgencyTypeKey);
+                    string languageCode = await GetLanguageCodePreference(item.EmailId);
                     Dictionary<string, string> addAddress = new Dictionary<string, string>();
                     if (!addAddress.ContainsKey(item.EmailId))
                     {
@@ -206,13 +214,14 @@ namespace net.atos.daf.ct2.notificationengine
                             AccountInfo = new AccountInfo() { EmailId = item.EmailId, Organization_Id = item.OrganizationId },
                             ToAddressList = addAddress,
                             Subject = item.EmailSub,
-                            Description = item.EmailText
+                            Description = item.EmailText,
+                            AlertNotification = new AlertNotification() { AlertName = item.AlertName, AlertLevel = urgencyTypeValue, AlertLevelCls = GetAlertTypeCls(urgencyTypeValue), DefinedThreshold = item.ThresholdValue, ActualThresholdValue = item.ValueAtAlertTime, AlertCategory = alertCategoryValue, VehicleGroup = item.Vehicle_group_vehicle_name, DateTime = DateTime.Now }
                         },
                         ContentType = EmailContentType.Html,
                         EventType = EmailEventType.AlertNotificationEmail
                     };
 
-                    //isResult = await _emailNotificationManager.TriggerSendEmail(mailNotification);
+                    isResult = await _emailNotificationManager.TriggerSendEmail(mailNotification);
                     item.Status = isResult ? ((char)NotificationSendType.Successful).ToString() : ((char)NotificationSendType.Failed).ToString();
                     await InsertNotificationSentHistory(item);
                 }
@@ -282,6 +291,27 @@ namespace net.atos.daf.ct2.notificationengine
         public async Task<string> GetTranslateValue(string languageCode, string key)
         {
             return await _notificationIdentifierRepository.GetTranslateValue(languageCode, key);
+        }
+        public async Task<string> GetLanguageCodePreference(string emailId)
+        {
+            return await _notificationIdentifierRepository.GetLanguageCodePreference(emailId);
+        }
+        private string GetAlertTypeCls(string alertType)
+        {
+            string alertTypeCls = string.Empty;
+            switch (alertType)
+            {
+                case "Critical":
+                    alertTypeCls = "alertCriticalLevel";
+                    break;
+                case "Warning":
+                    alertTypeCls = "alertWarningLevel";
+                    break;
+                case "Advisory":
+                    alertTypeCls = "alertAdvisoryLevel";
+                    break;
+            }
+            return alertTypeCls;
         }
     }
 }

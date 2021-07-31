@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.rfms.repository
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartDataAccess;
         private static readonly log4net.ILog _log =
-       log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 
         public RfmsRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartAccess)
@@ -25,7 +25,6 @@ namespace net.atos.daf.ct2.rfms.repository
         }
         public async Task<RfmsVehicles> GetVehicles(string visibleVins, int lastVinId)
         {
-            //This whole query needs to be corrected once db design is ready
             try
             {
                 var queryStatement = @" SELECT DISTINCT 
@@ -75,82 +74,149 @@ namespace net.atos.daf.ct2.rfms.repository
             {
                 throw;
             }
-
-
         }
 
-        public async Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest, string visibleVins)
+        public async Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest, string visibleVins, int lastVinId)
         {
             try
             {
-                var queryStatement = @"SELECT 
-                                    'ABC12345678901234' as vin,
-                                    'IGNITION_ON' as triggertype,
-                                    'RFMS' as context,
-                                    'VIN1234567890' as triggerinfo,
-                                    '12345678901234' as tachodriveridentification,
-                                    'DRIVER_CARD' as driverauthenticationequipment,
-                                    '0' as cardreplacementindex,
-                                    '0' as cardrenewalindex,
-                                    'S' as cardissuingmemberstate,
-                                    'ABC-123-DEF' as oemdriveridentification,
-                                    'USB' as oemidtype,
-                                    'string' as ptoid,
-                                    'NO_GPS_SIGNAL' as oemtelltale,
-                                    'YELLOW' as state,
-                                    'FUEL_LEVEL' as telltale,
-                                    '2021-07-27T04:16:45.121Z' as createddatetime,
-                                    '2021-07-27T04:16:45.121Z' as receiveddatetime,
-                                    '32' as altitude,
-                                    '30' as heading,
-                                    '57.71727' as latitude,
-                                    '11.921161' as longitude,
-                                    '2021-07-27T04:16:45.121Z' as positiondatetime,
-                                    '54.5' as speed,
-                                    '54.1' as tachographspeed,
-                                    '54.3' as wheelbasespeed";
-                //var parameter = new DynamicParameters();
+                string queryStatement = string.Empty;
+                if (rfmsVehiclePositionRequest.LatestOnly)
+                {
+                    queryStatement = @"SELECT Id, 
+                                        T1.vin,
+                                        vehicle_msg_trigger_type_id as triggertype,
+                                        'RFMS' as context,
+                                        vehicle_msg_trigger_additional_info as triggerinfo,
+                                        driver1_id as tachodriveridentification,
+                                        driver_auth_equipment_type_id as driverauthenticationequipment,
+                                        card_replacement_index as cardreplacementindex,
+                                        --'0' as cardrenewalindex,
+                                        --'S' as cardissuingmemberstate,
+                                        oem_driver_id as oemdriveridentification,
+                                        oem_driver_id_type as oemidtype,
+                                        pto_id as ptoid,
+                                        oem_telltale as oemtelltale,
+                                        telltale_state_id as state,
+                                        telltale_id as telltale,
+                                        created_datetime as createddatetime,
+                                        received_datetime as receiveddatetime,
+                                        gps_altitude as altitude,
+                                        gps_heading as heading,
+                                        gps_latitude as latitude,
+                                        gps_longitude as longitude,
+                                        gps_datetime as positiondatetime,
+                                        gps_speed as speed,
+                                        tachgraph_speed as tachographspeed,
+                                        wheelbased_speed as wheelbasespeed
+									    from livefleet.livefleet_position_statistics T1
+										INNER JOIN 
+										(SELECT MAX(Created_DateTime) as lastDate, vin
+										from livefleet.livefleet_position_statistics 
+										Group By Vin) T2
+										on T1.created_datetime = T2.lastDate
+										and T1.Vin = T2.Vin";
+                }
+                else
+                {
+                    queryStatement = @"SELECT Id, 
+                                        vin,
+                                        vehicle_msg_trigger_type_id as triggertype,
+                                        'RFMS' as context,
+                                        vehicle_msg_trigger_additional_info as triggerinfo,
+                                        driver1_id as tachodriveridentification,
+                                        driver_auth_equipment_type_id as driverauthenticationequipment,
+                                        card_replacement_index as cardreplacementindex,
+                                        --'0' as cardrenewalindex,
+                                        --'S' as cardissuingmemberstate,
+                                        oem_driver_id as oemdriveridentification,
+                                        oem_driver_id_type as oemidtype,
+                                        pto_id as ptoid,
+                                        oem_telltale as oemtelltale,
+                                        telltale_state_id as state,
+                                        telltale_id as telltale,
+                                        created_datetime as createddatetime,
+                                        received_datetime as receiveddatetime,
+                                        gps_altitude as altitude,
+                                        gps_heading as heading,
+                                        gps_latitude as latitude,
+                                        gps_longitude as longitude,
+                                        gps_datetime as positiondatetime,
+                                        gps_speed as speed,
+                                        tachgraph_speed as tachographspeed,
+                                        wheelbased_speed as wheelbasespeed
+									    from livefleet.livefleet_position_statistics";
+                }
+                var parameter = new DynamicParameters();
 
-                ////filter by date type****
+                if (!string.IsNullOrEmpty(visibleVins))
+                {
+                    List<string> lstVisibleVins = visibleVins.Split(',').ToList();
+                    parameter.Add("@visibleVins", lstVisibleVins);
+                    if (rfmsVehiclePositionRequest.LatestOnly)
+                        queryStatement = queryStatement + " WHERE T1.vin = ANY(@visibleVins)";
+                    else
+                        queryStatement = queryStatement + " WHERE vin = ANY(@visibleVins)";
+                }
 
+                //If Not Latest Only Check
+                if (!rfmsVehiclePositionRequest.LatestOnly)
+                {
+                    //Parameter add for starttime
+                    if (rfmsVehiclePositionRequest.StartTime != null)
+                    {
+                        parameter.Add("@start_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.StartTime));
 
+                        if (rfmsVehiclePositionRequest.Type == DateType.Created)
+                        {
+                            queryStatement = queryStatement + " and created_datetime > @start_time";
+                        }
+                        else
+                        {
+                            queryStatement = queryStatement + " and received_datetime > @start_time";
+                        }
+                    }
 
-                ////filter start time
-                //if (rfmsVehiclePositionRequest.StartTime != null)
-                //{
-                //    parameter.Add("@start_time", "%" + rfmsVehiclePositionRequest.StartTime + "%");
-                //    queryStatement = queryStatement + " and start_time < @start_time";
+                    //Parameter add for starttime
+                    if (rfmsVehiclePositionRequest.StopTime != null)
+                    {
+                        parameter.Add("@stop_time", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.StopTime));
 
-                //}
+                        if (rfmsVehiclePositionRequest.Type == DateType.Created)
+                        {
+                            queryStatement = queryStatement + " and created_datetime < @stop_time";
+                        }
+                        else
+                        {
+                            queryStatement = queryStatement + " and received_datetime < @stop_time";
+                        }
+                    }
+                }
+                //Parameter add for TriggerFilter
+                if (Int32.TryParse(rfmsVehiclePositionRequest.TriggerFilter, out int triggerFilter))
+                {
+                    parameter.Add("@triggerFilter", triggerFilter);
+                    queryStatement += " AND vehicle_msg_trigger_type_id = @triggerFilter";
+                }
 
-                ////filter stop time  
-                //if (rfmsVehiclePositionRequest.StopTime != null)
-                //{
-                //    parameter.Add("@stop_time", "%" + rfmsVehiclePositionRequest.StopTime + "%");
-                //    queryStatement = queryStatement + " and stop_time > @stop_time";
-
-                //}
-                ////filter vin
-                //if (rfmsVehiclePositionRequest.Vin != null)
-                //{
-                //    parameter.Add("@vin", "%" + rfmsVehiclePositionRequest.Vin + "%");
-                //    queryStatement = queryStatement + " and vin LIKE @vin";
-
-                //}
-
-                ////filter latest only*****
-
-                //// filter trigger 
-                //if (rfmsVehiclePositionRequest.TriggerFilter != null)
-                //{
-                //    parameter.Add("@trigger_filter", "%" + rfmsVehiclePositionRequest.TriggerFilter + "%");
-                //    queryStatement = queryStatement + " and trigger_filter LIKE @trigger_filter";
-
-                //}
+                if (lastVinId > 0)
+                {
+                    parameter.Add("@lastVinReceivedDateTime", utilities.UTCHandling.GetUTCFromDateTime(rfmsVehiclePositionRequest.StartTime));
+                    if (!rfmsVehiclePositionRequest.LatestOnly)
+                        queryStatement = queryStatement + " AND received_datetime > (SELECT received_datetime FROM LIVEFLEET.LIVEFLEET_POSITION_STATISTICS VV WHERE VV.received_datetime = @lastVinReceivedDateTime)";
+                }
+                if (rfmsVehiclePositionRequest.LatestOnly)
+                {
+                    queryStatement += " ORDER BY T1.received_datetime";
+                }
+                else
+                {
+                    queryStatement += " ORDER BY received_datetime";
+                }
 
                 var rfmsVehiclePosition = new RfmsVehiclePosition();
 
-                dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement);
+                dynamic result = await _dataMartDataAccess.QueryAsync<dynamic>(queryStatement, parameter);
 
                 VehiclePositionResponse vehiclePositionResponse = new VehiclePositionResponse();
 
@@ -167,7 +233,7 @@ namespace net.atos.daf.ct2.rfms.repository
 
             }
 
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -178,11 +244,12 @@ namespace net.atos.daf.ct2.rfms.repository
         private VehiclePosition MapVehiclePositions(dynamic record)
         {
             VehiclePosition vehiclePosition = new VehiclePosition();
+            vehiclePosition.RecordId = record.id;
             vehiclePosition.Vin = record.vin;
 
             TriggerType triggerType = new TriggerType();
             triggerType.Context = record.context;
-            triggerType.Type = record.triggertype;
+            triggerType.Type = Convert.ToString(record.triggertype);
 
             List<string> listTriggerInfo = new List<string>();
             listTriggerInfo.Add(record.triggerinfo);
@@ -193,7 +260,7 @@ namespace net.atos.daf.ct2.rfms.repository
 
             TachoDriverIdentification tachoDriverIdentification = new TachoDriverIdentification();
             tachoDriverIdentification.DriverIdentification = record.tachodriveridentification;
-            tachoDriverIdentification.DriverAuthenticationEquipment = record.driverauthenticationequipment;
+            tachoDriverIdentification.DriverAuthenticationEquipment = Convert.ToString(record.driverauthenticationequipment);
             tachoDriverIdentification.CardReplacementIndex = record.cardreplacementindex;
             tachoDriverIdentification.CardRenewalIndex = record.cardrenewalindex;
             tachoDriverIdentification.CardIssuingMemberState = record.cardissuingmemberstate;
@@ -210,8 +277,8 @@ namespace net.atos.daf.ct2.rfms.repository
 
             TellTaleInfo tellTaleInfo = new TellTaleInfo();
             tellTaleInfo.OemTellTale = record.oemtelltale;
-            tellTaleInfo.State = record.state;
-            tellTaleInfo.TellTale = record.telltale;
+            tellTaleInfo.State = Convert.ToString(record.state);
+            tellTaleInfo.TellTale = Convert.ToString(record.telltale);
 
             triggerType.TellTaleInfo = tellTaleInfo;
 
@@ -219,70 +286,57 @@ namespace net.atos.daf.ct2.rfms.repository
 
             if (record.createddatetime != null)
             {
-                DateTime.TryParse(record.createddatetime, out DateTime createdDateTime);
+                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.createddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime createdDateTime);
                 vehiclePosition.CreatedDateTime = createdDateTime;
             }
 
             if (record.receiveddatetime != null)
             {
-                DateTime.TryParse(record.receiveddatetime, out DateTime receivedDateTime);
+                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.receiveddatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime receivedDateTime);
                 vehiclePosition.ReceivedDateTime = receivedDateTime;
             }
 
             GnssPosition gnssPosition = new GnssPosition();
             if (record.altitude != null)
             {
-                int.TryParse(record.altitude, out int altitude);
-                gnssPosition.Altitude = altitude;
+                gnssPosition.Altitude = Convert.ToInt32(record.altitude);
             }
 
             if (record.heading != null)
             {
-                int.TryParse(record.heading, out int heading);
-                gnssPosition.Heading = heading;
+                gnssPosition.Heading = Convert.ToInt32(record.heading);
             }
 
             if (record.latitude != null)
             {
-                double.TryParse(record.latitude, out double latitude);
-                gnssPosition.Latitude = latitude;
+                gnssPosition.Latitude = Convert.ToDouble(record.latitude);
             }
 
             if (record.longitude != null)
             {
-                double.TryParse(record.longitude, out double longitude);
-                gnssPosition.Longitude = longitude;
+                gnssPosition.Longitude = Convert.ToDouble(record.longitude);
             }
 
             if (record.positiondatetime != null)
             {
-                DateTime.TryParse(record.positiondatetime, out DateTime positionDateTime);
+                DateTime.TryParse(utilities.UTCHandling.GetConvertedDateTimeFromUTC(record.positiondatetime, "UTC", "yyyy-MM-ddTHH:mm:ss"), out DateTime positionDateTime);
                 gnssPosition.PositionDateTime = positionDateTime;
             }
 
             if (record.speed != null)
             {
-                double.TryParse(record.speed, out double speed);
-                gnssPosition.Speed = speed;
+                gnssPosition.Speed = Convert.ToDouble(record.speed);
             }
             vehiclePosition.GnssPosition = gnssPosition;
 
-            if (record.speed != null)
-            {
-                double.TryParse(record.speed, out double speed);
-                gnssPosition.Speed = speed;
-            }
-
             if (record.tachographspeed != null)
             {
-                double.TryParse(record.tachographspeed, out double tachographspeed);
-                vehiclePosition.TachographSpeed = tachographspeed;
+                vehiclePosition.TachographSpeed = Convert.ToDouble(record.tachographspeed);
             }
 
             if (record.wheelbasespeed != null)
             {
-                double.TryParse(record.wheelbasespeed, out double wheelbasespeed);
-                vehiclePosition.WheelBasedSpeed = wheelbasespeed;
+                vehiclePosition.WheelBasedSpeed = Convert.ToDouble(record.wheelbasespeed);
             }
 
             return vehiclePosition;
@@ -342,6 +396,42 @@ namespace net.atos.daf.ct2.rfms.repository
 
                 var featureRateName = await _dataAccess.ExecuteScalarAsync<string>(queryStatement, parameter);
                 return featureRateName;
+            }
+
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<MasterTableCacheObject>> GetMasterTableCacheData()
+        {
+            try
+            {
+                var queryStatement = @" WITH CTE_CACHE AS (SELECT ID, NAME, 'telltalestate' AS CTABLE FROM MASTER.TELLTALESTATE
+                                         UNION
+                                         SELECT ID, NAME, 'telltale' AS CTABLE FROM MASTER.TELLTALE
+                                         UNION 
+                                         SELECT ID, NAME, 'vehiclemsgtriggertype' AS CTABLE FROM MASTER.VEHICLEMSGTRIGGERTYPE
+                                         UNION 
+                                         SELECT ID, NAME, 'driverauthequipment' AS CTABLE FROM MASTER.DRIVERAUTHEQUIPMENT)
+                                         SELECT * FROM CTE_CACHE 
+                                         ORDER BY CTABLE";
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement);
+
+                List<MasterTableCacheObject> lstCacheObject = new List<MasterTableCacheObject>();
+
+                foreach (dynamic record in result)
+                {
+                    lstCacheObject.Add(new MasterTableCacheObject()
+                    {
+                        Id = record.id,
+                        Name = record.name,
+                        TableName = record.ctable
+                    });
+                }
+
+                return lstCacheObject;
             }
 
             catch (Exception)

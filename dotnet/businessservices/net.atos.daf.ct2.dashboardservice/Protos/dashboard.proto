@@ -7,6 +7,7 @@ package Dashboard;
 service DashboardService {  
 rpc GetFleetKPIDetails(FleetKpiFilterRequest) returns (FleetKpiResponse);
 rpc GetLastAlert24Hours(Alert24HoursFilterRequest) returns (Alert24HoursResponse);
+rpc GetTodayLiveVinData(TodayLiveVehicleRequest) returns (TodayLiveVehicleResponse);
 }
 
 enum Responsecode{
@@ -18,6 +19,24 @@ enum Responsecode{
   NotFound = 404;
   InternalServerError = 500;
 }
+
+message TodayLiveVehicleRequest{
+ repeated string VINs = 1;
+}
+
+message TodayLiveVehicleResponse{
+    double Distance = 1;
+    int64 DrivingTime = 2;
+    int32 VehicleCount = 3;
+    int32 DriverCount = 4;
+    int32 CriticleAlertCount = 5;
+    int32 ActiveVehicles = 6;
+    int32 TimeBaseUtilization = 7;
+    int32 DistanceBaseUtilization = 8;
+    Responsecode code = 9;
+    string message = 10;
+}
+
 message FleetKpiFilterRequest {
     int64 StartDateTime = 1;
     int64 EndDateTime = 2;

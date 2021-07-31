@@ -2,7 +2,7 @@ import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { BaseChartDirective, Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions } from 'ng2-charts';
-
+import { DashboardService } from '../../services/dashboard.service'
 @Component({
   selector: 'app-today-live-vehicle',
   templateUrl: './today-live-vehicle.component.html',
@@ -12,6 +12,7 @@ export class TodayLiveVehicleComponent implements OnInit {
   @Input() translationData : any;
   @ViewChild('chart1') chart1 : ElementRef;
   liveVehicleData:any;
+  activeVehiclePercent : Number = 0;
 
   //Active Vehicles Chart
   doughnutChartLabels: Label[] = [('Target'), '', ''];
@@ -66,7 +67,7 @@ export class TodayLiveVehicleComponent implements OnInit {
 
       var text = chart.config.options.title.text;
       // Draw text in center
-      ctx.fillText("20%", centerX, centerY);
+      ctx.fillText("0%", centerX, centerY);
     }
   }];
 
@@ -150,7 +151,7 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
   }
 }];
 
-  constructor(private router : Router) { }
+  constructor(private router : Router, private dashboardService : DashboardService ) { }
 
   ngOnInit(): void {
     this.getLiveVehicleData();
@@ -169,6 +170,80 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
       "TimeUtilization": 0,
       "DistanceUtilization": 20
     }
+    this.updateCharts();
+    
+    
+  }
+
+  updateCharts(){
+    let activeVehiclePercent = this.dashboardService.calculatePercentage(this.liveVehicleData.ActiveVehicles,10)
+    this.doughnutChartActiveVehicleData = [[activeVehiclePercent,(100 - activeVehiclePercent)]]
+
+    this.doughnutChartPlugins = [{
+      beforeDraw(chart) {
+        const ctx = chart.ctx;
+    
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+        const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+    
+        ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
+        ctx.fillStyle = 'black';
+    
+        var text = chart.config.options.title.text;
+        // Draw text in center
+        ctx.fillText(activeVehiclePercent + "%", centerX, centerY);
+      }
+    }];
+
+    // update time based chart
+
+    let timeBasedPercent = this.dashboardService.calculatePercentage(this.liveVehicleData.TimeUtilization,10)
+    this.doughnutChartTimeBasedData = [[timeBasedPercent,(100 - timeBasedPercent)]]
+
+    this.doughnutChartTimePlugins = [{
+      beforeDraw(chart) {
+        const ctx = chart.ctx;
+    
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+        const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+    
+        ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
+        ctx.fillStyle = 'black';
+    
+        var text = chart.config.options.title.text;
+        // Draw text in center
+        ctx.fillText(timeBasedPercent + "%", centerX, centerY);
+      }
+    }];
+
+    //Distance Based Chart
+    
+    let distanceBasedPercent = this.dashboardService.calculatePercentage(this.liveVehicleData.DistanceUtilization,40)
+    this.doughnutChartDistanceBasedData = [[distanceBasedPercent,(100 - distanceBasedPercent)]]
+
+    this.doughnutChartDistancePlugins = [{
+      beforeDraw(chart) {
+        const ctx = chart.ctx;
+    
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+        const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+    
+        ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
+        ctx.fillStyle = 'black';
+    
+        var text = chart.config.options.title.text;
+        // Draw text in center
+        ctx.fillText(distanceBasedPercent + "%", centerX, centerY);
+      }
+    }];
+
+
   }
 
   setChartData(){
@@ -176,8 +251,6 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
     this.chart1.nativeElement.style.width = '10px';
 
   }
-
-  
 
   navigateToReport(){
     this.router.navigate(['/report/fleetutilisation']);
