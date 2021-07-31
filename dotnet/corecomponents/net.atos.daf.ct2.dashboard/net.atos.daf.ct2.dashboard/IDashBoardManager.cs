@@ -8,5 +8,6 @@ namespace net.atos.daf.ct2.dashboard
     {
         Task<FleetKpi> GetFleetKPIDetails(FleetKpiFilter fleetFuelFilters);
         Task<List<Alert24Hours>> GetLastAlert24Hours(Alert24HoursFilter alert24HoursFilter);
+        Task<TodayLiveVehicleResponse> GetLastAlert24Hours(TodayLiveVehicleRequest objTodayLiveVehicleRequest);
     }
 }

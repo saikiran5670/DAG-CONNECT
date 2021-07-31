@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ReportService } from 'src/app/services/report.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatTableExporterDirective } from 'mat-table-exporter';
@@ -55,12 +55,11 @@ translationAlertData: any = {};
 svgIcon:any;
 displayedColumns: string[] = ['icon','vin','driverName','drivingStatus','healthStatus'];
 @ViewChild('dataContainer') dataContainer: ElementRef;
-//  @ViewChild('filterVehicle') filterVehicle: ElementRef;
-// @ViewChild(FleetOverviewFilterVehicleComponent, {static : true}) child : FleetOverviewFilterVehicleComponent;
+@ViewChild('allSelected') private allSelected;
 messages: any[] = [];
 subscription: Subscription;
-
-  constructor(private messageService: MessageService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer,
+status = new FormControl();
+ constructor(private messageService: MessageService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private sanitizer: DomSanitizer,
     private dataInterchangeService: DataInterchangeService) { 
       this.subscription = this.messageService.getMessage().subscribe(message => {
         if (message.key.indexOf("refreshData") !== -1) {
@@ -105,9 +104,16 @@ subscription: Subscription;
     if(this.selectedIndex == 1){
     this.getDriverData();
     }
-    this.drawIcons(this.detailsData);
+    this.drawIcons(this.detailsData);   
   }
 
+  setDefaultDropValue(){
+    let newArray=[];
+    newArray = this.healthList.map(i=>i.value);
+    newArray.unshift(0);
+    this.filterVehicleForm.get("status").setValue(newArray);
+  }
+    
   tabVisibilityHandler(tabVisibility: boolean){
     this.tabVisibilityStatus = tabVisibility;
   }
@@ -282,7 +288,7 @@ getFilterData(){
           }
          });        
       }); 
-      this.vehicleListData = this.detailsData; 
+      this.vehicleListData = this.detailsData;      
       this.loadVehicleData();
     }
     if(this.todayFlagClicked  && this.selectedIndex == 0){
@@ -318,7 +324,7 @@ getFilterData(){
         let statusName = this.translationData[item.name];           
         this.otherList.push({'name':statusName, 'value': item.value})
         }});
-
+        this.setDefaultDropValue();
     }
   })
 } 
@@ -387,11 +393,29 @@ removeDuplicates(originalArray, prop) {
     this.loadVehicleData();
   }
 
-  onChangHealthStatus(id: any){
-    this.filterVehicleForm.get("status").setValue(id);
+  onChangHealthStatus(all,id: any) {
+    if (this.allSelected.selected) {
+      this.allSelected.deselect();     
+    }
+    if (
+      this.filterVehicleForm.controls.status.value.length ==
+      this.healthList.length
+    )
+    this.allSelected.select();
     this.loadVehicleData();
   }
-
+  toggleAllSelectionHealth() {
+    if (this.allSelected.selected) {
+      this.filterVehicleForm.controls.status.patchValue([
+        ...this.healthList.map(item => item.value),
+        0
+      ]);
+    } else {
+      this.filterVehicleForm.controls.status.patchValue([]);
+    }
+    this.loadVehicleData();
+  }
+ 
   onChangeOtherFilter(id: any){
     this.filterVehicleForm.get("otherFilter").setValue(id);
     this.loadVehicleData();
@@ -405,13 +429,27 @@ removeDuplicates(originalArray, prop) {
   loadVehicleData(){  
     this.initData =this.detailsData;
     let newAlertCat=[];
+    let status=this.filterVehicleForm.controls.status.value;
+    let health_status:any;
+    if(status.length == 0){
+      health_status =['all'];
+    }
+    else {
+      if(status.includes(0))
+      {
+        let newStatus = status.filter(i=>i != 0);       
+        newStatus.push('all');
+        status =  newStatus
+      }     
+      health_status =status;
+    }
     if(!this.todayFlagClicked  && this.selectedIndex == 0)
     {
       this.objData = {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
         "alertLevel": [this.filterVehicleForm.controls.level.value.toString()],
         "alertCategory": this.filterVehicleForm.controls.category.value,
-        "healthStatus": this.filterVehicleForm.controls.status.value,
+        "healthStatus": health_status,
         "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
         "driverId": ["all"],
         "days": 90,
@@ -423,7 +461,7 @@ removeDuplicates(originalArray, prop) {
         "groupId": [this.filterVehicleForm.controls.group.value.toString()],
         "alertLevel": [this.filterVehicleForm.controls.level.value.toString()],
         "alertCategory": this.filterVehicleForm.controls.category.value,
-        "healthStatus": this.filterVehicleForm.controls.status.value,
+        "healthStatus": health_status,
         "otherFilter": [this.filterVehicleForm.controls.otherFilter.value.toString()],
         "driverId": ["all"],
         "days": 0,
