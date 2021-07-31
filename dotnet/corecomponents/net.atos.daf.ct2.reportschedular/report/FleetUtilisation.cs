@@ -169,9 +169,9 @@ namespace net.atos.daf.ct2.account.report
                               , timeSpanUnit
                               , timeSpanUnit
                               , timeSpanUnit
-                              , distanceUnit
                               , await _unitManager.GetSpeedUnit(UnitToConvert)
                               , await _unitManager.GetWeightUnit(UnitToConvert)
+                              , distanceUnit
                               , distanceUnit
                               , ImageSingleton.GetInstance().GetLogo()
                 );
