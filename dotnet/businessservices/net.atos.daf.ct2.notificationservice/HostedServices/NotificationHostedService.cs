@@ -9,6 +9,7 @@ using net.atos.daf.ct2.notificationengine;
 using net.atos.daf.ct2.notificationengine.entity;
 using log4net;
 using System.Reflection;
+using System.Timers;
 
 namespace net.atos.daf.ct2.notificationservice.HostedServices
 {
@@ -18,6 +19,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
         private readonly Server _server;
         private readonly INotificationIdentifierManager _notificationIdentifierManager;
         private readonly IHostApplicationLifetime _appLifetime;
+        private static System.Timers.Timer _aTimer;
         public NotificationHostedService(INotificationIdentifierManager notificationIdentifierManager, Server server, IHostApplicationLifetime appLifetime)
         {
             _notificationIdentifierManager = notificationIdentifierManager;
@@ -30,10 +32,16 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
         {
             _logger.Info("Start async called");
             // _server.Start();
+            // Create a timer with a two second interval.
+            _aTimer = new System.Timers.Timer(150000);
+            // Hook up the Elapsed event for the timer. 
+            _aTimer.Elapsed += OnTimedEvent;
+            _aTimer.AutoReset = true;
+            _aTimer.Enabled = true;
             while (true)
             {
-                //OnStarted(); //_appLifetime.ApplicationStarted.Register(OnStarted);
-                //Thread.Sleep(30000);
+                OnStarted(); //_appLifetime.ApplicationStarted.Register(OnStarted);
+                Thread.Sleep(30000);
             }
             return Task.CompletedTask;
         }
@@ -63,6 +71,11 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                 _logger.Error(null, ex);
                 throw;
             }
+        }
+
+        private static void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            throw new Exception();
         }
     }
 }

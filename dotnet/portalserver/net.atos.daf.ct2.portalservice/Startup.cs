@@ -36,6 +36,8 @@ using net.atos.daf.ct2.subscriptionservice;
 using net.atos.daf.ct2.translationservice;
 using net.atos.daf.ct2.vehicleservice;
 using net.atos.daf.ct2.dashboardservice;
+using net.atos.daf.ct2.notificationservice;
+
 namespace net.atos.daf.ct2.portalservice
 {
     public class Startup
@@ -249,6 +251,7 @@ namespace net.atos.daf.ct2.portalservice
             });
 
             services.AddGrpcClient<PushNotificationService.PushNotificationServiceClient>(o => o.Address = new Uri(notificationservice));
+            services.AddGrpcClient<Greeter.GreeterClient>(o => o.Address = new Uri(notificationservice));
 
             services.AddSwaggerGen(c =>
             {
