@@ -10,5 +10,19 @@ namespace net.atos.daf.ct2.reports.repository
     public partial class ReportRepository : IReportRepository
     {
 
+        public async Task<List<EngineLoadDistributionTemplate>> GetEngineLoadDistribution(int enginetypeid)
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@enginetypeid", "enginetypeid");
+            string queryEngineLoadData = @"";
+
+            List<EngineLoadDistributionTemplate> lstengion = (List<EngineLoadDistributionTemplate>)await _dataAccess.QueryAsync<EngineLoadDistributionTemplate>(queryEngineLoadData, parameter);
+
+            return lstengion;
+
+
+        }
+
+
     }
 }
