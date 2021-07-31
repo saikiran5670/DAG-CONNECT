@@ -64,7 +64,7 @@ namespace net.atos.daf.ct2.notificationengine
                     var nGenAlertDetails = generatedAlertForVehicle.OrderBy(o => o.AlertGeneratedTime).GroupBy(e => new { e.Alertid, e.Vin }); //order by alert generated time  //.Where(e => e.Count() == item.Noti_frequency_threshhold_value);
                     for (int i = 1; i <= nGenAlertDetails.Count(); i++)
                     {
-                        if (i / frequencyThreshold == 0)
+                        if (i % frequencyThreshold == 0)
                         {
                             //index = 0;
                             index = i;
@@ -155,6 +155,8 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.SMS = item.Notrec_sms;
                         notificationHistory.AlertName = item.Ale_name;
                         notificationHistory.Vehicle_group_vehicle_name = item.Vehicle_group_vehicle_name;
+                        notificationHistory.Vin = tripAlert.Vin;
+                        notificationHistory.AlertGeneratedTime = tripAlert.AlertGeneratedTime;
 
                         identifiedNotificationRec.Add(notificationHistory);
                     }
@@ -200,6 +202,7 @@ namespace net.atos.daf.ct2.notificationengine
                     string alertCategoryValue = await GetTranslateValue(string.Empty, item.AlertCategoryKey);
                     string urgencyTypeValue = await GetTranslateValue(string.Empty, item.UrgencyTypeKey);
                     string languageCode = await GetLanguageCodePreference(item.EmailId);
+                    string alertGenTime = UTCHandling.GetConvertedDateTimeFromUTC(item.AlertGeneratedTime, "UTC", null);
                     Dictionary<string, string> addAddress = new Dictionary<string, string>();
                     if (!addAddress.ContainsKey(item.EmailId))
                     {
@@ -213,7 +216,7 @@ namespace net.atos.daf.ct2.notificationengine
                             ToAddressList = addAddress,
                             Subject = item.EmailSub,
                             Description = item.EmailText,
-                            AlertNotification = new AlertNotification() { AlertName = item.AlertName, AlertLevel = urgencyTypeValue, AlertLevelCls = GetAlertTypeCls(urgencyTypeValue), DefinedThreshold = item.ThresholdValue, ActualThresholdValue = item.ValueAtAlertTime, AlertCategory = alertCategoryValue, VehicleGroup = item.Vehicle_group_vehicle_name, DateTime = DateTime.Now }
+                            AlertNotification = new AlertNotification() { AlertName = item.AlertName, AlertLevel = urgencyTypeValue, AlertLevelCls = GetAlertTypeCls(urgencyTypeValue), DefinedThreshold = item.ThresholdValue, ActualThresholdValue = item.ValueAtAlertTime, AlertCategory = alertCategoryValue, VehicleGroup = item.Vehicle_group_vehicle_name, AlertDateTime = alertGenTime }
                         },
                         ContentType = EmailContentType.Html,
                         EventType = EmailEventType.AlertNotificationEmail

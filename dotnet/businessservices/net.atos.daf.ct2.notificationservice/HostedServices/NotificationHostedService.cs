@@ -6,9 +6,15 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Grpc.Core;
 using net.atos.daf.ct2.notificationengine;
-using net.atos.daf.ct2.notificationengine.entity;
+using NotificationEngineEntity = net.atos.daf.ct2.notificationengine.entity;
 using log4net;
 using System.Reflection;
+using net.atos.daf.ct2.confluentkafka;
+using net.atos.daf.ct2.confluentkafka.entity;
+using net.atos.daf.ct2.notificationservice.entity;
+using Microsoft.Extensions.Configuration;
+using Confluent.Kafka;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.notificationservice.HostedServices
 {
@@ -18,13 +24,18 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
         private readonly Server _server;
         private readonly INotificationIdentifierManager _notificationIdentifierManager;
         private readonly IHostApplicationLifetime _appLifetime;
-        public NotificationHostedService(INotificationIdentifierManager notificationIdentifierManager, Server server, IHostApplicationLifetime appLifetime)
+        private readonly KafkaConfiguration _kafkaConfiguration;
+        private readonly IConfiguration _configuration;
+        public NotificationHostedService(INotificationIdentifierManager notificationIdentifierManager, Server server, IHostApplicationLifetime appLifetime, IConfiguration configuration)
         {
             _notificationIdentifierManager = notificationIdentifierManager;
             _server = server;
             _appLifetime = appLifetime;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _logger.Info("Construtor called");
+            this._configuration = configuration;
+            _kafkaConfiguration = new KafkaConfiguration();
+            configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
         }
         public Task StartAsync(CancellationToken cancellationToken)
         {
@@ -33,30 +44,37 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             while (true)
             {
                 OnStarted(); //_appLifetime.ApplicationStarted.Register(OnStarted);
-                Thread.Sleep(3600000); // 1hr sleep mode
+                Thread.Sleep(1000); // 1hr sleep mode
             }
             return Task.CompletedTask;
         }
         public Task StopAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
         private void OnStarted()
         {
+            ReadAndProcessAlertMessage();
+        }
+
+        private void ReadAndProcessAlertMessage()
+        {
             try
             {
-                TripAlert tripAlert = new TripAlert();
-                tripAlert.Id = 1;
-                tripAlert.Tripid = "a801403e-ae4c-42cf-bf2d-ae39009c69oi";
-                tripAlert.Vin = "XLR0998HGFFT76657";
-                tripAlert.CategoryType = "L";
-                tripAlert.Type = "G";
-                tripAlert.Alertid = 328;
-                tripAlert.Latitude = 51.12768896;
-                tripAlert.Longitude = 4.935644520;
-                tripAlert.AlertGeneratedTime = 1626965785;
-                tripAlert.ThresholdValue = 8766;
-                tripAlert.ValueAtAlertTime = 8767;
-                tripAlert.ThresholdValueUnitType = "M";
-                _notificationIdentifierManager.GetNotificationDetails(tripAlert);
-
+                NotificationEngineEntity.TripAlert tripAlert = new NotificationEngineEntity.TripAlert();
+                KafkaEntity kafkaEntity = new KafkaEntity()
+                {
+                    BrokerList = _kafkaConfiguration.EH_FQDN,
+                    ConnString = _kafkaConfiguration.EH_CONNECTION_STRING,
+                    Topic = _kafkaConfiguration.EH_NAME,
+                    Cacertlocation = _kafkaConfiguration.CA_CERT_LOCATION,
+                    Consumergroup = _kafkaConfiguration.CONSUMER_GROUP
+                };
+                //Pushing message to kafka topic
+                ConsumeResult<Null, string> response = KafkaConfluentWorker.Consumer(kafkaEntity);
+                if (response != null)
+                {
+                    Console.WriteLine(response.Message.Value);
+                    tripAlert = JsonConvert.DeserializeObject<NotificationEngineEntity.TripAlert>(response.Message.Value);
+                    _notificationIdentifierManager.GetNotificationDetails(tripAlert);
+                }
             }
             catch (Exception ex)
             {
