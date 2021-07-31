@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.confluentkafka.test
                 ConnString = "Endpoint=sb://daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gicUoPvdd/u2bKPFXIhaDbBVgvBDsXrz9kcSWJm8gpw=",
                 Topic = "ingress.atos.alert.poc.json",
                 Cacertlocation = "./cacert.pem",
-                ProducerMessage = @"{'id':'0', 'tripid':'null', 'vin':'null', 'categoryType':'null', 'type':'null', 'name':'null', 'alertid':'0', 'thresholdValue':'0.0', 'thresholdValueUnitType':'null', 'valueAtAlertTime':'0.0', 'latitude':'0.0', 'longitude':'0.0', 'alertGeneratedTime':'0', 'messageTimestamp':'0', 'createdAt':'0', 'modifiedAt':'0'}"
+                ProducerMessage = @"{ 'id': 1, 'tripid': 'a801403e-ae4c-42cf-bf2d-ae39009c69oi', 'vin': 'XLR0998HGFFT76657', 'categoryType': null, 'type': 'L', 'name': 'G', 'alertid': 328, 'thresholdValue': 1000.0, 'thresholdValueUnitType': 'M', 'valueAtAlertTime': 10000.0, 'latitude': 51.12768896, 'longitude': 4.935644520, 'alertGeneratedTime': 1626965785, 'messageTimestamp': 1626965785, 'createdAt': 1626965785, 'modifiedAt': 1626965785}"
             };
             await KafkaConfluentWorker.Producer(kafkaEntity);
         }
