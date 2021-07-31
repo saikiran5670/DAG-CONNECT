@@ -167,3 +167,33 @@ jobs:
       inputs:
         targetPath: 'java/corecomponents/properties/tripMileage.properties'
         artifact: properties
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Pipeline Artifact'
+      inputs:
+        targetPath: 'java/corecomponents/properties/configuration.properties'
+        artifact: properties
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Pipeline Artifact'
+      inputs:
+        targetPath: 'java/corecomponents/properties/contiRawDataEnv.properties'
+        artifact: properties
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Pipeline Artifact'
+      inputs:
+        targetPath: 'java/corecomponents/properties/env.properties'
+        artifact: properties
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Pipeline Artifact'
+      inputs:
+        targetPath: 'java/corecomponents/properties/tripEgressConf.properties'
+        artifact: properties
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Pipeline Artifact'
+      inputs:
+        targetPath: 'java/corecomponents/properties/tripEnvironment.properties'
+        artifact: properties

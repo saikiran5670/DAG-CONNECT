@@ -128,7 +128,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 						try {
 						
 						currentTripPojo.setEnd_time_stamp(TimeFormatter.getInstance()
-								.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
+								.convertUTCToEpochMilli(indexValue.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 						
 						
 						//if(indexValue.exists("driverID")) //index message can be without driverID, trip without driver
@@ -152,10 +152,13 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 								tachomileagelength = tachomileageArray.length;
 							//long[] longtachoMlArray = Arrays.stream(tachomileageArray).mapToLong(i -> i).toArray();
 							if (tachomileagelength != 0) {
-								currentTripPojo.setOdometer_val(tachomileageArray[tachomileagelength - 1].longValue());
-							} else {
-								currentTripPojo.setOdometer_val(0L);
-							}
+						        if(tachomileageArray[tachomileagelength - 1]!=null)
+						         currentTripPojo.setOdometer_val(tachomileageArray[tachomileagelength - 1].longValue());
+						        else
+						         currentTripPojo.setOdometer_val(0L);
+						       } else {
+						        currentTripPojo.setOdometer_val(0L);
+						       }
 								
 						}
 						
@@ -165,7 +168,9 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 						currentTripPojo.setLast_received_position_longitude(indexValue.getGpsLongitude());
 						currentTripPojo.setLast_received_position_heading(indexValue.getGpsHeading());
 						currentTripPojo.setLast_geolocation_address_id(null);
-						currentTripPojo.setLast_processed_message_timestamp(TimeFormatter.getInstance().getCurrentUTCTime());
+						//currentTripPojo.setLast_processed_message_timestamp(TimeFormatter.getInstance().getCurrentUTCTime());
+						currentTripPojo.setLast_processed_message_timestamp(TimeFormatter.getInstance()
+								.convertUTCToEpochMilli(indexValue.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 						currentTripPojo.setStart_geolocation_address_id(null);
 						
 						//warning and vehicle health status fields - to be populated from monitoring messages
@@ -201,7 +206,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 							
 							CurrentTrip  current_trip_start_var = null;
 							
-								if (row.getDocument() != null) {
+								if (indexValue.getDocument() != null) {
 									if (indexValue.getDocument().getTripID() != null)
 										current_trip_start_var = currentTripDAO
 												.read(indexValue.getDocument().getTripID());
