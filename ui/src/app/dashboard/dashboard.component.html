@@ -33,7 +33,9 @@
             [plugins]="stack_barChartPlugins" [legend]="stack_barChartLegend" [chartType]="stack_barChartType">
           </canvas>
         </div> -->
-        <app-dashboard-vehicle-utilisation></app-dashboard-vehicle-utilisation>
+        <app-fleetkpi [translationData] ="translationData"></app-fleetkpi>
+        <app-today-live-vehicle [translationData] ="translationData"></app-today-live-vehicle>
+        <app-dashboard-vehicle-utilisation [translationData] ="translationData"></app-dashboard-vehicle-utilisation>
       <!-- </div>
     </mat-card-content>
   </mat-card> -->

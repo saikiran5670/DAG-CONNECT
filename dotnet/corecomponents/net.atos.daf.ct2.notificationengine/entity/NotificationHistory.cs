@@ -25,5 +25,15 @@ namespace net.atos.daf.ct2.notificationengine.entity
         public string WsText { get; set; }
         public string WsLogin { get; set; }
         public string WsPassword { get; set; }
+        public string AlertCategoryKey { get; set; }
+        public string AlertCategoryEnum { get; set; }
+        public string AlertTypeKey { get; set; }
+        public string AlertTypeEnum { get; set; }
+        public string UrgencyTypeKey { get; set; }
+        public string UrgencyTypeEnum { get; set; }
+        public double ThresholdValue { get; set; }
+        public string ThresholdValueUnitType { get; set; }
+        public double ValueAtAlertTime { get; set; }
+        public string SMS { get; set; }
     }
 }

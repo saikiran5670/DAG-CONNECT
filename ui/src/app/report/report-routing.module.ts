@@ -14,6 +14,7 @@ import { FleetFuelReportVehicleComponent } from './fleet-fuel-report/fleet-fuel-
 import { FleetFuelReportDriverComponent } from './fleet-fuel-report/fleet-fuel-report-driver/fleet-fuel-report-driver.component';
 import { VehicletripComponent } from './fleet-fuel-report/fleet-fuel-report-vehicle/vehicletrip/vehicletrip.component';
 import { FuelDeviationReportComponent } from './fuel-deviation-report/fuel-deviation-report.component';
+import { VehiclePerformanceReportComponent } from './vehicle-performance-report/vehicle-performance-report.component';
 
 const routes: Routes = [
   {
@@ -24,7 +25,7 @@ const routes: Routes = [
       { path: "fleetutilisation", component: FleetUtilisationComponent },
       { path: "fuelbenchmarking", component: FuelBenchmarkingComponent },
       { path: "fueldeviationreport", component: FuelDeviationReportComponent },
-      { path: "vehicleperformancereport", component: DashboardComponent },
+      { path: "vehicleperformancereport", component: VehiclePerformanceReportComponent },
       { path: "drivetimemanagement", component: DriverTimeManagementComponent },
       { path: "ecoscorereport", component: EcoScoreReportComponent },
       //{ path: "detaildriverreport",component :DetailDriverReportComponent},

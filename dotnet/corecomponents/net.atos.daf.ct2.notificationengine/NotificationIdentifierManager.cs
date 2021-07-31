@@ -10,6 +10,8 @@ using net.atos.daf.ct2.notification;
 using net.atos.daf.ct2.notification.entity;
 using net.atos.daf.ct2.notificationengine.entity;
 using net.atos.daf.ct2.notificationengine.repository;
+using net.atos.daf.ct2.sms;
+using net.atos.daf.ct2.sms.entity;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.webservice;
 using net.atos.daf.ct2.webservice.entity;
@@ -20,10 +22,12 @@ namespace net.atos.daf.ct2.notificationengine
     {
         private readonly INotificationIdentifierRepository _notificationIdentifierRepository;
         private readonly IEmailNotificationManager _emailNotificationManager;
-        public NotificationIdentifierManager(INotificationIdentifierRepository notificationIdentifierRepository, IEmailNotificationManager emailNotificationManager)
+        private readonly ISMSManager _smsManager;
+        public NotificationIdentifierManager(INotificationIdentifierRepository notificationIdentifierRepository, IEmailNotificationManager emailNotificationManager, ISMSManager smsManager)
         {
             _notificationIdentifierRepository = notificationIdentifierRepository;
             _emailNotificationManager = emailNotificationManager;
+            _smsManager = smsManager;
         }
         public async Task<List<Notification>> GetNotificationDetails(TripAlert tripAlert)
         {
@@ -39,64 +43,67 @@ namespace net.atos.daf.ct2.notificationengine
                 List<Notification> notificationTimingDetails = new List<Notification>();
                 List<Notification> notificationNotifyDetails = new List<Notification>();
                 List<NotificationHistory> identifiedNotificationRec = new List<NotificationHistory>();
+                string frequencyType = notificationDetails.Select(f => f.Noti_frequency_type).FirstOrDefault();
+                int frequencyThreshold = notificationDetails.Select(f => f.Noti_frequency_threshhold_value).FirstOrDefault();
+                string validityType = notificationDetails.Select(f => f.Noti_validity_type).FirstOrDefault();
                 // check frequency type of  notification
-                foreach (var item in notificationDetails)
+                //foreach (var item in notificationDetails)
+                //{
+                if (frequencyType.ToUpper() == "O")
                 {
-                    if (item.Noti_frequency_type.ToUpper() == "O")
+                    notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
+                }
+                else if (frequencyType.ToUpper() == "T" && numberOfAlertForvehicle != generatedAlertForVehicle.Count())
+                {
+                    //notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
+                    notificationOutput = notificationDetails.Where(p => p.Noti_frequency_type.ToUpper() == "T").ToList();
+                }
+                else if (frequencyType.ToUpper() == "E")
+                {
+                    int index = 0;
+                    var nGenAlertDetails = generatedAlertForVehicle.OrderBy(o => o.AlertGeneratedTime).GroupBy(e => new { e.Alertid, e.Vin }); //order by alert generated time  //.Where(e => e.Count() == item.Noti_frequency_threshhold_value);
+                    for (int i = 1; i <= nGenAlertDetails.Count(); i++)
                     {
-                        notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
-                    }
-                    else if (item.Noti_frequency_type.ToUpper() == "T" && numberOfAlertForvehicle != generatedAlertForVehicle.Count())
-                    {
-                        //notificationOutput = notificationDetails.Where(p => notificatinFrequencyCheck.All(p2 => p2.AlertId != p.Noti_alert_id)).ToList();
-                        notificationOutput = notificationDetails.Where(p => p.Noti_frequency_type.ToUpper() == "T").ToList();
-                    }
-                    else if (item.Noti_frequency_type.ToUpper() == "E")
-                    {
-                        int index = 0;
-                        var nGenAlertDetails = generatedAlertForVehicle.OrderBy(o => o.AlertGeneratedTime).GroupBy(e => new { e.Alertid, e.Vin }); //order by alert generated time  //.Where(e => e.Count() == item.Noti_frequency_threshhold_value);
-                        for (int i = 1; i <= nGenAlertDetails.Count(); i++)
+                        if (i / frequencyThreshold == 0)
                         {
-                            if (i / item.Noti_frequency_threshhold_value == 0)
-                            {
-                                //index = 0;
-                                index = i;
-                            }
-                        }
-                        if (index == nGenAlertDetails.Count())
-                        {
-                            notificationOutput = notificationDetails.Where(f => f.Noti_frequency_type.ToUpper() == "E").ToList();
+                            //index = 0;
+                            index = i;
                         }
                     }
-                    // check notification filter custom
-                    if (item.Noti_validity_type.ToUpper() == "C")
+                    if (index == nGenAlertDetails.Count())
                     {
-                        notificationTimingDetails = notificationOutput.Where(t => t.Aletimenoti_period_type.ToUpper() == "A").ToList();
-                        var customeTimingDetails = notificationOutput.Where(t => t.Aletimenoti_period_type.ToUpper() == "C");
-                        foreach (Notification customeTimingItem in customeTimingDetails)
-                        {
-                            //var bitsWithIndex = customeTimingItem.Aletimenoti_day_type.Cast<bool>() // we need to use Cast because BitArray does not provide generic IEnumerable
-                            //   .Select((bit, index) => new { Bit = bit, Index = index }); // projection, we will save bit indices
-                            for (int i = 0; i < customeTimingItem.Aletimenoti_day_type.Count; i++)
-                            {
-                                //if (customeTimingItem.Aletimenoti_day_type[i] == true && DateTime.Today.DayOfWeek.ToString().ToLower() == "monday")
-                                //if (bitsWithIndex.Where(x => x.Bit == true && x.Index == (int)DateTime.Today.DayOfWeek).Select(x => x.Index).Count() > 0)
-                                if (customeTimingItem.Aletimenoti_day_type[i] == true && i == (int)DateTime.Today.DayOfWeek)
-                                {
-                                    int hourInSecond = DateTime.Now.Hour * 3600;
-                                    int minInSecond = DateTime.Now.Minute * 60;
-                                    int totalSecond = hourInSecond + minInSecond;
-                                    if (customeTimingItem.Aletimenoti_start_date <= totalSecond && customeTimingItem.Aletimenoti_end_date >= totalSecond)
-                                        notificationTimingDetails.Add(customeTimingItem);
-                                }
-                            }
-                        }
-                    }
-                    else if (item.Noti_validity_type.ToUpper() == "A")
-                    {
-                        notificationTimingDetails = notificationOutput.Where(t => t.Noti_validity_type.ToUpper() == "A").ToList();
+                        notificationOutput = notificationDetails.Where(f => f.Noti_frequency_type.ToUpper() == "E").ToList();
                     }
                 }
+                // check notification filter custom
+                if (validityType.ToUpper() == "C")
+                {
+                    notificationTimingDetails = notificationOutput.Where(t => t.Aletimenoti_period_type.ToUpper() == "A").ToList();
+                    var customeTimingDetails = notificationOutput.Where(t => t.Aletimenoti_period_type.ToUpper() == "C");
+                    foreach (Notification customeTimingItem in customeTimingDetails)
+                    {
+                        //var bitsWithIndex = customeTimingItem.Aletimenoti_day_type.Cast<bool>() // we need to use Cast because BitArray does not provide generic IEnumerable
+                        //   .Select((bit, index) => new { Bit = bit, Index = index }); // projection, we will save bit indices
+                        for (int i = 0; i < customeTimingItem.Aletimenoti_day_type.Count; i++)
+                        {
+                            //if (customeTimingItem.Aletimenoti_day_type[i] == true && DateTime.Today.DayOfWeek.ToString().ToLower() == "monday")
+                            //if (bitsWithIndex.Where(x => x.Bit == true && x.Index == (int)DateTime.Today.DayOfWeek).Select(x => x.Index).Count() > 0)
+                            if (customeTimingItem.Aletimenoti_day_type[i] == true && i == (int)DateTime.Today.DayOfWeek)
+                            {
+                                int hourInSecond = DateTime.Now.Hour * 3600;
+                                int minInSecond = DateTime.Now.Minute * 60;
+                                int totalSecond = hourInSecond + minInSecond;
+                                if (customeTimingItem.Aletimenoti_start_date <= totalSecond && customeTimingItem.Aletimenoti_end_date >= totalSecond)
+                                    notificationTimingDetails.Add(customeTimingItem);
+                            }
+                        }
+                    }
+                }
+                else if (validityType.ToUpper() == "A")
+                {
+                    notificationTimingDetails = notificationOutput.Where(t => t.Noti_validity_type.ToUpper() == "A").ToList();
+                }
+                //}
                 //always
                 int maxNotLim = 10;
 
@@ -136,6 +143,17 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.WsLogin = item.Notrec_ws_login;
                         notificationHistory.WsPassword = item.Notrec_ws_password;
                         notificationHistory.WsText = item.Notrec_ws_text;
+                        notificationHistory.AlertCategoryKey = generatedAlertForVehicle[0].AlertCategoryKey;
+                        notificationHistory.AlertCategoryEnum = generatedAlertForVehicle[0].CategoryType;
+                        notificationHistory.AlertTypeKey = generatedAlertForVehicle[0].AlertTypeKey;
+                        notificationHistory.AlertTypeEnum = generatedAlertForVehicle[0].Type;
+                        notificationHistory.UrgencyTypeKey = generatedAlertForVehicle[0].UrgencyTypeKey;
+                        notificationHistory.UrgencyTypeEnum = generatedAlertForVehicle[0].UrgencyLevelType;
+                        notificationHistory.ThresholdValue = tripAlert.ThresholdValue;
+                        notificationHistory.ThresholdValueUnitType = tripAlert.ThresholdValueUnitType;
+                        notificationHistory.ValueAtAlertTime = tripAlert.ValueAtAlertTime;
+                        notificationHistory.SMS = item.Notrec_sms;
+
                         identifiedNotificationRec.Add(notificationHistory);
                     }
                 }
@@ -147,7 +165,7 @@ namespace net.atos.daf.ct2.notificationengine
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
                 {
-
+                    //await SendSMS(identifiedNotificationRec);
                 }
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").Count() > 0)
@@ -194,7 +212,7 @@ namespace net.atos.daf.ct2.notificationengine
                         EventType = EmailEventType.AlertNotificationEmail
                     };
 
-                    isResult = await _emailNotificationManager.TriggerSendEmail(mailNotification);
+                    //isResult = await _emailNotificationManager.TriggerSendEmail(mailNotification);
                     item.Status = isResult ? ((char)NotificationSendType.Successful).ToString() : ((char)NotificationSendType.Failed).ToString();
                     await InsertNotificationSentHistory(item);
                 }
@@ -232,6 +250,38 @@ namespace net.atos.daf.ct2.notificationengine
             {
                 throw;
             }
+        }
+
+        public async Task<bool> SendSMS(List<NotificationHistory> notificationHistory)
+        {
+            try
+            {
+                bool isResult = false;
+                foreach (var item in notificationHistory)
+                {
+                    string alertTypeValue = await GetTranslateValue(string.Empty, item.AlertTypeKey);
+                    string urgencyTypeValue = await GetTranslateValue(string.Empty, item.UrgencyTypeKey);
+                    string smsDescription = string.IsNullOrEmpty(item.SMS) ? item.SMS : item.SMS.Substring(0, 50);
+                    string smsBody = alertTypeValue + " " + item.ThresholdValue + " " + item.ThresholdValueUnitType + " " + item.ValueAtAlertTime + " " + urgencyTypeValue + " " + smsDescription;
+                    SMS sms = new SMS();
+                    sms.ToPhoneNumber = item.PhoneNo;
+                    sms.Body = smsBody;
+                    string status = await _smsManager.SendSMS(sms);
+                    item.Status = status.ToString();
+                    await InsertNotificationSentHistory(item);
+                    isResult = true;
+                }
+
+                return isResult;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<string> GetTranslateValue(string languageCode, string key)
+        {
+            return await _notificationIdentifierRepository.GetTranslateValue(languageCode, key);
         }
     }
 }

@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.dashboardservice
 {
-    public class DashBoardManagementService : DashBoardGRPCService.DashBoardGRPCServiceBase
+    public class DashBoardManagementService : DashboardService.DashboardServiceBase
     {
         private readonly ILog _logger;
         private readonly IDashBoardManager _dashBoardManager;
@@ -33,14 +33,14 @@ namespace net.atos.daf.ct2.dashboardservice
                     EndDateTime = request.EndDateTime,
                     VINs = request.VINs.ToList<string>()
                 };
-                List<dashboard.entity.FleetKpi> reportDetails = await _dashBoardManager.GetFleetKPIDetails(fleetKpiFilter);
+                dashboard.entity.FleetKpi reportDetails = await _dashBoardManager.GetFleetKPIDetails(fleetKpiFilter);
                 FleetKpiResponse fleetKpiResponse = new FleetKpiResponse
                 {
                     Code = Responsecode.Success,
                     Message = DashboardConstants.GET_FLEETKPI_DETAILS_SUCCESS_MSG
                 };
-                var res = JsonConvert.SerializeObject(reportDetails);
-                fleetKpiResponse.FleetKpis.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetKpi>>(res));
+                string serializeDetails = JsonConvert.SerializeObject(reportDetails);
+                fleetKpiResponse.FleetKpis = (JsonConvert.DeserializeObject<FleetKpi>(serializeDetails));
                 return await Task.FromResult(fleetKpiResponse);
             }
             catch (Exception ex)
@@ -51,6 +51,35 @@ namespace net.atos.daf.ct2.dashboardservice
                     Message = ex.Message
                 });
             }
+        }
+
+        public override async Task<Alert24HoursResponse> GetLastAlert24Hours(Alert24HoursFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                Alert24HoursFilter alert24HoursFilter = new Alert24HoursFilter
+                {
+                    VINs = request.VINs.ToList<string>()
+                };
+                List<dashboard.entity.Alert24Hours> reportDetails = await _dashBoardManager.GetLastAlert24Hours(alert24HoursFilter);
+                Alert24HoursResponse alert24HoursResponse = new Alert24HoursResponse
+                {
+                    Code = Responsecode.Success,
+                    Message = DashboardConstants.GET_ALERTLAST_24HOURS_SUCCESS_MSG
+                };
+                var res = JsonConvert.SerializeObject(reportDetails);
+                alert24HoursResponse.Alert24Hours.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<Alert24Hour>>(res));
+                return await Task.FromResult(alert24HoursResponse);
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(new Alert24HoursResponse
+                {
+                    Code = Responsecode.InternalServerError,
+                    Message = ex.Message
+                });
+            }
+
         }
     }
 }
