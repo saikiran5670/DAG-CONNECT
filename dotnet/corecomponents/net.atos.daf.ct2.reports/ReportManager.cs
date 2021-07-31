@@ -746,8 +746,6 @@ namespace net.atos.daf.ct2.reports
         }
         #endregion
 
-
-
         #region Vehicle Performance Report
         public async Task<EngineLoadDistributionTemplate> GetEngineLoadTemplate(int enginetypeid)
         {
@@ -757,11 +755,6 @@ namespace net.atos.daf.ct2.reports
             //We will bind data here
             return engineloadtemplate;
         }
-
-
-
-
-
         #endregion
     }
 }
