@@ -55,15 +55,15 @@
         </mat-form-field>
     </div>
     <div fxLayout="column" fxLayoutAlign="space-between" >
-        <mat-label>{{ translationData.lblHealthStatus|| 'Health Status' }} </mat-label>
-        <mat-form-field appearance="outline" class="full-width dropdown-filters">
-            <mat-select placeholder="All" multiple [(ngModel)]="selection2"(selectionChange)="onChangHealthStatus($event.value)" formControlName="status">
-                <mat-option value="all">{{translationData.lblAll || 'All'}}</mat-option>
-                <mat-option *ngFor="let item of healthList" [value]="item.value">
-                    {{item.name}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+   <mat-label>{{ translationData.lblHealthStatus|| 'Health Status' }} </mat-label>   
+    <mat-form-field appearance="outline" class="full-width dropdown-filters">
+    <mat-select placeholder="Health Status" [(ngModel)]="selection2" formControlName="status" multiple>
+		<mat-option *ngFor="let item of healthList" [value]="item.value" (click)="onChangHealthStatus(allSelected.viewValue,item.value)">
+			{{item.name}}
+		</mat-option>
+		<mat-option #allSelected (click)="toggleAllSelectionHealth()" [value]="0">All</mat-option>
+	</mat-select>
+</mat-form-field> 
     </div>
     <div fxLayout="column" fxLayoutAlign="space-between" >
         <mat-label>{{ translationData.lblOtherFilter || 'Other Filter' }} </mat-label>
@@ -76,7 +76,7 @@
             </mat-select>
         </mat-form-field>
     </div>
-  </form>
+  </form> 
 </div>
 <div *ngIf="selectedIndex == 1">
   <div class="fleet-filter-driver">

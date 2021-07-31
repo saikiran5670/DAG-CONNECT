@@ -196,12 +196,12 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
       this.isWarningOpen =  true;
       let filterrredData = [];
       for (let row of this.historyHealthData) {
-        let startDate = this.vehicleHealthForm.get('startDate').value;
-        let startDateTime = new Date(startDate.getMonth() + "-" + startDate.getDate() + "-" + startDate.getFullYear() + " " + this.vehicleHealthForm.get('startTime').value);
-        let endDate = this.vehicleHealthForm.get('endDate').value;
-        let endDateTime = new Date(endDate.getMonth() + "-" + endDate.getDate() + "-" + endDate.getFullYear() + " " + this.vehicleHealthForm.get('startTime').value);
+        // let startDate = this.startDateValue;
+        // let startDateTime = new Date(startDate.getDate() + "-" + startDate.getMonth() + "-" + startDate.getFullYear() + " " + this.vehicleHealthForm.get('startTime').value);
+        // let endDate = this.endDateValue;
+        // let endDateTime = new Date(endDate.getDate() + "-" + endDate.getMonth() + "-" + endDate.getFullYear() + " " + this.vehicleHealthForm.get('startTime').value);
         let check = new Date(row.warningTimetamp);
-        if (check >= startDateTime && check <= endDateTime) {
+        if (check >= this.startDateValue && check <= this.endDateValue) {
           filterrredData.push(row)
         }
       }
@@ -267,26 +267,23 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
   }
 
   onWarningTypeSelection(warning: any){
-    if(warning == 'servicenow') {
+    let sorteddata = [];
+    if(warning == 'deactivated_time' || warning == 'activated_time') {
       this.historyHealthData.sort((a, b) => {
-        if (a.warningVehicleHealthStatusType > b.warningVehicleHealthStatusType)
+        if (a.warningTimetamp < b.warningDeactivatedTimestamp)
             return -1;
         if (a < b)
             return 1;
         return 0;
     });
-    } else if(warning == 'stopnow') {
-      this.historyHealthData.sort((a, b) => {
-        if (a.warningVehicleHealthStatusType < b.warningVehicleHealthStatusType)
-            return -1;
-        if (a < b)
-            return 1;
-        return 0;
-    });
+    sorteddata = [...this.historyHealthData];
     } else {
-      this.historyHealthData;
+      let stopnow = this.historyHealthData.filter(item=>item.warningVehicleHealthStatusType == 'T');
+      let servicenow = this.historyHealthData.filter(item=>item.warningVehicleHealthStatusType == 'V');
+      let noaction = this.historyHealthData.filter(item=>item.warningVehicleHealthStatusType == 'N' || item.warningVehicleHealthStatusType.trim() == '');
+      sorteddata = [...stopnow,...servicenow,...noaction];
     }
-    this.applyDatatoCardPaginator(this.historyHealthData);
+    this.applyDatatoCardPaginator(sorteddata);
   }
 
   onChangeWarningType(warning: any){
@@ -388,6 +385,8 @@ export class VehicleHealthComponent implements OnInit, OnDestroy {
         break;
       }
     }
+    this.vehicleHealthForm.get('startDate').setValue(this.startDateValue);
+    this.vehicleHealthForm.get('endDate').setValue(this.endDateValue);
     // this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
     // this.setGlobalSearchData(this.fleetUtilizationSearchData);
     // this.resetTripFormControlValue(); // extra addded as per discuss with Atul

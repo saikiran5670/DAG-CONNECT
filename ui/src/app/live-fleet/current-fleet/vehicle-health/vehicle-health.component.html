@@ -216,8 +216,8 @@
                   <mat-select [(ngModel)]="warningTypeSelection" (selectionChange)="onWarningTypeSelection($event)"
                     placeholder="{{ translationData.lblSelectVehicleGroup || 'Severity' }}">
                     <mat-option value="severity">Severity</mat-option>
-                    <mat-option value="servicenow">Service Now</mat-option>
-                    <mat-option value="stopnow">Stop Now</mat-option>
+                    <mat-option *ngIf='isCurrent' value="activated_time">Activated Time</mat-option>
+                    <mat-option *ngIf='!isCurrent' value="deactivated_time">Activated Time / Deactivated Time</mat-option>
                   </mat-select>
                 </mat-form-field>
               </div>

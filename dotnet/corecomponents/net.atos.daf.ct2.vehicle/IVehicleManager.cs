@@ -49,5 +49,12 @@ namespace net.atos.daf.ct2.vehicle
         #region Get Vehicle Group Count for Report scheduler
         Task<int> GetVehicleAssociatedGroupCount(VehicleCountFilter vehicleCountFilter);
         #endregion
+
+        #region Provisioning Data Service
+
+        Task<bool> GetCurrentVehicle(ProvisioningVehicleDataServiceRequest request);
+        Task<bool> GetVehicleList(ProvisioningVehicleDataServiceRequest request);
+
+        #endregion
     }
 }

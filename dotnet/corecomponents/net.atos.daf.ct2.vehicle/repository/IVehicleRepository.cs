@@ -72,5 +72,8 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         // Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime);
         // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
+
+        Task<bool> GetCurrentVehicle(ProvisioningVehicleDataServiceRequest request);
+        Task<bool> GetVehicleList(ProvisioningVehicleDataServiceRequest request);
     }
 }

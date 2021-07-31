@@ -231,5 +231,19 @@ namespace net.atos.daf.ct2.notificationengine.repository
             return notificationHistory;
 
         }
+
+        public async Task<string> GetTranslateValue(string languageCode, string key)
+        {
+            try
+            {
+                string translateValue = await _dataAccess.QuerySingleAsync<string>("Select coalesce((select t.value from translation.translation as t where t.name =@key and t.code=@laguageCode), (select t.value from translation.translation as t where t.name =@key and t.code='EN-GB')) as Key", new { key = key, laguageCode = languageCode });
+
+                return translateValue;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
