@@ -4,6 +4,8 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.kafkacdc.entity;
 using Dapper;
 using System;
+using net.atos.daf.ct2.utilities;
+
 
 namespace net.atos.daf.ct2.kafkacdc.repository
 {
@@ -56,11 +58,12 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                     ,veh.license_plate_number as RegistrationNo	
                     from master.alert cte
                     inner join master.group grp 
-                    on cte.vehicle_group_id = grp.id and grp.object_type='V' and cte.id=12 --and grp.group_type='G'
+                    on cte.vehicle_group_id = grp.id and grp.object_type='V' and cte.state in ('A') and cte.id=12 --and grp.group_type='G'
                     left join master.groupref vgrpref
                     on  grp.id=vgrpref.group_id
                     left join master.vehicle veh
                     on vgrpref.ref_id=veh.id
+                    where cte.state in ('A')
                     )
                     --select * from cte_alert_vehicle_groupanddynamic;
 
@@ -249,7 +252,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                     select  distinct 
 		                    AlertId
 		                    ,VIN
-                    from cte_account_vehicle_CompleteList where  vehicleid>0 order by 1;";
+                    from cte_account_vehicle_CompleteList where  vehicleid>0  order by 1;";
 
                 IEnumerable<VehicleAlertRef> vehicleAlertRefs = await _dataAccess.QueryAsync<VehicleAlertRef>(query, parameter);
                 return vehicleAlertRefs.AsList();
@@ -261,8 +264,6 @@ namespace net.atos.daf.ct2.kafkacdc.repository
         }
         public async Task<bool> InsertVehicleAlertRef(List<VehicleAlertRef> vehicleAlertRefs)
         {
-            _dataAccess.Connection.Open();
-            var transactionScope = _dataAccess.Connection.BeginTransaction();
             bool isSucceed = false;
             try
             {
@@ -271,8 +272,8 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                     var parameter = new DynamicParameters();
                     parameter.Add("@vin", item.VIN);
                     parameter.Add("@alertid", item.AlertId);
-                    parameter.Add("@state", "I");
-                    parameter.Add("@createdat", System.DateTime.UtcNow.Millisecond);
+                    parameter.Add("@state", item.Op);
+                    parameter.Add("@createdat", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                     string query = @"INSERT INTO tripdetail.vehiclealertref(vin, alert_id, state, created_at)
                                                     VALUES (@vin, @alertid, @state, @createdat) RETURNING id;";
                     int result = await _dataMartdataAccess.ExecuteAsync(query, parameter);
@@ -283,16 +284,10 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                     }
                     isSucceed = true;
                 }
-                transactionScope.Commit();
             }
             catch (Exception ex)
             {
-                transactionScope.Rollback();
                 throw ex;
-            }
-            finally
-            {
-                _dataAccess.Connection.Close();
             }
             return isSucceed;
         }
@@ -308,7 +303,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                     parameter.Add("@vin", vehicleAlertRefs);
                     parameter.Add("@alertid", vehicleAlertRefs);
                     parameter.Add("@state", "U");
-                    parameter.Add("@createdat", System.DateTime.UtcNow.Millisecond);
+                    parameter.Add("@createdat", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                     string queryAlertLevelPull = @"UPDATE tripdetail.vehiclealertref
                                                SET state=@state, created_at=@createdat
                                                 WHERE vin=any(@vins) and alert_id=any(@alertids) ";
@@ -348,6 +343,29 @@ namespace net.atos.daf.ct2.kafkacdc.repository
             {
                 throw ex;
             }
+        }
+        public async Task<bool> DeleteAndInsertVehicleAlertRef(List<int> alertIds, List<VehicleAlertRef> vehicleAlertRefs)
+        {
+            //datamart transaction
+            _dataMartdataAccess.Connection.Open();
+            var transactionScope = _dataMartdataAccess.Connection.BeginTransaction();
+            bool isSucceed = false;
+            try
+            {
+                isSucceed = await DeleteVehicleAlertRef(alertIds);
+                isSucceed = await InsertVehicleAlertRef(vehicleAlertRefs);
+                transactionScope.Commit();
+            }
+            catch (Exception ex)
+            {
+                transactionScope.Rollback();
+                throw ex;
+            }
+            finally
+            {
+                _dataAccess.Connection.Close();
+            }
+            return isSucceed;
         }
     }
 }
