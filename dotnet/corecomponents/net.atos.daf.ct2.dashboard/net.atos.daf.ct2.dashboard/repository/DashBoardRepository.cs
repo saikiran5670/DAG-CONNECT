@@ -80,7 +80,6 @@ namespace net.atos.daf.ct2.dashboard.repository
             try
             {
                 var parameterOfFilters = new DynamicParameters();
-                var tempdate = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddDays(-1));
                 parameterOfFilters.Add("@Vins", alert24HoursFilter.VINs);
                 string queryAlert24Hours = @"select                                       
 	                 COUNT(CASE WHEN tra.category_type = 'L' then 1 ELSE NULL END) as Logistic,
