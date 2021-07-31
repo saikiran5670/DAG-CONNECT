@@ -81,5 +81,37 @@ namespace net.atos.daf.ct2.dashboardservice
             }
 
         }
+        public override async Task<TodayLiveVehicleResponse> GetTodayLiveVinData(TodayLiveVehicleRequest request, ServerCallContext context)
+        {
+            try
+            {
+                net.atos.daf.ct2.dashboard.entity.TodayLiveVehicleRequest objTodayLiveVehicleRequest = new net.atos.daf.ct2.dashboard.entity.TodayLiveVehicleRequest();
+                objTodayLiveVehicleRequest.VINs = request.VINs.ToList<string>();
+                var data = await _dashBoardManager.GetTodayLiveVinData(objTodayLiveVehicleRequest);
+                TodayLiveVehicleResponse objTodayLiveVehicleResponse = new TodayLiveVehicleResponse();
+                if (data != null)
+                {
+                    objTodayLiveVehicleResponse.ActiveVehicles = data.ActiveVehicles;
+                    objTodayLiveVehicleResponse.CriticleAlertCount = data.CriticleAlertCount;
+                    objTodayLiveVehicleResponse.Distance = data.Distance;
+                    objTodayLiveVehicleResponse.DistanceBaseUtilization = data.DistanceBaseUtilization;
+                    objTodayLiveVehicleResponse.DriverCount = data.DriverCount;
+                    objTodayLiveVehicleResponse.DrivingTime = data.DrivingTime;
+                    objTodayLiveVehicleResponse.TimeBaseUtilization = data.TimeBaseUtilization;
+                    objTodayLiveVehicleResponse.VehicleCount = data.VehicleCount;
+                    objTodayLiveVehicleResponse.Code = Responsecode.Success;
+                    objTodayLiveVehicleResponse.Message = DashboardConstants.GET_TODAY_LIVE_VEHICLE_SUCCESS_MSG;
+                }
+                return await Task.FromResult(objTodayLiveVehicleResponse);
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(new TodayLiveVehicleResponse
+                {
+                    Code = Responsecode.InternalServerError,
+                    Message = string.Format(DashboardConstants.GET_TODAY_LIVE_VEHICLE_FAILURE_MSG, ex.Message)
+                });
+            }
+        }
     }
 }
