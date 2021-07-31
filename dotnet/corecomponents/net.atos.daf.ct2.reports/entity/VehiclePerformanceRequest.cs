@@ -6,11 +6,19 @@ namespace net.atos.daf.ct2.reports.entity
 {
     public class VehiclePerformanceRequest
     {
-        public int Id { get; set; }
         public string Vin { get; set; }
+        public string PerformanceType { get; set; }
+        public long StartTime { get; set; }
+        public long EndTime { get; set; }
+
+    }
+
+    public class VehiclePerformanceSummary
+    {
+        public string Vin { get; set; }
+        public string EngineType { get; set; }
+        public string ModelType { get; set; }
         public string Vid { get; set; }
-        public string Engine_Type { get; set; }
-        public string Model_Type { get; set; }
 
     }
 }

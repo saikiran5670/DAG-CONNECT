@@ -755,7 +755,7 @@ namespace net.atos.daf.ct2.reports
             //We will bind data here
             return engineloadtemplate;
         }
-        public async Task<IEnumerable<VehiclePerformanceRequest>> GetVehPerformanceSummaryDetails(string vin)
+        public async Task<IEnumerable<VehiclePerformanceSummary>> GetVehPerformanceSummaryDetails(string vin)
         {
             return await _reportRepository.GetVehPerformanceSummaryDetails(vin);
 
