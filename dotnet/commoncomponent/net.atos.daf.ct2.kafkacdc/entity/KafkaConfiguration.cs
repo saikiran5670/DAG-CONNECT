@@ -11,5 +11,6 @@ namespace net.atos.daf.ct2.kafkacdc.entity
         public string EH_NAME { get; set; }
         public string CONSUMER_GROUP { get; set; }
         public string CA_CERT_LOCATION { get; set; }
+        public string IsVehicleCDCEnable { get; set; }
     }
 }
