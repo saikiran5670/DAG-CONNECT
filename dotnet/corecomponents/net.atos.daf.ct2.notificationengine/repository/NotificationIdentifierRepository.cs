@@ -73,6 +73,12 @@ namespace net.atos.daf.ct2.notificationengine.repository
 	                                    ,nottim.state as Aletimenoti_state
                                         ,ale.organization_id as Ale_organization_id
                                         ,ale.name as Ale_name
+	                                    ,vgrp.name as Vehicle_group_name
+										,vgrp.group_type as vehiclegroup
+										, case when vgrp.group_type ='S' then 
+											(select name from master.vehicle where id=vgrp.ref_id)
+											else vgrp.name
+											end Vehicle_group_vehicle_name
                                     from master.notificationrecipientref notref
                                     inner join master.notificationrecipient notrec
                                     on notref.recipient_id=notrec.id and notrec.state=@state and notref.state=@state
@@ -84,6 +90,8 @@ namespace net.atos.daf.ct2.notificationengine.repository
                                     on notrec.id=notlim.recipient_id and notlim.state=@state
                                     left join master.alerttimingdetail nottim
                                     on noti.id=nottim.ref_id and nottim.type=@adFilterType and nottim.state=@state
+                                    inner join master.group vgrp
+									on vgrp.id=ale.vehicle_group_id
                                     where notref.alert_id=@alert_id";
             var parameter = new DynamicParameters();
             parameter.Add("@alert_id", tripAlert.Alertid);
@@ -119,7 +127,8 @@ namespace net.atos.daf.ct2.notificationengine.repository
             parameter.Add("@alert_id", tripAlert.Alertid);
             parameter.Add("@vehicle_id", tripAlert.VehicleId);
             parameter.Add("@status", ((char)NotificationSendType.Failed).ToString());
-            if (tripAlert.Type.IndexOfAny(new char[] { 'N', 'X', 'c', 'Y', 'D', 'G', 'S' }) >= 0)
+            //await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type=@type and enum=@categoryEnum", new { type = 'C', categoryEnum = item.CategoryType });
+            if (tripAlert.Type.IndexOfAny(new char[] { 'N', 'X', 'C', 'Y', 'D', 'G', 'S', 'U', 'A', 'H', 'I', 'O', 'T', 'L', 'P', 'F' }) >= 0)
             {
                 queryStatement.Append(" and trip_id = @trip_id");
                 parameter.Add("@trip_id", tripAlert.Tripid);

@@ -154,6 +154,7 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.ValueAtAlertTime = tripAlert.ValueAtAlertTime;
                         notificationHistory.SMS = item.Notrec_sms;
                         notificationHistory.AlertName = item.Ale_name;
+                        notificationHistory.Vehicle_group_vehicle_name = item.Vehicle_group_vehicle_name;
 
                         identifiedNotificationRec.Add(notificationHistory);
                     }
