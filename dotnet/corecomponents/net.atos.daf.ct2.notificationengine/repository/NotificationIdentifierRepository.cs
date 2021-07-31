@@ -72,6 +72,7 @@ namespace net.atos.daf.ct2.notificationengine.repository
 	                                    ,nottim.end_date as Aletimenoti_end_date
 	                                    ,nottim.state as Aletimenoti_state
                                         ,ale.organization_id as Ale_organization_id
+                                        ,ale.name as Ale_name
                                     from master.notificationrecipientref notref
                                     inner join master.notificationrecipient notrec
                                     on notref.recipient_id=notrec.id and notrec.state=@state and notref.state=@state
