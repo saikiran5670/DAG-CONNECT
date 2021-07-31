@@ -153,6 +153,7 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.ThresholdValueUnitType = tripAlert.ThresholdValueUnitType;
                         notificationHistory.ValueAtAlertTime = tripAlert.ValueAtAlertTime;
                         notificationHistory.SMS = item.Notrec_sms;
+                        notificationHistory.AlertName = item.Ale_name;
 
                         identifiedNotificationRec.Add(notificationHistory);
                     }

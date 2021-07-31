@@ -33,14 +33,15 @@ namespace net.atos.daf.ct2.dashboardservice
                     EndDateTime = request.EndDateTime,
                     VINs = request.VINs.ToList<string>()
                 };
+
+                // Pull details from db
                 dashboard.entity.FleetKpi reportDetails = await _dashBoardManager.GetFleetKPIDetails(fleetKpiFilter);
-                FleetKpiResponse fleetKpiResponse = new FleetKpiResponse
-                {
-                    Code = Responsecode.Success,
-                    Message = DashboardConstants.GET_FLEETKPI_DETAILS_SUCCESS_MSG
-                };
+
+                // Prepare and Map repository object to service object
+                FleetKpiResponse fleetKpiResponse = new FleetKpiResponse { Code = Responsecode.Success, Message = DashboardConstants.GET_FLEETKPI_DETAILS_SUCCESS_MSG };
                 string serializeDetails = JsonConvert.SerializeObject(reportDetails);
                 fleetKpiResponse.FleetKpis = (JsonConvert.DeserializeObject<FleetKpi>(serializeDetails));
+
                 return await Task.FromResult(fleetKpiResponse);
             }
             catch (Exception ex)

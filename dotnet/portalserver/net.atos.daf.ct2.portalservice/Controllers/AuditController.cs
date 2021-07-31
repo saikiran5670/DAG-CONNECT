@@ -10,7 +10,7 @@ using net.atos.daf.ct2.notificationservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("audit")]
     [ApiController]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AuditController : ControllerBase
