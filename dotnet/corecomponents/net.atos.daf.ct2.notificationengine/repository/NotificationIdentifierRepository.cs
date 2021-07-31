@@ -255,5 +255,66 @@ namespace net.atos.daf.ct2.notificationengine.repository
                 throw;
             }
         }
+
+        public async Task<string> GetLanguageCodePreference(string emailId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@emailId", emailId.ToLower());
+
+                string accountQuery =
+                    @"SELECT preference_id from master.account where lower(email) = @emailId";
+
+                var accountPreferenceId = await _dataAccess.QueryFirstOrDefaultAsync<int?>(accountQuery, parameter);
+
+                if (!accountPreferenceId.HasValue)
+                {
+                    string orgQuery = string.Empty;
+                    int? orgPreferenceId = null;
+
+                    orgQuery =
+                        @"SELECT o.preference_id from master.account acc
+                            INNER JOIN master.accountOrg ao ON acc.id=ao.account_id
+                            INNER JOIN master.organization o ON ao.organization_id=o.id
+                            where lower(acc.email) = @emailId";
+
+                    orgPreferenceId = await _dataAccess.QueryFirstOrDefaultAsync<int?>(orgQuery, parameter);
+
+                    if (!orgPreferenceId.HasValue)
+                        return "EN-GB";
+                    else
+                        return await GetCodeByPreferenceId(orgPreferenceId.Value);
+                }
+                return await GetCodeByPreferenceId(accountPreferenceId.Value);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<string> GetCodeByPreferenceId(int preferenceId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@preferenceId", preferenceId);
+
+                string query =
+                    @"SELECT l.code from master.accountpreference ap
+                    INNER JOIN translation.language l ON ap.id = @preferenceId AND ap.language_id=l.id";
+
+                var languageCode = await _dataAccess.QueryFirstAsync<string>(query, parameter);
+
+                return languageCode;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

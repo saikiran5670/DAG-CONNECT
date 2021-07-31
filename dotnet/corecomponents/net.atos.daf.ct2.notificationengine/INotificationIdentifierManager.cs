@@ -11,5 +11,6 @@ namespace net.atos.daf.ct2.notificationengine
         Task<List<Notification>> GetNotificationDetails(TripAlert tripAlert);
         Task<NotificationHistory> InsertNotificationSentHistory(NotificationHistory notificationHistory);
         Task<string> GetTranslateValue(string languageCode, string key);
+        Task<string> GetLanguageCodePreference(string emailId);
     }
 }
