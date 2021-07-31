@@ -12,14 +12,14 @@ using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
-    public class VehicleAlertRefIntegrator : IVehicleAlertRefIntegrator
+    public class VehicleAlertRefManager : IVehicleAlertRefManager
     {
         private readonly IConfiguration _configuration;
 
         private readonly IVehicleAlertRepository _vehicleAlertRepository;
         private readonly KafkaConfiguration _kafkaConfig;
 
-        public VehicleAlertRefIntegrator(IVehicleAlertRepository vehicleAlertRepository, IConfiguration configuration)
+        public VehicleAlertRefManager(IVehicleAlertRepository vehicleAlertRepository, IConfiguration configuration)
         {
             _vehicleAlertRepository = vehicleAlertRepository;
             this._configuration = configuration;

@@ -40,6 +40,8 @@ export class CurrentFleetComponent implements OnInit {
   accountPrefObj: any;
   preferenceObject : any;
   _state: any;
+  filterData : any;
+
   // detailsData =[
   //   {
   //     "id": 8,
@@ -191,6 +193,9 @@ export class CurrentFleetComponent implements OnInit {
       //   }
       // });
       this.getFleetOverviewPreferences();
+    });
+    this.reportService.getFilterDetails().subscribe((data: any) => {
+      this.filterData = data;
     });
    }
 

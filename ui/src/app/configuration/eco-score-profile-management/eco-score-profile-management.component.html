@@ -115,11 +115,11 @@
         </div>
         <div fxLayout="column" fxLayoutAlign="end">
             <div fxLayout="row" class='areaWidth'>
-                <button class='margin-right-10 min-width-100-px' mat-raised-button color="warn" *ngIf="actionType == 'manage'" [disabled]="!deleteSelection"
+                <button class='margin-right-10 min-width-100-px' mat-raised-button color="warn" *ngIf="actionType == 'manage'" [disabled]="!deleteButton"
                 (click)='onDelete()'>{{ (translationData.lblDelete || 'Delete') }}</button>
                 <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" 
                     (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
-                <button class='no-margin' [disabled]="!ecoScoreProfileForm.valid " mat-raised-button color="primary"
+                <button class='no-margin' [disabled]="!ecoScoreProfileForm.valid || !saveButton" mat-raised-button color="primary"
                     (click)='onCreate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
                     (translationData.lblSave || 'Save') }}</button>
             </div>
@@ -132,7 +132,7 @@
     <mat-expansion-panel [(expanded)]="isEcoScore" class="full-width" fxLayoutGap="10px" (opened)="isEcoScore" (closed)="!isEcoScore">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ kpiData.kpiName }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblEcoScore || 'Eco-Score'}}</span>
                 <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblEcoScoreInfoLable || 'The Eco-Score represents the Overall Performance of the driver. The Eco-Score is the rounded down average of the Anticipation and Braking Scores. The Fuel Consumption is not part of the Eco-Score calculation' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
@@ -143,7 +143,7 @@
     <mat-expansion-panel [(expanded)]="isFuelConsumption" class="full-width" fxLayoutGap="10px" (opened)="isFuelConsumption" (closed)="!isFuelConsumption">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Fuel Consumption</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFuelConsumption || 'Fuel Consumption'}}</span>
                 <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblFuelScoreInfoLable || 'The Fuel Consumption is not part of the Eco-Score calculation' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
@@ -181,7 +181,7 @@
     <mat-expansion-panel [(expanded)]="isBrakingScore" class="full-width" fxLayoutGap="10px" (opened)="isBrakingScore" (closed)="!isBrakingScore">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Braking Score</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblBrakingScore || 'Braking Score'}}</span>
                 <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblBrakingScoreInfoLable || 'The Eco-Score is the rounded down average of the  Braking Scores' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
@@ -204,7 +204,7 @@
     <mat-expansion-panel [(expanded)]="isAnticipation" class="full-width" fxLayoutGap="10px" (opened)="isAnticipation" (closed)="!isAnticipation">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ anticipationKpiData.kpiName }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAnticipationScore || 'Anticipation Score'}}</span>
                 <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblAnticipationScoreInfoLable || 'The Eco-Score is the rounded down average of the Anticipation score' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>
@@ -215,7 +215,7 @@
     <mat-expansion-panel [(expanded)]="isOther" class="full-width" fxLayoutGap="10px" (opened)="isOther" (closed)="!isOther">
         <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Other Fuel Consumption Indicators</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblOtherFuelConsumptionIndicators || 'Other Fuel Consumption Indicators'}}</span>
                 <mat-icon class='margin-right-10' matTooltip="{{ translationData.lblOtherFuelScoreInfoLable || 'The other  Fuel Consumption is not part of the Eco-Score calculation' }}">info</mat-icon>
             </mat-panel-title>
         </mat-expansion-panel-header>

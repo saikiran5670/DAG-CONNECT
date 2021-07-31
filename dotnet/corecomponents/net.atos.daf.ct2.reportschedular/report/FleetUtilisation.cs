@@ -157,10 +157,10 @@ namespace net.atos.daf.ct2.account.report
                               , toDate.ToString(DateTimeFormat)
                               , string.Join(',', VehicleLists.Select(s => s.VehicleName).Distinct().ToArray())
                               , FleetUtilisationPdfDetails.Count()
-                              , FleetUtilisationPdfDetails.Sum(s => s.Distance)
+                              , Math.Round(FleetUtilisationPdfDetails.Sum(s => s.Distance), 2)
                               , distanceUnit
                               , FleetUtilisationPdfDetails.Sum(s => s.NumberOfTrips)
-                              , FleetUtilisationPdfDetails.Sum(s => s.AverageDistancePerDay)
+                              , Math.Round(FleetUtilisationPdfDetails.Sum(s => s.AverageDistancePerDay), 2)
                               , distanceUnit
                               , await _unitConversionManager.GetTimeSpan(TotalIdleDuration, TimeUnit.Seconds, UnitToConvert)
                               , timeSpanUnit
@@ -174,8 +174,7 @@ namespace net.atos.daf.ct2.account.report
                               , await _unitManager.GetWeightUnit(UnitToConvert)
                               , distanceUnit
                               , ImageSingleton.GetInstance().GetLogo()
-                ); ;
-            //return html.Replace("{{", "{").Replace("}}", "}").ToString();
+                );
             return html.ToString();
         }
     }

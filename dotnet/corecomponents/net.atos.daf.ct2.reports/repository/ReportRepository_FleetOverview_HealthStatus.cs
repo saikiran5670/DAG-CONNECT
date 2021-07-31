@@ -188,12 +188,28 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@warningClass", warningClass);
                 parameter.Add("@warningNumber", warningNumber);
                 parameter.Add("@code", lngCode.ToLower());
-                string query = @" SELECT warning.id, warning.code, warning.type, warning.veh_type,warning.class as WarningClass, warning.number as WarningNumber,
+                parameter.Add("@engCode", "EN-GB");
+                string query = @" SELECT warning.id, warning.code as LngCode, warning.type, warning.veh_type,warning.class as WarningClass, warning.number as WarningNumber,
                                   warning.description as WarningName, warning.advice as WarningAdvice,
 								  warning.icon_id as IconId,icon.icon,icon.name as IconName,icon.color_name as ColorName
 								  from master.dtcwarning warning
                                   LEFT JOIN master.icon icon on  warning.icon_id=icon.id  and icon.state in ('A','I') 
-                                  where warning.class= Any(@warningClass) and warning.number = Any(@warningNumber) and((@code != '' and Lower(code) = @code) or(@code = '' and code = ''))";
+                                  where warning.class= Any(@warningClass) and warning.number = Any(@warningNumber) 
+                                    and((Lower(@code) != '' and Lower(code) =Lower(@code)) or(Lower(@code) = '' and Lower(code) = ''))";
+                query += @"union SELECT warning.id
+                , warning.code as LngCode
+                ,warning.type, warning.veh_type
+                ,warning.class as WarningClass
+                , warning.number as WarningNumber
+                ,warning.description as WarningName
+                ,warning.advice as WarningAdvice
+                ,warning.icon_id as IconId
+                ,icon.icon,icon.name as IconName
+                ,icon.color_name as ColorName
+                from master.dtcwarning warning
+                LEFT JOIN master.icon icon on warning.icon_id=icon.id and icon.state in ('A','I')
+                where warning.class= Any(@warningClass) and warning.number = Any(@warningNumber) 
+                 and((Lower(@engCode) != '' and Lower(code) =Lower(@engCode)) or(Lower(@engCode) = '' and Lower(code) = ''))";
                 warningList = await _dataAccess.QueryAsync<WarningDetails>(query, parameter);
             }
             catch (Exception)

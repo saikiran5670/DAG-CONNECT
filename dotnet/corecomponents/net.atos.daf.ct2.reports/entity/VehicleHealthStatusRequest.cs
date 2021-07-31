@@ -22,6 +22,7 @@
         public int IconId { get; set; }
         public string IconName { get; set; }
         public string ColorName { get; set; }
+        public string LngCode { get; set; }
 
     }
     public class DriverDetails

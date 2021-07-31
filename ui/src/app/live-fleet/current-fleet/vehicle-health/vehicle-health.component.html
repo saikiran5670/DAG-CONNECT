@@ -39,7 +39,7 @@
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblWarningsType || 'Warnings Type' }} </mat-label>
                   <mat-form-field appearance="outline">
-                    <mat-select formControlName="warningType" (selectionChange)="onWarningTypeSelection($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Warnings Type' }}" >
+                    <mat-select formControlName="warningType" (selectionChange)="onChangeWarningType($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Warnings Type' }}" >
                       <mat-option value="AllWarnings">All Warnings</mat-option>
                       <mat-option value="Active">Active</mat-option>
                       <mat-option value="Deactive">Deactive</mat-option>
@@ -119,13 +119,13 @@
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblFrom || 'From' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>19/07/2021 00:00:00</span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ fromDisplayDate }}</span>
                   </span>
                 </div>
                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblVehicleGroup || 'Warning Type' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>All Warnings</span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ warningTypeDisplay }}</span>
                   </span>
                 </div>
               </div>
@@ -133,7 +133,7 @@
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
                     <span>{{ translationData.lblTo || 'To' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>19/07/2021 23:59:59</span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ toDisplayDate }}</span>
                   </span>
                 </div>
               </div>
@@ -213,7 +213,7 @@
               <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>Sort By</mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select (selectionChange)="onWarningTypeSelection($event)"
+                  <mat-select [(ngModel)]="warningTypeSelection" (selectionChange)="onWarningTypeSelection($event)"
                     placeholder="{{ translationData.lblSelectVehicleGroup || 'Severity' }}">
                     <mat-option value="severity">Severity</mat-option>
                     <mat-option value="servicenow">Service Now</mat-option>
@@ -230,9 +230,10 @@
                 translationData.lblSelectionMessage
                 || 'Please select and search required fields from top to view the details' }}</div>
             </div>
-            <div *ngIf="obs" style="font: 500 16px/32px Roboto, 'Helvetica Neue', sans-serif;" fxLayout="row"
-              fxLayoutAlign="left" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+            <div *ngIf="obs" style="font: 500 16px/32px Roboto, 'Helvetica Neue', sans-serif;" 
+               class="full-width margin-bottom-xlg" fxLayoutGap="10px">
               <div *ngFor="let warning of obs | async">
+                <div class="warning_block">
                 <mat-checkbox style="font-size: 14px;" (change)='checkboxClicked($event,warning)'> View on Map
                 </mat-checkbox>
                 <div class="areaWidth warning_history" fxLayout="column" fxLayoutAlign="left">
@@ -263,9 +264,10 @@
                     </p>
                   </div>
                 </div>
+              </div>
               </div>              
             </div>
-            <mat-paginator  *ngIf="obs" [pageSize]="3" [pageSizeOptions]="[3, 9, 15, 30]"></mat-paginator>
+            <mat-paginator class="full-width"  fxLayoutAlign="left" *ngIf="obs" [pageSize]="3" [pageSizeOptions]="[3, 9, 15, 30]"></mat-paginator>
           </div>
         </mat-expansion-panel>
       </mat-card>

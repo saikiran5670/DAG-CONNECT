@@ -363,8 +363,12 @@ export class FuelBenchmarkingComponent implements OnInit {
     // // this.setGlobalSearchData(this.fleetUtilizationSearchData);
     // // if(!this.makeDisableVehicleGroup)
     // // {
+      if(!this.makeDisableVehicleGroup)
+    {  
       this.resetTripFormControlValue(); // extra addded as per discuss with Atul
       this.filterDateData(); // extra addded as per discuss with Atul
+    }
+     
     
   
   }
@@ -533,8 +537,11 @@ export class FuelBenchmarkingComponent implements OnInit {
     this.internalSelection = true;
     //this.startDateValue = event.value._d;
     this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
-    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
-    this.filterDateData(); // extra addded as per discuss with Atul
+    if(!this.makeDisableVehicleGroup)
+    {  
+      this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+      this.filterDateData(); // extra addded as per discuss with Atul
+    }
   }
 
   // filterDateData(){
@@ -850,6 +857,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   }
 
   onVehicleGroupChange(event: any) {
+    //this.selectedVehicleGroup = event.value;
    
     if (event.value || event.value == 0) {
       this.internalSelection = true;
@@ -899,8 +907,13 @@ export class FuelBenchmarkingComponent implements OnInit {
   changeEndDateEvent(event: MatDatepickerInputEvent<any>) {
     this.internalSelection = true;
     this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
-    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
-    this.filterDateData(); // extra addded as per discuss with Atul
+
+    if(!this.makeDisableVehicleGroup)
+    {  
+      this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+      this.filterDateData(); // extra addded as per discuss with Atul
+    }
+
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
@@ -944,8 +957,12 @@ export class FuelBenchmarkingComponent implements OnInit {
       this.startTimeDisplay = selectedTime;
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
-    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
-    this.filterDateData();// extra addded as per discuss with Atul
+    if(!this.makeDisableVehicleGroup)
+    {  
+      this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+      this.filterDateData(); // extra addded as per discuss with Atul
+    }
+
   }
 
   endTimeChanged(selectedTime: any) {
@@ -958,8 +975,11 @@ export class FuelBenchmarkingComponent implements OnInit {
       this.endTimeDisplay = selectedTime;
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
-    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
-    this.filterDateData();
+    if(!this.makeDisableVehicleGroup)
+    {  
+      this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+      this.filterDateData(); // extra addded as per discuss with Atul
+    }
   }
 
   getTodayDate() {

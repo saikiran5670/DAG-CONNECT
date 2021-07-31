@@ -170,6 +170,18 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
+  getEcoScoreSingleDriver(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/ecoscore/singledriver`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   getCalendarDetails(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -441,7 +453,7 @@ export class ReportService {
     };
     return this.httpClient
       .post<any[]>(
-        `${this.reportServiceUrl}/fueldeviation​/charts`, data, headers
+        `${this.reportServiceUrl}/fueldeviation/charts`, data, headers
       )
       .pipe(catchError(this.handleError));
   }

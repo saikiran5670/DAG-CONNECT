@@ -70,7 +70,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                                                            INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
  	                                                            INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
 	                                                            INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' 
-			                                            INNER JOIN master.Report rpt ON rpt.feature_id = f.id
+			                                                    INNER JOIN master.Report rpt ON rpt.feature_id = f.id AND rpt.scheduled_report = 'Y'
 	                                                            INTERSECT
 	                                                            --Subscription Route
 	                                                            SELECT f.id
@@ -79,7 +79,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                                                            INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
  	                                                            INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
 	                                                            INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D'
-			                                            INNER JOIN master.Report rpt ON  rpt.feature_id = f.id
+			                                                    INNER JOIN master.Report rpt ON  rpt.feature_id = f.id AND rpt.scheduled_report = 'Y'
                                         ) fsets
                                         INNER JOIN master.Report rpt ON rpt.feature_id = fsets.id ; ";
 

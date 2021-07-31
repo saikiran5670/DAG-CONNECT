@@ -12,6 +12,7 @@ namespace net.atos.daf.ct2.unitconversion
         Task<string> GetSpeedUnit(UnitToConvert convertTo);
         Task<string> GetVolumeUnit(UnitToConvert convertTo);
         Task<string> GetVolumePerDistanceUnit(UnitToConvert convertTo);
+        Task<string> GetVolumePer100KmUnit(UnitToConvert convertTo);
         Task<string> GetWeightUnit(UnitToConvert convertTo);
         Task<string> GetTimeSpanUnit(UnitToConvert convertTo);
     }

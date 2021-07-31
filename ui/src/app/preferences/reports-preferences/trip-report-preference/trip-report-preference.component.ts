@@ -117,7 +117,7 @@ export class TripReportPreferenceComponent implements OnInit {
     let _flag = true;
     if(this.selectionForTripColumns.selected.length > 0){
       let _search = this.selectionForTripColumns.selected.filter(i => (i.key == 'rp_tr_report_tripreportdetails_vehiclename' || i.key == 'rp_tr_report_tripreportdetails_vin' || i.key == 'rp_tr_report_tripreportdetails_platenumber'));
-      if(_search.length){
+      if(_search.length > 0){
         _flag = false;
       }
     }

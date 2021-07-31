@@ -299,7 +299,7 @@ export class FuelDeviationPreferencesComponent implements OnInit {
     let _flag = true;
     if(this.selectionForDetails.selected.length > 0){
       let _search = this.selectionForDetails.selected.filter(i => (i.key == 'rp_fd_details_vehiclename' || i.key == 'rp_fd_details_vin' || i.key == 'rp_fd_details_regplatenumber'));
-      if(_search.length){
+      if(_search.length > 0){
         _flag = false;
       }
     }
