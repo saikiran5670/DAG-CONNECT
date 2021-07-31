@@ -44,6 +44,10 @@ namespace net.atos.daf.ct2.notification
             {
                 mailNotificationRequest.MessageRequest.RemainingDaysToExpire = Convert.ToInt32(_configuration["RemainingDaysToExpire"]);
             }
+            if (mailNotificationRequest.EventType == EmailEventType.AlertNotificationEmail)
+            {
+                mailNotificationRequest.MessageRequest.AlertNotification.DafEmailId = _configuration["DAFSupportEmailId"];
+            }
 
             mailNotificationRequest.MessageRequest.Configuration = _emailConfiguration;
             mailNotificationRequest.MessageRequest.TokenSecret = mailNotificationRequest.TokenSecret;

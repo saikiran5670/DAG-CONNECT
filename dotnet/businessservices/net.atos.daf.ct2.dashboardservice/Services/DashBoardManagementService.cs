@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.dashboardservice
                 return await Task.FromResult(new Alert24HoursResponse
                 {
                     Code = Responsecode.InternalServerError,
-                    Message = ex.Message
+                    Message = string.Format(DashboardConstants.GET_ALERTLAST_24HOURS_FAILURE_MSG, ex.Message)
                 });
             }
 
