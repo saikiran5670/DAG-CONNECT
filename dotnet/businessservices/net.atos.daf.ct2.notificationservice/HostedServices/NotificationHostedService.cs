@@ -29,11 +29,11 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.Info("Start async called");
-            // _server.Start();
+            // _server.Start();           
             while (true)
             {
-                //OnStarted(); //_appLifetime.ApplicationStarted.Register(OnStarted);
-                //Thread.Sleep(30000);
+                OnStarted(); //_appLifetime.ApplicationStarted.Register(OnStarted);
+                Thread.Sleep(3600000); // 1hr sleep mode
             }
             return Task.CompletedTask;
         }

@@ -6,22 +6,25 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.auditservice;
+using net.atos.daf.ct2.notificationservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("audit")]
     [ApiController]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AuditController : ControllerBase
     {
         private readonly ILog _logger;
         private readonly AuditService.AuditServiceClient _auditService;
+        private readonly Greeter.GreeterClient _greeterClient;
 
         //Constructor
-        public AuditController(AuditService.AuditServiceClient auditService)
+        public AuditController(AuditService.AuditServiceClient auditService , Greeter.GreeterClient greeterClient)
         {
             _auditService = auditService;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            _greeterClient = greeterClient;
         }
 
         [HttpPost]
@@ -68,6 +71,37 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 else if (allauditLogs != null && allauditLogs.Code == Responcecode.Success)
                 {
                     return Ok(allauditLogs);
+                }
+                else
+                {
+                    return StatusCode(500, "GetTranslations Response is null");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+        [HttpGet]
+        [Route("getname")]
+        public async Task<IActionResult> GetName([FromQuery] string request)
+        {
+            try
+            {
+                HelloRequest helloRequest = new HelloRequest();
+                helloRequest.Name = request;
+
+                HelloReply reName = await _greeterClient.SayHelloAsync(helloRequest);
+                if (reName != null
+                 && reName.Message == "There is an error In GetTranslation.")
+                {
+                    return StatusCode(500, "There is an error In GetTranslation.");
+                }
+                else if (reName != null)
+                {
+                    return Ok(reName);
                 }
                 else
                 {

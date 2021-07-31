@@ -64,8 +64,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("dashboard/alert24hours")]
+        [HttpPost]
+        [Route("alert24hours")]
         public async Task<IActionResult> GetAlert24Hours([FromBody] Entity.Dashboard.Alert24HoursFilter request)
         {
             try
