@@ -17,6 +17,7 @@ using net.atos.daf.ct2.notification.repository;
 using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.sms;
+using net.atos.daf.ct2.notificationservice.Services;
 
 namespace net.atos.daf.ct2.notificationservice
 {
@@ -67,6 +68,7 @@ namespace net.atos.daf.ct2.notificationservice
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<PushNotificationManagementService>();
+                endpoints.MapGrpcService<GreeterImpl>();
 
                 endpoints.MapGet("/", async context =>
                 {

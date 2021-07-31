@@ -54,6 +54,7 @@
     <Protobuf Include="Protos\map.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\reportscheduler.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\pushnotification.proto" GrpcServices="Client" />
+	<Protobuf Include="Protos\Greeter.proto" GrpcServices="Client" />
 
   </ItemGroup>
   <ItemGroup>
