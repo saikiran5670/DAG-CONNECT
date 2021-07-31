@@ -7,17 +7,18 @@ using Microsoft.Extensions.Hosting;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.dashboard;
 using net.atos.daf.ct2.dashboard.repository;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.repository;
 
 namespace net.atos.daf.ct2.dashboardservice
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -30,13 +31,21 @@ namespace net.atos.daf.ct2.dashboardservice
                     .AllowAnyHeader()
                     .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
             }));
-            var connectionString = Configuration.GetConnectionString("ConnectionString");
+            string connectionString = Configuration.GetConnectionString("ConnectionString");
+            string dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
             });
-            //services.AddTransient<IDashBoardManager, DashBoardManager>();
-            //services.AddTransient<IDashBoardRepository, DashBoardRepository>();
+            services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
+            {
+                return new PgSQLDataMartDataAccess(dataMartconnectionString);
+            });
+            services.AddTransient<IAuditTraillib, AuditTraillib>();
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+            services.AddTransient<IDashBoardManager, DashBoardManager>();
+            services.AddTransient<IDashBoardRepository, DashBoardRepository>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

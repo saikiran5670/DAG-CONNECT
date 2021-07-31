@@ -20,6 +20,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   @Input() driverPerformanceColumnData: any;
   @Input() translationData: any=[];
   @Input() compareEcoScore: any;
+  @Input() prefUnitFormat: any;
   @Output() backToMainPage = new EventEmitter<any>();
   generalExpandPanel: boolean = true;
   translationDataLocal: any=[];
@@ -174,11 +175,11 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     this.columnDefinitions = [
       {
         id: 'category', name: (this.translationData.lblCategory || 'Category'), field: 'key',
-        type: FieldType.string, width: 150, maxWidth: 400, formatter: this.treeFormatter, excludeFromHeaderMenu: true
+        type: FieldType.string, minWidth: 150, maxWidth: 400, formatter: this.treeFormatter, excludeFromHeaderMenu: true
       },
       {
-        id: 'target', name: (this.translationData.lblTarget || 'Target'), field: 'target',
-        type: FieldType.string, minWidth: 90, maxWidth: 175, excludeFromHeaderMenu: true
+        id: 'target', name: (this.translationData.lblTarget || 'Target'), field: 'targetValue',
+        type: FieldType.string, formatter: this.getTarget, minWidth: 90, maxWidth: 275, excludeFromHeaderMenu: true
       }
     ];
     this.columnDefinitionsGen = [
@@ -332,11 +333,26 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     if (value === null || value === undefined || dataContext === undefined) {
       return '';
     }
+    let key='';
+    if(this.prefUnitFormat !== 'dunit_Metric' && value.toLowerCase().indexOf("rp_cruisecontrol") !== -1){
+      key = value;
+      value = "rp_cruisecontrolusage";
+    }
     var foundValue = this.translationData.value || this.translationDataLocal.filter(obj=>obj.key === value);
+
     if(foundValue === undefined || foundValue === null || foundValue.length === 0)
       value = value;
     else
       value = foundValue[0].value;
+    
+    if(this.prefUnitFormat !== 'dunit_Metric' && key){
+      if(key.indexOf("30") !== -1)
+        value += ' 18.6-31 m/h(%)'
+      else if(key.indexOf("50") !== -1)
+        value += ' 31-46.6 m/h(%)'
+      else if(key.indexOf("75") !== -1)
+        value += ' >46.6 m/h(%)'
+    }
     const gridOptions = grid.getOptions() as GridOption;
     const treeLevelPropName = gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName || '__treeLevel';
     if (value === null || value === undefined || dataContext === undefined) {
@@ -361,37 +377,83 @@ export class EcoScoreDriverCompareComponent implements OnInit {
       return `${spacer} <span class="slick-group-toggle" level="${dataContext[treeLevelPropName]}"></span>&nbsp;${value}`;
     }
   }
+
+  getTarget: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+    return this.formatValues(dataContext, value);
+  }
   
   getScore0: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
     if(value !== undefined && value !== null && value.length > 0){
-      let color = value[0].color === 'Amber'?'Orange':value[0].color;
-      return '<span style="color:' + color + '">' + value[0].value + "</span>";
+      // let color = value[0].color === 'Amber'?'Orange':value[0].color;
+      let color = this.getColor(dataContext, value[0].value);
+      return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[0].value) + "</span>";
     }
     return '';
   }
   
   getScore1: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
     if(value !== undefined && value !== null && value.length > 1){
-      let color = value[1].color === 'Amber'?'Orange':value[1].color;
-      return '<span style="color:' + color + '">' + value[1].value + "</span>";
+      let color = this.getColor(dataContext, value[0].value);
+      return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[1].value) + "</span>";
     }
     return '';
   }
 
   getScore2: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
     if(value !== undefined && value !== null && value.length > 2){
-      let color = value[2].color === 'Amber'?'Orange':value[2].color;
-      return '<span style="color:' + color + '">' + value[2].value + "</span>";
+      let color = this.getColor(dataContext, value[0].value);
+      return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[2].value) + "</span>";
     }
     return '';
   }
 
   getScore3: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
     if(value !== undefined && value !== null && value.length > 3){
-      let color = value[3].color === 'Amber'?'Orange':value[3].color;
-      return '<span style="color:' + color + '">' + value[3].value + "</span>";
+      let color = this.getColor(dataContext, value[0].value);
+      return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[3].value) + "</span>";
     }
     return '';
+  }
+
+  formatValues(dataContext: any, val: any){
+    if(val !== '0'){
+      let valTemp = Number.parseFloat(val.toString());
+      if(dataContext.rangeValueType && dataContext.rangeValueType === 'T'){
+        valTemp = Number.parseInt(valTemp.toString());
+        return new Date(valTemp * 1000).toISOString().substr(11, 8);
+      } else if(this.prefUnitFormat !== 'dunit_Metric'){
+          if(dataContext.key && dataContext.key === 'rp_averagegrossweight'){
+            return (valTemp * 1.10231).toFixed(2);
+          } else if(dataContext.key && (dataContext.key === 'rp_distance' || dataContext.key === 'rp_averagedistanceperday'
+                    || dataContext.key === 'rp_averagedrivingspeed' || dataContext.key === 'rp_averagespeed')){
+            return (valTemp * 0.621371).toFixed(2);
+          } else if(dataContext.key && dataContext.key === 'rp_fuelconsumption'){
+            return val;
+          }
+        }
+    }
+    return val;
+  }
+  getColor(dataContext: any, val: string){
+    if(dataContext.limitType && val){
+      let valTemp = Number.parseFloat(val);
+      if(dataContext.limitType === 'N'){
+        if(valTemp < dataContext.limitValue)
+          return "#ff0000";
+        else if(valTemp > dataContext.limitValue && valTemp < dataContext.targetValue)
+          return "#ff9900";
+        else
+          return "#33cc33";
+      } else if(dataContext.limitType === 'X'){
+        if(valTemp < dataContext.targetValue)
+          return "#ff0000";
+        else if(valTemp > dataContext.targetValue && valTemp < dataContext.limitValue)
+          return "#ff9900";
+        else
+          return "#33cc33";
+      }
+      return "#000000";
+    }
   }
 
   loadData() {

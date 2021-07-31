@@ -7,6 +7,8 @@ public class DafConstants {
 	public static final String MINIMUM_PAUSE_BETWEEN_CHECKPOINTS = "min_checkpoint_pause";
 	public static final String CHECKPOINT_TIMEOUT = "checkpoint_timeout";
 	public static final String MAX_CONCURRENT_CHECKPOINTS = "max_concurrent_checkpoints";
+	public static final String RESTART_FLAG = "restart.flag";
+	
 
 	public static final String CHECKPOINT_DIRECTORY_INDEX = "checkpoint_directory_index";
 	public static final String CHECKPOINT_DIRECTORY_STATUS = "checkpoint_directory_status";

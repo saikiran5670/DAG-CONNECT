@@ -18,6 +18,7 @@
 
         public const string GET_REPORT_DETAILS_SUCCESS_MSG = "Report details fetched successfully.";
         public const string GET_REPORT_DETAILS_FAILURE_MSG = "Report details fetched failed. With Error : {0}";
+        public const string DEFAULT_LANGUAGE = "EN-GB";
 
         #region Eco-Score Report
         public const string GET_ECOSCORE_PROFILE_SUCCESS_MSG = "Eco-Score profiles fetched successfully.";
@@ -25,7 +26,7 @@
 
         public const string GET_ECOSCORE_REPORT_SUCCESS_MSG = "Eco-Score Report details fetched successfully.";
         public const string GET_ECOSCORE_REPORT_FAILURE_MSG = "Eco-Score Report details fetched failed. With Error : {0}";
-        public const string GET_ECOSCORE_REPORT_NOTFOUND_MSG = "No records found for Eco-Score reprot.";
+        public const string GET_ECOSCORE_REPORT_NOTFOUND_MSG = "No records found for Eco-Score report.";
         public const string UPDATE_ECOSCORE_PROFILE_SUCCESS_MSG = "Update successfully.";
         public const string ECOSCORE_PROFILE_ALREADY_EXIST_MSG = "Profile {0} already exist with the same name";
         public const string UPDATE_ECOSCORE_PROFILE_FAIL_MSG = "Update Eco Score Profile Fail.";

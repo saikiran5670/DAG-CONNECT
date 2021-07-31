@@ -854,7 +854,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage as 
                                 (
                                     SELECT eco.driver1_id, CASE WHEN SUM(trip_distance) <> 0 THEN 
-									(CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance)  
+									((CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance))*100  
 									ELSE null END as CruiseControlUsage
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id
@@ -862,7 +862,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage30 as 
                                 (
                                     SELECT eco.driver1_id, CASE WHEN SUM(trip_distance) <> 0 THEN 
-									(CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance)  
+									((CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance))*100  
 									ELSE null END as CruiseControlUsage30
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id
@@ -870,7 +870,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage50 as 
                                 (
                                     SELECT eco.driver1_id, CASE WHEN SUM(trip_distance) <> 0 THEN 
-									(CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  
+									((CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance))*100  
 									ELSE null END as CruiseControlUsage50
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id
@@ -878,7 +878,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage75 as 
                                 (
                                    SELECT eco.driver1_id, CASE WHEN SUM(trip_distance) <> 0 THEN 
-								   (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)   
+								   ((CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance))*100   
 								   ELSE null END as CruiseControlUsage75
 								   FROM ecoscorequery eco
 								   GROUP BY eco.driver1_id
@@ -887,7 +887,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.driver1_id,
                                     CASE WHEN ( SUM (eco.end_time)- SUM (eco.start_time) ) <> 0 and (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) <>0 THEN
-                                    SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) 
+                                    (SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000))*100 
                                     ELSE null END as PTOUsage
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id				 
@@ -920,7 +920,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.driver1_id,
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)  
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000) )*100 
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
@@ -955,7 +955,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBraking  as
                                 (
-                                   SELECT eco.driver1_id, CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0) as HarshBraking
+                                   SELECT eco.driver1_id,( CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0))*100 as HarshBraking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id
                                 ),
@@ -1181,7 +1181,7 @@ namespace net.atos.daf.ct2.reports.repository
                                CruiseControlUsage as 
                                 (
                                     SELECT eco.driver1_id,  CASE WHEN SUM(trip_distance) <>0 THEN
-									(CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance) 
+									((CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance))*100 
 									ELSE null END as CruiseControlUsage
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id
@@ -1189,7 +1189,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage30 as 
                                 (
                                     SELECT eco.driver1_id,  CASE WHEN SUM(trip_distance) <>0 THEN
-									(CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/ SUM(trip_distance) 
+									((CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/ SUM(trip_distance))*100 
 									ELSE null END as CruiseControlUsage30
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id
@@ -1197,7 +1197,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage50 as 
                                 (
                                     SELECT eco.driver1_id, CASE WHEN SUM(trip_distance) <>0 THEN
-									(CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance) 
+									((CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance))*100 
 									ELSE null END as CruiseControlUsage50
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id
@@ -1205,7 +1205,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage75 as 
                                 (
                                    SELECT eco.driver1_id, CASE WHEN SUM(trip_distance) <>0 THEN
-								   (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  
+								   ((CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance))*100  
 								   ELSE null END as  CruiseControlUsage75
 								   FROM ecoscorequery eco
 								   GROUP BY eco.driver1_id
@@ -1214,7 +1214,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.driver1_id,
                                     CASE WHEN ( SUM (eco.end_time)- SUM (eco.start_time) ) <> 0 and (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) <>0 THEN
-                                    SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) 
+                                    (SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000))*100 
                                     ELSE null END as PTOUsage
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id				 
@@ -1247,7 +1247,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.driver1_id,
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)  
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100  
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
@@ -1282,7 +1282,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBraking  as
                                 (
-                                   SELECT eco.driver1_id, CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0) as HarshBraking
+                                   SELECT eco.driver1_id, (CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0))*100 as HarshBraking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id
                                 ),
@@ -1473,7 +1473,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage as 
                                 (
                                     SELECT eco.organization_id , CASE WHEN SUM(trip_distance) <>0 THEN
-									(CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance) 
+									((CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance))*100 
 									ELSE null END as CruiseControlUsage
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
@@ -1481,7 +1481,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage30 as 
                                 (
                                     SELECT eco.organization_id , CASE WHEN SUM(trip_distance) <>0 THEN 
-									(CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance) 
+									((CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance))*100 
 									ELSE null END as CruiseControlUsage30
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
@@ -1489,7 +1489,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage50 as 
                                 (
                                     SELECT eco.organization_id , CASE WHEN SUM(trip_distance) <>0 THEN 
-									(CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance) 
+									((CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance))*100 
 									ELSE null END as CruiseControlUsage50
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
@@ -1497,7 +1497,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage75 as 
                                 (
                                    SELECT eco.organization_id , CASE WHEN SUM(trip_distance) <>0 THEN 
-								   (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  
+								   ((CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance))*100  
 								   ELSE null END as CruiseControlUsage75
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id 
@@ -1506,7 +1506,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.organization_id ,
                                     CASE WHEN ( SUM (eco.end_time)- SUM (eco.start_time) ) <> 0 and (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) <>0 THEN
-                                    SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) 
+                                    (SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000))*100 
                                     ELSE null END as PTOUsage
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 			 
@@ -1539,7 +1539,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.organization_id , 
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)  
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100  
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
@@ -1574,7 +1574,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBraking  as
                                 (
-                                   SELECT eco.organization_id , CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0) as HarshBraking
+                                   SELECT eco.organization_id , (CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0))*100 as HarshBraking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id 
                                 ),
@@ -1767,7 +1767,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage as 
                                 (
                                     SELECT eco.vin, CASE WHEN SUM(trip_distance)<>0 THEN
-									(CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance)  
+									((CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance))*100  
 									ELSE null END as CruiseControlUsage
 									FROM ecoscorequery eco
 									GROUP BY eco.vin
@@ -1775,7 +1775,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage30 as 
                                 (
                                     SELECT eco.vin, CASE WHEN SUM(trip_distance)<>0 THEN
-									(CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance)   
+									((CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance))*100   
 									ELSE null END as CruiseControlUsage30
 									FROM ecoscorequery eco
 									GROUP BY eco.vin
@@ -1783,7 +1783,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage50 as 
                                 (
                                     SELECT eco.vin, CASE WHEN SUM(trip_distance)<>0 THEN
-									(CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  
+									((CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance))*100  
 									ELSE null END as CruiseControlUsage50
 									FROM ecoscorequery eco
 									GROUP BY eco.vin
@@ -1791,7 +1791,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage75 as 
                                 (
                                    SELECT eco.vin, CASE WHEN SUM(trip_distance)<>0 THEN
-								   (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)   
+								   ((CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance))*100   
 								   ELSE null END as CruiseControlUsage75
 								   FROM ecoscorequery eco
 								   GROUP BY eco.vin
@@ -1800,7 +1800,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.vin, 
                                     CASE WHEN ( SUM (eco.end_time)- SUM (eco.start_time) ) <> 0 and (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) <>0 THEN
-                                    SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) 
+                                    (SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000))*100 
                                     ELSE null END as PTOUsage
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin				 
@@ -1833,7 +1833,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.vin, 
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000) 
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100 
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin
@@ -1869,7 +1869,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBraking  as
                                 (
-                                   SELECT eco.vin,  CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0) as HarshBraking
+                                   SELECT eco.vin,  (CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0))*100 as HarshBraking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.vin
                                 ),
@@ -2064,7 +2064,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage as 
                                 (
                                     SELECT eco.organization_id , eco.vin, CASE WHEN SUM(trip_distance) <>0 THEN
-									(CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance) 
+									((CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance))*100 
 									ELSE null END as CruiseControlUsage
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
@@ -2072,7 +2072,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage30 as 
                                 (
                                     SELECT eco.organization_id , eco.vin, CASE WHEN SUM(trip_distance) <>0 THEN
-                                    (CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance)
+                                    ((CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance))*100
                                     ELSE null END    as CruiseControlUsage30
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
@@ -2080,7 +2080,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage50 as 
                                 (
                                     SELECT eco.organization_id , eco.vin, CASE WHEN SUM(trip_distance) <>0 THEN  
-                                    (CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance) 
+                                    ((CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance))*100 
                                     ELSE null END    as CruiseControlUsage50
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
@@ -2088,7 +2088,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage75 as 
                                 (
                                    SELECT eco.organization_id , eco.vin,  CASE WHEN SUM(trip_distance) <>0 THEN
-                                   (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  
+                                   ((CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance))*100  
                                    ELSE null END  as CruiseControlUsage75
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id ,eco.vin
@@ -2097,7 +2097,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.organization_id , eco.vin, 
                                     CASE WHEN ( SUM (eco.end_time)- SUM (eco.start_time) ) <> 0 and (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) <>0 THEN
-                                    SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) 
+                                    (SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000))*100 
                                     ELSE null END as PTOUsage
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin				 
@@ -2130,7 +2130,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.organization_id , eco.vin, 
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)  
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100  
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
@@ -2165,7 +2165,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBraking  as
                                 (
-                                   SELECT eco.organization_id , eco.vin, CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0) as HarshBraking
+                                   SELECT eco.organization_id , eco.vin, (CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0))*100 as HarshBraking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.organization_id ,eco.vin
                                 ),
@@ -2555,7 +2555,7 @@ namespace net.atos.daf.ct2.reports.repository
                                CruiseControlUsage as 
                                 (
                                     SELECT eco.driver1_id, eco.Day, CASE WHEN SUM(trip_distance) <>0 THEN
-									(CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance) 
+									((CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance))*100 
 									ELSE null END as CruiseControlUsage
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id,eco.Day
@@ -2563,7 +2563,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage30 as 
                                 (
                                     SELECT eco.driver1_id,eco.Day,  CASE WHEN SUM(trip_distance) <>0 THEN
-									(CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/ SUM(trip_distance) 
+									((CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/ SUM(trip_distance))*100 
 									ELSE null END as CruiseControlUsage30
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id,eco.Day
@@ -2571,7 +2571,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage50 as 
                                 (
                                     SELECT eco.driver1_id,eco.Day, CASE WHEN SUM(trip_distance) <>0 THEN
-									(CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance) 
+									((CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance))*100 
 									ELSE null END as CruiseControlUsage50
 									FROM ecoscorequery eco
 									GROUP BY eco.driver1_id,eco.Day
@@ -2579,7 +2579,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage75 as 
                                 (
                                    SELECT eco.driver1_id,eco.Day, CASE WHEN SUM(trip_distance) <>0 THEN
-								   (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  
+								   ((CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance))*100  
 								   ELSE null END as  CruiseControlUsage75
 								   FROM ecoscorequery eco
 								   GROUP BY eco.driver1_id,eco.Day
@@ -2588,7 +2588,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.driver1_id,eco.Day,
                                     CASE WHEN ( SUM (eco.end_time)- SUM (eco.start_time) ) <> 0 and (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) <>0 THEN
-                                    SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) 
+                                    (SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000))*100 
                                     ELSE null END as PTOUsage
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id	,eco.Day			 
@@ -2621,7 +2621,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.driver1_id,eco.Day,
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)  
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100  
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id,eco.Day
@@ -2656,7 +2656,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBraking  as
                                 (
-                                   SELECT eco.driver1_id,eco.Day, CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0) as HarshBraking
+                                   SELECT eco.driver1_id,eco.Day,( CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0))*100 as HarshBraking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.driver1_id,eco.Day
                                 ),
@@ -2962,7 +2962,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage as 
                                 (
                                     SELECT eco.vin, eco.Day, CASE WHEN SUM(trip_distance)<>0 THEN
-									(CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance)  
+									((CAST(SUM (eco.cruise_control_usage) AS DOUBLE PRECISION ))/ SUM(trip_distance))*100  
 									ELSE null END as CruiseControlUsage
 									FROM ecoscorequery eco
 									GROUP BY eco.vin,eco.Day
@@ -2970,7 +2970,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage30 as 
                                 (
                                     SELECT eco.vin,eco.Day, CASE WHEN SUM(trip_distance)<>0 THEN
-									(CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance)   
+									((CAST(SUM (eco.cruise_control_usage_30_50) AS DOUBLE PRECISION ))/SUM(trip_distance))*100   
 									ELSE null END as CruiseControlUsage30
 									FROM ecoscorequery eco
 									GROUP BY eco.vin,eco.Day
@@ -2978,7 +2978,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage50 as 
                                 (
                                     SELECT eco.vin,eco.Day, CASE WHEN SUM(trip_distance)<>0 THEN
-									(CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance)  
+									((CAST(SUM (eco.cruise_control_usage_50_75) AS DOUBLE PRECISION ))/SUM(trip_distance))*100  
 									ELSE null END as CruiseControlUsage50
 									FROM ecoscorequery eco
 									GROUP BY eco.vin,eco.Day
@@ -2986,7 +2986,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 CruiseControlUsage75 as 
                                 (
                                    SELECT eco.vin,eco.Day, CASE WHEN SUM(trip_distance)<>0 THEN
-								   (CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance)   
+								   ((CAST(SUM (eco.cruise_control_usage_75) AS DOUBLE PRECISION ))/SUM(trip_distance))*100   
 								   ELSE null END as CruiseControlUsage75
 								   FROM ecoscorequery eco
 								   GROUP BY eco.vin,eco.Day
@@ -2995,7 +2995,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.vin, eco.Day,
                                     CASE WHEN ( SUM (eco.end_time)- SUM (eco.start_time) ) <> 0 and (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) <>0 THEN
-                                    SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000) 
+                                    (SUM(eco.pto_duration) / (( SUM (eco.end_time)- SUM (eco.start_time) )/1000))*100 
                                     ELSE null END as PTOUsage
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin,eco.Day				 
@@ -3028,7 +3028,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.vin,eco.Day, 
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000) 
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100 
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin,eco.Day
@@ -3064,7 +3064,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 ),
                                 HarshBraking  as
                                 (
-                                   SELECT eco.vin,eco.Day,  CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0) as HarshBraking
+                                   SELECT eco.vin,eco.Day, ( CAST(SUM(eco.harsh_brake_duration)AS DOUBLE PRECISION)/ NULLIF( (CAST(SUM(eco.brake_duration)AS DOUBLE PRECISION)),0))*100 as HarshBraking
                                    FROM ecoscorequery eco
                                    GROUP BY eco.vin,eco.Day
                                 ),
@@ -3172,6 +3172,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinDistance);
                 parameters.Add("@AggregationType", Enum.GetName(typeof(AggregateType), request.AggregationType));
                 parameters.Add("@Limit", request.EcoScoreRecordsLimit);
+                parameters.Add("@UserPrefTimeZone", await GetUserTimeZonePreference(request.AccountEmail, request.OrganizationId));
 
                 string query =
                     @"WITH 
@@ -3183,7 +3184,7 @@ namespace net.atos.daf.ct2.reports.repository
 				                    eco.cruise_control_usage , eco.cruise_control_usage_30_50,eco.cruise_control_usage_50_75,eco.cruise_control_usage_75,
 				                    eco.tacho_gross_weight_combination,
                                     CASE WHEN @AggregationType = 'TRIP' THEN CAST(eco.trip_id AS TEXT)
-					                     ELSE CAST(date_trunc(@AggregationType, to_timestamp(start_time/1000)) AS TEXT) 
+					                     ELSE CAST(date_trunc(@AggregationType, to_timestamp(eco.end_time/1000) AT TIME ZONE @UserPrefTimeZone) AS TEXT) 
                                     END as aggregation_type
 	                    FROM tripdetail.ecoscoredata eco
 	                    INNER JOIN master.driver dr ON dr.driver_id = eco.driver1_id
@@ -3474,6 +3475,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@MinTripDistance", request.MinDistance);
                 parameters.Add("@AggregationType", Enum.GetName(typeof(AggregateType), request.AggregationType));
                 parameters.Add("@Limit", request.EcoScoreRecordsLimit);
+                parameters.Add("@UserPrefTimeZone", await GetUserTimeZonePreference(request.AccountEmail, request.OrganizationId));
 
                 string query =
                     @"WITH 
@@ -3482,7 +3484,7 @@ namespace net.atos.daf.ct2.reports.repository
 								eco.dpa_anticipation_score, eco.dpa_anticipation_count, 
 								eco.used_fuel,eco.end_time,eco.start_time,
 								CASE WHEN @AggregationType = 'TRIP' THEN CAST(eco.trip_id AS TEXT)
-									 ELSE CAST(date_trunc(@AggregationType, to_timestamp(start_time/1000)) AS TEXT) 
+									 ELSE CAST(date_trunc(@AggregationType, to_timestamp(eco.end_time/1000) AT TIME ZONE @UserPrefTimeZone) AS TEXT) 
 								END as aggregation_type
 	                    FROM tripdetail.ecoscoredata eco
 	                    INNER JOIN master.driver dr ON dr.driver_id = eco.driver1_id
@@ -3545,6 +3547,78 @@ namespace net.atos.daf.ct2.reports.repository
                     order by StartTimestamp LIMIT @Limit";
 
                 return await _dataMartdataAccess.QueryAsync<dynamic>(query, parameters);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private async Task<string> GetUserTimeZonePreference(string emailId, string orgCode)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@emailId", emailId.ToLower());
+
+                string accountQuery =
+                    @"SELECT preference_id from master.account where lower(email) = @emailId";
+
+                var accountPreferenceId = await _dataAccess.QueryFirstAsync<int?>(accountQuery, parameter);
+
+                if (!accountPreferenceId.HasValue)
+                {
+                    string orgQuery = string.Empty;
+                    int? orgPreferenceId = null;
+                    if (!string.IsNullOrEmpty(orgCode))
+                    {
+                        var orgParameter = new DynamicParameters();
+                        orgParameter.Add("@orgCode", orgCode);
+
+                        orgQuery = @"SELECT preference_id from master.organization WHERE org_id=@orgCode";
+
+                        orgPreferenceId = await _dataAccess.QueryFirstAsync<int?>(orgQuery, orgParameter);
+                    }
+                    else
+                    {
+                        orgQuery =
+                            @"SELECT o.preference_id from master.account acc
+                            INNER JOIN master.accountOrg ao ON acc.id=ao.account_id
+                            INNER JOIN master.organization o ON ao.organization_id=o.id
+                            where lower(acc.email) = @emailId";
+
+                        orgPreferenceId = await _dataAccess.QueryFirstAsync<int?>(orgQuery, parameter);
+                    }
+
+                    if (!orgPreferenceId.HasValue)
+                        return "Europe/Amsterdam";
+                    else
+                        return await GetTimeZoneByPreferenceId(orgPreferenceId.Value);
+                }
+                return await GetTimeZoneByPreferenceId(accountPreferenceId.Value);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private async Task<string> GetTimeZoneByPreferenceId(int preferenceId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@preferenceId", preferenceId);
+
+                string query =
+                    @"SELECT tz.name from master.accountpreference ap
+                    INNER JOIN master.timezone tz ON ap.id = @preferenceId AND ap.timezone_id=tz.id";
+
+                var timeZone = await _dataAccess.QueryFirstAsync<string>(query, parameter);
+
+                return timeZone;
             }
             catch (Exception)
             {

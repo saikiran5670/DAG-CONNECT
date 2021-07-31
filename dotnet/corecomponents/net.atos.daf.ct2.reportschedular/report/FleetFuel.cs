@@ -143,8 +143,8 @@ namespace net.atos.daf.ct2.account.report
                         CruiseControlDistance50_75 = item.CruiseControlDistance50_75,
                         CruiseControlDistance75 = item.CruiseControlDistance50_75,
                         AverageTrafficClassification = item.AverageTrafficClassification,
-                        CCFuelConsumption = await _unitConversionManager.GetVolumePerDistance(item.CCFuelConsumption, VolumePerDistanceUnit.MilliLiterPerMeter, UnitToConvert),
-                        FuelconsumptionCCnonactive = await _unitConversionManager.GetVolumePerDistance(item.FuelconsumptionCCnonactive, VolumePerDistanceUnit.MilliLiterPerMeter, UnitToConvert),
+                        CCFuelConsumption = await _unitConversionManager.GetVolumePer100Km(item.CCFuelDistance, item.CCFuelConsumed, VolumeUnit.MilliLiter, UnitToConvert),
+                        FuelconsumptionCCnonactive = await _unitConversionManager.GetVolumePer100Km(item.CCFuelDistanceNotActive, item.CCFuelConsumedNotActive, VolumeUnit.MilliLiter, UnitToConvert),
                         IdlingConsumption = item.IdlingConsumption < 0.002 ? IdlingConsumptionConstants.VERY_GOOD : item.IdlingConsumption > 0.020 ? IdlingConsumptionConstants.MODERATE : IdlingConsumptionConstants.GOOD,
                         DPAScore = item.DPAScore < 0.3 ? DPAScoreConstants.LIGHT : item.DPAScore > 1.3 ? DPAScoreConstants.MEDIUM : DPAScoreConstants.HIGH
                     });

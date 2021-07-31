@@ -12,6 +12,7 @@ namespace net.atos.daf.ct2.poigeofence.test
     {
         private readonly IConfiguration _config;
         private readonly IDataAccess _dataAccess;
+        private readonly IDataMartDataAccess _iDataMartDataAccess;
         private readonly CorridorRepository _corridorRepository;
         private readonly ICorridorManger _iCorridorManger;
 
@@ -19,9 +20,11 @@ namespace net.atos.daf.ct2.poigeofence.test
         {
             _config = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json")
                                                 .Build();
-            var connectionString = _config.GetConnectionString("DevAzure");
+            string connectionString = _config.GetConnectionString("DevAzure");
+            string dataMartConnectionString = string.Empty;
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _corridorRepository = new CorridorRepository(_dataAccess);
+            _iDataMartDataAccess = new PgSQLDataMartDataAccess(dataMartConnectionString);
+            _corridorRepository = new CorridorRepository(_dataAccess, _iDataMartDataAccess);//respolved param missing error
             _iCorridorManger = new CorridorManger(_corridorRepository);
         }
 

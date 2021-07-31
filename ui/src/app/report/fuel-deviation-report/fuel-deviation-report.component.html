@@ -1,5 +1,5 @@
 <div class="bgtrans">
-  <form [formGroup]="fuelDeviationForm">
+  <!-- <form [formGroup]="fuelDeviationForm">
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
       <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
         <mat-expansion-panel-header class="full-width">
@@ -135,86 +135,124 @@
         </div>
       </mat-expansion-panel>
     </mat-card>
-    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='showSummaryPanel'>
-      <mat-expansion-panel [(expanded)]="summaryExpandPanel" class="full-width" fxLayoutGap="10px">
-        <mat-expansion-panel-header class="full-width">
-          <mat-panel-title>
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary ||
-              'Summary' }}</span>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <div>
-          <div style='padding: 10px 20px; margin-bottom: 15px; border-radius: 5px; background: #bee3f8;'>
-            <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
-              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <span>
-                  <span>{{ translationData.lblFrom || 'From' }}: </span>
-                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.fromDate }}</span>
-                </span>
+    <div id='fuelSummaryCharts'>
+      <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='showSummaryPanel'>
+        <mat-expansion-panel [(expanded)]="summaryExpandPanel" class="full-width" fxLayoutGap="10px">
+          <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary ||
+                'Summary' }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div>
+            <div style='padding: 10px 20px; margin-bottom: 15px; border-radius: 5px; background: #bee3f8;'>
+              <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblFrom || 'From' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.fromDate }}</span>
+                  </span>
+                </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehGroupName }}</span>
+                  </span>
+                </div>
               </div>
-              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <span>
-                  <span>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}: </span>
-                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehGroupName }}</span>
-                </span>
+              <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblTo || 'To' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
+                  </span>
+                </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblVehicle || 'Vehicle' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
+                  </span>
+                </div>
               </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
-              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <span>
-                  <span>{{ translationData.lblTo || 'To' }}: </span>
-                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
-                </span>
+            <div fxLayout="row" fxLayoutAlign="center center" class="full-width" fxLayoutGap="30px">
+              <div *ngIf="summaryBlock.fuelIncrease" class="areaWidth min-width-25-per summaryBox" fxLayout="column" fxLayoutAlign="center center">
+                <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
+                  <span>{{ translationData.lbl || 'Fuel Increase Events' }}</span>
+                </div>
+                <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
+                  <span>{{ (summarySectionData && summarySectionData.totalIncCount) ? summarySectionData.totalIncCount : 0 }}</span>
+                </div>
               </div>
-              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <span>
-                  <span>{{ translationData.lblVehicle || 'Vehicle' }}: </span>
-                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
-                </span>
+              <div *ngIf="summaryBlock.fuelDecrease" class="areaWidth min-width-25-per summaryBox" fxLayout="column" fxLayoutAlign="center center">
+                <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
+                  <span>{{ translationData.lbl || 'Fuel Decrease Events' }}</span>
+                </div>
+                <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
+                  <span>{{ (summarySectionData && summarySectionData.totalDecCount) ? summarySectionData.totalDecCount : 0 }}</span>
+                </div>
+              </div>
+              <div *ngIf="summaryBlock.fuelVehicleEvent" class="areaWidth min-width-25-per summaryBox" fxLayout="column" fxLayoutAlign="center center">
+                <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
+                  <span>{{ translationData.lbl || 'Vehicles With Fuel Events' }}</span>
+                </div>
+                <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
+                  <span>{{ (summarySectionData && summarySectionData.totalVehCount) ? summarySectionData.totalVehCount : 0 }}</span>
+                </div>
               </div>
             </div>
           </div>
-          <div fxLayout="row" fxLayoutAlign="center center" class="full-width" fxLayoutGap="30px">
-            <div *ngIf="fuelSummaryPrefData && fuelSummaryPrefData.length > 0 && fuelSummaryPrefData[0].state == 'A'" class="areaWidth min-width-25-per summaryBox" fxLayout="column" fxLayoutAlign="center center">
-              <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
-                <span>{{ translationData.lbl || 'Fuel Increase Events' }}</span>
-              </div>
-              <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
-                <span>{{ (summarySectionData && summarySectionData.totalIncCount) ? summarySectionData.totalIncCount : 0 }}</span>
-              </div>
+        </mat-expansion-panel>
+      </mat-card>
+      <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='showChartPanel'>
+        <mat-expansion-panel [(expanded)]="chartExpandPanel" class="full-width" fxLayoutGap="10px">
+          <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts ||
+                'Charts' }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div fxLayout="row" fxLayoutAlign="start" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+            <div *ngIf='fuelDeviationChart.fuelIncreaseEvent.state' class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblEventIncreaseEvents || 'Event Increase Events' }}</span>
+              <div *ngIf='fuelDeviationChart.fuelIncreaseEvent.lineChart' class="chart-wrapper"></div>
+              <div *ngIf='fuelDeviationChart.fuelIncreaseEvent.lineChart' class="chart-wrapper"></div>
             </div>
-            <div *ngIf="fuelSummaryPrefData && fuelSummaryPrefData.length > 0 && fuelSummaryPrefData[1].state == 'A'" class="areaWidth min-width-25-per summaryBox" fxLayout="column" fxLayoutAlign="center center">
-              <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
-                <span>{{ translationData.lbl || 'Fuel Decrease Events' }}</span>
-              </div>
-              <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
-                <span>{{ (summarySectionData && summarySectionData.totalDecCount) ? summarySectionData.totalDecCount : 0 }}</span>
-              </div>
-            </div>
-            <div *ngIf="fuelSummaryPrefData && fuelSummaryPrefData.length > 0 && fuelSummaryPrefData[2].state == 'A'" class="areaWidth min-width-25-per summaryBox" fxLayout="column" fxLayoutAlign="center center">
-              <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
-                <span>{{ translationData.lbl || 'Vehicles With Fuel Events' }}</span>
-              </div>
-              <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
-                <span>{{ (summarySectionData && summarySectionData.totalVehCount) ? summarySectionData.totalVehCount : 0 }}</span>
-              </div>
+            <div *ngIf='fuelDeviationChart.fuelDecreaseEvent.state' class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblEventDecreaseEvents || 'Event Decrease Events' }}</span>
+              <div *ngIf='fuelDeviationChart.fuelDecreaseEvent.lineChart' class="chart-wrapper"></div>
+              <div *ngIf='fuelDeviationChart.fuelDecreaseEvent.lineChart' class="chart-wrapper"></div>
             </div>
           </div>
-        </div>
-      </mat-expansion-panel>
-    </mat-card>
-    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='showChartPanel'>
-      <mat-expansion-panel [(expanded)]="chartExpandPanel" class="full-width" fxLayoutGap="10px">
-        <mat-expansion-panel-header class="full-width">
-          <mat-panel-title>
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts ||
-              'Charts' }}</span>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <div>
-        </div>
-      </mat-expansion-panel>
-    </mat-card>
+          <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+            <div *ngIf='fuelDeviationChart.fuelDeviationEvent.state' class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblFuelDeviationEvents || 'Fuel Deviation Events' }}</span>
+              <div *ngIf='fuelDeviationChart.fuelDeviationEvent.dChart' class="chart-wrapper">
+                <canvas baseChart 
+                  [data]="fuelDeviationDChartData"
+                  [chartType]="fuelDeviationDChartType"
+                  [labels]="fuelDeviationDChartLabels"
+                  [colors]="fuelDeviationDChartColors"
+                  [options]="fuelDeviationDChartOptions"
+                  [legend]="chartLegend">
+                </canvas>
+              </div>
+              <div *ngIf='!fuelDeviationChart.fuelDeviationEvent.dChart' class="chart-wrapper">
+                <canvas baseChart 
+                  [data]="fuelDeviationPChartData" 
+                  [labels]="fuelDeviationPChartLabels" 
+                  [chartType]="fuelDeviationPChartType"
+                  [options]="fuelDeviationPChartOptions"
+                  [colors]="fuelDeviationPChartColors"
+                  [legend]="chartLegend">
+                </canvas>
+              </div>
+            </div>
+            <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left"></div>
+          </div>
+        </mat-expansion-panel>
+      </mat-card>
+    </div>
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='showMapPanel'>
       <mat-expansion-panel [(expanded)]="showMap" class="full-width" fxLayoutGap="10px">
         <mat-expansion-panel-header class="full-width">
@@ -329,7 +367,7 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="odometer">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'odometer' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblkm || 'km') }})</span></mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblkm || 'km') }})</span></mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedOdometer != '' ? row.convertedOdometer : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="startTimeStamp">
@@ -395,5 +433,5 @@
         </div>
       </mat-expansion-panel>
     </mat-card>
-  </form>
+  </form> -->
 </div>
