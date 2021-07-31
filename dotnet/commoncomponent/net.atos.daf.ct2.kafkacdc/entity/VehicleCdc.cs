@@ -4,11 +4,29 @@ using System.Text;
 
 namespace net.atos.daf.ct2.kafkacdc.entity
 {
-    class VehicleCdc
+    public class VehicleCdc
     {
         public string Vin { get; set; }
         public string Vid { get; set; }
         public string Status { get; set; }
         public string FuelType { get; set; }
+        public double FuelTypeCoefficient { get; set; }
     }
+
+    class VehicleMgmtKafkaMessage
+    {
+        public string Schema { get; set; }
+        public string Payload { get; set; }
+        public string Operation { get; set; }
+        public string Namespace { get; set; }
+        public long Timestamp { get; set; }
+    }
+    public class VehicleMgmtPayload
+    {
+        public string Data { get; set; }
+        public string Operation { get; set; }
+        public string Namespace { get; set; }
+        public long Timestamp { get; set; }
+    }
+
 }
