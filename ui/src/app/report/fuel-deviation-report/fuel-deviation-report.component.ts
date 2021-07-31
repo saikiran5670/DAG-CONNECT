@@ -1,4 +1,6 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { MultiDataSet, Label, Color, SingleDataSet} from 'ng2-charts';
+import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { ReportService } from '../../services/report.service';
@@ -173,6 +175,61 @@ export class FuelDeviationReportComponent implements OnInit {
       value: 'vehicleName'
     }
   ];
+  summaryBlock: any = {
+    fuelIncrease: false,
+    fuelDecrease: false,
+    fuelVehicleEvent: false
+  }
+  //- doughnut chart
+  fuelDeviationDChartLabels: Label[] = [];
+  fuelDeviationDChartData: any = [];
+  fuelDeviationDChartType: ChartType = 'doughnut';
+  fuelDeviationDChartColors: Color[] = [
+    {
+      backgroundColor: ['#434348','#7cb5ec']
+    }
+  ];
+  chartLegend = true;
+  public fuelDeviationDChartOptions: ChartOptions = {
+    responsive: true,
+    legend: {
+      position: 'bottom'
+    },
+    cutoutPercentage: 70
+  };
+
+  //- pie chart
+  fuelDeviationPChartOptions: ChartOptions = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    }
+  };
+  fuelDeviationPChartType: ChartType = 'pie';
+  fuelDeviationPChartLabels: Label[] = [];
+  fuelDeviationPChartData: SingleDataSet = [];
+  fuelDeviationPChartLegend = true;
+  fuelDeviationPChartPlugins = [];
+  fuelDeviationPChartColors: Color[] = [
+    {
+      backgroundColor: ['#434348','#7cb5ec']
+    }
+  ];
+
+  fuelDeviationChart: any = {
+    fuelIncreaseEvent: {
+      state: false,
+      lineChart: false
+    },
+    fuelDecreaseEvent: {
+      state: false,
+      lineChart: false
+    },
+    fuelDeviationEvent: {
+      state: false,
+      dChart: false
+    }
+  };
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer) { 
     this.map_key = this.configService.getSettings("hereMap").api_key;
@@ -356,12 +413,10 @@ export class FuelDeviationReportComponent implements OnInit {
       this.reportPrefData = data["userPreferences"];
       this.resetFuelDeviationPrefData();
       this.getTranslatedColumnName(this.reportPrefData);
-      this.setDisplayColumnBaseOnPref();
       this.loadFuelDeviationData();
     }, (error) => {
       this.reportPrefData = [];
       this.resetFuelDeviationPrefData();
-      this.setDisplayColumnBaseOnPref();
       this.loadFuelDeviationData();
     });
   }
@@ -441,17 +496,38 @@ export class FuelDeviationReportComponent implements OnInit {
   }
 
   setDisplayColumnBaseOnPref(){
-    let filterPref = this.fuelTableDetailsPrefData.filter(i => i.state == 'I'); // removed unchecked
-    if(filterPref.length > 0){
-      filterPref.forEach(element => {
-        let search = this.prefMapData.filter(i => i.key == element.key); // present or not
-        if(search.length > 0){
-          let index = this.displayedColumns.indexOf(search[0].value); // find index
-          if (index > -1) {
-            this.displayedColumns.splice(index, 1); // removed
+    if(this.fuelSummaryPrefData.length > 0){
+      this.summaryBlock.fuelIncrease = this.fuelSummaryPrefData[0].state == 'A' ? true : false;
+      this.summaryBlock.fuelDecrease = this.fuelSummaryPrefData[1].state == 'A' ? true : false;
+      this.summaryBlock.fuelVehicleEvent = this.fuelSummaryPrefData[2].state == 'A' ? true : false;
+    }
+    if(this.fuelTableDetailsPrefData.length > 0){ //- Table details
+      let filterPref = this.fuelTableDetailsPrefData.filter(i => i.state == 'I'); // removed unchecked
+      if(filterPref.length > 0){
+        filterPref.forEach(element => {
+          let search = this.prefMapData.filter(i => i.key == element.key); // present or not
+          if(search.length > 0){
+            let index = this.displayedColumns.indexOf(search[0].value); // find index
+            if (index > -1) {
+              this.displayedColumns.splice(index, 1); // removed
+            }
           }
-        }
-      });
+        });
+      }
+    }
+    if(this.fuelChartsPrefData.length > 0){
+      this.fuelDeviationChart.fuelIncreaseEvent = {
+        state: this.fuelChartsPrefData[0].state == 'A' ? true : false,
+        lineChart: (this.fuelChartsPrefData[0].chartType == 'L') ? true : false 
+      }
+      this.fuelDeviationChart.fuelDecreaseEvent = {
+        state: this.fuelChartsPrefData[1].state == 'A' ? true : false,
+        lineChart: (this.fuelChartsPrefData[1].chartType == 'L') ? true : false 
+      }
+      this.fuelDeviationChart.fuelDeviationEvent = {
+        state: this.fuelChartsPrefData[2].state == 'A' ? true : false,
+        dChart: (this.fuelChartsPrefData[2].chartType == 'D') ? true : false 
+      }
     }
   }
 
@@ -501,6 +577,7 @@ export class FuelDeviationReportComponent implements OnInit {
           });
         }
       });
+      this.setDisplayColumnBaseOnPref();
     }
   }
 
@@ -768,6 +845,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.eventIconMarker = null;
     this.fuelDeviationData = [];
     this.summarySectionData = {};
+    this.resetChartData();
     this.vehicleListData = [];
     this.updateDataSource(this.fuelDeviationData);
     this.resetFuelDeviationFormControlValue();
@@ -819,7 +897,15 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     }
   }
 
+  resetChartData(){
+    this.fuelDeviationDChartData = [];
+    this.fuelDeviationDChartLabels = [];
+    this.fuelDeviationPChartData = [];
+    this.fuelDeviationPChartLabels = [];
+  }
+
   setSummarySection(data: any){
+    this.resetChartData();
     if(data && data.length > 0){
       let _totalIncCount: any = data.filter(i => i.fuelEventType == 'I');
       let _totalDecCount: any = data.filter(i => i.fuelEventType == 'D');
@@ -830,6 +916,10 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         totalDecCount: _totalDecCount.length,
         totalVehCount: vinCount.length
       };
+      this.fuelDeviationDChartData = [_totalIncCount.length, _totalDecCount.length];
+      this.fuelDeviationDChartLabels = [this.translationData.lblFuelIncreaseEvent || 'Fuel Increase Event', this.translationData.lblFuelDecreaseEvent || 'Fuel Decrease Event'];
+      this.fuelDeviationPChartData = [_totalIncCount.length, _totalDecCount.length];
+      this.fuelDeviationPChartLabels = [this.translationData.lblFuelIncreaseEvent || 'Fuel Increase Event', this.translationData.lblFuelDecreaseEvent || 'Fuel Decrease Event'];
     }
   }
 

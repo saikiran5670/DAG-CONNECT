@@ -24,6 +24,7 @@ import { ReportService } from './services/report.service';
 })
 
 export class AppComponent {
+  appUrlLink: any = '';
   public deviceInfo = null;
   // public isMobilevar = false;
   // public isTabletvar = false;
@@ -308,6 +309,7 @@ export class AppComponent {
 
     router.events.subscribe((val: any) => {
       if (val instanceof NavigationEnd) {
+        this.appUrlLink = val.url;
         this.isLogedIn = true;
         let PageName = val.url.split('/')[1];
         this.pageName = PageName;
@@ -367,8 +369,10 @@ export class AppComponent {
   unloadNotification($event: any) {
     if(this.isLogedIn) {
       localStorage.setItem("pageRefreshed", 'true');
+      localStorage.setItem("appRouterUrl", this.appUrlLink);
     } else {
       localStorage.removeItem("pageRefreshed");
+      localStorage.removeItem("appRouterUrl");
     }
   }
 
@@ -574,12 +578,18 @@ export class AppComponent {
     }else{
       if (from && from == 'orgContextSwitch') {
         let _menu = this.menuPages.menus;
-        if (_menu.length > 0) {
-          let _routerLink = _menu[0].subMenus.length > 0 ? `/${_menu[0].url}/${_menu[0].subMenus[0].url}` : `/${_menu[0].url}`;
-          this.router.navigate([_routerLink]);
-        } else {
-          this.router.navigate(['/dashboard']);
+        let _routerUrl = localStorage.getItem('appRouterUrl'); 
+        if(_routerUrl){ // from refresh page
+          this.router.navigate([_routerUrl]);
+        }else{
+          if (_menu.length > 0) {
+            let _routerLink = _menu[0].subMenus.length > 0 ? `/${_menu[0].url}/${_menu[0].subMenus[0].url}` : `/${_menu[0].url}`;
+            this.router.navigate([_routerLink]);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
         }
+        localStorage.removeItem('appRouterUrl'); 
       }
     }
   }
@@ -881,8 +891,17 @@ export class AppComponent {
     this.openUserRoleDialog = !this.openUserRoleDialog;
   }
 
+  setLocalContext(_orgId: any){
+    let _searchOrg = this.organizationList.filter(i => i.id == _orgId);
+    if (_searchOrg.length > 0) {
+      localStorage.setItem("contextOrgId", _searchOrg[0].id);
+      this.appForm.get("contextOrgSelection").setValue(_searchOrg[0].id); //-- set context org dropdown
+    }
+  }
+
   onOrgChange(value: any) {
     localStorage.setItem("accountOrganizationId", value);
+    this.setLocalContext(value);
     let orgname = this.organizationDropdown.filter(item => parseInt(item.id) === parseInt(value));
     this.userOrg = orgname[0].name;
     localStorage.setItem("organizationName", this.userOrg);
@@ -896,6 +915,7 @@ export class AppComponent {
     localStorage.setItem("accountRoleId", value);
     let rolename = this.roleDropdown.filter(item => parseInt(item.id) === parseInt(value));
     this.userRole = rolename[0].name;
+    this.setLocalContext(localStorage.getItem("accountOrganizationId"));
     this.filterOrgBasedRoles(localStorage.getItem("accountOrganizationId"), true);
     this.router.navigate(['/dashboard']);
   }
