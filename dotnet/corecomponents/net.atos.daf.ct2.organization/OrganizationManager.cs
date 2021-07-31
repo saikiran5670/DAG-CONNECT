@@ -96,9 +96,10 @@ namespace net.atos.daf.ct2.organization
 
         #region Provisioning Data Service
 
-        public async Task<bool> GetOrganisationList(ProvisioningOrganisationDataServiceRequest request)
+        public async Task<ProvisioningOrganisationDataServiceResponse> GetOrganisationList(ProvisioningOrganisationDataServiceRequest request)
         {
-            return await _organizationRepository.GetOrganisationList(request);
+            await _organizationRepository.GetOrganisationList(request);
+            return new ProvisioningOrganisationDataServiceResponse();
         }
 
         #endregion

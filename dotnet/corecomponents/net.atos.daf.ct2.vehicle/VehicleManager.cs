@@ -512,14 +512,16 @@ namespace net.atos.daf.ct2.vehicle
 
         #region Provisioning Data Service
 
-        public async Task<bool> GetCurrentVehicle(ProvisioningVehicleDataServiceRequest request)
+        public async Task<ProvisioningVehicleDataServiceResponse> GetCurrentVehicle(ProvisioningVehicleDataServiceRequest request)
         {
-            return await _vehicleRepository.GetCurrentVehicle(request);
+            await _vehicleRepository.GetCurrentVehicle(request);
+            return new ProvisioningVehicleDataServiceResponse();
         }
 
-        public async Task<bool> GetVehicleList(ProvisioningVehicleDataServiceRequest request)
+        public async Task<ProvisioningVehicleDataServiceResponse> GetVehicleList(ProvisioningVehicleDataServiceRequest request)
         {
-            return await _vehicleRepository.GetVehicleList(request);
+            await _vehicleRepository.GetVehicleList(request);
+            return new ProvisioningVehicleDataServiceResponse();
         }
 
         #endregion
