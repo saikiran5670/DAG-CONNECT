@@ -24,15 +24,15 @@ namespace net.atos.daf.ct2.rfms.test
             _rfmsRepository = new RfmsRepository(_dataAccess, _dataMartDataAccess);
         }
 
-        [TestMethod]
-        public void GetVehicles()
-        {
-            RfmsVehicleRequest rfmsVehicleRequest = new RfmsVehicleRequest();
+        //[TestMethod]
+        //public void GetVehicles()
+        //{
+        //    RfmsVehicleRequest rfmsVehicleRequest = new RfmsVehicleRequest();
 
-            var rfmsVehicleList = _rfmsRepository.GetVehicles(rfmsVehicleRequest).Result;
-            Assert.IsNotNull(rfmsVehicleList);
+        //    var rfmsVehicleList = _rfmsRepository.GetVehicles(rfmsVehicleRequest).Result;
+        //    Assert.IsNotNull(rfmsVehicleList);
 
 
-        }
+        //}
     }
 }
