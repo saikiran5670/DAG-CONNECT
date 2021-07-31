@@ -56,13 +56,13 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                            )
                                                         SELECT
                                                             isongoingtrip
-                                                          , count(vin)			       as vincount
-                                                          , sum(co2emission)           as co2emission
-                                                          , sum(distance)              as distance
-                                                          , sum(drivingtime)           as drivingtime
-                                                          , sum(idlingfuelconsumption) as idlingfuelconsumption
-                                                          , sum(fuelconsumption)       as fuelconsumption
-                                                          , sum(idlingtime)            as idlingtime
+                                                          , count(vin)			       as vehiclecount
+                                                          , Round(sum(co2emission),2)           as co2emission
+                                                          , Round(sum(distance),2)              as distance
+                                                          , Round(sum(drivingtime),2)           as drivingtime
+                                                          , Round(sum(idlingfuelconsumption),2) as idlingfuelconsumption
+                                                          , Round(sum(fuelconsumption),2)       as fuelconsumption
+                                                          , Round(sum(idlingtime),2)            as idlingtime
                                                         FROM cte_filteredTrip 
                                                         GROUP BY isongoingtrip";
 
