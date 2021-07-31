@@ -202,6 +202,7 @@ namespace net.atos.daf.ct2.notificationengine
                     string alertCategoryValue = await GetTranslateValue(string.Empty, item.AlertCategoryKey);
                     string urgencyTypeValue = await GetTranslateValue(string.Empty, item.UrgencyTypeKey);
                     string languageCode = await GetLanguageCodePreference(item.EmailId);
+                    string alertGenTime = UTCHandling.GetConvertedDateTimeFromUTC(item.AlertGeneratedTime, "UTC", null);
                     Dictionary<string, string> addAddress = new Dictionary<string, string>();
                     if (!addAddress.ContainsKey(item.EmailId))
                     {
@@ -215,7 +216,7 @@ namespace net.atos.daf.ct2.notificationengine
                             ToAddressList = addAddress,
                             Subject = item.EmailSub,
                             Description = item.EmailText,
-                            AlertNotification = new AlertNotification() { AlertName = item.AlertName, AlertLevel = urgencyTypeValue, AlertLevelCls = GetAlertTypeCls(urgencyTypeValue), DefinedThreshold = item.ThresholdValue, ActualThresholdValue = item.ValueAtAlertTime, AlertCategory = alertCategoryValue, VehicleGroup = item.Vehicle_group_vehicle_name, DateTime = DateTime.Now }
+                            AlertNotification = new AlertNotification() { AlertName = item.AlertName, AlertLevel = urgencyTypeValue, AlertLevelCls = GetAlertTypeCls(urgencyTypeValue), DefinedThreshold = item.ThresholdValue, ActualThresholdValue = item.ValueAtAlertTime, AlertCategory = alertCategoryValue, VehicleGroup = item.Vehicle_group_vehicle_name, AlertDateTime = alertGenTime }
                         },
                         ContentType = EmailContentType.Html,
                         EventType = EmailEventType.AlertNotificationEmail
