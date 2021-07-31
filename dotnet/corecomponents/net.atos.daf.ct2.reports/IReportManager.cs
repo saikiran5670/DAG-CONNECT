@@ -76,6 +76,7 @@ namespace net.atos.daf.ct2.reports
         #endregion
         #region Vehicle Performance Report
         Task<EngineLoadDistributionTemplate> GetEngineLoadTemplate(int enginetypeid);
+        Task<IEnumerable<VehiclePerformanceRequest>> GetVehPerformanceSummaryDetails(string vin);
         #endregion
     }
 }
