@@ -49,5 +49,18 @@ namespace net.atos.daf.ct2.subscription.test
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
         }
+
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task UnT_Report_GetAlertLast24Hours_Test()
+        {
+            var alertLast24Hours = new Alert24HoursFilter()
+            {
+                VINs = new List<string>() { "XLR0998HGFFT76657" },
+
+            };
+            var result = await _iDashBoardManager.GetLastAlert24Hours(alertLast24Hours);
+            Assert.IsNotNull(result);
+        }
     }
 }
