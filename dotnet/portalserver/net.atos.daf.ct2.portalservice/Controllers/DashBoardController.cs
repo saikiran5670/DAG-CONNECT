@@ -97,5 +97,39 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         }
 
+        #region Fleetutilization
+        [HttpPost]
+        [Route("fleetutilization")]
+        public async Task<IActionResult> GetFleetutilization([FromBody] Entity.Dashboard.DashboardFilter request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(DashboardConstant.GET_DASBHOARD_VALIDATION_DATEMISMATCH_MSG); }
+
+                string filters = JsonConvert.SerializeObject(request);
+                FleetKpiFilterRequest objDashboardFilter = JsonConvert.DeserializeObject<FleetKpiFilterRequest>(filters);
+                _logger.Info("GetFleetKpi method in dashboard API called.");
+                var data = await _dashboarClient.GetFleetUtilizationDetailsAsync(objDashboardFilter);
+                if (data != null)
+                {
+                    data.Message = DashboardConstant.GET_DASBHOARD_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, DashboardConstant.GET_DASBHOARD_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
     }
 }

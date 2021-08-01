@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
+using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reportservice.entity;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.reportservice.Services
 {
@@ -35,22 +37,22 @@ namespace net.atos.daf.ct2.reportservice.Services
                 };
 
 
-                //var result = await _reportManager.GetEngineLoadTemplate()
+                var result = await _reportManager.GetVehPerformanceChartTemplate(request);
 
-                //if (result?.Count > 0)
-                //{
-                //    var resDetails = JsonConvert.SerializeObject(result);
-                //    response.LogbookDetails.AddRange(
-                //         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<LogbookDetails>>(resDetails,
-                //        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
-                //    response.Code = Responsecode.Success;
-                //    response.Message = Responsecode.Success.ToString();
-                //}
-                //else
-                //{
-                //    response.Code = Responsecode.NotFound;
-                //    response.Message = "No Result Found";
-                //}
+                if (result != null)
+                {
+                    var resDetails = JsonConvert.SerializeObject(result);
+                    response.VehPerformanceCharts.AddRange(
+                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehPerformanceCharts>>(resDetails,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+                    response.Code = Responsecode.Success;
+                    response.Message = Responsecode.Success.ToString();
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = "No Result Found";
+                }
                 return await Task.FromResult(response);
 
 

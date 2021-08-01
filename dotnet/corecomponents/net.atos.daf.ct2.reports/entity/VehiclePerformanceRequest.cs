@@ -19,6 +19,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string EngineType { get; set; }
         public string ModelType { get; set; }
         public string Vid { get; set; }
+        public int EngineTypeId { get; set; }
 
     }
 }
