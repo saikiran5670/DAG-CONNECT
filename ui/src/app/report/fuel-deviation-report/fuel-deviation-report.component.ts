@@ -180,7 +180,7 @@ export class FuelDeviationReportComponent implements OnInit {
     fuelDecrease: false,
     fuelVehicleEvent: false
   }
-  //- doughnut chart
+  //- fuel deviation doughnut chart
   fuelDeviationDChartLabels: Label[] = [];
   fuelDeviationDChartData: any = [];
   fuelDeviationDChartType: ChartType = 'doughnut';
@@ -198,7 +198,7 @@ export class FuelDeviationReportComponent implements OnInit {
     cutoutPercentage: 70
   };
 
-  //- pie chart
+  //- fuel deviation pie chart
   fuelDeviationPChartOptions: ChartOptions = {
     responsive: true,
     legend: {
@@ -231,6 +231,82 @@ export class FuelDeviationReportComponent implements OnInit {
     }
   };
 
+  //- fuel increase line chart
+  _xIncLine: any = [];
+  _yIncLine: any = [];
+  fuelIncLineChartData: ChartDataSets[] = [];
+  fuelIncLineChartLabels: Label[] = this._xIncLine;
+  fuelIncLineChartOptions = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          steps: 10,
+          stepSize: 1,
+          // max:10,
+          beginAtZero: true,
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Values(Fuel Increase Events)'    
+        }
+      }]
+    }
+  };
+  fuelIncLineChartColors: Color[] = [
+    {
+      borderColor: '#7BC5EC',
+      backgroundColor: 'rgba(255,255,0,0)',
+    },
+  ];
+  fuelIncLineChartLegend = true;
+  fuelIncLineChartPlugins = [];
+  fuelIncLineChartType = 'line';
+
+  //- fuel decrease line chart
+  _xDecLine: any = [];
+  _yDecLine: any = [];
+  fuelDecLineChartData: ChartDataSets[] = [];
+  fuelDecLineChartLabels: Label[] = this._xDecLine;
+  fuelDecLineChartOptions = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          steps: 10,
+          stepSize: 1,
+          // max:10,
+          beginAtZero: true,
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Values(Fuel Decrease Events)'    
+        }
+      }]
+    }
+  };
+  fuelDecLineChartColors: Color[] = [
+    {
+      borderColor: '#7BC5EC',
+      backgroundColor: 'rgba(255,255,0,0)',
+    },
+  ];
+  fuelDecLineChartLegend = true;
+  fuelDecLineChartPlugins = [];
+  fuelDecLineChartType = 'line';
+  
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer) { 
     this.map_key = this.configService.getSettings("hereMap").api_key;
     this.platform = new H.service.Platform({
@@ -877,6 +953,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         //console.log(_fuelDeviationData);
         this.reportService.getFuelDeviationReportCharts(reportDataObj).subscribe((_fuelDeviationChartData: any) => {
           this.hideloader();
+          this.resetChartData();
           this.setChartsSection(_fuelDeviationChartData);
           this.setSummarySection(_fuelDeviationData.data);
           this.fuelDeviationData = this.reportMapService.convertFuelDeviationDataBasedOnPref(_fuelDeviationData.data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone, this.translationData);
@@ -884,6 +961,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
           this.updateDataSource(this.fuelDeviationData);
         }, (error) => {
           this.hideloader();
+          this.resetChartData();
           console.log("No charts data available...");
         });
       }, (error)=>{
@@ -902,10 +980,17 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.fuelDeviationDChartLabels = [];
     this.fuelDeviationPChartData = [];
     this.fuelDeviationPChartLabels = [];
+    this.fuelIncLineChartData = []
+    this.fuelDecLineChartData = []
+    this.fuelIncLineChartLabels = [];
+    this.fuelDecLineChartLabels = [];
+    this._xIncLine = [];
+    this._yIncLine = [];
+    this._xDecLine = [];
+    this._yDecLine = [];
   }
 
   setSummarySection(data: any){
-    this.resetChartData();
     if(data && data.length > 0){
       let _totalIncCount: any = data.filter(i => i.fuelEventType == 'I');
       let _totalDecCount: any = data.filter(i => i.fuelEventType == 'D');
@@ -923,7 +1008,29 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     }
   }
 
-  setChartsSection(_chartData: any){ }
+  setChartsSection(_chartData: any){ 
+    if(_chartData && _chartData.data && _chartData.data.length > 0){
+      _chartData.data.forEach(element => {
+        let _d = this.reportMapService.getStartTime(element.date, this.prefDateFormat, this.prefTimeZone, this.prefTimeZone, false);
+        this._xIncLine.push(_d);
+        this._xDecLine.push(_d);
+        this._yIncLine.push(element.increaseEvent);
+        this._yDecLine.push(element.decreaseEvent);
+      });
+      this.assignDataToCharts();
+    }
+  }
+
+  assignDataToCharts(){
+    this.fuelIncLineChartLabels = this._xIncLine;
+    this.fuelDecLineChartLabels = this._xDecLine;
+    this.fuelIncLineChartData = [
+      { data: this._yIncLine, label: this.translationData.lblFuelIncreaseEvents || 'Fuel Increase Events' },
+    ];
+    this.fuelDecLineChartData = [
+      { data: this._yDecLine, label: this.translationData.lblFuelDecreaseEvents || 'Fuel Decrease Events' },
+    ];
+  }
 
   setTableInfo(){
     let vehName: any = '';

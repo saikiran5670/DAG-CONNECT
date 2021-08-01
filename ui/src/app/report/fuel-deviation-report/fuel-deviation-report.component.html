@@ -213,21 +213,41 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div fxLayout="row" fxLayoutAlign="start" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-            <div *ngIf='fuelDeviationChart.fuelIncreaseEvent.state' class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+            <div style='padding: 10px 0px 20px 0px;' *ngIf='fuelDeviationChart.fuelIncreaseEvent.state' class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
               <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblEventIncreaseEvents || 'Event Increase Events' }}</span>
-              <div *ngIf='fuelDeviationChart.fuelIncreaseEvent.lineChart' class="chart-wrapper"></div>
-              <div *ngIf='fuelDeviationChart.fuelIncreaseEvent.lineChart' class="chart-wrapper"></div>
+              <div style='padding: 0px 20px;' *ngIf='fuelDeviationChart.fuelIncreaseEvent.lineChart' class="chart-wrapper">
+                <canvas baseChart 
+                  [datasets]="fuelIncLineChartData" 
+                  [labels]="fuelIncLineChartLabels" 
+                  [options]="fuelIncLineChartOptions"
+                  [colors]="fuelIncLineChartColors" 
+                  [legend]="fuelIncLineChartLegend" 
+                  [chartType]="fuelIncLineChartType" 
+                  [plugins]="fuelIncLineChartPlugins">
+              </canvas>
+              </div>
+              <div style='padding: 0px 20px;' *ngIf='!fuelDeviationChart.fuelIncreaseEvent.lineChart' class="chart-wrapper"></div>
             </div>
-            <div *ngIf='fuelDeviationChart.fuelDecreaseEvent.state' class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+            <div style='padding: 10px 0px 20px 0px;' *ngIf='fuelDeviationChart.fuelDecreaseEvent.state' class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
               <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblEventDecreaseEvents || 'Event Decrease Events' }}</span>
-              <div *ngIf='fuelDeviationChart.fuelDecreaseEvent.lineChart' class="chart-wrapper"></div>
-              <div *ngIf='fuelDeviationChart.fuelDecreaseEvent.lineChart' class="chart-wrapper"></div>
+              <div style='padding: 0px 20px;' *ngIf='fuelDeviationChart.fuelDecreaseEvent.lineChart' class="chart-wrapper">
+                <canvas baseChart 
+                  [datasets]="fuelDecLineChartData" 
+                  [labels]="fuelDecLineChartLabels" 
+                  [options]="fuelDecLineChartOptions"
+                  [colors]="fuelDecLineChartColors" 
+                  [legend]="fuelDecLineChartLegend" 
+                  [chartType]="fuelDecLineChartType" 
+                  [plugins]="fuelDecLineChartPlugins">
+                </canvas>
+              </div>
+              <div style='padding: 0px 20px;' *ngIf='!fuelDeviationChart.fuelDecreaseEvent.lineChart' class="chart-wrapper"></div>
             </div>
           </div>
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-            <div *ngIf='fuelDeviationChart.fuelDeviationEvent.state' class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+            <div style='padding: 10px 0px 20px 0px;' *ngIf='fuelDeviationChart.fuelDeviationEvent.state' class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
               <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblFuelDeviationEvents || 'Fuel Deviation Events' }}</span>
-              <div *ngIf='fuelDeviationChart.fuelDeviationEvent.dChart' class="chart-wrapper">
+              <div style='padding: 0px 20px;' *ngIf='fuelDeviationChart.fuelDeviationEvent.dChart' class="chart-wrapper">
                 <canvas baseChart 
                   [data]="fuelDeviationDChartData"
                   [chartType]="fuelDeviationDChartType"
@@ -237,7 +257,7 @@
                   [legend]="chartLegend">
                 </canvas>
               </div>
-              <div *ngIf='!fuelDeviationChart.fuelDeviationEvent.dChart' class="chart-wrapper">
+              <div style='padding: 0px 20px;' *ngIf='!fuelDeviationChart.fuelDeviationEvent.dChart' class="chart-wrapper">
                 <canvas baseChart 
                   [data]="fuelDeviationPChartData" 
                   [labels]="fuelDeviationPChartLabels" 
@@ -248,7 +268,6 @@
                 </canvas>
               </div>
             </div>
-            <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left"></div>
           </div>
         </mat-expansion-panel>
       </mat-card>
