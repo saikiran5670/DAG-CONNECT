@@ -142,5 +142,66 @@ namespace net.atos.daf.ct2.dashboard.repository
             }
 
         }
+
+        #region Fleet utilization
+
+        public async Task<List<Chart_Fleetutilization>> GetUtilizationchartsData(FleetKpiFilter tripFilters)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@StartDateTime", tripFilters.StartDateTime);
+                parameter.Add("@EndDateTime", tripFilters.EndDateTime);
+                parameter.Add("@vins", tripFilters.VINs.ToArray());
+                //string vin = string.Join("','", TripFilters.VIN.ToArray());
+                //vin = "'"+ vin.Replace(",", "', '")+"'";
+                //parameter.Add("@vins", vin);
+                string query = @"WITH cte_workingdays AS(
+                        select
+                        date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
+                        count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
+						Count(distinct vin) as vehiclecount,
+						Count(distinct trip_id) as tripcount,
+                        sum(etl_gps_distance) as totaldistance,
+                        sum(etl_gps_trip_time) as totaltriptime,
+                        sum(veh_message_driving_time) as totaldrivingtime,
+                        sum(idle_duration) as totalidleduration,
+                        sum(veh_message_distance) as totalAveragedistanceperday,
+                        sum(average_speed) as totalaverageSpeed,
+                        sum(average_weight) as totalaverageweightperprip,
+                        sum(last_odometer) as totalodometer
+                        FROM tripdetail.trip_statistics
+                        where (start_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
+						and vin=ANY(@vins)
+                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))                     
+                        )
+                        select
+                        '' as VIN,
+                        startdate,
+						extract(epoch from startdate) * 1000 as Calenderdate,
+                       	totalworkingdays,
+						vehiclecount,
+                        tripcount,
+                        CAST((totaldistance) as float) as distance,
+                        CAST((totaltriptime) as float) as triptime ,
+                        CAST((totaldrivingtime) as float) as drivingtime ,
+                        CAST((totaldistance) as float) as distance ,
+                        CAST((totalidleduration) as float) as idleduration ,
+                        CAST((totalAveragedistanceperday) as float) as distanceperday ,
+                        CAST((totalaverageSpeed) as float) as Speed ,
+                        CAST((totalaverageweightperprip) as float) as weight
+                        from cte_workingdays";
+
+
+                List<Chart_Fleetutilization> data = (List<Chart_Fleetutilization>)await _dataMartdataAccess.QueryAsync<Chart_Fleetutilization>(query, parameter);
+                return data;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        #endregion
     }
 }
