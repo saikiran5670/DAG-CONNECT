@@ -613,7 +613,7 @@ export class FleetFuelReportDriverComponent implements OnInit {
             distance:  this.FuelData[0].convertedDistance,
             fuelconsumed:  this.FuelData[0].convertedFuelConsumed100Km,
             idleDuration: this.FuelData[0].convertedIdleDuration,
-            fuelConsumption: this.FuelData[0].fuelConsumption,
+            fuelConsumption: this.FuelData[0].convertedFuelConsumption,
             co2emission: this.FuelData[0].cO2Emission,
             }  
   }
@@ -811,7 +811,42 @@ export class FleetFuelReportDriverComponent implements OnInit {
       
   }
   
+  miliLitreToLitre(_data: any){
+    return (_data/1000).toFixed(2);
+}
 
+
+miliLitreToGallon(_data: any){
+  let litre: any = this.miliLitreToLitre(_data);
+  let gallon: any = litre/3.780;
+  return gallon.toFixed(2);
+}
+  convertFuelConsumptionMlmToLtr100km(_data: any){
+    return (_data*100).toFixed(2);
+  }
+  convertFuelConsumptionMlmToMpg(_data: any){
+    let data: any = 1.6/(_data * 3.78);
+    return (data).toFixed(2);
+  }
+
+  getFuelConsumedUnits(fuelConsumed: any, unitFormat: any, litreFlag?: boolean){
+    let _fuelConsumed: any = 0;
+    switch(unitFormat){
+      case 'dunit_Metric': { 
+        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); //-- Ltr/100Km / ltr
+        break;
+      }
+      case 'dunit_Imperial':{
+        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToMpg(fuelConsumed) : this.miliLitreToGallon(fuelConsumed); // mpg / gallon
+        break;
+      }
+      default: {
+        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); // Ltr/100Km / ltr
+      }
+    }
+    return _fuelConsumed; 
+  }
+  
   convertTimeToMinutes(milisec: any){
     let newMin = milisec / 60000;
     return newMin;
@@ -1638,7 +1673,7 @@ setVehicleGroupAndVehiclePreSelection() {
       }
     case 'fuelconsumed': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.fuelConsumed);
+      sum += parseFloat(element.convertedFuelConsumed100Km);
       });
       sum= sum.toFixed(2)*1;
       break;
@@ -1652,7 +1687,7 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'fuelConsumption': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.convertedFuelConsumed100Km);
+      sum += parseFloat(element.convertedFuelConsumption);
       });
       sum= sum.toFixed(2)*1;
       break;
