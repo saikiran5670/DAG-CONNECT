@@ -40,19 +40,19 @@ namespace net.atos.daf.ct2.kafkacdc.test
         public void AddAlert()
         {
             var result = _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(12, "I").Result;
-            Assert.IsTrue(result.Count > 0);
+            Assert.IsTrue(result);
         }
         [TestMethod]
         public void UpdateAlert()
         {
             var result = _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(12, "U").Result;
-            Assert.IsTrue(result.Count > 0);
+            Assert.IsTrue(result);
         }
         [TestMethod]
         public void Delete()
         {
             var result = _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(12, "D").Result;
-            Assert.IsTrue(result.Count > 0);
+            Assert.IsTrue(result);
         }
         [TestMethod]
         public async Task VehicleCdcProducer()
