@@ -43,16 +43,12 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             // _server.Start();           
             while (true)
             {
-                OnStarted(); //_appLifetime.ApplicationStarted.Register(OnStarted);
-                Thread.Sleep(1000); // 1hr sleep mode
+                //ReadAndProcessAlertMessage();
+                Thread.Sleep(10000); // 10 sec sleep mode
             }
             return Task.CompletedTask;
         }
         public Task StopAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
-        private void OnStarted()
-        {
-            ReadAndProcessAlertMessage();
-        }
 
         private void ReadAndProcessAlertMessage()
         {
