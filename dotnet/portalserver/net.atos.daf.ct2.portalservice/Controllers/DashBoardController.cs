@@ -138,6 +138,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                if (request.VINs.Count <= 0)
+                {
+                    return BadRequest(DashboardConstant.GET_ALERTLAST24HOURS_VALIDATION_VINREQUIRED_MSG);
+                }
                 string filters = JsonConvert.SerializeObject(request);
                 _logger.Info("GetTodayLiveVinData method in dashboard API called.");
                 var data = await _dashboarClient.GetTodayLiveVinDataAsync(JsonConvert.DeserializeObject<dashboardservice.TodayLiveVehicleRequest>(filters));

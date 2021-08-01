@@ -110,9 +110,10 @@ namespace net.atos.daf.ct2.dashboard.repository
             {
                 var parameter = new DynamicParameters();
                 var filter = DateTime.Now;
-                var datetime = DateTime.Now.AddHours(-filter.Hour).AddMinutes(-filter.Minute).AddSeconds(-filter.Second);
-                long str = UTCHandling.GetUTCFromDateTime(datetime, "UTC");
+                DateTime datetime = DateTime.Now.AddHours(-filter.Hour).AddMinutes(-filter.Minute).AddSeconds(-filter.Second);
+                long dateTimeUTC = UTCHandling.GetUTCFromDateTime(datetime, "UTC");
                 parameter.Add("@Vins", objTodayLiveVehicleRequest.VINs);
+                parameter.Add("@startdatetime", dateTimeUTC);
                 string query = @"WITH cte_vintodaydata as
                                      (
                                 SELECT  lcts.vin,
@@ -122,7 +123,7 @@ namespace net.atos.daf.ct2.dashboard.repository
 		                                Count(ta.urgency_level_type) As criticlealertcount
                                 FROM  livefleet.livefleet_current_trip_statistics lcts
                                 LEFT JOIN tripdetail.tripalert ta ON lcts.vin = ta.vin
-		                                 WHERE lcts.vin  ANY(@Vins) AND LCTS.START_TIME_STAMP = @startdatetime
+		                                 WHERE lcts.vin = ANY(@Vins) AND LCTS.START_TIME_STAMP = @startdatetime
                                 GROUP BY lcts.vin,lcts.start_time_stamp
 	                                 )
 	                                 SELECT  
