@@ -171,7 +171,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                         sum(average_weight) as totalaverageweightperprip,
                         sum(last_odometer) as totalodometer
                         FROM tripdetail.trip_statistics
-                        where (start_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
+                        where is_ongoing_trip = false AND (end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
 						and vin=ANY(@vins)
                         group by date_trunc('day', to_timestamp(start_time_stamp/1000))                     
                         )
