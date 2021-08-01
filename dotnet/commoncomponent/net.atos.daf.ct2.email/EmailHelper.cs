@@ -90,7 +90,7 @@ namespace net.atos.daf.ct2.email
                         emailContent = GetEmailContent(emailTemplate);
                         break;
                     case EmailEventType.AlertNotificationEmail:
-                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AccountInfo.FullName, messageRequest.Description);
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AlertNotification.AlertName, messageRequest.AlertNotification.AlertLevelCls, messageRequest.AlertNotification.AlertLevel, messageRequest.AlertNotification.DefinedThreshold, messageRequest.AlertNotification.ActualThresholdValue, messageRequest.AlertNotification.AlertCategory, messageRequest.AlertNotification.VehicleGroup, messageRequest.AlertNotification.AlertDateTime, messageRequest.Description, messageRequest.AlertNotification.DafEmailId);
                         break;
                 }
 
@@ -102,7 +102,7 @@ namespace net.atos.daf.ct2.email
 
                 messageRequest.Content = emailContent;
                 messageRequest.ContentMimeType = emailTemplate.ContentType == (char)EmailContentType.Html ? MimeType.Html : MimeType.Text;
-                //This code for tempory base only
+
                 if (emailTemplate.EventType == EmailEventType.ScheduledReportEmail)
                 {
                     bool isEmailSend = false;

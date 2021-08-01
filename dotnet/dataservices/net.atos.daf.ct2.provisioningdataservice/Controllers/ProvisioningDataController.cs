@@ -234,10 +234,10 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
         {
             var account = await _accountManager.GetAccountByEmailId(request.Account);
             if (account == null)
-                return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ACCOUNT_NOT_FOUND", parameter: nameof(request.Account));
+                return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "DRIVER_NOT_FOUND", parameter: nameof(request.Account));
 
             if (string.IsNullOrEmpty(account.DriverId) || (!string.IsNullOrEmpty(account.DriverId) && !account.DriverId.Equals(request.DriverId)))
-                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INCORRECT_DRIVERID", parameter: nameof(request.DriverId));
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "DRIVER_NOT_FOUND", parameter: nameof(request.DriverId));
 
             var org = await _organizationManager.GetOrganizationByOrgCode(request.OrgId);
             if (org == null)

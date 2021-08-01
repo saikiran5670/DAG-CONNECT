@@ -91,5 +91,11 @@ namespace net.atos.daf.ct2.reports.repository
         Task<IEnumerable<Ranking>> GetFuelBenchmarkRanking(FuelBenchmarkFilter fuelBenchmarkFilter);
         Task<FuelBenchmarkConsumption> GetFuelBenchmarkDetail(FuelBenchmarkFilter fuelBenchmarkFilter);
         #endregion
+
+        #region Vehicle Performance Report
+        Task<List<EngineLoadDistributionTemplate>> GetEngineLoadDistribution(int enginetypeid);
+
+        Task<IEnumerable<VehiclePerformanceSummary>> GetVehPerformanceSummaryDetails(string vin);
+        #endregion
     }
 }

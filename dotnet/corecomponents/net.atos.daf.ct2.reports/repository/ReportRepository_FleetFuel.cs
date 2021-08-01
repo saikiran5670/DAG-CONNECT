@@ -47,7 +47,7 @@ namespace net.atos.daf.ct2.reports.repository
                 List<IdlingConsumption> lstIdlingConsumption = (List<IdlingConsumption>)await _dataAccess.QueryAsync<IdlingConsumption>(queryMasterData, parameterOfFilters);
                 return lstIdlingConsumption?.Count > 0 ? lstIdlingConsumption : new List<IdlingConsumption>();
             }
-            catch (System.Exception ex)
+            catch (System.Exception)
             {
                 throw;
             }
@@ -399,7 +399,7 @@ namespace net.atos.daf.ct2.reports.repository
                 var parameterOfFilters = new DynamicParameters();
                 parameterOfFilters.Add("@FromDate", fleetFuelFilters.StartDateTime);
                 parameterOfFilters.Add("@ToDate", fleetFuelFilters.EndDateTime);
-                parameterOfFilters.Add("@Vins", fleetFuelFilters.VINs.FirstOrDefault());
+                parameterOfFilters.Add("@Vin", fleetFuelFilters.VINs.FirstOrDefault());
 
                 string queryFleetUtilization = @"WITH CTE_FleetDeatils as
 			(
@@ -412,7 +412,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , (veh_message_distance)                                              as veh_message_distance
 				  , (average_speed)                                                     as average_speed
 				  , (max_speed)                                                         as max_speed
-				  , (average_gross_weight_comb)                                         as average_gross_weight_comb
+				  , (msg_gross_weight_combinition)                                      as average_gross_weight_comb
 				  , (etl_gps_fuel_consumed)                                             as fuel_consumed
 				  , (fuel_consumption)                                                  as fuel_consumption
 				  , (co2_emission)                                                      as co2_emission
@@ -435,62 +435,72 @@ namespace net.atos.daf.ct2.reports.repository
 				  , end_position_lattitude as endpositionlattitude
 				  , end_position_longitude as endpositionlongitude
                   , v_cruise_control_dist_for_cc_fuel_consumption as CCFuelDistance
-                  , v_cruise_control_fuel_consumed_for_cc_fuel_consumption as CCFuelConsumed
+                  , v_cruise_control_fuel_consumed_for_cc_fuel_consumption as CCFuelConsumed                  
                 From
-					tripdetail.trip_statistics
-				where (end_time_stamp >= @FromDate 
-							   and end_time_stamp<= @ToDate) and  VIN = @Vins
+					tripdetail.trip_statistics                    
+                where(end_time_stamp >= @FromDate
+                               and end_time_stamp <= @ToDate) and VIN = @Vin
 				
 			)
 		  , cte_combine as
-			(
-				SELECT
-					vh.name            as VehicleName
+            (
+                SELECT
+                    vh.name as VehicleName
 				  , tripid
-				  , fd.vin             as VIN
+				  , fd.vin as VIN
 				  , vh.registration_no as VehicleRegistrationNo
-				  , round ( fd.etl_gps_distance,2)                         as Distance
-				  , round ((fd.veh_message_distance),2)   as AverageDistancePerDay
-				  , round (fd.average_speed,2)                             as AverageSpeed
-				  , max_speed                                              as MaxSpeed
-				  , numberoftrips                                          as NumberOfTrips
-				  , round (fd.average_gross_weight_comb,2)                 as AverageGrossWeightComb
-				  , round((fd.fuel_consumed),2)              As FuelConsumed
-				  , round((fd.fuel_consumption),2)           As FuelConsumption
-				  , round((fd.co2_emission),2)           As CO2Emission
-				  , round(fd.idle_duration ,2)                                      as IdleDuration
-				  , round(fd.pto_duration,2)                               as PTODuration
-				  , round((fd.harsh_brake_duration),2)    As HarshBrakeDuration
-				  , round((fd.heavy_throttle_duration),2)    As HeavyThrottleDuration
-				  , round(fd.cruise_control_distance_30_50,2)                as CruiseControlDistance30_50
-				  , round(fd.cruise_control_distance_50_75,2)                as CruiseControlDistance50_75
-				  , round(fd.cruise_control_distance_more_than_75,2)         as CruiseControlDistance75
-				  , round(fd.average_traffic_classification)               as AverageTrafficClassification
-				  , round(fd.cc_fuel_consumption)                          as CCFuelConsumption 
-				  , round(fd.fuel_consumption_cc_non_active)               as FuelconsumptionCCnonactivesx
-				  , idling_consumption                                     as IdlingConsumption
-				  , dpa_score                                              as DPAScore
+				  , round(fd.etl_gps_distance, 2) as Distance
+				  , round((fd.veh_message_distance), 2) as AverageDistancePerDay
+				  , round(fd.average_speed, 2) as AverageSpeed
+				  , max_speed as MaxSpeed
+				  , numberoftrips as NumberOfTrips
+				  , round(fd.average_gross_weight_comb, 2) as AverageGrossWeightComb
+				  , round((fd.fuel_consumed), 2)              As FuelConsumed
+                   , round((fd.fuel_consumption), 2)           As FuelConsumption
+                    , round((fd.co2_emission), 2)           As CO2Emission
+                     , round(fd.idle_duration, 2)                                      as IdleDuration
+				  , round(fd.pto_duration, 2) as PTODuration
+				  , round((fd.harsh_brake_duration), 2)    As HarshBrakeDuration
+                   , round((fd.heavy_throttle_duration), 2)    As HeavyThrottleDuration
+                    , round(fd.cruise_control_distance_30_50, 2)                as CruiseControlDistance30_50
+				  , round(fd.cruise_control_distance_50_75, 2) as CruiseControlDistance50_75
+				  , round(fd.cruise_control_distance_more_than_75, 2) as CruiseControlDistance75
+				  , round(fd.average_traffic_classification) as AverageTrafficClassification
+				  , round(fd.cc_fuel_consumption) as CCFuelConsumption
+				  , round(fd.fuel_consumption_cc_non_active) as FuelconsumptionCCnonactivesx
+				  , idling_consumption as IdlingConsumption
+				  , dpa_score as DPAScore
                   ,StartDate
                   ,EndDate
                   ,  startpositionlattitude
 				  ,  startpositionlongitude
 				  , endpositionlattitude
 				  , endpositionlongitude
-                , round(fd.CCFuelDistance,2) as CCFuelDistance
-                , round(fd.CCFuelConsumed,2) as CCFuelConsumed
-                , round(fd.etl_gps_distance - fd.CCFuelDistance,2) as CCFuelDistanceNotActive
-                , round(fd.fuel_consumed - fd.CCFuelConsumed,2) as CCFuelConsumedNotActive
-				FROM
-					CTE_FleetDeatils fd
-				    left join
-						master.vehicle vh
-						on
-							fd.VIN =vh.VIN
+                , round(fd.CCFuelDistance, 2) as CCFuelDistance
+                , round(fd.CCFuelConsumed, 2) as CCFuelConsumed
+                , round(fd.etl_gps_distance - fd.CCFuelDistance, 2) as CCFuelDistanceNotActive
+                , round(fd.fuel_consumed - fd.CCFuelConsumed, 2) as CCFuelConsumedNotActive
+                , startgeoaddr.id AS StartPositionId
+                , endgeoaddr.id AS EndPositionId
+                , coalesce(startgeoaddr.address,'') AS StartPosition
+                , coalesce(endgeoaddr.address,'') AS EndPosition
+                FROM
+                    CTE_FleetDeatils fd
+                    left join master.vehicle vh
+                        on fd.VIN = vh.VIN
+                    left JOIN master.geolocationaddress as startgeoaddr
+                            on TRUNC(CAST(startgeoaddr.latitude as numeric),4)= TRUNC(CAST(startpositionlattitude as numeric),4) 
+                               and TRUNC(CAST(startgeoaddr.longitude as numeric),4) = TRUNC(CAST(startpositionlongitude as numeric),4)
+                    left JOIN master.geolocationaddress as endgeoaddr
+                            on TRUNC(CAST(endgeoaddr.latitude as numeric),4)= TRUNC(CAST(endpositionlattitude as numeric),4) 
+                               and TRUNC(CAST(endgeoaddr.longitude as numeric),4) = TRUNC(CAST(endpositionlongitude as numeric),4)
 			)
 		SELECT
-			 cmb.*
-		FROM
-			cte_combine cmb";
+
+             cmb.*
+        FROM
+
+            cte_combine cmb";
 
                 List<FleetFuelDetails> lstFleetDetails = (List<FleetFuelDetails>)await _dataMartdataAccess.QueryAsync<FleetFuelDetails>(queryFleetUtilization, parameterOfFilters);
 
@@ -543,7 +553,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , (veh_message_distance)                                              as veh_message_distance
 				  , (average_speed)                                                     as average_speed
 				  , (max_speed)                                                         as max_speed
-				  , (average_gross_weight_comb)                                         as average_gross_weight_comb
+				  , (msg_gross_weight_combinition)                                      as average_gross_weight_comb
 				  , (etl_gps_fuel_consumed)                                                  as fuel_consumed
 				  , (fuel_consumption)                                                  as fuel_consumption
 				  , (co2_emission)                                                      as co2_emission
@@ -652,7 +662,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                 return lstFleetDetails?.Count > 0 ? lstFleetDetails : new List<FleetFuelDetails>();
             }
-            catch (System.Exception ex)
+            catch (System.Exception)
             {
                 throw;
             }

@@ -37,9 +37,21 @@ namespace net.atos.daf.ct2.kafkacdc.test
         }
 
         [TestMethod]
-        public void GetVehicleAlertRefFromAlertConfiguration()
+        public void AddAlert()
         {
-            var result = _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(150).Result;
+            var result = _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(12, "I").Result;
+            Assert.IsTrue(result.Count > 0);
+        }
+        [TestMethod]
+        public void UpdateAlert()
+        {
+            var result = _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(12, "U").Result;
+            Assert.IsTrue(result.Count > 0);
+        }
+        [TestMethod]
+        public void Delete()
+        {
+            var result = _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(12, "D").Result;
             Assert.IsTrue(result.Count > 0);
         }
         [TestMethod]

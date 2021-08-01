@@ -23,7 +23,11 @@ namespace net.atos.daf.ct2.dashboard
         public async Task<FleetKpi> GetFleetKPIDetails(FleetKpiFilter fleetKpiFilter)
         {
             FleetKpi lstFleetKPIDetails = await GetCurrentFleetKPIDetails(fleetKpiFilter);
-            lstFleetKPIDetails.LastChangeKpi = await GetLastFleetKPIDetails(fleetKpiFilter);
+            if (lstFleetKPIDetails != null)
+            {
+                FleetKpi lstLastFleetKPIDetails = await GetLastFleetKPIDetails(fleetKpiFilter);
+                if (lstLastFleetKPIDetails != null) { lstFleetKPIDetails.LastChangeKpi = lstLastFleetKPIDetails; }
+            }
             return lstFleetKPIDetails;
         }
         /// <summary>
@@ -57,9 +61,10 @@ namespace net.atos.daf.ct2.dashboard
             // To prepare copy of existing object for query
             FleetKpiFilter lastFleetKpiFilter = new FleetKpiFilter
             {
-                StartDateTime = lastStartdate.ToUnixTime() * 1000,
-                EndDateTime = lastEnddate.ToUnixTime() * 1000,
-                VINs = fleetKpiFilter.VINs
+                VINs = fleetKpiFilter.VINs,
+                // converting time to milisecoed
+                StartDateTime = lastStartdate.ToUnixMiliSecTime(),
+                EndDateTime = lastEnddate.ToUnixMiliSecTime()
             };
 
             return await _dashboardRepository.GetFleetKPIDetails(lastFleetKpiFilter);
@@ -74,6 +79,13 @@ namespace net.atos.daf.ct2.dashboard
         {
             return await _dashboardRepository.GetTodayLiveVinData(objTodayLiveVehicleRequest);
         }
+
+        #region Utilization
+        public async Task<List<Chart_Fleetutilization>> GetUtilizationchartsData(FleetKpiFilter tripFilters)
+        {
+            return await _dashboardRepository.GetUtilizationchartsData(tripFilters);
+        }
+        #endregion
     }
 
 

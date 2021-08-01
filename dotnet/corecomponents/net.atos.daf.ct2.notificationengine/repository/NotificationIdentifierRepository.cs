@@ -73,6 +73,12 @@ namespace net.atos.daf.ct2.notificationengine.repository
 	                                    ,nottim.state as Aletimenoti_state
                                         ,ale.organization_id as Ale_organization_id
                                         ,ale.name as Ale_name
+	                                    ,vgrp.name as Vehicle_group_name
+										,vgrp.group_type as vehiclegroup
+										, case when vgrp.group_type ='S' then 
+											(select name from master.vehicle where id=vgrp.ref_id)
+											else vgrp.name
+											end Vehicle_group_vehicle_name
                                     from master.notificationrecipientref notref
                                     inner join master.notificationrecipient notrec
                                     on notref.recipient_id=notrec.id and notrec.state=@state and notref.state=@state
@@ -84,6 +90,8 @@ namespace net.atos.daf.ct2.notificationengine.repository
                                     on notrec.id=notlim.recipient_id and notlim.state=@state
                                     left join master.alerttimingdetail nottim
                                     on noti.id=nottim.ref_id and nottim.type=@adFilterType and nottim.state=@state
+                                    inner join master.group vgrp
+									on vgrp.id=ale.vehicle_group_id
                                     where notref.alert_id=@alert_id";
             var parameter = new DynamicParameters();
             parameter.Add("@alert_id", tripAlert.Alertid);
@@ -119,7 +127,8 @@ namespace net.atos.daf.ct2.notificationengine.repository
             parameter.Add("@alert_id", tripAlert.Alertid);
             parameter.Add("@vehicle_id", tripAlert.VehicleId);
             parameter.Add("@status", ((char)NotificationSendType.Failed).ToString());
-            if (tripAlert.Type.IndexOfAny(new char[] { 'N', 'X', 'c', 'Y', 'D', 'G', 'S' }) >= 0)
+            //await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type=@type and enum=@categoryEnum", new { type = 'C', categoryEnum = item.CategoryType });
+            if (tripAlert.Type.IndexOfAny(new char[] { 'N', 'X', 'C', 'Y', 'D', 'G', 'S', 'U', 'A', 'H', 'I', 'O', 'T', 'L', 'P', 'F' }) >= 0)
             {
                 queryStatement.Append(" and trip_id = @trip_id");
                 parameter.Add("@trip_id", tripAlert.Tripid);
@@ -240,6 +249,67 @@ namespace net.atos.daf.ct2.notificationengine.repository
                 string translateValue = await _dataAccess.QuerySingleAsync<string>("Select coalesce((select t.value from translation.translation as t where t.name =@key and t.code=@laguageCode), (select t.value from translation.translation as t where t.name =@key and t.code='EN-GB')) as Key", new { key = key, laguageCode = languageCode });
 
                 return translateValue;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<string> GetLanguageCodePreference(string emailId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@emailId", emailId.ToLower());
+
+                string accountQuery =
+                    @"SELECT preference_id from master.account where lower(email) = @emailId";
+
+                var accountPreferenceId = await _dataAccess.QueryFirstOrDefaultAsync<int?>(accountQuery, parameter);
+
+                if (!accountPreferenceId.HasValue)
+                {
+                    string orgQuery = string.Empty;
+                    int? orgPreferenceId = null;
+
+                    orgQuery =
+                        @"SELECT o.preference_id from master.account acc
+                            INNER JOIN master.accountOrg ao ON acc.id=ao.account_id
+                            INNER JOIN master.organization o ON ao.organization_id=o.id
+                            where lower(acc.email) = @emailId";
+
+                    orgPreferenceId = await _dataAccess.QueryFirstOrDefaultAsync<int?>(orgQuery, parameter);
+
+                    if (!orgPreferenceId.HasValue)
+                        return "EN-GB";
+                    else
+                        return await GetCodeByPreferenceId(orgPreferenceId.Value);
+                }
+                return await GetCodeByPreferenceId(accountPreferenceId.Value);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<string> GetCodeByPreferenceId(int preferenceId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@preferenceId", preferenceId);
+
+                string query =
+                    @"SELECT l.code from master.accountpreference ap
+                    INNER JOIN translation.language l ON ap.id = @preferenceId AND ap.language_id=l.id";
+
+                var languageCode = await _dataAccess.QueryFirstAsync<string>(query, parameter);
+
+                return languageCode;
             }
             catch (Exception)
             {

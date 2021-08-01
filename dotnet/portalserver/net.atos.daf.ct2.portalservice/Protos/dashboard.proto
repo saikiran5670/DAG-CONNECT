@@ -8,6 +8,7 @@ service DashboardService {
 
 rpc GetFleetKPIDetails(FleetKpiFilterRequest) returns (FleetKpiResponse);
 rpc GetLastAlert24Hours(Alert24HoursFilterRequest) returns (Alert24HoursResponse);
+rpc GetFleetUtilizationDetails(FleetKpiFilterRequest) returns (FleetUtilizationResponse);
 rpc GetTodayLiveVinData(TodayLiveVehicleRequest) returns (TodayLiveVehicleResponse);
 }
 
@@ -74,3 +75,27 @@ message Alert24Hour{
     int32 Advisory = 6;
 }
 //End for the Alert24Hours
+
+
+//start for utilization
+
+message FleetUtilizationResponse {
+    FleetUtilization Fleetutilizationcharts = 1;
+    Responsecode code = 2;
+    string message = 3;
+}
+
+message FleetUtilization {
+    string VehicleName = 1;
+    string VIN = 2;
+    int64 CalenderDate = 3;
+    double Distance = 4;
+    double Triptime  = 5;
+    double Drivingtime = 6;
+    double Idleduration = 7;
+    double Distanceperday = 8;
+    int32 Vehiclecount =10;
+    int32 Tripcount =11;   
+
+}
+// End utilizatio

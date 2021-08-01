@@ -745,5 +745,22 @@ namespace net.atos.daf.ct2.reports
             return fuelBenchmarkDetails;
         }
         #endregion
+
+        #region Vehicle Performance Report
+        public async Task<EngineLoadDistributionTemplate> GetEngineLoadTemplate(int enginetypeid)
+        {
+            var enginetemplate = await _reportRepository.GetEngineLoadDistribution(enginetypeid);
+
+            EngineLoadDistributionTemplate engineloadtemplate = new EngineLoadDistributionTemplate();
+            //We will bind data here
+            return engineloadtemplate;
+        }
+        public async Task<IEnumerable<VehiclePerformanceSummary>> GetVehPerformanceSummaryDetails(string vin)
+        {
+            return await _reportRepository.GetVehPerformanceSummaryDetails(vin);
+
+        }
+
+        #endregion
     }
 }

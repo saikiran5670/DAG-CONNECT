@@ -22,11 +22,24 @@ namespace net.atos.daf.ct2.email.Entity
         public string LanguageCode { get; set; }
         public bool IsBcc { get; set; }
         public string Description { get; set; }
+        public AlertNotification AlertNotification { get; set; }
     }
 
     public class ReportTokens
     {
         public string Token { get; set; }
         public string ReportName { get; set; }
+    }
+    public class AlertNotification
+    {
+        public string AlertName { get; set; }
+        public string AlertLevel { get; set; }
+        public string AlertLevelCls { get; set; }
+        public double DefinedThreshold { get; set; }
+        public double ActualThresholdValue { get; set; }
+        public string AlertCategory { get; set; }
+        public string VehicleGroup { get; set; }
+        public string AlertDateTime { get; set; }
+        public string DafEmailId { get; set; }
     }
 }

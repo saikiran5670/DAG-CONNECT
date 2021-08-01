@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.organization
 
         #region Provisioning Data Service
 
-        Task<bool> GetOrganisationList(ProvisioningOrganisationDataServiceRequest request);
+        Task<ProvisioningOrganisationDataServiceResponse> GetOrganisationList(ProvisioningOrganisationDataServiceRequest request);
 
         #endregion
     }
