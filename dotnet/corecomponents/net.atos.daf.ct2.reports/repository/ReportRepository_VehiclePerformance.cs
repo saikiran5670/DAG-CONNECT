@@ -23,6 +23,17 @@ namespace net.atos.daf.ct2.reports.repository
 
         }
 
+        public async Task<IEnumerable<VehiclePerformanceSummary>> GetVehPerformanceSummaryDetails(string vin)
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@vin", vin);
+            IEnumerable<VehiclePerformanceSummary> summary;
+            string query = @"SELECT vin,
+                                    vid, engine_type, model_type, name FROM master.vehicle";
+            summary = await _dataMartdataAccess.QueryAsync<VehiclePerformanceSummary>(query, parameter);
+            return summary.AsList<VehiclePerformanceSummary>();
 
+
+        }
     }
 }

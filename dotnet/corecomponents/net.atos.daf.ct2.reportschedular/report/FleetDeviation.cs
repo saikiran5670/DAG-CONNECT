@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.email.Enum;
+using net.atos.daf.ct2.map;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reportscheduler.entity;
@@ -30,6 +31,8 @@ namespace net.atos.daf.ct2.account.report
         private readonly IUnitManager _unitManager;
         private readonly EmailEventType _evenType;
         private readonly EmailContentType _contentType;
+        private readonly IMapManager _mapManager;
+        private readonly MapHelper _mapHelper;
 
         public string VIN { get; private set; }
         public string TimeZoneName { get; private set; }
@@ -55,7 +58,7 @@ namespace net.atos.daf.ct2.account.report
                           IReportSchedulerRepository reportSchedularRepository,
                           IVisibilityManager visibilityManager, ITemplateManager templateManager,
                           IUnitConversionManager unitConversionManager, IUnitManager unitManager,
-                          EmailEventType evenType, EmailContentType contentType)
+                          EmailEventType evenType, EmailContentType contentType, IMapManager mapManager)
         {
             ReportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
@@ -65,6 +68,8 @@ namespace net.atos.daf.ct2.account.report
             _unitManager = unitManager;
             _evenType = evenType;
             _contentType = contentType;
+            _mapManager = mapManager;
+            _mapHelper = new MapHelper(_mapManager);
         }
 
         public void SetParameters(ReportCreationScheduler reportSchedulerData, IEnumerable<VehicleList> vehicleLists)
@@ -114,8 +119,8 @@ namespace net.atos.daf.ct2.account.report
                         IdleDuration = await _unitConversionManager.GetTimeSpan(item.IdleDuration, TimeUnit.Seconds, UnitToConvert),
                         AverageSpeed = (int)await _unitConversionManager.GetSpeed(item.AverageSpeed, SpeedUnit.MeterPerMilliSec, UnitToConvert),
                         AverageWeight = await _unitConversionManager.GetWeight(item.AverageWeight, WeightUnit.KiloGram, UnitToConvert),
-                        StartPosition = item.StartPosition,
-                        EndPosition = item.EndPosition,
+                        StartPosition = string.IsNullOrEmpty(item.StartPosition) ? await _mapHelper.GetAddress(item.StartPositionLattitude, item.StartPositionLongitude) : item.StartPosition,
+                        EndPosition = string.IsNullOrEmpty(item.EndPosition) ? await _mapHelper.GetAddress(item.EndPositionLattitude, item.EndPositionLongitude) : item.EndPosition,
                         FuelConsumed = await _unitConversionManager.GetVolume(item.FuelConsumed, VolumeUnit.MilliLiter, UnitToConvert),
                         DrivingTime = await _unitConversionManager.GetTimeSpan(item.DrivingTime, TimeUnit.Seconds, UnitToConvert),
                         Alerts = item.Alerts

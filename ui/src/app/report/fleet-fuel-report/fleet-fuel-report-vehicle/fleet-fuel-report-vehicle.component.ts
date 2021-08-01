@@ -655,7 +655,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       distance:  this.FuelData[0].convertedDistance,
       fuelconsumed:  this.FuelData[0].convertedFuelConsumed100Km,
       idleDuration: this.FuelData[0].convertedIdleDuration,
-      fuelConsumption: this.FuelData[0].fuelConsumption,
+      fuelConsumption: this.FuelData[0].convertedFuelConsumption,
       co2emission: this.FuelData[0].cO2Emission,
       }   
   }
@@ -1768,7 +1768,7 @@ doc.addPage();
       }
     case 'fuelconsumed': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.fuelConsumed);
+      sum += parseFloat(element.convertedFuelConsumed100Km);
       });
       sum= sum.toFixed(2)*1;
       break;
@@ -1782,7 +1782,7 @@ doc.addPage();
     }
     case 'fuelConsumption': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.convertedFuelConsumed100Km);
+      sum += parseFloat(element.convertedFuelConsumption);
       });
       sum= sum.toFixed(2)*1;
       break;

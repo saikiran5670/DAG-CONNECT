@@ -52,8 +52,8 @@ namespace net.atos.daf.ct2.vehicle
 
         #region Provisioning Data Service
 
-        Task<bool> GetCurrentVehicle(ProvisioningVehicleDataServiceRequest request);
-        Task<bool> GetVehicleList(ProvisioningVehicleDataServiceRequest request);
+        Task<ProvisioningVehicleDataServiceResponse> GetCurrentVehicle(ProvisioningVehicleDataServiceRequest request);
+        Task<ProvisioningVehicleDataServiceResponse> GetVehicleList(ProvisioningVehicleDataServiceRequest request);
 
         #endregion
     }

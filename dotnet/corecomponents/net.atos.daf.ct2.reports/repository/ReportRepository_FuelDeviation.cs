@@ -113,7 +113,7 @@ namespace net.atos.daf.ct2.reports.repository
                 return _dataMartdataAccess.QueryAsync<FuelDeviationCharts>(query, parameter);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
