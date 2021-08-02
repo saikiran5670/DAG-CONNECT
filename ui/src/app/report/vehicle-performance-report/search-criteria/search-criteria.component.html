@@ -1,4 +1,4 @@
-<form [formGroup]="searchForm">
+<form [formGroup]="searchForm" (ngSubmit)="onSearch()">
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
         <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
             <mat-expansion-panel-header class="full-width">
@@ -52,7 +52,7 @@
                             </mat-select>
                         </mat-form-field>
                         <mat-error
-                            *ngIf="searchForm.get('vehicleGroup').hasError('required') && vehicleGrpDD.length > 0">
+                            *ngIf="searchForm.get('vehicleGroup').hasError('required') && formSubmitted">
                             {{translationData.lblPleaseSelectvehicleGroup || 'Please Select Vehicle Group' }}
                         </mat-error>
                     </div>
@@ -68,7 +68,7 @@
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
-                        <mat-error *ngIf="searchForm.get('vehicleName').hasError('required') && vehicleDD.length > 0">
+                        <mat-error *ngIf="searchForm.get('vehicleName').hasError('required') && formSubmitted">
                             {{translationData.lblPleaseSelectVehicle || 'Please Select Vehicle Name' }}
                         </mat-error>
                     </div>
@@ -151,16 +151,16 @@
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
-                        <mat-error *ngIf="searchForm.get('performanceType').hasError('required')">
+                        <mat-error *ngIf="searchForm.get('performanceType').hasError('required') && formSubmitted">
                             {{translationData.lblPleaseSelectPerformanceType || 'Please Select Performance Type' }}
                         </mat-error>
                     </div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'>
-                    <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
+                    <button type="button" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
                         (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
-                    <button [disabled]="!searchForm.valid" class='no-margin' mat-raised-button color="primary"
-                        (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
+                    <button type="submit" class='no-margin' mat-raised-button color="primary"
+                        >{{ translationData.lblSearch || 'Search' }}</button>
                 </div>
             </div>
         </mat-expansion-panel>
