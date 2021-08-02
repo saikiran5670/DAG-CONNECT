@@ -142,7 +142,7 @@ namespace net.atos.daf.ct2.account.report
             html.AppendFormat(ReportTemplateSingleto.
                                     GetInstance()
                                     .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
-                                                    _contentType, ReportSchedulerData.Code)
+                                                        _contentType, ReportSchedulerData.Code)
                               , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
                               , ImageSingleton.GetInstance().GetLogo()
