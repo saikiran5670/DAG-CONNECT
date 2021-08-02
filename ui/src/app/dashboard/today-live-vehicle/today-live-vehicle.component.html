@@ -15,25 +15,25 @@
           <div class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
             <span>
               <div>{{ translationData.lblDistance || 'Distance' }} </div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{liveVehicleData.Distance}}</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{liveVehicleData.distance}}</div>
             </span>
           </div>
           <div class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
             <span>
               <div>{{ translationData.lblDrivingTime || 'Driving Time' }} </div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{liveVehicleData.DrivingTime}}</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{liveVehicleData.drivingTime}}</div>
             </span>
           </div>
             <div class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <div>{{ translationData.lblDrivers || 'Drivers' }} </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{liveVehicleData.Drivers}}</div>
+                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{liveVehicleData.driverCount}}</div>
               </span>
             </div>
             <div class="areaWidth  divTile activeClass" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <div>{{ translationData.lblCriticalAlerts || 'Critical Alerts' }}: </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{liveVehicleData.CriticalAlert}}</div>
+                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{liveVehicleData.criticleAlertCount}}</div>
               </span>
             </div>
         </div>
@@ -44,7 +44,7 @@
           <div class="chartTile col-md-4">
             <div class="textDiv">
               <div>{{ translationData.lblActiveVehicles || 'Active Vehicles' }}</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{liveVehicleData.ActiveVehicles}}</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{liveVehicleData.activeVehicles}}</div>
             </div>
             
             <div class="col-md-8 chart-wrapper chartDimension">
@@ -61,7 +61,7 @@
           <div class="chartTile col-md-4">
             <div class="textDiv">
               <div>{{ translationData.lblTimeBased || 'Time Based UtiliSation Rate' }} </div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{liveVehicleData.TimeUtilization}}</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{liveVehicleData.timeBaseUtilization}}</div>
             </div>
             
             <div class="col-md-8 chart-wrapper chartDimension">
@@ -78,7 +78,7 @@
           <div class="chartTile col-md-4">
             <div class="textDiv">
                 <div>{{ translationData.lblDistanceBased || 'Distance Based Utilisation Rate' }} </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{liveVehicleData.DistanceUtilization}}{{' km'}}</div>
+                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{liveVehicleData.distanceBaseUtilization}}{{' km'}}</div>
             </div>
               
             <div class="col-md-8 chart-wrapper chartDimension">

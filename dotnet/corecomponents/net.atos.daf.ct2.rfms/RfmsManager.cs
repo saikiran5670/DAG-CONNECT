@@ -119,6 +119,14 @@ namespace net.atos.daf.ct2.rfms
                     rfmsVehiclePosition.MoreDataAvailableLink = "/vehiclepositions?starttime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
                     rfmsVehiclePosition.MoreDataAvailable = true;
                 }
+                if (rfmsVehiclePositionRequest.Type == DateType.Created)
+                {
+                    rfmsVehiclePosition.MoreDataAvailableLink += "&datetype=" + DateType.Created;
+                }
+                if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.StopTime))
+                {
+                    rfmsVehiclePosition.MoreDataAvailableLink += "&stoptime=" + rfmsVehiclePositionRequest.StopTime;
+                }
                 if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.Vin))
                 {
                     rfmsVehiclePosition.MoreDataAvailableLink += "&vin=" + rfmsVehiclePositionRequest.Vin;

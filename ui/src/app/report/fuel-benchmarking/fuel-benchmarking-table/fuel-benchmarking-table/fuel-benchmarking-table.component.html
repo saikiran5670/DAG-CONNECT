@@ -30,7 +30,8 @@
                 </mat-icon>
               </mat-header-cell>
               <mat-cell style="margin-right: 10px;" *matCellDef="let row; let i=index">
-                <div *ngIf="(i !== 4 && i !== 5) || column == 'period'" >{{i==1 && index !== 0? row[column]+" gal": i==2 && index !== 0? row[column]+" km" : i==3 && index !== 0? row[column]+" mpg" : row[column] }}</div>
+                <!-- <div *ngIf="(i !== 4 && i !== 5) || column == 'period'" >{{i==1 && index !== 0? row[column]+" gal": i==2 && index !== 0? row[column]+" km" : i==3 && index !== 0? row[column]+" mpg" : row[column] }}</div> -->
+                <div *ngIf="(i !== 4 && i !== 5) || column == 'period'" >{{i==1 && index !== 0? row[column]: i==2 && index !== 0? row[column] : i==3 && index !== 0? row[column] : row[column] }}</div>
 
                 <div *ngIf="index !== 0 && i == 4">
                   Consumption (Ltrs/100km)

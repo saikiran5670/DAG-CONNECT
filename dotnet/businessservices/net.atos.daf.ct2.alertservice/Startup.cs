@@ -8,6 +8,8 @@ using net.atos.daf.ct2.alert;
 using net.atos.daf.ct2.alert.repository;
 using net.atos.daf.ct2.alertservice.Services;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.kafkacdc;
+using net.atos.daf.ct2.kafkacdc.repository;
 using net.atos.daf.ct2.visibility;
 using net.atos.daf.ct2.visibility.repository;
 
@@ -36,19 +38,21 @@ namespace net.atos.daf.ct2.alertservice
             }));
 
             string connectionString = Configuration.GetConnectionString("ConnectionString");
-            //var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
+            string DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
             });
-            //services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
-            //{
-            //    return new PgSQLDataMartDataAccess(DataMartconnectionString);
-            //});
+            services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
+            {
+                return new PgSQLDataMartDataAccess(DataMartconnectionString);
+            });
             services.AddTransient<IAlertManager, AlertManager>();
             services.AddTransient<IAlertRepository, AlertRepository>();
             services.AddTransient<IVisibilityRepository, VisibilityRepository>();
             services.AddTransient<IVisibilityManager, VisibilityManager>();
+            services.AddTransient<IVehicleAlertRefManager, VehicleAlertRefManager>();
+            services.AddTransient<IVehicleAlertRepository, VehicleAlertRepository>();
             //services.AddTransient<IVehicleManager, VehicleManager>();
             //services.AddTransient<IVehicleRepository, VehicleRepository>();
             //services.AddTransient<IAuditLogRepository, AuditLogRepository>();

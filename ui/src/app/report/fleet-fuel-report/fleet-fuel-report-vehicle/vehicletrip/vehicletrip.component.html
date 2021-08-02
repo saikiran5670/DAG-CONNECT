@@ -443,7 +443,7 @@
                             || ' gal') }})</span>              
                         </mat-header-cell>          
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_fuelconsumed')">              
-                          <span>{{row.fuelConsumed}}</span>              
+                          <span>{{row.convertedFuelConsumed100Km}}</span>              
                         </mat-cell>
                       </ng-container>              
                       <ng-container matColumnDef="fuelConsumption">              
@@ -454,7 +454,7 @@
                             || ' mpg') }})</span>              
                         </mat-header-cell>              
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_fuelconsumption')">              
-                          <span>{{row.fuelConsumption}}</span>              
+                          <span>{{row.convertedFuelConsumption}}</span>              
                         </mat-cell>              
                       </ng-container>              
                       <ng-container matColumnDef="cO2Emission">              

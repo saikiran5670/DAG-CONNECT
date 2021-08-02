@@ -4,32 +4,20 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using net.atos.daf.ct2.email.Entity;
-using net.atos.daf.ct2.email.Enum;
-using net.atos.daf.ct2.notification;
-using net.atos.daf.ct2.notification.entity;
 using net.atos.daf.ct2.notificationengine.entity;
 using net.atos.daf.ct2.notificationengine.repository;
-using net.atos.daf.ct2.sms;
-using net.atos.daf.ct2.sms.entity;
 using net.atos.daf.ct2.utilities;
-using net.atos.daf.ct2.webservice;
-using net.atos.daf.ct2.webservice.entity;
 
 namespace net.atos.daf.ct2.notificationengine
 {
     public class NotificationIdentifierManager : INotificationIdentifierManager
     {
         private readonly INotificationIdentifierRepository _notificationIdentifierRepository;
-        private readonly IEmailNotificationManager _emailNotificationManager;
-        private readonly ISMSManager _smsManager;
-        public NotificationIdentifierManager(INotificationIdentifierRepository notificationIdentifierRepository, IEmailNotificationManager emailNotificationManager, ISMSManager smsManager)
+        public NotificationIdentifierManager(INotificationIdentifierRepository notificationIdentifierRepository)
         {
             _notificationIdentifierRepository = notificationIdentifierRepository;
-            _emailNotificationManager = emailNotificationManager;
-            _smsManager = smsManager;
         }
-        public async Task<List<Notification>> GetNotificationDetails(TripAlert tripAlert)
+        public async Task<List<NotificationHistory>> GetNotificationDetails(TripAlert tripAlert)
         {
             try
             {
@@ -161,133 +149,17 @@ namespace net.atos.daf.ct2.notificationengine
                         identifiedNotificationRec.Add(notificationHistory);
                     }
                 }
-
-                if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "E").Count() > 0)
-                {
-                    //await SendEmailNotification(identifiedNotificationRec);
-                }
-
-                if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
-                {
-                    //await SendSMS(identifiedNotificationRec);
-                }
-
-                if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").Count() > 0)
-                {
-                    await GetWebServiceCall(identifiedNotificationRec);
-                }
-
-                return notificationDetails;
+                return identifiedNotificationRec;
             }
             catch (Exception ex)
             {
 
                 throw ex;
             }
-
         }
-
         public async Task<NotificationHistory> InsertNotificationSentHistory(NotificationHistory notificationHistory)
         {
             return await _notificationIdentifierRepository.InsertNotificationSentHistory(notificationHistory);
-        }
-        public async Task<bool> SendEmailNotification(List<NotificationHistory> notificationHistoryEmail)
-        {
-            try
-            {
-                bool isResult = false;
-
-                foreach (var item in notificationHistoryEmail)
-                {
-                    string alertCategoryValue = await GetTranslateValue(string.Empty, item.AlertCategoryKey);
-                    string urgencyTypeValue = await GetTranslateValue(string.Empty, item.UrgencyTypeKey);
-                    string languageCode = await GetLanguageCodePreference(item.EmailId);
-                    string alertGenTime = UTCHandling.GetConvertedDateTimeFromUTC(item.AlertGeneratedTime, "UTC", null);
-                    Dictionary<string, string> addAddress = new Dictionary<string, string>();
-                    if (!addAddress.ContainsKey(item.EmailId))
-                    {
-                        addAddress.Add(item.EmailId, null);
-                    }
-                    var mailNotification = new MailNotificationRequest()
-                    {
-                        MessageRequest = new MessageRequest()
-                        {
-                            AccountInfo = new AccountInfo() { EmailId = item.EmailId, Organization_Id = item.OrganizationId },
-                            ToAddressList = addAddress,
-                            Subject = item.EmailSub,
-                            Description = item.EmailText,
-                            AlertNotification = new AlertNotification() { AlertName = item.AlertName, AlertLevel = urgencyTypeValue, AlertLevelCls = GetAlertTypeCls(urgencyTypeValue), DefinedThreshold = item.ThresholdValue, ActualThresholdValue = item.ValueAtAlertTime, AlertCategory = alertCategoryValue, VehicleGroup = item.Vehicle_group_vehicle_name, AlertDateTime = alertGenTime }
-                        },
-                        ContentType = EmailContentType.Html,
-                        EventType = EmailEventType.AlertNotificationEmail
-                    };
-
-                    isResult = await _emailNotificationManager.TriggerSendEmail(mailNotification);
-                    item.Status = isResult ? ((char)NotificationSendType.Successful).ToString() : ((char)NotificationSendType.Failed).ToString();
-                    await InsertNotificationSentHistory(item);
-                }
-                return isResult;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-        public async Task<bool> GetWebServiceCall(List<NotificationHistory> notificationHistoryWebService)
-        {
-            try
-            {
-                bool isResult = false;
-                foreach (var item in notificationHistoryWebService)
-                {
-                    WebServiceManager wsClient = new WebServiceManager();
-                    HeaderDetails headerDetails = new HeaderDetails();
-                    headerDetails.BaseUrl = item.WsUrl;
-                    headerDetails.Body = item.WsText;
-                    headerDetails.AuthType = item.WsAuthType;
-                    headerDetails.UserName = item.WsLogin;
-                    headerDetails.Password = item.WsPassword;
-                    headerDetails.ContentType = "application/json";
-                    HttpResponseMessage response = await wsClient.HttpClientCall(headerDetails);
-                    item.Status = response.StatusCode == System.Net.HttpStatusCode.OK ? ((char)NotificationSendType.Successful).ToString() : ((char)NotificationSendType.Failed).ToString();
-                    await InsertNotificationSentHistory(item);
-                    isResult = true;
-                }
-
-                return isResult;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        public async Task<bool> SendSMS(List<NotificationHistory> notificationHistory)
-        {
-            try
-            {
-                bool isResult = false;
-                foreach (var item in notificationHistory)
-                {
-                    string alertTypeValue = await GetTranslateValue(string.Empty, item.AlertTypeKey);
-                    string urgencyTypeValue = await GetTranslateValue(string.Empty, item.UrgencyTypeKey);
-                    string smsDescription = string.IsNullOrEmpty(item.SMS) ? item.SMS : item.SMS.Substring(0, 50);
-                    string smsBody = alertTypeValue + " " + item.ThresholdValue + " " + item.ThresholdValueUnitType + " " + item.ValueAtAlertTime + " " + urgencyTypeValue + " " + smsDescription;
-                    SMS sms = new SMS();
-                    sms.ToPhoneNumber = item.PhoneNo;
-                    sms.Body = smsBody;
-                    string status = await _smsManager.SendSMS(sms);
-                    item.Status = status.ToString();
-                    await InsertNotificationSentHistory(item);
-                    isResult = true;
-                }
-
-                return isResult;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
         public async Task<string> GetTranslateValue(string languageCode, string key)
         {
@@ -296,23 +168,6 @@ namespace net.atos.daf.ct2.notificationengine
         public async Task<string> GetLanguageCodePreference(string emailId)
         {
             return await _notificationIdentifierRepository.GetLanguageCodePreference(emailId);
-        }
-        private string GetAlertTypeCls(string alertType)
-        {
-            string alertTypeCls = string.Empty;
-            switch (alertType)
-            {
-                case "Critical":
-                    alertTypeCls = "alertCriticalLevel";
-                    break;
-                case "Warning":
-                    alertTypeCls = "alertWarningLevel";
-                    break;
-                case "Advisory":
-                    alertTypeCls = "alertAdvisoryLevel";
-                    break;
-            }
-            return alertTypeCls;
         }
     }
 }

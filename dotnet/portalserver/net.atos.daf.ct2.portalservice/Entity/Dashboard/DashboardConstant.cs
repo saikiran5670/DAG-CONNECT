@@ -15,7 +15,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Dashboard
         public const string GET_DASBHOARD_FAILURE_MSG = "No Result Found";
 
         public const string GET_ALERTLAST24HOURS_VALIDATION_VINREQUIRED_MSG = "Invalid VIN details.";
-        public const string GET_ALERTLAST24HOURS_SUCCESS_MSG = "Alert notification fetched successfully";
+        public const string GET_ALERTLAST24HOURS_SUCCESS_MSG = "Alert last 24hours details fetched successfully";
         public const string GET_ALERTLAST24HOURS_FAILURE_MSG = "No Result Found";
+
+        public const string GET_TODAY_LIVE_VEHICLE_SUCCESS_MSG = "Dashboard details fetched successfully";
+        public const string GET_TODAY_LIVE_VEHICLE_SUCCESS_MSG_VALIDATION_VINREQUIRED_MSG = "Invalid VIN details.";
     }
 }

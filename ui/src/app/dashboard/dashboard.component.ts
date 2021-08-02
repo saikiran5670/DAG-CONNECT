@@ -8,6 +8,7 @@ import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { MultiDataSet, Label, Color } from 'ng2-charts';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { ReportService } from '../services/report.service';
 import { TranslationService } from '../services/translation.service';
 
 @Component({
@@ -16,6 +17,13 @@ import { TranslationService } from '../services/translation.service';
   styleUrls: ['./dashboard.component.less'],
 })
 export class DashboardComponent implements OnInit {
+  localStLanguage: any;
+  accountOrganizationId: any;
+  globalSearchFilterData: any = JSON.parse(localStorage.getItem("globalSearchFilterData"));
+  accountId: any;
+  accountPrefObj : any;
+  showLoadingIndicator : boolean = false;
+  finalVinList : any =[];
   //--------- Pie chart ------------------//
   // doughnutChartData: MultiDataSet = [[55, 25, 20]];
   // doughnutChartLabels: Label[] = ['BMW', 'Ford', 'Tesla'];
@@ -115,11 +123,9 @@ export class DashboardComponent implements OnInit {
   //   },
   // ];
   // public stack_barChartLabels_overdue: Label[] = ['2020'];
-  localStLanguage: any;
-  accountOrganizationId: any;
   translationData: any = {};
 
-  constructor(public httpClient: HttpClient,private translationService: TranslationService) {}
+  constructor(public httpClient: HttpClient,private translationService: TranslationService,private reportService : ReportService) {}
 
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -136,10 +142,32 @@ export class DashboardComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
     });
+    this.globalSearchFilterData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+    this.showLoadingIndicator = true;
+    this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
+      this.hideloader();
+      this.processVins(tripData);
+
+    });
   }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+  }
+
+  processVins(tripData){
+    let _vinList = tripData['vehicleDetailsWithAccountVisibiltyList'].map(x=>x.vin);
+    if(_vinList.length > 0){
+      this.finalVinList = _vinList.filter((value, index, self) => self.indexOf(value) === index);
+    }
+  }
+  hideloader() {
+    // Setting display of spinner
+    this.showLoadingIndicator = false;
   }
 
 }

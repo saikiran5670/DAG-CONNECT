@@ -747,15 +747,14 @@ namespace net.atos.daf.ct2.reports
         #endregion
 
         #region Vehicle Performance Report
-        public async Task<EngineLoadDistributionTemplate> GetEngineLoadTemplate(int enginetypeid)
+        public async Task<VehiclePerformanceChartTemplate> GetVehPerformanceChartTemplate(VehiclePerformanceRequest vehiclePerformanceRequest)
         {
-            var enginetemplate = await _reportRepository.GetEngineLoadDistribution(enginetypeid);
+            var enginetemplate = await _reportRepository.GetVehPerformanceChartTemplate(vehiclePerformanceRequest);
 
-            EngineLoadDistributionTemplate engineloadtemplate = new EngineLoadDistributionTemplate();
             //We will bind data here
-            return engineloadtemplate;
+            return enginetemplate;
         }
-        public async Task<IEnumerable<VehiclePerformanceSummary>> GetVehPerformanceSummaryDetails(string vin)
+        public async Task<VehiclePerformanceSummary> GetVehPerformanceSummaryDetails(string vin)
         {
             return await _reportRepository.GetVehPerformanceSummaryDetails(vin);
 
