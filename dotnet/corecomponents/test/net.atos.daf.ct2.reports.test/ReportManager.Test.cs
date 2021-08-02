@@ -128,5 +128,19 @@ namespace net.atos.daf.ct2.reports.test
             var result = await _reportManager.GetFilteredFuelDeviation(fuelDeviationFilterRequest);
             Assert.IsNotNull(result);
         }
+
+        #region Vehicle Performance
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get vehicle performance Summary")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetVehPerformanceSummaryDetails()
+        {
+            var vin = "31";
+            var result = await _reportManager.GetVehPerformanceSummaryDetails(vin);
+            Assert.IsNotNull(result);
+        }
+
+        #endregion
     }
 }
