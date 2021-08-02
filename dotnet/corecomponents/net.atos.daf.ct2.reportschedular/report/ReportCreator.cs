@@ -110,9 +110,8 @@ namespace net.atos.daf.ct2.reportscheduler.report
             {
                 ColorMode = ColorMode.Color,
                 Orientation = GetOrientation(),
-                PaperSize = PaperKind.A4,
+                PaperSize = GetPaperKind(),
                 Margins = new MarginSettings { Top = 10 }
-                //Out = $@"C:\POC\All\{ ReportSchedulerData.ReportName }_{ ReportSchedulerData.Id }_{ DateTime.Now.ToString("ddMMyyyyHHmmss") }.pdf"
             };
             var objectSettings = new ObjectSettings
             {
@@ -140,7 +139,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
         }
         private PaperKind GetPaperKind()
         {
-            if (ReportKey == ReportNameConstants.REPORT_FLEET_FUEL || ReportKey == ReportNameConstants.REPORT_FLEET_UTILISATION)
+            if (ReportKey == ReportNameConstants.REPORT_FLEET_FUEL)
             {
                 return PaperKind.A3;
             }
@@ -185,9 +184,6 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 throw new Exception(string.Format(TripReportConstants.NO_VEHICLE_ASSOCIATION_MSG, vinData));
             }
             return vehicleList;
-            //var lst = new List<VehicleList>();
-            //lst.Add(vehicleList.Where(w => w.VIN == "XLR0998HGFFT76657").FirstOrDefault());
-            //return lst;
         }
 
         private async Task<byte[]> GetLogoImage()

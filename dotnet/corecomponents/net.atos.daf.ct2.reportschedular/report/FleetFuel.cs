@@ -242,7 +242,10 @@ namespace net.atos.daf.ct2.account.report
             if (VehicleLists.Count() == 1)
             {
                 var vehicle = VehicleLists.FirstOrDefault();
-                html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE_FLEET_FUEL_SINGLE
+                html.AppendFormat(ReportTemplateSingleto.
+                                    GetInstance()
+                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, EmailEventType.FleetFuel,
+                                                        _contentType, ReportSchedulerData.Code)
                                   , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                     : ImageSingleton.GetInstance().GetDefaultLogo()
                                   , await GenerateTableForSingle()
@@ -278,7 +281,10 @@ namespace net.atos.daf.ct2.account.report
             }
             else
             {
-                html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE_FLEET_FUEL
+                html.AppendFormat(ReportTemplateSingleto.
+                                    GetInstance()
+                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
+                                                        _contentType, ReportSchedulerData.Code)
                                   , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                     : ImageSingleton.GetInstance().GetDefaultLogo()
                                   , await GenerateTable()
