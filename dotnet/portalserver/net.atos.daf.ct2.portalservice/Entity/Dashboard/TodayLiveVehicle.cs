@@ -19,7 +19,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Dashboard
 
     public class TodayLiveVehicleRequest
     {
-        [Required(ErrorMessage = "VIN array should not be empty.")]
         public List<string> VINs { get; set; }
     }
 }

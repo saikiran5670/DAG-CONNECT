@@ -1,5 +1,5 @@
 <div class="bgtrans">
-  <!-- <form [formGroup]="fuelDeviationForm">
+  <form [formGroup]="fuelDeviationForm">
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
       <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
         <mat-expansion-panel-header class="full-width">
@@ -214,7 +214,7 @@
           </mat-expansion-panel-header>
           <div fxLayout="row" fxLayoutAlign="start" class="full-width margin-bottom-sm" fxLayoutGap="10px">
             <div style='padding: 10px 0px 20px 0px;' *ngIf='fuelDeviationChart.fuelIncreaseEvent.state' class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblEventIncreaseEvents || 'Event Increase Events' }}</span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblFuelIncreaseEvents || 'Fuel Increase Events' }}</span>
               <div style='padding: 0px 20px;' *ngIf='fuelDeviationChart.fuelIncreaseEvent.lineChart' class="chart-wrapper">
                 <canvas baseChart 
                   [datasets]="fuelIncLineChartData" 
@@ -226,10 +226,19 @@
                   [plugins]="fuelIncLineChartPlugins">
               </canvas>
               </div>
-              <div style='padding: 0px 20px;' *ngIf='!fuelDeviationChart.fuelIncreaseEvent.lineChart' class="chart-wrapper"></div>
+              <div style='padding: 0px 20px;' *ngIf='!fuelDeviationChart.fuelIncreaseEvent.lineChart' class="chart-wrapper">
+                <canvas baseChart 
+                  [datasets]="fuelIncBarChartData"
+                  [labels]="fuelIncBarChartLabels"
+                  [options]="fuelIncBarChartOptions"
+                  [plugins]="fuelIncBarChartPlugins"
+                  [legend]="fuelIncBarChartLegend"
+                  [chartType]="fuelIncBarChartType">
+                </canvas>
+              </div>
             </div>
             <div style='padding: 10px 0px 20px 0px;' *ngIf='fuelDeviationChart.fuelDecreaseEvent.state' class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblEventDecreaseEvents || 'Event Decrease Events' }}</span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblFuelDecreaseEvents || 'Fuel Decrease Events' }}</span>
               <div style='padding: 0px 20px;' *ngIf='fuelDeviationChart.fuelDecreaseEvent.lineChart' class="chart-wrapper">
                 <canvas baseChart 
                   [datasets]="fuelDecLineChartData" 
@@ -241,7 +250,16 @@
                   [plugins]="fuelDecLineChartPlugins">
                 </canvas>
               </div>
-              <div style='padding: 0px 20px;' *ngIf='!fuelDeviationChart.fuelDecreaseEvent.lineChart' class="chart-wrapper"></div>
+              <div style='padding: 0px 20px;' *ngIf='!fuelDeviationChart.fuelDecreaseEvent.lineChart' class="chart-wrapper">
+                <canvas baseChart 
+                  [datasets]="fuelDecBarChartData"
+                  [labels]="fuelDecBarChartLabels"
+                  [options]="fuelDecBarChartOptions"
+                  [plugins]="fuelDecBarChartPlugins"
+                  [legend]="fuelDecBarChartLegend"
+                  [chartType]="fuelDecBarChartType">
+                </canvas>
+              </div>
             </div>
           </div>
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
@@ -268,6 +286,7 @@
                 </canvas>
               </div>
             </div>
+            <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left"></div>
           </div>
         </mat-expansion-panel>
       </mat-card>
@@ -452,5 +471,5 @@
         </div>
       </mat-expansion-panel>
     </mat-card>
-  </form> -->
+  </form>
 </div>

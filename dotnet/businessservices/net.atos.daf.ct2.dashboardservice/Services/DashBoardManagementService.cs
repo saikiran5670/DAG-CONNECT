@@ -103,6 +103,11 @@ namespace net.atos.daf.ct2.dashboardservice
                     objTodayLiveVehicleResponse.Code = Responsecode.Success;
                     objTodayLiveVehicleResponse.Message = DashboardConstants.GET_TODAY_LIVE_VEHICLE_SUCCESS_MSG;
                 }
+                else
+                {
+                    objTodayLiveVehicleResponse.Code = Responsecode.Success;
+                    objTodayLiveVehicleResponse.Message = DashboardConstants.GET_TODAY_LIVE_VEHICLE_SUCCESS_NODATA_MSG;
+                }
                 return await Task.FromResult(objTodayLiveVehicleResponse);
             }
             catch (Exception ex)

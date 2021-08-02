@@ -164,12 +164,12 @@ namespace net.atos.daf.ct2.notificationengine
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "E").Count() > 0)
                 {
-                    //await SendEmailNotification(identifiedNotificationRec);
+                    await SendEmailNotification(identifiedNotificationRec);
                 }
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
                 {
-                    //await SendSMS(identifiedNotificationRec);
+                    await SendSMS(identifiedNotificationRec);
                 }
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").Count() > 0)
@@ -271,13 +271,14 @@ namespace net.atos.daf.ct2.notificationengine
                 {
                     string alertTypeValue = await GetTranslateValue(string.Empty, item.AlertTypeKey);
                     string urgencyTypeValue = await GetTranslateValue(string.Empty, item.UrgencyTypeKey);
-                    string smsDescription = string.IsNullOrEmpty(item.SMS) ? item.SMS : item.SMS.Substring(0, 50);
+                    string smsDescription = string.IsNullOrEmpty(item.SMS) ? item.SMS : item.SMS.Length <= 50 ? item.SMS : item.SMS.Substring(0, 50);
                     string smsBody = alertTypeValue + " " + item.ThresholdValue + " " + item.ThresholdValueUnitType + " " + item.ValueAtAlertTime + " " + urgencyTypeValue + " " + smsDescription;
                     SMS sms = new SMS();
                     sms.ToPhoneNumber = item.PhoneNo;
                     sms.Body = smsBody;
-                    string status = await _smsManager.SendSMS(sms);
-                    item.Status = status.ToString();
+                    var status = await _smsManager.SendSMS(sms);
+                    SMSStatus smsStatus = (SMSStatus)Enum.Parse(typeof(SMSStatus), status);
+                    item.Status = ((char)smsStatus).ToString();
                     await InsertNotificationSentHistory(item);
                     isResult = true;
                 }
