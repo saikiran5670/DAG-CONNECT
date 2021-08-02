@@ -2345,7 +2345,7 @@ setVehicleGroupAndVehiclePreSelection() {
       }
     case 'fuelconsumed': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.fuelConsumed);
+      sum += parseFloat(element.convertedFuelConsumed100Km);
       });
       sum= sum.toFixed(2)*1;
       break;
@@ -2359,7 +2359,7 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'fuelConsumption': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.convertedFuelConsumed100Km);
+      sum += parseFloat(element.convertedFuelConsumption);
       });
       sum= sum.toFixed(2)*1;
       break;

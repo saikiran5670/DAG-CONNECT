@@ -21,8 +21,8 @@ namespace net.atos.daf.ct2.driver
 
         #region Provisioning Data Service
 
-        Task<bool> GetCurrentDriver(ProvisioningDriverDataServiceRequest request);
-        Task<bool> GetDriverList(ProvisioningDriverDataServiceRequest request);
+        Task<ProvisioningDriverDataServiceResponse> GetCurrentDriver(ProvisioningDriverDataServiceRequest request);
+        Task<ProvisioningDriverDataServiceResponse> GetDriverList(ProvisioningDriverDataServiceRequest request);
 
         #endregion
     }

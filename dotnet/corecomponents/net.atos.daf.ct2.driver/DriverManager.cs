@@ -39,14 +39,16 @@ namespace net.atos.daf.ct2.driver
 
         #region Provisioning Data Service
 
-        public async Task<bool> GetCurrentDriver(ProvisioningDriverDataServiceRequest request)
+        public async Task<ProvisioningDriverDataServiceResponse> GetCurrentDriver(ProvisioningDriverDataServiceRequest request)
         {
-            return await _driverRepository.GetCurrentDriver(request);
+            await _driverRepository.GetCurrentDriver(request);
+            return new ProvisioningDriverDataServiceResponse();
         }
 
-        public async Task<bool> GetDriverList(ProvisioningDriverDataServiceRequest request)
+        public async Task<ProvisioningDriverDataServiceResponse> GetDriverList(ProvisioningDriverDataServiceRequest request)
         {
-            return await _driverRepository.GetDriverList(request);
+            await _driverRepository.GetDriverList(request);
+            return new ProvisioningDriverDataServiceResponse();
         }
 
         #endregion

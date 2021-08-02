@@ -75,7 +75,8 @@ namespace net.atos.daf.ct2.reports
         Task<FuelBenchmarkDetails> GetFuelBenchmarkDetails(FuelBenchmarkFilter fuelBenchmarkFilter);
         #endregion
         #region Vehicle Performance Report
-        Task<EngineLoadDistributionTemplate> GetEngineLoadTemplate(int enginetypeid);
+        Task<VehiclePerformanceChartTemplate> GetVehPerformanceChartTemplate(VehiclePerformanceRequest vehiclePerformanceRequest);
+        Task<VehiclePerformanceSummary> GetVehPerformanceSummaryDetails(string vin);
         #endregion
     }
 }

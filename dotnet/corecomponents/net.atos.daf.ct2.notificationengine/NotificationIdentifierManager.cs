@@ -164,12 +164,12 @@ namespace net.atos.daf.ct2.notificationengine
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "E").Count() > 0)
                 {
-                    //await SendEmailNotification(identifiedNotificationRec);
+                    await SendEmailNotification(identifiedNotificationRec);
                 }
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
                 {
-                    //await SendSMS(identifiedNotificationRec);
+                    await SendSMS(identifiedNotificationRec);
                 }
 
                 if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").Count() > 0)
@@ -202,6 +202,7 @@ namespace net.atos.daf.ct2.notificationengine
                     string alertCategoryValue = await GetTranslateValue(string.Empty, item.AlertCategoryKey);
                     string urgencyTypeValue = await GetTranslateValue(string.Empty, item.UrgencyTypeKey);
                     string languageCode = await GetLanguageCodePreference(item.EmailId);
+                    string alertGenTime = UTCHandling.GetConvertedDateTimeFromUTC(item.AlertGeneratedTime, "UTC", null);
                     Dictionary<string, string> addAddress = new Dictionary<string, string>();
                     if (!addAddress.ContainsKey(item.EmailId))
                     {
@@ -215,7 +216,7 @@ namespace net.atos.daf.ct2.notificationengine
                             ToAddressList = addAddress,
                             Subject = item.EmailSub,
                             Description = item.EmailText,
-                            AlertNotification = new AlertNotification() { AlertName = item.AlertName, AlertLevel = urgencyTypeValue, AlertLevelCls = GetAlertTypeCls(urgencyTypeValue), DefinedThreshold = item.ThresholdValue, ActualThresholdValue = item.ValueAtAlertTime, AlertCategory = alertCategoryValue, VehicleGroup = item.Vehicle_group_vehicle_name, DateTime = DateTime.Now }
+                            AlertNotification = new AlertNotification() { AlertName = item.AlertName, AlertLevel = urgencyTypeValue, AlertLevelCls = GetAlertTypeCls(urgencyTypeValue), DefinedThreshold = item.ThresholdValue, ActualThresholdValue = item.ValueAtAlertTime, AlertCategory = alertCategoryValue, VehicleGroup = item.Vehicle_group_vehicle_name, AlertDateTime = alertGenTime }
                         },
                         ContentType = EmailContentType.Html,
                         EventType = EmailEventType.AlertNotificationEmail
@@ -270,13 +271,14 @@ namespace net.atos.daf.ct2.notificationengine
                 {
                     string alertTypeValue = await GetTranslateValue(string.Empty, item.AlertTypeKey);
                     string urgencyTypeValue = await GetTranslateValue(string.Empty, item.UrgencyTypeKey);
-                    string smsDescription = string.IsNullOrEmpty(item.SMS) ? item.SMS : item.SMS.Substring(0, 50);
+                    string smsDescription = string.IsNullOrEmpty(item.SMS) ? item.SMS : item.SMS.Length <= 50 ? item.SMS : item.SMS.Substring(0, 50);
                     string smsBody = alertTypeValue + " " + item.ThresholdValue + " " + item.ThresholdValueUnitType + " " + item.ValueAtAlertTime + " " + urgencyTypeValue + " " + smsDescription;
                     SMS sms = new SMS();
                     sms.ToPhoneNumber = item.PhoneNo;
                     sms.Body = smsBody;
-                    string status = await _smsManager.SendSMS(sms);
-                    item.Status = status.ToString();
+                    var status = await _smsManager.SendSMS(sms);
+                    SMSStatus smsStatus = (SMSStatus)Enum.Parse(typeof(SMSStatus), status);
+                    item.Status = ((char)smsStatus).ToString();
                     await InsertNotificationSentHistory(item);
                     isResult = true;
                 }

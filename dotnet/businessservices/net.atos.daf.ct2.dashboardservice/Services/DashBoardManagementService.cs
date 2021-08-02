@@ -103,6 +103,11 @@ namespace net.atos.daf.ct2.dashboardservice
                     objTodayLiveVehicleResponse.Code = Responsecode.Success;
                     objTodayLiveVehicleResponse.Message = DashboardConstants.GET_TODAY_LIVE_VEHICLE_SUCCESS_MSG;
                 }
+                else
+                {
+                    objTodayLiveVehicleResponse.Code = Responsecode.Success;
+                    objTodayLiveVehicleResponse.Message = DashboardConstants.GET_TODAY_LIVE_VEHICLE_SUCCESS_NODATA_MSG;
+                }
                 return await Task.FromResult(objTodayLiveVehicleResponse);
             }
             catch (Exception ex)
@@ -114,5 +119,38 @@ namespace net.atos.daf.ct2.dashboardservice
                 });
             }
         }
+
+        #region utilization
+        public override async Task<FleetUtilizationResponse> GetFleetUtilizationDetails(FleetKpiFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                FleetKpiFilter fleetKpiFilter = new FleetKpiFilter
+                {
+                    StartDateTime = request.StartDateTime,
+                    EndDateTime = request.EndDateTime,
+                    VINs = request.VINs.ToList<string>()
+                };
+
+                // Pull details from db
+                dashboard.entity.FleetKpi reportDetails = await _dashBoardManager.GetFleetKPIDetails(fleetKpiFilter);
+
+                // Prepare and Map repository object to service object
+                FleetUtilizationResponse fleetutilizatioResponse = new FleetUtilizationResponse { Code = Responsecode.Success, Message = DashboardConstants.GET_FLEETUTILIZATION_DETAILS_SUCCESS_MSG };
+                string serializeDetails = JsonConvert.SerializeObject(reportDetails);
+                fleetutilizatioResponse.Fleetutilizationcharts = (JsonConvert.DeserializeObject<FleetUtilization>(serializeDetails));
+
+                return await Task.FromResult(fleetutilizatioResponse);
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(new FleetUtilizationResponse
+                {
+                    Code = Responsecode.InternalServerError,
+                    Message = ex.Message
+                });
+            }
+        }
+        #endregion
     }
 }
