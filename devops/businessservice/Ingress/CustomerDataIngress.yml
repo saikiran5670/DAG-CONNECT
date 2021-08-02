@@ -156,6 +156,10 @@ spec:
           serviceName: rfmsdataservice
           servicePort: 80
         path: /rfms/vehicles
+      - backend:
+          serviceName: portalservice
+          servicePort: 80
+        path: /dashboard
   tls:
   - hosts:
     - #{IngressURL}#
