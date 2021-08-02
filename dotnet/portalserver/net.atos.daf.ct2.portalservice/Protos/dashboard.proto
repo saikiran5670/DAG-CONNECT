@@ -80,7 +80,7 @@ message Alert24Hour{
 //start for utilization
 
 message FleetUtilizationResponse {
-    FleetUtilization Fleetutilizationcharts = 1;
+    repeated FleetUtilization Fleetutilizationcharts = 1;
     Responsecode code = 2;
     string message = 3;
 }
