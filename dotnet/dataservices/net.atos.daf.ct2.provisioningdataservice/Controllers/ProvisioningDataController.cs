@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
 {
     [ApiController]
     [Route("provisioning")]
-    //[Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
+    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class ProvisioningDataController : ControllerBase
     {
         private readonly IAuditTraillib _auditTrail;
@@ -245,7 +245,7 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ORGANIZATION_NOT_FOUND", parameter: nameof(request.OrgId));
 
             var orgs = await _accountManager.GetAccountOrg(account.Id);
-            if (orgs.Select(x => x.Id).ToArray().Contains(org.Id))
+            if (!orgs.Select(x => x.Id).ToArray().Contains(org.Id))
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "DRIVER_NOT_FOUND", parameter: nameof(request.Account));
 
             return new OkObjectResult(org.Id);
@@ -267,7 +267,7 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
                     return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "DRIVER_NOT_FOUND", parameter: nameof(request.DriverId));
 
                 var orgs = await _accountManager.GetAccountOrg(account.Id);
-                if (orgs.Select(x => x.Id).ToArray().Contains(org.Id))
+                if (!orgs.Select(x => x.Id).ToArray().Contains(org.Id))
                     return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "DRIVER_NOT_FOUND", parameter: nameof(request.Account));
             }
 
