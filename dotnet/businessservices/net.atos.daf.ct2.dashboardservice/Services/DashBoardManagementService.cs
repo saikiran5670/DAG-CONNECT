@@ -133,12 +133,12 @@ namespace net.atos.daf.ct2.dashboardservice
                 };
 
                 // Pull details from db
-                dashboard.entity.FleetKpi reportDetails = await _dashBoardManager.GetFleetKPIDetails(fleetKpiFilter);
+                var reportDetails = await _dashBoardManager.GetUtilizationchartsData(fleetKpiFilter);
 
                 // Prepare and Map repository object to service object
                 FleetUtilizationResponse fleetutilizatioResponse = new FleetUtilizationResponse { Code = Responsecode.Success, Message = DashboardConstants.GET_FLEETUTILIZATION_DETAILS_SUCCESS_MSG };
                 string serializeDetails = JsonConvert.SerializeObject(reportDetails);
-                fleetutilizatioResponse.Fleetutilizationcharts = (JsonConvert.DeserializeObject<FleetUtilization>(serializeDetails));
+                fleetutilizatioResponse.Fleetutilizationcharts.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetUtilization>>(serializeDetails));
 
                 return await Task.FromResult(fleetutilizatioResponse);
             }

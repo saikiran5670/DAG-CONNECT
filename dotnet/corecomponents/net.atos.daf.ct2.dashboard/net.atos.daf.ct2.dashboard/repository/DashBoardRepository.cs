@@ -165,7 +165,7 @@ namespace net.atos.daf.ct2.dashboard.repository
 						Count(distinct trip_id) as tripcount,
                         sum(etl_gps_distance) as totaldistance,
                         sum(etl_gps_trip_time) as totaltriptime,
-                        sum(veh_message_driving_time) as totaldrivingtime,
+                        sum(etl_gps_driving_time) as totaldrivingtime,
                         sum(idle_duration) as totalidleduration,
                         sum(veh_message_distance) as totalAveragedistanceperday,
                         sum(average_speed) as totalaverageSpeed,
@@ -188,7 +188,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                         CAST((totaldrivingtime) as float) as drivingtime ,
                         CAST((totaldistance) as float) as distance ,
                         CAST((totalidleduration) as float) as idleduration ,
-                        CAST((totalAveragedistanceperday) as float) as distanceperday ,
+                        CAST((totaldistance) as float) as distanceperday ,
                         CAST((totalaverageSpeed) as float) as Speed ,
                         CAST((totalaverageweightperprip) as float) as weight
                         from cte_workingdays";
