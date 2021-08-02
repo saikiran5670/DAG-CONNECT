@@ -1309,6 +1309,30 @@ export class ReportMapService {
     return gridData;
   }
 
+
+  // Fuel Benchmarking data conversions
+  getConvertedFuelBenchmarkingData(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
+    // gridData.forEach(element => {
+      gridData = JSON.parse(gridData);
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = this.getFuelConsumedUnits(gridData.fuelBenchmarkDetails.averageFuelConsumption, unitFormat);
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = this.getFuelConsumedUnits(gridData.fuelBenchmarkDetails.totalFuelConsumed, unitFormat);
+      gridData.fuelBenchmarkDetails.convertedTotalMileage = this.getFuelConsumed(gridData.fuelBenchmarkDetails.totalMileage, unitFormat);
+
+    // });
+    if(unitFormat == 'dunit_Imperial') {
+      gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " mi"
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " gal"
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " mpg"
+    }else if(unitFormat == 'dunit_Metric') {
+      gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " km"
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " ltr"
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " ltr/100km"
+    }
+    return gridData;
+  }
+
+
+
   getConvertedFleetFuelDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);

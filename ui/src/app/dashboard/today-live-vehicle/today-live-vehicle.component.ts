@@ -19,7 +19,7 @@ export class TodayLiveVehicleComponent implements OnInit {
   @Input() finalVinList : any;
   //Active Vehicles Chart
   doughnutChartLabels: Label[] = [('Target'), '', ''];
-  doughnutChartActiveVehicleData: MultiDataSet = [ [20, 80] ];
+  doughnutChartActiveVehicleData: MultiDataSet = [ [0, 100] ];
   doughnutChartType: ChartType = 'doughnut';
   doughnutColors: Color[] = [
     {
@@ -172,7 +172,7 @@ export class TodayLiveVehicleComponent implements OnInit {
 
 //Distance based chart
 doughnutChartDistanceBasedLabels: Label[] = [('Target'), '', ''];
-doughnutChartDistanceBasedData: MultiDataSet = [ [2, 98] ];
+doughnutChartDistanceBasedData: MultiDataSet = [ [0, 100] ];
 
  doughnutChartDistanceOptions: ChartOptions = {
   responsive: true,
@@ -206,7 +206,7 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
 
     var text = chart.config.options.title.text;
     // Draw text in center
-    ctx.fillText("2%", centerX, centerY);
+    ctx.fillText("0%", centerX, centerY);
   }
 }];
 
@@ -223,28 +223,41 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
   }
 
   getLiveVehicleData(){
-    this.dashboardService.getTodayLiveVehicleData(this.finalVinList).subscribe((vehicleData)=>{
+    let _vehiclePayload = {
+      "viNs": [ //this.finalVinList
+        "M4A14532",
+        "XLR0998HGFFT76657",
+        "XLRASH4300G1472w0",
+        "XLR0998HGFFT75550"
+      ]
+    }
+    this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
        // console.log(vehicleData);
-   
+       if(vehicleData){
+          this.liveVehicleData = vehicleData
+
+       }
     });
   
-    this.liveVehicleData = {
-      "VechicleCount": 0,
-      "Distance": 0,
-      "DrivingTime": 0,
-      "Drivers": 0,
-      "CriticalAlert": 0,
-      "ActiveVehicles": 10,
-      "TimeUtilization": 0,
-      "DistanceUtilization": 20
-    }
+  //   this.liveVehicleData ={
+  //     "distance": 0,
+  //     "drivingTime": 0,
+  //     "vehicleCount": 0,
+  //     "driverCount": 0,
+  //     "criticleAlertCount": 0,
+  //     "activeVehicles": 10,
+  //     "timeBaseUtilization": 0,
+  //     "distanceBaseUtilization": 0,
+  //     "code": 200,
+  //     "message": "No data found for Today live vehicle details."
+  // }
     this.updateCharts();
     
     
   }
 
   updateCharts(){
-    let activeVehiclePercent = this.dashboardService.calculatePercentage(this.liveVehicleData.ActiveVehicles,10)
+    let activeVehiclePercent = this.dashboardService.calculatePercentage(this.liveVehicleData.activeVehicles,10)
     this.doughnutChartActiveVehicleData = [[activeVehiclePercent,(100 - activeVehiclePercent)]]
 
     this.doughnutChartPlugins = [{
@@ -267,7 +280,7 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
 
     // update time based chart
 
-    let timeBasedPercent = this.dashboardService.calculatePercentage(this.liveVehicleData.TimeUtilization,10)
+    let timeBasedPercent = this.dashboardService.calculatePercentage(this.liveVehicleData.timeBaseUtilization,10)
     this.doughnutChartTimeBasedData = [[timeBasedPercent,(100 - timeBasedPercent)]]
 
     this.doughnutChartTimePlugins = [{
@@ -290,7 +303,7 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
 
     //Distance Based Chart
     
-    let distanceBasedPercent = this.dashboardService.calculatePercentage(this.liveVehicleData.DistanceUtilization,40)
+    let distanceBasedPercent = this.dashboardService.calculatePercentage(this.liveVehicleData.distanceBaseUtilization,40)
     this.doughnutChartDistanceBasedData = [[distanceBasedPercent,(100 - distanceBasedPercent)]]
 
     this.doughnutChartDistancePlugins = [{

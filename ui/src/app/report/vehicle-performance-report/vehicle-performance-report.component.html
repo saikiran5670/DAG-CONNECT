@@ -1,5 +1,5 @@
 <div class="bgtrans">
-    <app-search-criteria [translationData]='translationData' (showSearchResult)="showSearchResult($event)">
+    <app-search-criteria [translationData]='translationData' (showSearchResult)="showSearchResult($event)" (hideSearchResult)="hideSearchResult()">
     </app-search-criteria>
 
     <!-- Details Panel -->
@@ -7,31 +7,37 @@
         <mat-expansion-panel [(expanded)]="detailsExpandPanel" class="full-width" fxLayoutGap="10px">
             <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                    <span *ngIf="search" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
                         translationData[searchResult.lblDetails] || searchResult.performanceType + 'Details' }}</span>
+                    <span *ngIf="!search" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                        translationData.lblVehiclePerformanceDetails || 'Vehicle Performance Details' }}</span>
                 </mat-panel-title>
             </mat-expansion-panel-header>
 
-            <!-- <div *ngIf='initData.length == 0'>
-        <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record Found!' }}</div>
-        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
-      </div> *ngIf='initData.length > 0'   [ngClass]="{'reportTable': displayedColumns.length > 7}"-->
+            <div *ngIf='!search'>
+                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row"
+                    fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No
+                    Record Found!' }}</div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
+                    translationData.lblSelectionMessage || 'Please select and search required fields from top to view
+                    the details' }}</div>
+            </div>
 
-            <div>
+            <div *ngIf="search">
                 <div style='padding: 20px; margin-bottom: 10px; background: #bee3f8;'>
                     <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <span>
                                 <span>{{ translationData.lblFrom || 'From' }}: </span>
                                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-                                    searchResult.fromDate }}</span>
+                                    searchResult.startDate  }}</span>
                             </span>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <span>
                                 <span>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}: </span>
                                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-                                    searchResult.vehGroupName }}</span>
+                                    searchResult.vehicleGroup }}</span>
                             </span>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -72,7 +78,7 @@
     </mat-card>
 
     <!-- Charts Panel -->
-    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <mat-card *ngIf="search" class='mat-elevation-z no-padding margin-bottom-xlg'>
         <mat-expansion-panel [(expanded)]="chartsExpandPanel" class="full-width" fxLayoutGap="10px">
             <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
@@ -83,7 +89,7 @@
 
             <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                    <app-pie-chart></app-pie-chart>
+                    <app-heat-bubble-chart></app-heat-bubble-chart>
                 </div>
                 <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
                     <app-pie-chart></app-pie-chart>

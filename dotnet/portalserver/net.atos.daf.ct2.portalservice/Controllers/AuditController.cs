@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Greeter.GreeterClient _greeterClient;
 
         //Constructor
-        public AuditController(AuditService.AuditServiceClient auditService , Greeter.GreeterClient greeterClient)
+        public AuditController(AuditService.AuditServiceClient auditService, Greeter.GreeterClient greeterClient)
         {
             _auditService = auditService;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

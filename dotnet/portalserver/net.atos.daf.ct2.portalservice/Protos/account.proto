@@ -60,7 +60,7 @@ service AccountService
   
  
   // Add Role
-   rpc AddRoles (AccountRoleRequest) returns (AccountRoleResponse);
+  rpc AddRoles (AccountRoleRequest) returns (AccountRoleResponse);
   rpc RemoveRoles (AccountRoleDeleteRequest) returns (AccountRoleResponse);
   rpc GetRoles (AccountRoleDeleteRequest) returns (AccountRoles);
   rpc GenerateSSO (TokenSSORequest) returns (SSOToken);
@@ -242,6 +242,8 @@ message AccountFilter {
         int32 IconId =12;
         string IconByte =13;
         int32 CreatedBy=14;
+        int32 PageRefreshTime=15;
+
     }
     message AccountPreferenceResponse
     {
@@ -508,6 +510,7 @@ message DeleteAccessRelationRequest
     bool IsGroup=2;    
     int32 OrganizationId=3;    
 }
+
 message TokenSSORequest {
     string Email=1;
     int32 AccountID=2;

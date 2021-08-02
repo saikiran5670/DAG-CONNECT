@@ -29,9 +29,6 @@ namespace net.atos.daf.ct2.kafkacdc
         }
 
         public Task<bool> GetVehicleAlertRefFromAlertConfiguration(int alertId, string operation) => ExtractAndSyncVehicleAlertRefByAlertIds(alertId, operation);
-        public Task GetVehicleAlertRefFromAccountVehicleGroupMapping(List<int> vins, List<int> accounts) => Task.CompletedTask;
-        public Task GetVehicleAlertRefFromSubscriptionManagement(List<int> subscriptionIds) => Task.CompletedTask;
-        public Task GetVehicleAlertRefFromVehicleManagement(List<int> vins) => Task.CompletedTask;
         internal async Task<bool> ExtractAndSyncVehicleAlertRefByAlertIds(int alertId, string operation)
         {
             bool result = false;
@@ -44,8 +41,8 @@ namespace net.atos.daf.ct2.kafkacdc
             {
                 alertIds.Add(alertId);
                 // get all the vehicles & alert mapping under the vehicle group for given alert id
-                List<VehicleAlertRef> masterDBVehicleAlerts = await _vehicleAlertRepository.GetVehiclesFromAlertConfiguration(alertIds);
-                List<VehicleAlertRef> datamartVehicleAlerts = await _vehicleAlertRepository.GetVehicleAlertRefByAlertIds(alertIds);
+                List<VehicleAlertRef> masterDBVehicleAlerts = await _vehicleAlertRepository.GetVehiclesFromAlertConfiguration(alertId);
+                List<VehicleAlertRef> datamartVehicleAlerts = await _vehicleAlertRepository.GetVehicleAlertRefByAlertIds(alertId);
                 // Preparing data for sending to kafka topic
                 unmodifiedMapping = datamartVehicleAlerts.Where(datamart => masterDBVehicleAlerts.Any(master => master.VIN == datamart.VIN && master.AlertId == datamart.AlertId)).ToList().Distinct().ToList();
 

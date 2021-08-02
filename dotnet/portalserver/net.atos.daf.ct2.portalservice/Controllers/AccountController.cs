@@ -793,10 +793,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // Validation                 
                 if ((request.RefId <= 0) || (request.LanguageId <= 0) || (request.TimezoneId <= 0) || (request.CurrencyId <= 0) ||
                     (request.UnitId <= 0) || (request.VehicleDisplayId <= 0) || (request.DateFormatTypeId <= 0) || (request.TimeFormatId <= 0) ||
-                    (request.LandingPageDisplayId <= 0)
+                    (request.LandingPageDisplayId <= 0) || (request.PageRefreshTime <= 0)
                     )
                 {
-                    return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatTypeId, TimeFormatId, LandingPageDisplayId is required");
+                    return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatTypeId, TimeFormatId, LandingPageDisplayId, PageRefreshTime is required");
                 }
                 var accountPreference = new AccountBusinessService.AccountPreference();
                 var preference = new AccountBusinessService.AccountPreferenceResponse();
@@ -843,10 +843,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // Validation                 
                 if ((request.Id <= 0) || (request.LanguageId <= 0) || (request.TimezoneId <= 0) || (request.CurrencyId <= 0) ||
                     (request.UnitId <= 0) || (request.VehicleDisplayId <= 0) || (request.DateFormatTypeId <= 0) || (request.TimeFormatId <= 0) ||
-                    (request.LandingPageDisplayId <= 0)
+                    (request.LandingPageDisplayId <= 0) || (request.PageRefreshTime <= 0)
                     )
                 {
-                    return StatusCode(400, "The Preference Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
+                    return StatusCode(400, "The Preference Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId, PageRefreshTime is required");
                 }
                 request.CreatedBy = _userDetails.AccountId;
                 var preference = new AccountBusinessService.AccountPreferenceResponse();

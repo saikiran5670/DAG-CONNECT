@@ -297,20 +297,26 @@
       </div>
       <form [formGroup]="userSettingsForm" *ngIf="editGeneralSettingsFlag">
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm mobile-view" fxLayoutGap="10px">
-          <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.language}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
+          <div  class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblLanguage || 'Language' }}</mat-label>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-select placeholder="Language" formControlName="language" (selectionChange)="onDropdownChange($event, 'language')">
+             <mat-form-field appearance="outline" class="full-width">
+              <mat-select placeholder="Language" formControlName="language" (selectionChange)="onDropdownChange($event, 'language')"> 
+                <mat-option>
+                  <ngx-mat-select-search></ngx-mat-select-search>
+                </mat-option>
                 <mat-option *ngFor="let rer of languageDropdownData" [value]="rer.id">
                   {{ rer.value }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
           </div>
-          <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.timeZone}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
+          <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblTimeZone || 'Time Zone' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
               <mat-select placeholder="Time Zone" formControlName="timeZone" (selectionChange)="onDropdownChange($event, 'timeZone')">
+                <mat-option>
+                  <ngx-mat-select-search></ngx-mat-select-search>
+                </mat-option>
                 <mat-option *ngFor="let rer of timezoneDropdownData" [value]="rer.id">
                   {{ rer.value }}
                 </mat-option>

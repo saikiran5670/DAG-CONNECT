@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.data;
@@ -337,11 +339,50 @@ namespace net.atos.daf.ct2.driver
 
         #region Provisioning Data Service
 
-        public Task<bool> GetCurrentDriver(ProvisioningDriverDataServiceRequest request)
+        public async Task<ProvisioningDriver> GetCurrentDriver(ProvisioningDriverDataServiceRequest request)
         {
             try
             {
-                return Task.FromResult(true);
+                var parameters = new DynamicParameters();
+                parameters.Add("@VIN", request.VIN);
+                parameters.Add("@StartTimestamp", request.StartTimestamp);
+                parameters.Add("@EndTimestamp", request.EndTimestamp);
+
+                StringBuilder query =
+                    new StringBuilder(@"select driver1_id as DriverId from livefleet.livefleet_current_trip_statistics where VIN = @VIN");
+
+                if (request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
+                {
+                    query.Append(" and start_time_stamp >= @StartTimestamp and (end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL)");
+                }
+                else if (request.StartTimestamp.HasValue && !request.EndTimestamp.HasValue)
+                {
+                    query.Append(" and start_time_stamp >= @StartTimestamp and (end_time_stamp IS NULL or 1=1)");
+                }
+                else if (!request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
+                {
+                    query.Append(" and end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
+                }
+
+                query.Append(" order by end_time_stamp desc LIMIT 1");
+
+                var provisioningDriver = await _dataMartdataAccess.QueryFirstOrDefaultAsync<ProvisioningDriver>(query.ToString(), parameters);
+
+                if (provisioningDriver != null)
+                {
+                    parameters = new DynamicParameters();
+                    parameters.Add("@DriverId", provisioningDriver.DriverId);
+
+                    string queryDriver = @"select acc.email as Account, drv.first_name as FirstName, drv.last_name as LastName 
+                                            from master.driver drv inner join master.account acc on drv.email = acc.email
+                                            where drv.driver_id_ext = @DriverId";
+                    var driver = await _dataMartdataAccess.QueryFirstOrDefaultAsync<ProvisioningDriver>(queryDriver, parameters);
+
+                    provisioningDriver.FirstName = driver?.FirstName ?? string.Empty;
+                    provisioningDriver.LastName = driver?.LastName ?? string.Empty;
+                }
+
+                return provisioningDriver;
             }
             catch (Exception)
             {
@@ -349,11 +390,56 @@ namespace net.atos.daf.ct2.driver
             }
         }
 
-        public Task<bool> GetDriverList(ProvisioningDriverDataServiceRequest request)
+        public async Task<IEnumerable<ProvisioningDriver>> GetDriverList(ProvisioningDriverDataServiceRequest request)
         {
             try
             {
-                return Task.FromResult(true);
+                var parameters = new DynamicParameters();
+                IEnumerable<ProvisioningDriver> provisioningDrivers;
+                parameters.Add("@VINs", string.Join(',', request.VINs));
+                parameters.Add("@StartTimestamp", request.StartTimestamp);
+                parameters.Add("@EndTimestamp", request.EndTimestamp);
+
+                StringBuilder query =
+                    new StringBuilder(@"select driver1_id as DriverId 
+                                        from livefleet.livefleet_current_trip_statistics where VIN in (@VINs)");
+
+                if (request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
+                {
+                    query.Append(" and start_time_stamp >= @StartTimestamp and (end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL)");
+                }
+                else if (request.StartTimestamp.HasValue && !request.EndTimestamp.HasValue)
+                {
+                    query.Append(" and start_time_stamp >= @StartTimestamp and (end_time_stamp IS NULL or 1=1)");
+                }
+                else if (!request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
+                {
+                    query.Append(" and end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
+                }
+
+                query.Append(" order by end_time_stamp desc");
+
+                provisioningDrivers = await _dataMartdataAccess.QueryAsync<ProvisioningDriver>(query.ToString(), parameters);
+
+                if (provisioningDrivers != null && provisioningDrivers.Count() > 0)
+                {
+                    parameters = new DynamicParameters();
+                    parameters.Add("@DriverIds", string.Join(',', provisioningDrivers.Select(x => x.DriverId).ToArray()));
+
+                    string queryDriver = @"select acc.email as Account, drv.first_name as FirstName, drv.last_name as LastName 
+                                            from master.driver drv inner join master.account acc on drv.email = acc.email
+                                            where drv.driver_id_ext IN (@DriverIds)";
+                    var drivers = await _dataAccess.QueryAsync<ProvisioningDriver>(queryDriver, parameters);
+
+                    foreach (var provisioningDriver in provisioningDrivers)
+                    {
+                        var driver = drivers.Where(x => x.DriverId.Equals(provisioningDriver.DriverId)).FirstOrDefault();
+                        provisioningDriver.FirstName = driver?.FirstName ?? string.Empty;
+                        provisioningDriver.LastName = driver?.LastName ?? string.Empty;
+                    }
+                }
+
+                return provisioningDrivers;
             }
             catch (Exception)
             {
