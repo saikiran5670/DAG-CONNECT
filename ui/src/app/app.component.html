@@ -41,8 +41,12 @@
                                 notifications_none</mat-icon>
                             <span class="badge">0</span>
                         </a>
-                        <mat-select formControlName="languageSelection" class="matSelect"
+                         <mat-select formControlName="languageSelection" class="matSelect"
                             (selectionChange)="onLanguageChange($event.value)">
+                            
+                            <mat-option>
+                                <ngx-mat-select-search></ngx-mat-select-search>
+                            </mat-option>
                             <mat-option *ngFor="let lang of languages" [value]="lang.id" matTooltip="{{lang.name}}">
                                 &nbsp;{{ lang.name }}
                             </mat-option>

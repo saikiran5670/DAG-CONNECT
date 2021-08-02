@@ -13,9 +13,10 @@ namespace net.atos.daf.ct2.reports.repository
             var parameter = new DynamicParameters();
             var vehiclePerformanceChartTemplate = new VehiclePerformanceChartTemplate();
             var vehSummary = await GetVehPerformanceSummaryDetails(vehiclePerformanceRequest.Vin);
+            vehiclePerformanceChartTemplate.VehiclePerformanceSummary = vehSummary;
             parameter.Add("@enginetype", vehSummary.EngineType);
             string queryEngineLoadData = @"";
-            List<VehChartTemplate> lstengion = (List<VehChartTemplate>)await _dataAccess.QueryAsync<VehChartTemplate>(queryEngineLoadData, parameter);
+            List<EngineLoadType> lstengion = (List<EngineLoadType>)await _dataAccess.QueryAsync<EngineLoadType>(queryEngineLoadData, parameter);
             vehiclePerformanceChartTemplate.VehChartList = lstengion;
             return vehiclePerformanceChartTemplate;
         }
@@ -25,10 +26,9 @@ namespace net.atos.daf.ct2.reports.repository
             var parameter = new DynamicParameters();
             parameter.Add("@vin", vin);
             IEnumerable<VehiclePerformanceSummary> summary;
-            string query = @"SELECT vin, vid, engine_type, model_type, name FROM master.vehicle";
+            string query = @"SELECT vin as Vin,  engine_type as EngineType, model_type as ModelType, name as VehicleName FROM master.vehicle where vin = @vin";
             summary = await _dataMartdataAccess.QueryAsync<VehiclePerformanceSummary>(query, parameter);
             return summary as VehiclePerformanceSummary;
-
 
         }
     }

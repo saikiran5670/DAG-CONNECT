@@ -5,19 +5,19 @@ namespace net.atos.daf.ct2.reports.entity
     public class VehiclePerformanceChartTemplate
     {
         public VehiclePerformanceSummary VehiclePerformanceSummary { get; set; }
-        public List<VehChartTemplate> VehChartList { get; set; }
+        public List<EngineLoadType> VehChartList { get; set; }
     }
-    public class VehChartTemplate
+    public class EngineLoadType
     {
-        public string XAxisValue { get; set; }
-        public string YYxisValue { get; set; }
-        public int KpiType { get; set; }
-        public string EngineName { get; set; }
-        public string ModelName { get; set; }
-        public string VehiclePerformanceType { get; set; }
-        public int VehPerToYIndex { get; set; }
-        public int EngineTypeId { get; set; }
-        public string AxisType { get; set; }
-        public string AxisValue { get; set; }
+        public string Enginetype { get; set; }
+        public string TemplateLableKey { get; set; }
+        public bool IsDefault { get; set; }
+        public List<Chartdata> Chartdata { get; set; }
+    }
+    public class Chartdata
+    {
+        public int Index { get; set; }
+        public string Range { get; set; }
+        public List<string> Axisvalues { get; set; }
     }
 }

@@ -20,7 +20,9 @@
     "corridorRESTServiceURL": "https://api.dev1.ct2.atos.net/corridor",
     "authZuoraSSOServiceURL": "https://api.dev1.ct2.atos.net/account/sso",
     "reportRESTServiceURL": "https://api.dev1.ct2.atos.net/report",
-    "reportSchedulerRESTServiceURL" : "https://api.dev1.ct2.atos.net/reportscheduler"
+    "reportSchedulerRESTServiceURL" : "https://api.dev1.ct2.atos.net/reportscheduler",
+    "dashboardRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/dashboard"
+
   },
   "hereMap":{
     "app_id":"LRJH9LmTMNbwteXRz03L",
