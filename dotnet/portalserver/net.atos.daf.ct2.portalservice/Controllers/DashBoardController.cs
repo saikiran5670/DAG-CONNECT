@@ -23,6 +23,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         private readonly ILog _logger;
         private readonly DashboardService.DashboardService.DashboardServiceClient _dashboarClient;
+        private readonly string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly AuditHelper _auditHelper;
 
 
@@ -151,6 +152,43 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.Error(null, ex);
                 return StatusCode(500, string.Format("{0} {1}", ex.Message, ex.StackTrace));
+            }
+        }
+
+        [HttpGet]
+        [Route("vins")]
+        public async Task<IActionResult> GetVisibleVins(int accountId, int organizationId)
+        {
+            try
+            {
+                if (!(accountId > 0)) return BadRequest(DashboardConstant.ACCOUNT_REQUIRED_MSG);
+                if (!(organizationId > 0)) return BadRequest(DashboardConstant.ORGANIZATION_REQUIRED_MSG);
+                var response = await _dashboarClient.GetVisibleVinsAsync(
+                                              new VehicleListRequest { AccountId = accountId, OrganizationId = organizationId });
+
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (response.Code == Responsecode.Success)
+                    return Ok(response);
+                if (response.Code == Responsecode.Failed)
+                    return StatusCode((int)response.Code, response);
+                if (response.Code == Responsecode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(DashboardConstant.GET_VIN_VISIBILITY_FAILURE_MSG2, accountId, organizationId, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                //await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                // "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                // $"GetVinsFromTripStatisticsAndVehicleDetails method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
+                //  Request);
+                // check for fk violation
+                _logger.Error(null, ex);
+                if (ex.Message.Contains(_socketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
     }

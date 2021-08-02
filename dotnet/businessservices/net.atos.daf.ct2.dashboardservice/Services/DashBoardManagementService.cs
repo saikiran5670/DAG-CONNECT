@@ -8,6 +8,9 @@ using log4net;
 using net.atos.daf.ct2.dashboard;
 using net.atos.daf.ct2.dashboard.entity;
 using net.atos.daf.ct2.dashboardservice.entity;
+using net.atos.daf.ct2.reports;
+using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.visibility;
 using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.dashboardservice
@@ -16,6 +19,8 @@ namespace net.atos.daf.ct2.dashboardservice
     {
         private readonly ILog _logger;
         private readonly IDashBoardManager _dashBoardManager;
+        private readonly IReportManager _reportManager;
+        private readonly IVisibilityManager _visibilityManager;
 
         public DashBoardManagementService(IDashBoardManager dashBoardManager)
         {
@@ -149,6 +154,56 @@ namespace net.atos.daf.ct2.dashboardservice
                     Code = Responsecode.InternalServerError,
                     Message = ex.Message
                 });
+            }
+        }
+        #endregion
+
+        #region Fetch Visible VINs from data mart trip_statistics
+        public override async Task<VehicleListAndDetailsResponse> GetVisibleVins(VehicleListRequest request, ServerCallContext context)
+        {
+            var response = new VehicleListAndDetailsResponse();
+            try
+            {
+                var vehicleDeatilsWithAccountVisibility =
+                                await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+
+                if (vehicleDeatilsWithAccountVisibility.Count() == 0)
+                {
+                    response.Message = string.Format(DashboardConstants.GET_VIN_VISIBILITY_FAILURE_MSG, request.AccountId, request.OrganizationId);
+                    response.Code = Responsecode.Failed;
+                    return response;
+                }
+
+                var vinList = await _reportManager
+                                        .GetVinsFromTripStatistics(vehicleDeatilsWithAccountVisibility
+                                                                       .Select(s => s.Vin).Distinct());
+                if (vinList.Count() == 0)
+                {
+                    response.Message = string.Format(DashboardConstants.GET_VIN_TRIP_NOTFOUND_MSG, request.AccountId, request.OrganizationId);
+                    response.Code = Responsecode.Failed;
+                    response.VinTripList.Add(new List<VehicleFromTripDetails>());
+                    return response;
+                }
+                var res = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                response.VehicleDetailsWithAccountVisibiltyList.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(res)
+                    );
+                response.Message = DashboardConstants.GET_VIN_SUCCESS_MSG;
+                response.Code = Responsecode.Success;
+                res = JsonConvert.SerializeObject(vinList);
+                response.VinTripList.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleFromTripDetails>>(res)
+                    );
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                response.Message = ex.Message;
+                response.Code = Responsecode.InternalServerError;
+                response.VehicleDetailsWithAccountVisibiltyList.Add(new List<VehicleDetailsWithAccountVisibilty>());
+                response.VinTripList.Add(new List<VehicleFromTripDetails>());
+                return await Task.FromResult(response);
             }
         }
         #endregion
