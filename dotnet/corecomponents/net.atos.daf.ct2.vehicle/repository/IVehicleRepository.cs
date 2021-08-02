@@ -63,6 +63,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         Task<IEnumerable<VisibilityVehicle>> GetDynamicOwnedVehicleForVisibility(int OrganizationId);
         Task<IEnumerable<VisibilityVehicle>> GetDynamicOEMVehiclesForVisibility(int vehicleGroupId);
         Task<IEnumerable<VehicleGroupDetails>> GetVehicleGroupsViaAccessRelationship(int accountId, int orgId);
+        Task<IEnumerable<VehicleGroupDetails>> GetVehicleGroupsByOrganization(int orgId);
         Task<IEnumerable<VisibilityVehicle>> GetGroupTypeVehicles(int vehicleGroupId);
         Task<VehicleCountFilter> GetGroupFilterDetail(int vehicleGroupId, int orgnizationId);
 
@@ -73,7 +74,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         // Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime);
         // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
 
-        Task<bool> GetCurrentVehicle(ProvisioningVehicleDataServiceRequest request);
-        Task<bool> GetVehicleList(ProvisioningVehicleDataServiceRequest request);
+        Task<ProvisioningVehicle> GetCurrentVehicle(ProvisioningVehicleDataServiceRequest request);
+        Task<IEnumerable<ProvisioningVehicle>> GetVehicleList(ProvisioningVehicleDataServiceRequest request);
     }
 }

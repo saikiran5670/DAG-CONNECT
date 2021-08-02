@@ -43,6 +43,7 @@ namespace net.atos.daf.ct2.vehicle
         #region Vehicle Visibility
 
         Task<List<VisibilityVehicle>> GetVisibilityVehicles(int accountId, int orgId);
+        Task<List<VisibilityVehicle>> GetVisibilityVehiclesByOrganization(int orgId);
 
         #endregion
 
