@@ -18,6 +18,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   @Input() translationData: any = {};
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Output() showSearchResult = new EventEmitter();
+  @Output() hideSearchResult = new EventEmitter();
 
   localStLanguage;
   accountPrefObj;
@@ -25,6 +26,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   accountId;
   searchForm: FormGroup;
   searchExpandPanel: boolean = true;
+  formSubmitted: boolean = false;
   selectionTab: string = 'today';
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59';
@@ -243,9 +245,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.vehicleGrpDD = [];
     let currentStartTime = Util.convertDateToUtc(this.searchForm.get('startDate').value);  // extra addded as per discuss with Atul
     let currentEndTime = Util.convertDateToUtc(this.searchForm.get('endDate').value); // extra addded as per discuss with Atul
-    console.log(`${currentStartTime} is at utc ${currentEndTime}`)
-    console.log(`${this.searchForm.get('startDate').value} is at actual ${this.searchForm.get('endDate').value}`)
-    if (this.wholeTripData.vinTripList.length > 0) {
+    if (this.wholeTripData && this.wholeTripData.vinTripList && this.wholeTripData.vinTripList.length > 0) {
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if (filterVIN.length > 0) {
         distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
@@ -268,7 +268,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       }
     }
     this.vehicleGroupListData = finalVINDataList;
-    if (this.vehicleGroupListData.length > 0) {
+    if (this.vehicleGroupListData && this.vehicleGroupListData.length > 0) {
       let _s = this.vehicleGroupListData.map(item => item.vehicleGroupId).filter((value, index, self) => self.indexOf(value) === index);
       if (_s.length > 0) {
         _s.forEach(element => {
@@ -466,13 +466,75 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
+  formStartDate(date: any) {
+    let h = (date.getHours() < 10) ? ('0' + date.getHours()) : date.getHours();
+    let m = (date.getMinutes() < 10) ? ('0' + date.getMinutes()) : date.getMinutes();
+    let s = (date.getSeconds() < 10) ? ('0' + date.getSeconds()) : date.getSeconds();
+    let _d = (date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate();
+    let _m = ((date.getMonth() + 1) < 10) ? ('0' + (date.getMonth() + 1)) : (date.getMonth() + 1);
+    let _y = (date.getFullYear() < 10) ? ('0' + date.getFullYear()) : date.getFullYear();
+    let _date: any;
+    let _time: any;
+    if (this.prefTimeFormat == 12) {
+      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours() - 12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
+    } else {
+      _time = `${h}:${m}:${s}`;
+    }
+    switch (this.prefDateFormat) {
+      case 'ddateformat_dd/mm/yyyy': {
+        _date = `${_d}/${_m}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        _date = `${_d}-${_m}-${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        _date = `${_m}-${_d}-${_y} ${_time}`;
+        break;
+      }
+      default: {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+      }
+    }
+    return _date;
+  }
+
   onReset() {
+    this.formSubmitted = false;
     this.resetDropdownValues();
     this.selectionTimeRange('today');
+    this.hideSearchResult.emit();
   }
 
   onSearch() {
-    this.showSearchResult.emit(this.searchForm.value);
+    this.formSubmitted = true;
+    if(this.searchForm.valid) {
+      let vehName: any = '';
+      let vehGrpName: any = '';
+      let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.searchForm.get('vehicleGroup').value));
+      if (vehGrpCount.length > 0) {
+        vehGrpName = vehGrpCount[0].vehicleGroupName;
+      }
+      let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.searchForm.get('vehicleName').value));
+      if (vehCount.length > 0) {
+        vehName = vehCount[0].vehicleName;
+      }
+      let searchData = {
+        startDate: this.formStartDate(this.searchForm.get('startDate').value),
+        endDate: this.formStartDate(this.searchForm.get('endDate').value),
+        vehicleGroupId: this.searchForm.get('vehicleGroup').value,
+        vehicleNameId: this.searchForm.get('vehicleName').value,
+        vehicleGroup: vehGrpName,
+        vehicleName: vehName,
+        performanceType: this.searchForm.get('performanceType').value
+      }
+      this.showSearchResult.emit(searchData);
+    }
   }
 
 }

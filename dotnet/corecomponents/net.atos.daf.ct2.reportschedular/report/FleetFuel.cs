@@ -208,7 +208,7 @@ namespace net.atos.daf.ct2.account.report
                     });
 
             }
-
+            TotalNumberOfTrips = fleetFuelPdfTripDetails.Count;
             TotalDistance = fleetFuelPdfTripDetails.Sum(s => s.Distance);
             TotalFuelConsumed = fleetFuelPdfTripDetails.Sum(s => s.FuelConsumed);
             TotalFuelConsumption = fleetFuelPdfTripDetails.Sum(s => s.FuelConsumption);
@@ -244,7 +244,7 @@ namespace net.atos.daf.ct2.account.report
                 var vehicle = VehicleLists.FirstOrDefault();
                 html.AppendFormat(ReportTemplateSingleto.
                                     GetInstance()
-                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, EmailEventType.FleetFuel,
+                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, EmailEventType.FleetFuelReportSingleVehicle,
                                                         _contentType, ReportSchedulerData.Code)
                                   , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                     : ImageSingleton.GetInstance().GetDefaultLogo()
@@ -258,8 +258,8 @@ namespace net.atos.daf.ct2.account.report
                                   , distanceUnit
                                   , Math.Round(TotalFuelConsumed, 2)
                                   , volumeUnit
-                                  , await _unitConversionManager.GetTimeSpan(TotalIdleDuration, TimeUnit.Seconds, UnitToConvert)
-                                  , timeSpanUnit
+                                  , TotalIdleDuration
+                                  , "%"
                                   , Math.Round(TotalFuelConsumption, 2)
                                   , volumePer100KmUnit
                                   , Math.Round(TotalCO2Emission, 2)
@@ -297,8 +297,8 @@ namespace net.atos.daf.ct2.account.report
                                   , distanceUnit
                                   , Math.Round(TotalFuelConsumed, 2)
                                   , volumeUnit
-                                  , await _unitConversionManager.GetTimeSpan(TotalIdleDuration, TimeUnit.Seconds, UnitToConvert)
-                                  , timeSpanUnit
+                                  , TotalIdleDuration
+                                  , "%"
                                   , Math.Round(TotalFuelConsumption, 2)
                                   , volumePer100KmUnit
                                   , Math.Round(TotalCO2Emission, 2)

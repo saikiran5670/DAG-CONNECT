@@ -146,6 +146,7 @@ namespace net.atos.daf.ct2.accountservice
             preference.IconId = request.IconId;
             preference.IconByte = request.IconByte;
             preference.CreatedBy = request.CreatedBy;
+            preference.PageRefreshTime = request.PageRefreshTime;
             return preference;
         }
         public AccountPreference ToPreferenceEntity(Preference.AccountPreference entity)

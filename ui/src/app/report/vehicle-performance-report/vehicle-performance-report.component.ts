@@ -15,6 +15,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   // accountOrganizationId;
   // accountId;
   translationData: any = {};
+  search:boolean = false;
 
   constructor(private translationService: TranslationService) {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -45,8 +46,13 @@ export class VehiclePerformanceReportComponent implements OnInit {
 
   showSearchResult(data) {
     this.searchResult = data;
-    this.searchResult['lblDetails'] = this.searchResult.performanceType.replace(/ /g, '')+'Details';
+    this.searchResult['lblDetails'] = 'lbl' + this.searchResult.performanceType.replace(/ /g, '')+'Details';
+    this.search = true;
+    console.log("this.searchResult", this.searchResult)
   }
   
+  hideSearchResult() {
+    this.search = false;
+  }
 
 }
