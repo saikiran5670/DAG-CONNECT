@@ -166,6 +166,7 @@ namespace net.atos.daf.ct2.accountservice
             if (entity.IconByte != null && entity.IconByte.Length > 0)
                 request.IconByte = entity.IconByte;
             request.CreatedBy = entity.CreatedBy;
+            request.PageRefreshTime = entity.PageRefreshTime;
             return request;
         }
         // group mapping
