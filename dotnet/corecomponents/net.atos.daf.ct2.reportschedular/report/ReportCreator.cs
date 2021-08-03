@@ -87,8 +87,6 @@ namespace net.atos.daf.ct2.reportscheduler.report
 
             Report.SetParameters(ReportSchedulerData, await GetVehicleDetails());
             var pdf = await GetHtmlToPdfDocument();
-            //var test = _generatePdf.Convert(pdf);
-            //return true;
             return await _reportSchedulerRepository
                            .InsertReportPDF(new ScheduledReport
                            {
@@ -110,7 +108,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
             {
                 ColorMode = ColorMode.Color,
                 Orientation = GetOrientation(),
-                PaperSize = GetPaperKind(),
+                PaperSize = PaperKind.A4,
                 Margins = new MarginSettings { Top = 10 }
             };
             var objectSettings = new ObjectSettings
@@ -139,10 +137,6 @@ namespace net.atos.daf.ct2.reportscheduler.report
         }
         private PaperKind GetPaperKind()
         {
-            if (ReportKey == ReportNameConstants.REPORT_FLEET_FUEL)
-            {
-                return PaperKind.A4;
-            }
             return PaperKind.A4;
         }
 
