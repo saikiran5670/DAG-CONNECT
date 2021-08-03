@@ -40,6 +40,31 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
+          labelString: 'Vehicles'    
+        }
+        }
+      ],
+      xAxes: [{
+        barPercentage: 0.4
+    }]
+    }
+  };
+  barChartOptions2: any = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+      display: false
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
           labelString: 'km'    
         }
         }
@@ -84,6 +109,33 @@ lineChartOptions = {
       scaleLabel: {
         display: true,
         labelString: 'Vehicles'    
+      }
+    }]
+  }
+};
+lineChartOptions2 = {
+  responsive: true,
+  legend: {
+    position: 'bottom',
+    display: false,
+    labels: {
+      usePointStyle: true, // show legend as point instead of box
+      fontSize: 10 // legend point size is based on fontsize
+    }
+  },
+  scales: {
+    yAxes: [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        steps: 10,
+        stepSize: 1,
+        beginAtZero: false,
+      },
+      scaleLabel: {
+        display: true,
+        labelString: 'Km'    
       }
     }]
   }
@@ -152,6 +204,7 @@ vehicleUtilisationData: any;
 distance = [];
 calenderDate = [];
 vehiclecount = [];
+prefUnitFormat: any = 'dunit_Metric';
 
   constructor(private router: Router,private elRef: ElementRef,private dashboardService : DashboardService) { }
 
@@ -192,16 +245,43 @@ vehiclecount = [];
       this.vehiclecount.push(element.vehiclecount);
     });
     if(this.distanceChartType == 'bar'){
-    // this.barChartLabels1= [['23 July', '2020'], ['24 July', '2020'], ['25 July','2020'], ['26 July','2020'], ['27 July','2020'], ['28 July','2020']];
+        let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
+        this.barChartOptions2.scales.yAxes= [{
+          id: "y-axis-1",
+          position: 'left',
+          type: 'linear',
+          ticks: {
+            beginAtZero:true
+          },
+          scaleLabel: {
+            display: true,
+            labelString: label1   
+          }
+        }]      
     this.barChartLabels1= this.calenderDate;
     this.barChartData1= [
-      { data: this.distance , backgroundColor: '#7BC5EC',
+      { data: this.distance ,label: "Distance", backgroundColor: '#7BC5EC',
       hoverBackgroundColor: '#7BC5EC',}
     ];
     }
   else{
+    let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
+    this.lineChartOptions2.scales.yAxes= [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        steps: 10,
+        stepSize: 1,
+        beginAtZero: false,
+      },
+      scaleLabel: {
+        display: true,
+        labelString: label1   
+      }
+    }];
     this.lineChartData1= [
-      { data: this.distance,
+      { data: this.distance,label: "Distance",
         lineTension: 0, 
         pointBorderColor: "orange", // orange point border
       pointBackgroundColor: "white", // wite point fill
@@ -219,7 +299,7 @@ vehiclecount = [];
   //for vehicle per day chart
  if(this.vehicleChartType == 'line'){
     this.lineChartData2= [
-      { data: this.vehiclecount, label: 'Active Vehicles Per Day',
+      { data: this.vehiclecount, label: 'Vehicles',
         lineTension: 0, 
         pointBorderColor: "orange", 
       pointBackgroundColor: "white", 
@@ -236,7 +316,7 @@ vehiclecount = [];
   else{
     this.barChartLabels2= this.calenderDate;
     this.barChartData2= [
-      { data: this.vehiclecount, label: 'Active Vehicles Per Day' , backgroundColor: '#7BC5EC',
+      { data: this.vehiclecount, label: 'Vehicles' , backgroundColor: '#7BC5EC',
       hoverBackgroundColor: '#7BC5EC',}
     ];
   }
