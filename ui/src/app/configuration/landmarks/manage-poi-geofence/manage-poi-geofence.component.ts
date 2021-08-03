@@ -176,6 +176,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   checkboxClicked(event: any, row: any) {
     if(event.checked){ //-- add new marker
       this.markerArray.push(row);
+      this.moveMapToSelectedPOI(this.map, row.latitude, row.longitude);
     }else{ //-- remove existing marker
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
@@ -220,7 +221,11 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
   geofenceCheckboxClicked(event: any, row: any) {
     if(event.checked){ 
+      let latitude=0;
+      let longitude=0;
       this.geoMarkerArray.push(row);
+
+      this.addMarkersAndSetViewBoundsGeofence(this.map, row);
     }else{ 
       let arr = this.geoMarkerArray.filter(item => item.id != row.id);
       this.geoMarkerArray = arr;
@@ -366,6 +371,28 @@ export class ManagePoiGeofenceComponent implements OnInit {
       }, timeout);
     }, true);
     
+  }
+
+  moveMapToSelectedPOI(map, lat, lon){
+    map.setCenter({lat:lat, lng:lon});
+    map.setZoom(16);
+  }
+
+  addMarkersAndSetViewBoundsGeofence(map, row) {
+    let group = new H.map.Group();
+    let locationObjArray= [];
+    row.nodes.forEach(element => {
+      locationObjArray.push(new H.map.Marker({lat:element.latitude, lng:element.longitude}))
+    });    
+  
+    // add markers to the group
+    group.addObjects(locationObjArray);
+    map.addObject(group);
+  
+    // get geo bounding box for the group and set it to the map
+    map.getViewModel().setLookAtData({
+      bounds: group.getBoundingBox()
+    });
   }
     
   updatedPOITableData(tableData: any) {
