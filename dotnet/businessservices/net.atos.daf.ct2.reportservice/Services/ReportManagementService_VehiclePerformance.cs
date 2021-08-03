@@ -30,8 +30,6 @@ namespace net.atos.daf.ct2.reportservice.Services
                 reports.entity.VehiclePerformanceRequest request = new reports.entity.VehiclePerformanceRequest
                 {
                     Vin = vehPerformanceRequest.VIN,
-                    StartTime = vehPerformanceRequest.StartDateTime,
-                    EndTime = vehPerformanceRequest.EndDateTime,
                     PerformanceType = vehPerformanceRequest.PerformanceType
 
                 };
@@ -72,7 +70,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
         }
 
-        public override async Task<BubbleChartDataResponse> GetVehPerformanceBubbleChartData(VehPerformanceRequest request, ServerCallContext context)
+        public override async Task<BubbleChartDataResponse> GetVehPerformanceBubbleChartData(BubbleChartDataRequest request, ServerCallContext context)
         {
             try
             {
