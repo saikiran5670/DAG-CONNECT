@@ -94,6 +94,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
             preference.DateFormatId = request.DateFormatId;
             preference.TimeFormatId = request.TimeFormatId;
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
+            
             return preference;
         }
         public AccountBusinessService.AccountPreference ToAccountPreference(AccountBusinessService.AccountPreference request)
@@ -110,6 +111,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
             preference.TimeFormatId = request.TimeFormatId;
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
             preference.PreferenceType = request.PreferenceType;
+            preference.PageRefreshTime = request.PageRefreshTime;
             return preference;
         }
         public AccountBusinessService.AccountPreference ToAccountPreference(net.atos.daf.ct2.portalservice.Account.AccountPreferenceRequest request)
@@ -126,7 +128,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
                 VehicleDisplayId = request.VehicleDisplayId,
                 DateFormatId = request.DateFormatTypeId,
                 TimeFormatId = request.TimeFormatId,
-                LandingPageDisplayId = request.LandingPageDisplayId
+                LandingPageDisplayId = request.LandingPageDisplayId,
+                PageRefreshTime = request.PageRefreshTime
             };
             return preference;
         }
