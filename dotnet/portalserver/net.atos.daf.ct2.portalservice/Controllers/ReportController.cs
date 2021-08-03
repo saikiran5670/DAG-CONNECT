@@ -1610,6 +1610,37 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        [HttpPost]
+        [Route("vehperformancechartdata")]
+        public async Task<IActionResult> GetVehPerformanceBubbleChartData(VehiclePerformanceFilter vehiclePerformanceFilter)
+        {
+            try
+            {
+                BubbleChartDataRequest bubbleChartDataRequest = new BubbleChartDataRequest();
+                bubbleChartDataRequest.VIN = vehiclePerformanceFilter.VIN;
+                bubbleChartDataRequest.PerformanceType = vehiclePerformanceFilter.PerformanceType;
+
+                BubbleChartDataResponse response = await _reportServiceClient.GetVehPerformanceBubbleChartDataAsync(bubbleChartDataRequest);
+                if (response != null)
+                {
+                    response.Message = ReportConstants.GET_VEHICLE_PERFORMANCE_SUCCESS_MSG;
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_FUEL_BENCHMARK_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                $"{ nameof(GetVehPerformanceBubbleChartData) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
     }
 }

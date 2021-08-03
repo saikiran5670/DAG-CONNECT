@@ -137,6 +137,10 @@ namespace net.atos.daf.ct2.reportscheduler.report
         }
         private PaperKind GetPaperKind()
         {
+            if (ReportKey == ReportNameConstants.REPORT_FLEET_FUEL)
+            {
+                return PaperKind.A2;
+            }
             return PaperKind.A4;
         }
 
@@ -176,6 +180,13 @@ namespace net.atos.daf.ct2.reportscheduler.report
             if (vehicleList.Count == 0)
             {
                 throw new Exception(string.Format(TripReportConstants.NO_VEHICLE_ASSOCIATION_MSG, vinData));
+            }
+            if (true && ReportKey == ReportNameConstants.REPORT_FLEET_FUEL)
+            {
+                var lst = new List<VehicleList>();
+                lst.Add(vehicleList.Where(w => w.VIN == "XLR0998HGFFT76657").FirstOrDefault());
+                return lst;
+                //return vehicleList;
             }
             return vehicleList;
         }
