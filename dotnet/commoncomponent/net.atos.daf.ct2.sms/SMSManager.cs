@@ -30,7 +30,16 @@ namespace net.atos.daf.ct2.sms
                 to: new Twilio.Types.PhoneNumber(smsdetail.ToPhoneNumber)
             //messagingServiceSid: "MG5ad5618d31b2a9100761761fe1ed1755" Message sender id code
             );
-            return Task.FromResult(message.Status).ToString();
+            return message.Status.ToString();
+        }
+
+        public async Task<string> GetSMSBySid(string sid)
+        {
+            var accountSid = _smsConfiguration.AccountSid; //"AC652c7ba994c2b9fa3fb9667d1516257e";
+            var authToken = _smsConfiguration.AuthToken;//"9e5f38507b21bcc9cf8bc856488a5e13";
+            TwilioClient.Init(accountSid, authToken);
+            var message = MessageResource.Fetch(pathSid: sid);
+            return message.Status.ToString();
         }
     }
 }

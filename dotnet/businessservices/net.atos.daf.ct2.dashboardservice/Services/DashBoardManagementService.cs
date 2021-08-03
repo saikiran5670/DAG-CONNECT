@@ -8,6 +8,9 @@ using log4net;
 using net.atos.daf.ct2.dashboard;
 using net.atos.daf.ct2.dashboard.entity;
 using net.atos.daf.ct2.dashboardservice.entity;
+using net.atos.daf.ct2.reports;
+using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.visibility;
 using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.dashboardservice
@@ -16,6 +19,8 @@ namespace net.atos.daf.ct2.dashboardservice
     {
         private readonly ILog _logger;
         private readonly IDashBoardManager _dashBoardManager;
+        private readonly IReportManager _reportManager;
+        private readonly IVisibilityManager _visibilityManager;
 
         public DashBoardManagementService(IDashBoardManager dashBoardManager)
         {
@@ -103,6 +108,11 @@ namespace net.atos.daf.ct2.dashboardservice
                     objTodayLiveVehicleResponse.Code = Responsecode.Success;
                     objTodayLiveVehicleResponse.Message = DashboardConstants.GET_TODAY_LIVE_VEHICLE_SUCCESS_MSG;
                 }
+                else
+                {
+                    objTodayLiveVehicleResponse.Code = Responsecode.Success;
+                    objTodayLiveVehicleResponse.Message = DashboardConstants.GET_TODAY_LIVE_VEHICLE_SUCCESS_NODATA_MSG;
+                }
                 return await Task.FromResult(objTodayLiveVehicleResponse);
             }
             catch (Exception ex)
@@ -114,5 +124,88 @@ namespace net.atos.daf.ct2.dashboardservice
                 });
             }
         }
+
+        #region utilization
+        public override async Task<FleetUtilizationResponse> GetFleetUtilizationDetails(FleetKpiFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                FleetKpiFilter fleetKpiFilter = new FleetKpiFilter
+                {
+                    StartDateTime = request.StartDateTime,
+                    EndDateTime = request.EndDateTime,
+                    VINs = request.VINs.ToList<string>()
+                };
+
+                // Pull details from db
+                var reportDetails = await _dashBoardManager.GetUtilizationchartsData(fleetKpiFilter);
+
+                // Prepare and Map repository object to service object
+                FleetUtilizationResponse fleetutilizatioResponse = new FleetUtilizationResponse { Code = Responsecode.Success, Message = DashboardConstants.GET_FLEETUTILIZATION_DETAILS_SUCCESS_MSG };
+                string serializeDetails = JsonConvert.SerializeObject(reportDetails);
+                fleetutilizatioResponse.Fleetutilizationcharts.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetUtilization>>(serializeDetails));
+
+                return await Task.FromResult(fleetutilizatioResponse);
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(new FleetUtilizationResponse
+                {
+                    Code = Responsecode.InternalServerError,
+                    Message = ex.Message
+                });
+            }
+        }
+        #endregion
+
+        #region Fetch Visible VINs from data mart trip_statistics
+        public override async Task<VehicleListAndDetailsResponse> GetVisibleVins(VehicleListRequest request, ServerCallContext context)
+        {
+            var response = new VehicleListAndDetailsResponse();
+            try
+            {
+                var vehicleDeatilsWithAccountVisibility =
+                                await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+
+                if (vehicleDeatilsWithAccountVisibility.Count() == 0)
+                {
+                    response.Message = string.Format(DashboardConstants.GET_VIN_VISIBILITY_FAILURE_MSG, request.AccountId, request.OrganizationId);
+                    response.Code = Responsecode.Failed;
+                    return response;
+                }
+
+                var vinList = await _reportManager
+                                        .GetVinsFromTripStatistics(vehicleDeatilsWithAccountVisibility
+                                                                       .Select(s => s.Vin).Distinct());
+                if (vinList.Count() == 0)
+                {
+                    response.Message = string.Format(DashboardConstants.GET_VIN_TRIP_NOTFOUND_MSG, request.AccountId, request.OrganizationId);
+                    response.Code = Responsecode.Failed;
+                    response.VinTripList.Add(new List<VehicleFromTripDetails>());
+                    return response;
+                }
+                var res = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                response.VehicleDetailsWithAccountVisibiltyList.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(res)
+                    );
+                response.Message = DashboardConstants.GET_VIN_SUCCESS_MSG;
+                response.Code = Responsecode.Success;
+                res = JsonConvert.SerializeObject(vinList);
+                response.VinTripList.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleFromTripDetails>>(res)
+                    );
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                response.Message = ex.Message;
+                response.Code = Responsecode.InternalServerError;
+                response.VehicleDetailsWithAccountVisibiltyList.Add(new List<VehicleDetailsWithAccountVisibilty>());
+                response.VinTripList.Add(new List<VehicleFromTripDetails>());
+                return await Task.FromResult(response);
+            }
+        }
+        #endregion
     }
 }

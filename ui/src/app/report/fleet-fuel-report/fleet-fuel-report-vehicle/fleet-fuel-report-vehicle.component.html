@@ -221,7 +221,7 @@
             <mat-cell [hidden]="!checkForPreference('vehicleranking_consumption')" *matCellDef="let row">
               <mat-progress-bar class="example-margin" [color]="color" [mode]="mode" [bufferValue]="bufferValue"
                 value={{row.convertedFuelConsumed100Km}}></mat-progress-bar>
-              <div style="position: absolute; padding: 10px; color: white;"> {{row.convertedFuelConsumed100Km}} </div>
+              <div style="position: absolute; padding: 10px; color: white;"> {{row.convertedFuelConsumption}} </div>
             </mat-cell>
           </ng-container>
           <mat-header-row *matHeaderRowDef="rankingColumns"></mat-header-row>
@@ -630,7 +630,7 @@
                     || ' gal') }})</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_fuelconsumed')">
-                  <span>{{row.fuelConsumed}}</span>
+                  <span>{{row.convertedFuelConsumed100Km}}</span>
                 </mat-cell>
                 <!-- <mat-cell *matCellDef="let row">{{ row.convertedAverageSpeed != '' ? row.convertedAverageSpeed : '-' }}</mat-cell> -->
               </ng-container>
@@ -643,7 +643,7 @@
                 || ' mpg') }})</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_fuelconsumption')">
-                  <span>{{row.fuelConsumption}}</span>
+                  <span>{{row.convertedFuelConsumption}}</span>
                 </mat-cell>
                 <!-- <mat-cell *matCellDef="let row">{{ row.convertedAverageWeight != '' ? row.convertedAverageWeight : '-' }}</mat-cell> -->
               </ng-container>

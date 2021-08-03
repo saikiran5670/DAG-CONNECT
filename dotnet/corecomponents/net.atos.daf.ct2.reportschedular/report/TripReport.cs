@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.email.Enum;
+using net.atos.daf.ct2.map;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reportscheduler.entity;
@@ -29,6 +30,7 @@ namespace net.atos.daf.ct2.account.report
         private readonly IUnitManager _unitManager;
         private readonly EmailEventType _evenType;
         private readonly EmailContentType _contentType;
+        private readonly MapHelper _mapHelper;
 
         public string VIN { get; private set; }
         public string TimeZoneName { get; private set; }
@@ -49,7 +51,7 @@ namespace net.atos.daf.ct2.account.report
                           IReportSchedulerRepository reportSchedularRepository,
                           IVisibilityManager visibilityManager, ITemplateManager templateManager,
                           IUnitConversionManager unitConversionManager, IUnitManager unitManager,
-                          EmailEventType evenType, EmailContentType contentType)
+                          EmailEventType evenType, EmailContentType contentType, IMapManager mapManager)
         {
             ReportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
@@ -59,6 +61,7 @@ namespace net.atos.daf.ct2.account.report
             _unitManager = unitManager;
             _evenType = evenType;
             _contentType = contentType;
+            _mapHelper = new reportscheduler.helper.MapHelper(mapManager);
         }
 
         public void SetParameters(ReportCreationScheduler reportSchedulerData, IEnumerable<VehicleList> vehicleLists)
@@ -112,8 +115,8 @@ namespace net.atos.daf.ct2.account.report
                         AverageSpeed = await _unitConversionManager.GetSpeed(tripData.AverageSpeed, SpeedUnit.MeterPerMilliSec, UnitToConvert),
                         AverageWeight = await _unitConversionManager.GetWeight(tripData.AverageWeight, WeightUnit.KiloGram, UnitToConvert),
                         Odometer = await _unitConversionManager.GetDistance(tripData.Odometer, DistanceUnit.Meter, UnitToConvert),
-                        StartPosition = tripData.StartPosition,
-                        EndPosition = tripData.EndPosition,
+                        StartPosition = string.IsNullOrEmpty(tripData.StartPosition) ? await _mapHelper.GetAddress(tripData.StartPositionLattitude, tripData.StartPositionLongitude) : tripData.StartPosition,
+                        EndPosition = string.IsNullOrEmpty(tripData.EndPosition) ? await _mapHelper.GetAddress(tripData.EndPositionLattitude, tripData.EndPositionLongitude) : tripData.EndPosition,
                         //FuelConsumed = tripData.FuelConsumed,
                         DrivingTime = await _unitConversionManager.GetTimeSpan(tripData.DrivingTime, TimeUnit.Seconds, UnitToConvert),
                         Alerts = tripData.Alert,
@@ -139,7 +142,7 @@ namespace net.atos.daf.ct2.account.report
             html.AppendFormat(ReportTemplateSingleto.
                                     GetInstance()
                                     .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
-                                                    _contentType, ReportSchedulerData.Code)
+                                                        _contentType, ReportSchedulerData.Code)
                               , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
                               , ImageSingleton.GetInstance().GetLogo()

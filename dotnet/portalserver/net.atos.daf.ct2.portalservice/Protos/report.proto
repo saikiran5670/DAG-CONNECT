@@ -45,6 +45,7 @@ rpc GetFuelBenchmarkByTimePeriod (FuelBenchmarkTimePeriodRequest) returns (FuelB
 rpc GetEcoScoreReportSingleDriver (GetEcoScoreReportSingleDriverRequest) returns (GetEcoScoreReportSingleDriverResponse);
 rpc GetAssociatedVehiclGroup (VehicleListRequest) returns (AssociatedVehicleResponse);
 rpc GetEcoScoreReportTrendlines (GetEcoScoreReportSingleDriverRequest) returns (GetEcoScoreReportTrendlinesResponse);
+rpc GetVehiclePerformanceChartTemplate(VehPerformanceRequest) returns (VehPerformanceResponse);
 }
 
 message VehicleHealthReportRequest{
@@ -1319,3 +1320,36 @@ message GetEcoScoreReportTrendlinesResponse {
  repeated EcoScoreTrendlines Trendlines = 3 ;
 }
 /// END: Eco Score Report Single Driver
+// Vehicle Performance
+
+message VehPerformanceRequest{
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    string VIN = 3;
+    string PerformanceType= 4;
+    int32 AccountId = 5;
+    int32 OrganizationId = 6;
+
+}
+
+message VehPerformanceCharts{
+int32 EngineTypeId = 1;
+string EngineName = 2;
+string VehiclePerformanceType =3;
+string AxisType =4;
+string  AxisValue =5;
+int32 VehPerToYIndex =6;
+string KpiType =7;
+}
+message VehPerformanceResponse{
+string Message = 1;
+Responsecode Code = 2;
+repeated VehPerformanceCharts VehPerformanceCharts = 3;
+VehPerformanceSummary VehPerformanceSummary =4; 
+ }
+ message VehPerformanceSummary{
+      string ModelType = 1;
+      string EngineType = 2;
+      string Vin = 3;
+ }
+// Vehicle Performance End

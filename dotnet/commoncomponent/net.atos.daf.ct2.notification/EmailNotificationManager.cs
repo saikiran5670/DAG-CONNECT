@@ -46,7 +46,7 @@ namespace net.atos.daf.ct2.notification
             }
             if (mailNotificationRequest.EventType == EmailEventType.AlertNotificationEmail)
             {
-                mailNotificationRequest.MessageRequest.AlertNotification.DafEmailId = _configuration["DAFSupportEmailId"];
+                mailNotificationRequest.MessageRequest.AlertNotification.DafEmailId = _emailConfiguration.DAFSupportEmailId;
             }
 
             mailNotificationRequest.MessageRequest.Configuration = _emailConfiguration;

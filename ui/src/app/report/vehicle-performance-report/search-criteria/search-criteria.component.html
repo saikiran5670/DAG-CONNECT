@@ -1,4 +1,4 @@
-<form [formGroup]="searchForm">
+<form [formGroup]="searchForm" (ngSubmit)="onSearch()">
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
         <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
             <mat-expansion-panel-header class="full-width">
@@ -12,7 +12,7 @@
             <div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg"
                     fxLayoutGap="10px">
-                    <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+                    <div class="areaWidth min-width-70-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span
                                 class='mandatoryColor'>*</span></mat-label>
                         <div style='margin-top: 5px;'>
@@ -38,11 +38,11 @@
                                 color="primary">{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
                         </div>
                     </div>
-                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span
                                 class='mandatoryColor'>*</span></mat-label>
                         <mat-form-field appearance="outline">
-                            <mat-select [disabled]="vehicleGrpDD.length == 0"
+                            <mat-select 
                                 (selectionChange)="onVehicleGroupChange($event)"
                                 placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"
                                 formControlName="vehicleGroup">
@@ -52,14 +52,30 @@
                             </mat-select>
                         </mat-form-field>
                         <mat-error
-                            *ngIf="searchForm.get('vehicleGroup').hasError('required') && vehicleGrpDD.length > 0">
+                            *ngIf="searchForm.get('vehicleGroup').hasError('required') && formSubmitted">
                             {{translationData.lblPleaseSelectvehicleGroup || 'Please Select Vehicle Group' }}
+                        </mat-error>
+                    </div>
+                    <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblVehicleName || 'Vehicle Name' }} <span class='mandatoryColor'>*</span>
+                        </mat-label>
+                        <mat-form-field appearance="outline">
+                            <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)"
+                                placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}"
+                                formControlName="vehicleName">
+                                <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
+                                    {{ rer.vehicleName }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-error *ngIf="searchForm.get('vehicleName').hasError('required') && formSubmitted">
+                            {{translationData.lblPleaseSelectVehicle || 'Please Select Vehicle Name' }}
                         </mat-error>
                     </div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg"
                     fxLayoutGap="10px">
-                    <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+                    <div class="areaWidth min-width-70-per" fxLayout="column" fxLayoutAlign="left">
                         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                             <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
                                 <mat-label>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span>
@@ -67,9 +83,9 @@
                                 <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                                         <mat-form-field appearance="outline">
-                                            <input matInput [(ngModel)]="startDateValue"
+                                            <input matInput
                                                 (dateChange)="changeStartDateEvent($event)" [min]='last3MonthDate'
-                                                [max]='endDateValue' [matDatepicker]="startPicker"
+                                                [max]='searchForm.get("endDate").value' [matDatepicker]="startPicker"
                                                 formControlName="startDate">
                                             <mat-datepicker-toggle matSuffix [for]="startPicker">
                                             </mat-datepicker-toggle>
@@ -98,8 +114,8 @@
                                 <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
                                     <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
                                         <mat-form-field appearance="outline">
-                                            <input matInput [(ngModel)]="endDateValue"
-                                                (dateChange)="changeEndDateEvent($event)" [min]='startDateValue'
+                                            <input matInput
+                                                (dateChange)="changeEndDateEvent($event)" [min]='searchForm.get("startDate").value'
                                                 [max]='todayDate' [matDatepicker]="endPicker" formControlName="endDate">
                                             <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
                                             <mat-datepicker #endPicker></mat-datepicker>
@@ -124,27 +140,27 @@
                         </div>
                     </div>
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                        <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span>
+                        <mat-label>{{ translationData.lblPerformanceType || 'Performance Type' }} <span class='mandatoryColor'>*</span>
                         </mat-label>
                         <mat-form-field appearance="outline">
-                            <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)"
-                                placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}"
-                                formControlName="vehicle">
-                                <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
-                                    {{ rer.vehicleName }}
+                            <mat-select
+                                placeholder="{{ translationData.lblSelectPerformanceType || 'Select Performance Type' }}"
+                                formControlName="performanceType">
+                                <mat-option *ngFor="let performance of performanceTypeLst" [value]="performance.value">
+                                    {{ performance.label }}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
-                        <mat-error *ngIf="searchForm.get('vehicle').hasError('required') && vehicleDD.length > 0">
-                            {{translationData.lblPleaseSelectVehicle || 'Please Select Vehicle' }}
+                        <mat-error *ngIf="searchForm.get('performanceType').hasError('required') && formSubmitted">
+                            {{translationData.lblPleaseSelectPerformanceType || 'Please Select Performance Type' }}
                         </mat-error>
                     </div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'>
-                    <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
+                    <button type="button" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
                         (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
-                    <button [disabled]="!searchForm.valid" class='no-margin' mat-raised-button color="primary"
-                        (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
+                    <button type="submit" class='no-margin' mat-raised-button color="primary"
+                        >{{ translationData.lblSearch || 'Search' }}</button>
                 </div>
             </div>
         </mat-expansion-panel>
