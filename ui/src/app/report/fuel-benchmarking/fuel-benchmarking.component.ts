@@ -359,18 +359,12 @@ export class FuelBenchmarkingComponent implements OnInit {
         break;
       }
     }
-    // // this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
-    // // this.setGlobalSearchData(this.fleetUtilizationSearchData);
-    // // if(!this.makeDisableVehicleGroup)
-    // // {
-      if(!this.makeDisableVehicleGroup)
-    {  
+
+    //   if(!this.makeDisableVehicleGroup)
+    // {  
       this.resetTripFormControlValue(); // extra addded as per discuss with Atul
       this.filterDateData(); // extra addded as per discuss with Atul
-    }
-     
-    
-  
+    // }
   }
 
   proceedStep(prefData: any, preference: any) {
@@ -487,7 +481,7 @@ export class FuelBenchmarkingComponent implements OnInit {
       this.fuelBenchmarkingForm.get('vehicleGroup').setValue(this.fuelBenchmarkingSearchData.vehicleGroupDropDownValue);
     } else {
       // this.fuelBenchmarkingForm.get('vehicle').setValue(0);
-      this.fuelBenchmarkingForm.get('vehicleGroup').setValue(0);
+      this.fuelBenchmarkingForm.get('vehicleGroup').setValue('');
     }
   }
   setDefaultTodayDate() {
@@ -537,11 +531,11 @@ export class FuelBenchmarkingComponent implements OnInit {
     this.internalSelection = true;
     //this.startDateValue = event.value._d;
     this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
-    if(!this.makeDisableVehicleGroup)
-    {  
+    // if(!this.makeDisableVehicleGroup)
+    // {  
       this.resetTripFormControlValue(); // extra addded as per discuss with Atul
       this.filterDateData(); // extra addded as per discuss with Atul
-    }
+    // }
   }
 
   // filterDateData(){
@@ -596,6 +590,7 @@ export class FuelBenchmarkingComponent implements OnInit {
   //     this.onSearch();
   //   }
   // }
+  latestVehicleGroupValue;
   filterDateData() {
     let distinctVIN: any = [];
     let finalVINDataList: any = [];
@@ -623,6 +618,18 @@ export class FuelBenchmarkingComponent implements OnInit {
               });
             }
           });
+
+          //Condition added to check if data persist while changing the time range in disable mode
+          if(this.makeDisableVehicleGroup) {
+            for(let vehichleGroupId of finalVINDataList){
+              if(vehichleGroupId.vehicleGroupId == this.latestVehicleGroupValue ){
+                console.log("----in disbale mode i am matched----")
+                this.fuelBenchmarkingForm.get('vehicleGroup').setValue(this.latestVehicleGroupValue);
+              }
+            }
+            console.log("---latestVehicleGroupValue---",this.latestVehicleGroupValue)
+            
+          }
           console.log("finalVINDataList:: ", finalVINDataList);
         }
       } else {
@@ -643,14 +650,18 @@ export class FuelBenchmarkingComponent implements OnInit {
         });
       }
       //this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
-      this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+      // this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
       // this.resetTripFormControlValue();
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.vehicleDD = this.vehicleListData;
     if (this.vehicleListData.length > 0) {
-      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
-      this.resetTripFormControlValue();
+      // this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+     
+      //Don't want it to refresh in disable mode
+      if(!this.makeDisableVehicleGroup){
+        this.resetTripFormControlValue();
+      }
     };
     this.setVehicleGroupAndVehiclePreSelection();
     if (this.fromTripPageBack) {
@@ -664,8 +675,6 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   onSearch(selectedValue?: any) {
 
-      // this.columnLength++;
- 
     console.log("-------search triggere---")
     console.log("vehicle group", this.vehicleGrpDD);
     this.internalSelection = true;
@@ -857,6 +866,14 @@ export class FuelBenchmarkingComponent implements OnInit {
       if(this.selectionValueBenchmarkBY=="timePeriods")
       {
         this.makeDisableVehicleGroup=true;
+
+        //Inserting drop down value in var just after field get disabled
+
+        if(this.makeDisableVehicleGroup)
+        {  
+          this.latestVehicleGroupValue = this.fuelBenchmarkingForm.controls.vehicleGroup.value;
+        }
+
       }else{
         this.makeDisableTimePeriod=true;
       }
@@ -868,22 +885,21 @@ export class FuelBenchmarkingComponent implements OnInit {
     //this.selectedVehicleGroup = event.value;
    
     if (event.value || event.value == 0) {
-      this.internalSelection = true;
-      //  this.fuelBenchmarkingForm.get('vehicle').setValue(0); //- reset vehicle dropdown
-      if (parseInt(event.value) == 0) { //-- all group
-        this.vehicleDD = this.vehicleListData;
-      } else {
-        let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
-        if (search.length > 0) {
-          this.vehicleDD = [];
-          search.forEach(element => {
-            this.vehicleDD.push(element);
-          });
-        }
-      }
-      console.log("---on vehocle group change--", this.vehicleDD)
-      let vins = [];
-      this.vehicleDD.filter(vins)
+      // this.internalSelection = true;
+      // if (parseInt(event.value) == 0) { //-- all group
+      //   this.vehicleDD = this.vehicleListData;
+      // } else {
+      //   let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+      //   if (search.length > 0) {
+      //     this.vehicleDD = [];
+      //     search.forEach(element => {
+      //       this.vehicleDD.push(element);
+      //     });
+      //   }
+      // }
+      // console.log("---on vehocle group change--", this.vehicleDD)
+      // let vins = [];
+      // this.vehicleDD.filter(vins)
 
     } else {
       this.fuelBenchmarkingForm.get('vehicleGroup').setValue(parseInt(this.fuelBenchmarkingSearchData.vehicleGroupDropDownValue));
@@ -916,11 +932,11 @@ export class FuelBenchmarkingComponent implements OnInit {
     this.internalSelection = true;
     this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
 
-    if(!this.makeDisableVehicleGroup)
-    {  
+    // if(!this.makeDisableVehicleGroup)
+    // {  
       this.resetTripFormControlValue(); // extra addded as per discuss with Atul
       this.filterDateData(); // extra addded as per discuss with Atul
-    }
+    // }
 
   }
 
@@ -965,11 +981,11 @@ export class FuelBenchmarkingComponent implements OnInit {
       this.startTimeDisplay = selectedTime;
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
-    if(!this.makeDisableVehicleGroup)
-    {  
+    // if(!this.makeDisableVehicleGroup)
+    // {  
       this.resetTripFormControlValue(); // extra addded as per discuss with Atul
       this.filterDateData(); // extra addded as per discuss with Atul
-    }
+    // }
 
   }
 
@@ -983,11 +999,11 @@ export class FuelBenchmarkingComponent implements OnInit {
       this.endTimeDisplay = selectedTime;
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
-    if(!this.makeDisableVehicleGroup)
-    {  
+    // if(!this.makeDisableVehicleGroup)
+    // {  
       this.resetTripFormControlValue(); // extra addded as per discuss with Atul
       this.filterDateData(); // extra addded as per discuss with Atul
-    }
+    // }
   }
 
   getTodayDate() {
@@ -1090,6 +1106,7 @@ export class FuelBenchmarkingComponent implements OnInit {
 
   //Radio buttons selection
   onBenchmarkChange(event: any) {
+    this.onReset();
     this.selectionValueBenchmarkBY= '';
     // this.columnLength = 0;
     this.makeAddDisable=false;

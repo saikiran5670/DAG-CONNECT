@@ -14,6 +14,8 @@ namespace net.atos.daf.ct2.dashboard.entity
         public double Distanceperday { get; set; }
         public double Speed { get; set; }
         public double Weight { get; set; }
+        public double Fuelconsumption { get; set; }
+        public double Fuelconsumed { get; set; }
         public string VIN { get; set; }
         public int Vehiclecount { get; set; }
         public int Tripcount { get; set; }
