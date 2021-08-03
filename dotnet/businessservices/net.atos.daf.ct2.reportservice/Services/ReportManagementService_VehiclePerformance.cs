@@ -17,15 +17,15 @@ namespace net.atos.daf.ct2.reportservice.Services
             {
                 _logger.Info("Get GetVehiclePerformanceChartTemplate ");
                 VehPerformanceResponse response = new VehPerformanceResponse();
-                var vehicleDeatilsWithAccountVisibility =
-                                await _visibilityManager.GetVehicleByAccountVisibility(vehPerformanceRequest.AccountId, vehPerformanceRequest.OrganizationId);
+                ////var vehicleDeatilsWithAccountVisibility =
+                ////                await _visibilityManager.GetVehicleByAccountVisibility(vehPerformanceRequest.AccountId, vehPerformanceRequest.OrganizationId);
 
-                if (vehicleDeatilsWithAccountVisibility.Count() == 0 || !vehicleDeatilsWithAccountVisibility.Any(x => x.Vin == vehPerformanceRequest.VIN))
-                {
-                    response.Message = string.Format(ReportConstants.GET_VIN_VISIBILITY_FAILURE_MSG, vehPerformanceRequest.AccountId, vehPerformanceRequest.OrganizationId);
-                    response.Code = Responsecode.Failed;
-                    return response;
-                }
+                //if (vehicleDeatilsWithAccountVisibility.Count() == 0 || !vehicleDeatilsWithAccountVisibility.Any(x => x.Vin == vehPerformanceRequest.VIN))
+                //{
+                //    response.Message = string.Format(ReportConstants.GET_VIN_VISIBILITY_FAILURE_MSG, vehPerformanceRequest.AccountId, vehPerformanceRequest.OrganizationId);
+                //    response.Code = Responsecode.Failed;
+                //    return response;
+                //}
 
                 reports.entity.VehiclePerformanceRequest request = new reports.entity.VehiclePerformanceRequest
                 {
@@ -41,9 +41,11 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 if (result != null)
                 {
-                    var resDetails = JsonConvert.SerializeObject(result);
+                    var resChartDetails = JsonConvert.SerializeObject(result.VehChartList);
+                    var ressummarytDetails = JsonConvert.SerializeObject(result.VehiclePerformanceSummary);
+                    response.VehPerformanceSummary = JsonConvert.DeserializeObject<VehPerformanceSummary>(ressummarytDetails);
                     response.VehPerformanceCharts.AddRange(
-                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehPerformanceCharts>>(resDetails,
+                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehPerformanceCharts>>(resChartDetails,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
                     response.Code = Responsecode.Success;
                     response.Message = Responsecode.Success.ToString();
@@ -71,3 +73,4 @@ namespace net.atos.daf.ct2.reportservice.Services
         }
     }
 }
+//E,S,B

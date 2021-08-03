@@ -12,6 +12,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.common.realtime.dataprocess.IndexDataProcess;
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.pojo.KafkaRecord;
@@ -80,16 +81,40 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 
 	public void invoke(KafkaRecord<Index> value, Context context) throws Exception {
 		//this function is used to write data into Hbase table
-
-		Put put = new Put(Bytes.toBytes(value.getValue().getTransID() + "_" + value.getValue().getDocument().getTripID()
-				+ "_" + value.getValue().getVid() + "_" + value.getValue().getReceivedTimestamp()));
-
+		Long currentTimeStamp=TimeFormatter.getInstance().getCurrentUTCTime();
+		
+		if(value.getValue().getEvtDateTime()!=null) {
+		      currentTimeStamp = TimeFormatter.getInstance().convertUTCToEpochMilli(
+		                        value.getValue().getEvtDateTime(), DafConstants.DTM_TS_FORMAT);
+		}
+		
+		      Put put = new Put(Bytes.toBytes(value.getValue().getTransID() + "_" +
+		    		  value.getValue().getDocument().getTripID() + "_" + value.getValue().getVid()
+		    		  + "_" + currentTimeStamp));
+		
 		log.info("Index Data Row_Key :: "
 				+ (value.getValue().getTransID() + "_" + value.getValue().getDocument().getTripID() + "_"
-						+ value.getValue().getVid() + "_" + value.getValue().getReceivedTimestamp()));
+						+ value.getValue().getVid() + "_" + currentTimeStamp));
 		System.out.println("Index Data Row_Key :: "
 				+ (value.getValue().getTransID() + "_" + value.getValue().getDocument().getTripID() + "_"
-						+ value.getValue().getVid() + "_" + value.getValue().getReceivedTimestamp()));
+						+ value.getValue().getVid() + "_" + currentTimeStamp));
+		
+		
+		
+		/*
+		 * Put put = new Put(Bytes.toBytes(value.getValue().getTransID() + "_" +
+		 * value.getValue().getDocument().getTripID() + "_" + value.getValue().getVid()
+		 * + "_" + value.getValue().getReceivedTimestamp()));
+		 */
+
+		/*
+		 * log.info("Index Data Row_Key :: " + (value.getValue().getTransID() + "_" +
+		 * value.getValue().getDocument().getTripID() + "_" + value.getValue().getVid()
+		 * + "_" + value.getValue().getReceivedTimestamp()));
+		 * System.out.println("Index Data Row_Key :: " + (value.getValue().getTransID()
+		 * + "_" + value.getValue().getDocument().getTripID() + "_" +
+		 * value.getValue().getVid() + "_" + value.getValue().getReceivedTimestamp()));
+		 */
 		
 		// we have commented some of the below column values as we need to use them in future
 

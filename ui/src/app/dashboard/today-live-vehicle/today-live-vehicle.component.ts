@@ -12,6 +12,8 @@ import { DashboardService } from '../../services/dashboard.service';
 
 export class TodayLiveVehicleComponent implements OnInit {
   @Input() translationData : any;
+  @Input() preference : any;
+  @Input() prefData : any;
   @ViewChild('chart1') chart1 : ElementRef;
   liveVehicleData:any;
   activeVehiclePercent : Number = 0;
@@ -235,6 +237,7 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
        // console.log(vehicleData);
        if(vehicleData){
           this.liveVehicleData = vehicleData
+          this.updateCharts();
 
        }
     });
@@ -251,7 +254,6 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
   //     "code": 200,
   //     "message": "No data found for Today live vehicle details."
   // }
-    this.updateCharts();
     
     
   }
