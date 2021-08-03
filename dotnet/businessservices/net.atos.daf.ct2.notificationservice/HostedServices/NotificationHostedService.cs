@@ -39,6 +39,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
         private readonly IConfiguration _configuration;
         private readonly IEmailNotificationManager _emailNotificationManager;
         private readonly ISMSManager _smsManager;
+        private readonly NotificationConfiguration _notificationConfiguration;
 
         public NotificationHostedService(INotificationIdentifierManager notificationIdentifierManager, Server server, IHostApplicationLifetime appLifetime, IConfiguration configuration, IEmailNotificationManager emailNotificationManager, ISMSManager smsManager)
         {
@@ -52,6 +53,8 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             this._configuration = configuration;
             _kafkaConfiguration = new KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
+            _notificationConfiguration = new NotificationConfiguration();
+            configuration.GetSection("NotificationConfiguration").Bind(_notificationConfiguration);
         }
         public Task StartAsync(CancellationToken cancellationToken)
         {
@@ -59,8 +62,8 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             // _server.Start();           
             while (true)
             {
-                //ReadAndProcessAlertMessage();
-                Thread.Sleep(10000); // 10 sec sleep mode
+                //ReadAndProcessAlertMessage().Wait();
+                Thread.Sleep(_notificationConfiguration.ThreadSleepTimeInSec); // 10 sec sleep mode
             }
             return Task.CompletedTask;
         }
@@ -88,17 +91,26 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                     List<NotificationHistory> identifiedNotificationRec = await _notificationIdentifierManager.GetNotificationDetails(tripAlert);
                     if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "E").Count() > 0)
                     {
-                        await SendEmailNotification(identifiedNotificationRec);
+                        if (_notificationConfiguration.IsEmailSend == true)
+                        {
+                            await SendEmailNotification(identifiedNotificationRec);
+                        }
                     }
 
                     if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
                     {
-                        await SendSMS(identifiedNotificationRec);
+                        if (_notificationConfiguration.IsSMSSend == true)
+                        {
+                            await SendSMS(identifiedNotificationRec);
+                        }
                     }
 
                     if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").Count() > 0)
                     {
-                        await SendViaWebService(identifiedNotificationRec);
+                        if (_notificationConfiguration.IsWebServiceCall == true)
+                        {
+                            await SendViaWebService(identifiedNotificationRec);
+                        }
                     }
                 }
             }
@@ -188,7 +200,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                     string alertTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, item.AlertTypeKey);
                     string urgencyTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, item.UrgencyTypeKey);
                     string smsDescription = string.IsNullOrEmpty(item.SMS) ? item.SMS : item.SMS.Length <= 50 ? item.SMS : item.SMS.Substring(0, 50);
-                    string smsBody = alertTypeValue + " " + item.ThresholdValue + " " + item.ThresholdValueUnitType + " " + item.ValueAtAlertTime + " " + urgencyTypeValue + " " + smsDescription;
+                    string smsBody = alertTypeValue + ",TV:" + item.ThresholdValue.ToString("#.0000") + "," + item.ThresholdValueUnitType + ",AV:" + item.ValueAtAlertTime.ToString("#.0000") + ",UT:" + urgencyTypeValue + "," + smsDescription;
                     SMS sms = new SMS();
                     sms.ToPhoneNumber = item.PhoneNo;
                     sms.Body = smsBody;

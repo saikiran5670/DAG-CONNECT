@@ -2314,6 +2314,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             try
             {
                 StringBuilder query;
+                string clause;
                 IEnumerable<ProvisioningVehicle> provisioningVehicles;
                 var parameters = new DynamicParameters();
                 parameters.Add("@DriverId", request.DriverId);
@@ -2324,26 +2325,28 @@ namespace net.atos.daf.ct2.vehicle.repository
                 {
                     query =
                         new StringBuilder(@"select VIN, MAX(start_time_stamp) as StartTimestamp, MAX(end_time_stamp) as EndTimestamp 
-                                        from livefleet.livefleet_current_trip_statistics where driver1_id=@DriverId and ");
+                                        from livefleet.livefleet_current_trip_statistics where driver1_id=@DriverId");
+                    clause = " and ";
                 }
                 else
                 {
                     query =
                         new StringBuilder(@"select VIN, MAX(start_time_stamp) as StartTimestamp, MAX(end_time_stamp) as EndTimestamp 
-                                        from livefleet.livefleet_current_trip_statistics where ");
+                                        from livefleet.livefleet_current_trip_statistics");
+                    clause = " where ";
                 }
 
                 if (request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
                 {
-                    query.Append("start_time_stamp >= @StartTimestamp and (end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL)");
+                    query.Append(clause + "start_time_stamp >= @StartTimestamp and (end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL)");
                 }
                 else if (request.StartTimestamp.HasValue && !request.EndTimestamp.HasValue)
                 {
-                    query.Append("start_time_stamp >= @StartTimestamp and (end_time_stamp IS NULL or 1=1)");
+                    query.Append(clause + "start_time_stamp >= @StartTimestamp and (end_time_stamp IS NULL or 1=1)");
                 }
                 else if (!request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
                 {
-                    query.Append("end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
+                    query.Append(clause + "end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
                 }
 
                 query.Append(" group by VIN order by MAX(end_time_stamp) desc");
