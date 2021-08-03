@@ -137,6 +137,10 @@ namespace net.atos.daf.ct2.reportscheduler.report
         }
         private PaperKind GetPaperKind()
         {
+            if (ReportKey == ReportNameConstants.REPORT_FLEET_FUEL)
+            {
+                return PaperKind.A4Extra;
+            }
             return PaperKind.A4;
         }
 
