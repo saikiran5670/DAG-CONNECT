@@ -98,7 +98,7 @@ namespace net.atos.daf.ct2.unitconversion
                             result = value / 4546;
                             break;
                         case UnitToConvert.Metric:
-                            result = value / 1e+6; //need to check
+                            result = value / 1000;
                             break;
                     }
                     break;
