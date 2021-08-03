@@ -19,6 +19,7 @@ import { FleetFuelPreferencesComponent } from './reports-preferences/fleet-fuel-
 import { FuelDeviationPreferencesComponent } from './reports-preferences/fuel-deviation-preferences/fuel-deviation-preferences.component';
 import { FleetOverviewTabPreferencesComponent } from './fleet-overview-preferences/fleet-overview-tab-preferences/fleet-overview-tab-preferences.component';
 import { LogbookTabPreferencesComponent } from './fleet-overview-preferences/logbook-tab-preferences/logbook-tab-preferences.component';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import { LogbookTabPreferencesComponent } from './fleet-overview-preferences/log
     ReactiveFormsModule,
     ImageCropperModule,
     DirectivesModule,
-    NgxMaterialTimepickerModule
+    NgxMaterialTimepickerModule,
+    NgxMatSelectSearchModule
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA

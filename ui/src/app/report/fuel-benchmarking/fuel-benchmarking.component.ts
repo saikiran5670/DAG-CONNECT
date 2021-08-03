@@ -730,7 +730,7 @@ export class FuelBenchmarkingComponent implements OnInit {
           "viNs": _vinData,
         }
         this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
-
+          
           this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
           // this.setTableInfo();
           // this.updateDataSource(this.tripData);
@@ -796,7 +796,11 @@ export class FuelBenchmarkingComponent implements OnInit {
       }
       this.reportService.getBenchmarkDataByTimePeriod(requestObj).subscribe((data: any) => {
         this.showLoadingIndicator = true;
+        let withConvertedDataObj;
+        withConvertedDataObj = this.reportMapService.getConvertedFuelBenchmarkingData(data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
         console.log("---api hit and get data for time period range---", data)
+        console.log("-----withConvertedDataObj---++++++",withConvertedDataObj);
+        data = withConvertedDataObj;
         if(!this.test.includes(data)){
           this.test.push(data);
         }
@@ -832,7 +836,11 @@ export class FuelBenchmarkingComponent implements OnInit {
 
       this.reportService.getBenchmarkDataByVehicleGroup(requestObj).subscribe((data: any) => {
         this.showLoadingIndicator = true;
-        console.log("---api hit and get data for vehicle group range---", data)
+        let withConvertedDataObj;
+        withConvertedDataObj = this.reportMapService.getConvertedFuelBenchmarkingData(data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat, this.prefTimeZone);
+        console.log("---api hit and get data for vehicle group---", data)
+        console.log("-----withConvertedDataObj---++++++",withConvertedDataObj);
+        data = withConvertedDataObj;
         if(!this.test.includes(data)){
         this.test.push(data);
         }

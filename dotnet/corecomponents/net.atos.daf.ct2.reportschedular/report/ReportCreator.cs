@@ -73,11 +73,11 @@ namespace net.atos.daf.ct2.reportscheduler.report
             ReportNameConstants.REPORT_TRIP => new TripReport(_reportManager, _reportSchedulerRepository, _visibilityManager,
                                                               _templateManager, _unitConversionManager, _unitManager, EmailEventType.TripReport, EmailContentType.Html, _mapManager),
             ReportNameConstants.REPORT_FLEET_UTILISATION => new FleetUtilisation(_reportManager, _reportSchedulerRepository, _visibilityManager,
-                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetUtilisation, EmailContentType.Html),
+                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetUtilisationReport, EmailContentType.Html),
             ReportNameConstants.REPORT_FLEET_FUEL => new FleetFuel(_reportManager, _reportSchedulerRepository, _visibilityManager,
-                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetFuel, EmailContentType.Html, _mapManager),
+                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetFuelReportAllVehicles, EmailContentType.Html, _mapManager),
             ReportNameConstants.REPORT_FUEL_DEVIATION => new FuelDeviation(_reportManager, _reportSchedulerRepository, _visibilityManager,
-                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetFuel, EmailContentType.Html, _mapManager),
+                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FuelDeviationReport, EmailContentType.Html, _mapManager),
             _ => throw new ArgumentException(message: "invalid Report Key value", paramName: nameof(reportKey)),
         };
 
@@ -110,9 +110,8 @@ namespace net.atos.daf.ct2.reportscheduler.report
             {
                 ColorMode = ColorMode.Color,
                 Orientation = GetOrientation(),
-                PaperSize = PaperKind.A4,
+                PaperSize = GetPaperKind(),
                 Margins = new MarginSettings { Top = 10 }
-                //Out = $@"C:\POC\All\{ ReportSchedulerData.ReportName }_{ ReportSchedulerData.Id }_{ DateTime.Now.ToString("ddMMyyyyHHmmss") }.pdf"
             };
             var objectSettings = new ObjectSettings
             {
@@ -140,9 +139,9 @@ namespace net.atos.daf.ct2.reportscheduler.report
         }
         private PaperKind GetPaperKind()
         {
-            if (ReportKey == ReportNameConstants.REPORT_FLEET_FUEL || ReportKey == ReportNameConstants.REPORT_FLEET_UTILISATION)
+            if (ReportKey == ReportNameConstants.REPORT_FLEET_FUEL)
             {
-                return PaperKind.A3;
+                return PaperKind.A4;
             }
             return PaperKind.A4;
         }
@@ -185,9 +184,6 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 throw new Exception(string.Format(TripReportConstants.NO_VEHICLE_ASSOCIATION_MSG, vinData));
             }
             return vehicleList;
-            //var lst = new List<VehicleList>();
-            //lst.Add(vehicleList.Where(w => w.VIN == "XLR0998HGFFT76657").FirstOrDefault());
-            //return lst;
         }
 
         private async Task<byte[]> GetLogoImage()

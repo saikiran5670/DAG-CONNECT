@@ -78,7 +78,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   selectedVehicleGroup : string;
   selectedVehicle : string;
   driverSelected : boolean = false;
-  selectedDriverData = [];  
+  selectedDriverData: any;  
   totalDriveTime : Number = 0;
   totalWorkTime : Number = 0;
   totalRestTime : Number = 0;
@@ -117,6 +117,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   compareButton: boolean = false;
   targetProfileSelected: Number;
   ecoScoreDriverDetails: any;
+  ecoScoreDriverDetailsTrendLine: any;
   prefMapData: any = [
     {
       key: 'da_report_alldriver_general_driverscount',
@@ -357,7 +358,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       }
     }
   }
-  
+
   getEcoScoreReportPreferences(prefData: any){
     let repoId: any = prefData.filter(i => i.name == 'EcoScore Report');
     this.reportService.getReportUserPreference(repoId.length > 0 ? repoId[0].id : 10).subscribe((data : any) => {
@@ -1040,12 +1041,61 @@ let finalGroupDataList = [];
   onDriverSelected(_row){
     console.log(_row);
     this.selectedDriverData = _row;
+    this.selectedDriverData = {
+      startDate: this.fromDisplayDate,
+      endDate: this.toDisplayDate,
+      vehicleGroup: this.selectedVehicleGroup,
+      vehicleName: this.selectedVehicle,
+      driverId: _row.driverId,
+      driverName: _row.driverName,
+      driverOption: this.selectedDriverOption
+
+    }
     // let setId = (this.driverListData.filter(elem=>elem.driverID === _row.driverId)[0]['driverID']);
     // this.ecoScoreForm.get('driver').setValue(setId);
-    // this.onSearch();   
-    this.driverSelected = true;
-    this.compareEcoScore = false;
-    this.ecoScoreDriver = true;
+    // this.onSearch(); 
+    let searchDataParam = {
+      "startDateTime":1204336888377,
+      "endDateTime":1820818919744,
+      "viNs": [
+        "XLR0998HGFFT76666","XLR0998HGFFT76657","XLRASH4300G1472w0","XLR0998HGFFT74600"
+        ],
+      "driverId":"NL B000384974000000",
+      "minTripDistance":0,
+      "minDriverTotalDistance": 0,
+      "targetProfileId": 2,
+      "reportId": 10,
+      "uoM": "Metric"
+    }  
+    this.reportService.getEcoScoreSingleDriver(searchDataParam).subscribe((_driverDetails: any) => {  
+      this.ecoScoreDriverDetails = _driverDetails;          
+    //  console.log(JSON.stringify(_driverDetails));
+     console.log(_driverDetails);
+     this.reportService.getEcoScoreSingleDriverTrendLines(searchDataParam).subscribe((_trendLine: any) => {  
+      this.ecoScoreDriverDetailsTrendLine = _trendLine;
+      // console.log("trendlines "+JSON.stringify(_trendLine));
+      console.log("trendlines "+_trendLine);
+      this.driverSelected = true;
+      this.compareEcoScore = false;
+      this.ecoScoreDriver = true;
+     }, (error)=>{
+     
+     });
+    }, (error)=>{
+    
+    });
+
+    // this.reportService.getEcoScoreSingleDriverTrendLines(searchDataParam).subscribe((_trendLine: any) => {  
+    //   this.ecoScoreDriverDetailsTrendLine = _trendLine;
+    //   // console.log("trendlines "+JSON.stringify(_trendLine));
+    //   console.log("trendlines "+_trendLine);
+    //  }, (error)=>{
+     
+    //  });
+    
+    // this.driverSelected = true;
+    // this.compareEcoScore = false;
+    // this.ecoScoreDriver = true;
   }
 
   backToMainPage(){

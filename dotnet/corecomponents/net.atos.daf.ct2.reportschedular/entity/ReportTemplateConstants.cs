@@ -6,7 +6,8 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 {
     public static class ReportTemplateContants
     {
-        public const string REPORT_TEMPLATE_FLEET_UTILISATION = @"<!doctype html>
+        public const string REPORT_TEMPLATE_FLEET_UTILISATION = @"
+<!doctype html>
 <html>
 <head>
     <style>
@@ -138,15 +139,14 @@ tr {{ page-break-inside: avoid }}
 </body>
 </html>";
         public const string REPORT_TEMPLATE_FLEET_FUEL = @"
-
 <!doctype html>
 <html>
 <head>
-<style>
+    <style>
 .detailsDiv {{
   border: none;
-  background-color: lightblue;    
-  text-align: center
+  background-color: lightblue;
+  text-align: left
 }}
 .reportDetailsTable {{
   border-collapse: collapse;
@@ -171,91 +171,144 @@ tr {{ page-break-inside: avoid }}
 thead {{ display: table-header-group }}
 tfoot {{ display: table-row-group }}
 tr {{ page-break-inside: avoid }}
-</style>
+    </style>
 </head>
-  <body>
-		<img style='margin:20px 50px' align='left' width='180px' height='80px'  src='{0}'>
-		<img style='margin:20px 50px' align='right' width='220px' height='80px' src='{29}'><br/><br/><br/><br/>
+<body>
+    <table style='width: 100%;'>
+        <tr>
+            <td><img style='margin:20px 00px' align='left' width='380px' height='80px' src='{0}'></td>
+            <td><h2 style='text-align: center'>[lblFleetFuelReportDetails]</h2></td>
+            <td><img style='margin:0px 0px' align='right' width='180px' height='80px' src='{29}'></td>
+        </tr>
+    </table>
 	
-    <h2 style='margin:50px 50px'>[lblFleetFuel]</h2>
-	<div class='detailsDiv'>
-	  <table  style='width: 100%;'>
-		<tr>
-			<td style='width: 30%;'><p><strong>[lblFrom] : </strong>  {2}</P></td>
-			<td style='width: 30%;'><p><strong>[lblVehicleGroup] : </strong>  {3}</P></td>			
-		</tr>
-		<tr>
-			<td style='width: 30%;'><p><strong>[lblTo] : </strong>  {4}</P></td>
-			<td style='width: 30%;'><p><strong>[lblVehicleName] : </strong>  {5}</P></td>			
-		</tr>
-	  </table>
-	</div><br/><br/>
-<div class='detailsDiv'>
-	  <table  style='width: 100%;'>
-		<tr>
-			<td style='width: 30%;'><p><strong>Number of Trips : </strong>  {6}</P></td>
-			<td style='width: 30%;'><p><strong>Distance : </strong>  {7}{8}</P></td>		
-			<td style='width: 30%;'><p><strong>Fuel Consumed : </strong>  {9} {10} </P></td>
-			<td style='width: 30%;'><p><strong>Idle Duration : </strong>  {11} {12}</P></td>
-			<td style='width: 30%;'><p><strong>Fuel Consumption : </strong>   {13} {14}</P></td>	
-			<td style='width: 30%;'><p><strong>CO2 Emission : </strong>   {15} {16}</P></td>		
-		</tr>
-	  </table>
-	</div><br/><br/>
-	
-<table class='reportDetailsTable'>
-		<thead>
-			<th>Ranking</th>
-			<th>Vehicle</th>
-			<th>VIN</th>
-			<th>Plate Number</th>
-			<th>Consumption ({27})</th>			
-		</thead>
-		{28}
-	</table>
-<br/>
 	<table class='reportDetailsTable'>
-		<thead>
-			<th>Vehicle Name</th>
-			<th>VIN</th>
-			<th>Plate Number</th>
-			<th>Distance ({17})</th>
-			<th>Average distance per day ({18})</th>
-			<th>Average Speed ({19})</th>
-			<th>Max Speed ({20})</th>
-			<th>Number Of Trips</th>
-			<th>Average Gross Weight Comb ({21})</th>
-			<th>Fuel Consumed ({22})</th>
-			<th>Fuel Consumption ({23})</th>
-			<th>CO2 Emission ({24})</th>
-			<th>Idle Duration (%)</th>
-			<th>PTO Duration (%)</th>
-			<th>Harsh Brake Duration (%)</th>
-			<th>Heavy Throttle Duration (%)</th>
-			<th>Cruise Control Distance 30-50 km/h %</th>
-			<th>Cruise Control Distance 50-75 km/h %</th>
-			<th>Cruise Control Distance >75 km/h %</th>
-			<th>Average Traffic Classification</th>
-			<th>CC Fuel Consumption ({25})</th>
-			<th>Fuel Consumption CC Non Active ({26})</th>
-			<th>Idling Consumption</th>
-			<th>DPA Score</th>
-		</thead>
-		{1}
-	</table>
+        <thead>
+        <th>[lblRanking]</th>
+        <th>[lblVehicleName]</th>
+		<th>[lblVIN]</th>
+        <th>[lblRegistrationNumber]</th>
+        <th>[lblConsumption] ({27})</th>
+        </thead>
+        {28}
+    </table>
+<br/><br/>
+    <div class='detailsDiv'>
+        <table style='width: 100%;'>
+            <tr>
+                <td style='width: 25%;' align='left'><p style='margin-left: 10%;'><strong>[lblFrom] : </strong>  {2}</p></td>
+                <td style='width: 25%;' align='left'><p style='margin-left: 10%;'><strong>[lblTo] : </strong>  {3}</p></td>
+				<td style='width: 25%;' align='left'><p style='margin-left: 10%;'><strong>[lblVehicleGroup] : </strong>  {4}</p></td>
+                <td style='width: 25%;' align='left'><p style='margin-left: 10%;'><strong>[lblVehicleName] : </strong>  {5}</p></td>
+            </tr>
+        </table>
+    </div><br /><br />
+    <table style='width: 100%;'>
+        <tr>       
+            <td>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div class='areaWidth min-width-35-per' fxLayout='column' fxLayoutAlign='center'>
+                        <span>[lblNumberOfTrips]</span>
+                    </div>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span style='font: 500 14px/32px Roboto, ' Helvetica Neue', sans-serif;'>{6}</span>
+                    </div>
+                </div>
+            </td>
+			<td>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div class='areaWidth min-width-35-per' fxLayout='column' fxLayoutAlign='center'>
+                        <span>[lblTotalDistance]</span>
+                    </div>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span style='font: 500 14px/32px Roboto, ' Helvetica Neue', sans-serif;'>{7}{8}</span>
+                    </div>
+                </div>
+            </td>
+			<td>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div fxLayoutAlign='center'>
+                        <span>[lblFuelConsumed]</span>
+                    </div>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span style='font: 500 14px/32px Roboto, ' Helvetica Neue', sans-serif;'>{9} {10}</span>
+                    </div>
+                </div>
+            </td>
+			<td>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span>[lblIdleDuration]</span>
+                    </div>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span style='font: 500 14px/32px Roboto, ' Helvetica Neue', sans-serif;'>{11} {12}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span>[lblFuelConsumption]</span>
+                    </div>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span style='font: 500 14px/32px Roboto, ' Helvetica Neue', sans-serif;'>{13} {14}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span>[lblCO2Emission]</span>
+                    </div>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span style='font: 500 14px/32px Roboto, ' Helvetica Neue', sans-serif;'>{15} {16}</span>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table><br /><br />
 
-  </body>
+                  <table class='reportDetailsTable'>
+                      <thead>
+                      <th>[lblVehicleName]</th>
+                      <th>[lblVIN]</th>
+                      <th>[lblRegistrationNumber]</th>
+                      <th>[lblDistance]({17})</th>
+                      <th>[lblAverageDistancePerDay] ({18})</th>
+                      <th>[lblAverageSpeed]({19})</th>
+                      <th>[lblMaxSpeed] ({20})</th>
+                      <th>[lblNoOfTrips]</th>
+                      <th>[lblAverageGrossWeightComb] ({21})</th>
+                      <th>[lblFuelConsumed] ({22})</th>
+                      <th>[lblFuelConsumption] ({23})</th>
+                      <th>[lblCO2Emission] ({24})</th>
+                      <th>[lblIdleDuration] (%)</th>
+                      <th>[lblPTODuration] (%)</th>
+                      <th>[lblHarshBrakeDuration] (%)</th>
+                      <th>[lblHeavyThrottleDuration] (%)</th>
+                      <th>[lblCruiseControlDistance30-50] (%)</th>
+                      <th>[lblCruiseControlDistance50-75] (%)</th>
+                      <th>[lblCruiseControlDistance>75] (%)</th>
+                      <th>[lblAverageTrafficClassification]</th>
+                      <th>[lblCCFuelConsumption] ({25})</th>
+                      <th>[lblFuelconsumptionCCnonactive] ({26})</th>
+                      <th>[lblIdlingConsumption]</th>
+                      <th>[lblDPAScore]</th>
+                      </thead>
+                      {1}
+                  </table>
+
+</body>
 </html>";
         public const string REPORT_TEMPLATE_FLEET_FUEL_SINGLE = @"
-
 <!doctype html>
 <html>
 <head>
-<style>
+    <style>
 .detailsDiv {{
   border: none;
-  background-color: lightblue;    
-  text-align: center
+  background-color: lightblue;
+  text-align: left
 }}
 .reportDetailsTable {{
   border-collapse: collapse;
@@ -280,84 +333,135 @@ tr {{ page-break-inside: avoid }}
 thead {{ display: table-header-group }}
 tfoot {{ display: table-row-group }}
 tr {{ page-break-inside: avoid }}
-</style>
+    </style>
 </head>
-  <body>
-		<img style='margin:20px 50px' align='left' width='180px' height='80px'  src='{0}'>
-		<img style='margin:20px 50px' align='right' width='180px' height='80px' src='{29}'><br/><br/><br/><br/>
-	
-    <h2 style='margin:50px 50px'>[lblFleetFuel]</h2>
-	<div class='detailsDiv'>
-	  <table  style='width: 100%;'>
-		<tr>
-			<td style='width: 30%;'><p><strong>[lblFrom] : </strong>  {2}</P></td>
-			<td style='width: 30%;'><p><strong>[lblVehicleGroup] : </strong>  {3}</P></td>			
-		</tr>
-		<tr>
-			<td style='width: 30%;'><p><strong>[lblTo] : </strong>  {4}</P></td>
-			<td style='width: 30%;'><p><strong>[lblVehicleName] : </strong>  {5}</P></td>			
-		</tr>
-	  </table>
-	</div><br/><br/>
-<div class='detailsDiv'>
-	  <table  style='width: 100%;'>
-		<tr>
-			<td style='width: 30%;'><p><strong>Number of Trips : </strong>  {6}</P></td>
-			<td style='width: 30%;'><p><strong>Distance : </strong>  {7}{8}</P></td>		
-			<td style='width: 30%;'><p><strong>Fuel Consumed : </strong>  {9} {10} </P></td>
-			<td style='width: 30%;'><p><strong>Idle Duration : </strong>  {11} {12}</P></td>
-			<td style='width: 30%;'><p><strong>Fuel Consumption : </strong>   {13} {14}</P></td>	
-			<td style='width: 30%;'><p><strong>CO2 Emission : </strong>   {15} {16}</P></td>		
-		</tr>
-	  </table>
-	</div><br/><br/>
-	
-<strong>All Trip Details</strong>
-<br/>
-<div class='detailsDiv'>
-	  <table  style='width: 100%;'>
-		<tr>
-			<td style='width: 30%;'><p><strong>Vehicle Name : </strong>  {17}</P></td>
-			<td style='width: 30%;'><p><strong>VIN : </strong>  {18}</P></td>		
-			<td style='width: 30%;'><p><strong>Registration No. : </strong>  {19}</P></td>
-		</tr>
-	  </table>
-	</div><br/>
-	<table class='reportDetailsTable'>
-		<thead>
-			<th>Vehicle Name</th>
-			<th>VIN</th>
-			<th>RegistrationNo</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Distance ({20})</th>
-            <th>Start Position</th>
-            <th>End Position</th>
-            <th>Fuel Consumed ({21})</th>
-			<th>Fuel Consumption ({22})</th>
-            <th>Idle Duration (%)</th>
-            <th>Cruise Control Distance 30-50 km/h %</th>
-			<th>Cruise Control Distance 50-75 km/h %</th>
-			<th>Cruise Control Distance >75 km/h %</th>
-            <th>CO2 Emission ({23})</th>		
-			<th>Heavy Throttle Duration (%)</th>
-			<th>Harsh Brake Duration (%)</th>
-			<th>Average Traffic Classification</th>						
-			<th>CC Fuel Consumption ({24})</th>
-			<th>Fuel Consumption CC Non Active ({25})</th>
-			<th>Idling Consumption</th>
-			<th>DPA Score</th>
-            <th>Gross Weight Comb ({26})</th>	
-            <th>PTO Duration (%)</th>
-            <th>Max Speed ({27})</th>
-            <th>Average Speed ({28})</th>			
-		</thead>
-		{1}
-	</table>
+<body>
+    <table style='width: 100%;'>
+        <tr>
+            <td><img style='margin:20px 00px' align='left' width='180px' height='80px' src='{0}'></td>
+            <td><h2 style='text-align: center'>[lblFleetFuelReportDetails]</h2></td>
+            <td><img style='margin:0px 0px' align='right' width='180px' height='80px' src='{29}'></td>
+        </tr>
+    </table>
 
-  </body>
+    <div class='detailsDiv'>
+        <table style='width: 100%;'>
+            <tr>
+                <td style='width: 25%;' align='left'><p style='margin-left: 10%;'><strong>[lblFrom] : </strong>  {2}</p></td>
+                <td style='width: 25%;' align='left'><p style='margin-left: 10%;'><strong>[lblTo] : </strong>  {3}</p></td>
+                <td style='width: 25%;' align='left'><p style='margin-left: 10%;'><strong>[lblVehicleGroup] : </strong>  {4}</p></td>
+                <td style='width: 25%;' align='left'><p style='margin-left: 10%;'><strong>[lblVehicleName] : </strong>  {5}</p></td>
+            </tr>
+        </table>
+    </div><br /><br />
+    <table style='width: 100%;'>
+        <tr>
+            <td>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div class='areaWidth min-width-35-per' fxLayout='column' fxLayoutAlign='center'>
+                        <span>[lblNumberOfTrips]</span>
+                    </div>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span style='font: 500 14px/32px Roboto, ' Helvetica Neue', sans-serif;'>{6}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div class='areaWidth min-width-35-per' fxLayout='column' fxLayoutAlign='center'>
+                        <span>[lblTotalDistance]</span>
+                    </div>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span style='font: 500 14px/32px Roboto, ' Helvetica Neue', sans-serif;'>{7}{8}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div fxLayoutAlign='center'>
+                        <span>[lblFuelConsumed]</span>
+                    </div>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span style='font: 500 14px/32px Roboto, ' Helvetica Neue', sans-serif;'>{9} {10}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span>[lblIdleDuration]</span>
+                    </div>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span style='font: 500 14px/32px Roboto, ' Helvetica Neue', sans-serif;'>{11} {12}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span>[lblFuelConsumption]</span>
+                    </div>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span style='font: 500 14px/32px Roboto, ' Helvetica Neue', sans-serif;'>{13} {14}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span>[lblCO2Emission]</span>
+                    </div>
+                    <div fxLayout='column' fxLayoutAlign='center'>
+                        <span style='font: 500 14px/32px Roboto, ' Helvetica Neue', sans-serif;'>{15} {16}</span>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table><br /><br />
+    <strong>All Trip Details</strong>
+    <br />
+    <div class='detailsDiv'>
+        <table style='width: 100%;'>
+            <tr>
+                <td style='width: 30%;'><p><strong>Vehicle Name : </strong>  {17}</p></td>
+                <td style='width: 30%;'><p><strong>VIN : </strong>  {18}</p></td>
+                <td style='width: 30%;'><p><strong>Registration No. : </strong>  {19}</p></td>
+            </tr>
+        </table>
+    </div><br />
+          <table class='reportDetailsTable'>
+              <thead>
+              <th>[lblVehicleName]</th>
+              <th>[lblVIN]</th>
+              <th>[lblRegistrationNumber]</th>
+              <th>[lblstartDate]</th>
+              <th>[lblendDate]</th>
+              <th>[lblDistance] ({20})</th>
+              <th>[lblStartPosition]</th>
+              <th>[lblEndPosition]</th>
+              <th>[lblFuelConsumed] ({21})</th>
+              <th>[lblFuelConsumption] ({22})</th>
+              <th>[lblIdleDuration] (%)</th>
+              <th>[lblCruiseControlDistance30-50] (%)</th>
+              <th>[lblCruiseControlDistance50-75] (%)</th>
+              <th>[lblCruiseControlDistance>75] (%)</th>
+              <th>[lblCO2Emission] ({23})</th>
+              <th>[lblHeavyThrottleDuration] (%)</th>
+              <th>[lblHarshBrakeDuration] (%)</th>
+              <th>[lblAverageTrafficClassification]</th>
+              <th>[lblCCFuelConsumption] ({24})</th>
+              <th>[lblFuelconsumptionCCnonactive] ({25})</th>
+              <th>[lblIdlingConsumption]</th>
+              <th>[lblDPAScore]</th>
+              <th>[lblGrossWeightComb] ({26})</th>
+              <th>[lblPTODuration] (%)</th>
+              <th>[lblMaxSpeed] ({27})</th>
+              <th>[lblAverageSpeed]({28})</th>
+              </thead>
+              {1}
+          </table>
+</body>
 </html>";
-
         public const string REPORT_TEMPLATE_FUEL_DEVIATION = @"
 
 <!doctype html>
@@ -475,6 +579,7 @@ tr {{ page-break-inside: avoid }}
 	</table>
   </body>
 </html>";
+
         public const string REPORT_SUMMARY_TEMPLATE = @"
             <table style='width: 100%; border-collapse: collapse;' border = '0'>                   
                    <tr>

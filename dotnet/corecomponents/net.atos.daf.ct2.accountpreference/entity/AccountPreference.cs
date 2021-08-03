@@ -19,6 +19,7 @@ namespace net.atos.daf.ct2.accountpreference
         public int IconId { get; set; }
         public string IconByte { get; set; }
         public int CreatedBy { get; set; }
+        public int PageRefreshTime { get; set; }
 
     }
 

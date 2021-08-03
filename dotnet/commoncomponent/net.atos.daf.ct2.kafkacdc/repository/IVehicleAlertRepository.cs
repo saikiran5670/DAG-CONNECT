@@ -8,8 +8,8 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 {
     public interface IVehicleAlertRepository
     {
-        Task<List<VehicleAlertRef>> GetVehicleAlertRefByAlertIds(List<int> alertIds);
-        Task<List<VehicleAlertRef>> GetVehiclesFromAlertConfiguration(List<int> alertIds);
+        Task<List<VehicleAlertRef>> GetVehicleAlertRefByAlertIds(int alertIds);
+        Task<List<VehicleAlertRef>> GetVehiclesFromAlertConfiguration(int alertId);
         Task<bool> InsertVehicleAlertRef(List<VehicleAlertRef> vehicleAlertRefs);
         Task<bool> UpdateVehicleAlertRef(List<VehicleAlertRef> vehicleAlertRefs);
         Task<bool> DeleteVehicleAlertRef(List<int> alertIds);

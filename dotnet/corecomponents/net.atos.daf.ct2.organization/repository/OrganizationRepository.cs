@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.account;
@@ -18,6 +19,7 @@ namespace net.atos.daf.ct2.organization.repository
     public class OrganizationRepository : IOrganizationRepository
     {
         private readonly IDataAccess _dataAccess;
+        private readonly IDataMartDataAccess _dataMartdataAccess;
         private readonly IVehicleManager _vehicelManager;
         private readonly IGroupManager _groupManager;
         private readonly IAccountManager _accountManager;
@@ -27,9 +29,10 @@ namespace net.atos.daf.ct2.organization.repository
 
         private static readonly log4net.ILog _log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        public OrganizationRepository(IDataAccess dataAccess, IVehicleManager vehicleManager, IGroupManager groupManager, IAccountManager accountManager, SubscriptionComponent.ISubscriptionManager subscriptionManager, IdentitySessionComponent.IAccountSessionManager accountSessionManager, IdentitySessionComponent.IAccountTokenManager accountTokenManager)
+        public OrganizationRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess, IVehicleManager vehicleManager, IGroupManager groupManager, IAccountManager accountManager, SubscriptionComponent.ISubscriptionManager subscriptionManager, IdentitySessionComponent.IAccountSessionManager accountSessionManager, IdentitySessionComponent.IAccountTokenManager accountTokenManager)
         {
             _dataAccess = dataAccess;
+            _dataMartdataAccess = dataMartdataAccess;
             _vehicelManager = vehicleManager;
             _groupManager = groupManager;
             _accountManager = accountManager;
@@ -1262,11 +1265,89 @@ namespace net.atos.daf.ct2.organization.repository
 
         #region Provisioning Data Service
 
-        public Task<bool> GetOrganisationList(ProvisioningOrganisationDataServiceRequest request)
+        public async Task<IEnumerable<ProvisioningOrganisation>> GetOrganisationList(ProvisioningOrganisationDataServiceRequest request)
         {
             try
             {
-                return Task.FromResult(true);
+                StringBuilder query;
+                var parameters = new DynamicParameters();
+                IEnumerable<ProvisioningOrganisation> provisioningOrganisations;
+                parameters.Add("@DriverId", request.DriverId);
+                parameters.Add("@VIN", request.VIN);
+                parameters.Add("@StartTimestamp", request.StartTimestamp);
+                parameters.Add("@EndTimestamp", request.EndTimestamp);
+
+                if (!string.IsNullOrEmpty(request.Account) && !string.IsNullOrEmpty(request.DriverId))
+                {
+                    query =
+                        new StringBuilder(@"select DISTINCT VIN from livefleet.livefleet_current_trip_statistics where driver1_id = @DriverId and ");
+                }
+                else if (!string.IsNullOrEmpty(request.VIN))
+                {
+                    query =
+                        new StringBuilder(@"select DISTINCT VIN from livefleet.livefleet_current_trip_statistics where VIN = @VIN and ");
+                }
+                else
+                {
+                    return new List<ProvisioningOrganisation>().AsEnumerable();
+                }
+
+                if (request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
+                {
+                    query.Append("start_time_stamp >= @StartTimestamp and (end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL)");
+                }
+                else if (request.StartTimestamp.HasValue && !request.EndTimestamp.HasValue)
+                {
+                    query.Append("start_time_stamp >= @StartTimestamp and (end_time_stamp IS NULL or 1=1)");
+                }
+                else if (!request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
+                {
+                    query.Append("end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
+                }
+
+                var vins = await _dataMartdataAccess.QueryAsync<string>(query.ToString(), parameters);
+
+                if (vins != null && vins.Count() > 0)
+                {
+                    parameters = new DynamicParameters();
+                    parameters.Add("@VINs", vins);
+
+                    // Find owner org(s)
+                    string queryOrg = @"select distinct veh.organization_id
+                                        from master.vehicle veh
+                                        inner join master.orgrelationshipmapping orm on orm.vehicle_id=veh.id
+                                        Inner join master.orgrelationship ors on ors.id=orm.relationship_id
+                                        where ors.state='A'
+                                        and case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date >= now()::date 
+                                                else COALESCE(end_date,0) = 0 end
+                                        and veh.VIN = ANY(@VINs) and orm.owner_org_id = veh.organization_id and ors.code = 'owner'";
+                    var ownerOrgIds = await _dataAccess.QueryAsync<int>(queryOrg, parameters);
+
+                    parameters = new DynamicParameters();
+                    parameters.Add("@OwnerOrgs", ownerOrgIds);
+
+                    // Find visible org(s)
+                    queryOrg = @"select distinct orm.target_org_id
+                                from master.group grp
+                                inner join master.orgrelationshipmapping orm on orm.vehicle_group_id=grp.id and grp.object_type='V'
+                                Inner join master.orgrelationship ors
+                                on ors.id=orm.relationship_id
+                                where ors.state='A'
+                                and case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date >= now()::date 
+                                         else COALESCE(end_date,0) = 0 end
+                                and orm.vehicle_group_id=grp.id and orm.owner_org_id = ANY(@OwnerOrgs) and ors.code <> 'owner'";
+                    var visibleOrgIds = await _dataAccess.QueryAsync<int>(queryOrg, parameters);
+
+                    // Merge all Org Ids
+                    var finalOrgIds = ownerOrgIds.Concat(visibleOrgIds).Distinct();
+
+                    parameters = new DynamicParameters();
+                    parameters.Add("@OrgIds", finalOrgIds.ToArray());
+
+                    queryOrg = @"select org_id as OrgId, name as Name from master.organization where id = ANY(@OrgIds)";
+                    return await _dataAccess.QueryAsync<ProvisioningOrganisation>(queryOrg, parameters);
+                }
+                return new List<ProvisioningOrganisation>().AsEnumerable();
             }
             catch (Exception)
             {

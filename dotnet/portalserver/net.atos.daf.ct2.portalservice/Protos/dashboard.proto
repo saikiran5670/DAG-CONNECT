@@ -10,6 +10,7 @@ rpc GetFleetKPIDetails(FleetKpiFilterRequest) returns (FleetKpiResponse);
 rpc GetLastAlert24Hours(Alert24HoursFilterRequest) returns (Alert24HoursResponse);
 rpc GetFleetUtilizationDetails(FleetKpiFilterRequest) returns (FleetUtilizationResponse);
 rpc GetTodayLiveVinData(TodayLiveVehicleRequest) returns (TodayLiveVehicleResponse);
+rpc GetVisibleVins(VehicleListRequest) returns (VehicleListAndDetailsResponse);
 }
 
 enum Responsecode{
@@ -80,7 +81,7 @@ message Alert24Hour{
 //start for utilization
 
 message FleetUtilizationResponse {
-    FleetUtilization Fleetutilizationcharts = 1;
+    repeated FleetUtilization Fleetutilizationcharts = 1;
     Responsecode code = 2;
     string message = 3;
 }
@@ -99,3 +100,39 @@ message FleetUtilization {
 
 }
 // End utilizatio
+
+//Start Vehicle Visibility and Trip filtered records
+
+message VehicleDetailsWithAccountVisibilty {
+int32 VehicleGroupId = 1;
+int32 AccountId = 2;
+string ObjectType = 3;
+string GroupType = 4;
+string FunctionEnum = 5;
+int32 OrganizationId = 6;
+string AccessType = 7;
+string VehicleGroupName = 8;
+int32 VehicleId = 9;
+string VehicleName = 10;
+string Vin = 11;
+string RegistrationNo = 12;
+}
+
+message VehicleFromTripDetails {
+string Vin = 1;
+int64 StartTimeStamp=2;
+int64 EndTimeStamp=3;
+}
+
+message VehicleListAndDetailsResponse{
+Responsecode Code = 1;
+string Message = 2;
+repeated VehicleFromTripDetails VinTripList = 3;
+repeated VehicleDetailsWithAccountVisibilty VehicleDetailsWithAccountVisibiltyList = 4;
+}
+
+message VehicleListRequest{
+int32 AccountId = 3;
+int32 OrganizationId = 4;
+}
+//End Vehicle Visibility and Trip filtered records

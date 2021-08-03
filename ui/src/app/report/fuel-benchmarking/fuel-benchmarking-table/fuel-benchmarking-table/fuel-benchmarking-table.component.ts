@@ -26,6 +26,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   @Input() selectionValueBenchmarkBY: any;
   @Input() benchmarkSelectionChange: any;
   @Input() vehicleGroupSelected:any;
+  @Input() prefUnitFormat:any;
   //vehicleHeaderCount :any = 0;
   initData: any = [];
   responseDataTP: any = {}
@@ -38,7 +39,8 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   tableHeadingwithRange: any = "";
   displayedColumns: string[] = ['period'];
   timerangeColumn: string[] = ['timerangeColumn'];
-  firstColumn: string[] = ['numberOfActiveVehicles', 'totalFuelConsumed', 'totalMileage', 'averageFuelConsumption', 'ranking', 'fuelConsumption'];
+  firstColumn: string[] = ['numberOfActiveVehicles', 'convertedTotalFuelConsumed', 'convertedTotalMileage', 'convertedAvgFuelConsumption', 'ranking', 'fuelConsumption'];
+  //old without conversionValues // firstColumn: string[] = ['numberOfActiveVehicles', 'totalFuelConsumed', 'totalMileage', 'averageFuelConsumption', 'ranking', 'fuelConsumption'];
 
   doughnutChartLabels: Label[] = ['High', 'Medium', 'Low'];
   doughnutChartData: MultiDataSet = [
@@ -72,6 +74,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   }
 
   loadBenchmarkTable() {
+    // console.log("=====prefUnitFormat====",this.prefUnitFormat)
     //to check if benchmark selection chage
     if (this.benchmarkSelectionChange && this.displayedColumns.length > 1) {
       this.displayedColumns = this.displayedColumns.splice(0, 1)
@@ -86,7 +89,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     }
 
     for (let row of this.test) {
-      this.addColumn(JSON.parse(row), this.tableHeadingwithRange);
+      this.addColumn(row, this.tableHeadingwithRange);
     }
   }
 
