@@ -46,7 +46,7 @@ rpc GetEcoScoreReportSingleDriver (GetEcoScoreReportSingleDriverRequest) returns
 rpc GetAssociatedVehiclGroup (VehicleListRequest) returns (AssociatedVehicleResponse);
 rpc GetEcoScoreReportTrendlines (GetEcoScoreReportSingleDriverRequest) returns (GetEcoScoreReportTrendlinesResponse);
 rpc GetVehiclePerformanceChartTemplate(VehPerformanceRequest) returns (VehPerformanceResponse);
-rpc GetVehPerformanceBubbleChartData(VehPerformanceRequest) returns (BubbleChartDataResponse);
+rpc GetVehPerformanceBubbleChartData(BubbleChartDataRequest) returns (BubbleChartDataResponse);
 }
 
 message VehicleHealthReportRequest{
@@ -1313,7 +1313,7 @@ message GetEcoScoreReportTrendlinesResponse {
 /// END: Eco Score Report Single Driver
 // Vehicle Performance
 
-message VehPerformanceRequest{
+message BubbleChartDataRequest{
     int64 StartDateTime = 1;
     int64 EndDateTime = 2;
     string VIN = 3;
@@ -1355,9 +1355,11 @@ string Message = 1;
 Responsecode Code = 2;
 repeated BubbleChartData BubbleChartData = 3;
  }
- message BubbleChartDataRequest{     
+ message VehPerformanceRequest{     
     string VIN = 1;
-    string PerformanceType= 2;    
+    string PerformanceType= 2; 
+    int32 AccountId = 3;
+    int32 OrganizationId = 4;
 
 }
 // Vehicle Performance End
