@@ -33,8 +33,8 @@
             [plugins]="stack_barChartPlugins" [legend]="stack_barChartLegend" [chartType]="stack_barChartType">
           </canvas>
         </div> -->
-        <app-fleetkpi [translationData] ="translationData"></app-fleetkpi>
-        <app-today-live-vehicle *ngIf='finalVinList.length > 0' [translationData] ="translationData" [finalVinList]='finalVinList'></app-today-live-vehicle>
+        <app-fleetkpi *ngIf='finalVinList.length > 0' [translationData] ="translationData"  [finalVinList]='finalVinList' [prefData]='prefData' [preference]='preference'></app-fleetkpi>
+        <app-today-live-vehicle *ngIf='finalVinList.length > 0' [translationData] ="translationData" [finalVinList]='finalVinList' [prefData]='prefData' [preference]='preference'></app-today-live-vehicle>
         <app-dashboard-vehicle-utilisation [translationData] ="translationData"></app-dashboard-vehicle-utilisation>
       <!-- </div>
     </mat-card-content>
