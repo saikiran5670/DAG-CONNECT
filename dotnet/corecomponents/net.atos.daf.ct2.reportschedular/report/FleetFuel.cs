@@ -250,8 +250,8 @@ namespace net.atos.daf.ct2.account.report
                                                     : ImageSingleton.GetInstance().GetDefaultLogo()
                                   , await GenerateTableForSingle()
                                   , fromDate.ToString(DateTimeFormat)
-                                  , vehicle.VehicleGroupName ?? "All"
                                   , toDate.ToString(DateTimeFormat)
+                                  , vehicle.VehicleGroupName ?? "All"
                                   , vehicle.VehicleName
                                   , TotalNumberOfTrips
                                   , Math.Round(TotalDistance, 2)
@@ -289,8 +289,8 @@ namespace net.atos.daf.ct2.account.report
                                                     : ImageSingleton.GetInstance().GetDefaultLogo()
                                   , await GenerateTable()
                                   , fromDate.ToString(DateTimeFormat)
-                                  , VehicleLists.Any(s => !string.IsNullOrEmpty(s.VehicleGroupName)) ? string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).Distinct().ToArray()) : "All"
                                   , toDate.ToString(DateTimeFormat)
+                                  , VehicleLists.Any(s => !string.IsNullOrEmpty(s.VehicleGroupName)) ? string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).Distinct().ToArray()) : "All"
                                   , string.Join(',', VehicleLists.Select(s => s.VehicleName).Distinct().ToArray())
                                   , TotalNumberOfTrips
                                   , Math.Round(TotalDistance, 2)
