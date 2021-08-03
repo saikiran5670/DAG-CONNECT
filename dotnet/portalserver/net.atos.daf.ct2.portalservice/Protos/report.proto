@@ -1333,13 +1333,10 @@ message VehPerformanceRequest{
 }
 
 message VehPerformanceCharts{
-int32 EngineTypeId = 1;
-string EngineName = 2;
-string VehiclePerformanceType =3;
-string AxisType =4;
-string  AxisValue =5;
-int32 VehPerToYIndex =6;
-string KpiType =7;
+string IsDefault =3;
+string Index =4;
+string Range =5;
+string Axisvalues =6;
 }
 message VehPerformanceResponse{
 string Message = 1;

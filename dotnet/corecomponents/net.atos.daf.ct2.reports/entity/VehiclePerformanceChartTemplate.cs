@@ -9,15 +9,11 @@ namespace net.atos.daf.ct2.reports.entity
     }
     public class EngineLoadType
     {
-        public string Enginetype { get; set; }
-        public string TemplateLableKey { get; set; }
         public bool IsDefault { get; set; }
-        public List<Chartdata> Chartdata { get; set; }
-    }
-    public class Chartdata
-    {
+        //public List<Chartdata> Chartdata { get; set; }
         public int Index { get; set; }
         public string Range { get; set; }
-        public List<string> Axisvalues { get; set; }
+        public string Axisvalues { get; set; }
     }
+
 }
