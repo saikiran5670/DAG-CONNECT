@@ -383,7 +383,10 @@ export class ReportMapService {
           }
         }
         this.hereMap.addObject(this.group);
-        this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
+        this.hereMap.getViewModel().setLookAtData({
+          bounds: this.group.getBoundingBox()
+        });
+        // this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
       });
       this.makeCluster(_selectedRoutes, _ui);
     }else{
@@ -1314,9 +1317,9 @@ export class ReportMapService {
   getConvertedFuelBenchmarkingData(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     // gridData.forEach(element => {
       gridData = JSON.parse(gridData);
-      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = this.getFuelConsumedUnits(gridData.fuelBenchmarkDetails.averageFuelConsumption, unitFormat);
-      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = this.getFuelConsumedUnits(gridData.fuelBenchmarkDetails.totalFuelConsumed, unitFormat);
-      gridData.fuelBenchmarkDetails.convertedTotalMileage = this.getFuelConsumed(gridData.fuelBenchmarkDetails.totalMileage, unitFormat);
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = this.getFuelConsumedUnits(gridData.fuelBenchmarkDetails.averageFuelConsumption, unitFormat, true);
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = this.getFuelConsumedUnits(gridData.fuelBenchmarkDetails.totalFuelConsumed, unitFormat, false);
+      gridData.fuelBenchmarkDetails.convertedTotalMileage = this.convertDistanceUnits(gridData.fuelBenchmarkDetails.totalMileage, unitFormat);
 
     // });
     if(unitFormat == 'dunit_Imperial') {

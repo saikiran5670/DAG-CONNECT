@@ -1,20 +1,20 @@
 <mat-expansion-panel class="full-width margin-bottom-20m" fxLayoutGap="10px" [expanded]="true">
   <mat-expansion-panel-header class="full-width">
     <mat-panel-title>
-      <span *ngIf="clickButton"  class="mat-expansion-indicator"></span>
+      <!-- <span *ngIf="clickButton"  class="mat-expansion-indicator"></span> -->
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehiclesUtilisation
         || 'Vehicles Utilisation' }}</span>
     </mat-panel-title>
   </mat-expansion-panel-header>
   <!-- <div style='padding-left: 52%;' fxLayoutAlign="end"> -->
     <button class="weekButton"
-    (click)="selectionTimeRange('week')" [ngClass]="{'selectedBtn': selectionTab == 'week'}"  mat-raised-button
+    (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}"  mat-raised-button
       color="primary">{{translationData.lblLast7days|| 'Last 7 days' }}</button>
     <button class="monthButton" 
-    (click)="selectionTimeRange('month')" [ngClass]="{'selectedBtn': selectionTab == 'month'}" mat-raised-button
+    (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" mat-raised-button
       color="primary">{{translationData.lblLast30days|| 'Last 30 days' }}</button>
     <button class="moreButton"
-    (click)="selectionTimeRange('3months')" [ngClass]="{'selectedBtn': selectionTab == '3months'}" mat-raised-button
+    (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" mat-raised-button
       color="primary">{{translationData.lblLastWeek || 'Last 90 days' }}</button>
   <!-- </div> -->
   <div fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
@@ -22,12 +22,12 @@
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistancePerDay ||
         'Distance Per Day' }}</span>
       <div *ngIf="distanceChartType =='bar'" class="chart-wrapper">
-        <canvas baseChart [datasets]="barChartData1" [labels]="barChartLabels1" [options]="barChartOptions"
+        <canvas baseChart [datasets]="barChartData1" [labels]="barChartLabels1" [options]="barChartOptions2"
           [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
         </canvas>
       </div>
       <div *ngIf="distanceChartType =='line'" class="chart-wrapper">
-        <canvas baseChart [datasets]="lineChartData1" [labels]="lineChartLabels1" [options]="lineChartOptions"
+        <canvas baseChart [datasets]="lineChartData1" [labels]="lineChartLabels1" [options]="lineChartOptions2"
           [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType"
           [plugins]="lineChartPlugins">
         </canvas>
@@ -51,7 +51,7 @@
     <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="end">
       <div fxLayout="column">
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-left: 25%;'>{{
-          translationData.lblTimeBasedUtilisation || 'Time based utilisation' }}</span>
+          translationData.lblTimeBasedUtilisationRate || 'Time Based Utilisation Rate' }}</span>
         <div *ngIf="timeDChartType =='doughnut'" class="chart-wrapper">
           <canvas baseChart [data]="doughnutChartData1" [chartType]="doughnutChartType" [labels]="doughnutChartLabels1"
             [colors]="doughnutChartColors" [options]="doughnut_barOptions" [legend]="barChartLegend">
@@ -66,7 +66,7 @@
       </div>
       <div fxLayout="column">
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-left: 25%;'>{{
-          translationData.lblMileageBasedUtilisation || 'Mileage based utilisation' }}</span>
+          translationData.lblMileageBasedUtilisationRate || 'Distance Based Utilisation Rate' }}</span>
         <div *ngIf="mileageDChartType == 'doughnut'" class="chart-wrapper">
           <canvas baseChart [data]="doughnutChartData2" [chartType]="doughnutChartType" [labels]="doughnutChartLabels2"
             [colors]="doughnutChartColors" [options]="doughnut_barOptions" [legend]="barChartLegend">

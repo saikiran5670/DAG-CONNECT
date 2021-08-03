@@ -10,7 +10,7 @@
         {{ translationData.lblShowReport || 'Show Report'}}
     </button>
     <!-- block data -->
-    <div style='margin-bottom: 10px;' >
+    <div style='margin-bottom: 10px;' *ngIf='liveVehicleData'>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
           <div class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
             <span>
@@ -39,7 +39,7 @@
         </div>
     </div>
     <!-- Charts  -->
-    <div style='margin-bottom: 10px;' >
+    <div style='margin-bottom: 10px;'  *ngIf='liveVehicleData'>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
           <div class="chartTile col-md-4">
             <div class="textDiv">

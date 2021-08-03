@@ -87,8 +87,6 @@ namespace net.atos.daf.ct2.reportscheduler.report
 
             Report.SetParameters(ReportSchedulerData, await GetVehicleDetails());
             var pdf = await GetHtmlToPdfDocument();
-            //var test = _generatePdf.Convert(pdf);
-            //return true;
             return await _reportSchedulerRepository
                            .InsertReportPDF(new ScheduledReport
                            {
@@ -141,7 +139,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
         {
             if (ReportKey == ReportNameConstants.REPORT_FLEET_FUEL)
             {
-                return PaperKind.A4;
+                return PaperKind.A3;
             }
             return PaperKind.A4;
         }
