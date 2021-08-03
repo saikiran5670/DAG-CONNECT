@@ -15,6 +15,8 @@ public class DafConstants {
 
 	public static final String RESTART_ATTEMPS = "restart_attempts";
 	public static final String RESTART_INTERVAL = "restart_interval";
+	
+	public static final String DTM_TS_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
 	public static final String HBASE_ZOOKEEPER_QUORUM = "hbase.zookeeper.quorum";
 	public static final String HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT = "hbase.zookeeper.property.clientPort";
@@ -79,6 +81,8 @@ public class DafConstants {
 	public static final String INDEX_JOB = "IndexJob";
 	public static final String MONITOR_JOB = "MonitorJob";
 	public static final String STATUS_JOB = "StatusJob";
+	
+	
 	
 
 }
