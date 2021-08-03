@@ -1271,7 +1271,6 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 StringBuilder query;
                 var parameters = new DynamicParameters();
-                IEnumerable<ProvisioningOrganisation> provisioningOrganisations;
                 parameters.Add("@DriverId", request.DriverId);
                 parameters.Add("@VIN", request.VIN);
                 parameters.Add("@StartTimestamp", request.StartTimestamp);

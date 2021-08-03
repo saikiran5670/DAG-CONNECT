@@ -2269,7 +2269,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameters.Add("@EndTimestamp", request.EndTimestamp);
 
                 StringBuilder query =
-                    new StringBuilder(@"select VIN, start_time_stamp as StartTimestamp, end_time_stamp as EndTimestamp 
+                    new StringBuilder(@"select VIN, MAX(start_time_stamp) as StartTimestamp, MAX(end_time_stamp) as EndTimestamp 
                                         from livefleet.livefleet_current_trip_statistics where driver1_id=@DriverId");
 
                 if (request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
@@ -2285,23 +2285,29 @@ namespace net.atos.daf.ct2.vehicle.repository
                     query.Append(" and end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
                 }
 
-                query.Append(" order by end_time_stamp desc LIMIT 1");
+                query.Append(" group by VIN order by MAX(end_time_stamp) desc");
 
-                var provisioningVehicle = await _dataMartdataAccess.QueryFirstOrDefaultAsync<ProvisioningVehicle>(query.ToString(), parameters);
+                var provisioningVehicles = await _dataMartdataAccess.QueryAsync<ProvisioningVehicle>(query.ToString(), parameters);
 
-                if (provisioningVehicle != null)
+                if (provisioningVehicles != null && provisioningVehicles.Count() > 0)
                 {
-                    parameters = new DynamicParameters();
-                    parameters.Add("@VIN", provisioningVehicle.VIN);
+                    foreach (var provisioningVehicle in provisioningVehicles)
+                    {
+                        parameters = new DynamicParameters();
+                        parameters.Add("@VIN", provisioningVehicle.VIN);
 
-                    string queryVehicle = @"select Name, license_plate_number as RegNo from master.vehicle where vin = @VIN";
-                    var vehicle = await _dataAccess.QueryFirstOrDefaultAsync<ProvisioningVehicle>(queryVehicle, parameters);
-
-                    provisioningVehicle.Name = vehicle?.Name ?? string.Empty;
-                    provisioningVehicle.RegNo = vehicle?.RegNo ?? string.Empty;
+                        string queryVehicle = @"select VIN, Name, license_plate_number as RegNo from master.vehicle where vin = @VIN";
+                        var vehicle = await _dataAccess.QueryFirstOrDefaultAsync<ProvisioningVehicle>(queryVehicle, parameters);
+                        if (vehicle != null)
+                        {
+                            provisioningVehicle.Name = vehicle.Name ?? string.Empty;
+                            provisioningVehicle.RegNo = vehicle.RegNo ?? string.Empty;
+                            return provisioningVehicle;
+                        }
+                    }
                 }
 
-                return provisioningVehicle;
+                return null;
             }
             catch (Exception)
             {
