@@ -56,24 +56,23 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             _notificationConfiguration = new NotificationConfiguration();
             configuration.GetSection("NotificationConfiguration").Bind(_notificationConfiguration);
         }
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.Info("Start async called");
             // _server.Start();           
             while (true)
             {
-                //ReadAndProcessAlertMessage().Wait();
+                await ReadAndProcessAlertMessage();
                 Thread.Sleep(_notificationConfiguration.ThreadSleepTimeInSec); // 10 sec sleep mode
             }
-            return Task.CompletedTask;
         }
         public Task StopAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
 
         private async Task ReadAndProcessAlertMessage()
         {
+            NotificationEngineEntity.TripAlert tripAlert = new NotificationEngineEntity.TripAlert();
             try
             {
-                NotificationEngineEntity.TripAlert tripAlert = new NotificationEngineEntity.TripAlert();
                 KafkaEntity kafkaEntity = new KafkaEntity()
                 {
                     BrokerList = _kafkaConfiguration.EH_FQDN,
@@ -117,7 +116,9 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw;
+                ///failed message is getting logged.
+                _logger.Info(JsonConvert.SerializeObject(tripAlert));
+                //Need a discussion on handling failed kafka topic messages 
             }
         }
         public async Task<bool> SendEmailNotification(List<NotificationHistory> notificationHistoryEmail)
