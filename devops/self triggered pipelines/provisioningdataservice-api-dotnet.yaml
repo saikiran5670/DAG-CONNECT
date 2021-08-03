@@ -12,7 +12,7 @@ trigger:
 
 variables:
  - name: imageName
-   value: 'provisioningdataservice-api'
+   value: 'provisioningdataservice'
  - name: dockerFile
    value: 'dotnet/ProvisioningDataService_Dockerfile'
  - name: manifestFile
