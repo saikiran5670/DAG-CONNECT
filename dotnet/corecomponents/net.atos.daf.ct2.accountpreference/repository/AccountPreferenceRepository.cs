@@ -267,7 +267,7 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@id", filter.Id);
                 var query = @"SELECT ac.id,ac.type,ac.language_id,ac.timezone_id,ac.currency_id,ac.unit_id,ac.vehicle_display_id,
                             ac.date_format_id,ac.time_format_id,ac.state,ac.landing_page_display_id,
-                            COALESCE(i.id,0) as iconId,i.icon,ac.page_refresh_time
+                            COALESCE(i.id,0) as iconId,i.icon,ac.page_refresh_time as PageRefreshTime
                             FROM   master.accountpreference ac
                             LEFT OUTER JOIN master.icon i
                             ON i.id = ac.icon_id
@@ -305,7 +305,7 @@ namespace net.atos.daf.ct2.accountpreference
                 }
                 return entity;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -332,7 +332,7 @@ namespace net.atos.daf.ct2.accountpreference
                 entity.IconByte = Convert.ToBase64String(record.icon, 0, record.icon.Length);
             }
             //record.isActive = record.state;
-            entity.PageRefreshTime = record.PageRefreshTime;
+            entity.PageRefreshTime = record.pagerefreshtime;
             return entity;
         }
 
