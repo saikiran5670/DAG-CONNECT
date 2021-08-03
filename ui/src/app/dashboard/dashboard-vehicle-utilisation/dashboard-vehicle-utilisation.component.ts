@@ -6,6 +6,9 @@ import { NavigationExtras, Router } from '@angular/router';
 import { ElementRef } from '@angular/core';
 import { DashboardService } from '../../services/dashboard.service';
 import { Util } from 'src/app/shared/util';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { Inject } from '@angular/core';
+import { ReportMapService } from '../../report/report-map.service';
 
 @Component({
   selector: 'app-dashboard-vehicle-utilisation',
@@ -15,6 +18,8 @@ import { Util } from 'src/app/shared/util';
 export class DashboardVehicleUtilisationComponent implements OnInit {
   @Input() translationData: any;
   @Input() finalVinList : any;
+  @Input() preference : any;
+  @Input() prefData : any;
   timeDChartType: any;
   mileageDChartType: any;
   selectionTab: any;
@@ -204,28 +209,162 @@ vehicleUtilisationData: any;
 distance = [];
 calenderDate = [];
 vehiclecount = [];
-prefUnitFormat: any = 'dunit_Metric';
+selectedStartTime: any = '00:00';
+selectedEndTime: any = '23:59'; 
+startDateValue: any;
+endDateValue: any;
+prefTimeFormat: any; //-- coming from pref setting
+prefTimeZone: any; //-- coming from pref setting
+prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
+prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
+accountPrefObj: any;
+greaterTimeCount: any =0 ;
 
-  constructor(private router: Router,private elRef: ElementRef,private dashboardService : DashboardService) { }
+  constructor(private router: Router,
+              private elRef: ElementRef,
+              private dashboardService : DashboardService,
+              private reportMapService: ReportMapService,
+              @Inject(MAT_DATE_FORMATS) private dateFormats) { }
 
   ngOnInit(): void {
-    this.getVehicleData();
+
+    this.setInitialPref(this.prefData,this.preference);
     // this.setChartData();
-    this.selectionTimeRange('week');
+    this.selectionTimeRange('lastweek');
+
+  }
+
+  setInitialPref(prefData,preference){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefUnitFormat = prefData.unit[0].name;
+    }
+    this.setPrefFormatDate();
+    this.selectionTimeRange('lastweek');
+  }
+
+  selectionTimeRange(selection: any){
+    // this.internalSelection = true;
+    this.clickButton = true;
+    switch(selection){
+      case 'lastweek': {
+        this.selectionTab = 'lastweek';
+        this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        break;
+      }
+      case 'lastmonth': {
+        this.selectionTab = 'lastmonth';
+        this.startDateValue = this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        break;
+      }
+      case 'last3month': {
+        this.selectionTab = 'last3month';
+        this.startDateValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        break;
+      }
+    }
+
+    console.log(this.startDateValue, this.endDateValue);
+    this.getVehicleData();
+  }
+
+   //********************************** Date Time Functions *******************************************//
+   setPrefFormatDate(){
+    switch(this.prefDateFormat){
+      case 'ddateformat_dd/mm/yyyy': {
+        this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        break;
+      }
+      default:{
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+      }
+    }
+  }
+
+  getYesterdaysDate() {
+    //var date = new Date();
+    var date = Util.getUTCDate(this.prefTimeZone);
+    date.setDate(date.getDate()-1);
+    return date;
+  }
+
+  getLastWeekDate() {
+    // var date = new Date();
+    var date = Util.getUTCDate(this.prefTimeZone);
+    date.setDate(date.getDate()-7);
+    return date;
+  }
+
+  getLastMonthDate(){
+    // let date = new Date();
+    var date = Util.getUTCDate(this.prefTimeZone);
+    date.setMonth(date.getMonth()-1);
+    return date;
+  }
+
+  getLast3MonthDate(){
+    // let date = new Date();
+    var date = Util.getUTCDate(this.prefTimeZone);
+    date.setMonth(date.getMonth()-3);
+    return date;
+  }
+
+  setStartEndDateTime(date: any, timeObj: any, type: any){
+
+    let _x = timeObj.split(":")[0];
+    let _y = timeObj.split(":")[1];
+    if(this.prefTimeFormat == 12){
+      if(_y.split(' ')[1] == 'AM' && _x == 12) {
+        date.setHours(0);
+      }else{
+        date.setHours(_x);
+      }
+      date.setMinutes(_y.split(' ')[0]);
+    }else{
+      date.setHours(_x);
+      date.setMinutes(_y);
+    }
+    date.setSeconds(type == 'start' ? '00' : '59');
+    return date;
   }
 
   getVehicleData(){
     console.log(this.finalVinList);
+    let startDate = Util.convertDateToUtc(this.startDateValue);
+    let endDate = Util.convertDateToUtc(this.endDateValue);
     let _vehiclePayload = {
-      "startDateTime": 1525480060000,
-      "endDateTime": 1625480060000,
+      "startDateTime": startDate,
+      "endDateTime": endDate,
       "viNs": this.finalVinList
     }
   this.dashboardService.getVehicleUtilisationData(_vehiclePayload).subscribe((vehicleData)=>{
     if(vehicleData["fleetutilizationcharts"].length > 0){
        this.vehicleUtilisationData = vehicleData["fleetutilizationcharts"];
+       this.setChartData();
     }
-    this.setChartData();
  });
 
 }
@@ -236,13 +375,24 @@ prefUnitFormat: any = 'dunit_Metric';
     this.mileageDChartType = 'doughnut';
 
     //for distance chart
+    this.distance = [];
+    this.calenderDate = [];
+    this.vehiclecount = [];
+    let timebasedThreshold = 4000;
+    let percentage2;
     this.vehicleUtilisationData.forEach(element => {
       var date = new Date(element.calenderDate);
       const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
       let resultDate = [date.getDate() + ' ' +months[date.getMonth()],date.getFullYear()];
-      this.distance.push(element.distance/1000);
+      let distance = this.reportMapService.convertDistanceUnits(element.distanceperday,this.prefUnitFormat);
+      this.distance.push(distance);
       this.calenderDate.push(resultDate);
       this.vehiclecount.push(element.vehiclecount);
+      if(element.drivingtime > timebasedThreshold){
+        this.greaterTimeCount = this.greaterTimeCount + 1;
+      }
+      percentage2 = (this.greaterTimeCount/this.vehicleUtilisationData.length)* 100;
+      percentage2 = parseInt(percentage2);
     });
     if(this.distanceChartType == 'bar'){
         let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
@@ -324,14 +474,15 @@ prefUnitFormat: any = 'dunit_Metric';
   //for time based utilisation
   if(this.timeDChartType =='doughnut'){
     this.doughnutChartLabels1 = ['Full Utilisation >1400h','Under Utilisation <1400h'];
-    this.doughnutChartData1 = [[55, 25, 20]];
+    // this.doughnutChartData1 = [[55, 25, 20]];
+    this.doughnutChartData1 = [percentage2, 100- percentage2];
   }
   else{
     this.timePieChartLabels = ['Full Utilisation >1400h','Under Utilisation <1400h'];
-    this.timePieChartData = [55, 25, 20]
+    this.timePieChartData = [percentage2, 100- percentage2];
   }
 
-  //for mileage based utilisation
+  //for distance based utilisation
   if(this.mileageDChartType =='doughnut'){
     this.doughnutChartLabels2 = ['Full Utilisation >7000km','Under Utilisation <7000km'];
     this.doughnutChartData2 = [[5, 15, 30]];
@@ -386,31 +537,4 @@ prefUnitFormat: any = 'dunit_Metric';
     this.router.navigate(['fleetoverview/logbook'], navigationExtras);
   }
 
-  selectionTimeRange(selection: any){
-    // this.internalSelection = true;
-    this.clickButton = true;
-    switch(selection){
-      case 'week': {
-        this.selectionTab = 'week';
-        // this.setDefaultStartEndTime();
-        // this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
-        // this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
-        break;
-      }
-      case 'month': {
-        this.selectionTab = 'month';
-        // this.setDefaultStartEndTime();
-        // this.startDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start');
-        // this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-        break;
-      }
-      case '3months': {
-        this.selectionTab = '3months';
-        // this.setDefaultStartEndTime();
-        // this.startDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start');
-        // this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-        break;
-      }
-    }
-  }
 }

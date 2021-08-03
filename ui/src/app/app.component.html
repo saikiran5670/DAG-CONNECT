@@ -41,16 +41,19 @@
                                 notifications_none</mat-icon>
                             <span class="badge">0</span>
                         </a>
+
                          <mat-select formControlName="languageSelection" class="matSelect"
                             (selectionChange)="onLanguageChange($event.value)">
                             
                             <mat-option>
-                                <ngx-mat-select-search></ngx-mat-select-search>
+                                <ngx-mat-select-search formControlName="langFilterCtrl"></ngx-mat-select-search>
                             </mat-option>
                             <mat-option *ngFor="let lang of languages" [value]="lang.id" matTooltip="{{lang.name}}">
                                 &nbsp;{{ lang.name }}
                             </mat-option>
                         </mat-select>
+
+                        
                         <div class='logoutbtnContainer' fxLayout="row" fxLayoutAlign="end">
                             <div class="logoutButton" fxLayout="column">
                                 <button mat-icon-button (click)="logOut()" class="menuToggler display-flex align-items-center padding-item">

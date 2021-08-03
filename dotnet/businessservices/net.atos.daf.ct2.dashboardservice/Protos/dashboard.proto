@@ -96,6 +96,8 @@ message FleetUtilization {
     double Drivingtime = 6;
     double Idleduration = 7;
     double Distanceperday = 8;
+    double Fuelconsumed = 12;
+    double Fuelconsumption = 13;
     int32 Vehiclecount =10;
     int32 Tripcount =11;   
 

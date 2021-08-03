@@ -74,6 +74,9 @@ export class MapService {
               }
             }
             this.hereMap.addObject(this.group);
+            this.hereMap.getViewModel().setLookAtData({
+              bounds: this.group.getBoundingBox()
+            });
           })
         }
       }

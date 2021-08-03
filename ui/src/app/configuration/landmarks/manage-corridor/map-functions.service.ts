@@ -179,6 +179,10 @@ export class MapFunctionsService {
         this.endMarker.setData(endMarkerHtml);
         this.mapGroup.addObject(this.endMarker);
 
+        this.hereMap.getViewModel().setLookAtData({
+          bounds: this.mapGroup.getBoundingBox()
+        });
+
         if(accountOrganizationId){
         // add end tooltip
         let bubble;

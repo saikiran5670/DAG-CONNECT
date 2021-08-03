@@ -135,9 +135,9 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
                 }
 
                 var result = await ValidateParameters(request);
-                if (result is NoContentResult)
+                if (result is OkObjectResult)
                 {
-                    var response = await _driverManager.GetCurrentDriver(MapRequest(request));
+                    var response = await _driverManager.GetCurrentDriver(MapRequest(request, (int)(result as ObjectResult).Value));
 
                     return Ok(response);
                 }
@@ -171,8 +171,9 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
                 var result = await ValidateParameters(request);
                 if (result is OkObjectResult)
                 {
-                    var visibleVehicles = await _vehicleManager.GetVisibilityVehiclesByOrganization((int)(result as ObjectResult).Value);
-                    var response = await _driverManager.GetDriverList(MapRequest(request, visibleVehicles.Select(x => x.VIN).ToArray()));
+                    var orgId = (int)(result as ObjectResult).Value;
+                    var visibleVehicles = await _vehicleManager.GetVisibilityVehiclesByOrganization(orgId);
+                    var response = await _driverManager.GetDriverList(MapRequest(request, visibleVehicles.Select(x => x.VIN).ToArray(), orgId));
 
                     return Ok(response);
                 }
@@ -289,7 +290,7 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
             if (!visibleVehicles.Any(x => x.VIN.Contains(vehicle.VIN)))
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "VIN_NOT_FOUND", parameter: nameof(request.VIN));
 
-            return NoContent();
+            return new OkObjectResult(org.Id);
         }
 
         private async Task<IActionResult> ValidateParameters(DriverListRequest request)
@@ -315,19 +316,19 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
 
             if (!string.IsNullOrEmpty(request.Account) && !string.IsNullOrEmpty(request.DriverId) && !string.IsNullOrEmpty(request.VIN))
             {
-                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", parameter: $"({ nameof(request.Account) } & { nameof(request.DriverId) }) or { nameof(request.VIN) }");
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", parameter: $"({ nameof(request.Account) }+{ nameof(request.DriverId) }) or { nameof(request.VIN) }");
             }
 
             if (string.IsNullOrEmpty(request.Account) && string.IsNullOrEmpty(request.DriverId) && string.IsNullOrEmpty(request.VIN))
             {
-                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "MISSING_PARAMETER", parameter: $"({ nameof(request.Account) } & { nameof(request.DriverId) }) or { nameof(request.VIN) }");
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "MISSING_PARAMETER", parameter: $"({ nameof(request.Account) }+{ nameof(request.DriverId) }) or { nameof(request.VIN) }");
             }
 
             if (((string.IsNullOrEmpty(request.Account) && !string.IsNullOrEmpty(request.DriverId)) ||
                 (!string.IsNullOrEmpty(request.Account) && string.IsNullOrEmpty(request.DriverId)))
                 && !string.IsNullOrEmpty(request.VIN))
             {
-                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", parameter: $"({ nameof(request.Account) } & { nameof(request.DriverId) }) or { nameof(request.VIN) }");
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", parameter: $"({ nameof(request.Account) }+{ nameof(request.DriverId) }) or { nameof(request.VIN) }");
             }
 
             if (!string.IsNullOrEmpty(request.Account) && !string.IsNullOrEmpty(request.DriverId))
@@ -378,23 +379,23 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
             };
         }
 
-        private ProvisioningDriverDataServiceRequest MapRequest(DriverCurrentRequest request)
+        private ProvisioningDriverDataServiceRequest MapRequest(DriverCurrentRequest request, int orgId)
         {
             return new ProvisioningDriverDataServiceRequest
             {
                 VIN = request.VIN,
-                OrgId = request.OrgId,
+                OrgId = orgId,
                 StartTimestamp = request.StartTimestamp,
                 EndTimestamp = request.EndTimestamp
             };
         }
 
-        private ProvisioningDriverDataServiceRequest MapRequest(DriverListRequest request, string[] vins)
+        private ProvisioningDriverDataServiceRequest MapRequest(DriverListRequest request, string[] vins, int orgId)
         {
             return new ProvisioningDriverDataServiceRequest
             {
                 VINs = vins,
-                OrgId = request.OrgId,
+                OrgId = orgId,
                 StartTimestamp = request.StartTimestamp,
                 EndTimestamp = request.EndTimestamp
             };

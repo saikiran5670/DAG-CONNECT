@@ -571,10 +571,12 @@ namespace net.atos.daf.ct2.vehicle
         {
             var vehicles = new List<ProvisioningVehicle>();
             var provisioningVehicle = await _vehicleRepository.GetCurrentVehicle(request);
-
-            var visibleVehicles = await GetVisibilityVehiclesByOrganization(request.OrgId);
-            if (provisioningVehicle != null && visibleVehicles.Select(x => x.VIN).ToArray().Contains(provisioningVehicle.VIN))
-                vehicles.Add(provisioningVehicle);
+            if (provisioningVehicle != null)
+            {
+                var visibleVehicles = await GetVisibilityVehiclesByOrganization(request.OrgId);
+                if (visibleVehicles.Select(x => x.VIN).ToArray().Contains(provisioningVehicle.VIN))
+                    vehicles.Add(provisioningVehicle);
+            }
 
             return new ProvisioningVehicleDataServiceResponse { Vehicles = vehicles };
         }
@@ -582,9 +584,11 @@ namespace net.atos.daf.ct2.vehicle
         public async Task<ProvisioningVehicleDataServiceResponse> GetVehicleList(ProvisioningVehicleDataServiceRequest request)
         {
             var provisioningVehicles = await _vehicleRepository.GetVehicleList(request);
-
-            var visibleVehicles = await GetVisibilityVehiclesByOrganization(request.OrgId);
-            provisioningVehicles = provisioningVehicles.Where(nl => visibleVehicles.Any(veh => veh.VIN == nl.VIN)).AsEnumerable();
+            if (provisioningVehicles != null && provisioningVehicles.Count() > 0)
+            {
+                var visibleVehicles = await GetVisibilityVehiclesByOrganization(request.OrgId);
+                provisioningVehicles = provisioningVehicles.Where(nl => visibleVehicles.Any(veh => veh.VIN == nl.VIN)).AsEnumerable();
+            }
 
             return new ProvisioningVehicleDataServiceResponse { Vehicles = provisioningVehicles.ToList() };
         }

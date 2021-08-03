@@ -605,6 +605,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
 PoiCheckboxClicked(event: any, row: any) {
   if(event.checked){ //-- add new marker
     this.markerArray.push(row);
+    this.moveMapToSelectedPOI(this.map, row.latitude, row.longitude);
   }else{ //-- remove existing marker
     //It will filter out checked points only
     let arr = this.markerArray.filter(item => item.id != row.id);
@@ -670,6 +671,7 @@ PoiCheckboxClicked(event: any, row: any) {
 
     if(event.checked){ 
       this.geoMarkerArray.push(row);
+      this.addMarkersAndSetViewBoundsGeofence(this.map, row);
     }else{ 
       let arr = this.geoMarkerArray.filter(item => item.id != row.id);
       this.geoMarkerArray = arr;
@@ -887,6 +889,28 @@ PoiCheckboxClicked(event: any, row: any) {
         }
     }
 
+    moveMapToSelectedPOI(map, lat, lon){
+      map.setCenter({lat:lat, lng:lon});
+      map.setZoom(16);
+    }
+  
+    addMarkersAndSetViewBoundsGeofence(map, row) {
+      let group = new H.map.Group();
+      let locationObjArray= [];
+      row.nodes.forEach(element => {
+        locationObjArray.push(new H.map.Marker({lat:element.latitude, lng:element.longitude}))
+      });    
+    
+      // add markers to the group
+      group.addObjects(locationObjArray);
+      map.addObject(group);
+    
+      // get geo bounding box for the group and set it to the map
+      map.getViewModel().setLookAtData({
+        bounds: group.getBoundingBox()
+      });
+    }  
+
     corridorCheckboxClicked(event, row){
       if(event.checked){ //-- add new marker
         this.markerArray.push(row);
@@ -906,10 +930,16 @@ PoiCheckboxClicked(event: any, row: any) {
       // lineString.pushPoint({lat:48.8567, lng:2.3508});
       // lineString.pushPoint({lat:52.5166, lng:13.3833});
       });
-  
-      this.map.addObject(new H.map.Polyline(
+      
+      let group= new H.map.Group();
+      group.addObjects([new H.map.Polyline(
         lineString, { style: { lineWidth: 4 }}
-      ));
+      )]);
+      this.map.addObject(group);
+
+      this.map.getViewModel().setLookAtData({
+        bounds: group.getBoundingBox()
+      });
     }
   
 

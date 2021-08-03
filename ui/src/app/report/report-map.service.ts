@@ -383,7 +383,10 @@ export class ReportMapService {
           }
         }
         this.hereMap.addObject(this.group);
-        this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
+        this.hereMap.getViewModel().setLookAtData({
+          bounds: this.group.getBoundingBox()
+        });
+        // this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
       });
       this.makeCluster(_selectedRoutes, _ui);
     }else{
