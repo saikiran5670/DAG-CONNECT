@@ -55,4 +55,16 @@ export class DashboardService {
       errResponse
     );
   }
+
+  getVehicleUtilisationData(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.dashboardServiceUrl}/fleetutilization`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
 }

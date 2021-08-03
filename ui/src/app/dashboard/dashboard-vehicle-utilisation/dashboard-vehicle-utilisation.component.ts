@@ -4,6 +4,8 @@ import { MultiDataSet, Label, Color, SingleDataSet} from 'ng2-charts';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { NavigationExtras, Router } from '@angular/router';
 import { ElementRef } from '@angular/core';
+import { DashboardService } from '../../services/dashboard.service';
+import { Util } from 'src/app/shared/util';
 
 @Component({
   selector: 'app-dashboard-vehicle-utilisation',
@@ -12,6 +14,7 @@ import { ElementRef } from '@angular/core';
 })
 export class DashboardVehicleUtilisationComponent implements OnInit {
   @Input() translationData: any;
+  @Input() finalVinList : any;
   timeDChartType: any;
   mileageDChartType: any;
   selectionTab: any;
@@ -145,14 +148,34 @@ distanceChartType: any;
 vehicleChartType: any;
 public alertPieChartLabels: Label[] = [];
 public alertPieChartData: SingleDataSet = [];
+vehicleUtilisationData: any;
+distance = [];
+calenderDate = [];
+vehiclecount = [];
 
-  constructor(private router: Router,private elRef: ElementRef) { }
+  constructor(private router: Router,private elRef: ElementRef,private dashboardService : DashboardService) { }
 
   ngOnInit(): void {
-    this.setChartData();
+    this.getVehicleData();
+    // this.setChartData();
     this.selectionTimeRange('week');
   }
 
+  getVehicleData(){
+    console.log(this.finalVinList);
+    let _vehiclePayload = {
+      "startDateTime": 1525480060000,
+      "endDateTime": 1625480060000,
+      "viNs": this.finalVinList
+    }
+  this.dashboardService.getVehicleUtilisationData(_vehiclePayload).subscribe((vehicleData)=>{
+    if(vehicleData["fleetutilizationcharts"].length > 0){
+       this.vehicleUtilisationData = vehicleData["fleetutilizationcharts"];
+    }
+    this.setChartData();
+ });
+
+}
   setChartData(){
     this.distanceChartType = 'bar';
     this.vehicleChartType = 'line';
@@ -160,22 +183,31 @@ public alertPieChartData: SingleDataSet = [];
     this.mileageDChartType = 'doughnut';
 
     //for distance chart
+    this.vehicleUtilisationData.forEach(element => {
+      var date = new Date(element.calenderDate);
+      const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+      let resultDate = [date.getDate() + ' ' +months[date.getMonth()],date.getFullYear()];
+      this.distance.push(element.distance/1000);
+      this.calenderDate.push(resultDate);
+      this.vehiclecount.push(element.vehiclecount);
+    });
     if(this.distanceChartType == 'bar'){
-    this.barChartLabels1= [['23 July', '2020'], ['24 July', '2020'], ['25 July','2020'], ['26 July','2020'], ['27 July','2020'], ['28 July','2020']];
+    // this.barChartLabels1= [['23 July', '2020'], ['24 July', '2020'], ['25 July','2020'], ['26 July','2020'], ['27 July','2020'], ['28 July','2020']];
+    this.barChartLabels1= this.calenderDate;
     this.barChartData1= [
-      { data: [30, 33, 45, 40, 25, 30] , backgroundColor: '#7BC5EC',
+      { data: this.distance , backgroundColor: '#7BC5EC',
       hoverBackgroundColor: '#7BC5EC',}
     ];
     }
   else{
     this.lineChartData1= [
-      { data: [30, 33, 45, 40, 25, 30],
+      { data: this.distance,
         lineTension: 0, 
         pointBorderColor: "orange", // orange point border
       pointBackgroundColor: "white", // wite point fill
       pointBorderWidth: 2,},
     ];
-    this.lineChartLabels1= [['23 July', '2020'], ['24 July', '2020'], ['25 July','2020'], ['26 July','2020'], ['27 July','2020'], ['28 July','2020']];
+    this.lineChartLabels1= this.calenderDate;
     this.lineChartColors= [
       {
         borderColor: '#7BC5EC',
@@ -187,13 +219,13 @@ public alertPieChartData: SingleDataSet = [];
   //for vehicle per day chart
  if(this.vehicleChartType == 'line'){
     this.lineChartData2= [
-      { data: [2, 0, 3, 4, 3, 3], label: 'Active Vehicles Per Day',
+      { data: this.vehiclecount, label: 'Active Vehicles Per Day',
         lineTension: 0, 
         pointBorderColor: "orange", 
       pointBackgroundColor: "white", 
       pointBorderWidth: 2,},
     ];
-    this.lineChartLabels2= [['23 July', '2020'], ['24 July', '2020'], ['25 July','2020'], ['26 July','2020'], ['27 July','2020'], ['28 July','2020']];
+    this.lineChartLabels2= this.calenderDate;
     this.lineChartColors= [
       {
         borderColor: '#7BC5EC',
@@ -202,9 +234,9 @@ public alertPieChartData: SingleDataSet = [];
     ];
   }
   else{
-    this.barChartLabels2= [['23 July', '2020'], ['24 July', '2020'], ['25 July','2020'], ['26 July','2020'], ['27 July','2020'], ['28 July','2020']];
+    this.barChartLabels2= this.calenderDate;
     this.barChartData2= [
-      { data: [2, 0, 3, 4, 3, 3], label: 'Active Vehicles Per Day' , backgroundColor: '#7BC5EC',
+      { data: this.vehiclecount, label: 'Active Vehicles Per Day' , backgroundColor: '#7BC5EC',
       hoverBackgroundColor: '#7BC5EC',}
     ];
   }
