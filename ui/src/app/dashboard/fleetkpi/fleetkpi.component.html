@@ -7,12 +7,12 @@
     </mat-expansion-panel-header>
     <!-- time selection -->
     <button class="weekButton"
-    (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'week'}"  mat-raised-button
+    (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}"  mat-raised-button
       color="primary">{{translationData.lblLast7days|| 'Last 7 days' }}</button>
     <button class="monthButton" 
-    (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'month'}" mat-raised-button
+    (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" mat-raised-button
       color="primary">{{translationData.lblLast30days|| 'Last 30 days' }}</button>
     <button class="moreButton"
-    (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == '3months'}" mat-raised-button
+    (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" mat-raised-button
       color="primary">{{translationData.lblLastWeek || 'Last 90 days' }}</button>
 </mat-expansion-panel>
