@@ -26,6 +26,7 @@ using System.Net.Http;
 using net.atos.daf.ct2.sms.entity;
 using net.atos.daf.ct2.notification;
 using net.atos.daf.ct2.sms;
+using System.Text;
 
 namespace net.atos.daf.ct2.notificationservice.HostedServices
 {
@@ -56,24 +57,23 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             _notificationConfiguration = new NotificationConfiguration();
             configuration.GetSection("NotificationConfiguration").Bind(_notificationConfiguration);
         }
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.Info("Start async called");
             // _server.Start();           
             while (true)
             {
-                //ReadAndProcessAlertMessage().Wait();
+                await ReadAndProcessAlertMessage();
                 Thread.Sleep(_notificationConfiguration.ThreadSleepTimeInSec); // 10 sec sleep mode
             }
-            return Task.CompletedTask;
         }
         public Task StopAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
 
         private async Task ReadAndProcessAlertMessage()
         {
+            NotificationEngineEntity.TripAlert tripAlert = new NotificationEngineEntity.TripAlert();
             try
             {
-                NotificationEngineEntity.TripAlert tripAlert = new NotificationEngineEntity.TripAlert();
                 KafkaEntity kafkaEntity = new KafkaEntity()
                 {
                     BrokerList = _kafkaConfiguration.EH_FQDN,
@@ -117,7 +117,9 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw;
+                ///failed message is getting logged.
+                _logger.Info(JsonConvert.SerializeObject(tripAlert));
+                //Need a discussion on handling failed kafka topic messages 
             }
         }
         public async Task<bool> SendEmailNotification(List<NotificationHistory> notificationHistoryEmail)
@@ -128,6 +130,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
 
                 foreach (var item in notificationHistoryEmail)
                 {
+                    string alertTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, item.AlertTypeKey);
                     string alertCategoryValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, item.AlertCategoryKey);
                     string urgencyTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, item.UrgencyTypeKey);
                     string languageCode = await _notificationIdentifierManager.GetLanguageCodePreference(item.EmailId);
@@ -145,7 +148,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                             ToAddressList = addAddress,
                             Subject = item.EmailSub,
                             Description = item.EmailText,
-                            AlertNotification = new AlertNotification() { AlertName = item.AlertName, AlertLevel = urgencyTypeValue, AlertLevelCls = GetAlertTypeCls(urgencyTypeValue), DefinedThreshold = item.ThresholdValue, ActualThresholdValue = item.ValueAtAlertTime, AlertCategory = alertCategoryValue, VehicleGroup = item.Vehicle_group_vehicle_name, AlertDateTime = alertGenTime }
+                            AlertNotification = new AlertNotification() { AlertName = alertTypeValue, AlertLevel = urgencyTypeValue, AlertLevelCls = GetAlertTypeCls(urgencyTypeValue), DefinedThreshold = item.ThresholdValue, ActualThresholdValue = item.ValueAtAlertTime, AlertCategory = alertCategoryValue, VehicleGroup = item.Vehicle_group_vehicle_name, AlertDateTime = alertGenTime }
                         },
                         ContentType = EmailContentType.Html,
                         EventType = EmailEventType.AlertNotificationEmail
@@ -194,16 +197,13 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
         {
             try
             {
+
                 bool isResult = false;
                 foreach (var item in notificationHistory)
                 {
-                    string alertTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, item.AlertTypeKey);
-                    string urgencyTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, item.UrgencyTypeKey);
-                    string smsDescription = string.IsNullOrEmpty(item.SMS) ? item.SMS : item.SMS.Length <= 50 ? item.SMS : item.SMS.Substring(0, 50);
-                    string smsBody = alertTypeValue + ",TV:" + item.ThresholdValue.ToString("#.0000") + "," + item.ThresholdValueUnitType + ",AV:" + item.ValueAtAlertTime.ToString("#.0000") + ",UT:" + urgencyTypeValue + "," + smsDescription;
                     SMS sms = new SMS();
                     sms.ToPhoneNumber = item.PhoneNo;
-                    sms.Body = smsBody;
+                    sms.Body = await PrepareSMSBody(item);
                     var status = await _smsManager.SendSMS(sms);
                     SMSStatus smsStatus = (SMSStatus)Enum.Parse(typeof(SMSStatus), status);
                     item.Status = ((char)smsStatus).ToString();
@@ -233,6 +233,30 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                     break;
             }
             return alertTypeCls;
+        }
+        private async Task<string> PrepareSMSBody(NotificationHistory notificationHistorySMS)
+        {
+            StringBuilder sbSMSText = new StringBuilder();
+            string alertCategoryValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistorySMS.AlertCategoryKey);
+            string alertTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistorySMS.AlertTypeKey);
+            string urgencyTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistorySMS.UrgencyTypeKey);
+            string smsDescription = string.IsNullOrEmpty(notificationHistorySMS.SMS) ? notificationHistorySMS.SMS : notificationHistorySMS.SMS.Length <= 50 ? notificationHistorySMS.SMS : notificationHistorySMS.SMS.Substring(0, 50);
+            string vehicleGroup = string.IsNullOrEmpty(notificationHistorySMS.Vehicle_group_vehicle_name) ? notificationHistorySMS.Vehicle_group_vehicle_name : notificationHistorySMS.Vehicle_group_vehicle_name.Length <= 17 ? notificationHistorySMS.Vehicle_group_vehicle_name : notificationHistorySMS.Vehicle_group_vehicle_name.Substring(0, 17);
+            string alertGenTime = UTCHandling.GetConvertedDateTimeFromUTC(notificationHistorySMS.AlertGeneratedTime, "UTC", null);
+            string[] thresholdNumSplit = notificationHistorySMS.ThresholdValue.ToString().Split('.');
+            string thresholdNum = thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistorySMS.ThresholdValue.ToString("#.0000") : notificationHistorySMS.ThresholdValue.ToString() : notificationHistorySMS.ThresholdValue.ToString();
+            string[] valueAtAlerttimeSplit = notificationHistorySMS.ValueAtAlertTime.ToString().Split('.');
+            string valueAtAlertTime = valueAtAlerttimeSplit.Count() > 1 ? valueAtAlerttimeSplit[1].Length > 3 ? notificationHistorySMS.ValueAtAlertTime.ToString("#.0000") : notificationHistorySMS.ValueAtAlertTime.ToString() : notificationHistorySMS.ValueAtAlertTime.ToString();
+            sbSMSText.AppendFormat("AN:{0}", alertTypeValue);
+            sbSMSText.AppendFormat(",DT:{0}", thresholdNum);
+            sbSMSText.AppendFormat(",AT:{0}", notificationHistorySMS.ThresholdValueUnitType);
+            sbSMSText.AppendFormat(",AV:{0}", valueAtAlertTime);
+            sbSMSText.AppendFormat(",{0}", alertCategoryValue);
+            sbSMSText.AppendFormat(",VG:{0}", vehicleGroup);
+            sbSMSText.AppendFormat(",UL:{0}", urgencyTypeValue);
+            sbSMSText.AppendFormat(",T:{0}", alertGenTime);
+            sbSMSText.AppendFormat(",{0}", smsDescription);
+            return sbSMSText.ToString();
         }
     }
 }

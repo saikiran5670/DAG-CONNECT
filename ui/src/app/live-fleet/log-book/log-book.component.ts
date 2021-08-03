@@ -1593,6 +1593,9 @@ let prepare = []
       }, false);
     });
     this.hereMap.addObject(this.mapGroup);
+    this.hereMap.getViewModel().setLookAtData({
+      bounds: this.mapGroup.getBoundingBox()
+    });
     
   }
 

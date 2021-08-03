@@ -51,7 +51,7 @@
     <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="end">
       <div fxLayout="column">
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-left: 25%;'>{{
-          translationData.lblTimeBasedUtilisation || 'Time based utilisation' }}</span>
+          translationData.lblTimeBasedUtilisationRate || 'Time Based Utilisation Rate' }}</span>
         <div *ngIf="timeDChartType =='doughnut'" class="chart-wrapper">
           <canvas baseChart [data]="doughnutChartData1" [chartType]="doughnutChartType" [labels]="doughnutChartLabels1"
             [colors]="doughnutChartColors" [options]="doughnut_barOptions" [legend]="barChartLegend">
@@ -66,7 +66,7 @@
       </div>
       <div fxLayout="column">
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-left: 25%;'>{{
-          translationData.lblMileageBasedUtilisation || 'Mileage based utilisation' }}</span>
+          translationData.lblMileageBasedUtilisationRate || 'Distance Based Utilisation Rate' }}</span>
         <div *ngIf="mileageDChartType == 'doughnut'" class="chart-wrapper">
           <canvas baseChart [data]="doughnutChartData2" [chartType]="doughnutChartType" [labels]="doughnutChartLabels2"
             [colors]="doughnutChartColors" [options]="doughnut_barOptions" [legend]="barChartLegend">

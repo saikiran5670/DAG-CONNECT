@@ -8,6 +8,7 @@ import { DashboardService } from '../../services/dashboard.service';
 import { Util } from 'src/app/shared/util';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Inject } from '@angular/core';
+import { ReportMapService } from '../../report/report-map.service';
 
 @Component({
   selector: 'app-dashboard-vehicle-utilisation',
@@ -217,10 +218,12 @@ prefTimeZone: any; //-- coming from pref setting
 prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
 prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
 accountPrefObj: any;
+greaterTimeCount: any =0 ;
 
   constructor(private router: Router,
               private elRef: ElementRef,
               private dashboardService : DashboardService,
+              private reportMapService: ReportMapService,
               @Inject(MAT_DATE_FORMATS) private dateFormats) { }
 
   ngOnInit(): void {
@@ -350,16 +353,18 @@ accountPrefObj: any;
 
   getVehicleData(){
     console.log(this.finalVinList);
+    let startDate = Util.convertDateToUtc(this.startDateValue);
+    let endDate = Util.convertDateToUtc(this.endDateValue);
     let _vehiclePayload = {
-      "startDateTime": 1525480060000,
-      "endDateTime": 1625480060000,
+      "startDateTime": startDate,
+      "endDateTime": endDate,
       "viNs": this.finalVinList
     }
   this.dashboardService.getVehicleUtilisationData(_vehiclePayload).subscribe((vehicleData)=>{
     if(vehicleData["fleetutilizationcharts"].length > 0){
        this.vehicleUtilisationData = vehicleData["fleetutilizationcharts"];
+       this.setChartData();
     }
-    this.setChartData();
  });
 
 }
@@ -370,13 +375,24 @@ accountPrefObj: any;
     this.mileageDChartType = 'doughnut';
 
     //for distance chart
+    this.distance = [];
+    this.calenderDate = [];
+    this.vehiclecount = [];
+    let timebasedThreshold = 4000;
+    let percentage2;
     this.vehicleUtilisationData.forEach(element => {
       var date = new Date(element.calenderDate);
       const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
       let resultDate = [date.getDate() + ' ' +months[date.getMonth()],date.getFullYear()];
-      this.distance.push(element.distance/1000);
+      let distance = this.reportMapService.convertDistanceUnits(element.distanceperday,this.prefUnitFormat);
+      this.distance.push(distance);
       this.calenderDate.push(resultDate);
       this.vehiclecount.push(element.vehiclecount);
+      if(element.drivingtime > timebasedThreshold){
+        this.greaterTimeCount = this.greaterTimeCount + 1;
+      }
+      percentage2 = (this.greaterTimeCount/this.vehicleUtilisationData.length)* 100;
+      percentage2 = parseInt(percentage2);
     });
     if(this.distanceChartType == 'bar'){
         let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
@@ -458,14 +474,15 @@ accountPrefObj: any;
   //for time based utilisation
   if(this.timeDChartType =='doughnut'){
     this.doughnutChartLabels1 = ['Full Utilisation >1400h','Under Utilisation <1400h'];
-    this.doughnutChartData1 = [[55, 25, 20]];
+    // this.doughnutChartData1 = [[55, 25, 20]];
+    this.doughnutChartData1 = [percentage2, 100- percentage2];
   }
   else{
     this.timePieChartLabels = ['Full Utilisation >1400h','Under Utilisation <1400h'];
-    this.timePieChartData = [55, 25, 20]
+    this.timePieChartData = [percentage2, 100- percentage2];
   }
 
-  //for mileage based utilisation
+  //for distance based utilisation
   if(this.mileageDChartType =='doughnut'){
     this.doughnutChartLabels2 = ['Full Utilisation >7000km','Under Utilisation <7000km'];
     this.doughnutChartData2 = [[5, 15, 30]];
