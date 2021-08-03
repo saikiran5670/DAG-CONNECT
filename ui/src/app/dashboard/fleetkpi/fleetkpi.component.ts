@@ -2,6 +2,8 @@ import { Component, Input, OnInit, Inject} from '@angular/core';
 import { Util } from '../../shared/util';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { DashboardService } from 'src/app/services/dashboard.service';
+import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
+import { BaseChartDirective, Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions } from 'ng2-charts';
 
 
 @Component({
@@ -26,6 +28,74 @@ export class FleetkpiComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
 
+   //CO2 Emission Chart
+   doughnutChartLabels: Label[] = [('Target'), '', ''];
+   doughnutChartActiveVehicleData: MultiDataSet = [ [89, 11] ];
+   doughnutChartType: ChartType = 'doughnut';
+   doughnutColors: Color[] = [
+     {
+       backgroundColor: [
+         "#89c64d",
+         "#cecece"
+       ],
+       hoverBackgroundColor: [
+         "#89c64d",
+         "#cecece"
+       ],
+       hoverBorderColor: [
+         "#cce6b2",
+         "#ffffff"
+       ],
+       hoverBorderWidth: 7
+     }
+    ];
+    doughnutChartOptions: ChartOptions = {
+     responsive: true,
+     legend: {
+       display: false
+     },
+     cutoutPercentage: 80,
+     tooltips: {
+       position: 'nearest',
+      
+       callbacks: {
+         afterLabel: function(tooltipItem, data) {
+           var dataset = data['datasets'][0];
+           var percent = 100;
+          // let icon = '<i class="fas fa-sort-down"></i>'
+          return 'Last Change: ' + percent;
+         }
+       },
+       filter: function(item, data) {
+         var label = data.labels[item.index];
+         if (label) return true;
+         return false;
+       },
+    
+     },
+     title:{
+       text: "15",
+       display: false
+     }
+   };
+ 
+   public doughnutChartPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
+     beforeDraw(chart) {
+       const ctx = chart.ctx;
+ 
+       ctx.textAlign = 'center';
+       ctx.textBaseline = 'middle';
+       const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+       const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+ 
+       ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
+       ctx.fillStyle = 'black';
+ 
+       var text = chart.config.options.title.text;
+       // Draw text in center
+       ctx.fillText("89%", centerX, centerY);
+     }
+   }];
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private dashboardService : DashboardService) { }
 
   ngOnInit(): void {
