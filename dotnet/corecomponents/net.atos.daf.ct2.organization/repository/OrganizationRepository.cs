@@ -1280,12 +1280,12 @@ namespace net.atos.daf.ct2.organization.repository
                 if (!string.IsNullOrEmpty(request.Account) && !string.IsNullOrEmpty(request.DriverId))
                 {
                     query =
-                        new StringBuilder(@"select DISTINCT VIN from livefleet.livefleet_current_trip_statistics where driver1_id = @DriverId and ");
+                        new StringBuilder(@"select DISTINCT VIN from livefleet.livefleet_current_trip_statistics where driver1_id = @DriverId");
                 }
                 else if (!string.IsNullOrEmpty(request.VIN))
                 {
                     query =
-                        new StringBuilder(@"select DISTINCT VIN from livefleet.livefleet_current_trip_statistics where VIN = @VIN and ");
+                        new StringBuilder(@"select DISTINCT VIN from livefleet.livefleet_current_trip_statistics where VIN = @VIN");
                 }
                 else
                 {
@@ -1294,15 +1294,15 @@ namespace net.atos.daf.ct2.organization.repository
 
                 if (request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
                 {
-                    query.Append("start_time_stamp >= @StartTimestamp and (end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL)");
+                    query.Append(" and start_time_stamp >= @StartTimestamp and (end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL)");
                 }
                 else if (request.StartTimestamp.HasValue && !request.EndTimestamp.HasValue)
                 {
-                    query.Append("start_time_stamp >= @StartTimestamp and (end_time_stamp IS NULL or 1=1)");
+                    query.Append(" and start_time_stamp >= @StartTimestamp and (end_time_stamp IS NULL or 1=1)");
                 }
                 else if (!request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
                 {
-                    query.Append("end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
+                    query.Append(" and end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
                 }
 
                 var vins = await _dataMartdataAccess.QueryAsync<string>(query.ToString(), parameters);
