@@ -10,6 +10,7 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 })
 export class FleetkpiComponent implements OnInit {
   @Input() translationData : any;
+  @Input() finalVinList : any;
   @Input() preference : any;
   @Input() prefData : any;
   selectionTab: any;
