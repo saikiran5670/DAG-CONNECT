@@ -35,7 +35,7 @@
         </div> -->
         <app-fleetkpi *ngIf='finalVinList.length > 0' [translationData] ="translationData"  [finalVinList]='finalVinList' [prefData]='prefData' [preference]='preference'></app-fleetkpi>
         <app-today-live-vehicle *ngIf='finalVinList.length > 0' [translationData] ="translationData" [finalVinList]='finalVinList' [prefData]='prefData' [preference]='preference'></app-today-live-vehicle>
-        <app-dashboard-vehicle-utilisation [translationData] ="translationData"></app-dashboard-vehicle-utilisation>
+        <app-dashboard-vehicle-utilisation *ngIf='finalVinList.length > 0'  [translationData] ="translationData" [finalVinList]='finalVinList'></app-dashboard-vehicle-utilisation>
       <!-- </div>
     </mat-card-content>
    </mat-card> -->
