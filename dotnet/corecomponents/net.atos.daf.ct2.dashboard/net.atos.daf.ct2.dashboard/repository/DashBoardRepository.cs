@@ -170,7 +170,9 @@ namespace net.atos.daf.ct2.dashboard.repository
                         sum(veh_message_distance) as totalAveragedistanceperday,
                         sum(average_speed) as totalaverageSpeed,
                         sum(average_weight) as totalaverageweightperprip,
-                        sum(last_odometer) as totalodometer
+                        sum(last_odometer) as totalodometer,
+                        SUM(etl_gps_fuel_consumed)    as fuelconsumed,
+                        SUM(fuel_consumption)          as fuelconsumption
                         FROM tripdetail.trip_statistics
                         where is_ongoing_trip = false AND (end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
 						and vin=ANY(@vins)
@@ -190,7 +192,9 @@ namespace net.atos.daf.ct2.dashboard.repository
                         CAST((totalidleduration) as float) as idleduration ,
                         CAST((totaldistance) as float) as distanceperday ,
                         CAST((totalaverageSpeed) as float) as Speed ,
-                        CAST((totalaverageweightperprip) as float) as weight
+                        CAST((totalaverageweightperprip) as float) as weight,
+                        fuelconsumed,
+                        fuelconsumption
                         from cte_workingdays";
 
 
