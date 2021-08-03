@@ -96,6 +96,160 @@ export class FleetkpiComponent implements OnInit {
        ctx.fillText("89%", centerX, centerY);
      }
    }];
+
+    //Idling Time Chart
+    idlingChartLabels: Label[] = [('Target'), '', ''];
+    doughnutChartIdlingData: MultiDataSet = [ [89, 11] ];
+    doughnutChartIdlingOptions: ChartOptions = {
+      responsive: true,
+      legend: {
+        display: false
+      },
+      cutoutPercentage: 80,
+      tooltips: {
+        position: 'nearest',
+       
+        callbacks: {
+          afterLabel: function(tooltipItem, data) {
+            var dataset = data['datasets'][0];
+            var percent = 100;
+           // let icon = '<i class="fas fa-sort-down"></i>'
+           return 'Last Change: ' + percent;
+          }
+        },
+        filter: function(item, data) {
+          var label = data.labels[item.index];
+          if (label) return true;
+          return false;
+        },
+     
+      },
+      title:{
+        text: "15",
+        display: false
+      }
+    };
+  
+    public doughnutChartIdlingPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
+      beforeDraw(chart) {
+        const ctx = chart.ctx;
+  
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+        const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+  
+        ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
+        ctx.fillStyle = 'black';
+  
+        var text = chart.config.options.title.text;
+        // Draw text in center
+        ctx.fillText("67%", centerX, centerY);
+      }
+    }];
+
+      //Driving Time Chart
+      drivingChartLabels: Label[] = [('Target'), '', ''];
+      doughnutChartDrivingData: MultiDataSet = [ [89, 11] ];
+      doughnutChartDrivingOptions: ChartOptions = {
+        responsive: true,
+        legend: {
+          display: false
+        },
+        cutoutPercentage: 80,
+        tooltips: {
+          position: 'nearest',
+         
+          callbacks: {
+            afterLabel: function(tooltipItem, data) {
+              var dataset = data['datasets'][0];
+              var percent = 100;
+             // let icon = '<i class="fas fa-sort-down"></i>'
+             return 'Last Change: ' + percent;
+            }
+          },
+          filter: function(item, data) {
+            var label = data.labels[item.index];
+            if (label) return true;
+            return false;
+          },
+       
+        },
+        title:{
+          text: "15",
+          display: false
+        }
+      };
+    
+      public doughnutChartDrivingPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
+        beforeDraw(chart) {
+          const ctx = chart.ctx;
+    
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+          const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+    
+          ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
+          ctx.fillStyle = 'black';
+    
+          var text = chart.config.options.title.text;
+          // Draw text in center
+          ctx.fillText("89%", centerX, centerY);
+        }
+      }];
+      
+    //Distance Chart
+    distanceChartLabels: Label[] = [('Target'), '', ''];
+    doughnutChartDistanceData: MultiDataSet = [ [89, 11] ];
+    doughnutChartDistanceOptions: ChartOptions = {
+      responsive: true,
+      legend: {
+        display: false
+      },
+      cutoutPercentage: 80,
+      tooltips: {
+        position: 'nearest',
+       
+        callbacks: {
+          afterLabel: function(tooltipItem, data) {
+            var dataset = data['datasets'][0];
+            var percent = 100;
+           // let icon = '<i class="fas fa-sort-down"></i>'
+           return 'Last Change: ' + percent;
+          }
+        },
+        filter: function(item, data) {
+          var label = data.labels[item.index];
+          if (label) return true;
+          return false;
+        },
+     
+      },
+      title:{
+        text: "15",
+        display: false
+      }
+    };
+  
+    public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
+      beforeDraw(chart) {
+        const ctx = chart.ctx;
+  
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+        const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+  
+        ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
+        ctx.fillStyle = 'black';
+  
+        var text = chart.config.options.title.text;
+        // Draw text in center
+        ctx.fillText("67%", centerX, centerY);
+      }
+    }];
+
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private dashboardService : DashboardService) { }
 
   ngOnInit(): void {
