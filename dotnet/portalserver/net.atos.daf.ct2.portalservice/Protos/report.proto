@@ -46,7 +46,7 @@ rpc GetEcoScoreReportSingleDriver (GetEcoScoreReportSingleDriverRequest) returns
 rpc GetAssociatedVehiclGroup (VehicleListRequest) returns (AssociatedVehicleResponse);
 rpc GetEcoScoreReportTrendlines (GetEcoScoreReportSingleDriverRequest) returns (GetEcoScoreReportTrendlinesResponse);
 rpc GetVehiclePerformanceChartTemplate(VehPerformanceRequest) returns (VehPerformanceResponse);
-rpc GetVehPerformanceBubbleChartData(BubbleChartDataRequest) returns (BubbleChartDataResponse);
+rpc GetVehPerformanceBubbleChartData(VehPerformanceRequest) returns (BubbleChartDataResponse);
 }
 
 message VehicleHealthReportRequest{
