@@ -108,7 +108,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
             {
                 ColorMode = ColorMode.Color,
                 Orientation = GetOrientation(),
-                PaperSize = PaperKind.A4,
+                PaperSize = GetPaperKind(),
                 Margins = new MarginSettings { Top = 10 }
             };
             var objectSettings = new ObjectSettings
@@ -139,7 +139,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
         {
             if (ReportKey == ReportNameConstants.REPORT_FLEET_FUEL)
             {
-                return PaperKind.A2;
+                return PaperKind.A4Extra;
             }
             return PaperKind.A4;
         }
