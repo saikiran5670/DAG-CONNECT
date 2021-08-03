@@ -350,16 +350,18 @@ accountPrefObj: any;
 
   getVehicleData(){
     console.log(this.finalVinList);
+    let startDate = Util.convertDateToUtc(this.startDateValue);
+    let endDate = Util.convertDateToUtc(this.endDateValue);
     let _vehiclePayload = {
-      "startDateTime": 1525480060000,
-      "endDateTime": 1625480060000,
+      "startDateTime": startDate,
+      "endDateTime": endDate,
       "viNs": this.finalVinList
     }
   this.dashboardService.getVehicleUtilisationData(_vehiclePayload).subscribe((vehicleData)=>{
     if(vehicleData["fleetutilizationcharts"].length > 0){
        this.vehicleUtilisationData = vehicleData["fleetutilizationcharts"];
+       this.setChartData();
     }
-    this.setChartData();
  });
 
 }
@@ -370,11 +372,14 @@ accountPrefObj: any;
     this.mileageDChartType = 'doughnut';
 
     //for distance chart
+    this.distance = [];
+    this.calenderDate = [];
+    this.vehiclecount = [];
     this.vehicleUtilisationData.forEach(element => {
       var date = new Date(element.calenderDate);
       const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
       let resultDate = [date.getDate() + ' ' +months[date.getMonth()],date.getFullYear()];
-      this.distance.push(element.distance/1000);
+      this.distance.push(element.distanceperday/1000);
       this.calenderDate.push(resultDate);
       this.vehiclecount.push(element.vehiclecount);
     });
