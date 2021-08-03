@@ -73,11 +73,11 @@ namespace net.atos.daf.ct2.reportscheduler.report
             ReportNameConstants.REPORT_TRIP => new TripReport(_reportManager, _reportSchedulerRepository, _visibilityManager,
                                                               _templateManager, _unitConversionManager, _unitManager, EmailEventType.TripReport, EmailContentType.Html, _mapManager),
             ReportNameConstants.REPORT_FLEET_UTILISATION => new FleetUtilisation(_reportManager, _reportSchedulerRepository, _visibilityManager,
-                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetUtilisation, EmailContentType.Html),
+                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetUtilisationReport, EmailContentType.Html),
             ReportNameConstants.REPORT_FLEET_FUEL => new FleetFuel(_reportManager, _reportSchedulerRepository, _visibilityManager,
-                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetFuel, EmailContentType.Html, _mapManager),
+                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetFuelReportAllVehicles, EmailContentType.Html, _mapManager),
             ReportNameConstants.REPORT_FUEL_DEVIATION => new FuelDeviation(_reportManager, _reportSchedulerRepository, _visibilityManager,
-                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FleetFuel, EmailContentType.Html, _mapManager),
+                                                              _templateManager, _unitConversionManager, _unitManager, EmailEventType.FuelDeviationReport, EmailContentType.Html, _mapManager),
             _ => throw new ArgumentException(message: "invalid Report Key value", paramName: nameof(reportKey)),
         };
 
@@ -141,7 +141,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
         {
             if (ReportKey == ReportNameConstants.REPORT_FLEET_FUEL)
             {
-                return PaperKind.A3;
+                return PaperKind.A4;
             }
             return PaperKind.A4;
         }

@@ -200,7 +200,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                     string alertTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, item.AlertTypeKey);
                     string urgencyTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, item.UrgencyTypeKey);
                     string smsDescription = string.IsNullOrEmpty(item.SMS) ? item.SMS : item.SMS.Length <= 50 ? item.SMS : item.SMS.Substring(0, 50);
-                    string smsBody = alertTypeValue + " " + item.ThresholdValue + " " + item.ThresholdValueUnitType + " " + item.ValueAtAlertTime + " " + urgencyTypeValue + " " + smsDescription;
+                    string smsBody = alertTypeValue + ",TV:" + item.ThresholdValue.ToString("#.0000") + "," + item.ThresholdValueUnitType + ",AV:" + item.ValueAtAlertTime.ToString("#.0000") + ",UT:" + urgencyTypeValue + "," + smsDescription;
                     SMS sms = new SMS();
                     sms.ToPhoneNumber = item.PhoneNo;
                     sms.Body = smsBody;

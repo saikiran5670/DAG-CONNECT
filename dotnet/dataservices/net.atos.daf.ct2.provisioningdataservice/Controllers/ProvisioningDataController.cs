@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
 {
     [ApiController]
     [Route("provisioning")]
-    //[Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
+    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class ProvisioningDataController : ControllerBase
     {
         private readonly IAuditTraillib _auditTrail;
@@ -245,7 +245,7 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ORGANIZATION_NOT_FOUND", parameter: nameof(request.OrgId));
 
             var orgs = await _accountManager.GetAccountOrg(account.Id);
-            if (orgs.Select(x => x.Id).ToArray().Contains(org.Id))
+            if (!orgs.Select(x => x.Id).ToArray().Contains(org.Id))
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "DRIVER_NOT_FOUND", parameter: nameof(request.Account));
 
             return new OkObjectResult(org.Id);
@@ -257,7 +257,7 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
             if (org == null)
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ORGANIZATION_NOT_FOUND", parameter: nameof(request.OrgId));
 
-            if (!string.IsNullOrEmpty(request.Account))
+            if (!string.IsNullOrEmpty(request.Account) && !string.IsNullOrEmpty(request.DriverId))
             {
                 var account = await _accountManager.GetAccountByEmailId(request.Account);
                 if (account == null)
@@ -267,7 +267,7 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
                     return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "DRIVER_NOT_FOUND", parameter: nameof(request.DriverId));
 
                 var orgs = await _accountManager.GetAccountOrg(account.Id);
-                if (orgs.Select(x => x.Id).ToArray().Contains(org.Id))
+                if (!orgs.Select(x => x.Id).ToArray().Contains(org.Id))
                     return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "DRIVER_NOT_FOUND", parameter: nameof(request.Account));
             }
 
@@ -303,25 +303,31 @@ namespace net.atos.daf.ct2.provisioningdataservice.Controllers
 
         private async Task<IActionResult> ValidateParameters(OrganisationRequest request)
         {
-            if (((!string.IsNullOrEmpty(request.Account) && string.IsNullOrEmpty(request.DriverId)) ||
-                (string.IsNullOrEmpty(request.Account) && !string.IsNullOrEmpty(request.DriverId))) && string.IsNullOrEmpty(request.VIN))
+            if (string.IsNullOrEmpty(request.Account) && !string.IsNullOrEmpty(request.DriverId) && string.IsNullOrEmpty(request.VIN))
             {
-                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "MISSING_PARAMETER", parameter: $"{ nameof(request.Account) } - { nameof(request.DriverId) } combination");
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "MISSING_PARAMETER", parameter: $"{ nameof(request.Account) }");
+            }
+
+            if (!string.IsNullOrEmpty(request.Account) && string.IsNullOrEmpty(request.DriverId) && string.IsNullOrEmpty(request.VIN))
+            {
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "MISSING_PARAMETER", parameter: $"{ nameof(request.DriverId) }");
             }
 
             if (!string.IsNullOrEmpty(request.Account) && !string.IsNullOrEmpty(request.DriverId) && !string.IsNullOrEmpty(request.VIN))
             {
-                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", parameter: $"{ nameof(request.Account) } - { nameof(request.DriverId) } and { nameof(request.VIN) } combination");
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", parameter: $"({ nameof(request.Account) } & { nameof(request.DriverId) }) or { nameof(request.VIN) }");
             }
 
             if (string.IsNullOrEmpty(request.Account) && string.IsNullOrEmpty(request.DriverId) && string.IsNullOrEmpty(request.VIN))
             {
-                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "MISSING_PARAMETER", parameter: $"{ nameof(request.Account) } - { nameof(request.DriverId) } or { nameof(request.VIN) }");
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "MISSING_PARAMETER", parameter: $"({ nameof(request.Account) } & { nameof(request.DriverId) }) or { nameof(request.VIN) }");
             }
 
-            if (string.IsNullOrEmpty(request.Account) && string.IsNullOrEmpty(request.DriverId) && string.IsNullOrEmpty(request.VIN))
+            if (((string.IsNullOrEmpty(request.Account) && !string.IsNullOrEmpty(request.DriverId)) ||
+                (!string.IsNullOrEmpty(request.Account) && string.IsNullOrEmpty(request.DriverId)))
+                && !string.IsNullOrEmpty(request.VIN))
             {
-                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "MISSING_PARAMETER", parameter: $"{ nameof(request.Account) } - { nameof(request.DriverId) } or { nameof(request.VIN) }");
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", parameter: $"({ nameof(request.Account) } & { nameof(request.DriverId) }) or { nameof(request.VIN) }");
             }
 
             if (!string.IsNullOrEmpty(request.Account) && !string.IsNullOrEmpty(request.DriverId))

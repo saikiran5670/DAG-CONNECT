@@ -376,8 +376,9 @@ namespace net.atos.daf.ct2.driver
                     string queryDriver = @"select acc.email as Account, drv.first_name as FirstName, drv.last_name as LastName 
                                             from master.driver drv inner join master.account acc on drv.email = acc.email
                                             where drv.driver_id_ext = @DriverId";
-                    var driver = await _dataMartdataAccess.QueryFirstOrDefaultAsync<ProvisioningDriver>(queryDriver, parameters);
+                    var driver = await _dataAccess.QueryFirstOrDefaultAsync<ProvisioningDriver>(queryDriver, parameters);
 
+                    provisioningDriver.Account = driver?.Account ?? string.Empty;
                     provisioningDriver.FirstName = driver?.FirstName ?? string.Empty;
                     provisioningDriver.LastName = driver?.LastName ?? string.Empty;
                 }
@@ -396,13 +397,13 @@ namespace net.atos.daf.ct2.driver
             {
                 var parameters = new DynamicParameters();
                 IEnumerable<ProvisioningDriver> provisioningDrivers;
-                parameters.Add("@VINs", string.Join(',', request.VINs));
+                parameters.Add("@VINs", request.VINs);
                 parameters.Add("@StartTimestamp", request.StartTimestamp);
                 parameters.Add("@EndTimestamp", request.EndTimestamp);
 
                 StringBuilder query =
-                    new StringBuilder(@"select driver1_id as DriverId 
-                                        from livefleet.livefleet_current_trip_statistics where VIN in (@VINs)");
+                    new StringBuilder(@"select DISTINCT driver1_id as DriverId 
+                                        from livefleet.livefleet_current_trip_statistics where VIN = ANY(@VINs)");
 
                 if (request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
                 {
@@ -417,23 +418,22 @@ namespace net.atos.daf.ct2.driver
                     query.Append(" and end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
                 }
 
-                query.Append(" order by end_time_stamp desc");
-
                 provisioningDrivers = await _dataMartdataAccess.QueryAsync<ProvisioningDriver>(query.ToString(), parameters);
 
                 if (provisioningDrivers != null && provisioningDrivers.Count() > 0)
                 {
                     parameters = new DynamicParameters();
-                    parameters.Add("@DriverIds", string.Join(',', provisioningDrivers.Select(x => x.DriverId).ToArray()));
+                    parameters.Add("@DriverIds", provisioningDrivers.Select(x => x.DriverId).ToArray());
 
                     string queryDriver = @"select acc.email as Account, drv.first_name as FirstName, drv.last_name as LastName 
                                             from master.driver drv inner join master.account acc on drv.email = acc.email
-                                            where drv.driver_id_ext IN (@DriverIds)";
+                                            where drv.driver_id_ext = ANY(@DriverIds)";
                     var drivers = await _dataAccess.QueryAsync<ProvisioningDriver>(queryDriver, parameters);
 
                     foreach (var provisioningDriver in provisioningDrivers)
                     {
                         var driver = drivers.Where(x => x.DriverId.Equals(provisioningDriver.DriverId)).FirstOrDefault();
+                        provisioningDriver.Account = driver?.Account ?? string.Empty;
                         provisioningDriver.FirstName = driver?.FirstName ?? string.Empty;
                         provisioningDriver.LastName = driver?.LastName ?? string.Empty;
                     }

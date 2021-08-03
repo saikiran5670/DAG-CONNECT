@@ -1272,18 +1272,20 @@ namespace net.atos.daf.ct2.organization.repository
                 StringBuilder query;
                 var parameters = new DynamicParameters();
                 IEnumerable<ProvisioningOrganisation> provisioningOrganisations;
+                parameters.Add("@DriverId", request.DriverId);
+                parameters.Add("@VIN", request.VIN);
                 parameters.Add("@StartTimestamp", request.StartTimestamp);
                 parameters.Add("@EndTimestamp", request.EndTimestamp);
 
                 if (!string.IsNullOrEmpty(request.Account) && !string.IsNullOrEmpty(request.DriverId))
                 {
                     query =
-                        new StringBuilder(@"select VIN from livefleet.livefleet_current_trip_statistics where driver1_id = @DriverId and ");
+                        new StringBuilder(@"select DISTINCT VIN from livefleet.livefleet_current_trip_statistics where driver1_id = @DriverId");
                 }
                 else if (!string.IsNullOrEmpty(request.VIN))
                 {
                     query =
-                        new StringBuilder(@"select VIN from livefleet.livefleet_current_trip_statistics where VIN = @VIN and ");
+                        new StringBuilder(@"select DISTINCT VIN from livefleet.livefleet_current_trip_statistics where VIN = @VIN");
                 }
                 else
                 {
@@ -1292,25 +1294,23 @@ namespace net.atos.daf.ct2.organization.repository
 
                 if (request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
                 {
-                    query.Append("start_time_stamp >= @StartTimestamp and (end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL)");
+                    query.Append(" and start_time_stamp >= @StartTimestamp and (end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL)");
                 }
                 else if (request.StartTimestamp.HasValue && !request.EndTimestamp.HasValue)
                 {
-                    query.Append("start_time_stamp >= @StartTimestamp and (end_time_stamp IS NULL or 1=1)");
+                    query.Append(" and start_time_stamp >= @StartTimestamp and (end_time_stamp IS NULL or 1=1)");
                 }
                 else if (!request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
                 {
-                    query.Append("end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
+                    query.Append(" and end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
                 }
-
-                query.Append(" order by end_time_stamp desc");
 
                 var vins = await _dataMartdataAccess.QueryAsync<string>(query.ToString(), parameters);
 
                 if (vins != null && vins.Count() > 0)
                 {
                     parameters = new DynamicParameters();
-                    parameters.Add("@VINs", string.Join(',', vins));
+                    parameters.Add("@VINs", vins);
 
                     // Find owner org(s)
                     string queryOrg = @"select distinct veh.organization_id
@@ -1320,32 +1320,32 @@ namespace net.atos.daf.ct2.organization.repository
                                         where ors.state='A'
                                         and case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date >= now()::date 
                                                 else COALESCE(end_date,0) = 0 end
-                                        and veh.vehicle_id IN (@VINs) and veh.owner_org_id = veh.organization_id and ors.code = 'owner'";
+                                        and veh.VIN = ANY(@VINs) and orm.owner_org_id = veh.organization_id and ors.code = 'owner'";
                     var ownerOrgIds = await _dataAccess.QueryAsync<int>(queryOrg, parameters);
 
                     parameters = new DynamicParameters();
-                    parameters.Add("@OwnerOrgs", string.Join(',', ownerOrgIds));
+                    parameters.Add("@OwnerOrgs", ownerOrgIds);
 
                     // Find visible org(s)
                     queryOrg = @"select distinct orm.target_org_id
                                 from master.group grp
-                                inner join master.orgrelationshipmapping  orm on orm.vehicle_group_id=grp.id and org.object_type='V'
+                                inner join master.orgrelationshipmapping orm on orm.vehicle_group_id=grp.id and grp.object_type='V'
                                 Inner join master.orgrelationship ors
                                 on ors.id=orm.relationship_id
                                 where ors.state='A'
                                 and case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date >= now()::date 
                                          else COALESCE(end_date,0) = 0 end
-                                and orm.vehicle_group_id=grp.id and veh.owner_org_id IN (@OwnerOrgs) and ors.code <> 'owner'";
+                                and orm.vehicle_group_id=grp.id and orm.owner_org_id = ANY(@OwnerOrgs) and ors.code <> 'owner'";
                     var visibleOrgIds = await _dataAccess.QueryAsync<int>(queryOrg, parameters);
 
                     // Merge all Org Ids
-                    var finalOrgIds = ownerOrgIds.Concat(visibleOrgIds);
+                    var finalOrgIds = ownerOrgIds.Concat(visibleOrgIds).Distinct();
 
                     parameters = new DynamicParameters();
-                    parameters.Add("@OrgIds", string.Join(',', finalOrgIds));
+                    parameters.Add("@OrgIds", finalOrgIds.ToArray());
 
-                    queryOrg = @"select og_id as OrgId, name as Name from master.organization where id in (@OrgIds)";
-                    return provisioningOrganisations = await _dataAccess.QueryAsync<ProvisioningOrganisation>(queryOrg, parameters);
+                    queryOrg = @"select org_id as OrgId, name as Name from master.organization where id = ANY(@OrgIds)";
+                    return await _dataAccess.QueryAsync<ProvisioningOrganisation>(queryOrg, parameters);
                 }
                 return new List<ProvisioningOrganisation>().AsEnumerable();
             }
