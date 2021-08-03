@@ -167,7 +167,7 @@ spec:
       - backend:
           serviceName: provisioningdataservice
           servicePort: 80
-        path: /provisioning
+        path: /provisioning/vehicle/current
   tls:
   - hosts:
     - #{IngressURL}#
