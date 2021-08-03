@@ -63,8 +63,8 @@ namespace net.atos.daf.ct2.reports.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@vin", vehiclePerformanceRequest.Vin);
                 parameter.Add("@performancetype", vehiclePerformanceRequest.PerformanceType);
-                parameter.Add("@startDate", vehiclePerformanceRequest.StartTime);
-                parameter.Add("@endDate", vehiclePerformanceRequest.EndTime);
+                parameter.Add("@StartDateTime", vehiclePerformanceRequest.StartTime);
+                parameter.Add("@EndDateTime", vehiclePerformanceRequest.EndTime);
                 //var vehPerformanceChartData = new List<VehPerformanceChartData>();
                 string query = GetQueryAsPerPerformanceType(vehiclePerformanceRequest);
                 //var lstengion = (List<VehPerformanceChartData>)await _dataMartdataAccess.QueryAsync<VehPerformanceChartData>(query, parameter);
@@ -90,7 +90,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 array_to_string(num_val_rpm_torque, ',', '*') as CountPerIndex,
                                 array_to_string(col_index_rpm_torque, ',', '*') as ColumnIndex
                                 FROM tripdetail.trip_statistics 
-                                where vin = @vin 
+                                where vin = @vin and
                                is_ongoing_trip = false AND end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
                     break;
                 case "S":
@@ -102,7 +102,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 array_to_string(num_val_speed_rpm, ',', '*') as CountPerIndex, 
                                 array_to_string(col_index_speed_rpm, ',', '*') as ColumnIndex
                                 FROM tripdetail.trip_statistics 
-                                where vin = @vin 
+                                where vin = @vin and
                                is_ongoing_trip = false AND end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
                     break;
                 case "B":
@@ -114,7 +114,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     array_to_string(num_val_acceleration_speed, ',', '*') as CountPerIndex, 
                                     array_to_string(col_index_acceleration_speed, ',', '*') as ColumnIndex
                                     FROM tripdetail.trip_statistics 
-                                    where vin = @vin 
+                                    where vin = @vin and
                                     is_ongoing_trip = false AND end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
                     break;
                 default:
