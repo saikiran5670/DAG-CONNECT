@@ -8,13 +8,13 @@
   </mat-expansion-panel-header>
   <!-- <div style='padding-left: 52%;' fxLayoutAlign="end"> -->
     <button class="weekButton"
-    (click)="selectionTimeRange('week')" [ngClass]="{'selectedBtn': selectionTab == 'week'}"  mat-raised-button
+    (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}"  mat-raised-button
       color="primary">{{translationData.lblLast7days|| 'Last 7 days' }}</button>
     <button class="monthButton" 
-    (click)="selectionTimeRange('month')" [ngClass]="{'selectedBtn': selectionTab == 'month'}" mat-raised-button
+    (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" mat-raised-button
       color="primary">{{translationData.lblLast30days|| 'Last 30 days' }}</button>
     <button class="moreButton"
-    (click)="selectionTimeRange('3months')" [ngClass]="{'selectedBtn': selectionTab == '3months'}" mat-raised-button
+    (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" mat-raised-button
       color="primary">{{translationData.lblLastWeek || 'Last 90 days' }}</button>
   <!-- </div> -->
   <div fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
@@ -22,12 +22,12 @@
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistancePerDay ||
         'Distance Per Day' }}</span>
       <div *ngIf="distanceChartType =='bar'" class="chart-wrapper">
-        <canvas baseChart [datasets]="barChartData1" [labels]="barChartLabels1" [options]="barChartOptions"
+        <canvas baseChart [datasets]="barChartData1" [labels]="barChartLabels1" [options]="barChartOptions2"
           [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
         </canvas>
       </div>
       <div *ngIf="distanceChartType =='line'" class="chart-wrapper">
-        <canvas baseChart [datasets]="lineChartData1" [labels]="lineChartLabels1" [options]="lineChartOptions"
+        <canvas baseChart [datasets]="lineChartData1" [labels]="lineChartLabels1" [options]="lineChartOptions2"
           [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType"
           [plugins]="lineChartPlugins">
         </canvas>

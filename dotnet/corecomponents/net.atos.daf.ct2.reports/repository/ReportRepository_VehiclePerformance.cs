@@ -55,5 +55,44 @@ namespace net.atos.daf.ct2.reports.repository
 
 
         }
+        public async Task<List<VehPerformanceChartData>> GetVehPerformanceBubbleChartData(VehiclePerformanceRequest vehiclePerformanceRequest)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vin", vehiclePerformanceRequest.Vin);
+                parameter.Add("@performancetype", vehiclePerformanceRequest.PerformanceType);
+                parameter.Add("@startDate", vehiclePerformanceRequest.StartTime);
+                parameter.Add("@endDate", vehiclePerformanceRequest.EndTime);
+                var vehPerformanceChartData = new List<VehPerformanceChartData>();
+                string query = GetQueryAsPerPerformanceType(vehiclePerformanceRequest);
+                var lstengion = (List<VehPerformanceChartData>)await _dataAccess.QueryAsync<VehPerformanceChartData>(query, parameter);
+                return vehPerformanceChartData;
+            }
+            catch (Exception Ex)
+            {
+
+                throw;
+            }
+        }
+        private string GetQueryAsPerPerformanceType(VehiclePerformanceRequest vehiclePerformanceRequest)
+        {
+            var query = string.Empty;
+            switch (vehiclePerformanceRequest.PerformanceType)
+            {
+                case "E":
+                    query = "";
+                    break;
+                case "S":
+                    query = "";
+                    break;
+                case "B":
+                    query = "";
+                    break;
+                default:
+                    break;
+            }
+            return query;
+        }
     }
 }

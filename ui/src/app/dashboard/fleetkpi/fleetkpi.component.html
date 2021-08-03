@@ -7,12 +7,100 @@
     </mat-expansion-panel-header>
     <!-- time selection -->
     <button class="weekButton"
-    (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'week'}"  mat-raised-button
+    (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}"  mat-raised-button
       color="primary">{{translationData.lblLast7days|| 'Last 7 days' }}</button>
     <button class="monthButton" 
-    (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'month'}" mat-raised-button
+    (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" mat-raised-button
       color="primary">{{translationData.lblLast30days|| 'Last 30 days' }}</button>
     <button class="moreButton"
-    (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == '3months'}" mat-raised-button
+    (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" mat-raised-button
       color="primary">{{translationData.lblLastWeek || 'Last 90 days' }}</button>
+
+       <!-- Charts  -->
+    <div style='margin-bottom: 10px;'>
+      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+        <div class="chartTile col-md-2">
+          <div class="textDiv">
+            <div>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>86.14 T</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of 96.78 T</div>
+            
+          </div>
+          
+          <div class="col-md-8 chart-wrapper chartDimension">
+              <canvas #chart1 baseChart
+                [data]="doughnutChartActiveVehicleData"
+                [labels]="doughnutChartLabels"
+                [chartType]="doughnutChartType"
+                [options]="doughnutChartOptions"
+                [colors]="doughnutColors"
+                [plugins]="doughnutChartPlugins">
+              </canvas>
+            </div>
+        </div>
+
+        <!-- Idling Time -->
+        <div class="chartTile col-md-2">
+          <div class="textDiv">
+            <div>{{ translationData.lblIdlingTime || 'Idling Time' }}</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>1 Hr 46 min</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of 2 Hr</div>
+            
+          </div>
+          
+          <div class="col-md-8 chart-wrapper chartDimension">
+              <canvas #chart2 baseChart
+                [data]="doughnutChartIdlingData"
+                [labels]="idlingChartLabels"
+                [chartType]="doughnutChartType"
+                [options]="doughnutChartIdlingOptions"
+                [colors]="doughnutColors"
+                [plugins]="doughnutChartIdlingPlugins">
+              </canvas>
+            </div>
+        </div>
+
+         <!-- Driving Time -->
+         <div class="chartTile col-md-2">
+          <div class="textDiv">
+            <div>{{ translationData.lblDrivingTime || 'Driving Time' }}</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>1 Hr 46 min</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of 2 Hr</div>
+            
+          </div>
+          
+          <div class="col-md-8 chart-wrapper chartDimension">
+              <canvas #chart3 baseChart
+                [data]="doughnutChartDrivingData"
+                [labels]="drivingChartLabels"
+                [chartType]="doughnutChartType"
+                [options]="doughnutChartDrivingOptions"
+                [colors]="doughnutColors"
+                [plugins]="doughnutChartDrivingPlugins">
+              </canvas>
+            </div>
+        </div>
+
+         <!-- Distance Chart -->
+         <div class="chartTile col-md-2">
+          <div class="textDiv">
+            <div>{{ translationData.lblDistance || 'Distance' }}</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>73 Km</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of 110 Km</div>
+            
+          </div>
+          
+          <div class="col-md-8 chart-wrapper chartDimension">
+              <canvas #chart4 baseChart
+                [data]="doughnutChartDistanceData"
+                [labels]="distanceChartLabels"
+                [chartType]="doughnutChartType"
+                [options]="doughnutChartDistanceOptions"
+                [colors]="doughnutColors"
+                [plugins]="doughnutChartDistancePlugins">
+              </canvas>
+            </div>
+        </div>
+        </div>
+    </div>
 </mat-expansion-panel>
