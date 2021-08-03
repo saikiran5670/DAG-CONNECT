@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, Inject} from '@angular/core';
 import { Util } from '../../shared/util';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { DashboardService } from 'src/app/services/dashboard.service';
 
 
 @Component({
@@ -25,7 +26,7 @@ export class FleetkpiComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats) { }
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private dashboardService : DashboardService) { }
 
   ngOnInit(): void {
     this.setInitialPref(this.prefData,this.preference);
@@ -73,7 +74,25 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    console.log(this.startDateValue, this.endDateValue);
+    this.getKPIData();
+  }
+
+  getKPIData(){
+    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
+    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
+    let _kpiPayload = {
+      "startDateTime": _startTime,
+      "endDateTime": _endTime,
+      "viNs": [ //this.finalVinList
+        "M4A14532",
+        "XLR0998HGFFT76657",
+        "XLRASH4300G1472w0",
+        "XLR0998HGFFT75550"
+      ]
+    }
+    this.dashboardService.getFleetKPIData(_kpiPayload).subscribe((kpiData)=>{
+      //console.log(kpiData);
+    })
   }
 
    //********************************** Date Time Functions *******************************************//

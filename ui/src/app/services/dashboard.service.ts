@@ -44,6 +44,18 @@ export class DashboardService {
       .pipe(catchError(this.handleError));
   }
   
+  getFleetKPIData(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.dashboardServiceUrl}/fleetkpi`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+  
   calculatePercentage(_value,_thresholdValue){
     let _percent = (_value / _thresholdValue) * 100;
     return _percent;
