@@ -181,13 +181,6 @@ namespace net.atos.daf.ct2.reportscheduler.report
             {
                 throw new Exception(string.Format(TripReportConstants.NO_VEHICLE_ASSOCIATION_MSG, vinData));
             }
-            if (true && ReportKey == ReportNameConstants.REPORT_FLEET_FUEL)
-            {
-                var lst = new List<VehicleList>();
-                lst.Add(vehicleList.Where(w => w.VIN == "XLR0998HGFFT76657").FirstOrDefault());
-                return lst;
-                //return vehicleList;
-            }
             return vehicleList;
         }
 
