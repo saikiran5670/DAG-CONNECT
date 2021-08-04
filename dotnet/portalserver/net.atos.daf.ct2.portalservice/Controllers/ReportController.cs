@@ -1579,7 +1579,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
         #region VehiclePerformance
         [HttpPost]
-        [Route("vehicleperformancechart")]
+        [Route("vehicleperformance/charttemplate")]
         public async Task<IActionResult> GetVehiclePerformanceChartTemplate([FromBody] VehiclePerformanceFilter request)
         {
             try
@@ -1611,7 +1611,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         [HttpPost]
-        [Route("vehperformancechartdata")]
+        [Route("vehperformance/chartdata")]
         public async Task<IActionResult> GetVehPerformanceBubbleChartData(VehiclePerformanceFilter vehiclePerformanceFilter)
         {
             try
@@ -1648,7 +1648,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("vehicleperformancetype")]
+        [Route("vehicleperformance/kpi")]
         public async Task<IActionResult> GetVehPerformancetype()
         {
             try
