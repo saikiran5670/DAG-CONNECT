@@ -97,7 +97,7 @@ namespace net.atos.daf.ct2.reports.repository
 
         Task<VehiclePerformanceSummary> GetVehPerformanceSummaryDetails(string vin);
         Task<List<VehPerformanceChartData>> GetVehPerformanceBubbleChartData(VehiclePerformanceRequest vehiclePerformanceRequest);
-        Task<List<VehPerformanceProperty>> GetPerformanceType();
+        Task<List<VehPerformanceProperty>> GetVehPerformanceType();
         #endregion
     }
 }
