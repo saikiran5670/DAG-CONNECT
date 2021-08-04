@@ -46,9 +46,9 @@
                             (selectionChange)="onLanguageChange($event.value)">
                             
                             <mat-option>
-                                <ngx-mat-select-search formControlName="langFilterCtrl"></ngx-mat-select-search>
+                                <ngx-mat-select-search (keyup)="filterLanguages(search.value)" #search> <mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon></ngx-mat-select-search>
                             </mat-option>
-                            <mat-option *ngFor="let lang of languages" [value]="lang.id" matTooltip="{{lang.name}}">
+                            <mat-option *ngFor="let lang of filteredLanguages | async" [value]="lang.id" matTooltip="{{lang.name}}">
                                 &nbsp;{{ lang.name }}
                             </mat-option>
                         </mat-select>

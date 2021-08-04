@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.entity;
@@ -19,18 +20,21 @@ namespace net.atos.daf.ct2.reportscheduler
         private readonly IAuditTraillib _auditLog;
         //private readonly IGeneratePdf _generatePdf;
         private readonly IReportCreator _reportCreator;
+        private readonly IConfiguration _configuration;
 
         public ReportCreationSchedulerManager(ILogger<ReportCreationSchedulerManager> logger,
                                       IReportSchedulerRepository reportSchedularRepository,
                                       IAuditTraillib auditLog,
                                       //IGeneratePdf generatePdf,
-                                      IReportCreator reportCreator)
+                                      IReportCreator reportCreator,
+                                      IConfiguration configuration)
         {
             _logger = logger;
             _reportSchedulerRepository = reportSchedularRepository;
             _auditLog = auditLog;
             //_generatePdf = generatePdf;
             _reportCreator = reportCreator;
+            _configuration = configuration;
         }
 
         public async Task<bool> GenerateReport()
@@ -38,7 +42,8 @@ namespace net.atos.daf.ct2.reportscheduler
             var flag = true;
             try
             {
-                foreach (var reportSchedulerData in await _reportSchedulerRepository.GetReportCreationSchedulerList())
+                int.TryParse(_configuration["ReportCreationScheduler:ReportCreationRangeInMinutes"], out int reportCreationRangeInMinutes);
+                foreach (var reportSchedulerData in await _reportSchedulerRepository.GetReportCreationSchedulerList(reportCreationRangeInMinutes > 0 ? reportCreationRangeInMinutes : 90))
                 {
                     try
                     {

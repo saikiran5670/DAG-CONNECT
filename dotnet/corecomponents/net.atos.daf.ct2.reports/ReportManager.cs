@@ -763,9 +763,9 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetVehPerformanceBubbleChartData(vehiclePerformanceRequest);
         }
-        public async Task<List<VehPerformanceProperty>> GetPerformanceType()
+        public async Task<List<VehPerformanceProperty>> GetVehPerformanceType()
         {
-            return await _reportRepository.GetPerformanceType();
+            return await _reportRepository.GetVehPerformanceType();
         }
         #endregion
     }

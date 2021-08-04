@@ -12,10 +12,13 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 {
     public partial class ReportSchedulerRepository : IReportSchedulerRepository
     {
-        public Task<IEnumerable<ReportCreationScheduler>> GetReportCreationSchedulerList()
+        public Task<IEnumerable<ReportCreationScheduler>> GetReportCreationSchedulerList(int reportCreationRangeInMinutes)
         {
             try
             {
+                var parameter = new DynamicParameters();
+                parameter.Add("@from_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(-reportCreationRangeInMinutes)));
+                parameter.Add("@now_date", d1);
                 #region Query GetReportCreationScheduler
                 var query = @"select rs.id as Id, rs.organization_id as OrganizationId, rs.report_id as ReportId, 
                             r.name as ReportName, trim(r.key) as ReportKey,rs.frequency_type as FrequecyType, rs.status as Status, 
@@ -33,17 +36,16 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                             ap.date_format_id as DateFormatId,
                             ap.time_format_id as TimeFormatId
                             from master.reportscheduler rs
-                                 inner join master.report r on 
-                                            date_trunc('day', (to_timestamp(rs.next_schedule_run_date/1000) AT TIME ZONE 'UTC')) = date_trunc('day', NOW() AT TIME ZONE 'UTC') and 
-                                            date_trunc('minute', (to_timestamp(rs.end_date/1000) AT TIME ZONE 'UTC')) <= date_trunc('minute', NOW() AT TIME ZONE 'UTC') and 
-                                            date_trunc('minute', (to_timestamp(rs.end_date/1000) AT TIME ZONE 'UTC')) >= date_trunc('minute', NOW() AT TIME ZONE 'UTC') - interval '90 minutes' and 
+                                 inner join master.report r on                                             
+                                            rs.end_date <= @now_date and 
+                                            rs.end_date >= @from_date and 
                                             rs.status = 'A' and r.id = rs.report_id
 								 left Join master.account ac on ac.id = rs.created_by and ac.state='A'
 	                             left join master.accountpreference ap on ap.id = ac.preference_id								 
 								 left join master.scheduledreport sr on sr.schedule_report_id = rs.id and rs.start_date = sr.start_date and  sr.end_date = rs.end_date
                             where sr.id is null order by rs.next_schedule_run_date";
                 #endregion
-                return _dataAccess.QueryAsync<ReportCreationScheduler>(query);
+                return _dataAccess.QueryAsync<ReportCreationScheduler>(query, parameter);
             }
             catch (Exception)
             {
