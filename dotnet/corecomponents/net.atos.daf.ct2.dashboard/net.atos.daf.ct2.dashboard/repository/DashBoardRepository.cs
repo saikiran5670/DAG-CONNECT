@@ -109,11 +109,9 @@ namespace net.atos.daf.ct2.dashboard.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var filter = DateTime.Now;
-                DateTime datetime = DateTime.Now.AddHours(-filter.Hour).AddMinutes(-filter.Minute).AddSeconds(-filter.Second);
                 parameter.Add("@Vins", objTodayLiveVehicleRequest.VINs);
-                parameter.Add("@startdatetime", UTCHandling.GetUTCFromDateTime(datetime, "UTC"));
-                parameter.Add("@yesterdaydatetime", UTCHandling.GetUTCFromDateTime(filter.AddDays(-1), "UTC"));
+                parameter.Add("@startdatetime", objTodayLiveVehicleRequest.TodayDateTime);
+                parameter.Add("@yesterdaydatetime", objTodayLiveVehicleRequest.YesterdayDateTime);
                 string query = @"WITH CTE_Today as
                                 (
                                     SELECT 
@@ -127,7 +125,7 @@ namespace net.atos.daf.ct2.dashboard.repository
 										COUNT(ta.urgency_level_type) As criticlealertcount
 										FROM tripdetail.multi_day_trip_statistics mdts
 										LEFT JOIN tripdetail.tripalert ta ON mdts.vin = ta.vin
-										WHERE mdts.vin = ANY(@Vins) and mdts.activity_datetime = @startdatetime
+										WHERE mdts.vin = ANY(@Vins) and mdts.activity_datetime >= @startdatetime
 										GROUP BY TodayVin
                                 )
                                 , cte_yesterday as
@@ -138,7 +136,7 @@ namespace net.atos.daf.ct2.dashboard.repository
 									SUM(mdts.driving_time) as YesterDayTimeBasedUtilizationRate, 
 									SUM(mdts.trip_distance) as YesterDayDistanceBasedUtilization
 									FROM tripdetail.multi_day_trip_statistics mdts
-									WHERE mdts.vin = ANY(@Vins) and mdts.activity_datetime = @yesterdaydatetime
+									WHERE mdts.vin = ANY(@Vins) and mdts.activity_datetime >= @yesterdaydatetime
 									GROUP BY mdts.vin
                                 )
                              SELECT         t.TodayVin,
@@ -157,7 +155,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                                 CTE_Today t
 							INNER JOIN	
                                 cte_yesterday y on t.TodayVin = y.yesterdayVin";
-                var data = await _dataMartdataAccess.QueryAsync<dynamic>(query, parameter);
+                var data = await _dataMartdataAccess.QueryAsync<TodayLiveVehicleResponse>(query, parameter);
                 return data.FirstOrDefault();
             }
             catch (System.Exception ex)
