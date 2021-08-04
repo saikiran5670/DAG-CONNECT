@@ -18,6 +18,7 @@ export class TodayLiveVehicleComponent implements OnInit {
   liveVehicleData:any;
   activeVehiclePercent : Number = 0;
   fileIcon = 'assets/dashboard/greenArrow.svg';
+  totalVehicles : number = 0;
   @Input() finalVinList : any;
   //Active Vehicles Chart
   doughnutChartLabels: Label[] = [('Target'), '', ''];
@@ -236,7 +237,8 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
     this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
        // console.log(vehicleData);
        if(vehicleData){
-          this.liveVehicleData = vehicleData
+          this.liveVehicleData = vehicleData;
+          this.totalVehicles =  4//this.finalVinList.length;
           this.updateCharts();
 
        }
@@ -259,7 +261,10 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
   }
 
   updateCharts(){
-    let activeVehiclePercent = this.dashboardService.calculatePercentage(this.liveVehicleData.activeVehicles,10)
+    //let activeVehiclePercent = this.dashboardService.calculateTodayLivePercentage(this.liveVehicleData.activeVehicles,this.totalVehicles)
+    let activeVehiclePercent = this.dashboardService.calculateTodayLivePercentage(2,4)
+    
+    let activeVehicleChangePercent = this.dashboardService.calculateLastChange(2,1,4);
     this.doughnutChartActiveVehicleData = [[activeVehiclePercent,(100 - activeVehiclePercent)]]
 
     this.doughnutChartPlugins = [{
@@ -280,9 +285,37 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
       }
     }];
 
+    this.doughnutChartOptions = {
+      responsive: true,
+      legend: {
+        display: false
+      },
+      cutoutPercentage: 80,
+      tooltips: {
+        position: 'nearest',
+       
+        callbacks: {
+          afterLabel: function(tooltipItem, data) {
+            var dataset = data['datasets'][0];
+            var percent = 100;
+           // let icon = '<i class="fas fa-sort-down"></i>'
+           return 'Last Change: ' + activeVehicleChangePercent + "%";
+          }
+        },
+        filter: function(item, data) {
+          var label = data.labels[item.index];
+          if (label) return true;
+          return false;
+        },
+      },
+      title:{
+        text: "15",
+        display: false
+      }
+    }
     // update time based chart
 
-    let timeBasedPercent = this.dashboardService.calculatePercentage(this.liveVehicleData.timeBaseUtilization,10)
+    let timeBasedPercent = this.dashboardService.calculateTodayLivePercentage(this.liveVehicleData.timeBaseUtilization,10)
     this.doughnutChartTimeBasedData = [[timeBasedPercent,(100 - timeBasedPercent)]]
 
     this.doughnutChartTimePlugins = [{
@@ -305,9 +338,12 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
 
     //Distance Based Chart
     
-    let distanceBasedPercent = this.dashboardService.calculatePercentage(this.liveVehicleData.distanceBaseUtilization,40)
+    
+    //let distanceBasedPercent = this.dashboardService.calculateTodayLivePercentage(this.liveVehicleData.distanceBaseUtilization,40)
+    
+    let distanceBasedPercent = this.dashboardService.calculateKPIPercentage(20,4,10,1)["kpiPercent"];
     this.doughnutChartDistanceBasedData = [[distanceBasedPercent,(100 - distanceBasedPercent)]]
-
+   
     this.doughnutChartDistancePlugins = [{
       beforeDraw(chart) {
         const ctx = chart.ctx;

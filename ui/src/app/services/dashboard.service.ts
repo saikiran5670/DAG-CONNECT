@@ -56,9 +56,26 @@ export class DashboardService {
       .pipe(catchError(this.handleError));
   }
   
-  calculatePercentage(_value,_thresholdValue){
-    let _percent = (_value / _thresholdValue) * 100;
+  calculateTodayLivePercentage(_value,_totalValue){
+    let _percent = (_value / _totalValue) * 100;
     return _percent;
+  }
+
+  calculateOutOffValue(_totalValue,_thresholdValue,_days){
+    let _baseValue = (_totalValue * _thresholdValue *_days);
+    return _baseValue;
+  }
+
+  calculateKPIPercentage(_currentValue,_totalVehicle,_thresholdValue,_days){
+    let _baseValue = (_totalVehicle * _thresholdValue *_days);
+    let _kpiPercent = (_currentValue / _baseValue) *100;
+
+    return {cuttOff : _baseValue, kpiPercent:_kpiPercent};
+  }
+
+  calculateLastChange(currentValue,lastValue,totalValue){
+    let _lastChange = ((currentValue - lastValue)/currentValue)*100;
+    return _lastChange;
   }
 
   private handleError(errResponse: HttpErrorResponse) {
