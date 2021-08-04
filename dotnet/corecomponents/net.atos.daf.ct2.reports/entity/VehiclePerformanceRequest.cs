@@ -20,4 +20,12 @@ namespace net.atos.daf.ct2.reports.entity
         public string EngineType { get; set; }
         public string ModelType { get; set; }
     }
+
+    public class VehPerformanceProperty
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
+        public string Type { get; set; }
+    }
+
 }
