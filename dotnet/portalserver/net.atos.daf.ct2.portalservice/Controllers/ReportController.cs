@@ -1624,12 +1624,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 string filters = JsonConvert.SerializeObject(vehiclePerformanceFilter);
                 BubbleChartDataRequest objVehPerformanceFilter = JsonConvert.DeserializeObject<BubbleChartDataRequest>(filters);
-                var data = await _reportServiceClient.GetVehPerformanceBubbleChartDataAsync(objVehPerformanceFilter);
+                var response = await _reportServiceClient.GetVehPerformanceBubbleChartDataAsync(objVehPerformanceFilter);
 
-                if (data?.BubbleChartData != null)
+                if (response != null)
                 {
-                    data.Message = ReportConstants.GET_VEHICLE_PERFORMANCE_SUCCESS_MSG;
-                    return Ok(data);
+                    response.Message = ReportConstants.GET_VEHICLE_PERFORMANCE_SUCCESS_MSG;
+                    return Ok(response);
                 }
                 else
                 {
