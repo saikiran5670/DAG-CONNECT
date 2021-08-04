@@ -579,7 +579,10 @@ export class FleetMapService {
         }
       }
         this.hereMap.addObject(this.group);
-        this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
+        this.hereMap.getViewModel().setLookAtData({
+          bounds: this.group.getBoundingBox()
+        });
+        // this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
         
       });
    
@@ -1569,8 +1572,8 @@ export class FleetMapService {
 
   afterPlusClick(_selectedRoutes: any, _ui: any){
     this.hereMap.removeLayer(this.clusteringLayer);
-    this.hereMap.setCenter({lat: _selectedRoutes[0].startPositionLattitude, lng: _selectedRoutes[0].startPositionLongitude}, 'default');
-    this.hereMap.setZoom(10);
+    // this.hereMap.setCenter({lat: _selectedRoutes[0].startPositionLattitude, lng: _selectedRoutes[0].startPositionLongitude}, 'default');
+    // this.hereMap.setZoom(10);
     if(_selectedRoutes.length > 1){
       let _arr = _selectedRoutes.filter((elem, index) => _selectedRoutes.findIndex(obj => obj.startPositionLattitude === elem.startPositionLattitude && obj.startPositionLongitude === elem.startPositionLongitude) === index);
       let _a: any = [];
