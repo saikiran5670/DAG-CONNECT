@@ -17,14 +17,14 @@ namespace net.atos.daf.ct2.notificationservice.services
     public class PushNotificationManagementService : PushNotificationService.PushNotificationServiceBase
     {
         private readonly ILog _logger;
-        private readonly KafkaConfiguration _kafkaConfiguration;
+        private readonly entity.KafkaConfiguration _kafkaConfiguration;
         private readonly IConfiguration _configuration;
         //private readonly ITripAlertManager _tripAlertManager;
         public PushNotificationManagementService(/*ITripAlertManager tripAlertManager, */IConfiguration configuration)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._configuration = configuration;
-            _kafkaConfiguration = new KafkaConfiguration();
+            _kafkaConfiguration = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
             //_tripAlertManager = tripAlertManager;
         }

@@ -122,5 +122,25 @@ namespace net.atos.daf.ct2.reports.repository
             }
             return query;
         }
+
+        public async Task<List<VehPerformanceProperty>> GetVehPerformanceType()
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@type", "U");
+            string query = @"SELECT key as Name,
+                                            enum as Value, Type as Type
+                                            FROM translation.enumtranslation
+                                            Where type in ('Y','N')";
+
+            List<VehPerformanceProperty> response = (List<VehPerformanceProperty>)await _dataAccess.QueryAsync<VehPerformanceProperty>(query, parameter);
+            if (response.Count > 0)
+            {
+                return response;
+            }
+            else
+            {
+                return new List<VehPerformanceProperty>();
+            }
+        }
     }
 }

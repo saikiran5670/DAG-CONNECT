@@ -291,7 +291,7 @@ export class ReportMapService {
     return homeMarker;
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any){
+  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, row?: any){
     this.clearRoutesFromMap();
     if(_herePOI){
       this.showHereMapPOI(_herePOI, _selectedRoutes, _ui);
@@ -383,11 +383,18 @@ export class ReportMapService {
           }
         }
         this.hereMap.addObject(this.group);
-        this.hereMap.getViewModel().setLookAtData({
-          bounds: this.group.getBoundingBox()
-        });
+        if(elem.id == row.id){
+          let grp= new H.map.Group();
+          grp.addObjects([this.startMarker, this.endMarker]);
+          this.hereMap.addObject(grp);
+          this.hereMap.getViewModel().setLookAtData({
+            bounds: grp.getBoundingBox()
+          });
+        }
+        
         // this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
       });
+      
       this.makeCluster(_selectedRoutes, _ui);
     }else{
       if(_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)){
@@ -965,8 +972,8 @@ export class ReportMapService {
 
   afterPlusClick(_selectedRoutes: any, _ui: any){
     this.hereMap.removeLayer(this.clusteringLayer);
-    this.hereMap.setCenter({lat: _selectedRoutes[0].startPositionLattitude, lng: _selectedRoutes[0].startPositionLongitude}, 'default');
-    this.hereMap.setZoom(10);
+    // this.hereMap.setCenter({lat: _selectedRoutes[0].startPositionLattitude, lng: _selectedRoutes[0].startPositionLongitude}, 'default');
+    // this.hereMap.setZoom(10);
     if(_selectedRoutes.length > 1){
       let _arr = _selectedRoutes.filter((elem, index) => _selectedRoutes.findIndex(obj => obj.startPositionLattitude === elem.startPositionLattitude && obj.startPositionLongitude === elem.startPositionLongitude) === index);
       let _a: any = [];
@@ -1331,7 +1338,7 @@ export class ReportMapService {
       gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " ltr"
       gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " ltr/100km"
     }
-    return gridData;
+    return JSON.stringify(gridData);
   }
 
 

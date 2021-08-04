@@ -733,6 +733,8 @@ export class AppComponent {
       let preferenceLanguageId = 1;
       this.translationService.getLanguageCodes().subscribe(languageCodes => {
         this.languages = languageCodes;
+        this.languages.sort(this.compare);
+        this.resetLanguageFilter();
         localStorage.setItem("languageCodeList", JSON.stringify(this.languages));
         this.localStLanguage = JSON.parse(localStorage.getItem("language"));
         let filterLang = [];
@@ -783,10 +785,12 @@ export class AppComponent {
             let _searchOrg = this.organizationList.filter(i => i.id == _orgId);
             if (_searchOrg.length > 0) {
               localStorage.setItem("contextOrgId", _searchOrg[0].id);
+              localStorage.setItem("contextOrgName", _searchOrg[0].name);
               this.appForm.get("contextOrgSelection").setValue(_searchOrg[0].id); //-- set context org dropdown
             }
             else {
               localStorage.setItem("contextOrgId", this.organizationList[0].id);
+              localStorage.setItem("contextOrgName", this.organizationList[0].name);
               this.appForm.get("contextOrgSelection").setValue(this.organizationList[0].id); //-- set context org dropdown
             }
             this.calledTranslationLabels(preferencelanguageCode);
@@ -797,6 +801,20 @@ export class AppComponent {
         });
       });
     }
+  }
+
+  resetLanguageFilter() {
+    this.filteredLanguages.next(this.languages.slice());
+  }
+
+  compare(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
   }
 
   calledTranslationLabels(_code: any) {
@@ -837,14 +855,14 @@ export class AppComponent {
        //this.languageSelection.setValue(this.languages[30]);
 
         // load the initial bank list
-        this.filteredLanguages.next(this.languages.slice());
+        
     
 
-    this.langFilterCtrl.valueChanges
-      .pipe(takeUntil(this._onDestroy))
-      .subscribe(() => {
-        this.filterLanguages();
-      });
+    // this.langFilterCtrl.valueChanges
+    //   .subscribe(() => {
+    //     console.log("called")
+    //     this.filterLanguages();
+    //   });
   }
 
   private setPageTitle() {
@@ -936,6 +954,7 @@ export class AppComponent {
     let _searchOrg = this.organizationList.filter(i => i.id == _orgId);
     if (_searchOrg.length > 0) {
       localStorage.setItem("contextOrgId", _searchOrg[0].id);
+      localStorage.setItem("contextOrgName", _searchOrg[0].name);
       this.appForm.get("contextOrgSelection").setValue(_searchOrg[0].id); //-- set context org dropdown
     }
   }
@@ -1035,6 +1054,7 @@ export class AppComponent {
     let _search = this.organizationList.filter(i => i.id == parseInt(filterValue));
     if (_search.length > 0) {
       localStorage.setItem("contextOrgId", _search[0].id);
+      localStorage.setItem("contextOrgName", _search[0].name);
     }
     let switchObj = {
       accountId: this.accountID,
@@ -1091,23 +1111,21 @@ export class AppComponent {
     }
   }
 
-  filterLanguages() {
+  filterLanguages(search) {
     if (!this.languages) {
       return;
     }
-    // get the search keyword
-    let search = this.langFilterCtrl.value;
     if (!search) {
-      this.filteredLanguages.next(this.languages.slice());
+      this.resetLanguageFilter();
       return;
     } else {
       search = search.toLowerCase();
     }
-    // filter the banks
     this.filteredLanguages.next(
       this.languages.filter(item => item.name.toLowerCase().indexOf(search) > -1)
     );
-  }
+    console.log("this.filteredLanguages",this.filteredLanguages) 
+   }
 
 
 }

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.dashboardservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Dashboard;
+using net.atos.daf.ct2.portalservice.Entity.Report;
 using Newtonsoft.Json;
 using DashboardService = net.atos.daf.ct2.dashboardservice;
 
@@ -25,6 +26,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly DashboardService.DashboardService.DashboardServiceClient _dashboarClient;
         private readonly string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly AuditHelper _auditHelper;
+        private readonly DashboardMapper _dashboardMapper;
+
 
 
         public DashBoardController(DashboardService.DashboardService.DashboardServiceClient dashboardClient, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
@@ -32,6 +35,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _dashboarClient = dashboardClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _auditHelper = auditHelper;
+            _dashboardMapper = new DashboardMapper();
         }
 
         [HttpPost]
@@ -191,5 +195,39 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+
+        [HttpPost]
+        [Route("create")]
+        public async Task<IActionResult> CreateDashboardUserPreference(Entity.Dashboard.DashboardUserPreferenceCreateRequest objDashUserPreferenceCreateRequest)
+        {
+            try
+            {
+                var request = _dashboardMapper.MapCreateDashboardUserPreference(objDashUserPreferenceCreateRequest, _userDetails.AccountId, GetContextOrgId());
+                var responsed = await _dashboarClient.CreateDashboardUserPreferenceAsync(request);
+
+                if (responsed.Code == Responsecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, "Dashboard Controller",
+                            "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS, "Report use preference created successfully", 0, 0, JsonConvert.SerializeObject(objDashUserPreferenceCreateRequest),
+                                _userDetails);
+                    return Ok(responsed.Message);
+                }
+                else
+                {
+                    return StatusCode((int)responsed.Code, responsed.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Dashboard Controller",
+                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                 $"{ nameof(CreateDashboardUserPreference) } method Failed. Error : {ex.Message}", 0, 0, JsonConvert.SerializeObject(objDashUserPreferenceCreateRequest),
+                                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+            }
+        }
+
     }
 }

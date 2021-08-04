@@ -3,12 +3,12 @@ using net.atos.daf.ct2.confluentkafka.entity;
 
 namespace net.atos.daf.ct2.confluentkafka
 {
-    internal class KafkaConfigManager
+    internal class KafkaConfigPropertyManager
     {
         private const string SASLUSERNAME = "$ConnectionString";
         private const string BROKERVERSION = "1.0.0";
 
-        public static ConsumerConfig GetConsumerConfig(KafkaEntity kafkaEntity)
+        public static ConsumerConfig GetConsumerConfig(KafkaConfiguration kafkaEntity)
         {
             var config = new ConsumerConfig
             {
@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.confluentkafka
             return config;
         }
 
-        public static ProducerConfig GetProducerConfig(KafkaEntity kafkaEntity)
+        public static ProducerConfig GetProducerConfig(KafkaConfiguration kafkaEntity)
         {
             var config = new ProducerConfig
             {

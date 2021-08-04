@@ -48,7 +48,7 @@
                   </mat-form-field> 
                   <div *ngIf="selectedBenchmarking == 'timePeriods'">{{translationData.lblBottomBenchmarkVehicleGroupText || 'Select the Target Vehicle Group' }}</div>
                   <div *ngIf="selectedBenchmarking == 'vehicleGroup'">{{translationData.lblBottomBenchmarkVehicleGroupText || 'Add a group to compare in the benchmark (maximum 4)' }}</div>
-                  <mat-error *ngIf="fuelBenchmarkingForm.get('vehicleGroup').hasError('required') && vehicleGrpDD.length > 0">
+                  <mat-error *ngIf="fuelBenchmarkingForm.get('vehicleGroup').hasError('required') && vehicleGrpDD.length > 0 && !makeDisableVehicleGroup">
                     {{translationData.lblPleaseSelectvehicleGroup || 'Please Select Vehicle Group' }}
                   </mat-error>
                 </div>
