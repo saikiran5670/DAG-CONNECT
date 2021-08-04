@@ -1646,6 +1646,36 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpGet]
+        [Route("vehicleperformancetype")]
+        public async Task<IActionResult> GetVehPerformancetype()
+        {
+            try
+            {
+
+                VehPerformanceTypeRequest vehPerformanceTypeRequest = new VehPerformanceTypeRequest();
+                var response = await _reportServiceClient.GetVehPerformanceTypeAsync(vehPerformanceTypeRequest);
+                if (response != null)
+                {
+                    response.Message = ReportConstants.GET_VEHICLE_PERFORMANCE_SUCCESS_MSG;
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_FUEL_BENCHMARK_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                $"{ nameof(GetVehPerformancetype) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
     }
 }
