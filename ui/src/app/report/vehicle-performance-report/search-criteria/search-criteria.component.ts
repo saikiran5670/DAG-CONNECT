@@ -16,6 +16,7 @@ import { Util } from '../../../shared/util';
 })
 export class SearchCriteriaComponent implements OnInit, OnDestroy {
   @Input() translationData: any = {};
+  @Input() performanceTypeLst;
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Output() showSearchResult = new EventEmitter();
   @Output() hideSearchResult = new EventEmitter();
@@ -46,11 +47,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   vehicleGrpDD: any = [];
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
-  performanceTypeLst = [
-    { label: "Engine Load Collective",  value: "Engine Load Collective" },
-    { label: "Road Speed Collective",  value: "Road Speed Collective" },
-    { label: "Brake Behavior",  value: "Brake Behavior" }
-  ];
+  
 
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private formBuilder: FormBuilder, private translationService: TranslationService, private organizationService: OrganizationService, private utilsService: UtilsService, private reportService: ReportService) {
@@ -516,6 +513,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     if(this.searchForm.valid) {
       let vehName: any = '';
       let vehGrpName: any = '';
+      let vin;
+      let registrationNo;
       let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.searchForm.get('vehicleGroup').value));
       if (vehGrpCount.length > 0) {
         vehGrpName = vehGrpCount[0].vehicleGroupName;
@@ -523,15 +522,23 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.searchForm.get('vehicleName').value));
       if (vehCount.length > 0) {
         vehName = vehCount[0].vehicleName;
+        vin = vehCount[0].vin;
+        registrationNo = vehCount[0].registrationNo;
       }
+      let utcStartDateTime = Util.convertDateToUtc(this.searchForm.get('startDate').value);
+      let utcEndDateTime = Util.convertDateToUtc(this.searchForm.get('endDate').value);
       let searchData = {
+        utcStartDateTime: utcStartDateTime,
+        utcEndDateTime: utcEndDateTime,
         startDate: this.formStartDate(this.searchForm.get('startDate').value),
         endDate: this.formStartDate(this.searchForm.get('endDate').value),
         vehicleGroupId: this.searchForm.get('vehicleGroup').value,
         vehicleNameId: this.searchForm.get('vehicleName').value,
         vehicleGroup: vehGrpName,
         vehicleName: vehName,
-        performanceType: this.searchForm.get('performanceType').value
+        performanceType: this.searchForm.get('performanceType').value,
+        vin: vin,
+        registrationNo: registrationNo,
       }
       this.showSearchResult.emit(searchData);
     }

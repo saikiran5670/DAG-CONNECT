@@ -1,5 +1,5 @@
 <div class="bgtrans">
-    <app-search-criteria [translationData]='translationData' (showSearchResult)="showSearchResult($event)" (hideSearchResult)="hideSearchResult()">
+    <app-search-criteria [translationData]='translationData' [performanceTypeLst]="performanceTypeLst" (showSearchResult)="showSearchResult($event)" (hideSearchResult)="hideSearchResult()">
     </app-search-criteria>
 
     <!-- Details Panel -->
@@ -8,7 +8,7 @@
             <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                     <span *ngIf="search" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-                        translationData[searchResult.lblDetails] || searchResult.performanceType + 'Details' }}</span>
+                        translationData[searchResult.lbl] || searchResult.performanceTypeLabel }}</span>
                     <span *ngIf="!search" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
                         translationData.lblVehiclePerformanceDetails || 'Vehicle Performance Details' }}</span>
                 </mat-panel-title>
@@ -44,7 +44,7 @@
                             <span>
                                 <span>{{ translationData.lblVehicleVIN || 'Model Type' }}: </span>
                                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-                                    searchResult.vin }}</span>
+                                    searchResult.modelType }}</span>
                             </span>
                         </div>
                     </div>
@@ -67,7 +67,7 @@
                             <span>
                                 <span>{{ translationData.lblRegPlateNumber || 'Engine Type' }}: </span>
                                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-                                    searchResult.regNo }}</span>
+                                    searchResult.engineType }}</span>
                             </span>
                         </div>
                     </div>
