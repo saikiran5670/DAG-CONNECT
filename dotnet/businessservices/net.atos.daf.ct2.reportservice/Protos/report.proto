@@ -47,6 +47,7 @@ rpc GetAssociatedVehiclGroup (VehicleListRequest) returns (AssociatedVehicleResp
 rpc GetEcoScoreReportTrendlines (GetEcoScoreReportSingleDriverRequest) returns (GetEcoScoreReportTrendlinesResponse);
 rpc GetVehiclePerformanceChartTemplate(VehPerformanceRequest) returns (VehPerformanceResponse);
 rpc GetVehPerformanceBubbleChartData(BubbleChartDataRequest) returns (BubbleChartDataResponse);
+rpc GetVehPerformanceType(VehPerformanceTypeRequest) returns (VehPerformanceTypeResponse);
 }
 
 message VehicleHealthReportRequest{
@@ -1362,4 +1363,18 @@ repeated BubbleChartData BubbleChartData = 3;
     int32 OrganizationId = 4;
 
 }
+message VehPerformanceTypeRequest{
+
+}
+message VehPerformanceType{
+      string Name = 1;
+      string Value = 2;
+      string Type = 3;
+}
+message VehPerformanceTypeResponse{
+      repeated VehPerformanceType VehPerformanceType =1;
+      string Message = 2;
+      Responsecode Code = 3;
+}
+
 // Vehicle Performance End

@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.reports.repository
             return query;
         }
 
-        public async Task<List<VehPerformanceProperty>> GetPerformanceType()
+        public async Task<List<VehPerformanceProperty>> GetVehPerformanceType()
         {
             var parameter = new DynamicParameters();
             parameter.Add("@type", "U");
