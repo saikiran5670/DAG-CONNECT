@@ -61,7 +61,7 @@ export class DashboardService {
     return _percent;
   }
 
-  calculateOutOffValue(_totalValue,_thresholdValue,_days){
+  calculateTargetValue(_totalValue,_thresholdValue,_days){
     let _baseValue = (_totalValue * _thresholdValue *_days);
     return _baseValue;
   }
