@@ -21,11 +21,13 @@ namespace net.atos.daf.ct2.dashboardservice
         private readonly IDashBoardManager _dashBoardManager;
         private readonly IReportManager _reportManager;
         private readonly IVisibilityManager _visibilityManager;
+        private readonly Mapper _mapper;
 
         public DashBoardManagementService(IDashBoardManager dashBoardManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _dashBoardManager = dashBoardManager;
+            _mapper = new Mapper();
         }
 
         public override async Task<FleetKpiResponse> GetFleetKPIDetails(FleetKpiFilterRequest request, ServerCallContext context)
@@ -204,6 +206,38 @@ namespace net.atos.daf.ct2.dashboardservice
                 response.VehicleDetailsWithAccountVisibiltyList.Add(new List<VehicleDetailsWithAccountVisibilty>());
                 response.VinTripList.Add(new List<VehicleFromTripDetails>());
                 return await Task.FromResult(response);
+            }
+        }
+        #endregion
+
+        #region Create replica of User Preference Service to support the dashboard. 
+        public override async Task<DashboardUserPreferenceCreateResponse> CreateDashboardUserPreference(DashboardUserPreferenceCreateRequest request, ServerCallContext context)
+        {
+            try
+            {
+                DashboardUserPreferenceCreateResponse response = new DashboardUserPreferenceCreateResponse();
+                var isSuccess = await _dashBoardManager.CreateDashboardUserPreference(_mapper.MapCreateDashboardUserPreferences(request));
+                if (isSuccess)
+                {
+                    response.Message = String.Format(DashboardConstants.USER_PREFERENCE_CREATE_SUCCESS_MSG, request.AccountId, request.ReportId);
+                    response.Code = Responsecode.Success;
+                }
+                else
+                {
+                    response.Message = String.Format(DashboardConstants.USER_PREFERENCE_CREATE_FAILURE_MSG, request.AccountId, request.ReportId);
+                    response.Code = Responsecode.Failed;
+                }
+
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return new DashboardUserPreferenceCreateResponse()
+                {
+                    Code = Responsecode.InternalServerError,
+                    Message = $"{nameof(CreateDashboardUserPreference)} failed due to - " + ex.Message
+                };
             }
         }
         #endregion

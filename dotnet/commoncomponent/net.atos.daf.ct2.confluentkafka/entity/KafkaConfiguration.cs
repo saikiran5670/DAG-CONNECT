@@ -4,7 +4,7 @@ using System.Text;
 
 namespace net.atos.daf.ct2.confluentkafka.entity
 {
-    public class KafkaEntity
+    public class KafkaConfiguration
     {
         public string BrokerList { get; set; }
         public string ConnString { get; set; }

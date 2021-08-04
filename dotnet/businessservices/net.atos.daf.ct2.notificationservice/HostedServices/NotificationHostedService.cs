@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
         private readonly Server _server;
         private readonly INotificationIdentifierManager _notificationIdentifierManager;
         private readonly IHostApplicationLifetime _appLifetime;
-        private readonly KafkaConfiguration _kafkaConfiguration;
+        private readonly entity.KafkaConfiguration _kafkaConfiguration;
         private readonly IConfiguration _configuration;
         private readonly IEmailNotificationManager _emailNotificationManager;
         private readonly ISMSManager _smsManager;
@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             _emailNotificationManager = emailNotificationManager;
             _smsManager = smsManager;
             this._configuration = configuration;
-            _kafkaConfiguration = new KafkaConfiguration();
+            _kafkaConfiguration = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
             _notificationConfiguration = new NotificationConfiguration();
             configuration.GetSection("NotificationConfiguration").Bind(_notificationConfiguration);
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             NotificationEngineEntity.TripAlert tripAlert = new NotificationEngineEntity.TripAlert();
             try
             {
-                KafkaEntity kafkaEntity = new KafkaEntity()
+                confluentkafka.entity.KafkaConfiguration kafkaEntity = new confluentkafka.entity.KafkaConfiguration()
                 {
                     BrokerList = _kafkaConfiguration.EH_FQDN,
                     ConnString = _kafkaConfiguration.EH_CONNECTION_STRING,

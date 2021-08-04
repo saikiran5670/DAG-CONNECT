@@ -10,5 +10,7 @@ namespace net.atos.daf.ct2.dashboard.repository
         Task<List<Alert24Hours>> GetLastAlert24Hours(Alert24HoursFilter alert24HoursFilter);
         Task<TodayLiveVehicleResponse> GetTodayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest);
         Task<List<Chart_Fleetutilization>> GetUtilizationchartsData(FleetKpiFilter tripFilters);
+
+        Task<bool> CreateDashboardUserPreference(DashboardUserPreferenceCreateRequest request);
     }
 }

@@ -1338,7 +1338,7 @@ export class ReportMapService {
       gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " ltr"
       gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " ltr/100km"
     }
-    return gridData;
+    return JSON.stringify(gridData);
   }
 
 

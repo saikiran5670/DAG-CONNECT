@@ -208,5 +208,56 @@ namespace net.atos.daf.ct2.dashboard.repository
             }
         }
         #endregion
+
+        public async Task<bool> CreateDashboardUserPreference(DashboardUserPreferenceCreateRequest request)
+        {
+            string queryInsert = @"INSERT INTO master.reportpreference
+                                   (organization_id,account_id, report_id, type, data_attribute_id,state,chart_type,created_at,modified_at,threshold_limit_type,threshold_value,reportattribute_id)
+                                   VALUES (@organization_id,@account_id,@report_id,@type,@data_attribute_id,@state,@chart_type,@created_at,@modified_at,@threshold_type,@threshold_value,
+                                   (SELECT id from master.reportattribute WHERE report_id=@report_id AND data_attribute_id=@data_attribute_id))";
+
+            string queryDelete = @"DELETE FROM master.reportpreference
+                                  WHERE organization_id=@organization_id and account_id=@account_id AND report_id=@report_id";
+
+            var userPreference = new DynamicParameters();
+            userPreference.Add("@account_id", request.AccountId);
+            userPreference.Add("@report_id", request.ReportId);
+            userPreference.Add("@organization_id", request.OrganizationId);
+            userPreference.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+            userPreference.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+
+            _dataAccess.Connection.Open();
+            using (var transactionScope = _dataAccess.Connection.BeginTransaction())
+            {
+                try
+                {
+                    await _dataAccess.ExecuteAsync(queryDelete, userPreference);
+                    foreach (var attribute in request.Attributes)
+                    {
+                        userPreference.Add("@data_attribute_id", attribute.DataAttributeId);
+                        userPreference.Add("@state", (char)attribute.State);
+                        userPreference.Add("@type", (char)attribute.Type);
+                        userPreference.Add("@chart_type", attribute.ChartType.HasValue ? (char)attribute.ChartType : new char?());
+                        userPreference.Add("@threshold_type", attribute.ThresholdType.HasValue ? (char)attribute.ThresholdType : new char?());
+                        userPreference.Add("@threshold_value", attribute.ThresholdValue);
+                        await _dataAccess.ExecuteAsync(queryInsert, userPreference);
+                    }
+                    transactionScope.Commit();
+                }
+                catch (Exception)
+                {
+                    transactionScope.Rollback();
+                    throw;
+                }
+                finally
+                {
+                    if (transactionScope != null)
+                        transactionScope.Dispose();
+                    _dataAccess.Connection.Close();
+                }
+                return true;
+            }
+        }
+
     }
 }
