@@ -1619,8 +1619,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 BubbleChartDataRequest bubbleChartDataRequest = new BubbleChartDataRequest();
                 bubbleChartDataRequest.VIN = vehiclePerformanceFilter.VIN;
                 bubbleChartDataRequest.PerformanceType = vehiclePerformanceFilter.PerformanceType;
+                bubbleChartDataRequest.StartDateTime = vehiclePerformanceFilter.StartDateTime;
+                bubbleChartDataRequest.EndDateTime = vehiclePerformanceFilter.EndDateTime;
 
-                BubbleChartDataResponse response = await _reportServiceClient.GetVehPerformanceBubbleChartDataAsync(bubbleChartDataRequest);
+                string filters = JsonConvert.SerializeObject(vehiclePerformanceFilter);
+                BubbleChartDataRequest objVehPerformanceFilter = JsonConvert.DeserializeObject<BubbleChartDataRequest>(filters);
+                var response = await _reportServiceClient.GetVehPerformanceBubbleChartDataAsync(objVehPerformanceFilter);
+
                 if (response != null)
                 {
                     response.Message = ReportConstants.GET_VEHICLE_PERFORMANCE_SUCCESS_MSG;

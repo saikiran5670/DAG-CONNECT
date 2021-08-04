@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         private readonly IVehicleManager _vehicleManager;
         private readonly Group.IGroupManager _groupManager;
         private readonly Mapper _mapper;
-        private readonly KafkaConfiguration _kafkaConfiguration;
+        private readonly kafkacdc.entity.KafkaConfiguration _kafkaConfiguration;
 
         private readonly ILog _logger;
         private readonly IAuditTraillib _auditlog;
@@ -46,7 +46,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             _auditlog = auditlog;
             _accountmanager = accountmanager;
             _mapper = new Mapper();
-            _kafkaConfiguration = new KafkaConfiguration();
+            _kafkaConfiguration = new kafkacdc.entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
             _vehicleCdcManager = vehicleCdcManager;
         }
