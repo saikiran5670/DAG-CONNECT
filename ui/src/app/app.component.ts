@@ -783,10 +783,12 @@ export class AppComponent {
             let _searchOrg = this.organizationList.filter(i => i.id == _orgId);
             if (_searchOrg.length > 0) {
               localStorage.setItem("contextOrgId", _searchOrg[0].id);
+              localStorage.setItem("contextOrgName", _searchOrg[0].name);
               this.appForm.get("contextOrgSelection").setValue(_searchOrg[0].id); //-- set context org dropdown
             }
             else {
               localStorage.setItem("contextOrgId", this.organizationList[0].id);
+              localStorage.setItem("contextOrgName", this.organizationList[0].name);
               this.appForm.get("contextOrgSelection").setValue(this.organizationList[0].id); //-- set context org dropdown
             }
             this.calledTranslationLabels(preferencelanguageCode);
@@ -936,6 +938,7 @@ export class AppComponent {
     let _searchOrg = this.organizationList.filter(i => i.id == _orgId);
     if (_searchOrg.length > 0) {
       localStorage.setItem("contextOrgId", _searchOrg[0].id);
+      localStorage.setItem("contextOrgName", _searchOrg[0].name);
       this.appForm.get("contextOrgSelection").setValue(_searchOrg[0].id); //-- set context org dropdown
     }
   }
@@ -1035,6 +1038,7 @@ export class AppComponent {
     let _search = this.organizationList.filter(i => i.id == parseInt(filterValue));
     if (_search.length > 0) {
       localStorage.setItem("contextOrgId", _search[0].id);
+      localStorage.setItem("contextOrgName", _search[0].name);
     }
     let switchObj = {
       accountId: this.accountID,
