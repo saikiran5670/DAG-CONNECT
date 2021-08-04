@@ -426,8 +426,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.searchForm.controls.vehicleGroup.value;
-    this.globalSearchFilterData["vehicleDropDownValue"] = this.searchForm.controls.vehicle.value;
+    this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.searchForm.get('vehicleGroup').value;
+    this.globalSearchFilterData["vehicleDropDownValue"] = this.searchForm.get('vehicleName').value;
     this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
     this.globalSearchFilterData["startDateStamp"] = this.searchForm.get('startDate').value;
     this.globalSearchFilterData["endDateStamp"] = this.searchForm.get("endDate").value;

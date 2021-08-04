@@ -125,14 +125,12 @@ namespace net.atos.daf.ct2.reports.repository
 
         public async Task<List<VehPerformanceProperty>> GetVehPerformanceType()
         {
-            var parameter = new DynamicParameters();
-            parameter.Add("@type", "U");
             string query = @"SELECT key as Name,
                                             enum as Value, Type as Type
                                             FROM translation.enumtranslation
                                             Where type in ('Y','N')";
 
-            List<VehPerformanceProperty> response = (List<VehPerformanceProperty>)await _dataAccess.QueryAsync<VehPerformanceProperty>(query, parameter);
+            List<VehPerformanceProperty> response = (List<VehPerformanceProperty>)await _dataAccess.QueryAsync<VehPerformanceProperty>(query);
             if (response.Count > 0)
             {
                 return response;
