@@ -733,6 +733,8 @@ export class AppComponent {
       let preferenceLanguageId = 1;
       this.translationService.getLanguageCodes().subscribe(languageCodes => {
         this.languages = languageCodes;
+        this.languages.sort(this.compare);
+        this.resetLanguageFilter();
         localStorage.setItem("languageCodeList", JSON.stringify(this.languages));
         this.localStLanguage = JSON.parse(localStorage.getItem("language"));
         let filterLang = [];
@@ -801,6 +803,20 @@ export class AppComponent {
     }
   }
 
+  resetLanguageFilter() {
+    this.filteredLanguages.next(this.languages.slice());
+  }
+
+  compare(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  }
+
   calledTranslationLabels(_code: any) {
     let translationObj = {
       id: 0,
@@ -839,14 +855,14 @@ export class AppComponent {
        //this.languageSelection.setValue(this.languages[30]);
 
         // load the initial bank list
-        this.filteredLanguages.next(this.languages.slice());
+        
     
 
-    this.langFilterCtrl.valueChanges
-      .pipe(takeUntil(this._onDestroy))
-      .subscribe(() => {
-        this.filterLanguages();
-      });
+    // this.langFilterCtrl.valueChanges
+    //   .subscribe(() => {
+    //     console.log("called")
+    //     this.filterLanguages();
+    //   });
   }
 
   private setPageTitle() {
@@ -1095,23 +1111,21 @@ export class AppComponent {
     }
   }
 
-  filterLanguages() {
+  filterLanguages(search) {
     if (!this.languages) {
       return;
     }
-    // get the search keyword
-    let search = this.langFilterCtrl.value;
     if (!search) {
-      this.filteredLanguages.next(this.languages.slice());
+      this.resetLanguageFilter();
       return;
     } else {
       search = search.toLowerCase();
     }
-    // filter the banks
     this.filteredLanguages.next(
       this.languages.filter(item => item.name.toLowerCase().indexOf(search) > -1)
     );
-  }
+    console.log("this.filteredLanguages",this.filteredLanguages) 
+   }
 
 
 }
