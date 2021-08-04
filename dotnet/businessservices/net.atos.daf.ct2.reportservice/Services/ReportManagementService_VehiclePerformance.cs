@@ -128,5 +128,43 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
 
         }
+
+        public override async Task<VehPerformanceTypeResponse> GetVehPerformanceType(VehPerformanceTypeRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.Info("Get GetVehPerformanceType ");
+                VehPerformanceTypeResponse response = new VehPerformanceTypeResponse();
+
+
+                var result = await _reportManager.GetVehPerformanceType();
+
+                if (result != null)
+                {
+                    var resChartDetails = JsonConvert.SerializeObject(result);
+                    response.VehPerformanceType.AddRange(
+                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehPerformanceType>>(resChartDetails,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+                    response.Code = Responsecode.Success;
+                    response.Message = Responsecode.Success.ToString();
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = "No Result Found";
+                }
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new VehPerformanceTypeResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetVehiclePerformanceChartTemplate get failed due to - " + ex.Message
+                });
+            }
+        }
     }
 }
