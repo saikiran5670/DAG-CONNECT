@@ -38,21 +38,21 @@ namespace net.atos.daf.ct2.alertservice
             }));
 
             string connectionString = Configuration.GetConnectionString("ConnectionString");
-            string DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
+            string dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
             });
             services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
             {
-                return new PgSQLDataMartDataAccess(DataMartconnectionString);
+                return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
             services.AddTransient<IAlertManager, AlertManager>();
             services.AddTransient<IAlertRepository, AlertRepository>();
             services.AddTransient<IVisibilityRepository, VisibilityRepository>();
             services.AddTransient<IVisibilityManager, VisibilityManager>();
-            services.AddTransient<IVehicleAlertRefManager, VehicleAlertRefManager>();
-            services.AddTransient<IVehicleAlertRepository, VehicleAlertRepository>();
+            services.AddTransient<IAlertMgmAlertCdcManager, AlertMgmAlertCdcManager>();
+            services.AddTransient<IAlertMgmAlertCdcRepository, AlertMgmAlertCdcRepository>();
             //services.AddTransient<IVehicleManager, VehicleManager>();
             //services.AddTransient<IVehicleRepository, VehicleRepository>();
             //services.AddTransient<IAuditLogRepository, AuditLogRepository>();
