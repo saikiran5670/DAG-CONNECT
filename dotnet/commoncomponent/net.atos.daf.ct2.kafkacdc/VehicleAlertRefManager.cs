@@ -18,13 +18,13 @@ namespace net.atos.daf.ct2.kafkacdc
         private readonly IConfiguration _configuration;
 
         private readonly IVehicleAlertRepository _vehicleAlertRepository;
-        private readonly KafkaConfiguration _kafkaConfig;
+        private readonly entity.KafkaConfiguration _kafkaConfig;
 
         public VehicleAlertRefManager(IVehicleAlertRepository vehicleAlertRepository, IConfiguration configuration)
         {
             _vehicleAlertRepository = vehicleAlertRepository;
             this._configuration = configuration;
-            _kafkaConfig = new KafkaConfiguration();
+            _kafkaConfig = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
         }
 
@@ -97,7 +97,7 @@ namespace net.atos.daf.ct2.kafkacdc
         }
         internal async Task ProduceMessageToKafka(List<VehicleAlertRef> vehicleAlertRefList, int alertId, string operation)
         {
-            KafkaEntity kafkaEntity = new KafkaEntity()
+            confluentkafka.entity.KafkaConfiguration kafkaEntity = new confluentkafka.entity.KafkaConfiguration()
             {
                 BrokerList = _kafkaConfig.EH_FQDN,
                 ConnString = _kafkaConfig.EH_CONNECTION_STRING,
