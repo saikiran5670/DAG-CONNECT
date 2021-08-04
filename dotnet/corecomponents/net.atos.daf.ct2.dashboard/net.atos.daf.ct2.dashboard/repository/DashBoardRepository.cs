@@ -109,31 +109,52 @@ namespace net.atos.daf.ct2.dashboard.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var filter = DateTime.Now;
-                DateTime datetime = DateTime.Now.AddHours(-filter.Hour).AddMinutes(-filter.Minute).AddSeconds(-filter.Second);
-                long dateTimeUTC = UTCHandling.GetUTCFromDateTime(datetime, "UTC");
                 parameter.Add("@Vins", objTodayLiveVehicleRequest.VINs);
-                parameter.Add("@startdatetime", dateTimeUTC);
-                string query = @"WITH cte_vintodaydata as
-                                     (
-                                SELECT  lcts.vin,
-		                                SUM(lcts.trip_distance) AS distance ,
-		                                SUM(lcts.driving_time) AS drivingtime,
-		                                COUNT(lcts.driver1_id) AS driverid,
-		                                Count(ta.urgency_level_type) As criticlealertcount
-                                FROM  livefleet.livefleet_current_trip_statistics lcts
-                                LEFT JOIN tripdetail.tripalert ta ON lcts.vin = ta.vin
-		                                 WHERE lcts.vin = ANY(@Vins) AND LCTS.START_TIME_STAMP = @startdatetime
-                                GROUP BY lcts.vin,lcts.start_time_stamp
-	                                 )
-	                                 SELECT  
-	                                 Count(vin) AS vehiclecount,
-		                                SUM(distance) AS distance ,
-		                                SUM(drivingtime) AS drivingtime,
-		                                COUNT(drivingtime) AS drivingtime,
-		                                Count(criticlealertcount) As criticlealertcount
-                                FROM  cte_vintodaydata
-                                GROUP BY vin";
+                parameter.Add("@startdatetime", objTodayLiveVehicleRequest.TodayDateTime);
+                parameter.Add("@yesterdaydatetime", objTodayLiveVehicleRequest.YesterdayDateTime);
+                string query = @"WITH CTE_Today as
+                                (
+                                    SELECT 
+										mdts.vin as TodayVin ,
+										SUM(mdts.trip_distance) as distance, 
+										SUM(mdts.driving_time) as drivingtime,
+										COUNT(mdts.driver1_id) as Drivercount,
+										COUNT(mdts.vin) as TodayActiveVinCount ,
+										SUM(mdts.driving_time) as TodayTimeBasedUtilizationRate, 
+										SUM(mdts.trip_distance) as TodayDistanceBasedUtilization,
+										COUNT(ta.urgency_level_type) As criticlealertcount
+										FROM tripdetail.multi_day_trip_statistics mdts
+										LEFT JOIN tripdetail.tripalert ta ON mdts.vin = ta.vin
+										WHERE mdts.vin = ANY(@Vins) and mdts.activity_datetime >= @startdatetime
+										GROUP BY TodayVin
+                                )
+                                , cte_yesterday as
+                                (
+                                    SELECT 
+									mdts.vin as yesterdayVin ,
+									COUNT(mdts.vin) as YesterdayActiveVinCount ,
+									SUM(mdts.driving_time) as YesterDayTimeBasedUtilizationRate, 
+									SUM(mdts.trip_distance) as YesterDayDistanceBasedUtilization
+									FROM tripdetail.multi_day_trip_statistics mdts
+									WHERE mdts.vin = ANY(@Vins) and mdts.activity_datetime >= @yesterdaydatetime
+									GROUP BY mdts.vin
+                                )
+                             SELECT         t.TodayVin,
+											t.distance,
+											t.drivingtime,
+											t.Drivercount,
+											t.TodayActiveVinCount,
+											t.TodayTimeBasedUtilizationRate,
+											t.TodayDistanceBasedUtilization,
+											t.criticlealertcount,
+											y.yesterdayVin,
+											y.YesterdayActiveVinCount,
+											y.YesterDayTimeBasedUtilizationRate,
+											y.YesterDayDistanceBasedUtilization
+                            FROM
+                                CTE_Today t
+							INNER JOIN	
+                                cte_yesterday y on t.TodayVin = y.yesterdayVin";
                 var data = await _dataMartdataAccess.QueryAsync<TodayLiveVehicleResponse>(query, parameter);
                 return data.FirstOrDefault();
             }

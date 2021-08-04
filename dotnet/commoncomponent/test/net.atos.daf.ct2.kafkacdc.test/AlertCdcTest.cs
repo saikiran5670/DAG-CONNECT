@@ -15,8 +15,8 @@ namespace net.atos.daf.ct2.kafkacdc.test
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _datamartDataacess;
-        private readonly IVehicleAlertRefManager _vehicleAlertRefManager;
-        private readonly IVehicleAlertRepository _vehicleAlertRepository;
+        private readonly IAlertMgmAlertCdcManager _vehicleAlertRefManager;
+        private readonly IAlertMgmAlertCdcRepository _vehicleAlertRepository;
         private readonly IConfiguration _configuration;
         private readonly KafkaConfiguration _kafkaConfig;
         private readonly VehicleCdcManager _vehicleCdcManager;
@@ -29,9 +29,9 @@ namespace net.atos.daf.ct2.kafkacdc.test
             string datamartconnectionString = _configuration.GetConnectionString("DevAzureDatamart");
             _dataAccess = new PgSQLDataAccess(connectionString);
             _datamartDataacess = new PgSQLDataMartDataAccess(datamartconnectionString);
-            _vehicleAlertRepository = new VehicleAlertRepository(_dataAccess, _datamartDataacess);
+            _vehicleAlertRepository = new AlertMgmAlertCdcRepository(_dataAccess, _datamartDataacess);
             _configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
-            _vehicleAlertRefManager = new VehicleAlertRefManager(_vehicleAlertRepository, _configuration);
+            _vehicleAlertRefManager = new AlertMgmAlertCdcManager(_vehicleAlertRepository, _configuration);
             var vehicleCdcrepository = new VehicleCdcRepository(_dataAccess, _datamartDataacess);
             _vehicleCdcManager = new VehicleCdcManager(vehicleCdcrepository);
         }

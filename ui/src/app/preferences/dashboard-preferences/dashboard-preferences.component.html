@@ -13,4 +13,467 @@
         </mat-card-content>
     </mat-card>
 </div> -->
-<p>{{ translationData.lblDashboard || 'Dashboard' }}</p>
+
+
+<!-- <form [formGroup]="DasboardPreferenceForm"> -->
+<mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px"
+      [(expanded)]="showDashboardReport" (opened)="showDashboardReport == true"
+      (closed)="showDashboardReport == false">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>
+                {{ 'Dashboard' }}</span>
+            <span style='margin-left: 10px; vertical-align: middle;'>
+              <mat-icon *ngIf='!editDashboardFlag' (click)="editDashboardPreferences()"
+                style="cursor: pointer; font-size: 20px;">
+                edit</mat-icon>
+            </span>
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <!-- <div>
+        <app-today-live-vehicle *ngIf='showDashboardReport' [editFlag]='editDashboardFlag'
+          [translationData]='translationData'></app-today-live-vehicle>
+      </div> --> 
+
+   
+     <!-- *********Fleet KPI ********** -->
+    <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+    style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+   
+    <div class='min-width-33-3-per'>
+    <mat-checkbox class='custom-checkbox'>            
+        <div class='mainTabAlignment'>
+            <div>
+                <div class='headerFont'>{{'Fleet KPI'}}</div> 
+                <span> (Component view settings)</span>
+            </div>
+        </div>
+    </mat-checkbox>
+    </div> 
+       
+    <div class='min-width-33-3-per headerFont mainTabAlignment'>
+        {{'Target Per Day Per Vehicle'}}
+    </div>
+                    
+    <div class='min-width-33-3-per headerFont mainTabAlignment'>
+        {{'Thereshold Type'}}
+    </div>      
+  </div>
+
+  <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+style='border-radius: 5px 5px 0px 0px;'>
+    <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
+            <mat-checkbox class='custom-checkbox'>
+                <span>{{ 'CO2 Emission' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+          <mat-form-field appearance="outline" style='width: 80%'>
+              <input matInput type="text"
+                  placeholder="{{ 'Set Target' }}" >
+              <span matSuffix>Ton</span>
+          </mat-form-field>
+      </div>
+
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+          <mat-form-field appearance="outline" style='width: 80%'>
+              <mat-select [disabled]='upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
+                  <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.type">
+                  {{ rer.name }}
+                  </mat-option>
+              </mat-select>
+          </mat-form-field>
+      </div>
+  </div>
+
+<div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left center"
+style='border-radius: 5px 5px 0px 0px;'>      
+  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
+          <mat-checkbox class='custom-checkbox'>
+              <span>{{ 'Total Distance' }}</span>
+          </mat-checkbox>
+      </div>
+      <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <mat-form-field appearance="outline" style='width: 80%'>
+            <input matInput type="text"
+                placeholder="{{ 'Set Target' }}" >
+            <span matSuffix>km</span>
+        </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+      <mat-form-field appearance="outline" style='width: 80%'>
+          <mat-select [disabled]='upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
+              <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.type">
+              {{ rer.name }}
+              </mat-option>
+          </mat-select>
+      </mat-form-field>
+  </div>
+</div>
+
+<div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+style='border-radius: 5px 5px 0px 0px;'>
+      <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
+        <mat-checkbox class='custom-checkbox'>
+            <span>{{ 'Driving Time' }}</span>
+        </mat-checkbox>
+    </div>
+    <div style="display:inline-block" fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+      <mat-form-field appearance="outline" style='width: 30%;'>
+          <input matInput type="text"
+              placeholder="{{ '' }}">
+          <span matSuffix>Hr</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline" style='width: 30%;'>
+          <input matInput type="text"
+              placeholder="{{ '' }}">
+          <span matSuffix>Min</span>
+      </mat-form-field>
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+      <mat-form-field appearance="outline" style='width: 80%'>
+          <mat-select [disabled]='upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
+              <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.type">
+              {{ rer.name }}
+              </mat-option>
+          </mat-select>
+      </mat-form-field>
+  </div>
+</div>
+
+<div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left center"
+style='border-radius: 5px 5px 0px 0px;'>
+    <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
+      <mat-checkbox class='custom-checkbox'>
+          <span>{{ 'Fuel Consumption' }}</span>
+      </mat-checkbox>
+  </div>
+  </div>
+
+
+      
+    <!-- ********* today live vehicles ********** -->
+    
+    <!-- <form [formGroup]="todayLiveVehicleForm"> -->
+    <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+    style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+   
+    <div class='min-width-33-3-per'>
+    <mat-checkbox class='custom-checkbox'>            
+        <div class='mainTabAlignment'>
+            <div>
+                <div class='headerFont'>{{'Today Live Vehicle'}}</div> 
+                <span> (Component view settings)</span>
+            </div>
+        </div>
+    </mat-checkbox>
+    </div> 
+       
+    <div class='min-width-33-3-per headerFont mainTabAlignment'>
+        {{'Target Per Day Per Vehicle'}}
+    </div>
+                    
+    <div class='min-width-33-3-per headerFont mainTabAlignment'>
+        {{'Thereshold Type'}}
+    </div>      
+</div>
+
+<div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+style='border-radius: 5px 5px 0px 0px;'>
+    <div fxLayout="column" class="areaWidth full-width" fxLayoutGap="0px" fxLayoutAlign="left">           
+            <mat-checkbox class='custom-checkbox'>
+                <span>{{ 'Distance' }}</span>
+            </mat-checkbox>
+        </div>
+</div>
+      
+    <div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left">
+        <div fxLayout="column" class="areaWidth full-width" fxLayoutGap="0px" fxLayoutAlign="left">
+            <mat-checkbox class='custom-checkbox'>
+                <span>{{ 'Driving Time' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+
+    <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left">
+        <div fxLayout="column" class="areaWidth full-width" fxLayoutGap="0px" fxLayoutAlign="left">
+            <mat-checkbox class='custom-checkbox'>
+                <span>{{ 'Drivers' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+
+    <div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left">
+        <div fxLayout="column" class="areaWidth full-width" fxLayoutGap="0px" fxLayoutAlign="left">   
+            <mat-checkbox class='custom-checkbox'>
+                <span>{{ 'Critical Alerts' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+
+    <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left">
+        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+            <mat-checkbox class='custom-checkbox'>
+                <span>{{ 'Time Based Ulitisation Rate' }}</span>
+            </mat-checkbox>
+        </div>
+
+        <div style="display:inline-block" fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+            <mat-form-field appearance="outline" style='width: 30%;'>
+                <input matInput type="text"
+                    placeholder="{{ '' }}">
+                <span matSuffix>Hr</span>
+            </mat-form-field>
+            <mat-form-field appearance="outline" style='width: 30%;'>
+                <input matInput type="text"
+                    placeholder="{{ '' }}">
+                <span matSuffix>Min</span>
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+            <mat-form-field appearance="outline" style='width: 80%'>
+                <mat-select [disabled]='upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
+                    <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.type">
+                    {{ rer.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+    </div>
+
+    <div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left">
+        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">   
+            <mat-checkbox class='custom-checkbox'>
+                <span>{{ 'Distance Based Ulitisation Rate' }}</span>
+            </mat-checkbox>
+        </div>
+
+        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+            <mat-form-field appearance="outline" style='width: 80%'>
+                <input matInput type="text"
+                    placeholder="{{ 'Set Target' }}">
+                <span matSuffix>km</span>
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+            <mat-form-field appearance="outline" style='width: 80%'>
+                <mat-select [disabled]='upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
+                    <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.type">
+                    {{ rer.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+    </div>
+
+    <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left">
+        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">   
+            <mat-checkbox class='custom-checkbox'>
+                <span>{{ 'Active Vehicle' }}</span>
+            </mat-checkbox>
+        </div>
+
+        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+            <mat-form-field appearance="outline" style='width: 80%'>
+                <input matInput type="text" placeholder="{{ 'Set Target' }}">              
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+            <mat-form-field appearance="outline" style='width: 80%'>
+                <mat-select [disabled]='upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
+                    <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.type">
+                    {{ rer.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+    </div>
+<!-- </form> -->
+
+ <!-- ********* Vehicle Utilization ********** -->
+
+ <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+ style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+
+ <div class='min-width-33-3-per'>
+ <mat-checkbox class='custom-checkbox'>            
+     <div class='mainTabAlignment'>
+         <div>
+             <div class='headerFont'>{{'Vehicle Utilization'}}</div> 
+             <span> (Component view settings)</span>
+         </div>
+     </div>
+ </mat-checkbox>
+ </div> 
+    
+ <div class='min-width-33-3-per headerFont mainTabAlignment'>
+     {{'Target Per Day Per Vehicle'}}
+ </div>
+                 
+ <div class='min-width-33-3-per headerFont mainTabAlignment'>
+     {{'Chart Type'}}
+ </div>      
+</div>
+
+<div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left">
+  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">   
+      <mat-checkbox class='custom-checkbox'>
+          <span>{{ 'Distance Per Day' }}</span>
+      </mat-checkbox>
+  </div>
+
+  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+      <mat-form-field appearance="outline" style='width: 80%'>
+          <mat-select [disabled]='chartSelectionType.length == 0' placeholder="{{'Chart Type' }}">
+              <mat-option *ngFor="let rer of chartSelectionType" [value]="rer.type">
+              {{ rer.name }}
+              </mat-option>
+          </mat-select>
+      </mat-form-field>
+  </div>
+</div>
+
+<div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left">
+  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">   
+      <mat-checkbox class='custom-checkbox'>
+          <span>{{ 'Distance Per Day' }}</span>
+      </mat-checkbox>
+  </div>
+
+  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+      <mat-form-field appearance="outline" style='width: 80%'>
+          <mat-select [disabled]='chartSelectionType.length == 0' placeholder="{{'Chart Type' }}">
+              <mat-option *ngFor="let rer of chartSelectionType" [value]="rer.type">
+              {{ rer.name }}
+              </mat-option>
+          </mat-select>
+      </mat-form-field>
+  </div>
+</div>
+
+<div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left">
+  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">   
+      <mat-checkbox class='custom-checkbox'>
+          <span>{{ 'Distance Based Ulitisation Rate' }}</span>
+      </mat-checkbox>
+  </div>
+
+  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+      <mat-form-field appearance="outline" style='width: 80%'>
+          <input matInput type="text"
+              placeholder="{{ 'Set Target' }}" >
+          <span matSuffix>km</span>
+      </mat-form-field>
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+      <mat-form-field appearance="outline" style='width: 80%'>
+          <mat-select [disabled]='chartSelectionType.length == 0' placeholder="{{'Chart Type' }}">
+              <mat-option *ngFor="let rer of chartSelectionType" [value]="rer.type">
+              {{ rer.name }}
+              </mat-option>
+          </mat-select>
+      </mat-form-field>
+  </div>
+</div>
+
+<div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left">
+  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+      <mat-checkbox class='custom-checkbox'>
+          <span>{{ 'Time Based Ulitisation Rate' }}</span>
+      </mat-checkbox>
+  </div>
+
+  <div style="display:inline-block" fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+      <mat-form-field appearance="outline" style='width: 30%;'>
+          <input matInput type="text"
+              placeholder="{{ '' }}">
+          <span matSuffix>Hr</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline" style='width: 30%;'>
+          <input matInput type="text"
+              placeholder="{{ '' }}">
+          <span matSuffix>Min</span>
+      </mat-form-field>
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+      <mat-form-field appearance="outline" style='width: 80%'>
+          <mat-select [disabled]='chartSelectionType.length == 0' placeholder="{{'Chart Type' }}">
+              <mat-option *ngFor="let rer of chartSelectionType" [value]="rer.type">
+              {{ rer.name }}
+              </mat-option>
+          </mat-select>
+      </mat-form-field>
+  </div>
+</div>
+
+ <!-- ********* Alert Last 24 Hours ********** -->
+
+<div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
+<div class='min-width-33-3-per'>
+<mat-checkbox class='custom-checkbox'>            
+    <div class='mainTabAlignment'>
+        <div>
+            <div class='headerFont'>{{'Alert Last 24 Hours'}}</div> 
+            <span> (Component view settings)</span>
+        </div>
+    </div>
+</mat-checkbox>
+</div>   
+</div>  
+
+<div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+style='border-radius: 5px 5px 0px 0px;'>
+    <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
+            <mat-checkbox class='custom-checkbox'>
+                <span>{{ 'Level Alerts' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
+          <mat-checkbox class='custom-checkbox'>
+              <span>{{ 'Total Alerts' }}</span>
+          </mat-checkbox>
+      </div>
+      <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
+        <mat-checkbox class='custom-checkbox'>
+            <span>{{ 'Logistic Alerts' }}</span>
+        </mat-checkbox>
+    </div>
+</div>
+
+<div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left center"
+style='border-radius: 5px 5px 0px 0px;'>
+    <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
+            <mat-checkbox class='custom-checkbox'>
+                <span>{{ 'Fuel & Driver Alerts' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
+          <mat-checkbox class='custom-checkbox'>
+              <span>{{ 'Repair & Maintenance Alerts' }}</span>
+          </mat-checkbox>
+      </div>     
+</div>
+
+
+
+</mat-expansion-panel>
+<!-- </form> -->
+

@@ -1,33 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.kafkacdc.entity;
 using net.atos.daf.ct2.kafkacdc.repository;
-using net.atos.daf.ct2.confluentkafka;
-using net.atos.daf.ct2.confluentkafka.entity;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using System.Linq;
-using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.data;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
-    public class VehicleAlertRefManager : IVehicleAlertRefManager
+    public class AlertMgmAlertCdcManager : IAlertMgmAlertCdcManager
     {
+        private static readonly log4net.ILog _log =
+        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly IAlertMgmAlertCdcRepository _vehicleAlertRepository;
+        private readonly KafkaCdcHelper _kafkaCdcHelper;
         private readonly IConfiguration _configuration;
-
-        private readonly IVehicleAlertRepository _vehicleAlertRepository;
         private readonly entity.KafkaConfiguration _kafkaConfig;
 
-        public VehicleAlertRefManager(IVehicleAlertRepository vehicleAlertRepository, IConfiguration configuration)
+        //private readonly IDataAccess _dataAccess;
+        //private readonly IDataMartDataAccess _datamartDataacess;
+
+        public AlertMgmAlertCdcManager(IAlertMgmAlertCdcRepository vehicleAlertRepository, IConfiguration configuration)
         {
-            _vehicleAlertRepository = vehicleAlertRepository;
+
             this._configuration = configuration;
+
+            //Need to handle background dataaccess and dependency injection
+            //string connectionString = _configuration.GetConnectionString("ConnectionString");
+            //string datamartconnectionString = _configuration.GetConnectionString("DataMartConnectionString");
+            //_dataAccess = new PgSQLDataAccess(connectionString);
+            //_datamartDataacess = new PgSQLDataMartDataAccess(datamartconnectionString);
+            //_vehicleAlertRepository = new AlertMgmAlertCdcRepository(_dataAccess, _datamartDataacess);
+
             _kafkaConfig = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
-        }
 
+            _vehicleAlertRepository = vehicleAlertRepository;
+            _kafkaCdcHelper = new KafkaCdcHelper();
+        }
         public Task<bool> GetVehicleAlertRefFromAlertConfiguration(int alertId, string operation) => ExtractAndSyncVehicleAlertRefByAlertIds(alertId, operation);
         internal async Task<bool> ExtractAndSyncVehicleAlertRefByAlertIds(int alertId, string operation)
         {
@@ -84,50 +95,21 @@ namespace net.atos.daf.ct2.kafkacdc
                 //sent message to Kafka topic 
                 //Union mapping for sending to kafka topic
                 finalmapping = insertionMapping.Union(deletionMapping).ToList();
-                //sending only states I & D with combined mapping of vehicle and alertid
-                await ProduceMessageToKafka(finalmapping, alertId, operation);
+                //send only of there is any change in vehiclealertref table from datamart 
+                if (finalmapping.Count > 0)
+                {
+                    //sending only states I & D with combined mapping of vehicle and alertid
+                    await _kafkaCdcHelper.ProduceMessageToKafka(finalmapping, alertId, operation, _kafkaConfig);
+                }
                 result = true;
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
+                _log.Info("Alert CDC has failed for Alert Id :" + alertId.ToString() + " and operation " + operation);
+                _log.Error(ex.ToString());
                 result = false;
-                throw Ex;
             }
             return result;
-        }
-        internal async Task ProduceMessageToKafka(List<VehicleAlertRef> vehicleAlertRefList, int alertId, string operation)
-        {
-            confluentkafka.entity.KafkaConfiguration kafkaEntity = new confluentkafka.entity.KafkaConfiguration()
-            {
-                BrokerList = _kafkaConfig.EH_FQDN,
-                ConnString = _kafkaConfig.EH_CONNECTION_STRING,
-                Topic = _kafkaConfig.EH_NAME,
-                Cacertlocation = _kafkaConfig.CA_CERT_LOCATION,
-                ProducerMessage = PrepareKafkaJSON(vehicleAlertRefList, alertId, operation).Result
-            };
-            //Pushing message to kafka topic
-            await KafkaConfluentWorker.Producer(kafkaEntity);
-        }
-        internal Task<string> PrepareKafkaJSON(List<VehicleAlertRef> vehicleAlertRefList, int alertId, string operation)
-        {
-            VehicleAlertRefMsgFormat data = new VehicleAlertRefMsgFormat();
-            data.AlertId = alertId;
-            data.VinOps = new List<VehicleStateMsgFormat>();
-            data.VinOps = vehicleAlertRefList.Select(result => new VehicleStateMsgFormat() { VIN = result.VIN, Op = result.Op }).ToList();
-
-            Payload payload = new Payload()
-            {
-                Data = JsonConvert.SerializeObject(data),
-                Operation = operation,
-                Namespace = "alerts",
-                Ts_ms = UTCHandling.GetUTCFromDateTime(DateTime.Now)
-            };
-            VehicleAlertRefKafkaMessage vehicleAlertRefKafkaMessage = new VehicleAlertRefKafkaMessage()
-            {
-                Payload = payload,
-                Schema = "master.vehiclealertref"
-            };
-            return Task.FromResult(JsonConvert.SerializeObject(vehicleAlertRefKafkaMessage));
         }
     }
 }

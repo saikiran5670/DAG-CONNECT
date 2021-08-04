@@ -6,7 +6,7 @@ using net.atos.daf.ct2.kafkacdc.entity;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
-    public interface IVehicleAlertRefManager
+    public interface IAlertMgmAlertCdcManager
     {
         //Task GetVehicleAlertRefFromVehicleManagement(List<int> vins);
         Task<bool> GetVehicleAlertRefFromAlertConfiguration(int alertId, string operation);

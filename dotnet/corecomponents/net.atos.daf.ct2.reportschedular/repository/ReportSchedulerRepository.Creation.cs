@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@from_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(-reportCreationRangeInMinutes)));
-                parameter.Add("@now_date", d1);
+                parameter.Add("@now_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 #region Query GetReportCreationScheduler
                 var query = @"select rs.id as Id, rs.organization_id as OrganizationId, rs.report_id as ReportId, 
                             r.name as ReportName, trim(r.key) as ReportKey,rs.frequency_type as FrequecyType, rs.status as Status, 

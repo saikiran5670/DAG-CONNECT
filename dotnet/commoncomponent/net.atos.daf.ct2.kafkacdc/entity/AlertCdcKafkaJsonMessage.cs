@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.kafkacdc.entity
     //"timeStamp": 1627539915
     //}
     // VehicleAlertRefKafkaMessage myDeserializedClass = JsonConvert.DeserializeObject<VehicleAlertRefKafkaMessage>(myJsonResponse); 
-    public class VehicleAlertRefKafkaMessage
+    public class AlertCdcKafkaJsonMessage
     {
         public string Schema { get; set; }
         public Payload Payload { get; set; }
