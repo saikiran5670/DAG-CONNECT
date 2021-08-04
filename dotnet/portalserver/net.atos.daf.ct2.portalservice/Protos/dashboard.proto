@@ -5,12 +5,12 @@ option csharp_namespace = "net.atos.daf.ct2.dashboardservice";
 package Dashboard;
 
 service DashboardService {  
-
 rpc GetFleetKPIDetails(FleetKpiFilterRequest) returns (FleetKpiResponse);
 rpc GetLastAlert24Hours(Alert24HoursFilterRequest) returns (Alert24HoursResponse);
-rpc GetFleetUtilizationDetails(FleetKpiFilterRequest) returns (FleetUtilizationResponse);
 rpc GetTodayLiveVinData(TodayLiveVehicleRequest) returns (TodayLiveVehicleResponse);
+rpc GetFleetUtilizationDetails(FleetKpiFilterRequest) returns (FleetUtilizationResponse);
 rpc GetVisibleVins(VehicleListRequest) returns (VehicleListAndDetailsResponse);
+rpc CreateDashboardUserPreference (DashboardUserPreferenceCreateRequest) returns (DashboardUserPreferenceCreateResponse);
 }
 
 enum Responsecode{
@@ -22,6 +22,7 @@ enum Responsecode{
   NotFound = 404;
   InternalServerError = 500;
 }
+
 message TodayLiveVehicleRequest{
  repeated string VINs = 1;
 }
@@ -38,6 +39,7 @@ message TodayLiveVehicleResponse{
     Responsecode code = 9;
     string message = 10;
 }
+
 message FleetKpiFilterRequest {
     int64 StartDateTime = 1;
     int64 EndDateTime = 2;
@@ -48,6 +50,7 @@ message FleetKpiResponse {
     Responsecode code = 2;
     string message = 3;
 }
+
 message FleetKpi {
     int32 VehicleCount = 1;
     double Co2Emission = 2;
@@ -76,7 +79,6 @@ message Alert24Hour{
     int32 Advisory = 6;
 }
 //End for the Alert24Hours
-
 
 //start for utilization
 
@@ -138,3 +140,26 @@ int32 AccountId = 3;
 int32 OrganizationId = 4;
 }
 //End Vehicle Visibility and Trip filtered records
+
+//Start Create ReportUserPreference
+message DashboardUserPreferenceCreateRequest{
+    repeated DashboardUserPreferenceAttribute Attributes=1;
+    int32 AccountId=2;
+    int32 ReportId=3;
+    int32 OrganizationId=4;
+}
+
+message DashboardUserPreferenceCreateResponse{
+    Responsecode Code = 1;
+    string Message = 2;
+}
+
+message DashboardUserPreferenceAttribute {
+    int32 DataAttributeId = 1;
+    int32 State = 2;
+    int32 Type = 3;
+    int32 ChartType = 4;
+    int32 ThresholdType = 5;
+    double ThresholdValue = 6;
+}
+//End ReportUserPreference

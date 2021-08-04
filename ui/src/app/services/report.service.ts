@@ -470,6 +470,19 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
+  // https://api.dev1.ct2.atos.net/report/vehicleperformancechart
+  vehicleperformancechart(data: any) {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/vehicleperformancechart`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(errResponse: HttpErrorResponse) {
     console.error('Error : ', errResponse.error);
     return throwError(

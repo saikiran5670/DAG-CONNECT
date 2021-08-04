@@ -52,7 +52,7 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
       xAxes: [{
         barPercentage: 0.4
     }]
-    }
+      }
   };
   barChartOptions2: any = {
     responsive: true,
@@ -407,14 +407,18 @@ greaterTimeCount: any =0 ;
             display: true,
             labelString: label1   
           }
-        }]      
+        }]   
+
     this.barChartLabels1= this.calenderDate;
     this.barChartData1= [
-      { data: this.distance ,label: "Distance", backgroundColor: '#7BC5EC',
+      { data: this.distance ,label: label1, backgroundColor: '#7BC5EC',
       hoverBackgroundColor: '#7BC5EC',}
     ];
-    }
-  else{
+
+    
+}
+
+ else{
     let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
     this.lineChartOptions2.scales.yAxes= [{
       id: "y-axis-1",
@@ -431,7 +435,7 @@ greaterTimeCount: any =0 ;
       }
     }];
     this.lineChartData1= [
-      { data: this.distance,label: "Distance",
+      { data: this.distance,label: label1,
         lineTension: 0, 
         pointBorderColor: "orange", // orange point border
       pointBackgroundColor: "white", // wite point fill

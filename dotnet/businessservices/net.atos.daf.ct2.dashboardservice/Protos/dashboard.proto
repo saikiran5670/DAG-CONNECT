@@ -10,6 +10,7 @@ rpc GetLastAlert24Hours(Alert24HoursFilterRequest) returns (Alert24HoursResponse
 rpc GetTodayLiveVinData(TodayLiveVehicleRequest) returns (TodayLiveVehicleResponse);
 rpc GetFleetUtilizationDetails(FleetKpiFilterRequest) returns (FleetUtilizationResponse);
 rpc GetVisibleVins(VehicleListRequest) returns (VehicleListAndDetailsResponse);
+rpc CreateDashboardUserPreference (DashboardUserPreferenceCreateRequest) returns (DashboardUserPreferenceCreateResponse);
 }
 
 enum Responsecode{
@@ -139,3 +140,26 @@ int32 AccountId = 3;
 int32 OrganizationId = 4;
 }
 //End Vehicle Visibility and Trip filtered records
+
+//Start Create ReportUserPreference
+message DashboardUserPreferenceCreateRequest{
+    repeated DashboardUserPreferenceAttribute Attributes=1;
+    int32 AccountId=2;
+    int32 ReportId=3;
+    int32 OrganizationId=4;
+}
+
+message DashboardUserPreferenceCreateResponse{
+    Responsecode Code = 1;
+    string Message = 2;
+}
+
+message DashboardUserPreferenceAttribute {
+    int32 DataAttributeId = 1;
+    int32 State = 2;
+    int32 Type = 3;
+    int32 ChartType = 4;
+    int32 ThresholdType = 5;
+    double ThresholdValue = 6;
+}
+//End ReportUserPreference
