@@ -22,6 +22,8 @@ namespace net.atos.daf.ct2.dashboard.entity
 
     public class TodayLiveVehicleRequest
     {
+        public long TodayDateTime { get; set; }
+        public long YesterdayDateTime { get; set; }
         public List<string> VINs { get; set; }
     }
 }
