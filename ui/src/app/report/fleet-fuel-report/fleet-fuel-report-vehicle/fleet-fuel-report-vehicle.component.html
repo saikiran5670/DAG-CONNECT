@@ -785,23 +785,7 @@
                 </mat-cell>
               </ng-container>
   
-              <ng-container matColumnDef="dpaAnticipationScore">
-                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_dpaanticipationscore')">{{ translationData.lblDPAAnticipationscore || 'DPA
-                  Anticipation score' }}
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_dpaanticipationscore')">
-                  <span>{{row.dpaAnticipationScore}}</span>
-                </mat-cell>
-              </ng-container>
-  
-              <ng-container matColumnDef="dpaBrakingScore">
-                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_dpabrakingscore')">{{ translationData.lblDPABrakingscore || 'DPA Braking
-                  score' }}
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_dpabrakingscore')">
-                  <span>{{row.dpaBrakingScore}}</span>
-                </mat-cell>
-              </ng-container>
+              
   
               <ng-container matColumnDef="idlingPTOScore">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore || 'Idling

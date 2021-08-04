@@ -42,8 +42,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
   'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
-  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore',
-  'dpaBrakingScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
+  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore',
+  'idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
   'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
   detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
   'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
@@ -1406,8 +1406,8 @@ setVehicleGroupAndVehiclePreSelection() {
     'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb('+unitValkg+')','fuelConsumed('+unitValuekm+')', 'fuelConsumption('+unitVal100km+')',  
     'CO2 Emission('+unitValkg+')','Idle Duration(%)','PTO Duration(%)','HarshBrakeDuration(%)','Heavy Throttle Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')%',
     'Cruise Control Distance 50-75('+unitValkmh+')%','Cruise Control Distance>75('+unitValkmh+')%', 'Average Traffic Classification',
-    'CC Fuel Consumption','fuel Consumption CC Non Active','Idling Consumption','Dpa Score','Dpa AnticipationScore',
-    'Dpa Braking Score','Idling PTO Score(hh:mm:ss)%','Idling PTO%','Idling Without PTO(hh:mm:ss)%','Foot Brake',
+    'CC Fuel Consumption','fuel Consumption CC Non Active','Idling Consumption','Dpa Score',
+    'Idling PTO Score(hh:mm:ss)%','Idling PTO%','Idling Without PTO(hh:mm:ss)%','Foot Brake',
     'CO2 Emmision(gr/km)', 'Average Traffic Classification Value('+unitValkg+')','Idling Consumption Value('+unitValkg+')'];
     const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumption('+unitVal100km+')', 'Idle Duration(%)', 'Fuel Consumed('+unitValuekm+')', 'CO2 Emission('+unitValkg+')'];
     const summaryData= this.summaryNewObj;
@@ -1474,7 +1474,7 @@ setVehicleGroupAndVehiclePreSelection() {
       item.averageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission,item.convertedIdleDuration, item.ptoDuration,
       item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
       item.cruiseControlDistance75, item.averageTrafficClassification, item.ccFuelConsumption, item.fuelconsumptionCCnonactive,
-      item.idlingConsumption, item.dpaScore, item.dpaAnticipationScore, item.dpaBrakingScore,item.idlingPTOScore, item.idlingPTO, item.idlingWithoutPTOpercent,
+      item.idlingConsumption, item.dpaScore,item.idlingPTOScore, item.idlingPTO, item.idlingWithoutPTOpercent,
       item.footBrake, item.cO2Emmision, item.averageTrafficClassificationValue, item.idlingConsumptionValue
     ]);
     });
