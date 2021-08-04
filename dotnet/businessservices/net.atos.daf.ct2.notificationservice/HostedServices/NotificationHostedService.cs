@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
         private readonly Server _server;
         private readonly INotificationIdentifierManager _notificationIdentifierManager;
         private readonly IHostApplicationLifetime _appLifetime;
-        private readonly KafkaConfiguration _kafkaConfiguration;
+        private readonly entity.KafkaConfiguration _kafkaConfiguration;
         private readonly IConfiguration _configuration;
         private readonly IEmailNotificationManager _emailNotificationManager;
         private readonly ISMSManager _smsManager;
@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             _emailNotificationManager = emailNotificationManager;
             _smsManager = smsManager;
             this._configuration = configuration;
-            _kafkaConfiguration = new KafkaConfiguration();
+            _kafkaConfiguration = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
             _notificationConfiguration = new NotificationConfiguration();
             configuration.GetSection("NotificationConfiguration").Bind(_notificationConfiguration);
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             NotificationEngineEntity.TripAlert tripAlert = new NotificationEngineEntity.TripAlert();
             try
             {
-                KafkaEntity kafkaEntity = new KafkaEntity()
+                confluentkafka.entity.KafkaConfiguration kafkaEntity = new confluentkafka.entity.KafkaConfiguration()
                 {
                     BrokerList = _kafkaConfiguration.EH_FQDN,
                     ConnString = _kafkaConfiguration.EH_CONNECTION_STRING,
@@ -175,7 +175,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                     WebServiceManager wsClient = new WebServiceManager();
                     HeaderDetails headerDetails = new HeaderDetails();
                     headerDetails.BaseUrl = item.WsUrl;
-                    headerDetails.Body = item.WsText;
+                    headerDetails.Body = await PrepareWSBody(item);
                     headerDetails.AuthType = item.WsAuthType;
                     headerDetails.UserName = item.WsLogin;
                     headerDetails.Password = item.WsPassword;
@@ -257,6 +257,30 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
             sbSMSText.AppendFormat(",T:{0}", alertGenTime);
             sbSMSText.AppendFormat(",{0}", smsDescription);
             return sbSMSText.ToString();
+        }
+        private async Task<string> PrepareWSBody(NotificationHistory notificationHistoryWS)
+        {
+            StringBuilder sbWSText = new StringBuilder();
+            string alertCategoryValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistoryWS.AlertCategoryKey);
+            string alertTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistoryWS.AlertTypeKey);
+            string urgencyTypeValue = await _notificationIdentifierManager.GetTranslateValue(string.Empty, notificationHistoryWS.UrgencyTypeKey);
+            string wsDescription = notificationHistoryWS.WsText;
+            string vehicleGroup = notificationHistoryWS.Vehicle_group_vehicle_name;
+            string alertGenTime = UTCHandling.GetConvertedDateTimeFromUTC(notificationHistoryWS.AlertGeneratedTime, "UTC", null);
+            string[] thresholdNumSplit = notificationHistoryWS.ThresholdValue.ToString().Split('.');
+            string thresholdNum = thresholdNumSplit.Count() > 1 ? thresholdNumSplit[1].Length > 3 ? notificationHistoryWS.ThresholdValue.ToString("#.0000") : notificationHistoryWS.ThresholdValue.ToString() : notificationHistoryWS.ThresholdValue.ToString();
+            string[] valueAtAlerttimeSplit = notificationHistoryWS.ValueAtAlertTime.ToString().Split('.');
+            string valueAtAlertTime = valueAtAlerttimeSplit.Count() > 1 ? valueAtAlerttimeSplit[1].Length > 3 ? notificationHistoryWS.ValueAtAlertTime.ToString("#.0000") : notificationHistoryWS.ValueAtAlertTime.ToString() : notificationHistoryWS.ValueAtAlertTime.ToString();
+            sbWSText.AppendFormat("Alert Name:{0}", alertTypeValue);
+            sbWSText.AppendFormat(",Define Threshold:{0}", thresholdNum);
+            sbWSText.AppendFormat(",Actual Threshold:{0}", notificationHistoryWS.ThresholdValueUnitType);
+            sbWSText.AppendFormat(",Alert Vvalue at time:{0}", valueAtAlertTime);
+            sbWSText.AppendFormat(",{0}", alertCategoryValue);
+            sbWSText.AppendFormat(",Vehicle Group:{0}", vehicleGroup);
+            sbWSText.AppendFormat(",Urgency Level:{0}", urgencyTypeValue);
+            sbWSText.AppendFormat(",DateTime:{0}", alertGenTime);
+            sbWSText.AppendFormat(",{0}", wsDescription);
+            return sbWSText.ToString();
         }
     }
 }

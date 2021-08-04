@@ -89,7 +89,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
     }
 
     for (let row of this.test) {
-      this.addColumn(row, this.tableHeadingwithRange);
+      this.addColumn(JSON.parse(row), this.tableHeadingwithRange);
     }
   }
 
