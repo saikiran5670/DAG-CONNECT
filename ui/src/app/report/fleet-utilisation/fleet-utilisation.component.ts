@@ -185,7 +185,7 @@ barChartOptions: any = {
       },
       scaleLabel: {
         display: true,
-        labelString: 'per vehicle(km/day)'    
+        labelString: this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)'
       }} ,{
         id: "y-axis-2",
         position: 'right',
@@ -876,7 +876,7 @@ calendarOptions: CalendarOptions = {
       var date = new Date(e.calenderDate);
       let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
       this.chartsLabelsdefined.push(resultDate);
-      this.barVarticleData.push(e.averagedistanceperday/1000);
+      this.barVarticleData.push(this.reportMapService.convertDistanceUnits(e.averagedistanceperday, this.prefUnitFormat));
       this.averageDistanceBarData.push(this.barVarticleData/e.vehiclecount);
       this.lineChartVehicleCount.push(e.vehiclecount);  
       this.calendarSelectedValues(e);   
@@ -887,7 +887,7 @@ calendarOptions: CalendarOptions = {
   assignChartData(){
     this.barChartData = [
       { 
-        label: 'Average distance per vehicle(km/day)',
+        label: this.prefUnitFormat == 'dunit_Metric' ? 'Average distance per vehicle(km/day)' : 'Average distance per vehicle(miles/day)',
         type: 'bar',
         backgroundColor: '#7BC5EC',
         hoverBackgroundColor: '#7BC5EC',
@@ -895,7 +895,7 @@ calendarOptions: CalendarOptions = {
         data: this.averageDistanceBarData,	    
         },
         {
-          label: 'Total distance(km)',
+          label:  this.prefUnitFormat == 'dunit_Metric' ? 'Total distance(km)' :'Total distance(mile)',
           type: 'bar',
           backgroundColor: '#4679CC',
           hoverBackgroundColor: '#4679CC',
@@ -903,6 +903,7 @@ calendarOptions: CalendarOptions = {
           data: this.barVarticleData
         },
     ];
+    this.barChartOptions.scales.yAxes[0].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(miles/day)';
     this.lineChartData = [
       { data: this.lineChartVehicleCount, label: 'Number of Vehicles' },
     ];
