@@ -279,6 +279,18 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
     let activeVehiclePercent = this.dashboardService.calculateTodayLivePercentage(2,4);
     let vehicleTarget = this.dashboardService.calculateTargetValue(4,10,1);
     let activeVehicleChangePercent = this.dashboardService.calculateLastChange(2,1,4);
+    let activeVehicleCaretColor = 'caretGreen';
+    let caretIcon = ''
+    if( activeVehicleChangePercent > 0){
+      activeVehicleCaretColor = 'caretGreen';
+      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
+    }
+    else{
+      activeVehicleCaretColor = 'caretRed';
+      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
+
+    }
+
     this.doughnutChartActiveVehicleData = [[activeVehiclePercent,(100 - activeVehiclePercent)]]
 
     this.doughnutChartPlugins = [{
@@ -330,7 +342,7 @@ public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[]
             tooltipEl.id = 'chartjs-tooltip';
             tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + vehicleTarget + 
             '</div><div>Last Change: ' + activeVehicleChangePercent + '%'+
-            `<span><img matTooltip="Download" [src]="${fileIcon}" style="width: 14px; height: 11px;"/></span></div>`;
+            `<span>${caretIcon}</span></div>`;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
            // Set caret Position
