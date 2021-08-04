@@ -251,7 +251,7 @@ namespace net.atos.daf.ct2.account.report
                                   , await GenerateTableForSingle()
                                   , fromDate.ToString(DateTimeFormat)
                                   , toDate.ToString(DateTimeFormat)
-                                  , vehicle.VehicleGroupName ?? "All"
+                                  , string.IsNullOrEmpty(vehicle.VehicleGroupName) ? "All" : vehicle.VehicleGroupName
                                   , vehicle.VehicleName
                                   , TotalNumberOfTrips
                                   , Math.Round(TotalDistance, 2)
