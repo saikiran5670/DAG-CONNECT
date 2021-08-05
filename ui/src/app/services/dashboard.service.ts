@@ -96,4 +96,16 @@ export class DashboardService {
       )
       .pipe(catchError(this.handleError));
   }
+  
+  getAlert24Hours(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.dashboardServiceUrl}/alert24hours`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
 }
