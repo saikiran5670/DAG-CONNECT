@@ -15,7 +15,7 @@
 </div> -->
 
 
-<!-- <form [formGroup]="DasboardPreferenceForm"> -->
+<form [formGroup]="DashboardPreferenceForm"> 
 <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px"
       [(expanded)]="showDashboardReport" (opened)="showDashboardReport == true"
       (closed)="showDashboardReport == false">
@@ -39,11 +39,14 @@
 
    
      <!-- *********Fleet KPI ********** -->
-    <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+    <div *ngIf='fleetKPIColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
    
     <div class='min-width-33-3-per'>
-    <mat-checkbox class='custom-checkbox'>            
+    <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggle("FleetKPI") : null'
+    [checked]='selectionForFleetKPIColumns.hasValue() && isAllSelected("FleetKPI")'
+    [indeterminate]='selectionForFleetKPIColumns.hasValue() && !isAllSelected("FleetKPI")'
+    [disabled]='!editDashboardFlag'>            
         <div class='mainTabAlignment'>
             <div>
                 <div class='headerFont'>{{'Fleet KPI'}}</div> 
@@ -425,6 +428,7 @@ style='border-radius: 5px 5px 0px 0px;'>
 
  <!-- ********* Alert Last 24 Hours ********** -->
 
+ 
 <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
 style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
 <div class='min-width-33-3-per'>
@@ -439,41 +443,24 @@ style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
 </div>   
 </div>  
 
-<div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+
+<ng-container *ngIf='alertLast24HrsColumnData.length > 0'>
+<div fxLayout="row wrap" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
 style='border-radius: 5px 5px 0px 0px;'>
+<ng-container *ngFor="let field of alertLast24HrsColumnData; let index = index">
+   
     <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
-            <mat-checkbox class='custom-checkbox'>
-                <span>{{ 'Level Alerts' }}</span>
+            <mat-checkbox class='custom-checkbox' (change)='$event ? selectionForAlertLast24HoursColumns.toggle(field) : null;'
+            [checked]="selectionForAlertLast24HoursColumns.isSelected(field)">
+                <span>{{ field.translatedName }}</span>
             </mat-checkbox>
         </div>
-        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
-          <mat-checkbox class='custom-checkbox'>
-              <span>{{ 'Total Alerts' }}</span>
-          </mat-checkbox>
-      </div>
-      <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
-        <mat-checkbox class='custom-checkbox'>
-            <span>{{ 'Logistic Alerts' }}</span>
-        </mat-checkbox>
-    </div>
+</ng-container>
+      
 </div>
-
-<div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left center"
-style='border-radius: 5px 5px 0px 0px;'>
-    <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
-            <mat-checkbox class='custom-checkbox'>
-                <span>{{ 'Fuel & Driver Alerts' }}</span>
-            </mat-checkbox>
-        </div>
-        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
-          <mat-checkbox class='custom-checkbox'>
-              <span>{{ 'Repair & Maintenance Alerts' }}</span>
-          </mat-checkbox>
-      </div>     
-</div>
-
+</ng-container>
 
 
 </mat-expansion-panel>
-<!-- </form> -->
+</form> 
 
