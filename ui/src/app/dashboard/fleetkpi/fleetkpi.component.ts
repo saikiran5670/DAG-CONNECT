@@ -16,6 +16,7 @@ export class FleetkpiComponent implements OnInit {
   @Input() finalVinList : any;
   @Input() preference : any;
   @Input() prefData : any;
+  @Input() dashboardPrefData: any;
   selectionTab: any;
   clickButton:boolean = true;
   totalDays= 7;
