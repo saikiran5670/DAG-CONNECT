@@ -125,7 +125,7 @@ namespace net.atos.daf.ct2.dashboard.repository
 										COUNT(ta.urgency_level_type) As criticlealertcount
 										FROM tripdetail.multi_day_trip_statistics mdts
 										LEFT JOIN tripdetail.tripalert ta ON mdts.vin = ta.vin
-										WHERE mdts.vin = ANY(@Vins) and mdts.activity_datetime >= @startdatetime
+										WHERE mdts.activity_datetime >= @startdatetime AND mdts.vin = ANY(@Vins)
 										GROUP BY TodayVin
                                 )
                                 , cte_yesterday as
@@ -136,7 +136,7 @@ namespace net.atos.daf.ct2.dashboard.repository
 									SUM(mdts.driving_time) as YesterDayTimeBasedUtilizationRate, 
 									SUM(mdts.trip_distance) as YesterDayDistanceBasedUtilization
 									FROM tripdetail.multi_day_trip_statistics mdts
-									WHERE mdts.vin = ANY(@Vins) and mdts.activity_datetime >= @yesterdaydatetime
+									WHERE mdts.vin = ANY(@Vins) AND (mdts.activity_datetime BETWEEN  @yesterdaydatetime and @startdatetime)
 									GROUP BY mdts.vin
                                 )
                              SELECT         t.TodayVin,
