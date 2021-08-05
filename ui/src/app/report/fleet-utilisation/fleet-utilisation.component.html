@@ -216,7 +216,7 @@
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
           <div *ngIf='distanceChart && distanceChart.state' class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistancePerDay || 'Distance per day' }}</span>
-            <div class="chart-wrapper">
+            <div  *ngIf = "!distanceChartType" class="chart-wrapper">
               <canvas baseChart 
               [datasets]="barChartData"
               [labels]="barChartLabels"
@@ -226,10 +226,21 @@
               [chartType]="barChartType">
             </canvas>
           </div>
+          <div  *ngIf = "distanceChartType" class="chart-wrapper">
+            <canvas baseChart 
+                [datasets]="distanceLineChartData" 
+                [labels]="barChartLabels" 
+                [options]="distanceLineChartOptions"
+                [colors]="distanceLineChartColors" 
+                [legend]="lineChartLegend" 
+                [chartType]="lineChartType" 
+                [plugins]="lineChartPlugins">
+            </canvas>
+        </div>
         </div>
         <div *ngIf='activeVehicleChart && activeVehicleChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblActiveVehiclesPerDay || 'Active vehicles per day' }}</span>
-          <div class="chart-wrapper">
+          <div  *ngIf = "activeVehicleChartType" class="chart-wrapper">
             <canvas baseChart 
                 [datasets]="lineChartData" 
                 [labels]="lineChartLabels" 
@@ -240,6 +251,16 @@
                 [plugins]="lineChartPlugins">
             </canvas>
         </div>
+        <div  *ngIf = "!activeVehicleChartType" class="chart-wrapper">
+          <canvas baseChart 
+              [datasets]="VehicleBarChartData" 
+              [labels]="lineChartLabels" 
+              [options]="VehicleBarChartOptions"
+              [legend]="lineChartLegend" 
+              [chartType]="barChartType" 
+              [plugins]="barChartPlugins">
+          </canvas>
+      </div>
       </div>
 
       </div>
@@ -373,12 +394,16 @@
           <ng-container matColumnDef="vin">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.vin != '' ? row.vin : '-' }}</mat-cell>
+            <mat-cell *matCellDef="let row">
+              <span class='navigatePoint' matTooltip='{{ translationData.lbltooltipMsg || "Click to view details"}}' (click)='gotoTrip(row)'>{{ row.vin != '' ? row.vin : '-' }}</span>
+            </mat-cell>
           </ng-container>
           <ng-container matColumnDef="registrationnumber">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRegistrationNumber || 'Registration Number' }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.registrationNumber != '' ? row.registrationNumber : '-' }}</mat-cell>
+            <mat-cell *matCellDef="let row">
+              <span class='navigatePoint' matTooltip='{{ translationData.lbltooltipMsg || "Click to view details"}}' (click)='gotoTrip(row)'>{{ row.registrationNumber != '' ? row.registrationNumber : '-' }}</span>
+            </mat-cell>
           </ng-container>
           <ng-container matColumnDef="distance">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }})</span>
