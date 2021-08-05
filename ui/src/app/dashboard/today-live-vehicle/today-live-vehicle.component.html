@@ -61,7 +61,7 @@
           <div class="chartTile col-md-4">
             <div class="textDiv">
               <div>{{ translationData.lblTimeBased || 'Time Based UtiliSation Rate' }} </div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{liveVehicleData.timeBaseUtilization}}</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{timeBasedRate}}</div>
             </div>
             
             <div class="col-md-8 chart-wrapper chartDimension">
@@ -70,7 +70,7 @@
                   [labels]="doughnutChartTimeBasedLabels"
                   [chartType]="doughnutChartType"
                   [options]="doughnutChartTimeOptions"
-                  [colors]="doughnutColors"
+                  [colors]="doughnutTimeColors"
                   [plugins]="doughnutChartTimePlugins">
                 </canvas>
               </div>
@@ -87,7 +87,7 @@
                   [labels]="doughnutChartDistanceBasedLabels"
                   [chartType]="doughnutChartType"
                   [options]="doughnutChartDistanceOptions"
-                  [colors]="doughnutColors"
+                  [colors]="doughnutDistanceColors"
                   [plugins]="doughnutChartDistancePlugins">
                 </canvas>
               </div>

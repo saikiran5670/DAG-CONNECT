@@ -97,9 +97,11 @@ namespace net.atos.daf.ct2.dashboardservice
                 net.atos.daf.ct2.dashboard.entity.TodayLiveVehicleRequest objTodayLiveVehicleRequest = new net.atos.daf.ct2.dashboard.entity.TodayLiveVehicleRequest();
                 objTodayLiveVehicleRequest.VINs = request.VINs.ToList<string>();
                 var filter = DateTime.Now;
-                DateTime datetime = DateTime.Now.AddHours(-filter.Hour).AddMinutes(-filter.Minute).AddSeconds(-filter.Second);
+                DateTime datetime = DateTime.Now.AddHours(-filter.Hour).AddMinutes(-filter.Minute)
+                                   .AddSeconds(-filter.Second).AddMilliseconds(-filter.Millisecond);
+                DateTime yesterday = datetime.AddDays(-1);
                 objTodayLiveVehicleRequest.TodayDateTime = UTCHandling.GetUTCFromDateTime(datetime, "UTC");
-                objTodayLiveVehicleRequest.YesterdayDateTime = UTCHandling.GetUTCFromDateTime(filter.AddDays(-1), "UTC");
+                objTodayLiveVehicleRequest.YesterdayDateTime = UTCHandling.GetUTCFromDateTime(yesterday, "UTC");
                 var data = await _dashBoardManager.GetTodayLiveVinData(objTodayLiveVehicleRequest);
                 TodayLiveVehicleResponse objTodayLiveVehicleResponse = new TodayLiveVehicleResponse();
                 if (data != null)
@@ -121,13 +123,14 @@ namespace net.atos.daf.ct2.dashboardservice
                 }
                 else
                 {
-                    objTodayLiveVehicleResponse.Code = Responsecode.Success;
+                    objTodayLiveVehicleResponse.Code = Responsecode.Failed;
                     objTodayLiveVehicleResponse.Message = DashboardConstants.GET_TODAY_LIVE_VEHICLE_SUCCESS_NODATA_MSG;
                 }
                 return await Task.FromResult(objTodayLiveVehicleResponse);
             }
             catch (Exception ex)
             {
+                _logger.Error(null, ex);
                 return await Task.FromResult(new TodayLiveVehicleResponse
                 {
                     Code = Responsecode.InternalServerError,
