@@ -63,4 +63,14 @@ export class Util {
     return data;
   }
 
+  public static getHhMmTimeFromMS(totalSeconds: any){
+    let data: any = "00:00";
+    let hours = Math.floor(totalSeconds / 3600000);
+    totalSeconds %= 3600;
+    let minutes = Math.floor(totalSeconds / 60);
+    let seconds = totalSeconds % 60;
+    data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
+    return data;
+  }
+
 }

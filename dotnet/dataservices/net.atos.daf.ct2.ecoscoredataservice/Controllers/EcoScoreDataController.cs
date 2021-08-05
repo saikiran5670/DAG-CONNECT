@@ -120,9 +120,9 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
             if (minDistance < 0)
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "INVALID_PARAMETER", parameter: nameof(minDistance));
 
-            var account = await _accountManager.GetAccountByEmailId(request.AccountEmail);
+            var account = await _accountManager.GetAccountByEmailId(request.Account);
             if (account == null)
-                return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ACCOUNT_NOT_FOUND", parameter: nameof(request.AccountEmail));
+                return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ACCOUNT_NOT_FOUND", parameter: nameof(request.Account));
 
             if (string.IsNullOrEmpty(account.DriverId) || (!string.IsNullOrEmpty(account.DriverId) && !account.DriverId.Equals(request.DriverId)))
                 return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INCORRECT_DRIVERID", parameter: nameof(request.DriverId));
@@ -158,7 +158,7 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
         {
             return new EcoScoreDataServiceRequest
             {
-                AccountEmail = request.AccountEmail,
+                AccountEmail = request.Account,
                 DriverId = request.DriverId,
                 OrganizationId = request.OrganizationId,
                 VIN = request.VIN,
