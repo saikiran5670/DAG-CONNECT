@@ -216,10 +216,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 DashboardUserPreferenceRequest obj = new DashboardUserPreferenceRequest
                 {
                     ReportId = reportId,
-                    AccountId = 171,
-                    RoleId = 33,
-                    OrganizationId = 36,
-                    ContextOrgId = 36
+                    AccountId = _userDetails.AccountId, // 171
+                    RoleId = _userDetails.RoleId, // 33
+                    OrganizationId = GetUserSelectedOrgId(),//36
+                    ContextOrgId = GetContextOrgId() //36
                 };
 
                 //ReportId = reportId,
