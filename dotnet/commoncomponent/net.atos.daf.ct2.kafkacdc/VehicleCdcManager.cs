@@ -81,7 +81,7 @@ namespace net.atos.daf.ct2.kafkacdc
 
                 };
                 VehicleCdc vehicleCdc = new VehicleCdc();
-                ConsumeResult<Null, string> message = KafkaConfluentWorker.Consumer(kafkaEntity);
+                ConsumeResult<string, string> message = KafkaConfluentWorker.Consumer(kafkaEntity);
                 while (message != null)
                 {
                     vehicleCdc = JsonConvert.DeserializeObject<VehicleCdc>(message.Message.Value);

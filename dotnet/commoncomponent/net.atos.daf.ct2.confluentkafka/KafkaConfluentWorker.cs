@@ -27,12 +27,12 @@ namespace net.atos.daf.ct2.confluentkafka
             }
         }
         //private const string JSON_DATA = @"{'id':'0', 'tripid':'null', 'vin':'null', 'categoryType':'null', 'type':'null', 'name':'null', 'alertid':'0', 'thresholdValue':'0.0', 'thresholdValueUnitType':'null', 'valueAtAlertTime':'0.0', 'latitude':'0.0', 'longitude':'0.0', 'alertGeneratedTime':'0', 'messageTimestamp':'0', 'createdAt':'0', 'modifiedAt':'0'}";
-        public static ConsumeResult<Null, string> Consumer(KafkaConfiguration kafkaEntity)
+        public static ConsumeResult<string, string> Consumer(KafkaConfiguration kafkaEntity)
         {
             ConsumerConfig consumerConfig = KafkaConfigPropertyManager.GetConsumerConfig(kafkaEntity);
             try
             {
-                using (var consumer = new ConsumerBuilder<Null, string>(consumerConfig).Build())
+                using (var consumer = new ConsumerBuilder<string, string>(consumerConfig).Build())
                 {
                     consumer.Subscribe(kafkaEntity.Topic);
                     //TopicPartition tp = new TopicPartition(kafkaEntity.Topic, 0);
