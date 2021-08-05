@@ -44,7 +44,7 @@
           <div class="textDiv">
             <div>{{ translationData.lblIdlingTime || 'Idling Time' }}</div>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{currentIdlingTime}}</div>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{cutOffIdlingTime}}</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffIdlingTime}}</div>
             
           </div>
           
@@ -64,8 +64,8 @@
          <div class="chartTile col-md-2">
           <div class="textDiv">
             <div>{{ translationData.lblDrivingTime || 'Driving Time' }}</div>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>1 Hr 46 min</div>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of 2 Hr</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{currentDrivingTime}}</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffDrivingTime}}</div>
             
           </div>
           
@@ -75,7 +75,7 @@
                 [labels]="drivingChartLabels"
                 [chartType]="doughnutChartType"
                 [options]="doughnutChartDrivingOptions"
-                [colors]="doughnutColors"
+                [colors]="doughnutDrivingColors"
                 [plugins]="doughnutChartDrivingPlugins">
               </canvas>
             </div>
@@ -90,8 +90,8 @@
  <div class="chartTile col-md-2">
   <div class="textDiv">
     <div>{{ translationData.lblDistance || 'Distance' }}</div>
-    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>73 Km</div>
-    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of 110 Km</div>
+    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{currentDistanceValue}} Km</div>
+    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffDistanceValue}} Km</div>
     
   </div>
   
@@ -101,7 +101,7 @@
         [labels]="distanceChartLabels"
         [chartType]="doughnutChartType"
         [options]="doughnutChartDistanceOptions"
-        [colors]="doughnutColors"
+        [colors]="doughnutDistanceColors"
         [plugins]="doughnutChartDistancePlugins">
       </canvas>
     </div>
@@ -113,8 +113,8 @@
           <div class="chartTile col-md-2">
             <div class="textDiv">
               <div>{{ translationData.lblFuelConsume || 'Fuel Consumed' }}</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>42 L</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of 85 L</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{currentFuelConsumed}} L</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffFuelConsumed}} L</div>
               
             </div>
             
@@ -133,9 +133,9 @@
           <!-- Fuel Used -->
           <div class="chartTile col-md-2">
             <div class="textDiv">
-              <div>{{ translationData.lblFuelUsed || 'Fuel Used' }}</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>1 Hr 46 min</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of 2 Hr</div>
+              <div>{{ translationData.lblFuelUsedByIdling || 'Fuel Used By Idling' }}</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{currentIdlingFuelConsumed}} L</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffIdlingFuelConsumed}} L</div>
               
             </div>
             
@@ -155,8 +155,8 @@
            <div class="chartTile col-md-2">
             <div class="textDiv">
               <div>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>1 Hr 46 min</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of 2 Hr</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{currentFuelConsumption}}</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffFuelConsumption}}</div>
               
             </div>
             

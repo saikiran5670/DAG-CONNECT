@@ -44,6 +44,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   // remainingChar: any;
   showCount: boolean = false;
   createButtonFlag: boolean = false;
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService) { }
 
@@ -99,7 +100,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
     this.userRoleFormGroup.patchValue({
       userRoleName: this.gridData[0].roleName,
       userRoleDescription: this.gridData[0].description,
-      roleType: ((this.organizationId == 1 || this.organizationId == 2) ? (this.gridData[0].organizationId == 0 ? 'Global' : 'Regular') : 'Regular')
+      roleType: ((this.adminAccessType.adminFullAccess) ? (this.gridData[0].organizationId == 0 ? 'Global' : 'Regular') : 'Regular')
     })
 
     this.dataSource.data.forEach(row => {
