@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                         {
                             if (_notificationConfiguration.IsEmailSend == true)
                             {
-                                await SendEmailNotification(identifiedNotificationRec);
+                                await SendEmailNotification(identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "E").ToList());
                             }
                         }
 
@@ -103,7 +103,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                         {
                             if (_notificationConfiguration.IsSMSSend == true)
                             {
-                                await SendSMS(identifiedNotificationRec);
+                                await SendSMS(identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").ToList());
                             }
                         }
 
@@ -111,7 +111,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                         {
                             if (_notificationConfiguration.IsWebServiceCall == true)
                             {
-                                await SendViaWebService(identifiedNotificationRec);
+                                await SendViaWebService(identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").ToList());
                             }
                         }
                     }
