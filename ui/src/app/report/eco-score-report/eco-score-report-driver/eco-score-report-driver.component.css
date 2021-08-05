@@ -29,7 +29,7 @@
   /* .slick-viewport-top, .grid-canvas, .slickgrid-container, .gridPane {
     min-height: 500px !important;
   } */
-  .slickgrid-container, .gridPane {
+  #grid_performance_driver_table .slickgrid-container, #grid_performance_driver_table .gridPane {
     min-height: 500px !important;
   }
   
@@ -38,7 +38,7 @@
     max-height: 400px !important;
   }
   
-  .slick-header, .slick-header-columns, .slick-header-column {
+  .slick-header-columns, .slick-header-column {
     font-weight: 700;
     font-size: 14px !important;
     color: #353c45 !important;
@@ -102,4 +102,14 @@
   }
   .slick-row.even.l0.r0 {
     background-color: #cfebfc !important;
+  }
+
+  .barChart {
+    height: 450px;
+    width: 825px;
+  }
+
+  .chartTitle {
+    font-weight: 700;
+    font-size: medium;
   }
