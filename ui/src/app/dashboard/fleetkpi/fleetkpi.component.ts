@@ -544,7 +544,7 @@ export class FleetkpiComponent implements OnInit {
   getKPIData(){
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
-    this.totalVehicles = 3; //this.finalVinList.length;
+    this.totalVehicles = 400; //this.finalVinList.length;
     let _kpiPayload = {
       "startDateTime": _startTime,
       "endDateTime": _endTime,

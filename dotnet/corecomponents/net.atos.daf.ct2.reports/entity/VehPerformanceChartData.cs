@@ -21,4 +21,10 @@ namespace net.atos.daf.ct2.reports.entity
         public int Value { get; set; }
     }
 
+    public class IndexWiseChartData
+    {
+        public int Xindex { get; set; }
+        public int Yindex { get; set; }
+        public int Value { get; set; }
+    }
 }
