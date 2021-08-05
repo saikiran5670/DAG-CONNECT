@@ -759,9 +759,12 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.GetVehPerformanceSummaryDetails(vin);
 
         }
-        public async Task<List<VehPerformanceChartData>> GetVehPerformanceBubbleChartData(VehiclePerformanceRequest vehiclePerformanceRequest)
+        public async Task<List<IndexWiseChartData>> GetVehPerformanceBubbleChartData(VehiclePerformanceRequest vehiclePerformanceRequest)
         {
-            return await _reportRepository.GetVehPerformanceBubbleChartData(vehiclePerformanceRequest);
+            PerformanceChartMatrix objmat = new PerformanceChartMatrix();
+            var chartRawdata = await _reportRepository.GetVehPerformanceBubbleChartData(vehiclePerformanceRequest);
+            var chartdata = objmat.Getcombinedmatrix(chartRawdata.Where(i => i.ColumnIndex != null).ToList());
+            return chartdata;
         }
         public async Task<List<VehPerformanceProperty>> GetVehPerformanceType()
         {
