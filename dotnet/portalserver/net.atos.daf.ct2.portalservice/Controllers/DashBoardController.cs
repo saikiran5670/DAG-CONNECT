@@ -216,18 +216,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 DashboardUserPreferenceRequest obj = new DashboardUserPreferenceRequest
                 {
                     ReportId = reportId,
-                    AccountId = 171,
-                    RoleId = 33,
-                    OrganizationId = 36,
-                    ContextOrgId = 36
+                    AccountId = _userDetails.AccountId,
+                    RoleId = _userDetails.RoleId,
+                    OrganizationId = GetUserSelectedOrgId(),
+                    ContextOrgId = GetContextOrgId()
                 };
-
-                //ReportId = reportId,
-                //AccountId = _userDetails.AccountId, // 171
-                //RoleId = _userDetails.RoleId, // 33
-                //OrganizationId = GetUserSelectedOrgId(),//36
-                //ContextOrgId = GetContextOrgId() //36
-
                 var response = await _dashboardServiceClient.GetDashboardUserPreferenceAsync(obj);
                 if (response.Code == Responsecode.Success)
                 {
@@ -258,7 +251,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                var request = _dashboardMapper.MapCreateDashboardUserPreference(objDashUserPreferenceCreateRequest, _userDetails.AccountId, GetContextOrgId());
+                var request = _reportManager.MapCreateDashboardUserPreference(objDashUserPreferenceCreateRequest, _userDetails.AccountId, GetContextOrgId());
                 var responsed = await _dashboardServiceClient.CreateDashboardUserPreferenceAsync(request);
 
                 if (responsed.Code == Responsecode.Success)
