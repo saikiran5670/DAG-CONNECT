@@ -127,11 +127,14 @@ namespace net.atos.daf.ct2.notificationengine.repository
             parameter.Add("@alert_id", tripAlert.Alertid);
             parameter.Add("@vehicle_id", tripAlert.VehicleId);
             parameter.Add("@status", ((char)NotificationSendType.Failed).ToString());
-            //await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type=@type and enum=@categoryEnum", new { type = 'C', categoryEnum = item.CategoryType });
-            if (tripAlert.Type.IndexOfAny(new char[] { 'N', 'X', 'C', 'Y', 'D', 'G', 'S', 'U', 'A', 'H', 'I', 'O', 'T', 'L', 'P', 'F' }) >= 0)
+            if (tripAlert.Type != null)
             {
-                queryStatement.Append(" and trip_id = @trip_id");
-                parameter.Add("@trip_id", tripAlert.Tripid);
+                //await _dataAccess.QuerySingleOrDefaultAsync<string>("select key from translation.enumtranslation where type=@type and enum=@categoryEnum", new { type = 'C', categoryEnum = item.CategoryType });
+                if (tripAlert.Type.IndexOfAny(new char[] { 'N', 'X', 'C', 'Y', 'D', 'G', 'S', 'U', 'A', 'H', 'I', 'O', 'T', 'L', 'P', 'F' }) >= 0)
+                {
+                    queryStatement.Append(" and trip_id = @trip_id");
+                    parameter.Add("@trip_id", tripAlert.Tripid);
+                }
             }
 
             List<NotificationHistory> notificationHistoryOutput = (List<NotificationHistory>)await _dataAccess.QueryAsync<NotificationHistory>(queryStatement.ToString(), parameter);
