@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import {
   ChartComponent,
   ApexAxisChartSeries,
@@ -39,7 +39,8 @@ export type ChartOptionsApex = {
 @Component({
   selector: 'app-eco-score-report-driver',
   templateUrl: './eco-score-report-driver.component.html',
-  styleUrls: ['./eco-score-report-driver.component.css']
+  styleUrls: ['./eco-score-report-driver.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class EcoScoreReportDriverComponent implements OnInit {
   @Input() ecoScoreDriverInfo: any;
@@ -164,6 +165,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
      this.tableColumns();
     this.defineGrid();
     this.loadData();
+    this.loadBarChart();
   }
 
   hideloader() {
@@ -512,6 +514,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
     return series;
   }
 
+  //General Table
   translationUpdate(){
     this.translationDataLocal = [
       { key:'rp_general' , value:'General' },
@@ -551,17 +554,17 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.columnDefinitions = [
       {
         id: 'category', name: (this.translationData.lblCategory || 'Category'), field: 'key',
-        type: FieldType.string, minWidth: 150, maxWidth: 400, formatter: this.treeFormatter, excludeFromHeaderMenu: true
+        type: FieldType.string, formatter: this.treeFormatter, excludeFromHeaderMenu: true, width: 225
       },
       {
         id: 'target', name: (this.translationData.lblTarget || 'Target'), field: 'targetValue',
-        type: FieldType.string, formatter: this.getTarget, minWidth: 90, maxWidth: 275, excludeFromHeaderMenu: true
+        type: FieldType.string, formatter: this.getTarget, excludeFromHeaderMenu: true
       }
     ];
     this.columnDefinitionsGen = [
       {
         id: 'categoryG', name: (this.translationData.lblCategory || 'Category'), field: 'key',
-        type: FieldType.string, width: 150, maxWidth: 375, formatter: this.treeFormatter, excludeFromHeaderMenu: true
+        type: FieldType.string, formatter: this.treeFormatter, excludeFromHeaderMenu: true, width: 225
       }
     ];
     
@@ -569,60 +572,61 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.columnPerformance.push({columnId: 'target'});
     this.columnGeneral.push({columnId: 'categoryG'})
     if(this.driverDetails !== undefined && this.driverDetails !== null){
-      for(var i=1; i<=this.driverDetails.length;i++){
-        this.columnPerformance.push({columnId: 'driver'+i});
-        this.columnGeneral.push({columnId: 'driverG'+i});
+      for(var i=0; i<this.driverDetails.length;i++){
+        this.columnPerformance.push({columnId: 'driver_'+i});
+        this.columnGeneral.push({columnId: 'driverG_'+i});
       }
       this.compareDriverCount = this.driverDetails.length;
-      if(this.driverDetails.length > 0){
-        let driver1= '<span style="font-weight:700">'+this.driverDetails[0].vin+'</span><br/><span style="font-weight:normal">('+this.driverDetails[0].driverId+')</span>';
-        let driverG1= '<span style="font-weight:700">'+this.driverDetails[0].vin+'</span><br/><span style="font-weight:normal">('+this.driverDetails[0].driverId+')</span>';
-        this.columnDefinitions.push({
-          id: 'driver1', name: driver1, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore0, maxWidth: 325
-        });
+      this.driverDetails.forEach((element, index) => {
+        let driver= '<span style="font-weight:700">'+this.driverDetails[index].vin+'</span>';
+        let driverG= '<span style="font-weight:700">'+this.driverDetails[index].vin+'</span>';
         this.columnDefinitionsGen.push({
-          id: 'driverG1', name: driverG1, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore0, maxWidth: 375
+          id: 'driverG_'+index, name: driverG, field: 'score',
+          type: FieldType.number, formatter: this.getScore, width: 275
         });
-      }
-      if(this.driverDetails.length > 1){
-        let driver2= '<span style="font-weight:700">'+this.driverDetails[1].vin+'</span><br/><span style="font-weight:normal">('+this.driverDetails[1].driverId+')</span>';
-        let driverG2= '<span style="font-weight:700">'+this.driverDetails[1].vin+'</span><br/><span style="font-weight:normal">('+this.driverDetails[1].driverId+')</span>';
         this.columnDefinitions.push({
-          id: 'driver2', name: driver2, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 375
+          id: 'driver_'+index, name: driver, field: 'score',
+          type: FieldType.number, formatter: this.getScore, width: 275
         });
-        this.columnDefinitionsGen.push({
-          id: 'driverG2', name: driverG2, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 275
-        });
+      });
       }
-      if(this.driverDetails.length > 2){
-        let driver3= '<span style="font-weight:700">'+this.driverDetails[2].vin+'</span><br/><span style="font-weight:normal">('+this.driverDetails[2].driverId+')</span>';
-        let driverG3= '<span style="font-weight:700">'+this.driverDetails[2].vin+'</span><br/><span style="font-weight:normal">('+this.driverDetails[2].driverId+')</span>';
-        this.columnDefinitions.push({
-          id: 'driver3', name: driver3, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 325
-        });
-        this.columnDefinitionsGen.push({
-          id: 'driverG3', name: driverG3, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 375
-        });
-      }
-      if(this.driverDetails.length > 3){
-        let driver4= '<span style="font-weight:700">'+this.driverDetails[3].vin+'</span><br/><span style="font-weight:normal">('+this.driverDetails[3].driverId+')</span>';
-        let driverG4= '<span style="font-weight:700">'+this.driverDetails[3].vin+'</span><br/><span style="font-weight:normal">('+this.driverDetails[3].driverId+')</span>';
-        this.columnDefinitions.push({
-          id: 'driver4', name: driver4, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 325
-        });
-        this.columnDefinitionsGen.push({
-          id: 'driverG4', name: driverG4, field: 'score',
-          type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 375
-        });
-      }
-    }
+      // if(this.driverDetails.length > 1){
+      //   let driver2= '<span style="font-weight:700">'+this.driverDetails[1].vin+'</span>';
+      //   let driverG2= '<span style="font-weight:700">'+this.driverDetails[1].vin+'</span>';
+      //   this.columnDefinitions.push({
+      //     id: 'driver2', name: driver2, field: 'score',
+      //     type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 375
+      //   });
+      //   this.columnDefinitionsGen.push({
+      //     id: 'driverG2', name: driverG2, field: 'score',
+      //     type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 275
+      //   });
+      // }
+      // if(this.driverDetails.length > 2){
+      //   let driver3= '<span style="font-weight:700">'+this.driverDetails[2].vin+'</span>';
+      //   let driverG3= '<span style="font-weight:700">'+this.driverDetails[2].vin+'</span>';
+      //   this.columnDefinitions.push({
+      //     id: 'driver3', name: driver3, field: 'score',
+      //     type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 325
+      //   });
+      //   this.columnDefinitionsGen.push({
+      //     id: 'driverG3', name: driverG3, field: 'score',
+      //     type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 375
+      //   });
+      // }
+      // if(this.driverDetails.length > 3){
+      //   let driver4= '<span style="font-weight:700">'+this.driverDetails[3].vin+'</span>';
+      //   let driverG4= '<span style="font-weight:700">'+this.driverDetails[3].vin+'</span>';
+      //   this.columnDefinitions.push({
+      //     id: 'driver4', name: driver4, field: 'score',
+      //     type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 325
+      //   });
+      //   this.columnDefinitionsGen.push({
+      //     id: 'driverG4', name: driverG4, field: 'score',
+      //     type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 375
+      //   });
+      // }
+    // }
   }
 
   defineGrid(){
@@ -631,7 +635,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
       enableAutoResize: true,
       forceFitColumns: true,
       enableExport: false,
-      enableHeaderMenu: true,
+      enableHeaderMenu: false,
       enableContextMenu: false,
       enableGridMenu: false,
       enableFiltering: true,
@@ -652,12 +656,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
         iconExportCsvCommand: 'mdi mdi-download',
         iconExportExcelCommand: 'mdi mdi-file-excel-outline',
         iconExportTextDelimitedCommand: 'mdi mdi-download',
-      },
-      headerMenu: {
-        hideColumnHideCommand: false,
-        hideClearFilterCommand: true,
-        hideColumnResizeByContentCommand: true
-      },
+      }
     }
     this.defineGridGeneral();
     this.defineGridPerformance();
@@ -747,6 +746,18 @@ export class EcoScoreReportDriverComponent implements OnInit {
     return this.formatValues(dataContext, value);
   }
   
+  getScore: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+    if(value !== undefined && value !== null && value.length > 0){
+      let val = (columnDef.id).toString().split("_");
+      let index = Number.parseInt(val[1]);
+      if(value && value.length>index){
+        let color = this.getColor(dataContext, value[index].value);
+        return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[index].value) + "</span>";
+      }
+    }
+    return '';
+  }
+
   getScore0: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
     if(value !== undefined && value !== null && value.length > 0){
       // let color = value[0].color === 'Amber'?'Orange':value[0].color;
@@ -781,7 +792,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   }
 
   formatValues(dataContext: any, val: any){
-    if(val !== '0'){
+    if(val && val !== '0'){
       let valTemp = Number.parseFloat(val.toString());
       if(dataContext.rangeValueType && dataContext.rangeValueType === 'T'){
         valTemp = Number.parseInt(valTemp.toString());
@@ -849,19 +860,41 @@ export class EcoScoreReportDriverComponent implements OnInit {
   scaleShowVerticalLines: false,
   responsive: true
 };
-public barChartLabels = ['sagar', 'laxman', 'nimesh', 'vishal', 'nilam'];
+// public barChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;//['sagar', 'laxman', 'nimesh', 'vishal', 'nilam'];
+// public barChartType = 'bar';
+// public barChartLegend = true;
+// public barChartData = [
+//   {data: [65, 59, 80, 60, 50], label: 'Remote'},
+//   {data: [28, 48, 40, 81], label: 'Visit'}
+// ];
+
+public barChartLabels: any =[];
 public barChartType = 'bar';
 public barChartLegend = true;
-public barChartData = [
-  {data: [65, 59, 80, 60, 50], label: 'Remote'},
-  {data: [28, 48, 40, 81], label: 'Visit'}
-];
+public barChartData: any =[];
+
+loadBarChart(){
+  this.barChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;//['sagar', 'laxman', 'nimesh', 'vishal', 'nilam'];
+  this.barChartType = 'bar';
+  this.barChartLegend = true;
+  // this.barChartData = [
+  //   {data: this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet[0].data, label: 'Remote'},
+  //   {data: [28, 48, 40, 81], label: 'Visit'}
+  // ];
+  this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet.forEach(element => {
+    this.barChartData.push({
+      data: element.data,
+      label: element.label
+    });
+  });
+
+}
 
 public barChartOptions1 = {
   options: {
       title: {
         display: true,
-        text: 'Example Chart'
+        text: ''
       },
       scales: {
         xAxes: [{
@@ -893,11 +926,25 @@ public barChartOptions1 = {
    public pieChartOptions: ChartOptions = {
     responsive: true,
   };
-  public pieChartLabels: Label[] = [['Download', 'Sales'], ['In', 'Store', 'Sales'], 'Mail Sales'];
-  public pieChartData: SingleDataSet = [300, 500, 100];
+  // public pieChartLabels: Label[] = [['Download', 'Sales'], ['In', 'Store', 'Sales'], 'Mail Sales'];
+  // public pieChartData: SingleDataSet = [300, 500, 100];
+  // public pieChartType: ChartType = 'pie';
+  // public pieChartLegend = true;
+  // public pieChartPlugins = [];
+  public pieChartLabels: Label[] = [];
+  public pieChartData: SingleDataSet = [];
   public pieChartType: ChartType = 'pie';
   public pieChartLegend = true;
   public pieChartPlugins = [];
+
+  loadPieChart(){
+  //  this.pieChartLabels
+  //  this.pieChartData: SingleDataSet = [300, 500, 100];
+  //  this.pieChartType: ChartType = 'pie';
+  //  this.pieChartLegend = true;
+  //  this.pieChartPlugins = [];
+  // }
+  }
 
 
   toggleGeneralCharts(val){

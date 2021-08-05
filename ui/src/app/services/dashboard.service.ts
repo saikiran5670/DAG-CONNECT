@@ -73,7 +73,7 @@ export class DashboardService {
     return {cuttOff : _baseValue, kpiPercent:_kpiPercent};
   }
 
-  calculateLastChange(currentValue,lastValue,totalValue){
+  calculateLastChange(currentValue,lastValue,totalValue?){
     let _lastChange = ((currentValue - lastValue)/currentValue)*100;
     return _lastChange;
   }

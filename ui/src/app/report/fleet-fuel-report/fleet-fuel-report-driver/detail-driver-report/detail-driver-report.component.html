@@ -170,11 +170,10 @@
                 </div>
       
                 <div *ngIf="checkForPreference('summary_co2emission')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
-      
                   <span>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</span>
-      
-                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('co2emission')}} t</span>
-      
+                  <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('co2emission')}}{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || 'Ton') :
+                    (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || 't') : (translationData.lbltons ||'t') }}
+                    </span>
                 </div>
       
               </div>
@@ -597,13 +596,17 @@
                             <span>{{row.convertedFuelConsumption}}</span>              
                           </mat-cell>              
                         </ng-container>              
-                        <ng-container matColumnDef="cO2Emission">              
-                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_co2emission')">{{ translationData.lblCO2Emission || 'CO2 Emission(ton)' }}                          
-                          </mat-header-cell>              
-                          <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_co2emission')">              
-                            <span>{{row.cO2Emission}}</span>              
+                        <ng-container matColumnDef="cO2Emission" >
+                          <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_co2emission')">{{ translationData.lblCO2Emission || 'CO2 Emission' }}
+                            <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || 'Ton') :
+                              (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || 't') : (translationData.lbltons ||
+                              't') }})</span>
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_co2emission')">
+                            <span>{{row.cO2Emission}}</span>
                           </mat-cell>
-                        </ng-container>            
+                          <!-- <mat-cell *matCellDef="let row">{{ row.convertedAverageDistance != '' ? row.convertedAverageDistance : '-' }}</mat-cell> -->
+                        </ng-container>           
                         <ng-container matColumnDef="idleDuration">             
                           <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idleduration')">{{ translationData.lblIdleDuration || 'Idle Duration(hh:mm)%' }}              
                           </mat-header-cell>          

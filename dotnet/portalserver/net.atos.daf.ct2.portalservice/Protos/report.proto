@@ -1333,9 +1333,15 @@ string Axisvalues =6;
 message VehPerformanceResponse{
 string Message = 1;
 Responsecode Code = 2;
-repeated VehPerformanceCharts VehPerformanceCharts = 3;
-VehPerformanceSummary VehPerformanceSummary =4; 
+VehPerformanceTemplate VehPerformanceTemplate=3;
+
  }
+
+ message VehPerformanceTemplate
+ {
+ repeated VehPerformanceCharts VehPerformanceCharts = 1;
+ VehPerformanceSummary VehPerformanceSummary =2; 
+}
  message VehPerformanceSummary{
       string ModelType = 1;
       string EngineType = 2;

@@ -163,7 +163,8 @@ doughnutChartData1: any = [];
 doughnutChartType: ChartType = 'doughnut';
 doughnutChartColors: Color[] = [
   {
-    backgroundColor: ['#69EC0A','#7BC5EC'],
+    // backgroundColor: ['#69EC0A','#7BC5EC'],
+    backgroundColor: ['#69EC0A','#d62a29'],
   },
 ];
 doughnutChartLabels2: Label[] = [];
@@ -219,6 +220,9 @@ prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
 prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
 accountPrefObj: any;
 greaterTimeCount: any =0 ;
+totalDistance: any =0;
+totalThreshold: any;
+totalDrivingTime: any = 0;
 
   constructor(private router: Router,
               private elRef: ElementRef,
@@ -378,8 +382,12 @@ greaterTimeCount: any =0 ;
     this.distance = [];
     this.calenderDate = [];
     this.vehiclecount = [];
-    let timebasedThreshold = 4000;
+    let timebasedThreshold = 20077;
     let percentage2;
+    let percentage1;
+    this.totalDistance = 0;
+    this.totalDrivingTime =0;
+    this.greaterTimeCount = 0;
     this.vehicleUtilisationData.forEach(element => {
       var date = new Date(element.calenderDate);
       const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -388,12 +396,25 @@ greaterTimeCount: any =0 ;
       this.distance.push(distance);
       this.calenderDate.push(resultDate);
       this.vehiclecount.push(element.vehiclecount);
-      if(element.drivingtime > timebasedThreshold){
+
+        this.totalDistance = this.totalDistance + element.distance;
+        this.totalDrivingTime = this.totalDrivingTime + element.drivingtime;
         this.greaterTimeCount = this.greaterTimeCount + 1;
-      }
-      percentage2 = (this.greaterTimeCount/this.vehicleUtilisationData.length)* 100;
-      percentage2 = parseInt(percentage2);
     });
+    if(this.selectionTab == 'lastmonth'){
+      this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 30;
+    }
+    else if(this.selectionTab == 'lastweek'){
+      this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 7;
+    }
+    else if(this.selectionTab == 'last3month'){
+      this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 90;
+    }
+    percentage1 = (this.totalDrivingTime/this.totalThreshold)* 100; 
+    percentage1 = parseInt(percentage1);
+    percentage2 = (this.totalDistance/this.totalThreshold)* 100;
+    percentage2 = parseInt(percentage2);
+
     if(this.distanceChartType == 'bar'){
         let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
         this.barChartOptions2.scales.yAxes= [{
@@ -477,28 +498,54 @@ greaterTimeCount: any =0 ;
 
   //for time based utilisation
   if(this.timeDChartType =='doughnut'){
-    this.doughnutChartLabels1 = ['Full Utilisation >1400h','Under Utilisation <1400h'];
+    this.doughnutChartLabels1 = [`Full Utilisation >${this.getHhMmTime(timebasedThreshold)}`,`Under Utilisation < ${this.getHhMmTime(timebasedThreshold)}`];
     // this.doughnutChartData1 = [[55, 25, 20]];
-    this.doughnutChartData1 = [percentage2, 100- percentage2];
+    if(percentage1 > 100){
+      this.doughnutChartData1 = [percentage1];
+    }
+    else{
+    this.doughnutChartData1 = [percentage1, 100- percentage1];
+    }
   }
   else{
-    this.timePieChartLabels = ['Full Utilisation >1400h','Under Utilisation <1400h'];
-    this.timePieChartData = [percentage2, 100- percentage2];
+    this.timePieChartLabels = [`Full Utilisation >${this.getHhMmTime(timebasedThreshold)}`,`Under Utilisation < ${this.getHhMmTime(timebasedThreshold)}`];
+    this.timePieChartData = [percentage1, 100- percentage1];
   }
 
   //for distance based utilisation
+  let label3;
+  if(this.prefUnitFormat == 'dunit_Metric'){
+    label3 = 'Km'
+  }
+  else{
+    label3 = 'Miles'
+  }
   if(this.mileageDChartType =='doughnut'){
-    this.doughnutChartLabels2 = ['Full Utilisation >7000km','Under Utilisation <7000km'];
-    this.doughnutChartData2 = [[5, 15, 30]];
+    this.doughnutChartLabels2 = [`Full Utilisation >${this.reportMapService.convertDistanceUnits(this.totalDistance,this.prefUnitFormat)}${label3}`,`Under Utilisation <${this.reportMapService.convertDistanceUnits(this.totalDistance,this.prefUnitFormat)}${label3}`];
+    if(percentage2 > 100){
+    this.doughnutChartData2 = [percentage2];
+    }
+    else{
+      this.doughnutChartData2 = [percentage2, 100-percentage2];
+    }
   }
   else{
     this.mileagePieChartLabels= ['Full Utilisation >7000km','Under Utilisation <7000km'];
-    this.mileagePieChartData = [5, 15, 30];
+    this.mileagePieChartData = [percentage2, 100-percentage2];
     }
 
   //for alert level pie chart
   this.alertPieChartData= [5, 74, 10];
   this.alertPieChartLabels=  ['Critical','Warning','Advisory'];
+  }
+
+  getHhMmTime(totalSeconds: any){
+    let data: any = "00:00";
+    let hours = Math.floor(totalSeconds / 3600);
+    totalSeconds %= 3600;
+    let minutes = Math.floor(totalSeconds / 60);
+    let seconds = totalSeconds % 60;
+    return `${hours < 10 ? '0'+hours : hours} h ${minutes < 10 ? '0'+minutes : minutes} m`;
   }
 
     gotoLogBook(){

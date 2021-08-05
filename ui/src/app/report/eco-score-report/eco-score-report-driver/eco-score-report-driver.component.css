@@ -29,11 +29,11 @@
   /* .slick-viewport-top, .grid-canvas, .slickgrid-container, .gridPane {
     min-height: 500px !important;
   } */
-  #grid_performance_table1 .slickgrid-container, #grid_performance_table1 .gridPane {
+  .slickgrid-container, .gridPane {
     min-height: 500px !important;
   }
   
-  #grid_general_table1 .slickgrid-container, #grid_general_table1 .gridPane {
+  .slickgrid-container, .gridPane {
     min-height: 250px !important;
     max-height: 400px !important;
   }
@@ -42,26 +42,30 @@
     font-weight: 700;
     font-size: 14px !important;
     color: #353c45 !important;
-      padding-left: 5px !important;
-      min-height: 40px!important;
-    background: #bee3f8!important;
+    padding-left: 5px !important;
+    min-height: 40px !important;
+    background: #bee3f8 !important;
     font-family: Helvetica Neue LT Std-Md !important;
   }
   
+/* .slickgrid-container .slick-header-columns .slick-header-column.ui-state-default {
+    background: #bee3f8 !important;
+    background-color: #bee3f8 !important;
+  } */
+
   .slick-header-column span {
     float: none !important;
   }
   
-   .slick-cell.l1.r1, .slick-cell.l2.r2, .slick-cell.l3.r3, .slick-cell.l4.r4, .slick-cell.l5.r5  {
-    /* padding-left: 50px !important; */
+  .slick-cell.l1.r1, .slick-cell.l2.r2, .slick-cell.l3.r3, .slick-cell.l4.r4, .slick-cell.l5.r5  {
     text-align: center;
   }
   
-  #grid_performance_table1 .slick-cell.l1.r1 {
+  .slick-cell.l1.r1 {
     padding-left: 37px !important;
   }
   
-  #grid_performance_table1 .slick-cell.l1.r1 {
+  .slick-cell.l1.r1 {
     padding-left: 37px !important;
   }
   
@@ -81,7 +85,6 @@
     font-family: Helvetica Neue LT Std !important;
     color: rgba(0,0,0,.87) !important;
     letter-spacing: normal !important;
-    /* min-height: 40px!important; */
     font-size: 15px !important;
   }
   

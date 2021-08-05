@@ -10,6 +10,7 @@ using net.atos.daf.ct2.dashboard.entity;
 using net.atos.daf.ct2.dashboardservice.entity;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.visibility;
 using Newtonsoft.Json;
 
@@ -95,30 +96,41 @@ namespace net.atos.daf.ct2.dashboardservice
             {
                 net.atos.daf.ct2.dashboard.entity.TodayLiveVehicleRequest objTodayLiveVehicleRequest = new net.atos.daf.ct2.dashboard.entity.TodayLiveVehicleRequest();
                 objTodayLiveVehicleRequest.VINs = request.VINs.ToList<string>();
+                var filter = DateTime.Now;
+                DateTime datetime = DateTime.Now.AddHours(-filter.Hour).AddMinutes(-filter.Minute)
+                                   .AddSeconds(-filter.Second).AddMilliseconds(-filter.Millisecond);
+                DateTime yesterday = datetime.AddDays(-1);
+                objTodayLiveVehicleRequest.TodayDateTime = UTCHandling.GetUTCFromDateTime(datetime, "UTC");
+                objTodayLiveVehicleRequest.YesterdayDateTime = UTCHandling.GetUTCFromDateTime(yesterday, "UTC");
                 var data = await _dashBoardManager.GetTodayLiveVinData(objTodayLiveVehicleRequest);
                 TodayLiveVehicleResponse objTodayLiveVehicleResponse = new TodayLiveVehicleResponse();
                 if (data != null)
                 {
-                    objTodayLiveVehicleResponse.ActiveVehicles = data.ActiveVehicles;
-                    objTodayLiveVehicleResponse.CriticleAlertCount = data.CriticleAlertCount;
+                    objTodayLiveVehicleResponse.TodayVin = data.TodayVin;
                     objTodayLiveVehicleResponse.Distance = data.Distance;
-                    objTodayLiveVehicleResponse.DistanceBaseUtilization = data.DistanceBaseUtilization;
-                    objTodayLiveVehicleResponse.DriverCount = data.DriverCount;
                     objTodayLiveVehicleResponse.DrivingTime = data.DrivingTime;
-                    objTodayLiveVehicleResponse.TimeBaseUtilization = data.TimeBaseUtilization;
-                    objTodayLiveVehicleResponse.VehicleCount = data.VehicleCount;
+                    objTodayLiveVehicleResponse.DriverCount = data.DriverCount;
+                    objTodayLiveVehicleResponse.TodayActiveVinCount = data.TodayActiveVinCount;
+                    objTodayLiveVehicleResponse.TodayTimeBasedUtilizationRate = data.TodayTimeBasedUtilizationRate;
+                    objTodayLiveVehicleResponse.TodayDistanceBasedUtilization = data.TodayDistanceBasedUtilization;
+                    objTodayLiveVehicleResponse.CriticleAlertCount = data.CriticleAlertCount;
+                    objTodayLiveVehicleResponse.YesterdayVin = data.YesterdayVin;
+                    objTodayLiveVehicleResponse.YesterdayActiveVinCount = data.YesterdayActiveVinCount;
+                    objTodayLiveVehicleResponse.YesterDayTimeBasedUtilizationRate = data.YesterDayTimeBasedUtilizationRate;
+                    objTodayLiveVehicleResponse.YesterDayDistanceBasedUtilization = data.YesterDayDistanceBasedUtilization;
                     objTodayLiveVehicleResponse.Code = Responsecode.Success;
                     objTodayLiveVehicleResponse.Message = DashboardConstants.GET_TODAY_LIVE_VEHICLE_SUCCESS_MSG;
                 }
                 else
                 {
-                    objTodayLiveVehicleResponse.Code = Responsecode.Success;
+                    objTodayLiveVehicleResponse.Code = Responsecode.Failed;
                     objTodayLiveVehicleResponse.Message = DashboardConstants.GET_TODAY_LIVE_VEHICLE_SUCCESS_NODATA_MSG;
                 }
                 return await Task.FromResult(objTodayLiveVehicleResponse);
             }
             catch (Exception ex)
             {
+                _logger.Error(null, ex);
                 return await Task.FromResult(new TodayLiveVehicleResponse
                 {
                     Code = Responsecode.InternalServerError,
