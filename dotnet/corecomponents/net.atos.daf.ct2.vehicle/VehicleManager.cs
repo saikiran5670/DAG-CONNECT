@@ -409,7 +409,9 @@ namespace net.atos.daf.ct2.vehicle
                     {
                         case "S":
                             //Single
-                            vehicles.Add(await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId));
+                            var vehicle = await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId);
+                            if (vehicle != null)
+                                vehicles.Add(vehicle);
                             break;
                         case "G":
                             //Group
@@ -464,7 +466,9 @@ namespace net.atos.daf.ct2.vehicle
                     {
                         case "S":
                             //Single
-                            vehicles.Add(await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId));
+                            var vehicle = await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId);
+                            if (vehicle != null)
+                                vehicles.Add(vehicle);
                             break;
                         case "G":
                             //Group

@@ -131,12 +131,12 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.WsLogin = item.Notrec_ws_login;
                         notificationHistory.WsPassword = item.Notrec_ws_password;
                         notificationHistory.WsText = item.Notrec_ws_text;
-                        notificationHistory.AlertCategoryKey = generatedAlertForVehicle[0].AlertCategoryKey;
-                        notificationHistory.AlertCategoryEnum = generatedAlertForVehicle[0].CategoryType;
-                        notificationHistory.AlertTypeKey = generatedAlertForVehicle[0].AlertTypeKey;
-                        notificationHistory.AlertTypeEnum = generatedAlertForVehicle[0].Type;
-                        notificationHistory.UrgencyTypeKey = generatedAlertForVehicle[0].UrgencyTypeKey;
-                        notificationHistory.UrgencyTypeEnum = generatedAlertForVehicle[0].UrgencyLevelType;
+                        notificationHistory.AlertCategoryKey = generatedAlertForVehicle.Select(c => c.AlertCategoryKey).FirstOrDefault();
+                        notificationHistory.AlertCategoryEnum = generatedAlertForVehicle.Select(c => c.CategoryType).FirstOrDefault();
+                        notificationHistory.AlertTypeKey = generatedAlertForVehicle.Select(c => c.AlertTypeKey).FirstOrDefault();
+                        notificationHistory.AlertTypeEnum = generatedAlertForVehicle.Select(c => c.Type).FirstOrDefault();
+                        notificationHistory.UrgencyTypeKey = generatedAlertForVehicle.Select(c => c.UrgencyTypeKey).FirstOrDefault();
+                        notificationHistory.UrgencyTypeEnum = generatedAlertForVehicle.Select(c => c.UrgencyLevelType).FirstOrDefault();
                         notificationHistory.ThresholdValue = tripAlert.ThresholdValue;
                         notificationHistory.ThresholdValueUnitType = tripAlert.ThresholdValueUnitType;
                         notificationHistory.ValueAtAlertTime = tripAlert.ValueAtAlertTime;

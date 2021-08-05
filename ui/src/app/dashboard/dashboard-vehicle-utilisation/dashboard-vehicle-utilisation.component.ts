@@ -20,6 +20,7 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
   @Input() finalVinList : any;
   @Input() preference : any;
   @Input() prefData : any;
+  @Input() dashboardPrefData: any;
   timeDChartType: any;
   mileageDChartType: any;
   selectionTab: any;
@@ -206,6 +207,11 @@ distanceChartType: any;
 vehicleChartType: any;
 public alertPieChartLabels: Label[] = [];
 public alertPieChartData: SingleDataSet = [];
+alertPieChartColors: Color[] = [
+  {
+    backgroundColor: ['#69EC0A','#d62a29','#FFD700'],
+  },
+];
 vehicleUtilisationData: any;
 distance = [];
 calenderDate = [];
@@ -223,6 +229,11 @@ greaterTimeCount: any =0 ;
 totalDistance: any =0;
 totalThreshold: any;
 totalDrivingTime: any = 0;
+alertsData: any;
+logisticCount: any;
+fuelAndDriverCount: any;
+repairAndMaintenanceCount: any;
+toatlSum: any;
 
   constructor(private router: Router,
               private elRef: ElementRef,
@@ -236,6 +247,8 @@ totalDrivingTime: any = 0;
     // this.setChartData();
     this.selectionTimeRange('lastweek');
 
+    console.log("prefData = "+this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences);
+     
   }
 
   setInitialPref(prefData,preference){
@@ -371,7 +384,49 @@ totalDrivingTime: any = 0;
     }
  });
 
+ let alertPayload ={
+  "viNs": this.finalVinList
+ }
+ this.dashboardService.getAlert24Hours(alertPayload).subscribe((alertData)=>{
+  if(alertData["alert24Hours"].length > 0){
+     this.alertsData = alertData["alert24Hours"][0];
+     this.logisticCount = this.alertsData.logistic;
+     this.fuelAndDriverCount = this.alertsData.fuelAndDriver;
+     this.repairAndMaintenanceCount = this.alertsData.repairAndMaintenance;
+     this.toatlSum = this.alertsData.critical + this.alertsData.warning +this.alertsData.advisory;
+     this.setAlertChartData();
+  }
+});
+
 }
+
+setAlertChartData(){
+    //for alert level pie chart
+    if(this.alertsData){
+    let totalAlerts = this.alertsData.critical + this.alertsData.warning +this.alertsData.advisory;
+    let crticalPercent = (this.alertsData.critical/totalAlerts)* 100; 
+    let warningPercent = (this.alertsData.warning/totalAlerts)* 100;
+    let advisoryPercent = (this.alertsData.advisory/totalAlerts)* 100;
+    this.alertPieChartData= [crticalPercent,warningPercent,advisoryPercent];
+    this.alertPieChartLabels=  [`Critical (${this.alertsData.critical})`,`Warning (${this.alertsData.warning})`,`Advisory (${this.alertsData.advisory})`];
+    
+    }
+}
+
+checkForPreference(fieldKey) {
+  if (this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences.length != 0) {
+    let filterData = this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_'+fieldKey));
+    if (filterData.length > 0) {
+      if (filterData[0].state == 'A') {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
   setChartData(){
     this.distanceChartType = 'bar';
     this.vehicleChartType = 'line';
@@ -535,8 +590,8 @@ totalDrivingTime: any = 0;
     }
 
   //for alert level pie chart
-  this.alertPieChartData= [5, 74, 10];
-  this.alertPieChartLabels=  ['Critical','Warning','Advisory'];
+  // this.alertPieChartData= [5, 74, 10];
+  // this.alertPieChartLabels=  ['Critical','Warning','Advisory'];
   }
 
   getHhMmTime(totalSeconds: any){
