@@ -42,7 +42,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
   'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
-  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore',
+  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','dpaAnticipationScore','dpaBrakingScore',
   'idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
   'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
   detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
@@ -1400,16 +1400,17 @@ setVehicleGroupAndVehiclePreSelection() {
     let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 't') : (this.translationData.lblton|| 't');
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+    let unitValkg1 = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 't') : (this.translationData.lblpound|| 't');
 
     const rankingHeader = ['Ranking','VehicleName','Vin','VehicleRegistrationNo','Consumption('+unitVal100km+')']
     const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Distance('+unitValkm+')', 'Average Distance Per Day('+unitValkmh+')', 'Average Speed('+unitValkmh+')',
     'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb('+unitValkg+')','fuelConsumed('+unitValuekm+')', 'fuelConsumption('+unitVal100km+')',  
-    'CO2 Emission('+unitValkg+')','Idle Duration(%)','PTO Duration(%)','HarshBrakeDuration(%)','Heavy Throttle Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')%',
+    'CO2 Emission('+unitValkg1+')','Idle Duration(%)','PTO Duration(%)','HarshBrakeDuration(%)','Heavy Throttle Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')%',
     'Cruise Control Distance 50-75('+unitValkmh+')%','Cruise Control Distance>75('+unitValkmh+')%', 'Average Traffic Classification',
-    'CC Fuel Consumption','fuel Consumption CC Non Active','Idling Consumption','Dpa Score',
-    'Idling PTO Score(hh:mm:ss)','Idling PTO','Idling Without PTO(hh:mm:ss)%','Foot Brake',
+    'CC Fuel Consumption','fuel Consumption CC Non Active','Idling Consumption','Dpa Score','DPA Anticipation Score%','DPA Breaking Score%',
+    'Idling PTO Score(hh:mm:ss)%','Idling PTO%','Idling Without PTO(hh:mm:ss)%','Foot Brake',
     'CO2 Emmision(gr/km)', 'Average Traffic Classification Value('+unitValkg+')','Idling Consumption Value('+unitValkg+')'];
-    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumption('+unitVal100km+')', 'Idle Duration(%)', 'Fuel Consumed('+unitValuekm+')', 'CO2 Emission('+unitValkg+')'];
+    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumption('+unitVal100km+')', 'Idle Duration(%)', 'Fuel Consumed('+unitValuekm+')', 'CO2 Emission('+unitValkg1+')'];
     const summaryData= this.summaryNewObj;
     //Create workbook and worksheet
     let workbook = new Workbook();
@@ -1474,7 +1475,7 @@ setVehicleGroupAndVehiclePreSelection() {
       item.averageGrossWeightComb, item.convertedFuelConsumed100Km, item.convertedFuelConsumption,item.cO2Emission,item.convertedIdleDuration, item.ptoDuration,
       item.harshBrakeDuration, item.heavyThrottleDuration, item.cruiseControlDistance3050,item.cruiseControlDistance5075, 
       item.cruiseControlDistance75, item.averageTrafficClassification, item.ccFuelConsumption, item.fuelconsumptionCCnonactive,
-      item.idlingConsumption, item.dpaScore,item.idlingPTOScore, item.idlingPTO, item.idlingWithoutPTOpercent,
+      item.idlingConsumption, item.dpaScore,item.dpaAnticipationScore,item.dpaBrakingScore,item.idlingPTOScore, item.idlingPTO, item.idlingWithoutPTOpercent,
       item.footBrake, item.cO2Emmision, item.averageTrafficClassificationValue, item.idlingConsumptionValue
     ]);
     });
@@ -1524,7 +1525,7 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
       case 'fuelConsumption' :{
-        dataObj.push(e.fuelConsumption);
+        dataObj.push(e.convertedFuelConsumption);
         break;
       }
     }
@@ -1586,11 +1587,11 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'fuelConsumed' :{
-            tempObj.push(e.fuelConsumed);
+            tempObj.push(e.convertedFuelConsumed100Km);
             break;
           }
           case 'fuelConsumption' :{
-            tempObj.push(e.fuelConsumption);
+            tempObj.push(e.convertedFuelConsumption);
             break;
           }
           case 'cO2Emission' :{

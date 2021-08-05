@@ -83,34 +83,41 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                     Consumergroup = _kafkaConfiguration.CONSUMER_GROUP
                 };
                 //Pushing message to kafka topic
-                ConsumeResult<Null, string> response = KafkaConfluentWorker.Consumer(kafkaEntity);
+                ConsumeResult<string, string> response = KafkaConfluentWorker.Consumer(kafkaEntity);
                 if (response != null)
                 {
                     Console.WriteLine(response.Message.Value);
                     tripAlert = JsonConvert.DeserializeObject<NotificationEngineEntity.TripAlert>(response.Message.Value);
-                    List<NotificationHistory> identifiedNotificationRec = await _notificationIdentifierManager.GetNotificationDetails(tripAlert);
-                    if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "E").Count() > 0)
+                    if (tripAlert != null && tripAlert.Alertid > 0)
                     {
-                        if (_notificationConfiguration.IsEmailSend == true)
+                        List<NotificationHistory> identifiedNotificationRec = await _notificationIdentifierManager.GetNotificationDetails(tripAlert);
+                        if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "E").Count() > 0)
                         {
-                            await SendEmailNotification(identifiedNotificationRec);
+                            if (_notificationConfiguration.IsEmailSend == true)
+                            {
+                                await SendEmailNotification(identifiedNotificationRec);
+                            }
+                        }
+
+                        if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
+                        {
+                            if (_notificationConfiguration.IsSMSSend == true)
+                            {
+                                await SendSMS(identifiedNotificationRec);
+                            }
+                        }
+
+                        if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").Count() > 0)
+                        {
+                            if (_notificationConfiguration.IsWebServiceCall == true)
+                            {
+                                await SendViaWebService(identifiedNotificationRec);
+                            }
                         }
                     }
-
-                    if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").Count() > 0)
+                    else
                     {
-                        if (_notificationConfiguration.IsSMSSend == true)
-                        {
-                            await SendSMS(identifiedNotificationRec);
-                        }
-                    }
-
-                    if (identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").Count() > 0)
-                    {
-                        if (_notificationConfiguration.IsWebServiceCall == true)
-                        {
-                            await SendViaWebService(identifiedNotificationRec);
-                        }
+                        _logger.Info(JsonConvert.SerializeObject(tripAlert));
                     }
                 }
             }

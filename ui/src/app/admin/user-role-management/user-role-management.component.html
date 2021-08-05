@@ -77,10 +77,10 @@
                                 <button *ngIf="(row.organizationId == 0 && loggedInUser == 'admin') || (row.organizationId != 0)" class='actionBtn'  mat-flat-button (click)="deleteUserRole(row)" matTooltip="Delete">
                                     <mat-icon class="deleteIcon">delete_outline</mat-icon>
                                 </button> -->
-                                <button *ngIf="(row.organizationId == 0 && (organizationId == 1 || organizationId == 2)) || (row.organizationId != 0) && (!adminAccessType.adminReadOnlyAccess)" class='actionBtn'  mat-flat-button (click)="editUserRole(row, 'edit')" matTooltip="Edit">
+                                <button *ngIf="(row.organizationId == 0 && adminAccessType.adminFullAccess) || (row.organizationId != 0) && (!adminAccessType.adminReadOnlyAccess)" class='actionBtn'  mat-flat-button (click)="editUserRole(row, 'edit')" matTooltip="Edit">
                                     <mat-icon>create</mat-icon>
                                 </button>
-                                <button *ngIf="(row.organizationId == 0 && (organizationId == 1 || organizationId == 2)) || (row.organizationId != 0) && (adminAccessType.adminFullAccess)" class='actionBtn'  mat-flat-button (click)="deleteUserRole(row)" matTooltip="Delete">
+                                <button *ngIf="(row.organizationId == 0 && adminAccessType.adminFullAccess) || (row.organizationId != 0) && (adminAccessType.adminFullAccess)" class='actionBtn'  mat-flat-button (click)="deleteUserRole(row)" matTooltip="Delete">
                                     <mat-icon class="deleteIcon">delete_outline</mat-icon>
                                 </button>
                             </mat-cell>

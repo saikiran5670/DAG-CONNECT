@@ -87,7 +87,8 @@
   <mat-expansion-panel-header class="full-width">
     <mat-panel-title>
       <!-- <span *ngIf="clickButton"  class="mat-expansion-indicator"></span> -->
-      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlertsLast24Hours || 'Alerts Last 24 Hours' }}</span>
+      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlertsLast24Hours || 'Alerts Last 24 Hours - ' }}
+      <span [hidden]="!checkForPreference('alertlast24hours_totalalerts')" >{{toatlSum}}</span></span>
       <div style='padding-left: 76%;' fxLayoutAlign="end">
       </div>
     </mat-panel-title>
@@ -96,7 +97,7 @@
   color="primary">{{translationData.lblMoreInfo|| 'More Info' }}</button>
 
   <div fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-    <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+    <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left" [hidden]="!checkForPreference('alertlast24hours_levelalerts')">
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblLevelsOfAlertsTriggered ||
         'Levels Of Alerts Triggered' }}</span>
         <div class="chart-wrapper">
@@ -104,7 +105,7 @@
             [data]="alertPieChartData" 
             [labels]="alertPieChartLabels" 
             [chartType]="pieChartType"
-            [colors]="doughnutChartColors" 
+            [colors]="alertPieChartColors" 
             [options]="pieChartOptions1" 
             [plugins]="pieChartPlugins"
             [legend]="barChartLegend">
@@ -113,23 +114,20 @@
     </div>
     <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left" style="padding-top: 5%;">
       <div fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-        <div class="areaWidth min-width-33-per block1" matTooltip="{{translationData.lblClicktoviewmoredetails || 'Click to view more details'}}"
+        <div [hidden]="!checkForPreference('alertlast24hours_logisticalert')" class="areaWidth min-width-33-per block1" matTooltip="{{translationData.lblClicktoviewmoredetails || 'Click to view more details'}}"
         (click)="gotoLogBookFromLogistic()" >
-          <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' class="full width">{{ translationData.lblLogistic ||
-            'Logistic'}}</div>
-            <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' class="full width" >0</div>
-        </div>
-        <div class="areaWidth min-width-33-per block2" matTooltip="{{translationData.lblClicktoviewmoredetails || 'Click to view more details'}}"
+          <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;;' class="full width">{{ translationData.lblLogistics ||
+            'Logistics:'}}<span>{{logisticCount}}</span></div>
+         </div>
+        <div [hidden]="!checkForPreference('alertlast24hours_fueldriveralerts')" class="areaWidth min-width-33-per block2" matTooltip="{{translationData.lblClicktoviewmoredetails || 'Click to view more details'}}"
         (click)="gotoLogBookFromFuel()" >
           <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' class="full width">{{ translationData.lblFuelAndDriver ||
-            'Fuel & Driver'}}</div>
-            <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' class="full width" >1</div>
-        </div>
-        <div class="areaWidth min-width-33-per block3" matTooltip="{{translationData.lblClicktoviewmoredetails || 'Click to view more details'}}"
+            'Fuel & Driver:'}}<span>{{fuelAndDriverCount}}</span></div>
+         </div>
+        <div [hidden]="!checkForPreference('alertlast24hours_repairmaintenancealerts')" class="areaWidth min-width-33-per block3" matTooltip="{{translationData.lblClicktoviewmoredetails || 'Click to view more details'}}"
         (click)="gotoLogBookFromRepair()" >
           <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' class="full width">{{ translationData.lblRepairAndMaintenance ||
-            'Repair & Maintenance'}}</div>
-            <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' class="full width" >2</div>
+            'Repair & Maintenance:'}}<span>{{repairAndMaintenanceCount}}</span></div>
         </div>
       </div>
     </div>
