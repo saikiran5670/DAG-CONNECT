@@ -300,7 +300,7 @@
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
           <mat-label class='custom-font'>
-            {{ "Refresh Time" }}
+            {{ accountPreferenceData ? (accountPreferenceData.pageRefreshTime ? accountPreferenceData.pageRefreshTime : '--') : '--' }}
           </mat-label>
         </div>
       </div>
