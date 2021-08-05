@@ -230,9 +230,9 @@ totalDistance: any =0;
 totalThreshold: any;
 totalDrivingTime: any = 0;
 alertsData: any;
-criticalCount: any;
-warningCount: any;
-advisoryCount: any;
+logisticCount: any;
+fuelAndDriverCount: any;
+repairAndMaintenanceCount: any;
 toatlSum: any;
 
   constructor(private router: Router,
@@ -247,8 +247,8 @@ toatlSum: any;
     // this.setChartData();
     this.selectionTimeRange('lastweek');
 
-    console.log("prefData = "+this.dashboardPrefData);
-   
+    console.log("prefData = "+this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences);
+     
   }
 
   setInitialPref(prefData,preference){
@@ -390,9 +390,9 @@ toatlSum: any;
  this.dashboardService.getAlert24Hours(alertPayload).subscribe((alertData)=>{
   if(alertData["alert24Hours"].length > 0){
      this.alertsData = alertData["alert24Hours"][0];
-     this.criticalCount = this.alertsData.critical;
-     this.warningCount = this.alertsData.warning;
-     this.advisoryCount = this.alertsData.advisory;
+     this.logisticCount = this.alertsData.logistic;
+     this.fuelAndDriverCount = this.alertsData.fuelAndDriver;
+     this.repairAndMaintenanceCount = this.alertsData.repairAndMaintenance;
      this.toatlSum = this.alertsData.critical + this.alertsData.warning +this.alertsData.advisory;
      this.setAlertChartData();
   }
@@ -401,18 +401,30 @@ toatlSum: any;
 }
 
 setAlertChartData(){
-
     //for alert level pie chart
-    // this.alertPieChartData= [5, 74, 10];
     if(this.alertsData){
     let totalAlerts = this.alertsData.critical + this.alertsData.warning +this.alertsData.advisory;
-    let crticalPercent = (this.criticalCount/totalAlerts)* 100; 
-    let warningPercent = (this.warningCount/totalAlerts)* 100;
-    let advisoryPercent = (this.advisoryCount/totalAlerts)* 100;
+    let crticalPercent = (this.alertsData.critical/totalAlerts)* 100; 
+    let warningPercent = (this.alertsData.warning/totalAlerts)* 100;
+    let advisoryPercent = (this.alertsData.advisory/totalAlerts)* 100;
     this.alertPieChartData= [crticalPercent,warningPercent,advisoryPercent];
-    this.alertPieChartLabels=  [`Critical (${this.criticalCount})`,`Warning (${this.warningCount})`,`Advisory (${this.advisoryCount})`];
+    this.alertPieChartLabels=  [`Critical (${this.alertsData.critical})`,`Warning (${this.alertsData.warning})`,`Advisory (${this.alertsData.advisory})`];
     
     }
+}
+
+checkForPreference(fieldKey) {
+  if (this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences.length != 0) {
+    let filterData = this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_'+fieldKey));
+    if (filterData.length > 0) {
+      if (filterData[0].state == 'A') {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
   setChartData(){

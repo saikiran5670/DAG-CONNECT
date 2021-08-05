@@ -44,6 +44,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   // remainingChar: any;
   showCount: boolean = false;
   createButtonFlag: boolean = false;
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService) { }
 

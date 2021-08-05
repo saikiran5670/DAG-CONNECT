@@ -297,7 +297,8 @@ export class FleetkpiComponent implements OnInit {
     }];
 
     // Fuel Consumed
-
+    currentFuelConsumed : any = 0;
+    cutOffFuelConsumed : any = 0;
     doughnutChartFuelConsumedLabels: Label[] = [('Target'), '', ''];
     doughnutChartFuelConsumedData: MultiDataSet = [ [0, 100] ];
     doughnutFuelConsumedColors: Color[] = [
@@ -357,6 +358,8 @@ export class FleetkpiComponent implements OnInit {
     }];
 
     // Fuel used 
+    currentIdlingFuelConsumed : any = 0;
+    cutOffIdlingFuelConsumed : any = 0;
 
       doughnutChartFuelUsedLabels: Label[] = [('Target'), '', ''];
       doughnutChartFuelUsedData: MultiDataSet = [ [0, 100] ];
@@ -417,7 +420,8 @@ export class FleetkpiComponent implements OnInit {
       }];
 
        // Fuel Consumption 
-
+       currentFuelConsumption : any = 0;
+       cutOffFuelConsumption : any = 0;
        doughnutChartFuelConsumptionLabels: Label[] = [('Target'), '', ''];
        doughnutChartFuelConsumptionData: MultiDataSet = [ [0, 100] ];
        doughnutFuelConsumptionColors: Color[] = [
@@ -557,6 +561,10 @@ export class FleetkpiComponent implements OnInit {
     this.updateIdlingTime();
     this.updateDrivingTime();
     this.updateDistance();
+    this.updateFuelConsumed();
+    this.updateIdlingFuelConsumption();
+    this.updateFuelConsumption();
+
     //this.updateTimeUtilisation();
     //this.updateDistanceRate();
 
@@ -1364,6 +1372,623 @@ export class FleetkpiComponent implements OnInit {
           }
           else{
             this.doughnutDistanceColors = [
+              {
+                backgroundColor: [
+                  "#89c64d",
+                  "#cecece"
+                ],
+                hoverBackgroundColor: [
+                  "#89c64d",
+                  "#cecece"
+                ],
+                hoverBorderColor: [
+                  "#cce6b2",
+                  "#ffffff"
+                ],
+                hoverBorderWidth: 7
+              }
+             ];
+          }
+        }
+      default:
+        break;
+    }
+
+
+  }
+
+  updateFuelConsumed(){
+    let currentValue = this.kpiData['fleetKpis']['fuelConsumption'];
+    this.currentFuelConsumed=  currentValue > 0  ? (currentValue/1000).toFixed(2) : currentValue;
+    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumption'];
+    let _thresholdValue = 5000000;
+    let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
+    let targetValue = calculationValue['cuttOff'];
+    this.cutOffFuelConsumed =  targetValue > 0 ? (targetValue/1000).toFixed(2) : targetValue;
+    let currentPercent = calculationValue['kpiPercent'];
+    let lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+    let caretColor = 'caretGreen';
+    let caretIcon = '';
+    
+    if( lastChangePercent > 0){
+      caretColor = 'caretGreen';
+      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
+    }
+    else{
+      caretColor = 'caretRed';
+      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
+
+    }
+
+    this.doughnutChartFuelConsumedData = [[currentPercent,(100 - currentPercent)]]
+
+    this.doughnutChartFuelConsumedPlugins = [{
+      beforeDraw(chart) {
+        const ctx = chart.ctx;
+    
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+        const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+    
+        ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
+        ctx.fillStyle = 'black';
+    
+        var text = chart.config.options.title.text;
+        // Draw text in center
+        ctx.fillText(currentPercent.toFixed(2) + "%", centerX, centerY);
+      }
+    }];
+
+    this.doughnutChartFuelConsumedOptions= {
+      responsive: true,
+      legend: {
+        display: false
+      },
+      cutoutPercentage: 80,
+      tooltips: {
+        enabled: false,
+        custom: function(tooltip){
+          let tooltipEl = document.getElementById('chartjs-tooltip');
+          let fileIcon = 'assets/dashboard/greenArrow.svg';
+          if (!tooltipEl) {
+            tooltipEl = document.createElement('div');
+            tooltipEl.id = 'chartjs-tooltip';
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + (targetValue/1000).toFixed(2) + ` L` +
+            '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
+            `<span>${caretIcon}</span></div>`;
+            this._chart.canvas.parentNode.appendChild(tooltipEl);
+          }
+           // Set caret Position
+        tooltipEl.classList.remove('above', 'below','no-transform');
+        if (tooltip.yAlign) {
+          tooltipEl.classList.add(tooltip.yAlign);
+        } else {
+          tooltipEl.classList.add('no-transform');
+        }
+        function getBody(bodyItem) {
+          return bodyItem.lines;
+      }
+      var position = this._chart.canvas.getBoundingClientRect();
+        const positionY = this._chart.canvas.offsetTop;
+        const positionX = this._chart.canvas.offsetLeft;
+        const widthX = (this._chart.canvas.width)/8;
+        const heightY = (this._chart.canvas.height)/6;
+
+        // Display, position, and set styles for font
+        tooltipEl.style.opacity = 1 as any;
+        tooltipEl.style.position = 'absolute';
+        tooltipEl.style.background = '#FFF';
+        tooltipEl.style.border = '1px solid blue';
+        tooltipEl.style.borderRadius = '5px';
+        tooltipEl.style.left = positionY + widthX + 'px';
+        tooltipEl.style.top = positionX - heightY + 'px';
+        tooltipEl.style.fontFamily = tooltip._bodyFontFamily;
+        tooltipEl.style.fontSize = tooltip.bodyFontSize + 'px';
+        tooltipEl.style.fontStyle = tooltip._bodyFontStyle;
+        tooltipEl.style.padding = tooltip.yPadding +
+        'px ' +
+        tooltip.xPadding +
+        'px';
+           // Hide if no tooltip
+          if (tooltip.opacity === 0) {
+            tooltipEl.style.opacity = 0 as any;
+            this._chart.canvas.parentNode.removeChild(tooltipEl);
+
+            return;
+          }
+          else{
+            tooltipEl.style.opacity = 1 as any;
+            return;
+          }
+          
+        },
+     },
+      title:{
+        text: "15",
+        display: false
+      }
+    }
+
+    let _prefLimit = 'upper';
+    let _prefThreshold = 10;
+     
+    switch (_prefLimit) {
+      case 'upper':{
+        if(_prefThreshold < currentValue){ //red
+          this.doughnutFuelConsumedColors = [
+            {
+              backgroundColor: [
+                "#ff0000",
+                "#cecece"
+              ],
+              hoverBackgroundColor: [
+                "#ff0000",
+                "#cecece"
+              ],
+              hoverBorderColor: [
+                "#ff0000",
+                "#ffffff"
+              ],
+              hoverBorderWidth: 7
+            }
+           ];
+        }
+        else{
+          this.doughnutFuelConsumedColors = [
+            {
+              backgroundColor: [
+                "#89c64d",
+                "#cecece"
+              ],
+              hoverBackgroundColor: [
+                "#89c64d",
+                "#cecece"
+              ],
+              hoverBorderColor: [
+                "#cce6b2",
+                "#ffffff"
+              ],
+              hoverBorderWidth: 7
+            }
+           ];
+        }
+      }
+        break;
+        case 'lower':{
+          if(_prefLimit > currentValue){
+            this.doughnutFuelConsumedColors = [
+              {
+                backgroundColor: [
+                  "#ff0000",
+                  "#cecece"
+                ],
+                hoverBackgroundColor: [
+                  "#ff0000",
+                  "#cecece"
+                ],
+                hoverBorderColor: [
+                  "#ff0000",
+                  "#ffffff"
+                ],
+                hoverBorderWidth: 7
+              }
+             ];
+          }
+          else{
+            this.doughnutFuelConsumedColors = [
+              {
+                backgroundColor: [
+                  "#89c64d",
+                  "#cecece"
+                ],
+                hoverBackgroundColor: [
+                  "#89c64d",
+                  "#cecece"
+                ],
+                hoverBorderColor: [
+                  "#cce6b2",
+                  "#ffffff"
+                ],
+                hoverBorderWidth: 7
+              }
+             ];
+          }
+        }
+      default:
+        break;
+    }
+
+
+  }
+
+  updateIdlingFuelConsumption(){
+    let currentValue = this.kpiData['fleetKpis']['idlingfuelconsumption'];
+    this.currentIdlingFuelConsumed=  currentValue > 0  ? (currentValue/1000).toFixed(2) : currentValue;
+    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['idlingfuelconsumption'];
+    let _thresholdValue = 5000000;
+    let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
+    let targetValue = calculationValue['cuttOff'];
+    this.cutOffIdlingFuelConsumed =  targetValue > 0 ? (targetValue/1000).toFixed(2) : targetValue;
+    let currentPercent = calculationValue['kpiPercent'];
+    let lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+    let caretColor = 'caretGreen';
+    let caretIcon = '';
+    
+    if( lastChangePercent > 0){
+      caretColor = 'caretGreen';
+      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
+    }
+    else{
+      caretColor = 'caretRed';
+      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
+
+    }
+
+    this.doughnutChartFuelUsedData = [[currentPercent,(100 - currentPercent)]]
+
+    this.doughnutChartFuelUsedPlugins = [{
+      beforeDraw(chart) {
+        const ctx = chart.ctx;
+    
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+        const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+    
+        ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
+        ctx.fillStyle = 'black';
+    
+        var text = chart.config.options.title.text;
+        // Draw text in center
+        ctx.fillText(currentPercent.toFixed(2) + "%", centerX, centerY);
+      }
+    }];
+
+    this.doughnutChartFuelUsedOptions= {
+      responsive: true,
+      legend: {
+        display: false
+      },
+      cutoutPercentage: 80,
+      tooltips: {
+        enabled: false,
+        custom: function(tooltip){
+          let tooltipEl = document.getElementById('chartjs-tooltip');
+          let fileIcon = 'assets/dashboard/greenArrow.svg';
+          if (!tooltipEl) {
+            tooltipEl = document.createElement('div');
+            tooltipEl.id = 'chartjs-tooltip';
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + (targetValue/1000).toFixed(2) + ` L` +
+            '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
+            `<span>${caretIcon}</span></div>`;
+            this._chart.canvas.parentNode.appendChild(tooltipEl);
+          }
+           // Set caret Position
+        tooltipEl.classList.remove('above', 'below','no-transform');
+        if (tooltip.yAlign) {
+          tooltipEl.classList.add(tooltip.yAlign);
+        } else {
+          tooltipEl.classList.add('no-transform');
+        }
+        function getBody(bodyItem) {
+          return bodyItem.lines;
+      }
+      var position = this._chart.canvas.getBoundingClientRect();
+        const positionY = this._chart.canvas.offsetTop;
+        const positionX = this._chart.canvas.offsetLeft;
+        const widthX = (this._chart.canvas.width)/8;
+        const heightY = (this._chart.canvas.height)/6;
+
+        // Display, position, and set styles for font
+        tooltipEl.style.opacity = 1 as any;
+        tooltipEl.style.position = 'absolute';
+        tooltipEl.style.background = '#FFF';
+        tooltipEl.style.border = '1px solid blue';
+        tooltipEl.style.borderRadius = '5px';
+        tooltipEl.style.left = positionY + widthX + 'px';
+        tooltipEl.style.top = positionX - heightY + 'px';
+        tooltipEl.style.fontFamily = tooltip._bodyFontFamily;
+        tooltipEl.style.fontSize = tooltip.bodyFontSize + 'px';
+        tooltipEl.style.fontStyle = tooltip._bodyFontStyle;
+        tooltipEl.style.padding = tooltip.yPadding +
+        'px ' +
+        tooltip.xPadding +
+        'px';
+           // Hide if no tooltip
+          if (tooltip.opacity === 0) {
+            tooltipEl.style.opacity = 0 as any;
+            this._chart.canvas.parentNode.removeChild(tooltipEl);
+
+            return;
+          }
+          else{
+            tooltipEl.style.opacity = 1 as any;
+            return;
+          }
+          
+        },
+     },
+      title:{
+        text: "15",
+        display: false
+      }
+    }
+
+    let _prefLimit = 'upper';
+    let _prefThreshold = 10;
+     
+    switch (_prefLimit) {
+      case 'upper':{
+        if(_prefThreshold < currentValue){ //red
+          this.doughnutFuelUsedColors = [
+            {
+              backgroundColor: [
+                "#ff0000",
+                "#cecece"
+              ],
+              hoverBackgroundColor: [
+                "#ff0000",
+                "#cecece"
+              ],
+              hoverBorderColor: [
+                "#ff0000",
+                "#ffffff"
+              ],
+              hoverBorderWidth: 7
+            }
+           ];
+        }
+        else{
+          this.doughnutFuelUsedColors = [
+            {
+              backgroundColor: [
+                "#89c64d",
+                "#cecece"
+              ],
+              hoverBackgroundColor: [
+                "#89c64d",
+                "#cecece"
+              ],
+              hoverBorderColor: [
+                "#cce6b2",
+                "#ffffff"
+              ],
+              hoverBorderWidth: 7
+            }
+           ];
+        }
+      }
+        break;
+        case 'lower':{
+          if(_prefLimit > currentValue){
+            this.doughnutFuelUsedColors = [
+              {
+                backgroundColor: [
+                  "#ff0000",
+                  "#cecece"
+                ],
+                hoverBackgroundColor: [
+                  "#ff0000",
+                  "#cecece"
+                ],
+                hoverBorderColor: [
+                  "#ff0000",
+                  "#ffffff"
+                ],
+                hoverBorderWidth: 7
+              }
+             ];
+          }
+          else{
+            this.doughnutFuelUsedColors = [
+              {
+                backgroundColor: [
+                  "#89c64d",
+                  "#cecece"
+                ],
+                hoverBackgroundColor: [
+                  "#89c64d",
+                  "#cecece"
+                ],
+                hoverBorderColor: [
+                  "#cce6b2",
+                  "#ffffff"
+                ],
+                hoverBorderWidth: 7
+              }
+             ];
+          }
+        }
+      default:
+        break;
+    }
+
+
+  }
+
+  updateFuelConsumption(){
+    let currentValue = this.kpiData['fleetKpis']['drivingTime'];
+    this.currentFuelConsumption =  this.getTimeDisplay(currentValue);
+    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['drivingTime'];
+    let _thresholdValue = 3600000;
+    let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
+    let targetValue = calculationValue['cuttOff'];
+    this.cutOffFuelConsumption =  this.getTimeDisplay(targetValue);
+    let convertTargetValue = this.getTimeDisplay(targetValue);
+    let currentPercent = calculationValue['kpiPercent'];
+    let lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+    
+    let caretColor = 'caretGreen';
+    let caretIcon = '';
+    
+    if( lastChangePercent > 0){
+      caretColor = 'caretGreen';
+      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
+    }
+    else{
+      caretColor = 'caretRed';
+      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
+
+    }
+
+    this.doughnutChartFuelConsumptionData = [[currentPercent,(100 - currentPercent)]]
+
+    this.doughnutChartFuelConsumptionPlugins = [{
+      beforeDraw(chart) {
+        const ctx = chart.ctx;
+    
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+        const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+    
+        ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
+        ctx.fillStyle = 'black';
+    
+        var text = chart.config.options.title.text;
+        // Draw text in center
+        ctx.fillText(currentPercent.toFixed(2) + "%", centerX, centerY);
+      }
+    }];
+
+    this.doughnutChartFuelConsumptionOptions = {
+      responsive: true,
+      legend: {
+        display: false
+      },
+      cutoutPercentage: 80,
+      tooltips: {
+        enabled: false,
+        custom: function(tooltip){
+          let tooltipEl = document.getElementById('chartjs-tooltip');
+          let fileIcon = 'assets/dashboard/greenArrow.svg';
+          if (!tooltipEl) {
+            tooltipEl = document.createElement('div');
+            tooltipEl.id = 'chartjs-tooltip';
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + convertTargetValue + 
+            '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
+            `<span>${caretIcon}</span></div>`;
+            this._chart.canvas.parentNode.appendChild(tooltipEl);
+          }
+           // Set caret Position
+        tooltipEl.classList.remove('above', 'below','no-transform');
+        if (tooltip.yAlign) {
+          tooltipEl.classList.add(tooltip.yAlign);
+        } else {
+          tooltipEl.classList.add('no-transform');
+        }
+        function getBody(bodyItem) {
+          return bodyItem.lines;
+      }
+      var position = this._chart.canvas.getBoundingClientRect();
+        const positionY = this._chart.canvas.offsetTop;
+        const positionX = this._chart.canvas.offsetLeft;
+        const widthX = (this._chart.canvas.width)/8;
+        const heightY = (this._chart.canvas.height)/6;
+
+        // Display, position, and set styles for font
+        tooltipEl.style.opacity = 1 as any;
+        tooltipEl.style.position = 'absolute';
+        tooltipEl.style.background = '#FFF';
+        tooltipEl.style.border = '1px solid blue';
+        tooltipEl.style.borderRadius = '5px';
+        tooltipEl.style.left = positionY + widthX + 'px';
+        tooltipEl.style.top = positionX - heightY + 'px';
+        tooltipEl.style.fontFamily = tooltip._bodyFontFamily;
+        tooltipEl.style.fontSize = tooltip.bodyFontSize + 'px';
+        tooltipEl.style.fontStyle = tooltip._bodyFontStyle;
+        tooltipEl.style.padding = tooltip.yPadding +
+        'px ' +
+        tooltip.xPadding +
+        'px';
+           // Hide if no tooltip
+          if (tooltip.opacity === 0) {
+            tooltipEl.style.opacity = 0 as any;
+            this._chart.canvas.parentNode.removeChild(tooltipEl);
+
+            return;
+          }
+          else{
+            tooltipEl.style.opacity = 1 as any;
+            return;
+          }
+          
+        },
+     },
+      title:{
+        text: "15",
+        display: false
+      }
+    }
+
+    let _prefLimit = 'upper';
+    let _prefThreshold = 10;
+     
+    switch (_prefLimit) {
+      case 'upper':{
+        if(_prefThreshold < currentValue){ //red
+          this.doughnutFuelConsumptionColors = [
+            {
+              backgroundColor: [
+                "#ff0000",
+                "#cecece"
+              ],
+              hoverBackgroundColor: [
+                "#ff0000",
+                "#cecece"
+              ],
+              hoverBorderColor: [
+                "#ff0000",
+                "#ffffff"
+              ],
+              hoverBorderWidth: 7
+            }
+           ];
+        }
+        else{
+          this.doughnutFuelConsumptionColors = [
+            {
+              backgroundColor: [
+                "#89c64d",
+                "#cecece"
+              ],
+              hoverBackgroundColor: [
+                "#89c64d",
+                "#cecece"
+              ],
+              hoverBorderColor: [
+                "#cce6b2",
+                "#ffffff"
+              ],
+              hoverBorderWidth: 7
+            }
+           ];
+        }
+      }
+        break;
+        case 'lower':{
+          if(_prefLimit > currentValue){
+            this.doughnutFuelConsumptionColors = [
+              {
+                backgroundColor: [
+                  "#ff0000",
+                  "#cecece"
+                ],
+                hoverBackgroundColor: [
+                  "#ff0000",
+                  "#cecece"
+                ],
+                hoverBorderColor: [
+                  "#ff0000",
+                  "#ffffff"
+                ],
+                hoverBorderWidth: 7
+              }
+             ];
+          }
+          else{
+            this.doughnutFuelConsumptionColors = [
               {
                 backgroundColor: [
                   "#89c64d",
