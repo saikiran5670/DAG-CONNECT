@@ -4,6 +4,7 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { DashboardService } from 'src/app/services/dashboard.service';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { BaseChartDirective, Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions } from 'ng2-charts';
+import { stringify } from '@angular/compiler/src/util';
 
 
 @Component({
@@ -20,6 +21,7 @@ export class FleetkpiComponent implements OnInit {
   selectionTab: any;
   clickButton:boolean = true;
   totalDays= 7;
+  showLastChange : boolean = true;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   startDateValue: any;
@@ -508,6 +510,7 @@ export class FleetkpiComponent implements OnInit {
   selectionTimeRange(selection: any){
     // this.internalSelection = true;
     this.clickButton = true;
+    this.showLastChange = true;
     switch(selection){
       case 'lastweek': {
         this.selectionTab = 'lastweek';
@@ -526,6 +529,7 @@ export class FleetkpiComponent implements OnInit {
       case 'last3month': {
         this.selectionTab = 'last3month';
         this.totalDays = 90;
+        this.showLastChange = false;
         this.startDateValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
         break;
@@ -565,36 +569,37 @@ export class FleetkpiComponent implements OnInit {
     this.updateFuelConsumed();
     this.updateIdlingFuelConsumption();
     this.updateFuelConsumption();
-
-    //this.updateTimeUtilisation();
-    //this.updateDistanceRate();
-
-    //let activeVehiclePercent = this.dashboardService.calculateTodayLivePercentage(this.liveVehicleData.activeVehicles,this.totalVehicles)
-    
   }
 
   updateCO2Emmission(){
     let currentValue = this.kpiData['fleetKpis']['co2Emission'];
     this.currentC02Value =  currentValue > 0  ? currentValue.toFixed(2) : currentValue;
-    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['co2Emission'];
     let _thresholdValue = 5708.39;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
     this.cutOffC02Value =  targetValue > 0 ? targetValue.toFixed(2) : targetValue;
     let currentPercent = calculationValue['kpiPercent'];
-    let lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+    let showLastChange = this.showLastChange;
+    let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
-    
-    if( lastChangePercent > 0){
-      caretColor = 'caretGreen';
-      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
-    }
-    else{
-      caretColor = 'caretRed';
-      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
 
+    if(this.kpiData['fleetKpis']['lastChangeKpi']){
+      let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['co2Emission'];
+      lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+      caretColor = 'caretGreen';
+      
+      if( lastChangePercent > 0){
+        caretColor = 'caretGreen';
+        caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
+      }
+      else{
+        caretColor = 'caretRed';
+        caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
+  
+      }
     }
+   
 
     this.doughnutChartData = [[currentPercent,(100 - currentPercent)]]
 
@@ -630,9 +635,13 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + targetValue.toFixed(2) + ` T`+
-            '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
-            `<span>${caretIcon}</span></div>`;
+            let _str = `<div class='dashboardTT'><div>Target: ` + targetValue.toFixed(2) + ` T`+
+            `</div>`;
+            if(showLastChange){
+              _str += `<div>Last Change: ` + lastChangePercent.toFixed(2) + '%'+
+              `<span>${caretIcon}</span></div>`;
+            }
+            tooltipEl.innerHTML = _str;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
            // Set caret Position
@@ -781,7 +790,6 @@ export class FleetkpiComponent implements OnInit {
   updateIdlingTime(){
     let currentValue = this.kpiData['fleetKpis']['idlingTime'];
     this.currentIdlingTime =  this.getTimeDisplay(currentValue);
-    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['idlingTime'];
     let _thresholdValue = 3600000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
@@ -789,10 +797,19 @@ export class FleetkpiComponent implements OnInit {
     let convertTargetValue =  this.getTimeDisplay(targetValue);
 
     let currentPercent = calculationValue['kpiPercent'];
-    let lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
-    
+
+    let showLastChange = this.showLastChange;
+    let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
+
+    if(this.kpiData['fleetKpis']['lastChangeKpi']){
+    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['idlingTime'];
+      
+    lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+    
+    caretColor = 'caretGreen';
+    caretIcon = '';
     
     if( lastChangePercent > 0){
       caretColor = 'caretGreen';
@@ -802,6 +819,7 @@ export class FleetkpiComponent implements OnInit {
       caretColor = 'caretRed';
       caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
 
+    }
     }
 
     this.doughnutChartIdlingData = [[currentPercent,(100 - currentPercent)]]
@@ -838,9 +856,14 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` +  convertTargetValue + 
-            '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
-            `<span>${caretIcon}</span></div>`;
+            let _str = `<div class='dashboardTT'><div>Target: ` +  convertTargetValue + 
+            `</div>`;
+            if(showLastChange){
+              _str += `<div>Last Change: ` + lastChangePercent.toFixed(2) + '%'+
+              `<span>${caretIcon}</span></div>`;
+            }
+           
+            tooltipEl.innerHTML = _str;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
            // Set caret Position
@@ -989,27 +1012,36 @@ export class FleetkpiComponent implements OnInit {
   updateDrivingTime(){
     let currentValue = this.kpiData['fleetKpis']['drivingTime'];
     this.currentDrivingTime =  this.getTimeDisplay(currentValue);
-    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['drivingTime'];
     let _thresholdValue = 3600000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
     this.cutOffDrivingTime =  this.getTimeDisplay(targetValue);
     let convertTargetValue = this.getTimeDisplay(targetValue);
     let currentPercent = calculationValue['kpiPercent'];
-    let lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
-    
+
+
+    let showLastChange = this.showLastChange;
+    let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
-    
-    if( lastChangePercent > 0){
-      caretColor = 'caretGreen';
-      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
-    }
-    else{
-      caretColor = 'caretRed';
-      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
 
+    if(this.kpiData['fleetKpis']['lastChangeKpi']){
+      let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['drivingTime'];
+
+      lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+    
+      
+      if( lastChangePercent > 0){
+        caretColor = 'caretGreen';
+        caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
+      }
+      else{
+        caretColor = 'caretRed';
+        caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
+  
+      }
     }
+   
 
     this.doughnutChartDrivingData = [[currentPercent,(100 - currentPercent)]]
 
@@ -1045,9 +1077,14 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + convertTargetValue + 
-            '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
-            `<span>${caretIcon}</span></div>`;
+            let _str = `<div class='dashboardTT'><div>Target: ` + convertTargetValue + 
+            '</div>';
+            if(showLastChange){
+              _str += `<div>Last Change: ` + lastChangePercent.toFixed(2) + '%'+
+              `<span>${caretIcon}</span></div>`;
+            }
+            tooltipEl.innerHTML = _str;
+
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
            // Set caret Position
@@ -1196,26 +1233,35 @@ export class FleetkpiComponent implements OnInit {
   updateDistance(){
     let currentValue = this.kpiData['fleetKpis']['distance'];
     this.currentDistanceValue =  currentValue > 0  ? (currentValue/1000).toFixed(2) : currentValue;
-    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['distance'];
     let _thresholdValue = 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
     this.cutOffDistanceValue =  targetValue > 0 ? (targetValue/1000).toFixed(2) : targetValue;
     let currentPercent = calculationValue['kpiPercent'];
-    let lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+
+    
+    let showLastChange = this.showLastChange;
+    let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
-    
-    if( lastChangePercent > 0){
-      caretColor = 'caretGreen';
-      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
-    }
-    else{
-      caretColor = 'caretRed';
-      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
 
-    }
+    if(this.kpiData['fleetKpis']['lastChangeKpi']){
+    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['distance'];
 
+     lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+      
+      if( lastChangePercent > 0){
+        caretColor = 'caretGreen';
+        caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
+      }
+      else{
+        caretColor = 'caretRed';
+        caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
+  
+      }
+  
+    }
+   
     this.doughnutChartDistanceData = [[currentPercent,(100 - currentPercent)]]
 
     this.doughnutChartDistancePlugins = [{
@@ -1250,9 +1296,14 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + (targetValue/1000).toFixed(2) + ` km` +
-            '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
+            let _str =  `<div class='dashboardTT'><div>Target: ` + (targetValue/1000).toFixed(2) + ` km` +
+            '</div>';
+            if(showLastChange){
+              _str += `<div>Last Change: ` + lastChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
+            }
+            tooltipEl.innerHTML = _str;
+
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
            // Set caret Position
@@ -1401,16 +1452,24 @@ export class FleetkpiComponent implements OnInit {
   updateFuelConsumed(){
     let currentValue = this.kpiData['fleetKpis']['fuelConsumption'];
     this.currentFuelConsumed=  currentValue > 0  ? (currentValue/1000).toFixed(2) : currentValue;
-    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumption'];
     let _thresholdValue = 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
     this.cutOffFuelConsumed =  targetValue > 0 ? (targetValue/1000).toFixed(2) : targetValue;
     let currentPercent = calculationValue['kpiPercent'];
-    let lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+
+     
+    let showLastChange = this.showLastChange;
+    let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
-    
+
+    if(this.kpiData['fleetKpis']['lastChangeKpi']){
+      
+    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumption'];
+
+    lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+
     if( lastChangePercent > 0){
       caretColor = 'caretGreen';
       caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
@@ -1420,6 +1479,8 @@ export class FleetkpiComponent implements OnInit {
       caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
 
     }
+    }
+    
 
     this.doughnutChartFuelConsumedData = [[currentPercent,(100 - currentPercent)]]
 
@@ -1455,9 +1516,13 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + (targetValue/1000).toFixed(2) + ` L` +
-            '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
-            `<span>${caretIcon}</span></div>`;
+            let _str = `<div class='dashboardTT'><div>Target: ` + (targetValue/1000).toFixed(2) + ` L` +
+            '</div>';
+            if(showLastChange){
+              _str += '<div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
+              `<span>${caretIcon}</span></div>`;
+            }
+            tooltipEl.innerHTML = _str;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
            // Set caret Position
@@ -1606,25 +1671,33 @@ export class FleetkpiComponent implements OnInit {
   updateIdlingFuelConsumption(){
     let currentValue = this.kpiData['fleetKpis']['idlingfuelconsumption'];
     this.currentIdlingFuelConsumed=  currentValue > 0  ? (currentValue/1000).toFixed(2) : currentValue;
-    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['idlingfuelconsumption'];
     let _thresholdValue = 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
     this.cutOffIdlingFuelConsumed =  targetValue > 0 ? (targetValue/1000).toFixed(2) : targetValue;
     let currentPercent = calculationValue['kpiPercent'];
-    let lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+     
+    let showLastChange = this.showLastChange;
+    let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
-    
-    if( lastChangePercent > 0){
-      caretColor = 'caretGreen';
-      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
-    }
-    else{
-      caretColor = 'caretRed';
-      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
 
+    if(this.kpiData['fleetKpis']['lastChangeKpi']){
+    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['idlingfuelconsumption'];
+
+    lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+
+      if( lastChangePercent > 0){
+        caretColor = 'caretGreen';
+        caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
+      }
+      else{
+        caretColor = 'caretRed';
+        caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
+  
+      }
     }
+    
 
     this.doughnutChartFuelUsedData = [[currentPercent,(100 - currentPercent)]]
 
@@ -1660,9 +1733,13 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + (targetValue/1000).toFixed(2) + ` L` +
-            '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
-            `<span>${caretIcon}</span></div>`;
+            let _str =  `<div class='dashboardTT'><div>Target: ` + (targetValue/1000).toFixed(2) + ` L` +
+            '</div>';
+            if(showLastChange){
+              _str += '<div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
+              `<span>${caretIcon}</span></div>`;
+            }
+            tooltipEl.innerHTML = _str;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
            // Set caret Position
@@ -1811,26 +1888,34 @@ export class FleetkpiComponent implements OnInit {
   updateFuelConsumption(){
     let currentValue = this.kpiData['fleetKpis']['fuelConsumption'];
     this.currentFuelConsumption=  currentValue > 0  ? (currentValue/1000).toFixed(2) : currentValue;
-    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumption'];
     let _thresholdValue = 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
     this.cutOffFuelConsumption =  targetValue > 0 ? (targetValue/1000).toFixed(2) : targetValue;
     let currentPercent = calculationValue['kpiPercent'];
-    let lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
     
+     
+    let showLastChange = this.showLastChange;
+    let lastChangePercent = 0;
     let caretColor = 'caretGreen';
     let caretIcon = '';
-    
-    if( lastChangePercent > 0){
-      caretColor = 'caretGreen';
-      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
-    }
-    else{
-      caretColor = 'caretRed';
-      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
 
+    if(this.kpiData['fleetKpis']['lastChangeKpi']){
+      let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumption'];
+
+      lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+
+      if( lastChangePercent > 0){
+        caretColor = 'caretGreen';
+        caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
+      }
+      else{
+        caretColor = 'caretRed';
+        caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
+  
+      }
     }
+    
 
     this.doughnutChartFuelConsumptionData = [[currentPercent,(100 - currentPercent)]]
 
@@ -1866,9 +1951,13 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + targetValue + 'L'
-            '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
-            `<span>${caretIcon}</span></div>`;
+            let _str = `<div class='dashboardTT'><div>Target: ` + targetValue + 'L'
+            '</div>';
+            if(showLastChange){
+              _str += '<div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
+              `<span>${caretIcon}</span></div>`;
+            }
+            tooltipEl.innerHTML = _str;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
            // Set caret Position
