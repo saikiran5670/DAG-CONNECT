@@ -5,6 +5,7 @@ import { DashboardService } from 'src/app/services/dashboard.service';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { BaseChartDirective, Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions } from 'ng2-charts';
 import { stringify } from '@angular/compiler/src/util';
+import { ReportMapService } from '../../report/report-map.service';
 
 
 @Component({
@@ -483,7 +484,8 @@ export class FleetkpiComponent implements OnInit {
          }
        }];
  
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private dashboardService : DashboardService) { }
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private dashboardService : DashboardService,
+            private reportMapService : ReportMapService) { }
 
   ngOnInit(): void {
     this.setInitialPref(this.prefData,this.preference);
@@ -574,7 +576,7 @@ export class FleetkpiComponent implements OnInit {
   updateCO2Emmission(){
     let currentValue = this.kpiData['fleetKpis']['co2Emission'];
     this.currentC02Value =  currentValue > 0  ? currentValue.toFixed(2) : currentValue;
-    let _thresholdValue = 5708.39;
+    let _thresholdValue = 10;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
     this.cutOffC02Value =  targetValue > 0 ? targetValue.toFixed(2) : targetValue;
@@ -1232,11 +1234,11 @@ export class FleetkpiComponent implements OnInit {
 
   updateDistance(){
     let currentValue = this.kpiData['fleetKpis']['distance'];
-    this.currentDistanceValue =  currentValue > 0  ? (currentValue/1000).toFixed(2) : currentValue;
+    this.currentDistanceValue =  this.reportMapService.getDistance(currentValue, this.prefUnitFormat);
     let _thresholdValue = 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
-    let targetValue = calculationValue['cuttOff'];
-    this.cutOffDistanceValue =  targetValue > 0 ? (targetValue/1000).toFixed(2) : targetValue;
+    let targetValue =this.reportMapService.getDistance(calculationValue['cuttOff'],this.prefUnitFormat); 
+    this.cutOffDistanceValue =  this.reportMapService.getDistance(currentValue, this.prefUnitFormat);
     let currentPercent = calculationValue['kpiPercent'];
 
     
@@ -1282,6 +1284,7 @@ export class FleetkpiComponent implements OnInit {
       }
     }];
 
+    let targetUnit =  this.prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles');
     this.doughnutChartDistanceOptions = {
       responsive: true,
       legend: {
@@ -1296,7 +1299,7 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str =  `<div class='dashboardTT'><div>Target: ` + (targetValue/1000).toFixed(2) + ` km` +
+            let _str =  `<div class='dashboardTT'><div>Target: ` + (targetValue).toFixed(2) + ' '+ targetUnit +
             '</div>';
             if(showLastChange){
               _str += `<div>Last Change: ` + lastChangePercent.toFixed(2) + '%'+
@@ -1451,11 +1454,11 @@ export class FleetkpiComponent implements OnInit {
 
   updateFuelConsumed(){
     let currentValue = this.kpiData['fleetKpis']['fuelConsumption'];
-    this.currentFuelConsumed=  currentValue > 0  ? (currentValue/1000).toFixed(2) : currentValue;
+    this.currentFuelConsumed=  this.reportMapService.getFuelConsumed(currentValue,this.prefUnitFormat);
     let _thresholdValue = 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
-    let targetValue = calculationValue['cuttOff'];
-    this.cutOffFuelConsumed =  targetValue > 0 ? (targetValue/1000).toFixed(2) : targetValue;
+    let targetValue = this.reportMapService.getFuelConsumed( calculationValue['cuttOff'],this.prefUnitFormat);
+    this.cutOffFuelConsumed =  this.reportMapService.getFuelConsumed( calculationValue['cuttOff'],this.prefUnitFormat);
     let currentPercent = calculationValue['kpiPercent'];
 
      
@@ -1483,6 +1486,8 @@ export class FleetkpiComponent implements OnInit {
     
 
     this.doughnutChartFuelConsumedData = [[currentPercent,(100 - currentPercent)]]
+
+    let targetUnit = (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallons || 'g') : (this.translationData.lblLtrs || 'L');
 
     this.doughnutChartFuelConsumedPlugins = [{
       beforeDraw(chart) {
@@ -1516,7 +1521,7 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str = `<div class='dashboardTT'><div>Target: ` + (targetValue/1000).toFixed(2) + ` L` +
+            let _str = `<div class='dashboardTT'><div>Target: ` + (targetValue).toFixed(2) + ` ` + targetUnit
             '</div>';
             if(showLastChange){
               _str += '<div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
@@ -1670,11 +1675,11 @@ export class FleetkpiComponent implements OnInit {
 
   updateIdlingFuelConsumption(){
     let currentValue = this.kpiData['fleetKpis']['idlingfuelconsumption'];
-    this.currentIdlingFuelConsumed=  currentValue > 0  ? (currentValue/1000).toFixed(2) : currentValue;
+    this.currentIdlingFuelConsumed=  this.reportMapService.getFuelConsumed(currentValue,this.prefUnitFormat);
     let _thresholdValue = 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
-    let targetValue = calculationValue['cuttOff'];
-    this.cutOffIdlingFuelConsumed =  targetValue > 0 ? (targetValue/1000).toFixed(2) : targetValue;
+    let targetValue = this.reportMapService.getFuelConsumed(calculationValue['cuttOff'],this.prefUnitFormat);
+    this.cutOffIdlingFuelConsumed =  this.reportMapService.getFuelConsumed(calculationValue['cuttOff'],this.prefUnitFormat);
     let currentPercent = calculationValue['kpiPercent'];
      
     let showLastChange = this.showLastChange;
@@ -1719,6 +1724,8 @@ export class FleetkpiComponent implements OnInit {
       }
     }];
 
+    let targetUnit = (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallons || 'g') : (this.translationData.lblLtrs || 'L');
+    
     this.doughnutChartFuelUsedOptions= {
       responsive: true,
       legend: {
@@ -1733,7 +1740,7 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str =  `<div class='dashboardTT'><div>Target: ` + (targetValue/1000).toFixed(2) + ` L` +
+            let _str =  `<div class='dashboardTT'><div>Target: ` + (targetValue).toFixed(2) + ' ' + targetUnit
             '</div>';
             if(showLastChange){
               _str += '<div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
@@ -1887,11 +1894,11 @@ export class FleetkpiComponent implements OnInit {
 
   updateFuelConsumption(){
     let currentValue = this.kpiData['fleetKpis']['fuelConsumption'];
-    this.currentFuelConsumption=  currentValue > 0  ? (currentValue/1000).toFixed(2) : currentValue;
+    this.currentFuelConsumption=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat);
     let _thresholdValue = 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
-    let targetValue = calculationValue['cuttOff'];
-    this.cutOffFuelConsumption =  targetValue > 0 ? (targetValue/1000).toFixed(2) : targetValue;
+    let targetValue = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat);
+    this.cutOffFuelConsumption = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat);
     let currentPercent = calculationValue['kpiPercent'];
     
      
@@ -1937,6 +1944,7 @@ export class FleetkpiComponent implements OnInit {
       }
     }];
 
+    let targetUnit =  (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmpg || 'mpg') : (this.translationData.lblLtr100Km || 'Ltr/100Km');
     this.doughnutChartFuelConsumptionOptions = {
       responsive: true,
       legend: {
@@ -1951,7 +1959,7 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str = `<div class='dashboardTT'><div>Target: ` + targetValue + 'L'
+            let _str = `<div class='dashboardTT'><div>Target: ` + targetValue + ' ' + targetUnit;
             '</div>';
             if(showLastChange){
               _str += '<div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+

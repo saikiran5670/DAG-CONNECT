@@ -2333,46 +2333,64 @@ namespace net.atos.daf.ct2.vehicle.repository
                         new StringBuilder(@"select VIN, MAX(start_time_stamp) as StartTimestamp, MAX(end_time_stamp) as EndTimestamp 
                                         from livefleet.livefleet_current_trip_statistics where driver1_id=@DriverId");
                     clause = " and ";
+                    AppendFilters(request, query, clause);
+                    provisioningVehicles = await _dataMartdataAccess.QueryAsync<ProvisioningVehicle>(query.ToString(), parameters);
+
+                    if (provisioningVehicles != null && provisioningVehicles.Count() > 0)
+                    {
+                        parameters = new DynamicParameters();
+                        parameters.Add("@VINs", provisioningVehicles.Select(x => x.VIN).ToArray());
+
+                        string queryVehicle = @"select VIN, Name, license_plate_number as RegNo from master.vehicle where vin = ANY(@VINs)";
+                        var vehicles = await _dataAccess.QueryAsync<ProvisioningVehicle>(queryVehicle, parameters);
+
+                        foreach (var provisioningVehicle in provisioningVehicles)
+                        {
+                            var vehicle = vehicles.Where(x => x.VIN.Equals(provisioningVehicle.VIN)).FirstOrDefault();
+                            provisioningVehicle.Name = vehicle?.Name ?? string.Empty;
+                            provisioningVehicle.RegNo = vehicle?.RegNo ?? string.Empty;
+                        }
+                    }
                 }
                 else
                 {
+                    var provisioningVehiclesOutput = new List<ProvisioningVehicle>();
                     query =
-                        new StringBuilder(@"select VIN, MAX(start_time_stamp) as StartTimestamp, MAX(end_time_stamp) as EndTimestamp 
+                        new StringBuilder(@"select driver1_id as DriverId, VIN, MAX(start_time_stamp) as StartTimestamp, MAX(end_time_stamp) as EndTimestamp 
                                         from livefleet.livefleet_current_trip_statistics");
                     clause = " where ";
-                }
+                    AppendFilters(request, query, clause);
+                    var vehiclesData = await _dataMartdataAccess.QueryAsync<ProvisioningVehicle_Driver>(query.ToString(), parameters);
 
-                if (request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
-                {
-                    query.Append(clause + "start_time_stamp >= @StartTimestamp and (end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL)");
-                }
-                else if (request.StartTimestamp.HasValue && !request.EndTimestamp.HasValue)
-                {
-                    query.Append(clause + "start_time_stamp >= @StartTimestamp and (end_time_stamp IS NULL or 1=1)");
-                }
-                else if (!request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
-                {
-                    query.Append(clause + "end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
-                }
-
-                query.Append(" group by VIN order by MAX(end_time_stamp) desc");
-
-                provisioningVehicles = await _dataMartdataAccess.QueryAsync<ProvisioningVehicle>(query.ToString(), parameters);
-
-                if (provisioningVehicles != null && provisioningVehicles.Count() > 0)
-                {
-                    parameters = new DynamicParameters();
-                    parameters.Add("@VINs", provisioningVehicles.Select(x => x.VIN).ToArray());
-
-                    string queryVehicle = @"select VIN, Name, license_plate_number as RegNo from master.vehicle where vin = ANY(@VINs)";
-                    var vehicles = await _dataAccess.QueryAsync<ProvisioningVehicle>(queryVehicle, parameters);
-
-                    foreach (var provisioningVehicle in provisioningVehicles)
+                    foreach (var data in vehiclesData)
                     {
-                        var vehicle = vehicles.Where(x => x.VIN.Equals(provisioningVehicle.VIN)).FirstOrDefault();
-                        provisioningVehicle.Name = vehicle?.Name ?? string.Empty;
-                        provisioningVehicle.RegNo = vehicle?.RegNo ?? string.Empty;
+                        parameters = new DynamicParameters();
+                        parameters.Add("@DriverId", data.DriverId);
+                        parameters.Add("@OrgId", request.OrgId);
+
+                        string queryDriver = @"select exists (select 1
+                                        from master.driver drv inner join master.account acc on drv.email = acc.email
+                                        where drv.driver_id_ext = @DriverId and drv.organization_id = @OrgId)";
+                        var driverExists = await _dataAccess.ExecuteScalarAsync<bool>(queryDriver, parameters);
+                        if (driverExists)
+                        {
+                            parameters = new DynamicParameters();
+                            parameters.Add("@VIN", data.VIN);
+
+                            string queryVehicle = @"select VIN, Name, license_plate_number as RegNo from master.vehicle where vin = @VIN";
+                            var vehicle = await _dataAccess.QueryFirstOrDefaultAsync<ProvisioningVehicle>(queryVehicle, parameters);
+
+                            provisioningVehiclesOutput.Add(new ProvisioningVehicle
+                            {
+                                StartTimestamp = data.StartTimestamp,
+                                EndTimestamp = data.EndTimestamp,
+                                VIN = data.VIN,
+                                Name = vehicle?.Name ?? string.Empty,
+                                RegNo = vehicle?.RegNo ?? string.Empty
+                            });
+                        }
                     }
+                    provisioningVehicles = provisioningVehiclesOutput.AsEnumerable();
                 }
 
                 return provisioningVehicles;
@@ -2380,6 +2398,31 @@ namespace net.atos.daf.ct2.vehicle.repository
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        private static void AppendFilters(ProvisioningVehicleDataServiceRequest request, StringBuilder query, string clause)
+        {
+            if (request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
+            {
+                query.Append(clause + "start_time_stamp >= @StartTimestamp and (end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL)");
+            }
+            else if (request.StartTimestamp.HasValue && !request.EndTimestamp.HasValue)
+            {
+                query.Append(clause + "start_time_stamp >= @StartTimestamp and (end_time_stamp IS NULL or 1=1)");
+            }
+            else if (!request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
+            {
+                query.Append(clause + "end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
+            }
+
+            if (!string.IsNullOrEmpty(request.Account) && !string.IsNullOrEmpty(request.DriverId))
+            {
+                query.Append(" group by VIN order by MAX(end_time_stamp) desc");
+            }
+            else
+            {
+                query.Append(" group by VIN, driver1_id order by MAX(end_time_stamp) desc");
             }
         }
 

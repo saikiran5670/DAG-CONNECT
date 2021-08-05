@@ -100,6 +100,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 if (result != null)
                 {
+                    //response.BubbleChartData.Add(_mapper.ToBubbleChartDataResponse(result));
                     var resChartDetails = JsonConvert.SerializeObject(result);
                     response.BubbleChartData.AddRange(
                          JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<BubbleChartData>>(resChartDetails,
