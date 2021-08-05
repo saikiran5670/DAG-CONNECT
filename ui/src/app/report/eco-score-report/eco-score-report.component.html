@@ -345,7 +345,7 @@
     ></app-driver-time-detail>
   </div> -->
   <div *ngIf="ecoScoreDriver">
-    <app-eco-score-report-driver (backToMainPage)='backToMainPage()' [ecoScoreDriverInfo]="selectedDriverData" [ecoScoreDriverDetails]="ecoScoreDriverDetails" [ecoScoreDriverDetailsTrendLine]="ecoScoreDriverDetailsTrendLine" [translationData]="translationData" [prefUnitFormat]='prefUnitFormat'></app-eco-score-report-driver>
+    <app-eco-score-report-driver (backToMainPage)='backToMainPage()' [ecoScoreDriverInfo]="selectedDriverData" [ecoScoreDriverDetails]="ecoScoreDriverDetails" [ecoScoreDriverDetailsTrendLine]="ecoScoreDriverDetailsTrendLine" [generalColumnData]='generalColumnData' [driverPerformanceColumnData]='driverPerformanceColumnData' [translationData]="translationData" [prefUnitFormat]='prefUnitFormat'></app-eco-score-report-driver>
   </div>
   <div *ngIf="compareEcoScore">
     <app-eco-score-driver-compare (backToMainPage)='backToMainPage()' [compareEcoScore]="compareDriverEcoScoreSearchParam" [generalColumnData]='generalColumnData' [driverPerformanceColumnData]='driverPerformanceColumnData' [prefUnitFormat]='prefUnitFormat'></app-eco-score-driver-compare>

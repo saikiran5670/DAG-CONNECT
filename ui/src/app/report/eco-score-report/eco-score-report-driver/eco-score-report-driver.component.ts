@@ -21,6 +21,7 @@ import {
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { BaseChartDirective, Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions, SingleDataSet } from 'ng2-charts';
 import { ReportService } from 'src/app/services/report.service';
+import * as Chart from 'chart.js';
 
 export type ChartOptionsApex = {
   series: ApexAxisChartSeries;
@@ -49,6 +50,8 @@ export class EcoScoreReportDriverComponent implements OnInit {
   @Input() ecoScoreDriverDetailsTrendLine: any;
   @Input() translationData: any=[];
   @Input() prefUnitFormat: any;
+  @Input() generalColumnData: any;
+  @Input() driverPerformanceColumnData: any;
   fromDisplayDate: any;
   toDisplayDate : any;
   selectedVehicleGroup : string;
@@ -80,7 +83,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
  gridOptions!: GridOption;
  columnDefinitions!: Column[];
  datasetHierarchical: any[] = [];
- compareDriverCount: number = 0;
+ driverCount: number = 0;
  columnPerformance: any=[];
  //General table
  angularGridGen!: AngularGridInstance;
@@ -92,6 +95,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
  columnGeneral: any=[];
  //common details
  driverDetails: any=[];
+ driverDetailsGen: any=[];
  driver1:string = '';
  driver2:string = '';
  driver3:string = '';
@@ -105,11 +109,13 @@ export class EcoScoreReportDriverComponent implements OnInit {
  displayData: any[];
  showTable: boolean;
  gridOptionsCommon: GridOption;
- vehicleList: any=['overAll'];
+ vehicleListGeneral: any=[];
  showGeneralBar: boolean=true;
  showGeneralPie: boolean=false;
  showPerformanceBar: boolean=true;
  showPerformancePie: boolean=false;
+ vehicleLimitExceeds: boolean=false;
+ vehicleSelected: number;
 
   ngOnInit(): void {
     console.log("ecoScoreDriverInfo"+JSON.stringify(this.ecoScoreDriverInfo));
@@ -121,6 +127,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.selectedDriverName = this.ecoScoreDriverInfo.driverName;
     this.selectedDriverOption = this.ecoScoreDriverInfo.driverOption;
     this.showLoadingIndicator = true;
+    this.checkPrefData();
     this.loadOverallPerfomance();
     let searchDataParam = {
       "startDateTime":1204336888377,
@@ -154,18 +161,28 @@ export class EcoScoreReportDriverComponent implements OnInit {
      });
 
      this.translationUpdate();
-     this.ecoScoreDriverDetails.singleDriver.forEach(element => {
-       this.vehicleList.push({
-         id: element.vehicleName,
-         name: element.vehicleName
+     this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet.forEach((element, index) => {
+       this.vehicleListGeneral.push({
+         id: index,
+         name: element.label
        })
      });
     // this.ecoScoreDriverDetails = JSON.parse('{"code":200,"message":"Eco-Score Report details fetched successfully.","drivers":[{"driverName":"Hero Honda","driverId":"NL B000384974000000"}],"compareDrivers":{"dataAttributeId":221,"name":"EcoScore","key":"rp_ecoscore","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":234,"name":"EcoScore.General","key":"rp_general","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":235,"name":"EcoScore.General.AverageGrossweight","key":"rp_averagegrossweight","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":236,"name":"EcoScore.General.Distance","key":"rp_distance","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"65.6"}],"subCompareDrivers":[]},{"dataAttributeId":237,"name":"EcoScore.General.NumberOfTrips","key":"rp_numberoftrips","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"6.0"}],"subCompareDrivers":[]},{"dataAttributeId":238,"name":"EcoScore.General.NumberOfVehicles","key":"rp_numberofvehicles","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"6.0"}],"subCompareDrivers":[]},{"dataAttributeId":239,"name":"EcoScore.General.AverageDistancePerDay","key":"rp_averagedistanceperday","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"65.6"}],"subCompareDrivers":[]}]},{"dataAttributeId":243,"name":"EcoScore.DriverPerformance","key":"rp_driverperformance","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":244,"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","limitType":"N","limitValue":10,"targetValue":10,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"4.1"}],"subCompareDrivers":[]},{"dataAttributeId":245,"name":"EcoScore.DriverPerformance.FuelConsumption","key":"rp_fuelconsumption","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"18.7"}],"subCompareDrivers":[{"dataAttributeId":246,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage","key":"rp_cruisecontrolusage","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"45.3"}],"subCompareDrivers":[{"dataAttributeId":247,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage30-50km/h(%)","key":"rp_CruiseControlUsage30","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"0.6"}],"subCompareDrivers":[]},{"dataAttributeId":248,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage50-75km/h(%)","key":"rp_cruisecontroldistance50","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"9.1"}],"subCompareDrivers":[]},{"dataAttributeId":249,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage>75km/h(%)","key":"rp_cruisecontroldistance75","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"35.6"}],"subCompareDrivers":[]}]},{"dataAttributeId":250,"name":"EcoScore.DriverPerformance.FuelConsumption.PTOUsage(%)","key":"rp_ptousage","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":251,"name":"EcoScore.DriverPerformance.FuelConsumption.PTODuration","key":"rp_ptoduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":252,"name":"EcoScore.DriverPerformance.FuelConsumption.AverageDrivingSpeed","key":"rp_averagedrivingspeed","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"49.8"}],"subCompareDrivers":[]},{"dataAttributeId":253,"name":"EcoScore.DriverPerformance.FuelConsumption.AverageSpeed","key":"rp_averagespeed","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"43.5"}],"subCompareDrivers":[]},{"dataAttributeId":254,"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottling(%)","key":"rp_heavythrottling","limitType":"X","limitValue":48.9,"targetValue":48.9,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"66.4"}],"subCompareDrivers":[]},{"dataAttributeId":255,"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottleDuration","key":"rp_heavythrottleduration","limitType":"X","limitValue":3560,"targetValue":3560,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"36.0"}],"subCompareDrivers":[]},{"dataAttributeId":256,"name":"EcoScore.DriverPerformance.FuelConsumption.Idling(%)","key":"rp_idling","limitType":"X","limitValue":23.7,"targetValue":23.7,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"12.6"}],"subCompareDrivers":[]},{"dataAttributeId":257,"name":"EcoScore.DriverPerformance.FuelConsumption.IdleDuration","key":"rp_idleduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"684.0"}],"subCompareDrivers":[]}]},{"dataAttributeId":258,"name":"EcoScore.DriverPerformance.BrakingScore","key":"rp_brakingscore","limitType":"N","limitValue":7.5,"targetValue":7.5,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"1.7"}],"subCompareDrivers":[{"dataAttributeId":259,"name":"EcoScore.DriverPerformance.BrakingScore.HarshBraking(%)","key":"rp_harshbraking","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"1340.8"}],"subCompareDrivers":[]},{"dataAttributeId":260,"name":"EcoScore.DriverPerformance.BrakingScore.HarshBrakeDuration","key":"rp_harshbrakeduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"72.0"}],"subCompareDrivers":[]},{"dataAttributeId":261,"name":"EcoScore.DriverPerformance.BrakingScore.Braking(%)","key":"rp_braking","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":262,"name":"EcoScore.DriverPerformance.BrakingScore.BrakeDuration","key":"rp_brakeduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"-68390.1"}],"subCompareDrivers":[]}]},{"dataAttributeId":263,"name":"EcoScore.DriverPerformance.AnticipationScore","key":"rp_anticipationscore","limitType":"N","limitValue":7.5,"targetValue":7.5,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"6.5"}],"subCompareDrivers":[]}]}]}}');
-     this.driverDetails = this.ecoScoreDriverDetails.singleDriver.filter(a => a.headerType === 'VIN_Driver');
+     this.driverDetails = this.ecoScoreDriverDetails.singleDriver;
+     this.driverDetailsGen = this.ecoScoreDriverDetails.singleDriver.filter(a => a.headerType.indexOf("VIN_") !== -1);
+     let vins=[];
+    this.driverDetails.forEach(element => {
+      vins.push(element.vin);
+     });
+     let uniq = [...new Set(vins)];
+     if(uniq.length>20)
+      this.vehicleLimitExceeds = true;
      this.tableColumns();
     this.defineGrid();
-    this.loadData();
+   // this.loadData();
     this.loadBarChart();
+    this.loadPieChart(0);
+    this.vehicleSelected=0;
   }
 
   hideloader() {
@@ -194,7 +211,11 @@ export class EcoScoreReportDriverComponent implements OnInit {
     // Doughnut - Fuel Consumption
     this.doughnutChartLabelsFuelConsumption = [(this.translationData.lblFuelConsumption || 'Fuel Consumption'), '', ''];
     //litre/100 km - mpg pending
-    this.doughnutChartDataFuelConsumption= [ [this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.score, 100-this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.score] ];
+    let fuelConsumption = this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.score;
+    if(this.prefUnitFormat == 'dunit_Imperial')
+      fuelConsumption = (235.215/fuelConsumption).toFixed(3);
+    this.doughnutChartDataFuelConsumption= [ [fuelConsumption, 100-fuelConsumption] ];
+
     // Doughnut - Anticipation Score
     this.doughnutChartLabelsAnticipationScore = [(this.translationData.lblAnticipationScore || 'Anticipation Score'), '', ''];
     this.doughnutChartDataAnticipationScore= [ [this.ecoScoreDriverDetails.overallPerformance.anticipationScore.score, this.ecoScoreDriverDetails.overallPerformance.anticipationScore.targetValue] ];
@@ -266,10 +287,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
         if (label) return true;
         return false;
       }
-    },
-    title:{
-      text: "15",
-      display: false
     }
   };
 
@@ -514,6 +531,74 @@ export class EcoScoreReportDriverComponent implements OnInit {
     return series;
   }
 
+  checkPrefData(){
+    if(this.ecoScoreDriverDetails.singleDriverKPIInfo && this.ecoScoreDriverDetails.singleDriverKPIInfo.subSingleDriver && this.ecoScoreDriverDetails.singleDriverKPIInfo.subSingleDriver.length > 0){
+      this.ecoScoreDriverDetails.singleDriverKPIInfo.subSingleDriver.forEach(element => {
+        if(element.subSingleDriver && element.subSingleDriver.length > 0){
+          let _arr: any = [];
+          element.subSingleDriver.forEach(_elem => {
+            if(element.name == 'EcoScore.General'){ // general
+              if(_elem.dataAttributeId){
+                let _s = this.generalColumnData.filter(i => i.dataAttributeId == _elem.dataAttributeId && i.state == 'A');
+                if(_s.length > 0){ // filter only active from pref
+                  _arr.push(_elem);
+                }
+              }
+            }else if(element.name == 'EcoScore.DriverPerformance'){ // Driver Performance 
+              // single
+              if(_elem.subSingleDriver && _elem.subSingleDriver.length == 0 && this.driverPerformanceColumnData){ // single -> (eco-score & anticipation score)
+                let _q = this.driverPerformanceColumnData.filter(o => o.dataAttributeId == _elem.dataAttributeId && o.state == 'A');
+                if(_q.length > 0){ // filter only active from pref
+                  _arr.push(_elem);
+                }
+              }else{ // nested -> (fuel consume & braking score)
+                let _nestedArr: any = [];
+                _elem.subSingleDriver.forEach(el => {
+                  if(el.subSingleDriver && el.subSingleDriver.length == 0){ // no child -> (others)
+                    if(_elem.name == 'EcoScore.DriverPerformance.FuelConsumption' && this.driverPerformanceColumnData[1]){
+                      let _p = this.driverPerformanceColumnData[1].subReportUserPreferences.filter(j => j.dataAttributeId == el.dataAttributeId && j.state == 'A');
+                      if(_p.length > 0){ // filter only active from pref
+                        _nestedArr.push(el);
+                      }
+                    }else if(_elem.name == 'EcoScore.DriverPerformance.BrakingScore' && this.driverPerformanceColumnData[2]){
+                      let _p = this.driverPerformanceColumnData[2].subReportUserPreferences.filter(j => j.dataAttributeId == el.dataAttributeId && j.state == 'A');
+                      if(_p.length > 0){ // filter only active from pref
+                        _nestedArr.push(el);
+                      }
+                    }
+                  }else{ // child -> (cruise usage)
+                    if(_elem.name == 'EcoScore.DriverPerformance.FuelConsumption'){
+                      let _lastArr: any = [];
+                      el.subSingleDriver.forEach(_data => {
+                        let _x: any = this.driverPerformanceColumnData[1].subReportUserPreferences.filter(_w => _w.name == 'EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage');
+                        if(_x.length > 0 && _x[0].subReportUserPreferences){ // child checker
+                          let _v = _x[0].subReportUserPreferences.filter(i => i.dataAttributeId == _data.dataAttributeId && i.state == 'A');
+                          if(_v.length > 0){ // filter only active from pref
+                            _lastArr.push(_data);
+                          }
+                        }
+                      });
+                      el.subSingleDriver = _lastArr;
+                      if(_lastArr.length > 0){
+                        _nestedArr.push(el);
+                      }
+                    }
+                  }
+                });
+                _elem.subSingleDriver = _nestedArr;
+                if(_nestedArr.length > 0){
+                  _arr.push(_elem);
+                }
+              }
+            }
+          });
+          element.subSingleDriver = _arr;
+        }
+      });
+    }
+    this.loadData();
+  }
+
   //General Table
   translationUpdate(){
     this.translationDataLocal = [
@@ -558,7 +643,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
       },
       {
         id: 'target', name: (this.translationData.lblTarget || 'Target'), field: 'targetValue',
-        type: FieldType.string, formatter: this.getTarget, excludeFromHeaderMenu: true
+        type: FieldType.string, formatter: this.getTarget, excludeFromHeaderMenu: true, sortable: true
       }
     ];
     this.columnDefinitionsGen = [
@@ -576,57 +661,33 @@ export class EcoScoreReportDriverComponent implements OnInit {
         this.columnPerformance.push({columnId: 'driver_'+i});
         this.columnGeneral.push({columnId: 'driverG_'+i});
       }
-      this.compareDriverCount = this.driverDetails.length;
-      this.driverDetails.forEach((element, index) => {
-        let driver= '<span style="font-weight:700">'+this.driverDetails[index].vin+'</span>';
-        let driverG= '<span style="font-weight:700">'+this.driverDetails[index].vin+'</span>';
+      this.driverDetailsGen.forEach((element, index) => {
+        let driverG= '<span style="font-weight:700">'+this.driverDetailsGen[index].vin+'</span>';
         this.columnDefinitionsGen.push({
           id: 'driverG_'+index, name: driverG, field: 'score',
           type: FieldType.number, formatter: this.getScore, width: 275
         });
-        this.columnDefinitions.push({
-          id: 'driver_'+index, name: driver, field: 'score',
-          type: FieldType.number, formatter: this.getScore, width: 275
-        });
+      });
+      this.driverDetails.forEach((element, index) => {
+        let driver;
+        if(element.headerType.indexOf("Driver") !== -1)
+            driver= '<span style="font-weight:700">Driver</span>';
+        else
+            driver= '<span style="font-weight:700">Company</span>';
+            
+        if(element.headerType.indexOf("Overall") !== -1){
+           this.columnDefinitions.push({
+            id: 'driver_'+index, name: driver, field: 'score', columnGroup: 'Overall',
+            type: FieldType.number, formatter: this.getScore, width: 275
+          });
+        } else {
+          this.columnDefinitions.push({
+            id: 'driver_'+index, name: driver, field: 'score', columnGroup: this.driverDetails[index].vin,
+            type: FieldType.number, formatter: this.getScore, width: 275
+          });
+        }
       });
       }
-      // if(this.driverDetails.length > 1){
-      //   let driver2= '<span style="font-weight:700">'+this.driverDetails[1].vin+'</span>';
-      //   let driverG2= '<span style="font-weight:700">'+this.driverDetails[1].vin+'</span>';
-      //   this.columnDefinitions.push({
-      //     id: 'driver2', name: driver2, field: 'score',
-      //     type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 375
-      //   });
-      //   this.columnDefinitionsGen.push({
-      //     id: 'driverG2', name: driverG2, field: 'score',
-      //     type: FieldType.number, minWidth: 90, formatter: this.getScore1, maxWidth: 275
-      //   });
-      // }
-      // if(this.driverDetails.length > 2){
-      //   let driver3= '<span style="font-weight:700">'+this.driverDetails[2].vin+'</span>';
-      //   let driverG3= '<span style="font-weight:700">'+this.driverDetails[2].vin+'</span>';
-      //   this.columnDefinitions.push({
-      //     id: 'driver3', name: driver3, field: 'score',
-      //     type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 325
-      //   });
-      //   this.columnDefinitionsGen.push({
-      //     id: 'driverG3', name: driverG3, field: 'score',
-      //     type: FieldType.number, minWidth: 90, formatter: this.getScore2, maxWidth: 375
-      //   });
-      // }
-      // if(this.driverDetails.length > 3){
-      //   let driver4= '<span style="font-weight:700">'+this.driverDetails[3].vin+'</span>';
-      //   let driverG4= '<span style="font-weight:700">'+this.driverDetails[3].vin+'</span>';
-      //   this.columnDefinitions.push({
-      //     id: 'driver4', name: driver4, field: 'score',
-      //     type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 325
-      //   });
-      //   this.columnDefinitionsGen.push({
-      //     id: 'driverG4', name: driverG4, field: 'score',
-      //     type: FieldType.number, minWidth: 90, formatter: this.getScore3, maxWidth: 375
-      //   });
-      // }
-    // }
   }
 
   defineGrid(){
@@ -635,14 +696,14 @@ export class EcoScoreReportDriverComponent implements OnInit {
       enableAutoResize: true,
       forceFitColumns: true,
       enableExport: false,
-      enableHeaderMenu: false,
+      enableHeaderMenu: true,
       enableContextMenu: false,
       enableGridMenu: false,
       enableFiltering: true,
       enableTreeData: true, // you must enable this flag for the filtering & sorting to work as expected
       treeDataOptions: {
         columnId: 'category',
-        childrenPropName: 'subCompareDrivers'
+        childrenPropName: 'subSingleDriver'
       },
       multiColumnSort: false, // multi-column sorting is not supported with Tree Data, so you need to disable it
       headerRowHeight: 45,
@@ -656,6 +717,11 @@ export class EcoScoreReportDriverComponent implements OnInit {
         iconExportCsvCommand: 'mdi mdi-download',
         iconExportExcelCommand: 'mdi mdi-file-excel-outline',
         iconExportTextDelimitedCommand: 'mdi mdi-download',
+      },
+      headerMenu: {
+        hideColumnHideCommand: false,
+        hideClearFilterCommand: true,
+        hideColumnResizeByContentCommand: true
       }
     }
     this.defineGridGeneral();
@@ -666,8 +732,10 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.gridOptions = {
       ...this.gridOptionsCommon,
       ...{
+        createPreHeaderPanel: true,
+        showPreHeaderPanel: true,
         autoResize: {
-          containerId: 'container-DriverPerformance',
+          containerId: 'grid_performance_driver_table',
           sidePadding: 10
         },
         presets: {
@@ -698,7 +766,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
       return '';
     }
     let key='';
-    if(this.prefUnitFormat !== 'dunit_Metric' && value.toLowerCase().indexOf("rp_cruisecontrol") !== -1){
+    if(this.prefUnitFormat === 'dunit_Imperial' && value.toLowerCase().indexOf("rp_cruisecontrol") !== -1){
       key = value;
       value = "rp_cruisecontrolusage";
     }
@@ -709,13 +777,13 @@ export class EcoScoreReportDriverComponent implements OnInit {
     else
       value = foundValue[0].value;
     
-    if(this.prefUnitFormat !== 'dunit_Metric' && key){
+    if(this.prefUnitFormat === 'dunit_Imperial' && key){
       if(key.indexOf("30") !== -1)
-        value += ' 18.6-31 m/h(%)'
+        value += ' 15-30 mph(%)'
       else if(key.indexOf("50") !== -1)
-        value += ' 31-46.6 m/h(%)'
+        value += ' 30-45 mph(%)'
       else if(key.indexOf("75") !== -1)
-        value += ' >46.6 m/h(%)'
+        value += ' >45 mph(%)'
     }
     const gridOptions = grid.getOptions() as GridOption;
     const treeLevelPropName = gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName || '__treeLevel';
@@ -797,16 +865,17 @@ export class EcoScoreReportDriverComponent implements OnInit {
       if(dataContext.rangeValueType && dataContext.rangeValueType === 'T'){
         valTemp = Number.parseInt(valTemp.toString());
         return new Date(valTemp * 1000).toISOString().substr(11, 8);
-      } else if(this.prefUnitFormat !== 'dunit_Metric'){
-          if(dataContext.key && dataContext.key === 'rp_averagegrossweight'){
-            return (valTemp * 1.10231).toFixed(2);
-          } else if(dataContext.key && (dataContext.key === 'rp_distance' || dataContext.key === 'rp_averagedistanceperday'
-                    || dataContext.key === 'rp_averagedrivingspeed' || dataContext.key === 'rp_averagespeed')){
-            return (valTemp * 0.621371).toFixed(2);
-          } else if(dataContext.key && dataContext.key === 'rp_fuelconsumption'){
-            return val;
-          }
-        }
+      } 
+      // else if(this.prefUnitFormat === 'dunit_Imperial'){
+      //     if(dataContext.key && dataContext.key === 'rp_averagegrossweight'){
+      //       return (valTemp * 1.10231).toFixed(2);
+      //     } else if(dataContext.key && (dataContext.key === 'rp_distance' || dataContext.key === 'rp_averagedistanceperday'
+      //               || dataContext.key === 'rp_averagedrivingspeed' || dataContext.key === 'rp_averagespeed')){
+      //       return (valTemp * 0.621371).toFixed(2);
+      //     } else if(dataContext.key && dataContext.key === 'rp_fuelconsumption'){
+      //       return val;
+      //     }
+      //   }
     }
     return val;
   }
@@ -843,8 +912,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.gridObjGen = angularGrid.slickGrid;
     this.dataViewObjGen = angularGrid.dataView;
   }
-
-
   
   loadData() {
     // this.ecoScoreDriverDetails = JSON.parse('{"code":200,"message":"Eco-Score Report details fetched successfully.","drivers":[{"driverName":"Hero Honda","driverId":"NL B000384974000000"}],"compareDrivers":{"dataAttributeId":221,"name":"EcoScore","key":"rp_ecoscore","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":234,"name":"EcoScore.General","key":"rp_general","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":235,"name":"EcoScore.General.AverageGrossweight","key":"rp_averagegrossweight","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":236,"name":"EcoScore.General.Distance","key":"rp_distance","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"65.6"}],"subCompareDrivers":[]},{"dataAttributeId":237,"name":"EcoScore.General.NumberOfTrips","key":"rp_numberoftrips","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"6.0"}],"subCompareDrivers":[]},{"dataAttributeId":238,"name":"EcoScore.General.NumberOfVehicles","key":"rp_numberofvehicles","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"6.0"}],"subCompareDrivers":[]},{"dataAttributeId":239,"name":"EcoScore.General.AverageDistancePerDay","key":"rp_averagedistanceperday","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"65.6"}],"subCompareDrivers":[]}]},{"dataAttributeId":243,"name":"EcoScore.DriverPerformance","key":"rp_driverperformance","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":244,"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","limitType":"N","limitValue":10,"targetValue":10,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"4.1"}],"subCompareDrivers":[]},{"dataAttributeId":245,"name":"EcoScore.DriverPerformance.FuelConsumption","key":"rp_fuelconsumption","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"18.7"}],"subCompareDrivers":[{"dataAttributeId":246,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage","key":"rp_cruisecontrolusage","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"45.3"}],"subCompareDrivers":[{"dataAttributeId":247,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage30-50km/h(%)","key":"rp_CruiseControlUsage30","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"0.6"}],"subCompareDrivers":[]},{"dataAttributeId":248,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage50-75km/h(%)","key":"rp_cruisecontroldistance50","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"9.1"}],"subCompareDrivers":[]},{"dataAttributeId":249,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage>75km/h(%)","key":"rp_cruisecontroldistance75","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"35.6"}],"subCompareDrivers":[]}]},{"dataAttributeId":250,"name":"EcoScore.DriverPerformance.FuelConsumption.PTOUsage(%)","key":"rp_ptousage","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":251,"name":"EcoScore.DriverPerformance.FuelConsumption.PTODuration","key":"rp_ptoduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":252,"name":"EcoScore.DriverPerformance.FuelConsumption.AverageDrivingSpeed","key":"rp_averagedrivingspeed","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"49.8"}],"subCompareDrivers":[]},{"dataAttributeId":253,"name":"EcoScore.DriverPerformance.FuelConsumption.AverageSpeed","key":"rp_averagespeed","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"43.5"}],"subCompareDrivers":[]},{"dataAttributeId":254,"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottling(%)","key":"rp_heavythrottling","limitType":"X","limitValue":48.9,"targetValue":48.9,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"66.4"}],"subCompareDrivers":[]},{"dataAttributeId":255,"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottleDuration","key":"rp_heavythrottleduration","limitType":"X","limitValue":3560,"targetValue":3560,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"36.0"}],"subCompareDrivers":[]},{"dataAttributeId":256,"name":"EcoScore.DriverPerformance.FuelConsumption.Idling(%)","key":"rp_idling","limitType":"X","limitValue":23.7,"targetValue":23.7,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"12.6"}],"subCompareDrivers":[]},{"dataAttributeId":257,"name":"EcoScore.DriverPerformance.FuelConsumption.IdleDuration","key":"rp_idleduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"684.0"}],"subCompareDrivers":[]}]},{"dataAttributeId":258,"name":"EcoScore.DriverPerformance.BrakingScore","key":"rp_brakingscore","limitType":"N","limitValue":7.5,"targetValue":7.5,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"1.7"}],"subCompareDrivers":[{"dataAttributeId":259,"name":"EcoScore.DriverPerformance.BrakingScore.HarshBraking(%)","key":"rp_harshbraking","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"1340.8"}],"subCompareDrivers":[]},{"dataAttributeId":260,"name":"EcoScore.DriverPerformance.BrakingScore.HarshBrakeDuration","key":"rp_harshbrakeduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"72.0"}],"subCompareDrivers":[]},{"dataAttributeId":261,"name":"EcoScore.DriverPerformance.BrakingScore.Braking(%)","key":"rp_braking","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":262,"name":"EcoScore.DriverPerformance.BrakingScore.BrakeDuration","key":"rp_brakeduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"-68390.1"}],"subCompareDrivers":[]}]},{"dataAttributeId":263,"name":"EcoScore.DriverPerformance.AnticipationScore","key":"rp_anticipationscore","limitType":"N","limitValue":7.5,"targetValue":7.5,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"6.5"}],"subCompareDrivers":[]}]}]}}');
@@ -856,10 +923,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
     // this.datasetGen = fin.compareDrivers.subCompareDrivers[0].subCompareDrivers; 
  }
 
- public barChartOptions = {
-  scaleShowVerticalLines: false,
-  responsive: true
-};
 // public barChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;//['sagar', 'laxman', 'nimesh', 'vishal', 'nilam'];
 // public barChartType = 'bar';
 // public barChartLegend = true;
@@ -872,22 +935,47 @@ public barChartLabels: any =[];
 public barChartType = 'bar';
 public barChartLegend = true;
 public barChartData: any =[];
+public barChartOptions = {
+  scaleShowVerticalLines: false,
+  responsive: true,
+  animation: {
+    duration: 0,
+    onComplete: function () {
+        // render the value of the chart above the bar
+        var ctx = this.chart.ctx;
+        ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, 'normal', Chart.defaults.global.defaultFontFamily);
+        ctx.fillStyle = this.chart.config.options.defaultFontColor;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        this.data.datasets.forEach(function (dataset) {
+            for (var i = 0; i < dataset.data.length; i++) {
+                var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model;
+                ctx.fillText(dataset.data[i] + ' %', model.x, model.y - 5);
+            }
+        });
+    }}
+};
 
 loadBarChart(){
-  this.barChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;//['sagar', 'laxman', 'nimesh', 'vishal', 'nilam'];
-  this.barChartType = 'bar';
-  this.barChartLegend = true;
-  // this.barChartData = [
-  //   {data: this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet[0].data, label: 'Remote'},
-  //   {data: [28, 48, 40, 81], label: 'Visit'}
-  // ];
+  this.barChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;
   this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet.forEach(element => {
     this.barChartData.push({
       data: element.data,
       label: element.label
     });
   });
+}
 
+public barChartLabelsPerformance: any =[];
+public barChartDataPerformance: any =[];
+loadBarChartPerfomance(){
+  this.barChartLabelsPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.xAxisLabel;
+  this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet.forEach(element => {
+    this.barChartDataPerformance.push({
+      data: element.data,
+      label: element.label
+    });
+  });
 }
 
 public barChartOptions1 = {
@@ -918,34 +1006,52 @@ public barChartOptions1 = {
             labelString: 'y axis'
           }
         }]
-      }
+      },
+      animation: {
+        duration: 0,
+        onComplete: function () {
+            // render the value of the chart above the bar
+            var ctx = this.chart.ctx;
+            ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, 'normal', Chart.defaults.global.defaultFontFamily);
+            ctx.fillStyle = this.chart.config.options.defaultFontColor;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            this.data.datasets.forEach(function (dataset) {
+                for (var i = 0; i < dataset.data.length; i++) {
+                    var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model;
+                    ctx.fillText(dataset.data[i], model.x, model.y - 5);
+                }
+            });
+        }}
     }
   };
 
    // Pie
    public pieChartOptions: ChartOptions = {
     responsive: true,
+    legend : {
+      display: true
+    }
   };
   // public pieChartLabels: Label[] = [['Download', 'Sales'], ['In', 'Store', 'Sales'], 'Mail Sales'];
   // public pieChartData: SingleDataSet = [300, 500, 100];
-  // public pieChartType: ChartType = 'pie';
-  // public pieChartLegend = true;
-  // public pieChartPlugins = [];
   public pieChartLabels: Label[] = [];
   public pieChartData: SingleDataSet = [];
   public pieChartType: ChartType = 'pie';
   public pieChartLegend = true;
   public pieChartPlugins = [];
 
-  loadPieChart(){
-  //  this.pieChartLabels
-  //  this.pieChartData: SingleDataSet = [300, 500, 100];
-  //  this.pieChartType: ChartType = 'pie';
-  //  this.pieChartLegend = true;
-  //  this.pieChartPlugins = [];
-  // }
+  loadPieChart(index){
+    // let chart = [{"data":[100,0,0,0,0,0],"label":"Overall Driver"},{"data":[15,25,35,5,10,10]}];
+    if(this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet.length > 0){
+      this.pieChartData = this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet[index].data;
+      this.pieChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;
+    }
   }
 
+  // selectionChanged(val){
+  //   this.loadPieChart(Number.parseInt(val));
+  // }
 
   toggleGeneralCharts(val){
     if(val === 'bar'){
