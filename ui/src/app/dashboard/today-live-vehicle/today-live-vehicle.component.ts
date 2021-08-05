@@ -293,7 +293,7 @@ doughnutDistanceColors: Color[] = [
     }
     else{
       activeVehicleCaretColor = 'caretRed';
-      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
+      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
 
     }
 
@@ -511,7 +511,7 @@ doughnutDistanceColors: Color[] = [
     }
     else{
       activeVehicleCaretColor = 'caretRed';
-      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
+      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
 
     }
     this.doughnutChartTimePlugins = [{
@@ -714,7 +714,7 @@ doughnutDistanceColors: Color[] = [
     }
     else{
       activeVehicleCaretColor = 'caretRed';
-      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
+      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
 
     }
     this.doughnutChartDistancePlugins = [{
