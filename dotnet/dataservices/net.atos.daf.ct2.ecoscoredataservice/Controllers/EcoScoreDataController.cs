@@ -131,6 +131,10 @@ namespace net.atos.daf.ct2.ecoscoredataservice.Controllers
             if (org == null)
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ORGANIZATION_NOT_FOUND", parameter: nameof(request.OrganizationId));
 
+            var orgs = await _accountManager.GetAccountOrg(account.Id);
+            if (!orgs.Select(x => x.Id).ToArray().Contains(org.Id))
+                return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "ACCOUNT_NOT_FOUND", parameter: nameof(request.Account));
+
             var vehicle = await _vehicleManager.Get(new VehicleFilter() { VIN = request.VIN });
             if (vehicle.FirstOrDefault() == null)
                 return GenerateErrorResponse(HttpStatusCode.NotFound, errorCode: "VIN_NOT_FOUND", parameter: nameof(request.VIN));
