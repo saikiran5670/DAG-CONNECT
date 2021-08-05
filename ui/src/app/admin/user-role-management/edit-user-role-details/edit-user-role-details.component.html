@@ -31,7 +31,7 @@
                     <mat-label class='custom-font'>{{ this.gridData[0].description ? this.gridData[0].description : '--' }}</mat-label>
                 </div> -->
 
-                <div *ngIf="(organizationId == 1 || organizationId == 2)" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div *ngIf="(adminAccessType.adminFullAccess)" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblUserRoleType || 'Role Type' }}</mat-label>
                     <mat-label class='custom-font'>{{ this.gridData[0].organizationId == 0 ? 'Global' : 'Regular'  }}</mat-label>
                 </div>
@@ -74,7 +74,7 @@
                         {{ translationData.lblUserRoleType || 'Role Type'}}<span class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-select formControlName="roleType" [disabled]="(organizationId != 1 && organizationId != 2) || (!createStatus && !duplicateFlag)">
+                        <mat-select formControlName="roleType" [disabled]="(!adminAccessType.adminFullAccess) || (!createStatus && !duplicateFlag)">
                             <mat-option *ngFor="let roleType of roleTypes" [value]="roleType">
                                 {{roleType}}
                             </mat-option>
