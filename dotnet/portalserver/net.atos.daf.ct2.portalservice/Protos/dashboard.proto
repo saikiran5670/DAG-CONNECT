@@ -28,16 +28,20 @@ message TodayLiveVehicleRequest{
 }
 
 message TodayLiveVehicleResponse{
-    double Distance = 1;
-    int64 DrivingTime = 2;
-    int32 VehicleCount = 3;
-    int32 DriverCount = 4;
-    int32 CriticleAlertCount = 5;
-    int32 ActiveVehicles = 6;
-    int32 TimeBaseUtilization = 7;
-    int32 DistanceBaseUtilization = 8;
-    Responsecode code = 9;
-    string message = 10;
+    string TodayVin = 1;
+    double Distance = 2;
+    int64 DrivingTime = 3;
+    int32 DriverCount  = 4;
+    int32 TodayActiveVinCount = 5;
+    int64 TodayTimeBasedUtilizationRate = 6;
+    int64 TodayDistanceBasedUtilization = 7;
+    int32 CriticleAlertCount = 8;
+    string YesterdayVin = 9;
+    int32 YesterdayActiveVinCount = 10;
+    int64 YesterDayTimeBasedUtilizationRate = 11;
+    int64 YesterDayDistanceBasedUtilization = 12;
+    Responsecode code = 13;
+    string message = 14;
 }
 
 message FleetKpiFilterRequest {

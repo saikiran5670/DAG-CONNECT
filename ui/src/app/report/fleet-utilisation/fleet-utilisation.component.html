@@ -367,7 +367,7 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-              <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>
+              <span class='navigatePoint' matTooltip='{{ translationData.lbltooltipMsg || "Click to view details"}}' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="vin">

@@ -295,6 +295,16 @@
           </mat-label>
         </div>
       </div>
+      <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
+        class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">  
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
+          <mat-label class='custom-font'>
+            {{ "Refresh Time" }}
+          </mat-label>
+        </div>
+      </div>
+
       <form [formGroup]="userSettingsForm" *ngIf="editGeneralSettingsFlag">
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm mobile-view" fxLayoutGap="10px">
           <div  class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
@@ -419,6 +429,21 @@
             </mat-error>
           </div>
         </div>
+
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
+          <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.landingPage}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
+            <mat-form-field appearance="outline" style='width: 70%'>
+              <input matInput type="text" formControlName="pageRefreshTime">
+              <span matSuffix>min</span> 
+              <mat-error style="margin-top: 10px;" *ngIf="userSettingsForm.get('pageRefreshTime').hasError('min') || userSettingsForm.get('pageRefreshTime').hasError('max')">
+                Please set time in mentioned range
+               </mat-error>     
+            </mat-form-field>
+            <span>(min 1min and max 60min)</span>
+          </div>
+        </div>
+
         <div fxLayout="row" fxLayoutAlign="end end" class="areaWidth full-width mobile-view mobile-btn-align">
           <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary"
             (click)='onEditGeneralSettingsCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>

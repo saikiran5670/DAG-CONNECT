@@ -291,7 +291,7 @@
   
               <span>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
   
-              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('idleDuration')}} hh:mm</span>
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('idleDuration')}}</span>
   
             </div>
   
@@ -797,31 +797,21 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="cO2Emission">
-  
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_co2emission')">{{ translationData.lblCO2Emission || 'CO2 Emission(Ton)' }}
-  
-                <!-- <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm ||
-  
-            'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') :
-  
-            (translationData.lblmile || 'mile') }})</span> -->
-  
+            <ng-container matColumnDef="cO2Emission" >
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_co2emission')">{{ translationData.lblCO2Emission || 'CO2 Emission' }}
+                <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || 'Ton') :
+                  (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || 't') : (translationData.lbltons ||
+                  't') }})</span>
               </mat-header-cell>
-  
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_co2emission')">
-  
                 <span>{{row.cO2Emission}}</span>
-  
               </mat-cell>
-  
               <!-- <mat-cell *matCellDef="let row">{{ row.convertedAverageDistance != '' ? row.convertedAverageDistance : '-' }}</mat-cell> -->
-  
             </ng-container>
   
             <ng-container matColumnDef="idleDuration">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idleduration')">{{ translationData.lblIdleDuration || 'Idle Duration(hh:mm)%' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idleduration')">{{ translationData.lblIdleDuration || 'Idle Duration%' }}
   
                 <!-- <span
   
@@ -1006,37 +996,10 @@
   
             </ng-container>
   
-            <ng-container matColumnDef="dpaAnticipationScore">
-  
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicleranking_vehiclename')">{{ translationData.lblDPAAnticipationscore || 'DPA Anticipation score' }}
-  
-              </mat-header-cell>
-  
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicleranking_vehiclename')">
-  
-                <span>{{row.dpaAnticipationScore}}</span>
-  
-              </mat-cell>
-  
-            </ng-container>
-  
-            <ng-container matColumnDef="dpaBrakingScore">
-  
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('dpaBrakingScore')">{{ translationData.lblDPABrakingscore || 'DPA Braking score' }}
-  
-              </mat-header-cell>
-  
-              <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('dpaBrakingScore')">
-  
-                <span>{{row.dpaBrakingScore}}</span>
-  
-              </mat-cell>
-  
-            </ng-container>
   
             <ng-container matColumnDef="idlingPTOScore">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore || 'Idling with PTO(hh:mm:ss) score%' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore || 'Idling with PTO(hh:mm:ss) score' }}
   
               </mat-header-cell>
   
@@ -1050,7 +1013,7 @@
   
             <ng-container matColumnDef="idlingPTO">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO || 'Idling without PTO (hh:mm:ss)%' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO || 'Idling without PTO (hh:mm:ss)' }}
   
               </mat-header-cell>
   

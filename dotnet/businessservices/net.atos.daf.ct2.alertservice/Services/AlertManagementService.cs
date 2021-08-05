@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.kafkacdc.entity;
 using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.alertservice.common;
 
 namespace net.atos.daf.ct2.alertservice.Services
 {
@@ -23,20 +24,17 @@ namespace net.atos.daf.ct2.alertservice.Services
         private readonly IAlertManager _alertManager;
         private readonly Mapper _mapper;
         private readonly IVisibilityManager _visibilityManager;
-        private readonly KafkaConfiguration _kafkaConfiguration;
-        private readonly IConfiguration _configuration;
-        private readonly IVehicleAlertRefManager _vehicleAlertRefManager;
+        private readonly IAlertMgmAlertCdcManager _alertMgmAlertCdcManager;
+        private readonly AlertCdcHelper _alertCdcHelper;
 
-        public AlertManagementService(IAlertManager alertManager, IVisibilityManager visibilityManager, IConfiguration configuration,
-            IVehicleAlertRefManager vehicleAlertRefManager)
+        public AlertManagementService(IAlertManager alertManager, IVisibilityManager visibilityManager, IAlertMgmAlertCdcManager alertMgmAlertCdcManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _alertManager = alertManager;
             _mapper = new Mapper();
             _visibilityManager = visibilityManager;
-            _kafkaConfiguration = new KafkaConfiguration();
-            configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
-            _vehicleAlertRefManager = vehicleAlertRefManager;
+            _alertMgmAlertCdcManager = alertMgmAlertCdcManager;
+            _alertCdcHelper = new AlertCdcHelper(_alertMgmAlertCdcManager);
         }
 
         #region ActivateAlert,SuspendAlert and  DeleteAlert
@@ -48,7 +46,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 if (id > 0)
                 {
                     //Triggering alert cdc 
-                    _ = Task.Run(() => _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(request.AlertId, AlertState.Active.ToString()));
+                    await _alertCdcHelper.TriggerAlertCdc(request.AlertId, "A");
                 }
                 return await Task.FromResult(new AlertResponse
                 {
@@ -76,7 +74,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 if (id > 0)
                 {
                     //Triggering alert cdc 
-                    _ = Task.Run(() => _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(request.AlertId, AlertState.Suspend.ToString()));
+                    await _alertCdcHelper.TriggerAlertCdc(request.AlertId, "S");
                 }
                 return await Task.FromResult(new AlertResponse
                 {
@@ -113,7 +111,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 if (id > 0)
                 {
                     //Triggering alert cdc 
-                    _ = Task.Run(() => _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(request.AlertId, AlertState.Delete.ToString()));
+                    await _alertCdcHelper.TriggerAlertCdc(request.AlertId, "D");
                 }
                 return await Task.FromResult(new AlertResponse
                 {
@@ -198,7 +196,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 if (alert.Id > 0)
                 {
                     //Triggering alert cdc 
-                    _ = Task.Run(() => _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(alert.Id, "U"));
+                    await _alertCdcHelper.TriggerAlertCdc(alert.Id, "U");
                 }
                 return await Task.FromResult(new AlertResponse
                 {
@@ -252,7 +250,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 if (alert.Id > 0)
                 {
                     //Triggering alert cdc 
-                    _ = Task.Run(() => _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(alert.Id, "I"));
+                    await _alertCdcHelper.TriggerAlertCdc(alert.Id, "I");
                 }
                 return await Task.FromResult(new AlertResponse
                 {

@@ -6,9 +6,9 @@ using net.atos.daf.ct2.kafkacdc.entity;
 
 namespace net.atos.daf.ct2.kafkacdc.repository
 {
-    public interface IVehicleAlertRepository
+    public interface IAlertMgmAlertCdcRepository
     {
-        Task<List<VehicleAlertRef>> GetVehicleAlertRefByAlertIds(int alertIds);
+        Task<List<VehicleAlertRef>> GetVehicleAlertRefByAlertIds(int alertId);
         Task<List<VehicleAlertRef>> GetVehiclesFromAlertConfiguration(int alertId);
         Task<bool> InsertVehicleAlertRef(List<VehicleAlertRef> vehicleAlertRefs);
         Task<bool> UpdateVehicleAlertRef(List<VehicleAlertRef> vehicleAlertRefs);
