@@ -1400,15 +1400,15 @@ setVehicleGroupAndVehiclePreSelection() {
     let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 't') : (this.translationData.lblton|| 't');
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
-    let unitValkg1 = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound|| 'pound');
+    let unitValkg1 = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 't') : (this.translationData.lblpound|| 't');
 
     const rankingHeader = ['Ranking','VehicleName','Vin','VehicleRegistrationNo','Consumption('+unitVal100km+')']
     const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Distance('+unitValkm+')', 'Average Distance Per Day('+unitValkmh+')', 'Average Speed('+unitValkmh+')',
     'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb('+unitValkg+')','fuelConsumed('+unitValuekm+')', 'fuelConsumption('+unitVal100km+')',  
     'CO2 Emission('+unitValkg1+')','Idle Duration(%)','PTO Duration(%)','HarshBrakeDuration(%)','Heavy Throttle Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')%',
     'Cruise Control Distance 50-75('+unitValkmh+')%','Cruise Control Distance>75('+unitValkmh+')%', 'Average Traffic Classification',
-    'CC Fuel Consumption','fuel Consumption CC Non Active','Idling Consumption','Dpa Score','DPA Anticipation Score','DPA Breaking Score',
-    'Idling PTO Score(hh:mm:ss)','Idling PTO','Idling Without PTO(hh:mm:ss)%','Foot Brake',
+    'CC Fuel Consumption','fuel Consumption CC Non Active','Idling Consumption','Dpa Score','DPA Anticipation Score%','DPA Breaking Score%',
+    'Idling PTO Score(hh:mm:ss)%','Idling PTO%','Idling Without PTO(hh:mm:ss)%','Foot Brake',
     'CO2 Emmision(gr/km)', 'Average Traffic Classification Value('+unitValkg+')','Idling Consumption Value('+unitValkg+')'];
     const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumption('+unitVal100km+')', 'Idle Duration(%)', 'Fuel Consumed('+unitValuekm+')', 'CO2 Emission('+unitValkg1+')'];
     const summaryData= this.summaryNewObj;
