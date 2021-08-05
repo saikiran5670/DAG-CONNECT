@@ -208,14 +208,18 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                 bool isResult = false;
                 foreach (var item in notificationHistory)
                 {
-                    SMS sms = new SMS();
-                    sms.ToPhoneNumber = item.PhoneNo;
-                    sms.Body = await PrepareSMSBody(item);
-                    var status = await _smsManager.SendSMS(sms);
-                    SMSStatus smsStatus = (SMSStatus)Enum.Parse(typeof(SMSStatus), status);
-                    item.Status = ((char)smsStatus).ToString();
-                    await _notificationIdentifierManager.InsertNotificationSentHistory(item);
-                    isResult = true;
+                    if (!string.IsNullOrEmpty(item.PhoneNo))
+                    {
+                        SMS sms = new SMS();
+                        sms.ToPhoneNumber = item.PhoneNo;
+                        sms.Body = await PrepareSMSBody(item);
+                        var status = await _smsManager.SendSMS(sms);
+                        SMSStatus smsStatus = (SMSStatus)Enum.Parse(typeof(SMSStatus), status);
+                        item.Status = ((char)smsStatus).ToString();
+                        await _notificationIdentifierManager.InsertNotificationSentHistory(item);
+                        isResult = true;
+                    }
+
                 }
                 return isResult;
             }
