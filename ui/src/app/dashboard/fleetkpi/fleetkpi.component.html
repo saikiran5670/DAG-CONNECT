@@ -18,8 +18,8 @@
 
        <!-- Charts  -->
     <div style='margin-bottom: 10px;'>
-      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width mb-10" fxLayoutGap="10px">
-        <div class="chartTile col-md-2">
+      <div fxLayout="row" class="full-width mb-10" fxLayoutGap="10px">
+        <div [hidden]="!checkForPreference('co2emission')" class="chartTile col-md-2">
           <div class="textDiv">
             <div>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</div>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; line-height: 1.5;'>{{currentC02Value}} T <br>
@@ -42,7 +42,7 @@
         </div>
 
         <!-- Idling Time -->
-        <div class="chartTile col-md-2">
+        <div [hidden]="!checkForPreference('idlingtime')" class="chartTile col-md-2">
           <div class="textDiv">
             <div>{{ translationData.lblIdlingTime || 'Idling Time' }}</div>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5'>{{currentIdlingTime}} <br>
@@ -63,7 +63,7 @@
         </div>
 
          <!-- Driving Time -->
-         <div class="chartTile col-md-2">
+         <div [hidden]="!checkForPreference('drivingtime')" class="chartTile col-md-2">
           <div class="textDiv">
             <div>{{ translationData.lblDrivingTime || 'Driving Time' }}</div>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5'>{{currentDrivingTime}}<br>
@@ -87,10 +87,10 @@
         </div>
         <!-- row2 -->
         
-        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width mb-10" fxLayoutGap="10px">
+        <div fxLayout="row" class="full-width mb-10" fxLayoutGap="10px">
  <!-- Distance Chart -->
 
- <div class="chartTile col-md-2">
+ <div  [hidden]="!checkForPreference('totaldistance')" class="chartTile col-md-2">
   <div class="textDiv">
     <div>{{ translationData.lblDistance || 'Distance' }}</div>
     <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentDistanceValue}} Km <br>
@@ -111,7 +111,7 @@
 </div>
 
 <!-- Fuel Consumed -->
-<div class="chartTile col-md-2">
+<div  [hidden]="!checkForPreference('fuelconsumed')" class="chartTile col-md-2">
   <div class="textDiv">
     <div>{{ translationData.lblFuelConsume || 'Fuel Consumed' }}</div>
     <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentFuelConsumed}} L <br>
@@ -131,8 +131,8 @@
     </div>
 </div>
 
-<!-- Fuel Used -->
-<div class="chartTile col-md-2">
+<!-- Fuel Used Idling-->
+<div  [hidden]="!checkForPreference('fuelusedidling')"  class="chartTile col-md-2">
   <div class="textDiv">
     <div>{{ translationData.lblFuelUsedByIdling || 'Fuel Used By Idling' }}</div>
     <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentIdlingFuelConsumed}} L<br>
@@ -155,14 +155,14 @@
 </div>
 <!-- row3 -->
 
-<div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+<div fxLayout="row" class="full-width" fxLayoutGap="10px">
          
            <!-- Fuel Consumption -->
-           <div class="chartTile col-md-2">
+           <div [hidden]="!checkForPreference('fuelconsumption')"  class="chartTile col-md-2">
             <div class="textDiv">
               <div>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentFuelConsumption}}<br>
-                out of {{cutOffFuelConsumption}}</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentFuelConsumption}} L<br>
+                out of {{cutOffFuelConsumption}} L</div>
               
             </div>
             

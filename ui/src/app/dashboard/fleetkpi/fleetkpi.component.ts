@@ -1809,14 +1809,13 @@ export class FleetkpiComponent implements OnInit {
   }
 
   updateFuelConsumption(){
-    let currentValue = this.kpiData['fleetKpis']['drivingTime'];
-    this.currentFuelConsumption =  this.getTimeDisplay(currentValue);
-    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['drivingTime'];
-    let _thresholdValue = 3600000;
+    let currentValue = this.kpiData['fleetKpis']['fuelConsumption'];
+    this.currentFuelConsumption=  currentValue > 0  ? (currentValue/1000).toFixed(2) : currentValue;
+    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumption'];
+    let _thresholdValue = 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
-    this.cutOffFuelConsumption =  this.getTimeDisplay(targetValue);
-    let convertTargetValue = this.getTimeDisplay(targetValue);
+    this.cutOffFuelConsumption =  targetValue > 0 ? (targetValue/1000).toFixed(2) : targetValue;
     let currentPercent = calculationValue['kpiPercent'];
     let lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
     
@@ -1867,7 +1866,7 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + convertTargetValue + 
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + targetValue + 'L'
             '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
@@ -2013,6 +2012,20 @@ export class FleetkpiComponent implements OnInit {
     }
 
 
+  }
+
+  checkForPreference(fieldKey) {
+    if (this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
+      let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_fleetkpi_'+fieldKey));
+      if (filterData.length > 0) {
+        if (filterData[0].state == 'A') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
   }
    //********************************** Date Time Functions *******************************************//
    setPrefFormatDate(){
