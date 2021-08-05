@@ -106,9 +106,9 @@ namespace net.atos.daf.ct2.dashboardservice
                 objTodayLiveVehicleRequest.YesterdayDateTime = UTCHandling.GetUTCFromDateTime(yesterday, "UTC");
                 var data = await _dashBoardManager.GetTodayLiveVinData(objTodayLiveVehicleRequest);
                 TodayLiveVehicleResponse objTodayLiveVehicleResponse = new TodayLiveVehicleResponse();
-                if (data != null)
+                if (data != null && data.TodayActiveVinCount > 0)
                 {
-                    objTodayLiveVehicleResponse.TodayVin = data.TodayVin;
+                    //objTodayLiveVehicleResponse.TodayVin = data.TodayVin;
                     objTodayLiveVehicleResponse.Distance = data.Distance;
                     objTodayLiveVehicleResponse.DrivingTime = data.DrivingTime;
                     objTodayLiveVehicleResponse.DriverCount = data.DriverCount;
@@ -116,7 +116,7 @@ namespace net.atos.daf.ct2.dashboardservice
                     objTodayLiveVehicleResponse.TodayTimeBasedUtilizationRate = data.TodayTimeBasedUtilizationRate;
                     objTodayLiveVehicleResponse.TodayDistanceBasedUtilization = data.TodayDistanceBasedUtilization;
                     objTodayLiveVehicleResponse.CriticleAlertCount = data.CriticleAlertCount;
-                    objTodayLiveVehicleResponse.YesterdayVin = data.YesterdayVin;
+                    //objTodayLiveVehicleResponse.YesterdayVin = data.YesterdayVin;
                     objTodayLiveVehicleResponse.YesterdayActiveVinCount = data.YesterdayActiveVinCount;
                     objTodayLiveVehicleResponse.YesterDayTimeBasedUtilizationRate = data.YesterDayTimeBasedUtilizationRate;
                     objTodayLiveVehicleResponse.YesterDayDistanceBasedUtilization = data.YesterDayDistanceBasedUtilization;
