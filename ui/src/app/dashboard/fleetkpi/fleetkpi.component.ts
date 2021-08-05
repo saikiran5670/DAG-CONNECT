@@ -35,7 +35,7 @@ export class FleetkpiComponent implements OnInit {
    cutOffC02Value : any =  0;
 
    doughnutChartLabels: Label[] = [('Target'), '', ''];
-   doughnutChartData: MultiDataSet = [ [89, 11] ];
+   doughnutChartData: MultiDataSet = [ [0, 100] ];
    doughnutChartType: ChartType = 'doughnut';
    doughnutColors: Color[] = [
      {
@@ -61,7 +61,7 @@ export class FleetkpiComponent implements OnInit {
      },
      cutoutPercentage: 80,
      title:{
-       text: "15",
+       text: "0",
        display: false
      }
    };
@@ -80,7 +80,7 @@ export class FleetkpiComponent implements OnInit {
  
        var text = chart.config.options.title.text;
        // Draw text in center
-       ctx.fillText("89%", centerX, centerY);
+       ctx.fillText("0%", centerX, centerY);
      }
    }];
 
@@ -90,7 +90,7 @@ export class FleetkpiComponent implements OnInit {
     cutOffIdlingTime : any =  0;
 
     idlingChartLabels: Label[] = [('Target'), '', ''];
-    doughnutChartIdlingData: MultiDataSet = [ [89, 11] ];
+    doughnutChartIdlingData: MultiDataSet = [ [0, 100] ];
     doughnutChartIdlingOptions: ChartOptions = {
       responsive: true,
       legend: {
@@ -151,13 +151,15 @@ export class FleetkpiComponent implements OnInit {
   
         var text = chart.config.options.title.text;
         // Draw text in center
-        ctx.fillText("67%", centerX, centerY);
+        ctx.fillText("0%", centerX, centerY);
       }
     }];
 
       //Driving Time Chart
+      currentDrivingTime: any =  0;
+      cutOffDrivingTime : any =  0;
       drivingChartLabels: Label[] = [('Target'), '', ''];
-      doughnutChartDrivingData: MultiDataSet = [ [89, 11] ];
+      doughnutChartDrivingData: MultiDataSet = [ [0, 100] ];
       doughnutChartDrivingOptions: ChartOptions = {
         responsive: true,
         legend: {
@@ -187,6 +189,23 @@ export class FleetkpiComponent implements OnInit {
           display: false
         }
       };
+      doughnutDrivingColors: Color[] = [
+        {
+          backgroundColor: [
+            "#89c64d",
+            "#cecece"
+          ],
+          hoverBackgroundColor: [
+            "#89c64d",
+            "#cecece"
+          ],
+          hoverBorderColor: [
+            "#cce6b2",
+            "#ffffff"
+          ],
+          hoverBorderWidth: 7
+        }
+       ];
     
       public doughnutChartDrivingPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
         beforeDraw(chart) {
@@ -202,13 +221,15 @@ export class FleetkpiComponent implements OnInit {
     
           var text = chart.config.options.title.text;
           // Draw text in center
-          ctx.fillText("89%", centerX, centerY);
+          ctx.fillText("0%", centerX, centerY);
         }
       }];
       
     //Distance Chart
+    currentDistanceValue : any = 0;
+    cutOffDistanceValue : any = 0;
     distanceChartLabels: Label[] = [('Target'), '', ''];
-    doughnutChartDistanceData: MultiDataSet = [ [89, 11] ];
+    doughnutChartDistanceData: MultiDataSet = [ [0, 100] ];
     doughnutChartDistanceOptions: ChartOptions = {
       responsive: true,
       legend: {
@@ -238,6 +259,24 @@ export class FleetkpiComponent implements OnInit {
         display: false
       }
     };
+
+    doughnutDistanceColors: Color[] = [
+      {
+        backgroundColor: [
+          "#89c64d",
+          "#cecece"
+        ],
+        hoverBackgroundColor: [
+          "#89c64d",
+          "#cecece"
+        ],
+        hoverBorderColor: [
+          "#cce6b2",
+          "#ffffff"
+        ],
+        hoverBorderWidth: 7
+      }
+     ];
   
     public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
       beforeDraw(chart) {
@@ -253,7 +292,7 @@ export class FleetkpiComponent implements OnInit {
   
         var text = chart.config.options.title.text;
         // Draw text in center
-        ctx.fillText("67%", centerX, centerY);
+        ctx.fillText("0%", centerX, centerY);
       }
     }];
 
@@ -516,6 +555,8 @@ export class FleetkpiComponent implements OnInit {
   updateCharts(){
     this.updateCO2Emmission();
     this.updateIdlingTime();
+    this.updateDrivingTime();
+    this.updateDistance();
     //this.updateTimeUtilisation();
     //this.updateDistanceRate();
 
@@ -580,7 +621,7 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + targetValue.toFixed(2) + 
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + targetValue.toFixed(2) + ` T`+
             '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
@@ -728,20 +769,6 @@ export class FleetkpiComponent implements OnInit {
 
   }
 
-  getTimeDisplay(_timeValue){
-    let convertedTime = Util.getHhMmTimeFromMS(_timeValue);
-    let convertedTimeDisplay = '';
-    if(convertedTime){
-      if(convertedTime.indexOf(":") != -1){
-        convertedTimeDisplay = convertedTime.split(':')[0] + ' Hr ' + convertedTime.split(':')[1] + ' min';
-      }
-    }
-    else{
-      convertedTimeDisplay = '--';
-    }
-    return convertedTimeDisplay;
-  }
-
   updateIdlingTime(){
     let currentValue = this.kpiData['fleetKpis']['idlingTime'];
     this.currentIdlingTime =  this.getTimeDisplay(currentValue);
@@ -750,6 +777,8 @@ export class FleetkpiComponent implements OnInit {
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
     this.cutOffIdlingTime =  this.getTimeDisplay(targetValue);
+    let convertTargetValue =  this.getTimeDisplay(targetValue);
+
     let currentPercent = calculationValue['kpiPercent'];
     let lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
     
@@ -800,7 +829,7 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + targetValue + 
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` +  convertTargetValue + 
             '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
@@ -862,7 +891,7 @@ export class FleetkpiComponent implements OnInit {
     switch (_prefLimit) {
       case 'upper':{
         if(_prefThreshold < currentValue){ //red
-          this.doughnutColors = [
+          this.doughnutIdlingColors = [
             {
               backgroundColor: [
                 "#ff0000",
@@ -881,7 +910,7 @@ export class FleetkpiComponent implements OnInit {
            ];
         }
         else{
-          this.doughnutColors = [
+          this.doughnutIdlingColors = [
             {
               backgroundColor: [
                 "#89c64d",
@@ -903,7 +932,7 @@ export class FleetkpiComponent implements OnInit {
         break;
         case 'lower':{
           if(_prefLimit > currentValue){
-            this.doughnutColors = [
+            this.doughnutIdlingColors = [
               {
                 backgroundColor: [
                   "#ff0000",
@@ -922,7 +951,419 @@ export class FleetkpiComponent implements OnInit {
              ];
           }
           else{
-            this.doughnutColors = [
+            this.doughnutIdlingColors = [
+              {
+                backgroundColor: [
+                  "#89c64d",
+                  "#cecece"
+                ],
+                hoverBackgroundColor: [
+                  "#89c64d",
+                  "#cecece"
+                ],
+                hoverBorderColor: [
+                  "#cce6b2",
+                  "#ffffff"
+                ],
+                hoverBorderWidth: 7
+              }
+             ];
+          }
+        }
+      default:
+        break;
+    }
+
+
+  }
+
+  updateDrivingTime(){
+    let currentValue = this.kpiData['fleetKpis']['drivingTime'];
+    this.currentDrivingTime =  this.getTimeDisplay(currentValue);
+    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['drivingTime'];
+    let _thresholdValue = 3600000;
+    let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
+    let targetValue = calculationValue['cuttOff'];
+    this.cutOffDrivingTime =  this.getTimeDisplay(targetValue);
+    let convertTargetValue = this.getTimeDisplay(targetValue);
+    let currentPercent = calculationValue['kpiPercent'];
+    let lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+    
+    let caretColor = 'caretGreen';
+    let caretIcon = '';
+    
+    if( lastChangePercent > 0){
+      caretColor = 'caretGreen';
+      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
+    }
+    else{
+      caretColor = 'caretRed';
+      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
+
+    }
+
+    this.doughnutChartDrivingData = [[currentPercent,(100 - currentPercent)]]
+
+    this.doughnutChartDrivingPlugins = [{
+      beforeDraw(chart) {
+        const ctx = chart.ctx;
+    
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+        const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+    
+        ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
+        ctx.fillStyle = 'black';
+    
+        var text = chart.config.options.title.text;
+        // Draw text in center
+        ctx.fillText(currentPercent.toFixed(2) + "%", centerX, centerY);
+      }
+    }];
+
+    this.doughnutChartDrivingOptions = {
+      responsive: true,
+      legend: {
+        display: false
+      },
+      cutoutPercentage: 80,
+      tooltips: {
+        enabled: false,
+        custom: function(tooltip){
+          let tooltipEl = document.getElementById('chartjs-tooltip');
+          let fileIcon = 'assets/dashboard/greenArrow.svg';
+          if (!tooltipEl) {
+            tooltipEl = document.createElement('div');
+            tooltipEl.id = 'chartjs-tooltip';
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + convertTargetValue + 
+            '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
+            `<span>${caretIcon}</span></div>`;
+            this._chart.canvas.parentNode.appendChild(tooltipEl);
+          }
+           // Set caret Position
+        tooltipEl.classList.remove('above', 'below','no-transform');
+        if (tooltip.yAlign) {
+          tooltipEl.classList.add(tooltip.yAlign);
+        } else {
+          tooltipEl.classList.add('no-transform');
+        }
+        function getBody(bodyItem) {
+          return bodyItem.lines;
+      }
+      var position = this._chart.canvas.getBoundingClientRect();
+        const positionY = this._chart.canvas.offsetTop;
+        const positionX = this._chart.canvas.offsetLeft;
+        const widthX = (this._chart.canvas.width)/8;
+        const heightY = (this._chart.canvas.height)/6;
+
+        // Display, position, and set styles for font
+        tooltipEl.style.opacity = 1 as any;
+        tooltipEl.style.position = 'absolute';
+        tooltipEl.style.background = '#FFF';
+        tooltipEl.style.border = '1px solid blue';
+        tooltipEl.style.borderRadius = '5px';
+        tooltipEl.style.left = positionY + widthX + 'px';
+        tooltipEl.style.top = positionX - heightY + 'px';
+        tooltipEl.style.fontFamily = tooltip._bodyFontFamily;
+        tooltipEl.style.fontSize = tooltip.bodyFontSize + 'px';
+        tooltipEl.style.fontStyle = tooltip._bodyFontStyle;
+        tooltipEl.style.padding = tooltip.yPadding +
+        'px ' +
+        tooltip.xPadding +
+        'px';
+           // Hide if no tooltip
+          if (tooltip.opacity === 0) {
+            tooltipEl.style.opacity = 0 as any;
+            this._chart.canvas.parentNode.removeChild(tooltipEl);
+
+            return;
+          }
+          else{
+            tooltipEl.style.opacity = 1 as any;
+            return;
+          }
+          
+        },
+     },
+      title:{
+        text: "15",
+        display: false
+      }
+    }
+
+    let _prefLimit = 'upper';
+    let _prefThreshold = 10;
+     
+    switch (_prefLimit) {
+      case 'upper':{
+        if(_prefThreshold < currentValue){ //red
+          this.doughnutDrivingColors = [
+            {
+              backgroundColor: [
+                "#ff0000",
+                "#cecece"
+              ],
+              hoverBackgroundColor: [
+                "#ff0000",
+                "#cecece"
+              ],
+              hoverBorderColor: [
+                "#ff0000",
+                "#ffffff"
+              ],
+              hoverBorderWidth: 7
+            }
+           ];
+        }
+        else{
+          this.doughnutDrivingColors = [
+            {
+              backgroundColor: [
+                "#89c64d",
+                "#cecece"
+              ],
+              hoverBackgroundColor: [
+                "#89c64d",
+                "#cecece"
+              ],
+              hoverBorderColor: [
+                "#cce6b2",
+                "#ffffff"
+              ],
+              hoverBorderWidth: 7
+            }
+           ];
+        }
+      }
+        break;
+        case 'lower':{
+          if(_prefLimit > currentValue){
+            this.doughnutDrivingColors = [
+              {
+                backgroundColor: [
+                  "#ff0000",
+                  "#cecece"
+                ],
+                hoverBackgroundColor: [
+                  "#ff0000",
+                  "#cecece"
+                ],
+                hoverBorderColor: [
+                  "#ff0000",
+                  "#ffffff"
+                ],
+                hoverBorderWidth: 7
+              }
+             ];
+          }
+          else{
+            this.doughnutDrivingColors = [
+              {
+                backgroundColor: [
+                  "#89c64d",
+                  "#cecece"
+                ],
+                hoverBackgroundColor: [
+                  "#89c64d",
+                  "#cecece"
+                ],
+                hoverBorderColor: [
+                  "#cce6b2",
+                  "#ffffff"
+                ],
+                hoverBorderWidth: 7
+              }
+             ];
+          }
+        }
+      default:
+        break;
+    }
+
+
+  }
+
+  updateDistance(){
+    let currentValue = this.kpiData['fleetKpis']['distance'];
+    this.currentDistanceValue =  currentValue > 0  ? (currentValue/1000).toFixed(2) : currentValue;
+    let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['distance'];
+    let _thresholdValue = 5000000;
+    let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
+    let targetValue = calculationValue['cuttOff'];
+    this.cutOffDistanceValue =  targetValue > 0 ? (targetValue/1000).toFixed(2) : targetValue;
+    let currentPercent = calculationValue['kpiPercent'];
+    let lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
+    let caretColor = 'caretGreen';
+    let caretIcon = '';
+    
+    if( lastChangePercent > 0){
+      caretColor = 'caretGreen';
+      caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${caretColor}"></i>`;
+    }
+    else{
+      caretColor = 'caretRed';
+      caretIcon = `<i class="fa fa-caret-down tooltipCaret caretClass ${caretColor}"></i>`;
+
+    }
+
+    this.doughnutChartDistanceData = [[currentPercent,(100 - currentPercent)]]
+
+    this.doughnutChartDistancePlugins = [{
+      beforeDraw(chart) {
+        const ctx = chart.ctx;
+    
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+        const centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+    
+        ctx.font = '500 14px Roboto, "Helvetica Neue", sans-serif';
+        ctx.fillStyle = 'black';
+    
+        var text = chart.config.options.title.text;
+        // Draw text in center
+        ctx.fillText(currentPercent.toFixed(2) + "%", centerX, centerY);
+      }
+    }];
+
+    this.doughnutChartDistanceOptions = {
+      responsive: true,
+      legend: {
+        display: false
+      },
+      cutoutPercentage: 80,
+      tooltips: {
+        enabled: false,
+        custom: function(tooltip){
+          let tooltipEl = document.getElementById('chartjs-tooltip');
+          let fileIcon = 'assets/dashboard/greenArrow.svg';
+          if (!tooltipEl) {
+            tooltipEl = document.createElement('div');
+            tooltipEl.id = 'chartjs-tooltip';
+            tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + (targetValue/1000).toFixed(2) + ` km` +
+            '</div><div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
+            `<span>${caretIcon}</span></div>`;
+            this._chart.canvas.parentNode.appendChild(tooltipEl);
+          }
+           // Set caret Position
+        tooltipEl.classList.remove('above', 'below','no-transform');
+        if (tooltip.yAlign) {
+          tooltipEl.classList.add(tooltip.yAlign);
+        } else {
+          tooltipEl.classList.add('no-transform');
+        }
+        function getBody(bodyItem) {
+          return bodyItem.lines;
+      }
+      var position = this._chart.canvas.getBoundingClientRect();
+        const positionY = this._chart.canvas.offsetTop;
+        const positionX = this._chart.canvas.offsetLeft;
+        const widthX = (this._chart.canvas.width)/8;
+        const heightY = (this._chart.canvas.height)/6;
+
+        // Display, position, and set styles for font
+        tooltipEl.style.opacity = 1 as any;
+        tooltipEl.style.position = 'absolute';
+        tooltipEl.style.background = '#FFF';
+        tooltipEl.style.border = '1px solid blue';
+        tooltipEl.style.borderRadius = '5px';
+        tooltipEl.style.left = positionY + widthX + 'px';
+        tooltipEl.style.top = positionX - heightY + 'px';
+        tooltipEl.style.fontFamily = tooltip._bodyFontFamily;
+        tooltipEl.style.fontSize = tooltip.bodyFontSize + 'px';
+        tooltipEl.style.fontStyle = tooltip._bodyFontStyle;
+        tooltipEl.style.padding = tooltip.yPadding +
+        'px ' +
+        tooltip.xPadding +
+        'px';
+           // Hide if no tooltip
+          if (tooltip.opacity === 0) {
+            tooltipEl.style.opacity = 0 as any;
+            this._chart.canvas.parentNode.removeChild(tooltipEl);
+
+            return;
+          }
+          else{
+            tooltipEl.style.opacity = 1 as any;
+            return;
+          }
+          
+        },
+     },
+      title:{
+        text: "15",
+        display: false
+      }
+    }
+
+    let _prefLimit = 'upper';
+    let _prefThreshold = 10;
+     
+    switch (_prefLimit) {
+      case 'upper':{
+        if(_prefThreshold < currentValue){ //red
+          this.doughnutDistanceColors = [
+            {
+              backgroundColor: [
+                "#ff0000",
+                "#cecece"
+              ],
+              hoverBackgroundColor: [
+                "#ff0000",
+                "#cecece"
+              ],
+              hoverBorderColor: [
+                "#ff0000",
+                "#ffffff"
+              ],
+              hoverBorderWidth: 7
+            }
+           ];
+        }
+        else{
+          this.doughnutDistanceColors = [
+            {
+              backgroundColor: [
+                "#89c64d",
+                "#cecece"
+              ],
+              hoverBackgroundColor: [
+                "#89c64d",
+                "#cecece"
+              ],
+              hoverBorderColor: [
+                "#cce6b2",
+                "#ffffff"
+              ],
+              hoverBorderWidth: 7
+            }
+           ];
+        }
+      }
+        break;
+        case 'lower':{
+          if(_prefLimit > currentValue){
+            this.doughnutDistanceColors = [
+              {
+                backgroundColor: [
+                  "#ff0000",
+                  "#cecece"
+                ],
+                hoverBackgroundColor: [
+                  "#ff0000",
+                  "#cecece"
+                ],
+                hoverBorderColor: [
+                  "#ff0000",
+                  "#ffffff"
+                ],
+                hoverBorderWidth: 7
+              }
+             ];
+          }
+          else{
+            this.doughnutDistanceColors = [
               {
                 backgroundColor: [
                   "#89c64d",
@@ -1022,5 +1463,20 @@ export class FleetkpiComponent implements OnInit {
     date.setSeconds(type == 'start' ? '00' : '59');
     return date;
   }
+
+  getTimeDisplay(_timeValue){
+    let convertedTime = Util.getHhMmTimeFromMS(_timeValue);
+    let convertedTimeDisplay = '';
+    if(convertedTime){
+      if(convertedTime.indexOf(":") != -1){
+        convertedTimeDisplay = convertedTime.split(':')[0] + ' Hr ' + convertedTime.split(':')[1] + ' min';
+      }
+    }
+    else{
+      convertedTimeDisplay = '--';
+    }
+    return convertedTimeDisplay;
+  }
+
 
 }
