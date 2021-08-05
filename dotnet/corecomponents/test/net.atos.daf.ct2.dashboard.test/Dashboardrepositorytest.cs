@@ -41,10 +41,6 @@ namespace net.atos.daf.ct2.subscription.test
             TodayLiveVehicleRequest objTodayLiveVehicleRequest = new TodayLiveVehicleRequest();
             objTodayLiveVehicleRequest.VINs = new List<string>();
             objTodayLiveVehicleRequest.VINs.Add("M4A14532");
-            objTodayLiveVehicleRequest.VINs.Add("XLR0998HGFFT76657");
-            objTodayLiveVehicleRequest.VINs.Add("XLRASH4300G1472w0");
-            objTodayLiveVehicleRequest.VINs.Add("XLR0998HGFFT75550");
-            objTodayLiveVehicleRequest.VINs.Add("XLRAE75PC0E348696");
             var results = await _iDashBoardManager.GetTodayLiveVinData(objTodayLiveVehicleRequest);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);

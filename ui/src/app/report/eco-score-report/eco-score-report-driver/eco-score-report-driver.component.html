@@ -160,7 +160,7 @@
                   </div>
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <div class="container-fluid" id="grid_general_table1">
+              <div class="container-fluid" id="grid_general_driver_table">
                 <angular-slickgrid gridId="grid_general_table"
                 [columnDefinitions]="columnDefinitionsGen"
                 [gridOptions]="gridOptionsGen"
@@ -204,7 +204,8 @@
                             [labels]="barChartLabels"
                             [options]="barChartOptions"
                             [legend]="barChartLegend"
-                            [chartType]="barChartType">
+                            [chartType]="barChartType"
+                            height="225">
                     </canvas>
               </div>
               <div class="container-fluid" *ngIf="showGeneralPie">
@@ -231,7 +232,7 @@
                   </div>
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <div class="container-fluid" id="grid_performance_table1">
+              <div class="container-fluid" id="grid_performance_driver_table">
                 <angular-slickgrid gridId="grid_performance_table"
                 [columnDefinitions]="columnDefinitions"
                 [gridOptions]="gridOptions"

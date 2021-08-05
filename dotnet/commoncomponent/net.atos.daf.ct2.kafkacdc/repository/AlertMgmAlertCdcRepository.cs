@@ -9,13 +9,12 @@ using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.kafkacdc.repository
 {
-    public class VehicleAlertRepository : IVehicleAlertRepository
+    public class AlertMgmAlertCdcRepository : IAlertMgmAlertCdcRepository
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartdataAccess;
 
-        public VehicleAlertRepository(IDataAccess dataAccess
-                                , IDataMartDataAccess dataMartdataAccess)
+        public AlertMgmAlertCdcRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             _dataAccess = dataAccess;
             _dataMartdataAccess = dataMartdataAccess;
@@ -333,7 +332,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                 IEnumerable<VehicleAlertRef> vehicleAlertRefs = await _dataAccess.QueryAsync<VehicleAlertRef>(query, parameter);
                 return vehicleAlertRefs.AsList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
