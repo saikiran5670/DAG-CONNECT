@@ -338,7 +338,7 @@ doughnutDistanceColors: Color[] = [
     
         var text = chart.config.options.title.text;
         // Draw text in center
-        ctx.fillText(activeVehiclePercent + "%", centerX, centerY);
+        ctx.fillText(activeVehiclePercent.toFixed(2) + "%", centerX, centerY);
       }
     }];
 
@@ -357,7 +357,7 @@ doughnutDistanceColors: Color[] = [
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
             tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + vehicleTarget + 
-            '</div><div>Last Change: ' + activeVehicleChangePercent + '%'+
+            '</div><div>Last Change: ' + activeVehicleChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
