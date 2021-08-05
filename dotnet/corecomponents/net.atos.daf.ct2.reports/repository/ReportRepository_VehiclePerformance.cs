@@ -41,29 +41,10 @@ namespace net.atos.daf.ct2.reports.repository
 
         }
 
-        private async Task CalculateKPIData(List<VehPerformanceChartData> vehChartList, string performanceType)
+
+        public async Task CalculateKPIData(List<VehPerformanceChartData> vehicleChartDatas, string performanceType)
         {
-
-            switch (performanceType)
-            {
-
-                case "E":
-                    var rangeData = await GetRangeData(performanceType);
-                    CalculateEngineLoadKPIData(vehChartList, rangeData);
-                    break;
-                case "S":
-
-                    break;
-                case "B":
-
-                    break;
-                default:
-                    break;
-
-            }
-        }
-        public void CalculateEngineLoadKPIData(List<VehPerformanceChartData> vehicleChartDatas, List<KpiDataRange> rangeData)
-        {
+            List<KpiDataRange> rangeData = await GetRangeData(performanceType);
             long multiTripDuration = 0;
             foreach (var trip in vehicleChartDatas)
             {
