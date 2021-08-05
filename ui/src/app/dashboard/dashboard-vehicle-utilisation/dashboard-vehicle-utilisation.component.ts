@@ -20,6 +20,7 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
   @Input() finalVinList : any;
   @Input() preference : any;
   @Input() prefData : any;
+  @Input() dashboardPrefData: any;
   timeDChartType: any;
   mileageDChartType: any;
   selectionTab: any;
@@ -246,6 +247,8 @@ toatlSum: any;
     // this.setChartData();
     this.selectionTimeRange('lastweek');
 
+    console.log("prefData = "+this.dashboardPrefData);
+   
   }
 
   setInitialPref(prefData,preference){
@@ -407,7 +410,8 @@ setAlertChartData(){
     let warningPercent = (this.warningCount/totalAlerts)* 100;
     let advisoryPercent = (this.advisoryCount/totalAlerts)* 100;
     this.alertPieChartData= [crticalPercent,warningPercent,advisoryPercent];
-    this.alertPieChartLabels=  ['Critical','Warning','Advisory'];
+    this.alertPieChartLabels=  [`Critical (${this.criticalCount})`,`Warning (${this.warningCount})`,`Advisory (${this.advisoryCount})`];
+    
     }
 }
 
