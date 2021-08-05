@@ -10,6 +10,12 @@
         public string CountPerIndex { get; set; }
         public string ColumnIndex { get; set; }
 
+    }
 
+    public class IndexWiseChartData
+    {
+        public int Xindex { get; set; }
+        public int Yindex { get; set; }
+        public int Value { get; set; }
     }
 }
