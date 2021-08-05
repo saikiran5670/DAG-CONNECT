@@ -15,13 +15,13 @@
           <div class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
             <span>
               <div>{{ translationData.lblDistance || 'Distance' }} </div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{liveVehicleData.distance}}</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{distance}}{{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </div>
             </span>
           </div>
           <div class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
             <span>
               <div>{{ translationData.lblDrivingTime || 'Driving Time' }} </div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{liveVehicleData.drivingTime}}</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{drivingTime}}</div>
             </span>
           </div>
             <div class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
@@ -44,7 +44,7 @@
           <div class="chartTile col-md-4">
             <div class="textDiv">
               <div>{{ translationData.lblActiveVehicles || 'Active Vehicles' }}</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{liveVehicleData.activeVehicles}}</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{liveVehicleData.todayActiveVinCount}}</div>
             </div>
             
             <div class="col-md-8 chart-wrapper chartDimension">
@@ -78,7 +78,7 @@
           <div class="chartTile col-md-4">
             <div class="textDiv">
                 <div>{{ translationData.lblDistanceBased || 'Distance Based Utilisation Rate' }} </div>
-                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{liveVehicleData.distanceBaseUtilization}}{{' km'}}</div>
+                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{distanceRate}}{{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </div>
             </div>
               
             <div class="col-md-8 chart-wrapper chartDimension">
