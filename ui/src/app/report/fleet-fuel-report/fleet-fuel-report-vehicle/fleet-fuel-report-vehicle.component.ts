@@ -1407,7 +1407,7 @@ setVehicleGroupAndVehiclePreSelection() {
     'CO2 Emission('+unitValkg+')','Idle Duration(%)','PTO Duration(%)','HarshBrakeDuration(%)','Heavy Throttle Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')%',
     'Cruise Control Distance 50-75('+unitValkmh+')%','Cruise Control Distance>75('+unitValkmh+')%', 'Average Traffic Classification',
     'CC Fuel Consumption','fuel Consumption CC Non Active','Idling Consumption','Dpa Score',
-    'Idling PTO Score(hh:mm:ss)%','Idling PTO%','Idling Without PTO(hh:mm:ss)%','Foot Brake',
+    'Idling PTO Score(hh:mm:ss)','Idling PTO','Idling Without PTO(hh:mm:ss)%','Foot Brake',
     'CO2 Emmision(gr/km)', 'Average Traffic Classification Value('+unitValkg+')','Idling Consumption Value('+unitValkg+')'];
     const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumption('+unitVal100km+')', 'Idle Duration(%)', 'Fuel Consumed('+unitValuekm+')', 'CO2 Emission('+unitValkg+')'];
     const summaryData= this.summaryNewObj;
