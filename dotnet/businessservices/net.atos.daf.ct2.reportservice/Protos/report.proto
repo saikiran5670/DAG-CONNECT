@@ -1347,10 +1347,19 @@ VehPerformanceTemplate VehPerformanceTemplate=3;
       string EngineType = 2;
       string Vin = 3;
  }
+ message KpiData{
+ string Label =1;
+ int32 Value =2;
+ }
  message BubbleChartData{
- int32 Xindex=1;
- int32 Yindex=2;
- int32 Value = 3;
+ string Vin=1;
+ string TripId=2;
+ int32 AbsRpmtTrque=3;
+ int32 OrdRpmTorque=4;
+string MatrixValue=5;
+string CountPerIndex=6;
+ string ColumnIndex=7;
+ repeated KpiData KpiData =8;
  
  }
  message BubbleChartDataResponse{

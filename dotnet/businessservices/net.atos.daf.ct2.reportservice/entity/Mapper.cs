@@ -108,6 +108,8 @@ namespace net.atos.daf.ct2.reportservice.entity
             return objRequest;
         }
 
+        //internal BubbleChartData ToBubbleChartDataResponse(List<VehPerformanceChartData> result) => throw new NotImplementedException();
+
         internal GetReportUserPreferenceResponse MapReportUserPreferences(IEnumerable<reports.entity.ReportUserPreference> userPreferences)
         {
             var root = userPreferences.Where(up => up.Name.IndexOf('.') == -1).First();

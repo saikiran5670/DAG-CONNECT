@@ -27,8 +27,10 @@ namespace net.atos.daf.ct2.reports.repository
 	                on pt.template=pm.template
 	                where vehicle_performance_type= @performancetype
 	                and engine_type = @enginetype";
-                List<EngineLoadType> lstengion = (List<EngineLoadType>)await _dataAccess.QueryAsync<EngineLoadType>(queryEngineLoadData, parameter);
-                vehiclePerformanceChartTemplate.VehChartList = lstengion;
+                var lstengion = await _dataAccess.QueryAsync<VehicleChartData>(queryEngineLoadData, parameter);
+                vehiclePerformanceChartTemplate.VehChartList = lstengion.ToList();
+
+
                 return vehiclePerformanceChartTemplate;
             }
             catch (Exception Ex)
@@ -39,6 +41,79 @@ namespace net.atos.daf.ct2.reports.repository
 
         }
 
+
+        public async Task CalculateKPIData(List<VehPerformanceChartData> vehicleChartDatas, string performanceType)
+        {
+            List<KpiDataRange> rangeData = await GetRangeData(performanceType);
+            long multiTripDuration = 0;
+            foreach (var trip in vehicleChartDatas)
+            {
+
+                if (trip.MatrixValue != null)
+                {
+                    multiTripDuration += trip.TripDuration;
+                    var matrixValues = trip.MatrixValue.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+                    foreach (var value in matrixValues)
+                    {
+                        foreach (var range in rangeData)
+                        {
+                            switch (range.Kpi)
+                            {
+                                case "O":
+                                    if (value >= range.LowerVal && value <= range.UpperVal)
+                                        range.Value += value;
+                                    break;
+                                case "A":
+                                    if (value >= range.LowerVal && value <= range.UpperVal)
+                                        range.Value += value;
+                                    break;
+                                case "P":
+                                    if (value >= range.LowerVal && value <= range.UpperVal)
+                                        range.Value += value;
+                                    break;
+                                case "E":
+                                    if (value >= range.LowerVal && value <= range.UpperVal)
+                                        range.Value += value;
+                                    break;
+                                case "N":
+                                    if (value >= range.LowerVal && value <= range.UpperVal)
+                                        range.Value += value;
+                                    break;
+                                case "I":
+                                    if (value >= range.LowerVal && value <= range.UpperVal)
+                                        range.Value += value;
+                                    break;
+                                case "D":
+                                    if (value >= range.LowerVal && value <= range.UpperVal)
+                                        range.Value += value;
+                                    break;
+                                case "U":
+                                    if (value >= range.LowerVal && value <= range.UpperVal)
+                                        range.Value += value;
+                                    break;
+
+                                default:
+                                    break;
+                            }
+
+                        }
+
+                    }
+
+                    List<KPIs> lstKpis = new List<KPIs>();
+                    foreach (var kpiDict in rangeData)
+                    {
+                        KPIs kPIs = new KPIs();
+                        kPIs.Label = kpiDict.Kpi;
+                        kPIs.Value = kpiDict.Value / Convert.ToInt32(multiTripDuration);
+                        lstKpis.Add(kPIs);
+                    }
+                    trip.ListKPIs = lstKpis;
+                }
+
+            }
+
+        }
         public async Task<VehiclePerformanceSummary> GetVehPerformanceSummaryDetails(string vin)
         {
             try
@@ -69,6 +144,7 @@ namespace net.atos.daf.ct2.reports.repository
                 string query = GetQueryAsPerPerformanceType(vehiclePerformanceRequest);
                 //var lstengion = (List<VehPerformanceChartData>)await _dataMartdataAccess.QueryAsync<VehPerformanceChartData>(query, parameter);
                 var lstengion = await _dataMartdataAccess.QueryAsync<VehPerformanceChartData>(query, parameter);
+                await CalculateKPIData(lstengion.ToList(), vehiclePerformanceRequest.PerformanceType);
                 return lstengion.ToList();
             }
             catch (Exception Ex)
@@ -76,6 +152,25 @@ namespace net.atos.daf.ct2.reports.repository
 
                 throw;
             }
+        }
+        private async Task<List<KpiDataRange>> GetRangeData(string pType)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@performancetype", pType);
+                var query = @"SELECT  vehicle_performance_type as PerformanceType, index as Index, kpi as Kpi, lower_val as LowerVal, 
+                            upper_val as UpperVal FROM master.performancekpiranges where vehicle_performance_type=@performancetype;";
+                var result = await _dataAccess.QueryAsync<KpiDataRange>(query, parameter);
+                return result.ToList();
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
         }
         private string GetQueryAsPerPerformanceType(VehiclePerformanceRequest vehiclePerformanceRequest)
         {
@@ -88,7 +183,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 abs_rpm_torque as AbsRpmtTrque, ord_rpm_torque as OrdRpmTorque,
                                 array_to_string(nonzero_matrix_val_rpm_torque, ',', '*') as MatrixValue,
                                 array_to_string(num_val_rpm_torque, ',', '*') as CountPerIndex,
-                                array_to_string(col_index_rpm_torque, ',', '*') as ColumnIndex
+                                array_to_string(col_index_rpm_torque, ',', '*') as ColumnIndex,
+                                etl_gps_driving_time as TripDuration
                                 FROM tripdetail.trip_statistics 
                                 where vin = @vin and
                                is_ongoing_trip = false AND end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
@@ -100,7 +196,8 @@ namespace net.atos.daf.ct2.reports.repository
                                 ord_speed_rpm as OrdRpmTorque,
                                 array_to_string(nonzero_matrix_val_speed_rpm, ',', '*') as MatrixValue,
                                 array_to_string(num_val_speed_rpm, ',', '*') as CountPerIndex, 
-                                array_to_string(col_index_speed_rpm, ',', '*') as ColumnIndex
+                                array_to_string(col_index_speed_rpm, ',', '*') as ColumnIndex,
+                                etl_gps_driving_time as TripDuration
                                 FROM tripdetail.trip_statistics 
                                 where vin = @vin and
                                is_ongoing_trip = false AND end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
@@ -112,7 +209,8 @@ namespace net.atos.daf.ct2.reports.repository
                                     array_to_string(nonzero_matrix_val_acceleration_speed, ',', '*') as MatrixValue,
                                     array_to_string(nonzero_matrix_val_brake_pedal_acceleration_speed, ',', '*') as Breakacc, 
                                     array_to_string(num_val_acceleration_speed, ',', '*') as CountPerIndex, 
-                                    array_to_string(col_index_acceleration_speed, ',', '*') as ColumnIndex
+                                    array_to_string(col_index_acceleration_speed, ',', '*') as ColumnIndex,
+                                    etl_gps_driving_time as TripDuration
                                     FROM tripdetail.trip_statistics 
                                     where vin = @vin and
                                     is_ongoing_trip = false AND end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
@@ -122,7 +220,6 @@ namespace net.atos.daf.ct2.reports.repository
             }
             return query;
         }
-
         public async Task<List<VehPerformanceProperty>> GetVehPerformanceType()
         {
             string query = @"SELECT key as Name,

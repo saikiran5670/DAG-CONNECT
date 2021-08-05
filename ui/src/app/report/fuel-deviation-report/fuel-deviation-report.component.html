@@ -261,8 +261,31 @@
                 </canvas>
               </div>
             </div>
+            <div style='padding: 10px 0px 20px 0px;' *ngIf='fuelDeviationChart.fuelDeviationEvent.state && ((fuelDeviationChart.fuelIncreaseEvent.state && !fuelDeviationChart.fuelDecreaseEvent.state) || (fuelDeviationChart.fuelDecreaseEvent.state && !fuelDeviationChart.fuelIncreaseEvent.state))' class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+              <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblFuelDeviationEvents || 'Fuel Deviation Events' }}</span>
+              <div style='padding: 0px 20px;' *ngIf='fuelDeviationChart.fuelDeviationEvent.dChart' class="chart-wrapper">
+                <canvas baseChart 
+                  [data]="fuelDeviationDChartData"
+                  [chartType]="fuelDeviationDChartType"
+                  [labels]="fuelDeviationDChartLabels"
+                  [colors]="fuelDeviationDChartColors"
+                  [options]="fuelDeviationDChartOptions"
+                  [legend]="chartLegend">
+                </canvas>
+              </div>
+              <div style='padding: 0px 20px;' *ngIf='!fuelDeviationChart.fuelDeviationEvent.dChart' class="chart-wrapper">
+                <canvas baseChart 
+                  [data]="fuelDeviationPChartData" 
+                  [labels]="fuelDeviationPChartLabels" 
+                  [chartType]="fuelDeviationPChartType"
+                  [options]="fuelDeviationPChartOptions"
+                  [colors]="fuelDeviationPChartColors"
+                  [legend]="chartLegend">
+                </canvas>
+              </div>
+            </div>
           </div>
-          <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+          <div *ngIf='fuelDeviationChart.fuelDeviationEvent.state && ((fuelDeviationChart.fuelDecreaseEvent.state && fuelDeviationChart.fuelIncreaseEvent.state) || (!fuelDeviationChart.fuelDecreaseEvent.state && !fuelDeviationChart.fuelIncreaseEvent.state))' fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
             <div style='padding: 10px 0px 20px 0px;' *ngIf='fuelDeviationChart.fuelDeviationEvent.state' class="border-solid areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
               <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{ translationData.lblFuelDeviationEvents || 'Fuel Deviation Events' }}</span>
               <div style='padding: 0px 20px;' *ngIf='fuelDeviationChart.fuelDeviationEvent.dChart' class="chart-wrapper">

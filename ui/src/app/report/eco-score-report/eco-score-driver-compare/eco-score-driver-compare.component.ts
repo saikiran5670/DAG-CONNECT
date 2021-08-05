@@ -347,11 +347,11 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     
     if(this.prefUnitFormat !== 'dunit_Metric' && key){
       if(key.indexOf("30") !== -1)
-        value += ' 18.6-31 m/h(%)'
+        value += ' 15-30 mph(%)'
       else if(key.indexOf("50") !== -1)
-        value += ' 31-46.6 m/h(%)'
+        value += ' 30-45 mph(%)'
       else if(key.indexOf("75") !== -1)
-        value += ' >46.6 m/h(%)'
+        value += ' >45 mph(%)'
     }
     const gridOptions = grid.getOptions() as GridOption;
     const treeLevelPropName = gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName || '__treeLevel';

@@ -161,8 +161,9 @@ namespace net.atos.daf.ct2.reports.test
             };
             var result = await _reportManager.GetVehPerformanceBubbleChartData(chart);
             Assert.IsNotNull(result);
-        }
+            //}
 
-        #endregion
+            #endregion
+        }
     }
 }

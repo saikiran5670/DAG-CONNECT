@@ -18,13 +18,15 @@
 
        <!-- Charts  -->
     <div style='margin-bottom: 10px;'>
-      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-        <div class="chartTile col-md-2">
+      <div fxLayout="row" class="full-width mb-10" fxLayoutGap="10px">
+        <div [hidden]="!checkForPreference('co2emission')" class="chartTile col-md-2">
           <div class="textDiv">
             <div>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</div>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{currentC02Value}} T</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; line-height: 1.5;'>{{currentC02Value}} T <br>
+            out of {{cutOffC02Value}} T </div>
+            <!-- <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'></div>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffC02Value}} T</div>
-            
+             -->
           </div>
           
           <div class="col-md-8 chart-wrapper chartDimension">
@@ -40,11 +42,11 @@
         </div>
 
         <!-- Idling Time -->
-        <div class="chartTile col-md-2">
+        <div [hidden]="!checkForPreference('idlingtime')" class="chartTile col-md-2">
           <div class="textDiv">
             <div>{{ translationData.lblIdlingTime || 'Idling Time' }}</div>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{currentIdlingTime}}</div>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffIdlingTime}}</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5'>{{currentIdlingTime}} <br>
+            out of {{cutOffIdlingTime}}</div>
             
           </div>
           
@@ -61,11 +63,11 @@
         </div>
 
          <!-- Driving Time -->
-         <div class="chartTile col-md-2">
+         <div [hidden]="!checkForPreference('drivingtime')" class="chartTile col-md-2">
           <div class="textDiv">
             <div>{{ translationData.lblDrivingTime || 'Driving Time' }}</div>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{currentDrivingTime}}</div>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffDrivingTime}}</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5'>{{currentDrivingTime}}<br>
+            out of {{cutOffDrivingTime}}</div>
             
           </div>
           
@@ -85,13 +87,14 @@
         </div>
         <!-- row2 -->
         
-        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+        <div fxLayout="row" class="full-width mb-10" fxLayoutGap="10px">
  <!-- Distance Chart -->
- <div class="chartTile col-md-2">
+
+ <div  [hidden]="!checkForPreference('totaldistance')" class="chartTile col-md-2">
   <div class="textDiv">
     <div>{{ translationData.lblDistance || 'Distance' }}</div>
-    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{currentDistanceValue}} Km</div>
-    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffDistanceValue}} Km</div>
+    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentDistanceValue}} {{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} <br>
+      out of {{cutOffDistanceValue}}  {{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </div>
     
   </div>
   
@@ -106,57 +109,60 @@
       </canvas>
     </div>
 </div>
+
+<!-- Fuel Consumed -->
+<div  [hidden]="!checkForPreference('fuelconsumed')" class="chartTile col-md-2">
+  <div class="textDiv">
+    <div>{{ translationData.lblFuelConsume || 'Fuel Consumed' }}</div>
+    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }}) <br>
+      out of {{cutOffFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }})</div>
+    
+  </div>
+  
+  <div class="col-md-8 chart-wrapper chartDimension">
+      <canvas #chart5 baseChart
+        [data]="doughnutChartFuelConsumedData"
+        [labels]="doughnutChartLabels"
+        [chartType]="doughnutChartType"
+        [options]="doughnutChartFuelConsumedOptions"
+        [colors]="doughnutFuelConsumedColors"
+        [plugins]="doughnutChartFuelConsumedPlugins">
+      </canvas>
+    </div>
+</div>
+
+<!-- Fuel Used Idling-->
+<div  [hidden]="!checkForPreference('fuelusedidling')"  class="chartTile col-md-2">
+  <div class="textDiv">
+    <div>{{ translationData.lblFuelUsedByIdling || 'Fuel Used By Idling' }}</div>
+    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentIdlingFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }})<br>
+      out of {{cutOffIdlingFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblGallons || 'g') : (translationData.lblLtr || 'L') }})</div>
+    
+  </div>
+  
+  <div class="col-md-8 chart-wrapper chartDimension">
+      <canvas #chart6 baseChart
+        [data]="doughnutChartFuelUsedData"
+        [labels]="doughnutChartFuelUsedLabels"
+        [chartType]="doughnutChartType"
+        [options]="doughnutChartFuelUsedOptions"
+        [colors]="doughnutFuelUsedColors"
+        [plugins]="doughnutChartFuelUsedPlugins">
+      </canvas>
+    </div>
+</div>
+
 </div>
 <!-- row3 -->
 
-<div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-          <div class="chartTile col-md-2">
-            <div class="textDiv">
-              <div>{{ translationData.lblFuelConsume || 'Fuel Consumed' }}</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{currentFuelConsumed}} L</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffFuelConsumed}} L</div>
-              
-            </div>
-            
-            <div class="col-md-8 chart-wrapper chartDimension">
-                <canvas #chart5 baseChart
-                  [data]="doughnutChartFuelConsumedData"
-                  [labels]="doughnutChartLabels"
-                  [chartType]="doughnutChartType"
-                  [options]="doughnutChartFuelConsumedOptions"
-                  [colors]="doughnutFuelConsumedColors"
-                  [plugins]="doughnutChartFuelConsumedPlugins">
-                </canvas>
-              </div>
-          </div>
-  
-          <!-- Fuel Used -->
-          <div class="chartTile col-md-2">
-            <div class="textDiv">
-              <div>{{ translationData.lblFuelUsedByIdling || 'Fuel Used By Idling' }}</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{currentIdlingFuelConsumed}} L</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffIdlingFuelConsumed}} L</div>
-              
-            </div>
-            
-            <div class="col-md-8 chart-wrapper chartDimension">
-                <canvas #chart6 baseChart
-                  [data]="doughnutChartFuelUsedData"
-                  [labels]="doughnutChartFuelUsedLabels"
-                  [chartType]="doughnutChartType"
-                  [options]="doughnutChartFuelUsedOptions"
-                  [colors]="doughnutFuelUsedColors"
-                  [plugins]="doughnutChartFuelUsedPlugins">
-                </canvas>
-              </div>
-          </div>
-  
+<div fxLayout="row" class="full-width" fxLayoutGap="10px">
+         
            <!-- Fuel Consumption -->
-           <div class="chartTile col-md-2">
+           <div [hidden]="!checkForPreference('fuelconsumption')"  class="chartTile col-md-2">
             <div class="textDiv">
               <div>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{currentFuelConsumption}}</div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffFuelConsumption}}</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentFuelConsumption}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblLtr100Km || 'Ltr/100Km') }})<br>
+                out of {{cutOffFuelConsumption}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblLtr100Km || 'Ltr/100Km') }})</div>
               
             </div>
             

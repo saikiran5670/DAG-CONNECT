@@ -16,7 +16,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 _logger.Info("Get GetVehiclePerformanceChartTemplate ");
-                VehPerformanceResponse response = new VehPerformanceResponse() { VehPerformanceTemplate=new VehPerformanceTemplate() };
+                VehPerformanceResponse response = new VehPerformanceResponse() { VehPerformanceTemplate = new VehPerformanceTemplate() };
                 ////var vehicleDeatilsWithAccountVisibility =
                 ////                await _visibilityManager.GetVehicleByAccountVisibility(vehPerformanceRequest.AccountId, vehPerformanceRequest.OrganizationId);
 
@@ -100,6 +100,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 if (result != null)
                 {
+                    //response.BubbleChartData.Add(_mapper.ToBubbleChartDataResponse(result));
                     var resChartDetails = JsonConvert.SerializeObject(result);
                     response.BubbleChartData.AddRange(
                          JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<BubbleChartData>>(resChartDetails,
