@@ -416,7 +416,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   }
 
   formatValues(dataContext: any, val: any){
-    if(val !== '0'){
+    if(val && val !== '0'){
       let valTemp = Number.parseFloat(val.toString());
       if(dataContext.rangeValueType && dataContext.rangeValueType === 'T'){
         valTemp = Number.parseInt(valTemp.toString());
