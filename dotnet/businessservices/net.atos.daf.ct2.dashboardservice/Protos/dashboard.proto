@@ -11,6 +11,7 @@ rpc GetTodayLiveVinData(TodayLiveVehicleRequest) returns (TodayLiveVehicleRespon
 rpc GetFleetUtilizationDetails(FleetKpiFilterRequest) returns (FleetUtilizationResponse);
 rpc GetVisibleVins(VehicleListRequest) returns (VehicleListAndDetailsResponse);
 rpc CreateDashboardUserPreference (DashboardUserPreferenceCreateRequest) returns (DashboardUserPreferenceCreateResponse);
+rpc GetDashboardUserPreference(DashboardUserPreferenceRequest) returns (DashboardUserPreferenceResponse);
 }
 
 enum Responsecode{
@@ -167,3 +168,31 @@ message DashboardUserPreferenceAttribute {
     double ThresholdValue = 6;
 }
 //End ReportUserPreference
+
+//START Get User Dashboard Preferences
+message DashboardUserPreferenceRequest {
+    int32 ReportId = 1;
+    int32 AccountId=2;
+    int32 RoleId=3;
+    int32 OrganizationId=4;
+    int32 ContextOrgId=5; 
+}
+
+message DashboardUserPreferenceResponse {
+    DashboardUserPreference UserPreference = 1;
+    Responsecode Code = 2;
+    string Message = 3;
+    int32 TargetProfileId=4;
+}
+
+message DashboardUserPreference{
+    int32 DataAttributeId=1;
+    string Name=2;
+    string Key=3;
+    string State=4;
+    string ChartType=5;
+    string ThresholdType=6;
+    double ThresholdValue=7;
+    repeated DashboardUserPreference SubReportUserPreferences=8;
+}
+//END Get User Dashboard Preferences

@@ -36,6 +36,48 @@ namespace net.atos.daf.ct2.dashboardservice.entity
             return objRequest;
 
         }
+
+        internal DashboardUserPreferenceResponse MapReportUserPreferences(IEnumerable<reports.entity.ReportUserPreference> userPreferences)
+        {
+            var root = userPreferences.Where(up => up.Name.IndexOf('.') == -1).First();
+
+            var preferences = FillRecursive(userPreferences, new int[] { root.DataAttributeId }).FirstOrDefault();
+
+            return new DashboardUserPreferenceResponse
+            {
+                TargetProfileId = root.TargetProfileId ?? 0,
+                UserPreference = preferences,
+                Code = Responsecode.Success
+            };
+        }
+
+        private static List<DashboardUserPreference> FillRecursive(IEnumerable<reports.entity.ReportUserPreference> flatObjects, int[] parentIds)
+        {
+            List<DashboardUserPreference> recursiveObjects = new List<DashboardUserPreference>();
+            if (parentIds != null)
+            {
+                foreach (var item in flatObjects.Where(x => parentIds.Contains(x.DataAttributeId)))
+                {
+                    if (item.ReportAttributeType == reports.entity.ReportAttributeType.Simple ||
+                        item.ReportAttributeType == reports.entity.ReportAttributeType.Complex)
+                    {
+                        var preference = new DashboardUserPreference
+                        {
+                            DataAttributeId = item.DataAttributeId,
+                            Name = item.Name ?? string.Empty,
+                            Key = item.Key ?? string.Empty,
+                            State = item.State ?? ((char)ReportPreferenceState.InActive).ToString(),
+                            ChartType = item.ChartType ?? string.Empty,
+                            ThresholdType = item.ThresholdType ?? string.Empty,
+                            ThresholdValue = item.ThresholdValue
+                        };
+                        preference.SubReportUserPreferences.AddRange(FillRecursive(flatObjects, item.SubDataAttributes));
+                        recursiveObjects.Add(preference);
+                    }
+                }
+            }
+            return recursiveObjects;
+        }
     }
 
 

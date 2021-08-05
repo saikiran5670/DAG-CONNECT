@@ -9,6 +9,10 @@ using net.atos.daf.ct2.dashboard;
 using net.atos.daf.ct2.dashboard.repository;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
+using net.atos.daf.ct2.reports;
+using net.atos.daf.ct2.reports.repository;
+using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.repository;
 
 namespace net.atos.daf.ct2.dashboardservice
 {
@@ -45,6 +49,13 @@ namespace net.atos.daf.ct2.dashboardservice
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IDashBoardManager, DashBoardManager>();
             services.AddTransient<IDashBoardRepository, DashBoardRepository>();
+
+            services.AddTransient<IReportManager, ReportManager>();
+            services.AddTransient<IReportRepository, ReportRepository>();
+
+            services.AddTransient<IVisibilityManager, VisibilityManager>();
+            services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
