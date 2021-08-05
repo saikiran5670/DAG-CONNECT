@@ -1594,10 +1594,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 string filters = JsonConvert.SerializeObject(request);
                 VehPerformanceRequest objVehPerformanceFilter = JsonConvert.DeserializeObject<VehPerformanceRequest>(filters);
                 var data = await _reportServiceClient.GetVehiclePerformanceChartTemplateAsync(objVehPerformanceFilter);
-                if (data?.VehPerformanceCharts != null)
+                if (data?.VehPerformanceTemplate?.VehPerformanceCharts != null)
                 {
                     data.Message = ReportConstants.GET_VEHICLE_PERFORMANCE_SUCCESS_MSG;
-                    return Ok(data);
+                    return Ok(data.VehPerformanceTemplate);
                 }
                 else
                 {
@@ -1611,7 +1611,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         [HttpPost]
-        [Route("vehperformance/chartdata")]
+        [Route("vehicleperformance/chartdata")]
         public async Task<IActionResult> GetVehPerformanceBubbleChartData(VehiclePerformanceFilter vehiclePerformanceFilter)
         {
             try
@@ -1629,7 +1629,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response != null)
                 {
                     response.Message = ReportConstants.GET_VEHICLE_PERFORMANCE_SUCCESS_MSG;
-                    return Ok(response);
+                    return Ok(response.BubbleChartData);
                 }
                 else
                 {
@@ -1659,7 +1659,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response != null)
                 {
                     response.Message = ReportConstants.GET_VEHICLE_PERFORMANCE_SUCCESS_MSG;
-                    return Ok(response);
+                    return Ok(response.VehPerformanceType);
                 }
                 else
                 {

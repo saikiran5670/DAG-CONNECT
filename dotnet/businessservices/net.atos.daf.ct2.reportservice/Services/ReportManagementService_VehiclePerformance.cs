@@ -16,7 +16,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 _logger.Info("Get GetVehiclePerformanceChartTemplate ");
-                VehPerformanceResponse response = new VehPerformanceResponse();
+                VehPerformanceResponse response = new VehPerformanceResponse() { VehPerformanceTemplate=new VehPerformanceTemplate() };
                 ////var vehicleDeatilsWithAccountVisibility =
                 ////                await _visibilityManager.GetVehicleByAccountVisibility(vehPerformanceRequest.AccountId, vehPerformanceRequest.OrganizationId);
 
@@ -41,8 +41,8 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     var resChartDetails = JsonConvert.SerializeObject(result.VehChartList);
                     var ressummarytDetails = JsonConvert.SerializeObject(result.VehiclePerformanceSummary);
-                    response.VehPerformanceSummary = JsonConvert.DeserializeObject<VehPerformanceSummary>(ressummarytDetails);
-                    response.VehPerformanceCharts.AddRange(
+                    response.VehPerformanceTemplate.VehPerformanceSummary = JsonConvert.DeserializeObject<VehPerformanceSummary>(ressummarytDetails);
+                    response.VehPerformanceTemplate.VehPerformanceCharts.AddRange(
                          JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehPerformanceCharts>>(resChartDetails,
                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
                     response.Code = Responsecode.Success;
