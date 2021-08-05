@@ -31,7 +31,7 @@
                 <button [disabled]="selectionTab == 'lastmonth'" (click)="selectionTimeRange('lastmonth')"
                   [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}"
                   class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button
-                  color="primary">{{translationData.lblLastMonth|| 'Last Month' }}</button>
+                  color="primary">{{translationData.lblLastMonth || 'Last Month' }}</button>
                 <button [disabled]="selectionTab == 'last3month'" (click)="selectionTimeRange('last3month')"
                   [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm'
                   mat-raised-button color="primary">{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
@@ -178,7 +178,7 @@
             <div fxLayout="row" fxLayoutAlign="center center" class="full-width" fxLayoutGap="30px">
               <div *ngIf="summaryBlock.fuelIncrease" class="areaWidth min-width-25-per summaryBox" fxLayout="column" fxLayoutAlign="center center">
                 <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
-                  <span>{{ translationData.lbl || 'Fuel Increase Events' }}</span>
+                  <span>{{ translationData.lblFuelIncreaseEvents || 'Fuel Increase Events' }}</span>
                 </div>
                 <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
                   <span>{{ (summarySectionData && summarySectionData.totalIncCount) ? summarySectionData.totalIncCount : 0 }}</span>
@@ -186,7 +186,7 @@
               </div>
               <div *ngIf="summaryBlock.fuelDecrease" class="areaWidth min-width-25-per summaryBox" fxLayout="column" fxLayoutAlign="center center">
                 <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
-                  <span>{{ translationData.lbl || 'Fuel Decrease Events' }}</span>
+                  <span>{{ translationData.lblFuelDecreaseEvents || 'Fuel Decrease Events' }}</span>
                 </div>
                 <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
                   <span>{{ (summarySectionData && summarySectionData.totalDecCount) ? summarySectionData.totalDecCount : 0 }}</span>
@@ -194,7 +194,7 @@
               </div>
               <div *ngIf="summaryBlock.fuelVehicleEvent" class="areaWidth min-width-25-per summaryBox" fxLayout="column" fxLayoutAlign="center center">
                 <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
-                  <span>{{ translationData.lbl || 'Vehicles With Fuel Events' }}</span>
+                  <span>{{ translationData.lblVehiclesWithFuelEvents || 'Vehicles With Fuel Events' }}</span>
                 </div>
                 <div fxLayout="row" class="full-width" fxLayoutAlign="center center">
                   <span>{{ (summarySectionData && summarySectionData.totalVehCount) ? summarySectionData.totalVehCount : 0 }}</span>

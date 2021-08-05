@@ -150,7 +150,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 string filters = JsonConvert.SerializeObject(request);
                 _logger.Info("GetTodayLiveVinData method in dashboard API called.");
                 var data = await _dashboarClient.GetTodayLiveVinDataAsync(JsonConvert.DeserializeObject<dashboardservice.TodayLiveVehicleRequest>(filters));
-                return Ok(data);
+                switch (data.Code)
+                {
+                    case Responsecode.Success:
+                        return Ok(data);
+                    case Responsecode.Failed:
+                        return StatusCode((int)data.Code, data);
+                    case Responsecode.InternalServerError:
+                        return StatusCode(500, "Internal Server Error.");
+                    default:
+                        return StatusCode((int)data.Code, data.Message);
+                }
             }
             catch (Exception ex)
             {
