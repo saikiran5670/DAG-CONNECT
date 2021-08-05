@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.confluentkafka.test
                 Cacertlocation = "./cacert.pem",
                 Consumergroup = "alertpoccosumer"
             };
-            ConsumeResult<Null, string> result = KafkaConfluentWorker.Consumer(kafkaEntity);
+            ConsumeResult<string, string> result = KafkaConfluentWorker.Consumer(kafkaEntity);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Message);
             Assert.IsNotNull(result.Message.Value);
@@ -82,7 +82,7 @@ namespace net.atos.daf.ct2.confluentkafka.test
                 Cacertlocation = "./cacert.pem",
                 Consumergroup = "cdcvehicleconsumer"
             };
-            ConsumeResult<Null, string> result = KafkaConfluentWorker.Consumer(kafkaEntity);
+            ConsumeResult<string, string> result = KafkaConfluentWorker.Consumer(kafkaEntity);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Message);
             Assert.IsNotNull(result.Message.Value);

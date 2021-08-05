@@ -1407,7 +1407,7 @@ setVehicleGroupAndVehiclePreSelection() {
   }
 
   exportAsPDFFile(){
-  var doc = new jsPDF('p', 'mm', 'a0');
+  var doc = new jsPDF('p', 'mm', 'a4');
  
   //var doc = new jsPDF('p', 'mm', 'a4');
   let pdfColumns = [this.displayedColumns];

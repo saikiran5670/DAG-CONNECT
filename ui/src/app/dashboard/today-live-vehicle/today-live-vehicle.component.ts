@@ -16,6 +16,7 @@ export class TodayLiveVehicleComponent implements OnInit {
   @Input() translationData : any;
   @Input() preference : any;
   @Input() prefData : any;
+  @Input() dashboardPrefData :  any;
   @ViewChild('chart1') chart1 : ElementRef;
   @ViewChild('chart3') chart3 : ElementRef;
 
@@ -239,10 +240,8 @@ doughnutDistanceColors: Color[] = [
   getLiveVehicleData(){
     let _vehiclePayload = {
       "viNs": [ //this.finalVinList
-        "M4A14532",
-        "XLR0998HGFFT76657",
-        "XLRASH4300G1472w0",
-        "XLR0998HGFFT75550"
+            "M4A14532","XLR0998HGFFT76657"
+        
       ]
     }
     this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{

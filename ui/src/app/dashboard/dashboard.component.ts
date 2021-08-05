@@ -27,6 +27,7 @@ export class DashboardComponent implements OnInit {
   finalVinList : any =[];
   prefData : any;
   preference : any;
+  dashboardPrefData: any;
   //--------- Pie chart ------------------//
   // doughnutChartData: MultiDataSet = [[55, 25, 20]];
   // doughnutChartLabels: Label[] = ['BMW', 'Ford', 'Tesla'];
@@ -163,6 +164,14 @@ export class DashboardComponent implements OnInit {
           });
         }
       });
+    });
+    let reportId = 18; 
+    this.reportService.getReportUserPreference(reportId).subscribe((prefData: any) => {
+      this.dashboardPrefData = prefData['userPreferences'];   
+        
+    }, (error) => {
+      this.dashboardPrefData = [];
+      
     });
    
   }

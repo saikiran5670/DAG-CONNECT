@@ -270,16 +270,22 @@ ngOnDestroy(){
         }else{ // org pref
           this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
             this.proceedStep(prefData, orgPref);
+            
           }, (error) => { // failed org API
             let pref: any = {};
             this.proceedStep(prefData, pref);
           });
+
         }
+        if(this.showBack){
+          if(this._state.fromDashboard == true){
+          this.selectionTimeRange('today');}
+          }
       });
     });
-    if(this._state.fromDashboard == true){
-    this.selectionTimeRange('today');
-    }
+    // if(this._state.fromDashboard == true){
+    // this.selectionTimeRange('yesterday');
+    // }
   }
 
   changeHerePOISelection(event: any, hereData: any){
@@ -515,11 +521,24 @@ ngOnDestroy(){
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
   }
+
   this.logBookForm.get('vehicle').setValue("all");
   this.logBookForm.get('vehicleGroup').setValue("all");
   this.logBookForm.get('alertLevel').setValue("all");
   this.logBookForm.get('alertType').setValue("all");
   this.logBookForm.get('alertCategory').setValue("all");
+
+  if(this.showBack && this.selectionTab == 'today'){
+  if(this._state.fromDashboard == true && this._state.logisticFlag == true){
+    this.logBookForm.get('alertCategory').setValue("L");
+  }
+  else if(this._state.fromDashboard == true && this._state.fuelFlag == true){
+    this.logBookForm.get('alertCategory').setValue("F");
+  }
+  else if(this._state.fromDashboard == true && this._state.repairFlag == true){
+    this.logBookForm.get('alertCategory').setValue("R");
+  }
+}
 }
 
   loadWholeTripData(){
@@ -839,15 +858,6 @@ ngOnDestroy(){
             if(_v.length > 0){
               let id =_v[0].vehicleId;
               this.logBookForm.get('vehicle').setValue(id);
-              if(this._state.fromDashboard == true && this._state.logisticFlag == true){
-                this.logBookForm.get('alertCategory').setValue("L");
-              }
-              if(this._state.fromDashboard == true && this._state.fuelFlag == true){
-                this.logBookForm.get('alertCategory').setValue("F");
-              }
-              if(this._state.fromDashboard == true && this._state.repairFlag == true){
-                this.logBookForm.get('alertCategory').setValue("R");
-              }
             }
         }
         }else{
@@ -860,7 +870,19 @@ ngOnDestroy(){
       this.logBookForm.get('alertLevel').setValue("all");
       this.logBookForm.get('alertType').setValue("all");
       this.logBookForm.get('alertCategory').setValue("all");
+      
     }
+    if(this.showBack && this.selectionTab == 'today'){
+    if(this._state.fromDashboard == true && this._state.logisticFlag == true){
+      this.logBookForm.get('alertCategory').setValue("L");
+    }
+    if(this._state.fromDashboard == true && this._state.fuelFlag == true){
+      this.logBookForm.get('alertCategory').setValue("F");
+    }
+    if(this._state.fromDashboard == true && this._state.repairFlag == true){
+      this.logBookForm.get('alertCategory').setValue("R");
+    }
+  }
   }
 
   onVehicleGroupChange(event: any){

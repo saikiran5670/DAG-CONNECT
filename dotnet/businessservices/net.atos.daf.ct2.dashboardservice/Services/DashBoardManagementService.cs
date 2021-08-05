@@ -24,10 +24,12 @@ namespace net.atos.daf.ct2.dashboardservice
         private readonly IVisibilityManager _visibilityManager;
         private readonly Mapper _mapper;
 
-        public DashBoardManagementService(IDashBoardManager dashBoardManager)
+        public DashBoardManagementService(IDashBoardManager dashBoardManager, IReportManager reportManager, IVisibilityManager visibilityManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _dashBoardManager = dashBoardManager;
+            _reportManager = reportManager;
+            _visibilityManager = visibilityManager;
             _mapper = new Mapper();
         }
 
@@ -104,9 +106,9 @@ namespace net.atos.daf.ct2.dashboardservice
                 objTodayLiveVehicleRequest.YesterdayDateTime = UTCHandling.GetUTCFromDateTime(yesterday, "UTC");
                 var data = await _dashBoardManager.GetTodayLiveVinData(objTodayLiveVehicleRequest);
                 TodayLiveVehicleResponse objTodayLiveVehicleResponse = new TodayLiveVehicleResponse();
-                if (data != null)
+                if (data != null && data.TodayActiveVinCount > 0)
                 {
-                    objTodayLiveVehicleResponse.TodayVin = data.TodayVin;
+                    //objTodayLiveVehicleResponse.TodayVin = data.TodayVin;
                     objTodayLiveVehicleResponse.Distance = data.Distance;
                     objTodayLiveVehicleResponse.DrivingTime = data.DrivingTime;
                     objTodayLiveVehicleResponse.DriverCount = data.DriverCount;
@@ -114,7 +116,7 @@ namespace net.atos.daf.ct2.dashboardservice
                     objTodayLiveVehicleResponse.TodayTimeBasedUtilizationRate = data.TodayTimeBasedUtilizationRate;
                     objTodayLiveVehicleResponse.TodayDistanceBasedUtilization = data.TodayDistanceBasedUtilization;
                     objTodayLiveVehicleResponse.CriticleAlertCount = data.CriticleAlertCount;
-                    objTodayLiveVehicleResponse.YesterdayVin = data.YesterdayVin;
+                    //objTodayLiveVehicleResponse.YesterdayVin = data.YesterdayVin;
                     objTodayLiveVehicleResponse.YesterdayActiveVinCount = data.YesterdayActiveVinCount;
                     objTodayLiveVehicleResponse.YesterDayTimeBasedUtilizationRate = data.YesterDayTimeBasedUtilizationRate;
                     objTodayLiveVehicleResponse.YesterDayDistanceBasedUtilization = data.YesterDayDistanceBasedUtilization;
@@ -228,7 +230,8 @@ namespace net.atos.daf.ct2.dashboardservice
             try
             {
                 DashboardUserPreferenceCreateResponse response = new DashboardUserPreferenceCreateResponse();
-                var isSuccess = await _dashBoardManager.CreateDashboardUserPreference(_mapper.MapCreateDashboardUserPreferences(request));
+                //var isSuccess = await _dashBoardManager.CreateDashboardUserPreference(_mapper.MapCreateDashboardUserPreferences1(request));
+                var isSuccess = await _reportManager.CreateReportUserPreference(_mapper.MapCreateReportUserPreferences(request));
                 if (isSuccess)
                 {
                     response.Message = String.Format(DashboardConstants.USER_PREFERENCE_CREATE_SUCCESS_MSG, request.AccountId, request.ReportId);
@@ -252,6 +255,58 @@ namespace net.atos.daf.ct2.dashboardservice
                 };
             }
         }
+
+        public override async Task<DashboardUserPreferenceResponse> GetDashboardUserPreference(DashboardUserPreferenceRequest request, ServerCallContext context)
+        {
+            try
+            {
+                DashboardUserPreferenceResponse response = new DashboardUserPreferenceResponse();
+                IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
+                var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
+                var roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
+                if (userPreferencesExists)
+                {
+                    var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
+
+                    //Filter out preferences based on Account role and org package subscription
+                    userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAttributeId == x.DataAttributeId));
+                }
+                else
+                {
+                    userPreferences = roleBasedUserPreferences;
+                }
+
+                try
+                {
+                    if (userPreferences.Count() == 0)
+                    {
+                        response.Code = Responsecode.NotFound;
+                        response.Message = "No data found";
+                    }
+                    else
+                    {
+                        response = _mapper.MapReportUserPreferences(userPreferences);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(null, ex);
+                    throw new Exception("Error occurred while parsing the report user preferences or data is missing.");
+                }
+
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return new DashboardUserPreferenceResponse()
+                {
+                    Code = Responsecode.InternalServerError,
+                    Message = $"{nameof(GetDashboardUserPreference)} failed due to - " + ex.Message
+                };
+            }
+        }
+
         #endregion
     }
 }
