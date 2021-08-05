@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.dashboardservice.entity
 {
     public class Mapper
     {
-        internal dashboard.entity.DashboardUserPreferenceCreateRequest MapCreateDashboardUserPreferences(DashboardUserPreferenceCreateRequest request)
+        internal dashboard.entity.DashboardUserPreferenceCreateRequest MapCreateDashboardUserPreferences1(DashboardUserPreferenceCreateRequest request)
         {
 
             dashboard.entity.DashboardUserPreferenceCreateRequest objRequest
@@ -36,6 +36,35 @@ namespace net.atos.daf.ct2.dashboardservice.entity
             return objRequest;
 
         }
+
+        internal reports.entity.ReportUserPreferenceCreateRequest MapCreateReportUserPreferences(DashboardUserPreferenceCreateRequest request)
+        {
+            reports.entity.ReportUserPreferenceCreateRequest objRequest
+                   = new reports.entity.ReportUserPreferenceCreateRequest
+                   {
+                       Attributes = new List<reports.entity.UserPreferenceAttribute>(),
+                       OrganizationId = request.OrganizationId,
+                       ReportId = request.ReportId,
+                       AccountId = request.AccountId
+                   };
+
+            foreach (var attribute in request.Attributes)
+            {
+                objRequest.Attributes.Add(new reports.entity.UserPreferenceAttribute
+                {
+                    DataAttributeId = attribute.DataAttributeId,
+                    State = (reports.entity.ReportUserPreferenceState)(ReportUserPreferenceState)(char)attribute.State,
+                    Type = (reports.entity.ReportPreferenceType)(ReportPreferenceType)(char)attribute.Type,
+                    ChartType = (reports.entity.ReportPreferenceChartType?)(attribute.ChartType > 0 ? (ReportPreferenceChartType)(char)attribute.ChartType : new ReportPreferenceChartType?()),
+                    ThresholdType = (reports.entity.ReportPreferenceThresholdType?)(attribute.ThresholdType > 0 ? (ReportPreferenceThresholdType?)(char)attribute.ThresholdType : new ReportPreferenceThresholdType?()),
+                    ThresholdValue = attribute.ThresholdValue,
+                });
+            }
+            return objRequest;
+        }
+
+
+        #region Get user Preference
 
         internal DashboardUserPreferenceResponse MapReportUserPreferences(IEnumerable<reports.entity.ReportUserPreference> userPreferences)
         {
@@ -78,6 +107,7 @@ namespace net.atos.daf.ct2.dashboardservice.entity
             }
             return recursiveObjects;
         }
+        #endregion
     }
 
 

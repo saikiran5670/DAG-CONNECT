@@ -427,7 +427,22 @@ checkForPreference(fieldKey) {
   return true;
 }
 
+checkForVehiclePreference(fieldKey) {
+  if (this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
+    let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_'+fieldKey));
+    if (filterData.length > 0) {
+      if (filterData[0].state == 'A') {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
   setChartData(){
+
     this.distanceChartType = 'bar';
     this.vehicleChartType = 'line';
     this.timeDChartType = 'doughnut';

@@ -106,9 +106,9 @@ namespace net.atos.daf.ct2.dashboardservice
                 objTodayLiveVehicleRequest.YesterdayDateTime = UTCHandling.GetUTCFromDateTime(yesterday, "UTC");
                 var data = await _dashBoardManager.GetTodayLiveVinData(objTodayLiveVehicleRequest);
                 TodayLiveVehicleResponse objTodayLiveVehicleResponse = new TodayLiveVehicleResponse();
-                if (data != null)
+                if (data != null && data.TodayActiveVinCount > 0)
                 {
-                    objTodayLiveVehicleResponse.TodayVin = data.TodayVin;
+                    //objTodayLiveVehicleResponse.TodayVin = data.TodayVin;
                     objTodayLiveVehicleResponse.Distance = data.Distance;
                     objTodayLiveVehicleResponse.DrivingTime = data.DrivingTime;
                     objTodayLiveVehicleResponse.DriverCount = data.DriverCount;
@@ -116,7 +116,7 @@ namespace net.atos.daf.ct2.dashboardservice
                     objTodayLiveVehicleResponse.TodayTimeBasedUtilizationRate = data.TodayTimeBasedUtilizationRate;
                     objTodayLiveVehicleResponse.TodayDistanceBasedUtilization = data.TodayDistanceBasedUtilization;
                     objTodayLiveVehicleResponse.CriticleAlertCount = data.CriticleAlertCount;
-                    objTodayLiveVehicleResponse.YesterdayVin = data.YesterdayVin;
+                    //objTodayLiveVehicleResponse.YesterdayVin = data.YesterdayVin;
                     objTodayLiveVehicleResponse.YesterdayActiveVinCount = data.YesterdayActiveVinCount;
                     objTodayLiveVehicleResponse.YesterDayTimeBasedUtilizationRate = data.YesterDayTimeBasedUtilizationRate;
                     objTodayLiveVehicleResponse.YesterDayDistanceBasedUtilization = data.YesterDayDistanceBasedUtilization;
@@ -230,7 +230,8 @@ namespace net.atos.daf.ct2.dashboardservice
             try
             {
                 DashboardUserPreferenceCreateResponse response = new DashboardUserPreferenceCreateResponse();
-                var isSuccess = await _dashBoardManager.CreateDashboardUserPreference(_mapper.MapCreateDashboardUserPreferences(request));
+                //var isSuccess = await _dashBoardManager.CreateDashboardUserPreference(_mapper.MapCreateDashboardUserPreferences1(request));
+                var isSuccess = await _reportManager.CreateReportUserPreference(_mapper.MapCreateReportUserPreferences(request));
                 if (isSuccess)
                 {
                     response.Message = String.Format(DashboardConstants.USER_PREFERENCE_CREATE_SUCCESS_MSG, request.AccountId, request.ReportId);
