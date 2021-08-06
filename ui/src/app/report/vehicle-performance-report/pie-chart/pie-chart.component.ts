@@ -11,6 +11,7 @@ export class PieChartComponent implements OnInit {
   @Input() chartLabels;
   @Input() chartData;
   @Input() legends;
+  @Input() chartTitle;
   // Pie
   public pieChartOptions: ChartOptions = {
     responsive: true,
@@ -22,14 +23,14 @@ export class PieChartComponent implements OnInit {
       }
     }
   };
-  public pieChartLabels: Label[] = [['Download', 'Sales'], ['In', 'Store', 'Sales'], 'Mail Sales'];
+  public pieChartLabels: Label[] = ['Optimum', 'Harsh Brake', 'Moderate'];
   public pieChartData: SingleDataSet = [300, 500, 100];
   public pieChartType: ChartType = 'pie';
   public pieChartLegend = false;
   public pieChartPlugins = [];
   public pieChartColors = [
     {
-      backgroundColor: ['rgba(255,0,0,0.3)', 'rgba(0,255,0,0.3)', 'rgba(0,0,255,0.3)'],
+      backgroundColor: ['#00B050', '#FF0000', '#FFFF00'],
     },
   ];
 

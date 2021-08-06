@@ -152,6 +152,7 @@ export class DashboardPreferencesComponent implements OnInit {
       this.prepareDataDashboardPref();
         
     }, (error) => {
+      this.resetColumnData();
       this.initData = [];
       
     });
@@ -272,13 +273,73 @@ export class DashboardPreferencesComponent implements OnInit {
     }
   }
 
-  isAllSelected(section){
-    console.log("section name---->", section);
+  isAllSelected(section){   
     const numSelected = this["selectionFor"+section+"Columns"].selected.length;
     let lowerCaseSection = section.charAt(0).toLowerCase() + section.substring(1);
     const numRows = this[lowerCaseSection+"ColumnData"].length;
     return numSelected === numRows;
   }
+
+  getSaveObject(columnData, selectionData) {
+    console.log("selcted data", selectionData);
+    console.log("coloumn dataaaa", columnData);
+    let saveArr = [];
+     this[columnData].forEach(element => {
+     let sSearch = this[selectionData].selected.filter(item => item.dataAttributeId == element.dataAttributeId);
+     console.log("sssearch", sSearch);
+      if(sSearch.length > 0){
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "V", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }else{
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "V", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }
+     });
+    return saveArr;
+  }
+
+  onCancel(){
+    this.editDashboardFlag= false;
+    this.showDashboardReport = true;
+    this.setColumnCheckbox();
+  }
+
+  // onReset(){
+  //   this.setColumnCheckbox();
+  // }
+
+  onConfirm() {
+   
+    let _fleetKPIArr: any = [];
+    let _vehicleUtilizationArr: any = [];
+    let _todayLiveVehicleArr: any = [];
+    let _alertLast24HoursArr: any = [];
+
+    _fleetKPIArr = this.getSaveObject('fleetKPIColumnData', 'selectionForFleetKPIColumns');
+    _vehicleUtilizationArr = this.getSaveObject('vehicleUtilizationColumnData', 'selectionForVehicleUtilizationColumns');
+    _todayLiveVehicleArr = this.getSaveObject('todayLiveVehicleColumnData', 'selectionForTodayLiveVehicleColumns');
+    _alertLast24HoursArr = this.getSaveObject('alertLast24HoursColumnData', 'selectionForAlertLast24HoursColumns');
+ 
+    console.log("save Object", [..._fleetKPIArr, ... _vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr])
+    // return [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr];
+
+    
+    let objData: any = {
+      reportId: this.reportId,
+      attributes: [..._fleetKPIArr, ... _vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr] //-- merge data
+    }
+    this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
+      this.loadDashboardPreferences();
+      //this.setDashboardFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+      //this.reloadCurrentComponent();
+      // if((this.router.url).includes("fleetfuelreport")){
+         this.reloadCurrentComponent();
+      // }
+    });
+  }
+
+  reloadCurrentComponent(){
+    window.location.reload(); //-- reload screen
+  }
+
 
 
 }

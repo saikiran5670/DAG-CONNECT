@@ -20,6 +20,8 @@ export class VehiclePerformanceReportComponent implements OnInit {
   yaxisVaues = [];
   pieChartLabels = [];
   pieChartData = [];
+  piechartTitle = '';
+  bubbleHeatchartTitle = '';
   performanceTypeLst = [
     { name: "Engine Load Collective",  value: "E" },
     { name: "Road Speed Collective",  value: "S" },
@@ -204,6 +206,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
       this.search = true;
       this.showLoadingIndicator = false;
       this.generatePieChartData(res[1].kpiData);
+      this.updateChartTitles(this.searchResult.performanceType);
       console.log("searchResult", this.searchResult)
       console.log("xaxisVaues", this.xaxisVaues)
       console.log("yaxisVaues", this.yaxisVaues)
@@ -214,6 +217,19 @@ export class VehiclePerformanceReportComponent implements OnInit {
   
   hideSearchResult() {
     this.search = false;
+  }
+
+  updateChartTitles(performanceType) {
+    if(performanceType == 'E') {
+      this.piechartTitle = "Engine Operational Performance";
+      this.bubbleHeatchartTitle = "Engine Load Distribution";
+    } else if(performanceType == 'S') {
+      this.piechartTitle = "Road Speed Performance";
+      this.bubbleHeatchartTitle = "Road Speed Distribution";
+    } else {
+      this.piechartTitle = "Brake Performance";
+      this.bubbleHeatchartTitle = "Brake Behavior Distribution";
+    }
   }
 
   processXaxis(data) {

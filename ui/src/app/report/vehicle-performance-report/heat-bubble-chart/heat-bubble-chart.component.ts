@@ -34,6 +34,7 @@ export class HeatBubbleChartComponent implements OnInit {
   @Input() searchData;
   @Input() xaxis;
   @Input() yaxis;
+  @Input() chartTitle;
   public chartOptions;
 
   constructor() {
@@ -58,9 +59,9 @@ export class HeatBubbleChartComponent implements OnInit {
       fill: {
         type: "gradient"
       },
-      title: {
-        text: this.searchData?.performanceTypeLabel.replace(' Collective', '') + " Distribution"
-      },
+      // title: {
+      //   text: this.chartTitle
+      // },
       xaxis: this.xaxis,
       yaxis: this.yaxis,
       theme: {
@@ -77,5 +78,5 @@ export class HeatBubbleChartComponent implements OnInit {
 
     console.log("chartOptions", this.chartOptions)
   }
-  
+
 }

@@ -11,7 +11,8 @@ import { catchError } from 'rxjs/operators';
 import { ReportService } from '../services/report.service';
 import { TranslationService } from '../services/translation.service';
 import { OrganizationService } from '../services/organization.service';
-import { MessageService } from '../services/message.service'
+import { MessageService } from '../services/message.service';
+import { DashboardService } from '../services/dashboard.service';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -130,7 +131,7 @@ export class DashboardComponent implements OnInit {
   translationData: any = {};
 
   constructor(public httpClient: HttpClient,private translationService: TranslationService,private reportService : ReportService, private organizationService: OrganizationService,
-    private messageService : MessageService) {
+    private messageService : MessageService,private dashboardService : DashboardService) {
       this.sendMessage();
      
     }
@@ -192,7 +193,7 @@ export class DashboardComponent implements OnInit {
   }
 
   proceedStep(prefData: any, preference: any){
-    this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
+    this.dashboardService.getVinsForDashboard(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
       this.prefData = prefData;
       this.preference = preference;
       this.hideloader();
