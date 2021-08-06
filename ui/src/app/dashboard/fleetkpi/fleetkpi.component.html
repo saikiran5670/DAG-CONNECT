@@ -5,6 +5,181 @@
           || 'Fleet KPI' }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <!-- block data -->
+    <!-- time selection -->
+    <button class="weekButton"
+    (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}"  mat-raised-button
+      color="primary">{{translationData.lblLast7days|| 'Last 7 days' }}</button>
+    <button class="monthButton" 
+    (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" mat-raised-button
+      color="primary">{{translationData.lblLast30days|| 'Last 30 days' }}</button>
+    <button class="moreButton"
+    (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" mat-raised-button
+      color="primary">{{translationData.lblLastWeek || 'Last 90 days' }}</button>
+
+       <!-- Charts  -->
+    <div style='margin-bottom: 10px;'>
+      <div fxLayout="row" class="full-width mb-10" fxLayoutGap="10px">
+        <div [hidden]="!checkForPreference('co2emission')" class="chartTile col-md-2">
+          <div class="textDiv">
+            <div>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; line-height: 1.5;'>{{currentC02Value}} T <br>
+            out of {{cutOffC02Value}} T </div>
+            <!-- <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'></div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>out of {{cutOffC02Value}} T</div>
+             -->
+          </div>
+          
+          <div class="col-md-8 chart-wrapper chartDimension">
+              <canvas #chart1 baseChart
+                [data]="doughnutChartData"
+                [labels]="doughnutChartLabels"
+                [chartType]="doughnutChartType"
+                [options]="doughnutChartOptions"
+                [colors]="doughnutColors"
+                [plugins]="doughnutChartPlugins">
+              </canvas>
+            </div>
+        </div>
+
+        <!-- Idling Time -->
+        <div [hidden]="!checkForPreference('idlingtime')" class="chartTile col-md-2">
+          <div class="textDiv">
+            <div>{{ translationData.lblIdlingTime || 'Idling Time' }}</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5'>{{currentIdlingTime}} <br>
+            out of {{cutOffIdlingTime}}</div>
+            
+          </div>
+          
+          <div class="col-md-8 chart-wrapper chartDimension">
+              <canvas #chart2 baseChart
+                [data]="doughnutChartIdlingData"
+                [labels]="idlingChartLabels"
+                [chartType]="doughnutChartType"
+                [options]="doughnutChartIdlingOptions"
+                [colors]="doughnutIdlingColors"
+                [plugins]="doughnutChartIdlingPlugins">
+              </canvas>
+            </div>
+        </div>
+
+         <!-- Driving Time -->
+         <div [hidden]="!checkForPreference('drivingtime')" class="chartTile col-md-2">
+          <div class="textDiv">
+            <div>{{ translationData.lblDrivingTime || 'Driving Time' }}</div>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5'>{{currentDrivingTime}}<br>
+            out of {{cutOffDrivingTime}}</div>
+            
+          </div>
+          
+          <div class="col-md-8 chart-wrapper chartDimension">
+              <canvas #chart3 baseChart
+                [data]="doughnutChartDrivingData"
+                [labels]="drivingChartLabels"
+                [chartType]="doughnutChartType"
+                [options]="doughnutChartDrivingOptions"
+                [colors]="doughnutDrivingColors"
+                [plugins]="doughnutChartDrivingPlugins">
+              </canvas>
+            </div>
+        </div>
+
+       
+        </div>
+        <!-- row2 -->
+        
+        <div fxLayout="row" class="full-width mb-10" fxLayoutGap="10px">
+ <!-- Distance Chart -->
+
+ <div  [hidden]="!checkForPreference('totaldistance')" class="chartTile col-md-2">
+  <div class="textDiv">
+    <div>{{ translationData.lblDistance || 'Distance' }}</div>
+    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentDistanceValue}} {{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} <br>
+      out of {{cutOffDistanceValue}}  {{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </div>
     
+  </div>
+  
+  <div class="col-md-8 chart-wrapper chartDimension">
+      <canvas #chart4 baseChart
+        [data]="doughnutChartDistanceData"
+        [labels]="distanceChartLabels"
+        [chartType]="doughnutChartType"
+        [options]="doughnutChartDistanceOptions"
+        [colors]="doughnutDistanceColors"
+        [plugins]="doughnutChartDistancePlugins">
+      </canvas>
+    </div>
+</div>
+
+<!-- Fuel Consumed -->
+<div  [hidden]="!checkForPreference('fuelconsumed')" class="chartTile col-md-2">
+  <div class="textDiv">
+    <div>{{ translationData.lblFuelConsume || 'Fuel Consumed' }}</div>
+    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }}) <br>
+      out of {{cutOffFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }})</div>
+    
+  </div>
+  
+  <div class="col-md-8 chart-wrapper chartDimension">
+      <canvas #chart5 baseChart
+        [data]="doughnutChartFuelConsumedData"
+        [labels]="doughnutChartLabels"
+        [chartType]="doughnutChartType"
+        [options]="doughnutChartFuelConsumedOptions"
+        [colors]="doughnutFuelConsumedColors"
+        [plugins]="doughnutChartFuelConsumedPlugins">
+      </canvas>
+    </div>
+</div>
+
+<!-- Fuel Used Idling-->
+<div  [hidden]="!checkForPreference('fuelusedidling')"  class="chartTile col-md-2">
+  <div class="textDiv">
+    <div>{{ translationData.lblFuelUsedByIdling || 'Fuel Used By Idling' }}</div>
+    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentIdlingFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }})<br>
+      out of {{cutOffIdlingFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblGallons || 'g') : (translationData.lblLtr || 'L') }})</div>
+    
+  </div>
+  
+  <div class="col-md-8 chart-wrapper chartDimension">
+      <canvas #chart6 baseChart
+        [data]="doughnutChartFuelUsedData"
+        [labels]="doughnutChartFuelUsedLabels"
+        [chartType]="doughnutChartType"
+        [options]="doughnutChartFuelUsedOptions"
+        [colors]="doughnutFuelUsedColors"
+        [plugins]="doughnutChartFuelUsedPlugins">
+      </canvas>
+    </div>
+</div>
+
+</div>
+<!-- row3 -->
+
+<div fxLayout="row" class="full-width" fxLayoutGap="10px">
+         
+           <!-- Fuel Consumption -->
+           <div [hidden]="!checkForPreference('fuelconsumption')"  class="chartTile col-md-2">
+            <div class="textDiv">
+              <div>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentFuelConsumption}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblLtr100Km || 'Ltr/100Km') }})<br>
+                out of {{cutOffFuelConsumption}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblLtr100Km || 'Ltr/100Km') }})</div>
+              
+            </div>
+            
+            <div class="col-md-8 chart-wrapper chartDimension">
+                <canvas #chart7 baseChart
+                  [data]="doughnutChartFuelConsumptionData"
+                  [labels]="doughnutChartFuelConsumptionLabels"
+                  [chartType]="doughnutChartType"
+                  [options]="doughnutChartFuelConsumptionOptions"
+                  [colors]="doughnutFuelConsumptionColors"
+                  [plugins]="doughnutChartFuelConsumptionPlugins">
+                </canvas>
+              </div>
+          </div>
+  
+         
+          </div>
+    </div>
 </mat-expansion-panel>
+ 

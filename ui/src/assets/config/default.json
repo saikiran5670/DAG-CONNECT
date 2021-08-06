@@ -20,7 +20,9 @@
       "corridorRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/corridor",
       "authZuoraSSOServiceURL": "#{AUTHENTICATIONSERVICEURL}#/account/sso",
       "reportRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/report",
-      "reportSchedulerRESTServiceURL" : "#{AUTHENTICATIONSERVICEURL}#/reportscheduler"
+      "reportSchedulerRESTServiceURL" : "#{AUTHENTICATIONSERVICEURL}#/reportscheduler",
+      "dashboardRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/dashboard"
+
     },
     "hereMap":{
       "app_id":"LRJH9LmTMNbwteXRz03L",

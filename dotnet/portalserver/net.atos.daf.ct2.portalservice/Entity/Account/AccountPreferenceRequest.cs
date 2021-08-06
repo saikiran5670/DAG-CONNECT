@@ -16,6 +16,8 @@ namespace net.atos.daf.ct2.portalservice.Account
         public int IconId { get; set; }
         public string IconByte { get; set; }
         public int CreatedBy { get; set; }
+        public int PageRefreshTime { get; set; }
+
 
     }
     public class AccountPreferenceResponse
@@ -31,5 +33,6 @@ namespace net.atos.daf.ct2.portalservice.Account
         public int LandingPageDisplayId { get; set; }
         public int IconId { get; set; }
         public string IconByte { get; set; }
+        public int PageRefreshTime { get; set; }
     }
 }

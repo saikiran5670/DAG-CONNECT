@@ -136,25 +136,24 @@ namespace net.atos.daf.ct2.account.report
         public async Task<string> GenerateTemplate(byte[] logoBytes)
         {
             if (!IsAllParameterSet) throw new Exception(TripReportConstants.ALL_PARAM_MSG);
-            var fromDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(FromDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
-            var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
+            var fromDate = TimeZoneHelper.GetDateTimeFromUTC(FromDate, TimeZoneName, DateTimeFormat);
+            var toDate = TimeZoneHelper.GetDateTimeFromUTC(ToDate, TimeZoneName, DateTimeFormat);
 
             StringBuilder html = new StringBuilder();
-            //ReportTemplateSingleto.
-            //                        GetInstance()
-            //                        .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
-            //                                        _contentType, ReportSchedulerData.Code)
+
             var timeSpanUnit = await _unitManager.GetTimeSpanUnit(UnitToConvert);
             var distanceUnit = await _unitManager.GetDistanceUnit(UnitToConvert);
 
-            html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE_FLEET_UTILISATION
-            //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
+            html.AppendFormat(ReportTemplateSingleto.
+                                    GetInstance()
+                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
+                                                    _contentType, ReportSchedulerData.Code)
                               , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
                               , await GenerateTable()
-                              , fromDate.ToString(DateTimeFormat)
+                              , fromDate
                               , VehicleLists.Any(s => !string.IsNullOrEmpty(s.VehicleGroupName)) ? string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).Distinct().ToArray()) : "All"
-                              , toDate.ToString(DateTimeFormat)
+                              , toDate
                               , string.Join(',', VehicleLists.Select(s => s.VehicleName).Distinct().ToArray())
                               , FleetUtilisationPdfDetails.Count()
                               , Math.Round(FleetUtilisationPdfDetails.Sum(s => s.Distance), 2)

@@ -1,5 +1,6 @@
 //using net.atos.daf.ct2.driver.repository;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.driver.entity;
@@ -41,14 +42,18 @@ namespace net.atos.daf.ct2.driver
 
         public async Task<ProvisioningDriverDataServiceResponse> GetCurrentDriver(ProvisioningDriverDataServiceRequest request)
         {
-            await _driverRepository.GetCurrentDriver(request);
-            return new ProvisioningDriverDataServiceResponse();
+            var provisioningDriver = await _driverRepository.GetCurrentDriver(request);
+            var drivers = new List<ProvisioningDriver>();
+            if (provisioningDriver != null)
+                drivers.Add(provisioningDriver);
+
+            return new ProvisioningDriverDataServiceResponse { Drivers = drivers };
         }
 
         public async Task<ProvisioningDriverDataServiceResponse> GetDriverList(ProvisioningDriverDataServiceRequest request)
         {
-            await _driverRepository.GetDriverList(request);
-            return new ProvisioningDriverDataServiceResponse();
+            var provisioningDrivers = await _driverRepository.GetDriverList(request);
+            return new ProvisioningDriverDataServiceResponse { Drivers = provisioningDrivers.ToList() };
         }
 
         #endregion

@@ -17,17 +17,16 @@ namespace net.atos.daf.ct2.notificationservice.services
     public class PushNotificationManagementService : PushNotificationService.PushNotificationServiceBase
     {
         private readonly ILog _logger;
-        private readonly KafkaConfiguration _kafkaConfiguration;
+        private readonly entity.KafkaConfiguration _kafkaConfiguration;
         private readonly IConfiguration _configuration;
-        private readonly ITripAlertManager _tripAlertManager;
-        public PushNotificationManagementService(ITripAlertManager tripAlertManager, IConfiguration configuration)
+        //private readonly ITripAlertManager _tripAlertManager;
+        public PushNotificationManagementService(/*ITripAlertManager tripAlertManager, */IConfiguration configuration)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             this._configuration = configuration;
-            _kafkaConfiguration = new KafkaConfiguration();
+            _kafkaConfiguration = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
-
-            _tripAlertManager = tripAlertManager;
+            //_tripAlertManager = tripAlertManager;
         }
 
         public override async Task GetAlertMessageStream(Google.Protobuf.WellKnownTypes.Empty _, IServerStreamWriter<AlertMessageData> responseStream, ServerCallContext context)
@@ -39,7 +38,7 @@ namespace net.atos.daf.ct2.notificationservice.services
                 {
                     TripAlert tripAlert = new TripAlert();
                     //await Task.Delay(50);
-                    ConsumeResult<Null, string> message = Worker.Consumer(_kafkaConfiguration.EH_FQDN, _kafkaConfiguration.EH_CONNECTION_STRING, _kafkaConfiguration.CONSUMER_GROUP, _kafkaConfiguration.EH_NAME, _kafkaConfiguration.CA_CERT_LOCATION);
+                    ConsumeResult<Null, string> message = new ConsumeResult<Null, string>();//Worker.Consumer(_kafkaConfiguration.EH_FQDN, _kafkaConfiguration.EH_CONNECTION_STRING, _kafkaConfiguration.CONSUMER_GROUP, _kafkaConfiguration.EH_NAME, _kafkaConfiguration.CA_CERT_LOCATION);
                     if (message != null)
                     {
                         tripAlert = JsonConvert.DeserializeObject<TripAlert>(message.Message.Value);

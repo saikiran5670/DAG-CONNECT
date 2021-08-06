@@ -77,6 +77,8 @@ namespace net.atos.daf.ct2.reports
         #region Vehicle Performance Report
         Task<VehiclePerformanceChartTemplate> GetVehPerformanceChartTemplate(VehiclePerformanceRequest vehiclePerformanceRequest);
         Task<VehiclePerformanceSummary> GetVehPerformanceSummaryDetails(string vin);
+        Task<VehiclePerformanceData> GetVehPerformanceBubbleChartData(VehiclePerformanceRequest vehiclePerformanceRequest);
+        Task<List<VehPerformanceProperty>> GetVehPerformanceType();
         #endregion
     }
 }

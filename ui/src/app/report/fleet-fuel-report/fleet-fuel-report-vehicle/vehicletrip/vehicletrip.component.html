@@ -100,7 +100,7 @@
                   <div *ngIf="checkForPreference('summary_idledurationtotaltime')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                     <span>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('idleDuration')}}
-                      hh:mm</span>
+                      </span>
                   </div>
                   <div *ngIf="checkForPreference('summary_fuelconsumption')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                     <span>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
@@ -465,7 +465,7 @@
                         </mat-cell>
                       </ng-container>            
                       <ng-container matColumnDef="idleDuration">             
-                        <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idleduration')">{{ translationData.lblIdleDuration || 'Idle Duration(hh:mm)%' }}              
+                        <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idleduration')">{{ translationData.lblIdleDuration || 'Idle Duration%' }}              
                         </mat-header-cell>          
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_idleduration')">             
                          <span>{{row.convertedIdleDuration}}</span>              

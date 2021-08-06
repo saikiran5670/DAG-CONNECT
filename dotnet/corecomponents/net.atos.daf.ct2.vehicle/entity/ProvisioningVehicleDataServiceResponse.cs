@@ -10,10 +10,17 @@ namespace net.atos.daf.ct2.vehicle.entity
     public class ProvisioningVehicle
     {
         public long StartTimestamp { get; set; }
-        public long EndTimestamp { get; set; }
+        public long? EndTimestamp { get; set; }
         public string VIN { get; set; }
         public string Name { get; set; }
         public string RegNo { get; set; }
     }
 
+    public class ProvisioningVehicle_Driver
+    {
+        public long StartTimestamp { get; set; }
+        public long? EndTimestamp { get; set; }
+        public string VIN { get; set; }
+        public string DriverId { get; set; }
+    }
 }

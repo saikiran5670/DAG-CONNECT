@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.organization.test
             _auditLogRepository = new AuditLogRepository(_dataAccess);
             _auditlog = new AuditTraillib(_auditLogRepository);
             _vehicleManager = new VehicleManager(new VehicleRepository(_dataAccess, null));
-            _organizationRepository = new OrganizationRepository(_dataAccess,
+            _organizationRepository = new OrganizationRepository(_dataAccess, null,
                                                                   _vehicleManager,
                                                                   _groupManager,
                                                                   _accountManager, null, null, null);

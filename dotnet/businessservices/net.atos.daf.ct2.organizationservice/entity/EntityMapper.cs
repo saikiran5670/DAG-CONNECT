@@ -21,6 +21,7 @@ namespace net.atos.daf.ct2.organizationservice.entity
             // preference.DriverId = request.DriverId;
             preference.TimeFormatId = request.TimeFormatId;
             // preference.LandingPageDisplayId = request.LandingPageDisplayId;
+            preference.PageRefreshTime = request.PageRefreshTime;
             return preference;
         }
 
@@ -36,6 +37,7 @@ namespace net.atos.daf.ct2.organizationservice.entity
             //objResponse.VehicleDisplay = request.VehicleDisplay;
             objResponse.Unit = request.Unit;
             objResponse.Timezone = request.Timezone;
+            objResponse.PageRefreshTime = request.PageRefreshTime;
 
 
             return objResponse;
@@ -118,6 +120,7 @@ namespace net.atos.daf.ct2.organizationservice.entity
             objResponse.DateFormat = request.DateFormatType;
             objResponse.LanguageName = request.LanguageName;
             objResponse.Unit = request.Unit;
+            objResponse.PageRefreshTime = request.PageRefreshTime;
             return objResponse;
         }
 

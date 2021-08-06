@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.confluentkafka.test
         [TestMethod]
         public async Task ProducerTest()
         {
-            KafkaEntity kafkaEntity = new KafkaEntity()
+            KafkaConfiguration kafkaEntity = new KafkaConfiguration()
             {
                 BrokerList = "daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net:9093",
                 ConnString = "Endpoint=sb://daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gicUoPvdd/u2bKPFXIhaDbBVgvBDsXrz9kcSWJm8gpw=",
@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.confluentkafka.test
         [TestMethod]
         public void ConsumerTest()
         {
-            KafkaEntity kafkaEntity = new KafkaEntity()
+            KafkaConfiguration kafkaEntity = new KafkaConfiguration()
             {
                 BrokerList = "daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net:9093",
                 ConnString = "Endpoint=sb://daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gicUoPvdd/u2bKPFXIhaDbBVgvBDsXrz9kcSWJm8gpw=",
@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.confluentkafka.test
                 Cacertlocation = "./cacert.pem",
                 Consumergroup = "alertpoccosumer"
             };
-            ConsumeResult<Null, string> result = KafkaConfluentWorker.Consumer(kafkaEntity);
+            ConsumeResult<string, string> result = KafkaConfluentWorker.Consumer(kafkaEntity);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Message);
             Assert.IsNotNull(result.Message.Value);
@@ -47,7 +47,7 @@ namespace net.atos.daf.ct2.confluentkafka.test
         [TestMethod]
         public async Task ProducerVehTest()
         {
-            KafkaEntity kafkaEntity = new KafkaEntity()
+            KafkaConfiguration kafkaEntity = new KafkaConfiguration()
             {
                 BrokerList = "daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net:9093",
                 ConnString = "Endpoint=sb://daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gicUoPvdd/u2bKPFXIhaDbBVgvBDsXrz9kcSWJm8gpw=",
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.confluentkafka.test
         [TestMethod]
         public void ConsumerVehTest()
         {
-            KafkaEntity kafkaEntity = new KafkaEntity()
+            KafkaConfiguration kafkaEntity = new KafkaConfiguration()
             {
                 BrokerList = "daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net:9093",
                 ConnString = "Endpoint=sb://daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gicUoPvdd/u2bKPFXIhaDbBVgvBDsXrz9kcSWJm8gpw=",
@@ -82,7 +82,7 @@ namespace net.atos.daf.ct2.confluentkafka.test
                 Cacertlocation = "./cacert.pem",
                 Consumergroup = "cdcvehicleconsumer"
             };
-            ConsumeResult<Null, string> result = KafkaConfluentWorker.Consumer(kafkaEntity);
+            ConsumeResult<string, string> result = KafkaConfluentWorker.Consumer(kafkaEntity);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Message);
             Assert.IsNotNull(result.Message.Value);

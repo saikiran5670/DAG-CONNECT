@@ -8,6 +8,10 @@ using log4net;
 using net.atos.daf.ct2.dashboard;
 using net.atos.daf.ct2.dashboard.entity;
 using net.atos.daf.ct2.dashboardservice.entity;
+using net.atos.daf.ct2.reports;
+using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.visibility;
 using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.dashboardservice
@@ -16,11 +20,17 @@ namespace net.atos.daf.ct2.dashboardservice
     {
         private readonly ILog _logger;
         private readonly IDashBoardManager _dashBoardManager;
+        private readonly IReportManager _reportManager;
+        private readonly IVisibilityManager _visibilityManager;
+        private readonly Mapper _mapper;
 
-        public DashBoardManagementService(IDashBoardManager dashBoardManager)
+        public DashBoardManagementService(IDashBoardManager dashBoardManager, IReportManager reportManager, IVisibilityManager visibilityManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _dashBoardManager = dashBoardManager;
+            _reportManager = reportManager;
+            _visibilityManager = visibilityManager;
+            _mapper = new Mapper();
         }
 
         public override async Task<FleetKpiResponse> GetFleetKPIDetails(FleetKpiFilterRequest request, ServerCallContext context)
@@ -88,30 +98,41 @@ namespace net.atos.daf.ct2.dashboardservice
             {
                 net.atos.daf.ct2.dashboard.entity.TodayLiveVehicleRequest objTodayLiveVehicleRequest = new net.atos.daf.ct2.dashboard.entity.TodayLiveVehicleRequest();
                 objTodayLiveVehicleRequest.VINs = request.VINs.ToList<string>();
+                var filter = DateTime.Now;
+                DateTime datetime = DateTime.Now.AddHours(-filter.Hour).AddMinutes(-filter.Minute)
+                                   .AddSeconds(-filter.Second).AddMilliseconds(-filter.Millisecond);
+                DateTime yesterday = datetime.AddDays(-1);
+                objTodayLiveVehicleRequest.TodayDateTime = UTCHandling.GetUTCFromDateTime(datetime, "UTC");
+                objTodayLiveVehicleRequest.YesterdayDateTime = UTCHandling.GetUTCFromDateTime(yesterday, "UTC");
                 var data = await _dashBoardManager.GetTodayLiveVinData(objTodayLiveVehicleRequest);
                 TodayLiveVehicleResponse objTodayLiveVehicleResponse = new TodayLiveVehicleResponse();
-                if (data != null)
+                if (data != null && data.TodayActiveVinCount > 0)
                 {
-                    objTodayLiveVehicleResponse.ActiveVehicles = data.ActiveVehicles;
-                    objTodayLiveVehicleResponse.CriticleAlertCount = data.CriticleAlertCount;
+                    //objTodayLiveVehicleResponse.TodayVin = data.TodayVin;
                     objTodayLiveVehicleResponse.Distance = data.Distance;
-                    objTodayLiveVehicleResponse.DistanceBaseUtilization = data.DistanceBaseUtilization;
-                    objTodayLiveVehicleResponse.DriverCount = data.DriverCount;
                     objTodayLiveVehicleResponse.DrivingTime = data.DrivingTime;
-                    objTodayLiveVehicleResponse.TimeBaseUtilization = data.TimeBaseUtilization;
-                    objTodayLiveVehicleResponse.VehicleCount = data.VehicleCount;
+                    objTodayLiveVehicleResponse.DriverCount = data.DriverCount;
+                    objTodayLiveVehicleResponse.TodayActiveVinCount = data.TodayActiveVinCount;
+                    objTodayLiveVehicleResponse.TodayTimeBasedUtilizationRate = data.TodayTimeBasedUtilizationRate;
+                    objTodayLiveVehicleResponse.TodayDistanceBasedUtilization = data.TodayDistanceBasedUtilization;
+                    objTodayLiveVehicleResponse.CriticleAlertCount = data.CriticleAlertCount;
+                    //objTodayLiveVehicleResponse.YesterdayVin = data.YesterdayVin;
+                    objTodayLiveVehicleResponse.YesterdayActiveVinCount = data.YesterdayActiveVinCount;
+                    objTodayLiveVehicleResponse.YesterDayTimeBasedUtilizationRate = data.YesterDayTimeBasedUtilizationRate;
+                    objTodayLiveVehicleResponse.YesterDayDistanceBasedUtilization = data.YesterDayDistanceBasedUtilization;
                     objTodayLiveVehicleResponse.Code = Responsecode.Success;
                     objTodayLiveVehicleResponse.Message = DashboardConstants.GET_TODAY_LIVE_VEHICLE_SUCCESS_MSG;
                 }
                 else
                 {
-                    objTodayLiveVehicleResponse.Code = Responsecode.Success;
+                    objTodayLiveVehicleResponse.Code = Responsecode.Failed;
                     objTodayLiveVehicleResponse.Message = DashboardConstants.GET_TODAY_LIVE_VEHICLE_SUCCESS_NODATA_MSG;
                 }
                 return await Task.FromResult(objTodayLiveVehicleResponse);
             }
             catch (Exception ex)
             {
+                _logger.Error(null, ex);
                 return await Task.FromResult(new TodayLiveVehicleResponse
                 {
                     Code = Responsecode.InternalServerError,
@@ -133,12 +154,12 @@ namespace net.atos.daf.ct2.dashboardservice
                 };
 
                 // Pull details from db
-                dashboard.entity.FleetKpi reportDetails = await _dashBoardManager.GetFleetKPIDetails(fleetKpiFilter);
+                var reportDetails = await _dashBoardManager.GetUtilizationchartsData(fleetKpiFilter);
 
                 // Prepare and Map repository object to service object
                 FleetUtilizationResponse fleetutilizatioResponse = new FleetUtilizationResponse { Code = Responsecode.Success, Message = DashboardConstants.GET_FLEETUTILIZATION_DETAILS_SUCCESS_MSG };
                 string serializeDetails = JsonConvert.SerializeObject(reportDetails);
-                fleetutilizatioResponse.Fleetutilizationcharts = (JsonConvert.DeserializeObject<FleetUtilization>(serializeDetails));
+                fleetutilizatioResponse.Fleetutilizationcharts.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetUtilization>>(serializeDetails));
 
                 return await Task.FromResult(fleetutilizatioResponse);
             }
@@ -151,6 +172,136 @@ namespace net.atos.daf.ct2.dashboardservice
                 });
             }
         }
+        #endregion
+
+        #region Fetch Visible VINs from data mart trip_statistics
+        public override async Task<VehicleListAndDetailsResponse> GetVisibleVins(VehicleListRequest request, ServerCallContext context)
+        {
+            var response = new VehicleListAndDetailsResponse();
+            try
+            {
+                var vehicleDeatilsWithAccountVisibility =
+                                await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+
+                if (vehicleDeatilsWithAccountVisibility.Count() == 0)
+                {
+                    response.Message = string.Format(DashboardConstants.GET_VIN_VISIBILITY_FAILURE_MSG, request.AccountId, request.OrganizationId);
+                    response.Code = Responsecode.Failed;
+                    return response;
+                }
+
+                var vinList = await _reportManager
+                                        .GetVinsFromTripStatistics(vehicleDeatilsWithAccountVisibility
+                                                                       .Select(s => s.Vin).Distinct());
+                if (vinList.Count() == 0)
+                {
+                    response.Message = string.Format(DashboardConstants.GET_VIN_TRIP_NOTFOUND_MSG, request.AccountId, request.OrganizationId);
+                    response.Code = Responsecode.Failed;
+                    response.VinTripList.Add(new List<VehicleFromTripDetails>());
+                    return response;
+                }
+                var res = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                response.VehicleDetailsWithAccountVisibiltyList.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(res)
+                    );
+                response.Message = DashboardConstants.GET_VIN_SUCCESS_MSG;
+                response.Code = Responsecode.Success;
+                res = JsonConvert.SerializeObject(vinList);
+                response.VinTripList.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleFromTripDetails>>(res)
+                    );
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                response.Message = ex.Message;
+                response.Code = Responsecode.InternalServerError;
+                response.VehicleDetailsWithAccountVisibiltyList.Add(new List<VehicleDetailsWithAccountVisibilty>());
+                response.VinTripList.Add(new List<VehicleFromTripDetails>());
+                return await Task.FromResult(response);
+            }
+        }
+        #endregion
+
+        #region Create replica of User Preference Service to support the dashboard. 
+        public override async Task<DashboardUserPreferenceCreateResponse> CreateDashboardUserPreference(DashboardUserPreferenceCreateRequest request, ServerCallContext context)
+        {
+            try
+            {
+                DashboardUserPreferenceCreateResponse response = new DashboardUserPreferenceCreateResponse();
+                var isSuccess = await _reportManager.CreateReportUserPreference(_mapper.MapCreateReportUserPreferences(request));
+                if (isSuccess)
+                {
+                    response.Message = String.Format(DashboardConstants.USER_PREFERENCE_CREATE_SUCCESS_MSG, request.AccountId, request.ReportId);
+                    response.Code = Responsecode.Success;
+                }
+                else
+                {
+                    response.Message = String.Format(DashboardConstants.USER_PREFERENCE_CREATE_FAILURE_MSG, request.AccountId, request.ReportId);
+                    response.Code = Responsecode.Failed;
+                }
+
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return new DashboardUserPreferenceCreateResponse()
+                {
+                    Code = Responsecode.InternalServerError,
+                    Message = $"{nameof(CreateDashboardUserPreference)} failed due to - " + ex.Message
+                };
+            }
+        }
+
+        public override async Task<DashboardUserPreferenceResponse> GetDashboardUserPreference(DashboardUserPreferenceRequest request, ServerCallContext context)
+        {
+            try
+            {
+                DashboardUserPreferenceResponse response = new DashboardUserPreferenceResponse();
+                IEnumerable<reports.entity.ReportUserPreference> userPreferences = null;
+                var userPreferencesExists = await _reportManager.CheckIfReportUserPreferencesExist(request.ReportId, request.AccountId, request.OrganizationId);
+                var roleBasedUserPreferences = await _reportManager.GetPrivilegeBasedReportUserPreferences(request.ReportId, request.AccountId, request.RoleId, request.OrganizationId, request.ContextOrgId);
+                if (userPreferencesExists)
+                {
+                    var preferences = await _reportManager.GetReportUserPreferences(request.ReportId, request.AccountId, request.OrganizationId);
+
+                    //Filter out preferences based on Account role and org package subscription
+                    userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAttributeId == x.DataAttributeId));
+                }
+                else
+                { userPreferences = roleBasedUserPreferences; }
+
+                try
+                {
+                    if (userPreferences.Count() == 0)
+                    {
+                        response.Code = Responsecode.NotFound;
+                        response.Message = "No data found";
+                    }
+                    else
+                    { response = _mapper.MapReportUserPreferences(userPreferences); }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(null, ex);
+                    throw new Exception("Error occurred while parsing the report user preferences or data is missing.");
+                }
+
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return new DashboardUserPreferenceResponse()
+                {
+                    Code = Responsecode.InternalServerError,
+                    Message = $"{nameof(GetDashboardUserPreference)} failed due to - " + ex.Message
+                };
+            }
+        }
+
         #endregion
     }
 }

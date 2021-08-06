@@ -4,13 +4,8 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.notification;
-using net.atos.daf.ct2.notification.repository;
 using net.atos.daf.ct2.notificationengine.entity;
 using net.atos.daf.ct2.notificationengine.repository;
-using net.atos.daf.ct2.sms;
-using net.atos.daf.ct2.translation;
-using net.atos.daf.ct2.translation.repository;
 
 namespace net.atos.daf.ct2.notificationengine.test
 {
@@ -22,11 +17,6 @@ namespace net.atos.daf.ct2.notificationengine.test
         private readonly IDataMartDataAccess _datamartDataacess;
         private readonly INotificationIdentifierManager _inotificationIdentifierManager;
         private readonly NotificationIdentifierRepository _notificationIdentifierRepository;
-        private readonly IEmailNotificationManager _emailNotificationManager;
-        private readonly IEmailRepository _emailRepository;
-        private readonly ITranslationRepository _translationRepository;
-        private readonly ITranslationManager _translationManager;
-        private readonly ISMSManager _smsManager;
         public NotificationEngineManager()
         {
             string connectionString = "Server=dafct-lan1-d-euwe-cdp-pgsql-master.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master;Password=9RQkJM2hwfe!;Ssl Mode=Require;";
@@ -34,13 +24,8 @@ namespace net.atos.daf.ct2.notificationengine.test
             _config = new ConfigurationBuilder().Build();
             _dataAccess = new PgSQLDataAccess(connectionString);
             _datamartDataacess = new PgSQLDataMartDataAccess(datamartconnectionString);
-            _emailRepository = new EmailRepository(_dataAccess);
-            _translationRepository = new TranslationRepository(_dataAccess);
-            _translationManager = new TranslationManager(_translationRepository);
-            _emailNotificationManager = new EmailNotificationManager(_emailRepository, _config, _translationManager);
-            _smsManager = new SMSManager(_config);
             _notificationIdentifierRepository = new NotificationIdentifierRepository(_dataAccess, _datamartDataacess);
-            _inotificationIdentifierManager = new NotificationIdentifierManager(_notificationIdentifierRepository, _emailNotificationManager, _smsManager);
+            _inotificationIdentifierManager = new NotificationIdentifierManager(_notificationIdentifierRepository);
         }
 
         [TestCategory("Unit-Test-Case")]

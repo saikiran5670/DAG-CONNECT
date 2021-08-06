@@ -86,6 +86,7 @@ namespace net.atos.daf.ct2.dashboard
             return await _dashboardRepository.GetUtilizationchartsData(tripFilters);
         }
         #endregion
+
     }
 
 

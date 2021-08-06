@@ -227,93 +227,27 @@ public class LiveFleetDriverActivityDao implements Serializable {
 
 		stmt_insert_driver_activity.setLong(10, Types.NULL); // 10-Duration
 
-		stmt_insert_driver_activity.setLong(11, row.getCreatedAtM2m()); // 11-created_at_m2m
+		if(row.getCreatedAtM2m()!=null) {
+			stmt_insert_driver_activity.setLong(11, row.getCreatedAtM2m()); // 11-created_at_m2m
+		} else {
+			stmt_insert_driver_activity.setLong(11, Types.NULL);
+		}
 		stmt_insert_driver_activity.setLong(12, row.getCreatedAtKafka()); // 12-created_at_kafka
 		stmt_insert_driver_activity.setLong(13, row.getCreatedAtDm()); // 13-created_at_dm
 		stmt_insert_driver_activity.setLong(14, Types.NULL); // 14-modified_at
 		stmt_insert_driver_activity.setLong(15, row.getLastProcessedMessageTimestamp()); // 15-last_processed_message_time
 		stmt_insert_driver_activity.setBoolean(16, row.getIsDriver1()); // 16-is_Driver_flag
 
-		stmt_insert_driver_activity.setString(17, row.getCode());
+		if(row.getCode()!=null) {
+			stmt_insert_driver_activity.setString(17, row.getCode());
+		} else {
+			stmt_insert_driver_activity.setString(17, "");
+		}
 		
 		
 		return stmt_insert_driver_activity;
 
 	}
-
-	/*
-	 * 
-	 * 
-	 * private PreparedStatement fillStatement(PreparedStatement
-	 * stmt_insert_driver_activity, Index row, Long trip_Start_time) throws
-	 * SQLException {
-	 * 
-	 * int varVEvtid = row.getVEvtID();
-	 * 
-	 * if (row.getDocument().getTripID() != null)
-	 * stmt_insert_driver_activity.setString(1, row.getDocument().getTripID());
-	 * // 1 // trip // id else stmt_insert_driver_activity.setString(1,
-	 * row.getRoName());
-	 * 
-	 * if (varVEvtid == 4) stmt_insert_driver_activity.setLong(2,
-	 * row.getReceivedTimestamp()); // 2 // trip_start_time_stamp
-	 * 
-	 * else stmt_insert_driver_activity.setLong(2, 0);
-	 * 
-	 * if (varVEvtid == 5) stmt_insert_driver_activity.setLong(3,
-	 * row.getReceivedTimestamp()); // 3 // trip_end_time_stamp else
-	 * stmt_insert_driver_activity.setLong(3, 0);
-	 * 
-	 * if (row.getReceivedTimestamp() != null)
-	 * stmt_insert_driver_activity.setLong(4, row.getReceivedTimestamp()); // 4
-	 * // Activity_date else stmt_insert_driver_activity.setLong(4, 0);
-	 * 
-	 * if (row.getVin() != null) stmt_insert_driver_activity.setString(5,
-	 * (String) row.getVin()); // 5 // vin else
-	 * stmt_insert_driver_activity.setString(5, (String) row.getVid());
-	 * 
-	 * if (row.getDriverID() != null) stmt_insert_driver_activity.setString(6,
-	 * (String) row.getDriverID()); // 6 // Driver // ID else
-	 * stmt_insert_driver_activity.setLong(6, 0);
-	 * 
-	 * if (row.getDocument().getDriver1WorkingState() != null)
-	 * stmt_insert_driver_activity.setInt(7,
-	 * row.getDocument().getDriver1WorkingState()); // 7 // Working // state //
-	 * code else stmt_insert_driver_activity.setLong(7, 0);
-	 * 
-	 * if ((row.getDocument().getDriver1CardInserted() == true) &&
-	 * ((row.getDocument().getDriver1WorkingState() == 1) ||
-	 * (row.getDocument().getDriver1WorkingState() == 2) ||
-	 * (row.getDocument().getDriver1WorkingState() == 3)))
-	 * stmt_insert_driver_activity.setLong(8, row.getReceivedTimestamp()); // 8
-	 * // start_time else stmt_insert_driver_activity.setInt(8, 0);
-	 * 
-	 * if ((row.getDocument().getDriver1CardInserted() == false) ||
-	 * ((row.getDocument().getDriver1CardInserted() == true) &&
-	 * (row.getDocument().getDriver1WorkingState() == 0)))
-	 * stmt_insert_driver_activity.setLong(9, row.getReceivedTimestamp()); // 9
-	 * // end_time else stmt_insert_driver_activity.setInt(9, 0);
-	 * 
-	 * stmt_insert_driver_activity.setLong(10, (row.getReceivedTimestamp() -
-	 * trip_Start_time)); // 10 // Duration
-	 * 
-	 * stmt_insert_driver_activity.setLong(11, row.getReceivedTimestamp()); //
-	 * 11 // created_at_m2m stmt_insert_driver_activity.setLong(12,
-	 * row.getReceivedTimestamp()); // 12 // created_at_kafka
-	 * stmt_insert_driver_activity.setLong(13, row.getReceivedTimestamp()); //
-	 * 13 // created_at_dm stmt_insert_driver_activity.setLong(14,
-	 * row.getReceivedTimestamp()); // 14 // modified_at
-	 * stmt_insert_driver_activity.setLong(15, row.getReceivedTimestamp()); //
-	 * 15 // last_processed_message_time
-	 * 
-	 * System.out.println("trip activity starting and VEvt ID is --> " +
-	 * varVEvtid);
-	 * 
-	 * return stmt_insert_driver_activity;
-	 * 
-	 * }
-	 * 
-	 */
 
 	public Long read(String tripId) throws TechnicalException, SQLException {
 

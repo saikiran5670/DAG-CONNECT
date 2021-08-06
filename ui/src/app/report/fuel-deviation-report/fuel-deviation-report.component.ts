@@ -1307,7 +1307,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     const detail = this.translationData.lblDetailSection || 'Detail Section';
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmile || 'mile');
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
-    let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.translationData.lblpound || 'pound');
+    //let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.translationData.lblpound || 'pound');
     let unitValton = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblton || 'ton');
     let unitValgallon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.translationData.lblgallon || 'gallon');
     
@@ -1471,7 +1471,12 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       prepare.push(tempObj);    
     });
     
-    let DATA = document.getElementById('fuelSummaryCharts');
+    let DATA: any;
+    if(this.chartExpandPanel){ // charts expand
+      DATA = document.getElementById('fuelSummaryCharts'); // summary + charts
+    }else{
+      DATA = document.getElementById('fuelSummary'); // only summary
+    }
     html2canvas( DATA)
     .then(canvas => {  
       (doc as any).autoTable({

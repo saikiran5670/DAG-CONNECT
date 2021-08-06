@@ -1,0 +1,130 @@
+/* make sure to add the @import the SlickGrid Theme AFTER the variables changes */
+
+
+/*
+  www.OnlineWebFonts.Com
+  You must credit the author Copy this link on your web
+  <div>Font made from <a href="http://www.onlinewebfonts.com">oNline Web Fonts</a>is licensed by CC BY 3.0</div>
+*/
+@font-face {
+    font-family: "SalesforceSans-Regular";
+    src: url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.eot"); /* IE9*/
+    src: url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+    url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.woff2") format("woff2"), /* chrome firefox */
+    url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.woff") format("woff"), /* chrome firefox */
+    url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.ttf") format("truetype"), /* chrome firefox opera Safari, Android, iOS 4.2+*/
+    url("https://db.onlinewebfonts.com/t/0fadaa21fcac88ceee0bb8da992c221b.svg#SalesforceSans-Regular") format("svg"); /* iOS 4.1- */
+  }
+  .icon {
+      align-items: center;
+      display: inline-flex;
+      justify-content: center;
+      height: 1rem;
+      width: 1rem;
+  }
+  .gridPane, .slickgrid-container, .grid-canvas {
+    width: 100% !important;
+  }
+  
+  /* .slick-viewport-top, .grid-canvas, .slickgrid-container, .gridPane {
+    min-height: 500px !important;
+  } */
+  #grid_performance_driver_table .slickgrid-container, #grid_performance_driver_table .gridPane {
+    min-height: 500px !important;
+  }
+  
+  .slickgrid-container, .gridPane {
+    min-height: 250px !important;
+    max-height: 400px !important;
+  }
+  
+  .slick-header-columns, .slick-header-column {
+    font-weight: 700;
+    font-size: 14px !important;
+    color: #353c45 !important;
+    padding-left: 5px !important;
+    min-height: 40px !important;
+    background: #bee3f8 !important;
+    font-family: Helvetica Neue LT Std-Md !important;
+  }
+  
+/* .slickgrid-container .slick-header-columns .slick-header-column.ui-state-default {
+    background: #bee3f8 !important;
+    background-color: #bee3f8 !important;
+  } */
+
+  .slick-header-column span {
+    float: none !important;
+  }
+  
+  .slick-cell.l1.r1, .slick-cell.l2.r2, .slick-cell.l3.r3, .slick-cell.l4.r4, .slick-cell.l5.r5  {
+    text-align: center;
+  }
+  
+  .slick-cell.l1.r1 {
+    padding-left: 37px !important;
+  }
+  
+  .slick-cell.l1.r1 {
+    padding-left: 37px !important;
+  }
+  
+  .slick-headerrow {
+    display: none !important;
+  }
+  
+  .slick-row.odd {
+    background-color: #ecf7fe !important;
+  }
+  
+  .slick-row {
+    border-bottom-color: rgba(0,0,0,.12) !important;
+    border-width: 0 !important;
+    border-bottom-width: 1px !important;
+    font-size: 15px !important;
+    font-family: Helvetica Neue LT Std !important;
+    color: rgba(0,0,0,.87) !important;
+    letter-spacing: normal !important;
+    font-size: 15px !important;
+  }
+  
+  .slickgrid-container .grid-canvas .slick-cell {
+    font-size: 15px !important;
+  }
+  
+  .backBtnCss {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  .slick-row.odd.l0.r0 {
+    background-color: #ecf7fe !important;
+  }
+  .slick-row.even.l0.r0 {
+    background-color: #cfebfc !important;
+  }
+
+  .chartContainer {
+    height: 500px;
+    width: 925px;
+  }
+
+  .chartTitle {
+    font-weight: 700;
+    font-size: medium;
+  }
+
+  .enable {
+    /* color: #000000; */
+    color: #00529C;
+  }
+
+  .disable {
+    /* color: #bfbfbf; */
+    color: #CCCCCC;
+  }
+
+  .chartSelection {
+    display: inline-block;
+    cursor: pointer;
+  }

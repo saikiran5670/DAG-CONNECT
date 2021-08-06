@@ -208,7 +208,7 @@ namespace net.atos.daf.ct2.account.report
                     });
 
             }
-
+            TotalNumberOfTrips = fleetFuelPdfTripDetails.Count;
             TotalDistance = fleetFuelPdfTripDetails.Sum(s => s.Distance);
             TotalFuelConsumed = fleetFuelPdfTripDetails.Sum(s => s.FuelConsumed);
             TotalFuelConsumption = fleetFuelPdfTripDetails.Sum(s => s.FuelConsumption);
@@ -223,8 +223,8 @@ namespace net.atos.daf.ct2.account.report
         public async Task<string> GenerateTemplate(byte[] logoBytes)
         {
             if (!IsAllParameterSet) throw new Exception(TripReportConstants.ALL_PARAM_MSG);
-            var fromDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(FromDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
-            var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
+            var fromDate = TimeZoneHelper.GetDateTimeFromUTC(FromDate, TimeZoneName, DateTimeFormat);
+            var toDate = TimeZoneHelper.GetDateTimeFromUTC(ToDate, TimeZoneName, DateTimeFormat);
 
             StringBuilder html = new StringBuilder();
             //ReportTemplateSingleto.
@@ -242,21 +242,24 @@ namespace net.atos.daf.ct2.account.report
             if (VehicleLists.Count() == 1)
             {
                 var vehicle = VehicleLists.FirstOrDefault();
-                html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE_FLEET_FUEL_SINGLE
+                html.AppendFormat(ReportTemplateSingleto.
+                                    GetInstance()
+                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, EmailEventType.FleetFuelReportSingleVehicle,
+                                                        _contentType, ReportSchedulerData.Code)
                                   , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                     : ImageSingleton.GetInstance().GetDefaultLogo()
                                   , await GenerateTableForSingle()
-                                  , fromDate.ToString(DateTimeFormat)
-                                  , vehicle.VehicleGroupName ?? "All"
-                                  , toDate.ToString(DateTimeFormat)
+                                  , fromDate
+                                  , toDate
+                                  , string.IsNullOrEmpty(vehicle.VehicleGroupName) ? "All" : vehicle.VehicleGroupName
                                   , vehicle.VehicleName
                                   , TotalNumberOfTrips
                                   , Math.Round(TotalDistance, 2)
                                   , distanceUnit
                                   , Math.Round(TotalFuelConsumed, 2)
                                   , volumeUnit
-                                  , await _unitConversionManager.GetTimeSpan(TotalIdleDuration, TimeUnit.Seconds, UnitToConvert)
-                                  , timeSpanUnit
+                                  , TotalIdleDuration
+                                  , "%"
                                   , Math.Round(TotalFuelConsumption, 2)
                                   , volumePer100KmUnit
                                   , Math.Round(TotalCO2Emission, 2)
@@ -278,21 +281,24 @@ namespace net.atos.daf.ct2.account.report
             }
             else
             {
-                html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE_FLEET_FUEL
+                html.AppendFormat(ReportTemplateSingleto.
+                                    GetInstance()
+                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
+                                                        _contentType, ReportSchedulerData.Code)
                                   , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                     : ImageSingleton.GetInstance().GetDefaultLogo()
                                   , await GenerateTable()
-                                  , fromDate.ToString(DateTimeFormat)
+                                  , fromDate
+                                  , toDate
                                   , VehicleLists.Any(s => !string.IsNullOrEmpty(s.VehicleGroupName)) ? string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).Distinct().ToArray()) : "All"
-                                  , toDate.ToString(DateTimeFormat)
                                   , string.Join(',', VehicleLists.Select(s => s.VehicleName).Distinct().ToArray())
                                   , TotalNumberOfTrips
                                   , Math.Round(TotalDistance, 2)
                                   , distanceUnit
                                   , Math.Round(TotalFuelConsumed, 2)
                                   , volumeUnit
-                                  , await _unitConversionManager.GetTimeSpan(TotalIdleDuration, TimeUnit.Seconds, UnitToConvert)
-                                  , timeSpanUnit
+                                  , TotalIdleDuration
+                                  , "%"
                                   , Math.Round(TotalFuelConsumption, 2)
                                   , volumePer100KmUnit
                                   , Math.Round(TotalCO2Emission, 2)

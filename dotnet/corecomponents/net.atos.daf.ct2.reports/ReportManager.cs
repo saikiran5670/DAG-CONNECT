@@ -759,7 +759,21 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.GetVehPerformanceSummaryDetails(vin);
 
         }
-
+        public async Task<VehiclePerformanceData> GetVehPerformanceBubbleChartData(VehiclePerformanceRequest vehiclePerformanceRequest)
+        {
+            PerformanceChartMatrix objmat = new PerformanceChartMatrix();
+            VehiclePerformanceData charts = new VehiclePerformanceData();
+            var chartRawdata = await _reportRepository.GetVehPerformanceBubbleChartData(vehiclePerformanceRequest);
+            var chartdata = objmat.Getcombinedmatrix(chartRawdata.Where(i => i.ColumnIndex != null).ToList());
+            //CalculateKPIData(List<IndexWiseChartData> vehicleChartDatas, double tripDuration, List<KpiDataRange> rangedata)
+            charts.ChartData = chartdata;
+            charts.PieChartData = objmat.CalculateKPIData(chartdata, chartRawdata.Sum(i => i.TripDuration), await _reportRepository.GetRangeData(vehiclePerformanceRequest.PerformanceType));
+            return charts;
+        }
+        public async Task<List<VehPerformanceProperty>> GetVehPerformanceType()
+        {
+            return await _reportRepository.GetVehPerformanceType();
+        }
         #endregion
     }
 }

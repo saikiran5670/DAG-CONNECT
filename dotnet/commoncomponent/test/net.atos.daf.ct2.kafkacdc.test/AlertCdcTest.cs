@@ -15,8 +15,8 @@ namespace net.atos.daf.ct2.kafkacdc.test
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _datamartDataacess;
-        private readonly IVehicleAlertRefManager _vehicleAlertRefManager;
-        private readonly IVehicleAlertRepository _vehicleAlertRepository;
+        private readonly IAlertMgmAlertCdcManager _vehicleAlertRefManager;
+        private readonly IAlertMgmAlertCdcRepository _vehicleAlertRepository;
         private readonly IConfiguration _configuration;
         private readonly KafkaConfiguration _kafkaConfig;
         private readonly VehicleCdcManager _vehicleCdcManager;
@@ -29,9 +29,9 @@ namespace net.atos.daf.ct2.kafkacdc.test
             string datamartconnectionString = _configuration.GetConnectionString("DevAzureDatamart");
             _dataAccess = new PgSQLDataAccess(connectionString);
             _datamartDataacess = new PgSQLDataMartDataAccess(datamartconnectionString);
-            _vehicleAlertRepository = new VehicleAlertRepository(_dataAccess, _datamartDataacess);
+            _vehicleAlertRepository = new AlertMgmAlertCdcRepository(_dataAccess, _datamartDataacess);
             _configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
-            _vehicleAlertRefManager = new VehicleAlertRefManager(_vehicleAlertRepository, _configuration);
+            _vehicleAlertRefManager = new AlertMgmAlertCdcManager(_vehicleAlertRepository, _configuration);
             var vehicleCdcrepository = new VehicleCdcRepository(_dataAccess, _datamartDataacess);
             _vehicleCdcManager = new VehicleCdcManager(vehicleCdcrepository);
         }
@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.kafkacdc.test
         [TestMethod]
         public async Task VehicleCdcProducer()
         {
-            var _kafkaConfig = new KafkaConfiguration()
+            var kafkaConfig = new KafkaConfiguration()
             {
                 CA_CERT_LOCATION = "./cacert.pem",
                 EH_CONNECTION_STRING = "Endpoint=sb://daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gicUoPvdd/u2bKPFXIhaDbBVgvBDsXrz9kcSWJm8gpw=",
@@ -66,7 +66,7 @@ namespace net.atos.daf.ct2.kafkacdc.test
             };
             // var vCdcList = new List<VehicleCdc>() { new VehicleCdc() { FuelType = "B", Status = "C", Vid = "M4A1113", FuelTypeCoefficient = 0, Vin = "XLRAE75PC0E345556" } };
             var vehicleIds = new List<int>() { 10 };
-            await _vehicleCdcManager.VehicleCdcProducer(vehicleIds, _kafkaConfig);
+            await _vehicleCdcManager.VehicleCdcProducer(vehicleIds, kafkaConfig);
             //  Assert.IsTrue(result != null);
 
 
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.kafkacdc.test
         [TestMethod]
         public void VehicleCdcConsumer()
         {
-            var _kafkaConfig = new KafkaConfiguration()
+            var kafkaConfig = new KafkaConfiguration()
             {
                 CA_CERT_LOCATION = "./cacert.pem",
                 CONSUMER_GROUP = "cdcvehicleconsumer",
@@ -82,7 +82,7 @@ namespace net.atos.daf.ct2.kafkacdc.test
                 EH_FQDN = "daf-lan1-d-euwe-cdp-evh-int.servicebus.windows.net:9093",//BrokerList
                 EH_NAME = "ingress.atos.vehicle.cdc.json" //topic name
             };
-            var result = _vehicleCdcManager.VehicleCdcConsumer(_kafkaConfig);
+            var result = _vehicleCdcManager.VehicleCdcConsumer(kafkaConfig);
             Assert.IsTrue(result != null);
 
 

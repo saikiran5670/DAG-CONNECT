@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.entity;
@@ -19,18 +20,21 @@ namespace net.atos.daf.ct2.reportscheduler
         private readonly IAuditTraillib _auditLog;
         //private readonly IGeneratePdf _generatePdf;
         private readonly IReportCreator _reportCreator;
+        private readonly IConfiguration _configuration;
 
         public ReportCreationSchedulerManager(ILogger<ReportCreationSchedulerManager> logger,
                                       IReportSchedulerRepository reportSchedularRepository,
                                       IAuditTraillib auditLog,
                                       //IGeneratePdf generatePdf,
-                                      IReportCreator reportCreator)
+                                      IReportCreator reportCreator,
+                                      IConfiguration configuration)
         {
             _logger = logger;
             _reportSchedulerRepository = reportSchedularRepository;
             _auditLog = auditLog;
             //_generatePdf = generatePdf;
             _reportCreator = reportCreator;
+            _configuration = configuration;
         }
 
         public async Task<bool> GenerateReport()
@@ -38,7 +42,8 @@ namespace net.atos.daf.ct2.reportscheduler
             var flag = true;
             try
             {
-                foreach (var reportSchedulerData in await _reportSchedulerRepository.GetReportCreationSchedulerList())
+                int.TryParse(_configuration["ReportCreationScheduler:ReportCreationRangeInMinutes"], out int reportCreationRangeInMinutes);
+                foreach (var reportSchedulerData in await _reportSchedulerRepository.GetReportCreationSchedulerList(reportCreationRangeInMinutes > 0 ? reportCreationRangeInMinutes : 90))
                 {
                     try
                     {
@@ -51,13 +56,21 @@ namespace net.atos.daf.ct2.reportscheduler
                         }
                         else
                         {
-                            await AddAuditLog($"Scheduler Id: {reportSchedulerData.Id}, No subscription available for the report.", AuditTrailEnum.Event_status.FAILED, reportSchedulerData.Id);
+                            await AddAuditLog($"Scheduler Id: {reportSchedulerData.Id}, No subscription available for the report.", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_UNSUBSCRIBED, reportSchedulerData.Id);
                         }
                     }
                     catch (Exception ex)
                     {
-                        flag = false;
-                        await AddAuditLog($"SchedulerId: {reportSchedulerData.Id}, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, reportSchedulerData.Id);
+                        if (ex.Source == "Npgsql" && ex.InnerException != null && ex.InnerException.Message.Contains("Timeout"))
+                        {
+                            flag = false;
+                            await AddAuditLog($"SchedulerId: {reportSchedulerData.Id}, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_SQL_TIMEOUT, reportSchedulerData.Id);
+                        }
+                        else
+                        {
+                            flag = false;
+                            await AddAuditLog($"SchedulerId: {reportSchedulerData.Id}, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_MSG, reportSchedulerData.Id);
+                        }
                     }
                 }
             }
@@ -71,7 +84,7 @@ namespace net.atos.daf.ct2.reportscheduler
 
         private static bool CheckForSubscription(ReportCreationScheduler reportSchedulerData, IEnumerable<ReportType> reportSubscriptions) => reportSubscriptions.Any(w => w.Key == reportSchedulerData.ReportKey) && reportSubscriptions.Any(w => w.Key == ReportNameConstants.REPORT_SCHEDULE);
 
-        private async Task AddAuditLog(string message, AuditTrailEnum.Event_status eventStatus, int sourceObjectId = 0)
+        private async Task AddAuditLog(string message, AuditTrailEnum.Event_status eventStatus, string updated_data = CreationConstants.LOG_MSG, int sourceObjectId = 0)
         {
             await _auditLog.AddLogs(new AuditTrail
             {
@@ -85,7 +98,7 @@ namespace net.atos.daf.ct2.reportscheduler
                 Message = message,
                 Sourceobject_id = sourceObjectId,
                 Targetobject_id = 0,
-                Updated_data = "ReportCreationScheduler"
+                Updated_data = updated_data
             });
         }
     }

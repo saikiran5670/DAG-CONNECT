@@ -42,10 +42,13 @@ import {AutocompleteLibModule} from 'angular-ng-autocomplete';
 import { DownloadReportModule } from './download-report/download-report.module';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+
+
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
-  return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
-  //return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
+ return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
+ // return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
 @NgModule({
@@ -71,7 +74,8 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     AutocompleteLibModule,
     DownloadReportModule,
     BsDropdownModule.forRoot(),
-    NgxIntlTelInputModule
+    NgxIntlTelInputModule,
+    NgxMatSelectSearchModule
     //RouterModule.forRoot(appRoute)
   ],
   providers: [

@@ -9,6 +9,9 @@ rpc GetFleetKPIDetails(FleetKpiFilterRequest) returns (FleetKpiResponse);
 rpc GetLastAlert24Hours(Alert24HoursFilterRequest) returns (Alert24HoursResponse);
 rpc GetTodayLiveVinData(TodayLiveVehicleRequest) returns (TodayLiveVehicleResponse);
 rpc GetFleetUtilizationDetails(FleetKpiFilterRequest) returns (FleetUtilizationResponse);
+rpc GetVisibleVins(VehicleListRequest) returns (VehicleListAndDetailsResponse);
+rpc CreateDashboardUserPreference (DashboardUserPreferenceCreateRequest) returns (DashboardUserPreferenceCreateResponse);
+rpc GetDashboardUserPreference(DashboardUserPreferenceRequest) returns (DashboardUserPreferenceResponse);
 }
 
 enum Responsecode{
@@ -26,16 +29,20 @@ message TodayLiveVehicleRequest{
 }
 
 message TodayLiveVehicleResponse{
-    double Distance = 1;
-    int64 DrivingTime = 2;
-    int32 VehicleCount = 3;
-    int32 DriverCount = 4;
-    int32 CriticleAlertCount = 5;
-    int32 ActiveVehicles = 6;
-    int32 TimeBaseUtilization = 7;
-    int32 DistanceBaseUtilization = 8;
-    Responsecode code = 9;
-    string message = 10;
+    string TodayVin = 1;
+    double Distance = 2;
+    int64 DrivingTime = 3;
+    int32 DriverCount  = 4;
+    int32 TodayActiveVinCount = 5;
+    int64 TodayTimeBasedUtilizationRate = 6;
+    int64 TodayDistanceBasedUtilization = 7;
+    int32 CriticleAlertCount = 8;
+    string YesterdayVin = 9;
+    int32 YesterdayActiveVinCount = 10;
+    int64 YesterDayTimeBasedUtilizationRate = 11;
+    int64 YesterDayDistanceBasedUtilization = 12;
+    Responsecode code = 13;
+    string message = 14;
 }
 
 message FleetKpiFilterRequest {
@@ -56,8 +63,9 @@ message FleetKpi {
     double DrivingTime = 4;
     double Distance  = 5;
     double FuelConsumption = 6;
-    double Idlingfuelconsumption = 7;
-    FleetKpi LastChangeKpi = 8;
+    double FuelConsumed = 7;
+    double Idlingfuelconsumption = 8;
+    FleetKpi LastChangeKpi = 9;
 }
 // Start For the Alert24Hours
 message Alert24HoursFilterRequest {
@@ -81,7 +89,7 @@ message Alert24Hour{
 //start for utilization
 
 message FleetUtilizationResponse {
-    FleetUtilization Fleetutilizationcharts = 1;
+    repeated FleetUtilization Fleetutilizationcharts = 1;
     Responsecode code = 2;
     string message = 3;
 }
@@ -95,8 +103,97 @@ message FleetUtilization {
     double Drivingtime = 6;
     double Idleduration = 7;
     double Distanceperday = 8;
+    double Fuelconsumed = 12;
+    double Fuelconsumption = 13;
     int32 Vehiclecount =10;
     int32 Tripcount =11;   
 
 }
 // End utilizatio
+
+//Start Vehicle Visibility and Trip filtered records
+
+message VehicleDetailsWithAccountVisibilty {
+int32 VehicleGroupId = 1;
+int32 AccountId = 2;
+string ObjectType = 3;
+string GroupType = 4;
+string FunctionEnum = 5;
+int32 OrganizationId = 6;
+string AccessType = 7;
+string VehicleGroupName = 8;
+int32 VehicleId = 9;
+string VehicleName = 10;
+string Vin = 11;
+string RegistrationNo = 12;
+}
+
+message VehicleFromTripDetails {
+string Vin = 1;
+int64 StartTimeStamp=2;
+int64 EndTimeStamp=3;
+}
+
+message VehicleListAndDetailsResponse{
+Responsecode Code = 1;
+string Message = 2;
+repeated VehicleFromTripDetails VinTripList = 3;
+repeated VehicleDetailsWithAccountVisibilty VehicleDetailsWithAccountVisibiltyList = 4;
+}
+
+message VehicleListRequest{
+int32 AccountId = 3;
+int32 OrganizationId = 4;
+}
+//End Vehicle Visibility and Trip filtered records
+
+//Start Create ReportUserPreference
+message DashboardUserPreferenceCreateRequest{
+    repeated DashboardUserPreferenceAttribute Attributes=1;
+    int32 AccountId=2;
+    int32 ReportId=3;
+    int32 OrganizationId=4;
+}
+
+message DashboardUserPreferenceCreateResponse{
+    Responsecode Code = 1;
+    string Message = 2;
+}
+
+message DashboardUserPreferenceAttribute {
+    int32 DataAttributeId = 1;
+    int32 State = 2;
+    int32 Type = 3;
+    int32 ChartType = 4;
+    int32 ThresholdType = 5;
+    double ThresholdValue = 6;
+}
+//End ReportUserPreference
+
+//START Get User Dashboard Preferences
+message DashboardUserPreferenceRequest {
+    int32 ReportId = 1;
+    int32 AccountId=2;
+    int32 RoleId=3;
+    int32 OrganizationId=4;
+    int32 ContextOrgId=5; 
+}
+
+message DashboardUserPreferenceResponse {
+    DashboardUserPreference UserPreference = 1;
+    Responsecode Code = 2;
+    string Message = 3;
+    int32 TargetProfileId=4;
+}
+
+message DashboardUserPreference{
+    int32 DataAttributeId=1;
+    string Name=2;
+    string Key=3;
+    string State=4;
+    string ChartType=5;
+    string ThresholdType=6;
+    double ThresholdValue=7;
+    repeated DashboardUserPreference SubReportUserPreferences=8;
+}
+//END Get User Dashboard Preferences

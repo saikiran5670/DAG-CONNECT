@@ -595,7 +595,7 @@ tripTraceArray: any = [];
       filter: "",
       menuId: 10 //-- for fleet utilisation
     }
-    this.getFleetPreferences();
+    //this.getFleetPreferences();
     this.loadfleetFuelDetails(this.driverDetails);
     if(this.driverDetails){
       this.onSearch();
@@ -659,28 +659,28 @@ tripTraceArray: any = [];
     };
     this.router.navigate(['report/fleetfuelreport'], navigationExtras);
   }
-  // setDisplayColumnBaseOnPref(){
-  //   let filterPref = this.tripPrefData.filter(i => i.state == 'I'); // removed unchecked
-  //   if(filterPref.length > 0){
-  //     filterPref.forEach(element => {
-  //       let search = this.prefMapData.filter(i => i.key == element.key); // present or not
-  //       if(search.length > 0){
-  //         let index = this.displayedColumns.indexOf(search[0].value); // find index
-  //         if (index > -1) {
-  //           this.displayedColumns.splice(index, 1); // removed
-  //         }
-  //       }
+   setDisplayColumnBaseOnPref(){
+     let filterPref = this.tripPrefData.filter(i => i.state == 'I'); // removed unchecked
+    if(filterPref.length > 0){
+       filterPref.forEach(element => {
+         let search = this.prefMapData.filter(i => i.key == element.key); // present or not
+         if(search.length > 0){
+           let index = this.displayedColumns.indexOf(search[0].value); // find index
+          if (index > -1) {
+             this.displayedColumns.splice(index, 1); // removed
+          }
+         }
 
-  //       if(element.key == 'rp_tr_report_tripreportdetails_vehiclename'){
-  //         this.showField.vehicleName = false;
-  //       }else if(element.key == 'rp_tr_report_tripreportdetails_vin'){
-  //         this.showField.vin = false;
-  //       }else if(element.key == 'rp_tr_report_tripreportdetails_vehicleRegistrationNo'){
-  //         this.showField.regNo = false;
-  //       }
-  //     });
-  //   }
-  // }
+         if(element.key == 'rp_tr_report_tripreportdetails_vehiclename'){
+           this.showField.vehicleName = false;
+         }else if(element.key == 'rp_tr_report_tripreportdetails_vin'){
+           this.showField.vin = false;
+         }else if(element.key == 'rp_tr_report_tripreportdetails_vehicleRegistrationNo'){
+           this.showField.regNo = false;
+         }
+       });
+     }
+   }
 
   
   changeHerePOISelection(event: any, hereData: any){
@@ -1039,7 +1039,7 @@ createEndMarker(){
     if(event.checked){
       
       this.rowdata.push(row);
-      this.mapService.viewselectedroutes(this.rowdata,this.displayRouteView,this.trackType);
+      this.mapService.viewselectedroutes(this.rowdata,this.displayRouteView,this.trackType, row);
 
       let _ui = this.reportMapService.getUI();
      // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
@@ -1611,7 +1611,7 @@ createEndMarker(){
   }
 
   proceedStep(prefData: any, preference: any){
-    if (prefData && preference) {
+   // if (prefData && preference) {
       let _search = prefData?.timeformat?.filter(i => i.id == preference.timeFormatId);
       if (_search && _search.length > 0) {
         this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
@@ -1632,10 +1632,11 @@ createEndMarker(){
           this.prefUnitFormat = prefData.unit[0].name;
         }
       }
-    }
+    
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
+    this.getFleetPreferences();
   }
 
   setDefaultStartEndTime()

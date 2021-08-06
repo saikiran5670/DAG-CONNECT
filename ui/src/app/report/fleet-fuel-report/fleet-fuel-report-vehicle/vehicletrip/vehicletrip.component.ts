@@ -1016,7 +1016,7 @@ createEndMarker(){
     if(event.checked){
       
       this.rowdata.push(row);
-      this.mapService.viewselectedroutes(this.rowdata, this.displayRouteView,this.trackType);
+      this.mapService.viewselectedroutes(this.rowdata, this.displayRouteView,this.trackType, row);
 
       let _ui = this.reportMapService.getUI();
      // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
@@ -2352,9 +2352,9 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'idleDuration': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.idleDuration);
+      sum += parseFloat(element.convertedIdleDuration);
       });
-      sum = this.reportMapService.getHhMmTime(sum);
+      sum = sum.toFixed(2);
       break;
     }
     case 'fuelConsumption': { 

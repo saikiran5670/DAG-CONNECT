@@ -281,6 +281,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
   PoiCheckboxClicked(event: any, row: any) {
     if(event.checked){ //-- add new marker
       this.markerArray.push(row);
+    this.moveMapToSelectedPOI(this.map, row.latitude, row.longitude);
     }else{ //-- remove existing marker
       //It will filter out checked points only
       let arr = this.markerArray.filter(item => item.id != row.id);
@@ -288,6 +289,28 @@ export class AlertAdvancedFilterComponent implements OnInit {
     }
     this.addMarkerOnMap(this.ui);
       
+    }
+
+    moveMapToSelectedPOI(map, lat, lon){
+      map.setCenter({lat:lat, lng:lon});
+      map.setZoom(16);
+    }
+  
+    addMarkersAndSetViewBoundsGeofence(map, row) {
+      let group = new H.map.Group();
+      let locationObjArray= [];
+      row.nodes.forEach(element => {
+        locationObjArray.push(new H.map.Marker({lat:element.latitude, lng:element.longitude}))
+      });    
+    
+      // add markers to the group
+      group.addObjects(locationObjArray);
+      map.addObject(group);
+    
+      // get geo bounding box for the group and set it to the map
+      map.getViewModel().setLookAtData({
+        bounds: group.getBoundingBox()
+      });
     }
 
     loadGeofenceData() {
@@ -725,6 +748,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
 
         if(event.checked){ 
           this.geoMarkerArray.push(row);
+          this.addMarkersAndSetViewBoundsGeofence(this.map, row);
         }else{ 
           let arr = this.geoMarkerArray.filter(item => item.id != row.id);
           this.geoMarkerArray = arr;

@@ -291,7 +291,7 @@ export class ReportMapService {
     return homeMarker;
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any){
+  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, row?: any){
     this.clearRoutesFromMap();
     if(_herePOI){
       this.showHereMapPOI(_herePOI, _selectedRoutes, _ui);
@@ -383,8 +383,18 @@ export class ReportMapService {
           }
         }
         this.hereMap.addObject(this.group);
-        this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
+        if(elem.id == row.id){
+          let grp= new H.map.Group();
+          grp.addObjects([this.startMarker, this.endMarker]);
+          this.hereMap.addObject(grp);
+          this.hereMap.getViewModel().setLookAtData({
+            bounds: grp.getBoundingBox()
+          });
+        }
+        
+        // this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
       });
+      
       this.makeCluster(_selectedRoutes, _ui);
     }else{
       if(_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)){
@@ -962,8 +972,8 @@ export class ReportMapService {
 
   afterPlusClick(_selectedRoutes: any, _ui: any){
     this.hereMap.removeLayer(this.clusteringLayer);
-    this.hereMap.setCenter({lat: _selectedRoutes[0].startPositionLattitude, lng: _selectedRoutes[0].startPositionLongitude}, 'default');
-    this.hereMap.setZoom(10);
+    // this.hereMap.setCenter({lat: _selectedRoutes[0].startPositionLattitude, lng: _selectedRoutes[0].startPositionLongitude}, 'default');
+    // this.hereMap.setZoom(10);
     if(_selectedRoutes.length > 1){
       let _arr = _selectedRoutes.filter((elem, index) => _selectedRoutes.findIndex(obj => obj.startPositionLattitude === elem.startPositionLattitude && obj.startPositionLongitude === elem.startPositionLongitude) === index);
       let _a: any = [];
@@ -1309,12 +1319,36 @@ export class ReportMapService {
     return gridData;
   }
 
+
+  // Fuel Benchmarking data conversions
+  getConvertedFuelBenchmarkingData(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
+    // gridData.forEach(element => {
+      gridData = JSON.parse(gridData);
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = this.getFuelConsumedUnits(gridData.fuelBenchmarkDetails.averageFuelConsumption, unitFormat, true);
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = this.getFuelConsumedUnits(gridData.fuelBenchmarkDetails.totalFuelConsumed, unitFormat, false);
+      gridData.fuelBenchmarkDetails.convertedTotalMileage = this.convertDistanceUnits(gridData.fuelBenchmarkDetails.totalMileage, unitFormat);
+
+    // });
+    if(unitFormat == 'dunit_Imperial') {
+      gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " mi"
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " gal"
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " mpg"
+    }else if(unitFormat == 'dunit_Metric') {
+      gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " km"
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " ltr"
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " ltr/100km"
+    }
+    return JSON.stringify(gridData);
+  }
+
+
+
   getConvertedFleetFuelDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
       element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
-      element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
+      element.convertedIdleDuration = element.idleDuration.toFixed(2);
       element.convertedFuelConsumed100Km = this.getFuelConsumptionUnits(element.fuelConsumed, unitFormat);
       element.convertedFuelConsumption = this.getFuelConsumedUnits(element.fuelConsumption, unitFormat);
       element.dpaScore = parseFloat(element.dpaScore);

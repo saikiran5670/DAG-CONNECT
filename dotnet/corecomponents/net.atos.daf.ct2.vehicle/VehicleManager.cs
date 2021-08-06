@@ -409,7 +409,9 @@ namespace net.atos.daf.ct2.vehicle
                     {
                         case "S":
                             //Single
-                            vehicles.Add(await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId));
+                            var vehicle = await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId);
+                            if (vehicle != null)
+                                vehicles.Add(vehicle);
                             break;
                         case "G":
                             //Group
@@ -451,6 +453,63 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
+        public async Task<List<VisibilityVehicle>> GetVisibilityVehiclesByOrganization(int orgId)
+        {
+            try
+            {
+                List<VisibilityVehicle> vehicles = new List<VisibilityVehicle>();
+                var vehicleGroups = await _vehicleRepository.GetVehicleGroupsByOrganization(orgId);
+
+                foreach (var vehicleGroup in vehicleGroups)
+                {
+                    switch (vehicleGroup.GroupType)
+                    {
+                        case "S":
+                            //Single
+                            var vehicle = await _vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId);
+                            if (vehicle != null)
+                                vehicles.Add(vehicle);
+                            break;
+                        case "G":
+                            //Group
+                            vehicles.AddRange(await _vehicleRepository.GetGroupTypeVehicles(vehicleGroup.Id));
+                            break;
+                        case "D":
+                            //Dynamic
+                            switch (vehicleGroup.GroupMethod)
+                            {
+                                case "A":
+                                    //All
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicAllVehicleForVisibility(orgId));
+                                    break;
+                                case "O":
+                                    //Owner
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId));
+                                    break;
+                                case "V":
+                                    //Visible
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId));
+                                    break;
+                                case "M":
+                                    //OEM
+                                    vehicles.AddRange(await _vehicleRepository.GetDynamicOEMVehiclesForVisibility(vehicleGroup.Id));
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                return vehicles.Distinct(new ObjectComparer()).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
         #endregion
 
         #region Vehicle Count for Report Scheduler
@@ -514,14 +573,28 @@ namespace net.atos.daf.ct2.vehicle
 
         public async Task<ProvisioningVehicleDataServiceResponse> GetCurrentVehicle(ProvisioningVehicleDataServiceRequest request)
         {
-            await _vehicleRepository.GetCurrentVehicle(request);
-            return new ProvisioningVehicleDataServiceResponse();
+            var vehicles = new List<ProvisioningVehicle>();
+            var provisioningVehicle = await _vehicleRepository.GetCurrentVehicle(request);
+            if (provisioningVehicle != null)
+            {
+                var visibleVehicles = await GetVisibilityVehiclesByOrganization(request.OrgId);
+                if (visibleVehicles.Select(x => x.VIN).ToArray().Contains(provisioningVehicle.VIN))
+                    vehicles.Add(provisioningVehicle);
+            }
+
+            return new ProvisioningVehicleDataServiceResponse { Vehicles = vehicles };
         }
 
         public async Task<ProvisioningVehicleDataServiceResponse> GetVehicleList(ProvisioningVehicleDataServiceRequest request)
         {
-            await _vehicleRepository.GetVehicleList(request);
-            return new ProvisioningVehicleDataServiceResponse();
+            var provisioningVehicles = await _vehicleRepository.GetVehicleList(request);
+            if (provisioningVehicles != null && provisioningVehicles.Count() > 0)
+            {
+                var visibleVehicles = await GetVisibilityVehiclesByOrganization(request.OrgId);
+                provisioningVehicles = provisioningVehicles.Where(nl => visibleVehicles.Any(veh => veh.VIN == nl.VIN)).AsEnumerable();
+            }
+
+            return new ProvisioningVehicleDataServiceResponse { Vehicles = provisioningVehicles.ToList() };
         }
 
         #endregion

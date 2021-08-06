@@ -15,11 +15,17 @@ namespace net.atos.daf.ct2.reports.entity
 
     public class VehiclePerformanceSummary
     {
+        public string VehicleName { get; set; }
         public string Vin { get; set; }
         public string EngineType { get; set; }
         public string ModelType { get; set; }
-        public string Vid { get; set; }
-        public int EngineTypeId { get; set; }
-
     }
+
+    public class VehPerformanceProperty
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
+        public string Type { get; set; }
+    }
+
 }

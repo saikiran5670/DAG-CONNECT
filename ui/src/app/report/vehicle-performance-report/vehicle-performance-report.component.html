@@ -1,5 +1,104 @@
 <div class="bgtrans">
-    <!-- <app-search-criteria></app-search-criteria> -->
-</div>
+    <app-search-criteria [translationData]='translationData' [performanceTypeLst]="performanceTypeLst" (showSearchResult)="showSearchResult($event)" (hideSearchResult)="hideSearchResult()">
+    </app-search-criteria>
 
-<!-- <p>vehicle-performance-report works!</p> -->
+    <!-- Details Panel -->
+    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+        <mat-expansion-panel [(expanded)]="detailsExpandPanel" class="full-width" fxLayoutGap="10px">
+            <mat-expansion-panel-header class="full-width">
+                <mat-panel-title>
+                    <span *ngIf="search" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                        translationData[searchResult.lbl] || searchResult.performanceTypeLabel }}</span>
+                    <span *ngIf="!search" style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                        translationData.lblVehiclePerformanceDetails || 'Vehicle Performance Details' }}</span>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div *ngIf='!search'>
+                <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row"
+                    fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No
+                    Record Found!' }}</div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
+                    translationData.lblSelectionMessage || 'Please select and search required fields from top to view
+                    the details' }}</div>
+            </div>
+
+            <div *ngIf="search">
+                <div style='padding: 20px; margin-bottom: 10px; background: #bee3f8;'>
+                    <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                            <span>
+                                <span>{{ translationData.lblFrom || 'From' }}: </span>
+                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                    searchResult.startDate  }}</span>
+                            </span>
+                        </div>
+                        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                            <span>
+                                <span>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}: </span>
+                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                    searchResult.vehicleGroup }}</span>
+                            </span>
+                        </div>
+                        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                            <span>
+                                <span>{{ translationData.lblVehicleVIN || 'Model Type' }}: </span>
+                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                    searchResult.modelType }}</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                            <span>
+                                <span>{{ translationData.lblTo || 'To' }}: </span>
+                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                    searchResult.endDate }}</span>
+                            </span>
+                        </div>
+                        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                            <span>
+                                <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
+                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                    searchResult.vehicleName }}</span>
+                            </span>
+                        </div>
+                        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                            <span>
+                                <span>{{ translationData.lblRegPlateNumber || 'Engine Type' }}: </span>
+                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                    searchResult.engineType }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </mat-expansion-panel>
+    </mat-card>
+
+    <!-- Charts Panel -->
+    <mat-card *ngIf="search" class='mat-elevation-z no-padding margin-bottom-xlg'>
+        <mat-expansion-panel [(expanded)]="chartsExpandPanel" class="full-width" fxLayoutGap="10px">
+            <mat-expansion-panel-header class="full-width">
+                <mat-panel-title>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                        translationData.lblCharts || 'Charts' }}</span>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                    <app-heat-bubble-chart [searchData]="searchResult" [xaxis]="chartXaxis" [yaxis]="chartYaxis" ></app-heat-bubble-chart>
+                </div>
+                <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                    <app-pie-chart [chartLabels]="pieChartLabels" [chartData]="pieChartData"></app-pie-chart>
+                </div>
+            </div>
+
+        </mat-expansion-panel>
+    </mat-card>
+
+    <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+
+</div>

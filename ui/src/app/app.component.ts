@@ -5,7 +5,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { DataInterchangeService } from './services/data-interchange.service';
 import { TranslationService } from './services/translation.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { DOCUMENT } from '@angular/common';
 import { AccountService } from './services/account.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -14,8 +14,9 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { OrganizationService } from './services/organization.service';
 import { AuthService } from './services/auth.service';
 import { MessageService } from './services/message.service';
-import { timer, Subscription } from 'rxjs';
+import { timer, Subscription, ReplaySubject, Subject } from 'rxjs';
 import { ReportService } from './services/report.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -41,6 +42,7 @@ export class AppComponent {
   menuPages: any;
   // newData: any = {};
   languages = [];
+  languageSelection: any  = [];
   openUserRoleDialog = false;
   organizationDropdown: any = [];
   roleDropdown: any = [];
@@ -249,7 +251,24 @@ export class AppComponent {
   timeLeft: number = 120;
   messages: any[] = [];
   subscription: Subscription;
-  isFleetOverview: boolean = false;
+  showTimer: boolean = false;
+
+
+    /** list of banks */
+   // protected banks: Bank[] = BANKS;
+
+    /** control for the selected bank */
+    //public bankCtrl: FormControl = new FormControl();
+  
+    /** control for the MatSelect filter keyword */
+    public langFilterCtrl: FormControl = new FormControl();
+  
+     /** list of banks filtered by search keyword */
+  public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+
+    /** Subject that emits when the component has been destroyed. */
+    protected _onDestroy = new Subject<void>();
+
 
   constructor(private reportService: ReportService, private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService, private messageService: MessageService) {
     this.defaultTranslation();
@@ -304,7 +323,8 @@ export class AppComponent {
 
     this.appForm = this.fb.group({
       'languageSelection': [this.localStLanguage ? this.localStLanguage.id : (this.accountInfo ? this.accountInfo.accountPreference.languageId : 8)],
-      'contextOrgSelection': this.organizationList.length > 0 ? this.organizationList[0].id : 1
+      'contextOrgSelection': this.organizationList.length > 0 ? this.organizationList[0].id : 1,
+      'langFilterCtrl' : []
     });
 
     router.events.subscribe((val: any) => {
@@ -350,7 +370,7 @@ export class AppComponent {
     this.subscription = this.messageService.getMessage().subscribe(message => {
       if (message.key.indexOf("refreshTimer") !== -1) {
         this.refreshTimer();
-        this.isFleetOverview = true;
+        this.showTimer = true;
       }
     });
 
@@ -569,7 +589,15 @@ export class AppComponent {
       } else if (accessNameList.includes("Admin#Account")) {
         this.userType = "Admin#Account";
       }
-  
+
+
+
+      if (accessNameList.includes("Admin#TranslationManagement#Inspect")){
+        localStorage.setItem("canSeeXRay", "true");
+      }
+      
+
+
       if (accessNameList.includes("Admin#Organization-Scope") && this.userType != 'Admin#Organisation' && this.userType != 'Admin#Account') {
         this.orgContextType = true;
         localStorage.setItem("orgContextStatus", this.orgContextType.toString());
@@ -705,6 +733,8 @@ export class AppComponent {
       let preferenceLanguageId = 1;
       this.translationService.getLanguageCodes().subscribe(languageCodes => {
         this.languages = languageCodes;
+        this.languages.sort(this.compare);
+        this.resetLanguageFilter();
         localStorage.setItem("languageCodeList", JSON.stringify(this.languages));
         this.localStLanguage = JSON.parse(localStorage.getItem("language"));
         let filterLang = [];
@@ -755,10 +785,12 @@ export class AppComponent {
             let _searchOrg = this.organizationList.filter(i => i.id == _orgId);
             if (_searchOrg.length > 0) {
               localStorage.setItem("contextOrgId", _searchOrg[0].id);
+              localStorage.setItem("contextOrgName", _searchOrg[0].name);
               this.appForm.get("contextOrgSelection").setValue(_searchOrg[0].id); //-- set context org dropdown
             }
             else {
               localStorage.setItem("contextOrgId", this.organizationList[0].id);
+              localStorage.setItem("contextOrgName", this.organizationList[0].name);
               this.appForm.get("contextOrgSelection").setValue(this.organizationList[0].id); //-- set context org dropdown
             }
             this.calledTranslationLabels(preferencelanguageCode);
@@ -769,6 +801,20 @@ export class AppComponent {
         });
       });
     }
+  }
+
+  resetLanguageFilter() {
+    this.filteredLanguages.next(this.languages.slice());
+  }
+
+  compare(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
   }
 
   calledTranslationLabels(_code: any) {
@@ -804,6 +850,19 @@ export class AppComponent {
     if (this.router.url) {
       //this.isLogedIn = true;
     }
+
+        // set initial selection
+       //this.languageSelection.setValue(this.languages[30]);
+
+        // load the initial bank list
+        
+    
+
+    // this.langFilterCtrl.valueChanges
+    //   .subscribe(() => {
+    //     console.log("called")
+    //     this.filterLanguages();
+    //   });
   }
 
   private setPageTitle() {
@@ -895,6 +954,7 @@ export class AppComponent {
     let _searchOrg = this.organizationList.filter(i => i.id == _orgId);
     if (_searchOrg.length > 0) {
       localStorage.setItem("contextOrgId", _searchOrg[0].id);
+      localStorage.setItem("contextOrgName", _searchOrg[0].name);
       this.appForm.get("contextOrgSelection").setValue(_searchOrg[0].id); //-- set context org dropdown
     }
   }
@@ -994,6 +1054,7 @@ export class AppComponent {
     let _search = this.organizationList.filter(i => i.id == parseInt(filterValue));
     if (_search.length > 0) {
       localStorage.setItem("contextOrgId", _search[0].id);
+      localStorage.setItem("contextOrgName", _search[0].name);
     }
     let switchObj = {
       accountId: this.accountID,
@@ -1041,13 +1102,30 @@ export class AppComponent {
   }
 
   showSpinner(){
-    if((this.router.url).indexOf("/fleetoverview") !== -1)
-      this.isFleetOverview = true;
+    if((this.router.url).indexOf("/fleetoverview") !== -1 || (this.router.url).indexOf("/dashboard") !== -1)
+      this.showTimer = true;
     else{
-      this.isFleetOverview = false;
+      this.showTimer = false;
       if(this.sub)
         this.sub.unsubscribe();
     }
   }
+
+  filterLanguages(search) {
+    if (!this.languages) {
+      return;
+    }
+    if (!search) {
+      this.resetLanguageFilter();
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    this.filteredLanguages.next(
+      this.languages.filter(item => item.name.toLowerCase().indexOf(search) > -1)
+    );
+    console.log("this.filteredLanguages",this.filteredLanguages) 
+   }
+
 
 }

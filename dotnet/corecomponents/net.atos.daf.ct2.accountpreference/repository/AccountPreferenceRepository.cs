@@ -56,6 +56,7 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@time_format_id", preference.TimeFormatId);
                 parameter.Add("@landing_page_display_id", preference.LandingPageDisplayId);
                 parameter.Add("@Icon_id", iconId);
+                parameter.Add("@page_refresh_time", preference.PageRefreshTime);
                 //parameter.Add("@driver_id", preference.DriverId);
 
                 // check the ref_id must be account id or organization id
@@ -103,9 +104,9 @@ namespace net.atos.daf.ct2.accountpreference
 
                 string query = @"insert into master.accountpreference
                                 (type,language_id,timezone_id,
-                                currency_id,unit_id,vehicle_display_id,date_format_id,state,time_format_id,landing_page_display_id,icon_id) 
+                                currency_id,unit_id,vehicle_display_id,date_format_id,state,time_format_id,landing_page_display_id,icon_id,page_refresh_time) 
                                 values (@type,@language_id,@timezone_id,
-                                @currency_id,@unit_id,@vehicle_display_id,@date_format_id,'A',@time_format_id,@landing_page_display_id,@Icon_id) RETURNING id";
+                                @currency_id,@unit_id,@vehicle_display_id,@date_format_id,'A',@time_format_id,@landing_page_display_id,@Icon_id,@page_refresh_time) RETURNING id";
 
                 var createdPreferenceId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 // Update preference id for account or organization
@@ -183,6 +184,8 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@date_format_id", preference.DateFormatTypeId);
                 parameter.Add("@time_format_id", preference.TimeFormatId);
                 parameter.Add("@landing_page_display_id", preference.LandingPageDisplayId);
+                parameter.Add("@page_refresh_time", preference.PageRefreshTime);
+
                 if (preference.IconId > 0)
                 {
                     parameter.Add("@Icon_id", preference.IconId);
@@ -195,7 +198,7 @@ namespace net.atos.daf.ct2.accountpreference
                 var query = @"update master.accountpreference set language_id=@language_id,
                             timezone_id=@timezone_id,currency_id=@currency_id,unit_id=@unit_id,
                             vehicle_display_id=@vehicle_display_id,
-                            date_format_id=@date_format_id,state='A',time_format_id=@time_format_id,landing_page_display_id=@landing_page_display_id,icon_id=@icon_id
+                            date_format_id=@date_format_id,state='A',time_format_id=@time_format_id,landing_page_display_id=@landing_page_display_id,icon_id=@icon_id,page_refresh_time=@page_refresh_time
 	                        WHERE id=@id RETURNING id;";
                 var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 preference.IconId = createdIconId;
@@ -264,7 +267,7 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@id", filter.Id);
                 var query = @"SELECT ac.id,ac.type,ac.language_id,ac.timezone_id,ac.currency_id,ac.unit_id,ac.vehicle_display_id,
                             ac.date_format_id,ac.time_format_id,ac.state,ac.landing_page_display_id,
-                            COALESCE(i.id,0) as iconId,i.icon
+                            COALESCE(i.id,0) as iconId,i.icon,ac.page_refresh_time as PageRefreshTime
                             FROM   master.accountpreference ac
                             LEFT OUTER JOIN master.icon i
                             ON i.id = ac.icon_id
@@ -302,7 +305,7 @@ namespace net.atos.daf.ct2.accountpreference
                 }
                 return entity;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -329,6 +332,7 @@ namespace net.atos.daf.ct2.accountpreference
                 entity.IconByte = Convert.ToBase64String(record.icon, 0, record.icon.Length);
             }
             //record.isActive = record.state;
+            entity.PageRefreshTime = record.pagerefreshtime;
             return entity;
         }
 

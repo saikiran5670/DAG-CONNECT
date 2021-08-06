@@ -42,7 +42,7 @@ export class MapService {
         return data;
       }
       
-      viewselectedroutes(_selectedRoutes:any, _displayRouteView?: any,trackType?: any, ){
+      viewselectedroutes(_selectedRoutes:any, _displayRouteView?: any,trackType?: any, row?: any){
 
         if(_selectedRoutes && _selectedRoutes.length > 0){
           _selectedRoutes.forEach(elem => {
@@ -74,6 +74,15 @@ export class MapService {
               }
             }
             this.hereMap.addObject(this.group);
+
+            if(elem.id == row.id){
+              let grp= new H.map.Group();
+              grp.addObjects([this.startMarker, this.endMarker]);
+              this.hereMap.addObject(grp);
+              this.hereMap.getViewModel().setLookAtData({
+                bounds: grp.getBoundingBox()
+              });
+            }
           })
         }
       }

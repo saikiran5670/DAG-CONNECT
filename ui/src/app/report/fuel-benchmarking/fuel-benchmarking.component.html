@@ -48,7 +48,7 @@
                   </mat-form-field> 
                   <div *ngIf="selectedBenchmarking == 'timePeriods'">{{translationData.lblBottomBenchmarkVehicleGroupText || 'Select the Target Vehicle Group' }}</div>
                   <div *ngIf="selectedBenchmarking == 'vehicleGroup'">{{translationData.lblBottomBenchmarkVehicleGroupText || 'Add a group to compare in the benchmark (maximum 4)' }}</div>
-                  <mat-error *ngIf="fuelBenchmarkingForm.get('vehicleGroup').hasError('required') && vehicleGrpDD.length > 0">
+                  <mat-error *ngIf="fuelBenchmarkingForm.get('vehicleGroup').hasError('required') && vehicleGrpDD.length > 0 && !makeDisableVehicleGroup">
                     {{translationData.lblPleaseSelectvehicleGroup || 'Please Select Vehicle Group' }}
                   </mat-error>
                 </div>
@@ -135,9 +135,11 @@
       <app-fuel-benchmarking-table *ngIf="selectionValueBenchmarkBY"
         [selectionValueBenchmarkBY]= "selectionValueBenchmarkBY"
         [test]="test"
+        [prefUnitFormat]="prefUnitFormat"
         [benchmarkSelectionChange]="benchmarkSelectionChange"
         [startDateRange]="startDateRange" 
         [vehicleGroupSelected] = "vehicleGroupSelected"
+        [translationData]="translationData"
         [endDateRange]="endDateRange" #fuelBenchmarking></app-fuel-benchmarking-table>
 
 
@@ -147,13 +149,13 @@
               <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
               <span>
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{'Fuel Benchmarking Details' }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{translationData.lblFuelBenchmarkingDetails || 'Fuel Benchmarking Details' }}</span>
               </span>
             </mat-panel-title>
             </mat-expansion-panel-header>
 
             <div>
-              <span>{{'Please select and search required fields from top to view the details' }}</span>
+              <span>{{translationData.lblFuelBenchmarkingDetailsSelectMsg ||  'Please select and search required fields from top to view the details' }}</span>
             </div>
             </mat-expansion-panel>          
           </mat-card>

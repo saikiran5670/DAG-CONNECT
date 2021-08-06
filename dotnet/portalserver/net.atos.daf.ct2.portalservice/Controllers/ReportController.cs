@@ -1579,7 +1579,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
         #region VehiclePerformance
         [HttpPost]
-        [Route("vehicleperformancechart")]
+        [Route("vehicleperformance/charttemplate")]
         public async Task<IActionResult> GetVehiclePerformanceChartTemplate([FromBody] VehiclePerformanceFilter request)
         {
             try
@@ -1594,10 +1594,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 string filters = JsonConvert.SerializeObject(request);
                 VehPerformanceRequest objVehPerformanceFilter = JsonConvert.DeserializeObject<VehPerformanceRequest>(filters);
                 var data = await _reportServiceClient.GetVehiclePerformanceChartTemplateAsync(objVehPerformanceFilter);
-                if (data?.VehPerformanceCharts != null)
+                if (data?.VehPerformanceTemplate?.VehPerformanceCharts != null)
                 {
                     data.Message = ReportConstants.GET_VEHICLE_PERFORMANCE_SUCCESS_MSG;
-                    return Ok(data);
+                    return Ok(data.VehPerformanceTemplate);
                 }
                 else
                 {
@@ -1607,6 +1607,72 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
 
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        [HttpPost]
+        [Route("vehicleperformance/chartdata")]
+        public async Task<IActionResult> GetVehPerformanceBubbleChartData(VehiclePerformanceFilter vehiclePerformanceFilter)
+        {
+            try
+            {
+                BubbleChartDataRequest bubbleChartDataRequest = new BubbleChartDataRequest();
+                bubbleChartDataRequest.VIN = vehiclePerformanceFilter.VIN;
+                bubbleChartDataRequest.PerformanceType = vehiclePerformanceFilter.PerformanceType;
+                bubbleChartDataRequest.StartDateTime = vehiclePerformanceFilter.StartDateTime;
+                bubbleChartDataRequest.EndDateTime = vehiclePerformanceFilter.EndDateTime;
+
+                string filters = JsonConvert.SerializeObject(vehiclePerformanceFilter);
+                BubbleChartDataRequest objVehPerformanceFilter = JsonConvert.DeserializeObject<BubbleChartDataRequest>(filters);
+                var response = await _reportServiceClient.GetVehPerformanceBubbleChartDataAsync(objVehPerformanceFilter);
+
+                if (response != null)
+                {
+                    response.Message = ReportConstants.GET_VEHICLE_PERFORMANCE_SUCCESS_MSG;
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_FUEL_BENCHMARK_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                $"{ nameof(GetVehPerformanceBubbleChartData) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("vehicleperformance/kpi")]
+        public async Task<IActionResult> GetVehPerformancetype()
+        {
+            try
+            {
+
+                VehPerformanceTypeRequest vehPerformanceTypeRequest = new VehPerformanceTypeRequest();
+                var response = await _reportServiceClient.GetVehPerformanceTypeAsync(vehPerformanceTypeRequest);
+                if (response != null)
+                {
+                    response.Message = ReportConstants.GET_VEHICLE_PERFORMANCE_SUCCESS_MSG;
+                    return Ok(response.VehPerformanceType);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_FUEL_BENCHMARK_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                ReportConstants.FLEETOVERVIEW_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                $"{ nameof(GetVehPerformancetype) } method Failed. Error : {ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                 _userDetails);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }

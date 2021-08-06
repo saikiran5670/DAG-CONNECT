@@ -16,8 +16,7 @@ namespace net.atos.daf.ct2.dashboard.repository
         private static readonly log4net.ILog _log =
           log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public DashBoardRepository(IDataAccess dataAccess
-                                , IDataMartDataAccess dataMartdataAccess)
+        public DashBoardRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             _dataAccess = dataAccess;
             _dataMartdataAccess = dataMartdataAccess;
@@ -45,6 +44,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                                  , SUM(etl_gps_distance)     as distance
                                                                  , SUM(etl_gps_driving_time) as drivingtime
                                                                  , SUM(fuel_consumption)     as fuelconsumption
+                                                                 , SUM(etl_gps_fuel_consumed) as fuelconsumed
                                                                  , SUM(idling_consumption)   as idlingfuelconsumption
                                                                  , SUM(idle_duration)        as idlingtime
                                                                FROM
@@ -62,6 +62,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                           , Round(sum(drivingtime),2)           as drivingtime
                                                           , Round(sum(idlingfuelconsumption),2) as idlingfuelconsumption
                                                           , Round(sum(fuelconsumption),2)       as fuelconsumption
+                                                          , Round(sum(fuelconsumed),2)          as fuelconsumed
                                                           , Round(sum(idlingtime),2)            as idlingtime
                                                         FROM cte_filteredTrip 
                                                         GROUP BY isongoingtrip";
@@ -109,31 +110,52 @@ namespace net.atos.daf.ct2.dashboard.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var filter = DateTime.Now;
-                DateTime datetime = DateTime.Now.AddHours(-filter.Hour).AddMinutes(-filter.Minute).AddSeconds(-filter.Second);
-                long dateTimeUTC = UTCHandling.GetUTCFromDateTime(datetime, "UTC");
                 parameter.Add("@Vins", objTodayLiveVehicleRequest.VINs);
-                parameter.Add("@startdatetime", dateTimeUTC);
-                string query = @"WITH cte_vintodaydata as
-                                     (
-                                SELECT  lcts.vin,
-		                                SUM(lcts.trip_distance) AS distance ,
-		                                SUM(lcts.driving_time) AS drivingtime,
-		                                COUNT(lcts.driver1_id) AS driverid,
-		                                Count(ta.urgency_level_type) As criticlealertcount
-                                FROM  livefleet.livefleet_current_trip_statistics lcts
-                                LEFT JOIN tripdetail.tripalert ta ON lcts.vin = ta.vin
-		                                 WHERE lcts.vin = ANY(@Vins) AND LCTS.START_TIME_STAMP = @startdatetime
-                                GROUP BY lcts.vin,lcts.start_time_stamp
-	                                 )
-	                                 SELECT  
-	                                 Count(vin) AS vehiclecount,
-		                                SUM(distance) AS distance ,
-		                                SUM(drivingtime) AS drivingtime,
-		                                COUNT(drivingtime) AS drivingtime,
-		                                Count(criticlealertcount) As criticlealertcount
-                                FROM  cte_vintodaydata
-                                GROUP BY vin";
+                parameter.Add("@startdatetime", objTodayLiveVehicleRequest.TodayDateTime);
+                parameter.Add("@yesterdaydatetime", objTodayLiveVehicleRequest.YesterdayDateTime);
+                string query = @"WITH CTE_Today as
+                                            	(
+                                            		SELECT 
+														lcts.vin as TodayVin ,
+														SUM(lcts.trip_distance) as distance, 
+														SUM(lcts.driving_time) as drivingtime,
+														COUNT(lcts.driver1_id) as Drivercount,
+														COUNT(lcts.vin) as TodayActiveVinCount,
+														SUM(lcts.driving_time) as TodayTimeBasedUtilizationRate, 
+														SUM(lcts.trip_distance) as TodayDistanceBasedUtilization,
+														COUNT(ta.urgency_level_type) As criticlealertcount
+														FROM livefleet.livefleet_current_trip_statistics lcts
+														LEFT JOIN tripdetail.tripalert ta ON lcts.vin = ta.vin
+														WHERE lcts.start_time_stamp >= @startdatetime AND lcts.vin = Any(@Vins)
+														GROUP BY TodayVin
+                                            	)
+                                              , cte_yesterday as
+                                            	(
+                                            		SELECT 
+													lcts.vin as yesterdayVin ,
+													COUNT(lcts.vin) as YesterdayActiveVinCount ,
+													SUM(lcts.driving_time) as YesterDayTimeBasedUtilizationRate, 
+													SUM(lcts.trip_distance) as YesterDayDistanceBasedUtilization
+													FROM livefleet.livefleet_current_trip_statistics lcts
+													WHERE (lcts.start_time_stamp BETWEEN @yesterdaydatetime and @startdatetime) AND lcts.vin = Any(@Vins)
+													GROUP BY lcts.vin
+                                            	)
+                                            SELECT --t.TodayVin,
+											SUM(t.distance) as distance, 
+											SUM(t.drivingtime) as drivingtime,
+											SUM(t.Drivercount) as Drivercount,
+											SUM(t.TodayActiveVinCount) as TodayActiveVinCount,
+											SUM(t.TodayTimeBasedUtilizationRate) as TodayTimeBasedUtilizationRate,
+											SUM(t.TodayDistanceBasedUtilization) as TodayDistanceBasedUtilization,
+											SUM(t.criticlealertcount) As criticlealertcount,
+											--y.yesterdayVin,
+											SUM(y.YesterdayActiveVinCount) as YesterdayActiveVinCount,
+											SUM(y.YesterDayTimeBasedUtilizationRate) as YesterDayTimeBasedUtilizationRate,
+											SUM(y.YesterDayDistanceBasedUtilization)  as YesterDayDistanceBasedUtilization
+                                            FROM
+                                            	CTE_Today t
+											INNER JOIN	
+                                                cte_yesterday y on t.TodayVin = y.yesterdayVin";
                 var data = await _dataMartdataAccess.QueryAsync<TodayLiveVehicleResponse>(query, parameter);
                 return data.FirstOrDefault();
             }
@@ -165,12 +187,14 @@ namespace net.atos.daf.ct2.dashboard.repository
 						Count(distinct trip_id) as tripcount,
                         sum(etl_gps_distance) as totaldistance,
                         sum(etl_gps_trip_time) as totaltriptime,
-                        sum(veh_message_driving_time) as totaldrivingtime,
+                        sum(etl_gps_driving_time) as totaldrivingtime,
                         sum(idle_duration) as totalidleduration,
                         sum(veh_message_distance) as totalAveragedistanceperday,
                         sum(average_speed) as totalaverageSpeed,
                         sum(average_weight) as totalaverageweightperprip,
-                        sum(last_odometer) as totalodometer
+                        sum(last_odometer) as totalodometer,
+                        SUM(etl_gps_fuel_consumed)    as fuelconsumed,
+                        SUM(fuel_consumption)          as fuelconsumption
                         FROM tripdetail.trip_statistics
                         where is_ongoing_trip = false AND (end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
 						and vin=ANY(@vins)
@@ -188,9 +212,11 @@ namespace net.atos.daf.ct2.dashboard.repository
                         CAST((totaldrivingtime) as float) as drivingtime ,
                         CAST((totaldistance) as float) as distance ,
                         CAST((totalidleduration) as float) as idleduration ,
-                        CAST((totalAveragedistanceperday) as float) as distanceperday ,
+                        CAST((totaldistance) as float) as distanceperday ,
                         CAST((totalaverageSpeed) as float) as Speed ,
-                        CAST((totalaverageweightperprip) as float) as weight
+                        CAST((totalaverageweightperprip) as float) as weight,
+                        fuelconsumed,
+                        fuelconsumption
                         from cte_workingdays";
 
 
@@ -204,5 +230,6 @@ namespace net.atos.daf.ct2.dashboard.repository
             }
         }
         #endregion
+
     }
 }

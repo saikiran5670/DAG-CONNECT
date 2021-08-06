@@ -1,57 +1,55 @@
 <mat-expansion-panel class="full-width margin-bottom-20m" fxLayoutGap="10px" [expanded]="true">
   <mat-expansion-panel-header class="full-width">
     <mat-panel-title>
-      <span *ngIf="clickButton"  class="mat-expansion-indicator"></span>
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblVehiclesUtilisation
         || 'Vehicles Utilisation' }}</span>
     </mat-panel-title>
   </mat-expansion-panel-header>
-  <!-- <div style='padding-left: 52%;' fxLayoutAlign="end"> -->
     <button class="weekButton"
-    (click)="selectionTimeRange('week')" [ngClass]="{'selectedBtn': selectionTab == 'week'}"  mat-raised-button
+    (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}"  mat-raised-button
       color="primary">{{translationData.lblLast7days|| 'Last 7 days' }}</button>
     <button class="monthButton" 
-    (click)="selectionTimeRange('month')" [ngClass]="{'selectedBtn': selectionTab == 'month'}" mat-raised-button
+    (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" mat-raised-button
       color="primary">{{translationData.lblLast30days|| 'Last 30 days' }}</button>
     <button class="moreButton"
-    (click)="selectionTimeRange('3months')" [ngClass]="{'selectedBtn': selectionTab == '3months'}" mat-raised-button
+    (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" mat-raised-button
       color="primary">{{translationData.lblLastWeek || 'Last 90 days' }}</button>
-  <!-- </div> -->
+
   <div fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+    <div [hidden]="!checkForVehiclePreference('vehicleutilization_distanceperday')" class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistancePerDay ||
         'Distance Per Day' }}</span>
       <div *ngIf="distanceChartType =='bar'" class="chart-wrapper">
-        <canvas baseChart [datasets]="barChartData1" [labels]="barChartLabels1" [options]="barChartOptions"
+        <canvas id="myChart2" class="chart" baseChart [datasets]="barChartData1" [labels]="barChartLabels1" [options]="barChartOptions2"
           [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
         </canvas>
       </div>
       <div *ngIf="distanceChartType =='line'" class="chart-wrapper">
-        <canvas baseChart [datasets]="lineChartData1" [labels]="lineChartLabels1" [options]="lineChartOptions"
+        <canvas class="chart" baseChart [datasets]="lineChartData1" [labels]="lineChartLabels1" [options]="lineChartOptions2"
           [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType"
           [plugins]="lineChartPlugins">
         </canvas>
       </div>
     </div>
-    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+    <div [hidden]="!checkForVehiclePreference('vehicleutilization_activevehiclesperday')" class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblActiveVehiclesPerDay
         || 'Active Vehicles Per Day' }}</span>
       <div *ngIf="vehicleChartType =='line'" class="chart-wrapper">
-        <canvas baseChart [datasets]="lineChartData2" [labels]="lineChartLabels2" [options]="lineChartOptions"
+        <canvas class="chart" baseChart [datasets]="lineChartData2" [labels]="lineChartLabels2" [options]="lineChartOptions"
           [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType"
           [plugins]="lineChartPlugins">
         </canvas>
       </div>
       <div *ngIf="vehicleChartType =='bar'" class="chart-wrapper">
-        <canvas baseChart [datasets]="barChartData2" [labels]="barChartLabels2" [options]="barChartOptions"
+        <canvas class="chart" baseChart [datasets]="barChartData2" [labels]="barChartLabels2" [options]="barChartOptions"
           [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
         </canvas>
       </div>
     </div>
-    <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="end">
+    <div [hidden]="!checkForVehiclePreference('vehicleutilization_timebasedutilizationrate')" class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="end">
       <div fxLayout="column">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-left: 25%;'>{{
-          translationData.lblTimeBasedUtilisation || 'Time based utilisation' }}</span>
+        <span style='font: 500 14px/30px Roboto, "Helvetica Neue", sans-serif;padding-left: 25%;'>{{
+          translationData.lblTimeBasedUtilisationRate || 'Time Based Utilisation Rate' }}</span>
         <div *ngIf="timeDChartType =='doughnut'" class="chart-wrapper">
           <canvas baseChart [data]="doughnutChartData1" [chartType]="doughnutChartType" [labels]="doughnutChartLabels1"
             [colors]="doughnutChartColors" [options]="doughnut_barOptions" [legend]="barChartLegend">
@@ -64,9 +62,9 @@
           </canvas>
         </div>
       </div>
-      <div fxLayout="column">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-left: 25%;'>{{
-          translationData.lblMileageBasedUtilisation || 'Mileage based utilisation' }}</span>
+      <div [hidden]="!checkForVehiclePreference('vehicleutilization_distancebasedutilizationrate')" fxLayout="column">
+        <span style='font: 500 14px/30px Roboto, "Helvetica Neue", sans-serif;padding-left: 25%;'>{{
+          translationData.lblDistanceBasedUtilisationRate || 'Distance Based Utilisation Rate' }}</span>
         <div *ngIf="mileageDChartType == 'doughnut'" class="chart-wrapper">
           <canvas baseChart [data]="doughnutChartData2" [chartType]="doughnutChartType" [labels]="doughnutChartLabels2"
             [colors]="doughnutChartColors" [options]="doughnut_barOptions" [legend]="barChartLegend">
@@ -86,8 +84,8 @@
 <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
   <mat-expansion-panel-header class="full-width">
     <mat-panel-title>
-      <!-- <span *ngIf="clickButton"  class="mat-expansion-indicator"></span> -->
-      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlertsLast24Hours || 'Alerts Last 24 Hours' }}</span>
+      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAlertsLast24Hours || 'Alerts Last 24 Hours - ' }}
+      <span [hidden]="!checkForPreference('alertlast24hours_totalalerts')" >{{toatlSum}}</span></span>
       <div style='padding-left: 76%;' fxLayoutAlign="end">
       </div>
     </mat-panel-title>
@@ -96,7 +94,7 @@
   color="primary">{{translationData.lblMoreInfo|| 'More Info' }}</button>
 
   <div fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-    <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+    <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left" [hidden]="!checkForPreference('alertlast24hours_levelalerts')">
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblLevelsOfAlertsTriggered ||
         'Levels Of Alerts Triggered' }}</span>
         <div class="chart-wrapper">
@@ -104,8 +102,8 @@
             [data]="alertPieChartData" 
             [labels]="alertPieChartLabels" 
             [chartType]="pieChartType"
-            [colors]="doughnutChartColors" 
-            [options]="pieChartOptions1" 
+            [colors]="alertPieChartColors" 
+            [options]="alertPieChartOptions" 
             [plugins]="pieChartPlugins"
             [legend]="barChartLegend">
           </canvas>
@@ -114,22 +112,19 @@
     <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left" style="padding-top: 5%;">
       <div fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-33-per block1" matTooltip="{{translationData.lblClicktoviewmoredetails || 'Click to view more details'}}"
-        (click)="gotoLogBookFromLogistic()" >
-          <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' class="full width">{{ translationData.lblLogistic ||
-            'Logistic'}}</div>
-            <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' class="full width" >0</div>
-        </div>
+        [hidden]="!checkForPreference('alertlast24hours_logisticalert')"  (click)="gotoLogBookFromLogistic()" >
+          <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;;' class="full width">{{ translationData.lblLogistics ||
+            'Logistics:'}}<span>{{logisticCount}}</span></div>
+         </div>
         <div class="areaWidth min-width-33-per block2" matTooltip="{{translationData.lblClicktoviewmoredetails || 'Click to view more details'}}"
-        (click)="gotoLogBookFromFuel()" >
+        [hidden]="!checkForPreference('alertlast24hours_fueldriveralerts')"  (click)="gotoLogBookFromFuel()" >
           <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' class="full width">{{ translationData.lblFuelAndDriver ||
-            'Fuel & Driver'}}</div>
-            <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' class="full width" >1</div>
-        </div>
-        <div class="areaWidth min-width-33-per block3" matTooltip="{{translationData.lblClicktoviewmoredetails || 'Click to view more details'}}"
-        (click)="gotoLogBookFromRepair()" >
+            'Fuel & Driver:'}}<span>{{fuelAndDriverCount}}</span></div>
+         </div>
+        <div  class="areaWidth min-width-33-per block3" matTooltip="{{translationData.lblClicktoviewmoredetails || 'Click to view more details'}}"
+        [hidden]="!checkForPreference('alertlast24hours_repairmaintenancealerts')" (click)="gotoLogBookFromRepair()" >
           <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' class="full width">{{ translationData.lblRepairAndMaintenance ||
-            'Repair & Maintenance'}}</div>
-            <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' class="full width" >2</div>
+            'Repair & Maintenance:'}}<span>{{repairAndMaintenanceCount}}</span></div>
         </div>
       </div>
     </div>
