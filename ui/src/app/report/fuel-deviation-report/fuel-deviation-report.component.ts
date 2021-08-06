@@ -1471,7 +1471,12 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       prepare.push(tempObj);    
     });
     
-    let DATA = document.getElementById('fuelSummaryCharts');
+    let DATA: any;
+    if(this.chartExpandPanel){ // charts expand
+      DATA = document.getElementById('fuelSummaryCharts'); // summary + charts
+    }else{
+      DATA = document.getElementById('fuelSummary'); // only summary
+    }
     html2canvas( DATA)
     .then(canvas => {  
       (doc as any).autoTable({
