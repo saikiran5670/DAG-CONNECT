@@ -43,8 +43,13 @@ export class PieChartComponent implements OnInit {
     this.pieChartLabels = this.chartLabels;
     this.pieChartData = this.chartData;
     this.pieChartColors[0].backgroundColor = [];
-    for(let leg of this.legends) {
-      this.pieChartColors[0].backgroundColor.push(leg.color);
+    for(let label of this.pieChartLabels) {
+      for(let leg of this.legends) {
+        if(label == leg.transName) {
+          this.pieChartColors[0].backgroundColor.push(leg.color);
+          break;
+        }
+      }
     }
     console.log("this.chartLabels", this.chartLabels)
     console.log("this.chartData", this.chartData)

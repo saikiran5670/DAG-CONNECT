@@ -73,6 +73,14 @@ export class HeatBubbleChartComponent implements OnInit {
             '<span>' +  w.globals.initialSeries[seriesIndex].data[dataPointIndex][2] + '</span><br/>' +
             '</div>'
         }
+      },
+      grid: {
+        // row: {
+        //   colors: ['#F44336', '#E91E63', '#9C27B0']
+        // },
+        // column: {
+        //   colors: ['#F44336', '#E91E63', '#9C27B0']
+        // }
       }
     };
 
