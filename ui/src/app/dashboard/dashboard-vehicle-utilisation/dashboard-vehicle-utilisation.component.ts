@@ -9,6 +9,8 @@ import { Util } from 'src/app/shared/util';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Inject } from '@angular/core';
 import { ReportMapService } from '../../report/report-map.service';
+import { MessageService } from '../../services/message.service';
+
 
 @Component({
   selector: 'app-dashboard-vehicle-utilisation',
@@ -165,7 +167,8 @@ doughnutChartType: ChartType = 'doughnut';
 doughnutChartColors: Color[] = [
   {
     // backgroundColor: ['#69EC0A','#7BC5EC'],
-    backgroundColor: ['#69EC0A','#d62a29'],
+    // backgroundColor: ['#69EC0A','#d62a29'],
+    backgroundColor: ['#65C3F7 ','#F4AF85 '],
   },
 ];
 doughnutChartLabels2: Label[] = [];
@@ -215,7 +218,8 @@ public alertPieChartLabels: Label[] = [];
 public alertPieChartData: SingleDataSet = [];
 alertPieChartColors: Color[] = [
   {
-    backgroundColor: ['#69EC0A','#d62a29','#FFD700'],
+    // backgroundColor: ['#69EC0A','#d62a29','#FFD700'],
+    backgroundColor: ['#D50017 ','#FB5F01 ','#FFD700 '],
   },
 ];
 vehicleUtilisationData: any;
@@ -240,21 +244,28 @@ logisticCount: any;
 fuelAndDriverCount: any;
 repairAndMaintenanceCount: any;
 toatlSum: any;
+_fleetTimer : boolean = true; 
 
   constructor(private router: Router,
               private elRef: ElementRef,
               private dashboardService : DashboardService,
               private reportMapService: ReportMapService,
-              @Inject(MAT_DATE_FORMATS) private dateFormats) { }
+              @Inject(MAT_DATE_FORMATS) private dateFormats,
+              private messageService: MessageService) {
+                if(this._fleetTimer){
+                  this.messageService.getMessage().subscribe(message => {
+                    if (message.key.indexOf("refreshData") !== -1) {
+                      this.getVehicleData();
+                    }
+                  });
+                }
+               }
 
   ngOnInit(): void {
 
     this.setInitialPref(this.prefData,this.preference);
     // this.setChartData();
-    this.selectionTimeRange('lastweek');
-
-    console.log("prefData = "+this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences);
-     
+    this.selectionTimeRange('lastweek');     
   }
 
   setInitialPref(prefData,preference){
@@ -297,9 +308,14 @@ toatlSum: any;
         break;
       }
     }
+    if(this._fleetTimer){
+      this.messageService.sendMessage('refreshData');
 
-    console.log(this.startDateValue, this.endDateValue);
-    this.getVehicleData();
+    }
+    else{
+      this.getVehicleData();
+    }
+
   }
 
    //********************************** Date Time Functions *******************************************//
@@ -375,7 +391,7 @@ toatlSum: any;
   }
 
   getVehicleData(){
-    console.log(this.finalVinList);
+
     let startDate = Util.convertDateToUtc(this.startDateValue);
     let endDate = Util.convertDateToUtc(this.endDateValue);
     let _vehiclePayload = {
@@ -415,7 +431,6 @@ setAlertChartData(){
     let advisoryPercent = (this.alertsData.advisory/totalAlerts)* 100;
     this.alertPieChartData= [crticalPercent,warningPercent,advisoryPercent];
     this.alertPieChartLabels=  [`Critical (${this.alertsData.critical})`,`Warning (${this.alertsData.warning})`,`Advisory (${this.alertsData.advisory})`];
-    let alertchartdata1 = this.alertPieChartData;
     this.alertPieChartOptions = {
         responsive: true,
         legend: {
@@ -425,14 +440,12 @@ setAlertChartData(){
 
           tooltips: {
             position: 'nearest',
-         borderWidth: 0,
-            callbacks: {
-              afterLabel: function(tooltipItem, data) {
-                // return data.labels[tooltipItem.index] + 
-                // " : " + data[tooltipItem.index]+'%'
-                return '%'
-              }
-            },
+         callbacks: {
+          label: function(tooltipItem, data) {
+            return data.labels[tooltipItem.index] + 
+            " : " + data.datasets[0].data[tooltipItem.index]+'%'
+          }
+        },
       }
     }
   }

@@ -251,10 +251,11 @@ doughnutDistanceColors: Color[] = [
 
   getLiveVehicleData(){
     let _vehiclePayload = {
-      "viNs": [ //this.finalVinList
-            "M4A14532","XLR0998HGFFT76657"
+      "viNs": this.finalVinList
+      // [ //this.finalVinList
+      //       "M4A14532","XLR0998HGFFT76657"
         
-      ]
+      // ]
     }
     this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
        // console.log(vehicleData);
@@ -315,7 +316,7 @@ doughnutDistanceColors: Color[] = [
 
   updateActiveVehicle(){
     let activeVehicleCount = this.liveVehicleData.todayActiveVinCount;
-    this.totalVehicles = 400;
+    this.totalVehicles = this.finalVinList.length;
     let activeVehiclePercent = this.dashboardService.calculateTodayLivePercentage(activeVehicleCount,this.totalVehicles);
     let thresholdValue = 10;
     let vehicleTarget = this.dashboardService.calculateTargetValue(this.totalVehicles,thresholdValue,1);

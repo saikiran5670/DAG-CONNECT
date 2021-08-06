@@ -34,6 +34,7 @@ export class HeatBubbleChartComponent implements OnInit {
   @Input() searchData;
   @Input() xaxis;
   @Input() yaxis;
+  @Input() chartTitle;
   public chartOptions;
 
   constructor() {
@@ -58,9 +59,9 @@ export class HeatBubbleChartComponent implements OnInit {
       fill: {
         type: "gradient"
       },
-      title: {
-        text: this.searchData?.performanceTypeLabel
-      },
+      // title: {
+      //   text: this.chartTitle
+      // },
       xaxis: this.xaxis,
       yaxis: this.yaxis,
       theme: {
@@ -68,10 +69,6 @@ export class HeatBubbleChartComponent implements OnInit {
       },
       tooltip: {
         custom: function({series, seriesIndex, dataPointIndex, w}) {
-          // console.log("series", series)
-          // console.log("seriesIndex", seriesIndex)
-          // console.log("dataPointIndex", dataPointIndex)
-          // console.log("w", w)
           return '<div class="arrow_box">' +
             '<span>' +  w.globals.initialSeries[seriesIndex].data[dataPointIndex][2] + '</span><br/>' +
             '</div>'
@@ -81,21 +78,5 @@ export class HeatBubbleChartComponent implements OnInit {
 
     console.log("chartOptions", this.chartOptions)
   }
-
-  // public generateData(baseval, count, yrange) {
-  //   var i = 0;
-  //   var series = [];
-  //   while (i < count) {
-  //     //var x =Math.floor(Math.random() * (750 - 1 + 1)) + 1;;
-  //     var y =
-  //       Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
-  //     var z = Math.floor(Math.random() * (75 - 15 + 1)) + 15;
-
-  //     series.push([baseval, y, z]);
-  //     baseval += 86400000;
-  //     i++;
-  //   }
-  //   return series;
-  // }
 
 }
