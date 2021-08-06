@@ -16,6 +16,9 @@ export class VehiclePerformanceReportComponent implements OnInit {
   translationData: any = {};
   search:boolean = false;
   showLoadingIndicator:boolean = false;
+  xaxisVaues = [];
+  pieChartLabels = [];
+  pieChartData = [];
   performanceTypeLst = [
     { name: "Engine Load Collective",  value: "E" },
     { name: "Road Speed Collective",  value: "S" },
@@ -33,31 +36,61 @@ export class VehiclePerformanceReportComponent implements OnInit {
     'S':'#EEECE1',
     'T':'',
     'U':'#659FA4'
-  }
+  };
   
   chartXaxis;
   chartYaxis;
   legends = [];
 
   xaxisE = {
-    type: 'category',
+    type: 'numeric',
     tickPlacement: 'between',
+    max: 100,
+    tickAmount: 10,
     title: {
       text: 'RPM',
     },
     labels: {
-      formatter: (value) => {
-        if(value == 9) {
-          return ">2100";
+      offsetX: 0,
+      offsetY: 0,
+      formatter: (value, index) => {
+        console.log(`yaxis -> value ${value} & index ${index}` )
+        // return value;
+        if(value !== 0) {
+          let newIndex = (index/10)-1;
+          return this.xaxisVaues[newIndex];
         }
-        return value;
+        return '';
+      },
+      style: {
+        // colors: [],
+        // fontSize: '12px',
+        // fontFamily: 'Helvetica, Arial, sans-serif',
+        // fontWeight: 400,
+        cssClass: 'apexcharts-xaxis-label',
       }
     },
+    tooltip: {
+      enabled: false,
+    }
   }
 
   yaxisE = {
+    type: 'numeric',
+    tickPlacement: 'between',
     max: 100,
     tickAmount: 10,
+    labels: {
+      offsetX: 0,
+      offsetY: 15,
+      formatter: (value, index) => {
+        console.log(`yaxis -> value ${value} & index ${index}`)
+        if(index !== 0) {
+          return value;
+        }
+        return ' ';
+      }
+    },
     title: {
       text: '%',
     },
@@ -171,16 +204,21 @@ export class VehiclePerformanceReportComponent implements OnInit {
     }
     let req1 = this.reportService.chartTemplate(payload);
     let req2 = this.reportService.chartData(payload);
-    console.log("res", this.legends)
+    console.log("legends", this.legends)
     forkJoin([req1, req2]).subscribe((res:any) => {
       console.log("res", res)
       this.searchResult = { ...this.searchResult, ...res[0].vehPerformanceSummary}
       this.searchResult.vehPerformanceCharts = res[0].vehPerformanceCharts;
-      this.searchResult.bubbleChartData = res[1];
+      this.searchResult.kpiData = res[1].kpiData;
+      this.searchResult.matrixData = res[1].matrixData;
+      this.searchResult.bubbleData = this.transformDataForBubbleChart(res[1].matrixData);
       this.chartXaxis = this["xaxis"+ this.searchResult.performanceType];
       this.chartYaxis = this["yaxis"+ this.searchResult.performanceType];
+      this.xaxisVaues = this.processXaxis(res[0].vehPerformanceCharts)
       this.search = true;
       this.showLoadingIndicator = false;
+      this.generatePieChartData(res[1].kpiData);
+      console.log("searchResult", this.searchResult)
     }, (err) => {
       this.showLoadingIndicator = false;
     });    
@@ -188,6 +226,43 @@ export class VehiclePerformanceReportComponent implements OnInit {
   
   hideSearchResult() {
     this.search = false;
+  }
+
+  processXaxis(data) {
+    let xaxisObj = data.filter((item)=>item.index == -1);
+    if(xaxisObj[0] && xaxisObj[0].axisvalues) {
+      let tempArr = xaxisObj[0].axisvalues.split(',')
+      tempArr = tempArr.map(el => el.replace(/'/g, ''));
+      console.log(tempArr);
+      return tempArr;
+    }
+    return [];
+  }
+
+  transformDataForBubbleChart(bubbleData) {
+    let bubbleChartData = [];
+    for(let bubble of bubbleData) {
+      let newArr = [];
+      newArr.push(bubble.xindex*10);
+      newArr.push(bubble.yindex*10);
+      newArr.push(bubble.value);
+      bubbleChartData.push(newArr);
+    }
+    return bubbleChartData;
+  }
+
+  generatePieChartData(pieData) {
+    for (let pie of pieData) {
+      if (pie.label.trim() != '') {
+        let labelObj = this.legends.filter(item => item.value == pie.label.trim());
+        if (labelObj && labelObj[0]) {
+          this.pieChartLabels.push(this.translationData[labelObj[0].name]);
+        } else {
+          this.pieChartLabels.push(pie.label.trim());
+        }
+        this.pieChartData.push(pie.value);
+      }
+    }
   }
 
 }

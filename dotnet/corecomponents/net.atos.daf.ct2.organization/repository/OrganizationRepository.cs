@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.account;
+using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.organization.entity;
@@ -13,6 +14,7 @@ using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using SubscriptionComponent = net.atos.daf.ct2.subscription;
+using net.atos.daf.ct2.account.ENUM;
 
 namespace net.atos.daf.ct2.organization.repository
 {
@@ -75,42 +77,10 @@ namespace net.atos.daf.ct2.organization.repository
                     string queryInsert = "insert into master.organization(org_id, type, name, address_type, street, street_number, postal_code, city,country_code,reference_date,preference_id,vehicle_default_opt_in,driver_default_opt_in) " +
                                   "values(@OrganizationId, @OrganizationType, @Name, @AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@ReferencedDate,null,@vehicle_default_opt_in,@driver_default_opt_in) RETURNING id";
 
-                    var orgid = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
-                    organization.Id = orgid;
+                    var orgId = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
+                    organization.Id = orgId;
 
-                    // Create dynamic account group
-                    Group groupAccount = new Group();
-                    groupAccount.ObjectType = ObjectType.AccountGroup;
-                    groupAccount.GroupType = GroupType.Dynamic;
-                    groupAccount.Argument = "";
-                    groupAccount.FunctionEnum = FunctionEnum.All;
-                    groupAccount.OrganizationId = orgid;
-                    groupAccount.RefId = 0;
-                    groupAccount.Name = "All accounts";
-                    groupAccount.Description = "All accounts";
-                    groupAccount.CreatedAt = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
-                    groupAccount = await _groupManager.Create(groupAccount);
-
-                    // Create dynamic vehicle group
-                    Group groupVehicle = new Group();
-                    groupVehicle.ObjectType = ObjectType.VehicleGroup;
-                    groupVehicle.GroupType = GroupType.Dynamic;
-                    groupVehicle.Argument = "";
-                    groupVehicle.FunctionEnum = FunctionEnum.All;
-                    groupVehicle.OrganizationId = orgid;
-                    groupVehicle.RefId = 0;
-                    groupVehicle.Name = "Fleet";
-                    groupVehicle.Description = "Fleet";
-                    groupVehicle.CreatedAt = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
-                    groupVehicle = await _groupManager.Create(groupVehicle);
-
-                    //// Create access relationship
-                    //AccessRelationship accessRelationship = new AccessRelationship();
-                    //accessRelationship.AccountGroupId = groupAccount.Id;
-                    //accessRelationship.VehicleGroupId = groupVehicle.Id;
-                    //accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ViewOnly;
-                    //await accountManager.CreateAccessRelationship(accessRelationship);
-
+                    await CreateDefaultGroupsAndAccessRelationship(orgId);
                 }
             }
             catch (Exception ex)
@@ -508,7 +478,7 @@ namespace net.atos.daf.ct2.organization.repository
                     int organizationId = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, parameterInsert);
 
                     // Create dynamic account group
-                    await CreateDefaultGroups(organizationId);
+                    await CreateDefaultGroupsAndAccessRelationship(organizationId);
 
                     // Assign base package at ORG lavel
                     await _subscriptionManager.Create(organizationId, Convert.ToInt32(customer.OrgCreationPackage));
@@ -524,24 +494,25 @@ namespace net.atos.daf.ct2.organization.repository
         }
 
         /// <summary>
-        /// This method is used to create default groups on organization creation
+        /// This method is used to create default groups and access relationship on organization creation
         /// </summary>
         /// <param name="organizationId"></param>
         /// <returns></returns>
-        public async Task<int> CreateDefaultGroups(int organizationId)
+        public async Task<int> CreateDefaultGroupsAndAccessRelationship(int organizationId)
         {
             try
             {
+                // Create dynamic account group
                 Group groupAccount = new Group();
                 groupAccount.ObjectType = ObjectType.AccountGroup;
                 groupAccount.GroupType = GroupType.Dynamic;
                 groupAccount.Argument = "";
-                groupAccount.FunctionEnum = FunctionEnum.All;  // As per requirement change none to all
+                groupAccount.FunctionEnum = FunctionEnum.All;
                 groupAccount.OrganizationId = organizationId;
                 groupAccount.RefId = 0;
                 groupAccount.Name = "All accounts";
                 groupAccount.Description = "All accounts";
-                groupAccount.CreatedAt = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
+                groupAccount.CreatedAt = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
                 groupAccount = await _groupManager.Create(groupAccount);
 
                 // Create dynamic vehicle group
@@ -549,13 +520,20 @@ namespace net.atos.daf.ct2.organization.repository
                 groupVehicle.ObjectType = ObjectType.VehicleGroup;
                 groupVehicle.GroupType = GroupType.Dynamic;
                 groupVehicle.Argument = "";
-                groupVehicle.FunctionEnum = FunctionEnum.All;   // As per requirement change none to all
+                groupVehicle.FunctionEnum = FunctionEnum.All;
                 groupVehicle.OrganizationId = organizationId;
                 groupVehicle.RefId = 0;
                 groupVehicle.Name = "Fleet";
                 groupVehicle.Description = "Fleet";
-                groupVehicle.CreatedAt = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
+                groupVehicle.CreatedAt = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
                 groupVehicle = await _groupManager.Create(groupVehicle);
+
+                // Create access relationship
+                AccessRelationship accessRelationship = new AccessRelationship();
+                accessRelationship.AccountGroupId = groupAccount.Id;
+                accessRelationship.VehicleGroupId = groupVehicle.Id;
+                accessRelationship.AccessRelationType = AccessRelationType.FullAccess;
+                await _accountManager.CreateAccessRelationship(accessRelationship);
             }
             catch (Exception ex)
             {
@@ -831,12 +809,12 @@ namespace net.atos.daf.ct2.organization.repository
 
                 if (iscustomerexist > 0 && isVINExist > 0)  // Update organization and vehicle
                 {
-                    int OrganizationId = await UpdateCompany(keyHandOver);
-                    await UpdatetVehicle(keyHandOver, OrganizationId);
+                    int organizationId = await UpdateCompany(keyHandOver);
+                    await UpdatetVehicle(keyHandOver, organizationId);
 
                     // Owner Relationship Management
 
-                    keyHandOver.OEMRelationship = OrganizationId.ToString();
+                    keyHandOver.OEMRelationship = organizationId.ToString();
                     await OwnerRelationship(keyHandOver, isVINExist);
 
                     return keyHandOver;
@@ -846,7 +824,7 @@ namespace net.atos.daf.ct2.organization.repository
                 {
                     // Insert Company
                     int organizationID = await InsertCompany(keyHandOver);
-                    await CreateDefaultGroups(organizationID);
+                    await CreateDefaultGroupsAndAccessRelationship(organizationID);
 
                     // Insert Vehicle                    
                     await InsertVehicle(keyHandOver, organizationID);
@@ -880,7 +858,7 @@ namespace net.atos.daf.ct2.organization.repository
                 else if (iscustomerexist < 1 && isVINExist > 0) // Insert organization and update vehicle
                 {
                     int organizationID = await InsertCompany(keyHandOver);
-                    await CreateDefaultGroups(organizationID);
+                    await CreateDefaultGroupsAndAccessRelationship(organizationID);
                     await UpdatetVehicle(keyHandOver, organizationID);
 
                     // Owner Relationship Management  

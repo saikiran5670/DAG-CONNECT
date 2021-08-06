@@ -251,7 +251,7 @@ export class AppComponent {
   timeLeft: number = 120;
   messages: any[] = [];
   subscription: Subscription;
-  isFleetOverview: boolean = false;
+  showTimer: boolean = false;
 
 
     /** list of banks */
@@ -370,7 +370,7 @@ export class AppComponent {
     this.subscription = this.messageService.getMessage().subscribe(message => {
       if (message.key.indexOf("refreshTimer") !== -1) {
         this.refreshTimer();
-        this.isFleetOverview = true;
+        this.showTimer = true;
       }
     });
 
@@ -1102,10 +1102,10 @@ export class AppComponent {
   }
 
   showSpinner(){
-    if((this.router.url).indexOf("/fleetoverview") !== -1)
-      this.isFleetOverview = true;
+    if((this.router.url).indexOf("/fleetoverview") !== -1 || (this.router.url).indexOf("/dashboard") !== -1)
+      this.showTimer = true;
     else{
-      this.isFleetOverview = false;
+      this.showTimer = false;
       if(this.sub)
         this.sub.unsubscribe();
     }

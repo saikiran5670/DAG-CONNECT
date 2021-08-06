@@ -165,7 +165,8 @@ doughnutChartType: ChartType = 'doughnut';
 doughnutChartColors: Color[] = [
   {
     // backgroundColor: ['#69EC0A','#7BC5EC'],
-    backgroundColor: ['#69EC0A','#d62a29'],
+    // backgroundColor: ['#69EC0A','#d62a29'],
+    backgroundColor: ['#65C3F7 ','#F4AF85 '],
   },
 ];
 doughnutChartLabels2: Label[] = [];
@@ -196,6 +197,12 @@ public pieChartOptions1: ChartOptions = {
     position: 'right',
   },
 };
+public alertPieChartOptions: ChartOptions = {
+  // responsive: true,
+  // legend: {
+  //   position: 'right',
+  // },
+};
 public mileagePieChartLabels: Label[] = [];
 public mileagePieChartData: SingleDataSet = [];
 public pieChartType: ChartType = 'pie';
@@ -209,7 +216,8 @@ public alertPieChartLabels: Label[] = [];
 public alertPieChartData: SingleDataSet = [];
 alertPieChartColors: Color[] = [
   {
-    backgroundColor: ['#69EC0A','#d62a29','#FFD700'],
+    // backgroundColor: ['#69EC0A','#d62a29','#FFD700'],
+    backgroundColor: ['#D50017 ','#FB5F01 ','#FFD700 '],
   },
 ];
 vehicleUtilisationData: any;
@@ -409,8 +417,28 @@ setAlertChartData(){
     let advisoryPercent = (this.alertsData.advisory/totalAlerts)* 100;
     this.alertPieChartData= [crticalPercent,warningPercent,advisoryPercent];
     this.alertPieChartLabels=  [`Critical (${this.alertsData.critical})`,`Warning (${this.alertsData.warning})`,`Advisory (${this.alertsData.advisory})`];
-    
+    let alertchartdata1 = this.alertPieChartData;
+    this.alertPieChartOptions = {
+        responsive: true,
+        legend: {
+          position: 'right',
+        },
+          // cutoutPercentage: 80,
+
+          tooltips: {
+            position: 'nearest',
+         borderWidth: 0,
+            callbacks: {
+              afterLabel: function(tooltipItem, data) {
+                // return data.labels[tooltipItem.index] + 
+                // " : " + data[tooltipItem.index]+'%'
+                return '%'
+              }
+            },
+      }
     }
+  }
+    
 }
 
 checkForPreference(fieldKey) {
@@ -442,11 +470,24 @@ checkForVehiclePreference(fieldKey) {
 }
 
   setChartData(){
-
-    this.distanceChartType = 'bar';
-    this.vehicleChartType = 'line';
-    this.timeDChartType = 'doughnut';
-    this.mileageDChartType = 'doughnut';
+    if(this.dashboardPrefData.subReportUserPreferences.length > 0){
+    let filterData1 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distanceperday'));
+    filterData1[0].chartType = 'B'  
+    this.distanceChartType = filterData1[0].chartType == 'L' ? 'line' : 'bar';
+     let filterData2 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
+     filterData2[0].chartType = 'L'  
+     this.vehicleChartType =  filterData2[0].chartType == 'L' ? 'line' : 'bar';
+     let filterData3 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
+     filterData3[0].chartType = 'D'  
+     this.timeDChartType =  filterData3[0].chartType == 'P' ? 'pie' : 'doughnut';
+     let filterData4 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
+     filterData4[0].chartType = 'D'  
+     this.mileageDChartType =  filterData4[0].chartType == 'P' ? 'pie' : 'doughnut';
+    }
+    // this.distanceChartType = 'bar';
+    // this.vehicleChartType = 'line';
+    // this.timeDChartType = 'doughnut';
+    // this.mileageDChartType = 'doughnut';
 
     //for distance chart
     this.distance = [];

@@ -132,6 +132,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   resetDropdownValues() {
     this.searchForm.get('vehicleGroup').setValue('');
     this.searchForm.get('vehicleName').setValue('');
+    this.searchForm.get('vehicleName').disable();
     this.searchForm.get('performanceType').setValue('');
   }
 
@@ -387,6 +388,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
         }
       }
       this.searchForm.get('vehicleName').setValue('');
+      this.searchForm.get('vehicleName').enable();
     }
     else {
       this.searchForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));

@@ -11,7 +11,7 @@ import { catchError } from 'rxjs/operators';
 import { ReportService } from '../services/report.service';
 import { TranslationService } from '../services/translation.service';
 import { OrganizationService } from '../services/organization.service';
-
+import { MessageService } from '../services/message.service'
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -129,7 +129,11 @@ export class DashboardComponent implements OnInit {
   // public stack_barChartLabels_overdue: Label[] = ['2020'];
   translationData: any = {};
 
-  constructor(public httpClient: HttpClient,private translationService: TranslationService,private reportService : ReportService, private organizationService: OrganizationService) {}
+  constructor(public httpClient: HttpClient,private translationService: TranslationService,private reportService : ReportService, private organizationService: OrganizationService,
+    private messageService : MessageService) {
+      this.sendMessage();
+     
+    }
 
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -176,6 +180,11 @@ export class DashboardComponent implements OnInit {
       
     });
    
+  }
+
+  sendMessage(): void {
+    // send message to subscribers via observable subject
+    this.messageService.sendMessage('refreshTimer');
   }
 
   processTranslation(transData: any) {
