@@ -1,10 +1,13 @@
 package net.atos.daf.postgre.dao;
 
 import java.io.Serializable;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 
+import org.postgresql.util.PGobject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +29,7 @@ public class TripSinkDao implements Serializable {
 		try {
 			if (null != dataObject && null != (connection = getConnection())) {
 
-				tripInsertQry = fillStatement(tripInsertQry, dataObject);
+				tripInsertQry = fillStatement(tripInsertQry, dataObject, connection);
 				tripInsertQry.addBatch();
 				tripInsertQry.executeBatch();
 				
@@ -48,7 +51,7 @@ public class TripSinkDao implements Serializable {
 
 	}
 
-	private PreparedStatement fillStatement(PreparedStatement statement, Trip rec) throws SQLException, Exception {
+	private PreparedStatement fillStatement(PreparedStatement statement, Trip rec, Connection connection) throws SQLException, Exception {
 
 		statement.setString(1, rec.getTripId());
 
@@ -334,282 +337,480 @@ public class TripSinkDao implements Serializable {
 		else
 			statement.setLong(57, 0);
 		
+		PGobject jsonObject = new PGobject();
+		jsonObject.setType("json");
+		
+		//statement.setString(58, rec.getRpmTorque());
+		jsonObject.setValue(rec.getRpmTorque());
+		statement.setObject(58, jsonObject);
+		
+		if (rec.getAbsRpmTorque() != null)
+			statement.setLong(59, rec.getAbsRpmTorque());
+		else
+			statement.setLong(59, Types.NULL);
+		
+		if (rec.getOrdRpmTorque() != null)
+			statement.setLong(60, rec.getOrdRpmTorque());
+		else
+			statement.setLong(60, Types.NULL);
+		
+		Array nonZeroRpmTorqueMatrixArray =null;
+		Array numValRpmTorqueArray =null;
+		Array clmnIdnxRpmTorqueArray =null;
+		
+		if(rec.getNonZeroRpmTorqueMatrix() != null)
+			nonZeroRpmTorqueMatrixArray = connection.createArrayOf("BIGINT", rec.getNonZeroRpmTorqueMatrix());
+		
+		statement.setArray(61, nonZeroRpmTorqueMatrixArray);
+		
+		if(rec.getNumValRpmTorque() != null)
+			numValRpmTorqueArray = connection.createArrayOf("BIGINT", rec.getNumValRpmTorque());
+		
+		statement.setArray(62, numValRpmTorqueArray);
+		
+		if(rec.getClmnIdnxRpmTorque() != null)
+			clmnIdnxRpmTorqueArray = connection.createArrayOf("BIGINT", rec.getClmnIdnxRpmTorque());
+		
+		statement.setArray(63, clmnIdnxRpmTorqueArray);
+				
+		jsonObject.setValue(rec.getRpmSpeed());
+		statement.setObject(64, jsonObject);
+		
+		if (rec.getAbsRpmSpeed() != null)
+			statement.setLong(65, rec.getAbsRpmSpeed());
+		else
+			statement.setLong(65, Types.NULL);
+		
+		if (rec.getOrdRpmSpeed() != null)
+			statement.setLong(66, rec.getOrdRpmSpeed());
+		else
+			statement.setLong(66, Types.NULL);
+		
+		Array nonZeroRpmSpeedMatrixArray =null;
+		Array numValRpmSpeedArray =null;
+		Array clmnIdnxRpmSpeedArray =null;
+		
+		if(rec.getNonZeroRpmSpeedMatrix() != null)
+			nonZeroRpmSpeedMatrixArray = connection.createArrayOf("BIGINT", rec.getNonZeroRpmSpeedMatrix());
+		
+		statement.setArray(67, nonZeroRpmSpeedMatrixArray);
+		
+		if(rec.getNumValRpmSpeed() != null)
+			numValRpmSpeedArray = connection.createArrayOf("BIGINT", rec.getNumValRpmSpeed());
+		
+		statement.setArray(68, numValRpmSpeedArray);
+		
+		if(rec.getClmnIdnxRpmSpeed() != null)
+			clmnIdnxRpmSpeedArray = connection.createArrayOf("BIGINT", rec.getClmnIdnxRpmSpeed());
+		
+		statement.setArray(69, clmnIdnxRpmSpeedArray);
+				
+		//statement.setString(70, rec.getAclnSpeed());
+		jsonObject.setValue(rec.getAclnSpeed());
+		statement.setObject(70, jsonObject);
+		
+		if (rec.getAbsAclnSpeed() != null)
+			statement.setLong(71, rec.getAbsAclnSpeed());
+		else
+			statement.setLong(71, Types.NULL);
+		
+		if (rec.getOrdAclnSpeed() != null)
+			statement.setLong(72, rec.getOrdAclnSpeed());
+		else
+			statement.setLong(72, Types.NULL);
+		
+		Array nonZeroAclnSpeedMatrixArray =null;
+		Array numValAclnSpeedArray =null;
+		Array clmnIdnxAclnSpeedArray =null;
+		Array nonZeroBrakePedalAclnSpeedMatrix = null;
+		
+		if(rec.getNonZeroAclnSpeedMatrix() != null)
+			nonZeroAclnSpeedMatrixArray = connection.createArrayOf("BIGINT", rec.getNonZeroAclnSpeedMatrix());
+		
+		if(rec.getNonZeroBrakePedalAclnSpeedMatrix() != null)
+			nonZeroBrakePedalAclnSpeedMatrix = connection.createArrayOf("BIGINT", rec.getNonZeroBrakePedalAclnSpeedMatrix());
+		
+		
+		statement.setArray(73, nonZeroAclnSpeedMatrixArray);
+		statement.setArray(74, nonZeroBrakePedalAclnSpeedMatrix);
+		
+		if(rec.getNumValAclnSpeed() != null)
+			numValAclnSpeedArray = connection.createArrayOf("BIGINT", rec.getNumValAclnSpeed());
+		
+		statement.setArray(75, numValAclnSpeedArray);
+		
+		if(rec.getClmnIdnxAclnSpeed() != null)
+			clmnIdnxAclnSpeedArray = connection.createArrayOf("BIGINT", rec.getClmnIdnxAclnSpeed());
+		
+		statement.setArray(76, clmnIdnxAclnSpeedArray);
+		
 		
 		if (rec.getVin() != null) {
-			statement.setString(58, rec.getVin());
+			statement.setString(77, rec.getVin());
 		} else if (rec.getVid() != null) {
-			statement.setString(58, rec.getVid());
+			statement.setString(77, rec.getVid());
 		} else
-			statement.setString(58, DafConstants.UNKNOWN);
+			statement.setString(77, DafConstants.UNKNOWN);
 
 		if (rec.getStartDateTime() != null)
-			statement.setLong(59, rec.getStartDateTime());
-		else
-			statement.setLong(59, 0);
-
-		if (rec.getEndDateTime() != null)
-			statement.setLong(60, rec.getEndDateTime());
-		else
-			statement.setLong(60, 0);
-
-		if (rec.getGpsTripDist() != null)
-			statement.setLong(61, rec.getGpsTripDist());
-		else
-			statement.setLong(61, 0);
-
-		if (rec.getTripCalDist() != null)
-			statement.setLong(62, rec.getTripCalDist());
-		else
-			statement.setLong(62, 0);
-
-		if (rec.getVIdleDuration() != null)
-			statement.setLong(63, rec.getVIdleDuration());
-		else
-			statement.setLong(63, 0);
-
-		if (rec.getTripCalAvgSpeed() != null)
-			statement.setDouble(64, rec.getTripCalAvgSpeed());
-		else
-			statement.setDouble(64, 0);
-
-		if (rec.getVGrossWeightCombination() != null)
-			statement.setDouble(65, rec.getVGrossWeightCombination());
-		else
-			statement.setDouble(65, 0);
-
-		if (rec.getGpsStartVehDist() != null)
-			statement.setLong(66, rec.getGpsStartVehDist());
-		else
-			statement.setLong(66, 0);
-
-		if (rec.getGpsStopVehDist() != null)
-			statement.setLong(67, rec.getGpsStopVehDist());
-		else
-			statement.setLong(67, 0);
-
-		if (rec.getGpsStartLatitude() != null)
-			statement.setDouble(68, rec.getGpsStartLatitude());
-		else
-			statement.setDouble(68, 0);
-
-		if (rec.getGpsStartLongitude() != null)
-			statement.setDouble(69, rec.getGpsStartLongitude());
-		else
-			statement.setDouble(69, 0);
-
-		if (rec.getGpsEndLatitude() != null)
-			statement.setDouble(70, rec.getGpsEndLatitude());
-		else
-			statement.setDouble(70, 0);
-
-		if (rec.getGpsEndLongitude() != null)
-			statement.setDouble(71, rec.getGpsEndLongitude());
-		else
-			statement.setDouble(71, 0);
-
-		if (rec.getVUsedFuel() != null)
-			statement.setLong(72, rec.getVUsedFuel());
-		else
-			statement.setLong(72, 0);
-
-		if (rec.getTripCalUsedFuel() != null)
-			statement.setLong(73, rec.getTripCalUsedFuel());
-		else
-			statement.setLong(73, 0);
-
-		if (rec.getVTripMotionDuration() != null)
-			statement.setLong(74, rec.getVTripMotionDuration());
-		else
-			statement.setLong(74, 0);
-
-		if (rec.getTripCalDrivingTm() != null)
-			statement.setLong(75, rec.getTripCalDrivingTm());
-		else
-			statement.setLong(75, 0);
-
-		if (rec.getReceivedTimestamp() != null)
-			statement.setLong(76, rec.getReceivedTimestamp());
-		else
-			statement.setLong(76, 0);
-
-		if (rec.getKafkaProcessingTS() != null)
-			statement.setLong(77, rec.getKafkaProcessingTS());
-		else
-			statement.setLong(77, 0);
-
-		if (rec.getTripProcessingTS() != null)
-			statement.setLong(78, rec.getTripProcessingTS());
+			statement.setLong(78, rec.getStartDateTime());
 		else
 			statement.setLong(78, 0);
 
-		if (rec.getEtlProcessingTS() != null)
-			statement.setLong(79, rec.getEtlProcessingTS());
+		if (rec.getEndDateTime() != null)
+			statement.setLong(79, rec.getEndDateTime());
 		else
 			statement.setLong(79, 0);
 
-		if (rec.getTripCalC02Emission() != null)
-			statement.setDouble(80, rec.getTripCalC02Emission());
+		if (rec.getGpsTripDist() != null)
+			statement.setLong(80, rec.getGpsTripDist());
 		else
-			statement.setDouble(80, 0);
+			statement.setLong(80, 0);
 
-		if (rec.getTripCalFuelConsumption() != null)
-			statement.setDouble(81, rec.getTripCalFuelConsumption());
+		if (rec.getTripCalDist() != null)
+			statement.setLong(81, rec.getTripCalDist());
 		else
-			statement.setDouble(81, 0);
+			statement.setLong(81, 0);
 
-		if (rec.getVTachographSpeed() != null)
-			statement.setDouble(82, rec.getVTachographSpeed());
+		if (rec.getVIdleDuration() != null)
+			statement.setLong(82, rec.getVIdleDuration());
 		else
-			statement.setDouble(82, 0);
+			statement.setLong(82, 0);
 
-		if (rec.getTripCalAvgGrossWtComb() != null)
-			statement.setDouble(83, rec.getTripCalAvgGrossWtComb());
+		if (rec.getTripCalAvgSpeed() != null)
+			statement.setDouble(83, rec.getTripCalAvgSpeed());
 		else
 			statement.setDouble(83, 0);
 
-		if (rec.getTripCalPtoDuration() != null)
-			statement.setDouble(84, rec.getTripCalPtoDuration());
+		if (rec.getVGrossWeightCombination() != null)
+			statement.setDouble(84, rec.getVGrossWeightCombination());
 		else
 			statement.setDouble(84, 0);
 
-		if (rec.getTripCalHarshBrakeDuration() != null)
-			statement.setDouble(85, rec.getTripCalHarshBrakeDuration());
+		if (rec.getGpsStartVehDist() != null)
+			statement.setLong(85, rec.getGpsStartVehDist());
 		else
-			statement.setDouble(85, 0);
+			statement.setLong(85, 0);
 
-		if (rec.getTripCalHeavyThrottleDuration() != null)
-			statement.setDouble(86, rec.getTripCalHeavyThrottleDuration());
+		if (rec.getGpsStopVehDist() != null)
+			statement.setLong(86, rec.getGpsStopVehDist());
 		else
-			statement.setDouble(86, 0);
+			statement.setLong(86, 0);
 
-		if (rec.getTripCalCrsCntrlDist25To50() != null)
-			statement.setLong(87, rec.getTripCalCrsCntrlDist25To50());
+		if (rec.getGpsStartLatitude() != null)
+			statement.setDouble(87, rec.getGpsStartLatitude());
 		else
-			statement.setLong(87, 0);
+			statement.setDouble(87, 0);
 
-		if (rec.getTripCalCrsCntrlDist50To75() != null)
-			statement.setLong(88, rec.getTripCalCrsCntrlDist50To75());
+		if (rec.getGpsStartLongitude() != null)
+			statement.setDouble(88, rec.getGpsStartLongitude());
 		else
-			statement.setLong(88, 0);
+			statement.setDouble(88, 0);
 
-		if (rec.getTripCalCrsCntrlDistAbv75() != null)
-			statement.setLong(89, rec.getTripCalCrsCntrlDistAbv75());
+		if (rec.getGpsEndLatitude() != null)
+			statement.setDouble(89, rec.getGpsEndLatitude());
 		else
-			statement.setLong(89, 0);
+			statement.setDouble(89, 0);
 
-		if (rec.getTripCalAvgTrafficClsfn() != null)
-			statement.setDouble(90, rec.getTripCalAvgTrafficClsfn());
+		if (rec.getGpsEndLongitude() != null)
+			statement.setDouble(90, rec.getGpsEndLongitude());
 		else
 			statement.setDouble(90, 0);
 
-		if (rec.getTripCalCCFuelConsumption() != null)
-			statement.setDouble(91, rec.getTripCalCCFuelConsumption());
+		if (rec.getVUsedFuel() != null)
+			statement.setLong(91, rec.getVUsedFuel());
 		else
-			statement.setDouble(91, 0);
+			statement.setLong(91, 0);
 
-		if (rec.getVCruiseControlFuelConsumed() != null)
-			statement.setLong(92, rec.getVCruiseControlFuelConsumed());
+		if (rec.getTripCalUsedFuel() != null)
+			statement.setLong(92, rec.getTripCalUsedFuel());
 		else
 			statement.setLong(92, 0);
 
-		if (rec.getVCruiseControlDist() != null)
-			statement.setLong(93, rec.getVCruiseControlDist());
+		if (rec.getVTripMotionDuration() != null)
+			statement.setLong(93, rec.getVTripMotionDuration());
 		else
 			statement.setLong(93, 0);
 
-		if (rec.getTripCalfuelNonActiveCnsmpt() != null)
-			statement.setDouble(94, rec.getTripCalfuelNonActiveCnsmpt());
+		if (rec.getTripCalDrivingTm() != null)
+			statement.setLong(94, rec.getTripCalDrivingTm());
 		else
-			statement.setDouble(94, 0);
+			statement.setLong(94, 0);
 
-		if (rec.getVIdleFuelConsumed() != null)
-			statement.setLong(95, rec.getVIdleFuelConsumed());
+		if (rec.getReceivedTimestamp() != null)
+			statement.setLong(95, rec.getReceivedTimestamp());
 		else
 			statement.setLong(95, 0);
 
-		if (rec.getTripCalDpaScore() != null)
-			statement.setDouble(96, rec.getTripCalDpaScore());
+		if (rec.getKafkaProcessingTS() != null)
+			statement.setLong(96, rec.getKafkaProcessingTS());
 		else
-			statement.setDouble(96, 0);
+			statement.setLong(96, 0);
 
-		if(rec.getDriverId() != null)
-			statement.setString(97, rec.getDriverId());
+		if (rec.getTripProcessingTS() != null)
+			statement.setLong(97, rec.getTripProcessingTS());
 		else
-			statement.setString(97, DafConstants.UNKNOWN);
-		
-		statement.setString(98, rec.getDriver2Id());
+			statement.setLong(97, 0);
 
-		if (rec.getTripCalGpsVehTime() != null)
-			statement.setLong(99, rec.getTripCalGpsVehTime());
+		if (rec.getEtlProcessingTS() != null)
+			statement.setLong(98, rec.getEtlProcessingTS());
 		else
-			statement.setLong(99, 0);
+			statement.setLong(98, 0);
 
-		statement.setBoolean(100, Boolean.FALSE);
+		if (rec.getTripCalC02Emission() != null)
+			statement.setDouble(99, rec.getTripCalC02Emission());
+		else
+			statement.setDouble(99, 0);
 
-		if (rec.getVGrossWtSum() != null)
-			statement.setDouble(101, rec.getVGrossWtSum());
+		if (rec.getTripCalFuelConsumption() != null)
+			statement.setDouble(100, rec.getTripCalFuelConsumption());
+		else
+			statement.setDouble(100, 0);
+
+		if (rec.getVTachographSpeed() != null)
+			statement.setDouble(101, rec.getVTachographSpeed());
 		else
 			statement.setDouble(101, 0);
 
-		if (rec.getNumberOfIndexMessage() != null)
-			statement.setLong(102, rec.getNumberOfIndexMessage());
+		if (rec.getTripCalAvgGrossWtComb() != null)
+			statement.setDouble(102, rec.getTripCalAvgGrossWtComb());
 		else
-			statement.setInt(102, 0);
-		
-		if (rec.getVPTODuration() != null)
-			statement.setLong(103, rec.getVPTODuration());
+			statement.setDouble(102, 0);
+
+		if (rec.getTripCalPtoDuration() != null)
+			statement.setDouble(103, rec.getTripCalPtoDuration());
 		else
-			statement.setLong(103, 0);
-	
-		if (rec.getVHarshBrakeDuration() != null)
-			statement.setLong(104, rec.getVHarshBrakeDuration());
+			statement.setDouble(103, 0);
+
+		if (rec.getTripCalHarshBrakeDuration() != null)
+			statement.setDouble(104, rec.getTripCalHarshBrakeDuration());
 		else
-			statement.setLong(104, 0);
-	
-		if (rec.getVBrakeDuration() != null)
-			statement.setLong(105, rec.getVBrakeDuration());
+			statement.setDouble(104, 0);
+
+		if (rec.getTripCalHeavyThrottleDuration() != null)
+			statement.setDouble(105, rec.getTripCalHeavyThrottleDuration());
 		else
-			statement.setLong(105, 0);
-		
-		if (rec.getVMaxThrottlePaddleDuration() != null)
-			statement.setLong(106, rec.getVMaxThrottlePaddleDuration());
+			statement.setDouble(105, 0);
+
+		if (rec.getTripCalCrsCntrlDist25To50() != null)
+			statement.setLong(106, rec.getTripCalCrsCntrlDist25To50());
 		else
 			statement.setLong(106, 0);
-		
-		if (rec.getVTripAccelerationTime() != null)
-			statement.setLong(107, rec.getVTripAccelerationTime());
+
+		if (rec.getTripCalCrsCntrlDist50To75() != null)
+			statement.setLong(107, rec.getTripCalCrsCntrlDist50To75());
 		else
 			statement.setLong(107, 0);
-		
-		if (rec.getVTripDPABrakingCount() != null)
-			statement.setLong(108, rec.getVTripDPABrakingCount());
+
+		if (rec.getTripCalCrsCntrlDistAbv75() != null)
+			statement.setLong(108, rec.getTripCalCrsCntrlDistAbv75());
 		else
 			statement.setLong(108, 0);
-		
-		if (rec.getVTripDPAAnticipationCount() != null)
-			statement.setLong(109, rec.getVTripDPAAnticipationCount());
-		else
-			statement.setLong(109, 0);
-				
-		if (rec.getVSumTripDPABrakingScore() != null)
-			statement.setLong(110, rec.getVSumTripDPABrakingScore());
-		else
-			statement.setInt(110, 0);
 
-		if (rec.getVSumTripDPAAnticipationScore() != null)
-			statement.setLong(111, rec.getVSumTripDPAAnticipationScore());
+		if (rec.getTripCalAvgTrafficClsfn() != null)
+			statement.setDouble(109, rec.getTripCalAvgTrafficClsfn());
+		else
+			statement.setDouble(109, 0);
+
+		if (rec.getTripCalCCFuelConsumption() != null)
+			statement.setDouble(110, rec.getTripCalCCFuelConsumption());
+		else
+			statement.setDouble(110, 0);
+
+		if (rec.getVCruiseControlFuelConsumed() != null)
+			statement.setLong(111, rec.getVCruiseControlFuelConsumed());
 		else
 			statement.setLong(111, 0);
 
-		if (rec.getVTripIdleWithoutPTODuration() != null)
-			statement.setLong(112, rec.getVTripIdleWithoutPTODuration());
+		if (rec.getVCruiseControlDist() != null)
+			statement.setLong(112, rec.getVCruiseControlDist());
 		else
 			statement.setLong(112, 0);
+
+		if (rec.getTripCalfuelNonActiveCnsmpt() != null)
+			statement.setDouble(113, rec.getTripCalfuelNonActiveCnsmpt());
+		else
+			statement.setDouble(113, 0);
+
+		if (rec.getVIdleFuelConsumed() != null)
+			statement.setLong(114, rec.getVIdleFuelConsumed());
+		else
+			statement.setLong(114, 0);
+
+		if (rec.getTripCalDpaScore() != null)
+			statement.setDouble(115, rec.getTripCalDpaScore());
+		else
+			statement.setDouble(115, 0);
+
+		if(rec.getDriverId() != null)
+			statement.setString(116, rec.getDriverId());
+		else
+			statement.setString(116, DafConstants.UNKNOWN);
+		
+		statement.setString(117, rec.getDriver2Id());
+
+		if (rec.getTripCalGpsVehTime() != null)
+			statement.setLong(118, rec.getTripCalGpsVehTime());
+		else
+			statement.setLong(118, 0);
+
+		statement.setBoolean(119, Boolean.FALSE);
+
+		if (rec.getVGrossWtSum() != null)
+			statement.setDouble(120, rec.getVGrossWtSum());
+		else
+			statement.setDouble(120, 0);
+
+		if (rec.getNumberOfIndexMessage() != null)
+			statement.setLong(121, rec.getNumberOfIndexMessage());
+		else
+			statement.setInt(121, 0);
+		
+		if (rec.getVPTODuration() != null)
+			statement.setLong(122, rec.getVPTODuration());
+		else
+			statement.setLong(122, 0);
+	
+		if (rec.getVHarshBrakeDuration() != null)
+			statement.setLong(123, rec.getVHarshBrakeDuration());
+		else
+			statement.setLong(123, 0);
+	
+		if (rec.getVBrakeDuration() != null)
+			statement.setLong(124, rec.getVBrakeDuration());
+		else
+			statement.setLong(124, 0);
+		
+		if (rec.getVMaxThrottlePaddleDuration() != null)
+			statement.setLong(125, rec.getVMaxThrottlePaddleDuration());
+		else
+			statement.setLong(125, 0);
+		
+		if (rec.getVTripAccelerationTime() != null)
+			statement.setLong(126, rec.getVTripAccelerationTime());
+		else
+			statement.setLong(126, 0);
+		
+		if (rec.getVTripDPABrakingCount() != null)
+			statement.setLong(127, rec.getVTripDPABrakingCount());
+		else
+			statement.setLong(127, 0);
+		
+		if (rec.getVTripDPAAnticipationCount() != null)
+			statement.setLong(128, rec.getVTripDPAAnticipationCount());
+		else
+			statement.setLong(128, 0);
+				
+		if (rec.getVSumTripDPABrakingScore() != null)
+			statement.setLong(129, rec.getVSumTripDPABrakingScore());
+		else
+			statement.setInt(129, 0);
+
+		if (rec.getVSumTripDPAAnticipationScore() != null)
+			statement.setLong(130, rec.getVSumTripDPAAnticipationScore());
+		else
+			statement.setLong(130, 0);
+
+		if (rec.getVTripIdleWithoutPTODuration() != null)
+			statement.setLong(131, rec.getVTripIdleWithoutPTODuration());
+		else
+			statement.setLong(131, 0);
 		
 		if (rec.getVTripIdlePTODuration() != null)
-			statement.setLong(113, rec.getVTripIdlePTODuration());
+			statement.setLong(132, rec.getVTripIdlePTODuration());
 		else
-			statement.setLong(113, 0);
+			statement.setLong(132, 0);
+		
+		jsonObject.setValue(rec.getRpmTorque()); 
+		statement.setObject(133, jsonObject);
+		
+		if (rec.getAbsRpmTorque() != null)
+			statement.setLong(134, rec.getAbsRpmTorque());
+		else
+			statement.setLong(134, Types.NULL);
+		
+		if (rec.getOrdRpmTorque() != null)
+			statement.setLong(135, rec.getOrdRpmTorque());
+		else
+			statement.setLong(135, Types.NULL);
+		
+		
+		if(rec.getNonZeroRpmTorqueMatrix() != null)
+			nonZeroRpmTorqueMatrixArray = connection.createArrayOf("BIGINT", rec.getNonZeroRpmTorqueMatrix());
+		
+		statement.setArray(136, nonZeroRpmTorqueMatrixArray);
+		
+		if(rec.getNumValRpmTorque() != null)
+			numValRpmTorqueArray = connection.createArrayOf("BIGINT", rec.getNumValRpmTorque());
+		
+		statement.setArray(137, numValRpmTorqueArray);
+		
+		if(rec.getClmnIdnxRpmTorque() != null)
+			clmnIdnxRpmTorqueArray = connection.createArrayOf("BIGINT", rec.getClmnIdnxRpmTorque());
+		
+		statement.setArray(138, clmnIdnxRpmTorqueArray);
+				
+		jsonObject.setValue(rec.getRpmSpeed());
+		statement.setObject(139, jsonObject);
+		
+		if (rec.getAbsRpmSpeed() != null)
+			statement.setLong(140, rec.getAbsRpmSpeed());
+		else
+			statement.setLong(140, Types.NULL);
+		
+		if (rec.getOrdRpmSpeed() != null)
+			statement.setLong(141, rec.getOrdRpmSpeed());
+		else
+			statement.setLong(141, Types.NULL);
+		
+		
+		if(rec.getNonZeroRpmSpeedMatrix() != null)
+			nonZeroRpmSpeedMatrixArray = connection.createArrayOf("BIGINT", rec.getNonZeroRpmSpeedMatrix());
+		
+		statement.setArray(142, nonZeroRpmSpeedMatrixArray);
+		
+		if(rec.getNumValRpmSpeed() != null)
+			numValRpmSpeedArray = connection.createArrayOf("BIGINT", rec.getNumValRpmSpeed());
+		
+		statement.setArray(143, numValRpmTorqueArray);
+		
+		if(rec.getClmnIdnxRpmSpeed() != null)
+			clmnIdnxRpmSpeedArray = connection.createArrayOf("BIGINT", rec.getClmnIdnxRpmSpeed());
+		
+		statement.setArray(144, clmnIdnxRpmTorqueArray);
+				
+		jsonObject.setValue(rec.getAclnSpeed()); 
+		statement.setObject(145, jsonObject);
+		
+		if (rec.getAbsAclnSpeed() != null)
+			statement.setLong(146, rec.getAbsAclnSpeed());
+		else
+			statement.setLong(146, Types.NULL);
+		
+		if (rec.getOrdAclnSpeed() != null)
+			statement.setLong(147, rec.getOrdAclnSpeed());
+		else
+			statement.setLong(147, Types.NULL);
+		
+		if(rec.getNonZeroAclnSpeedMatrix() != null)
+			nonZeroAclnSpeedMatrixArray = connection.createArrayOf("BIGINT", rec.getNonZeroAclnSpeedMatrix());
+		
+		if(rec.getNonZeroBrakePedalAclnSpeedMatrix() != null)
+			nonZeroBrakePedalAclnSpeedMatrix = connection.createArrayOf("BIGINT", rec.getNonZeroBrakePedalAclnSpeedMatrix());
+		
+		
+		statement.setArray(148, nonZeroAclnSpeedMatrixArray);
+		statement.setArray(149, nonZeroBrakePedalAclnSpeedMatrix);
+		
+		if(rec.getNumValAclnSpeed() != null)
+			numValAclnSpeedArray = connection.createArrayOf("BIGINT", rec.getNumValAclnSpeed());
+		
+		statement.setArray(150, numValAclnSpeedArray);
+		
+		if(rec.getClmnIdnxAclnSpeed() != null)
+			clmnIdnxAclnSpeedArray = connection.createArrayOf("BIGINT", rec.getClmnIdnxAclnSpeed());
+		
+		statement.setArray(151, clmnIdnxAclnSpeedArray);
 		
 
 		return statement;
