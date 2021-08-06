@@ -95,12 +95,8 @@ namespace net.atos.daf.ct2.kafkacdc
                 //sent message to Kafka topic 
                 //Union mapping for sending to kafka topic
                 finalmapping = insertionMapping.Union(deletionMapping).ToList();
-                //send only of there is any change in vehiclealertref table from datamart 
-                if (finalmapping.Count > 0)
-                {
-                    //sending only states I & D with combined mapping of vehicle and alertid
-                    await _kafkaCdcHelper.ProduceMessageToKafka(finalmapping, alertId, operation, _kafkaConfig);
-                }
+                //sending only states I & D with combined mapping of vehicle and alertid
+                await _kafkaCdcHelper.ProduceMessageToKafka(finalmapping, alertId, operation, _kafkaConfig);
                 result = true;
             }
             catch (Exception ex)
