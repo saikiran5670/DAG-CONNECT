@@ -137,8 +137,8 @@ namespace net.atos.daf.ct2.account.report
         public async Task<string> GenerateTemplate(byte[] logoBytes)
         {
             if (!IsAllParameterSet) throw new Exception(TripReportConstants.ALL_PARAM_MSG);
-            var fromDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(FromDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
-            var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
+            var fromDate = TimeZoneHelper.GetDateTimeFromUTC(FromDate, TimeZoneName, DateTimeFormat);
+            var toDate = TimeZoneHelper.GetDateTimeFromUTC(ToDate, TimeZoneName, DateTimeFormat);
 
             StringBuilder html = new StringBuilder();
             var timeSpanUnit = await _unitManager.GetTimeSpanUnit(UnitToConvert);
@@ -152,9 +152,9 @@ namespace net.atos.daf.ct2.account.report
                               , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
                               , await GenerateTable()
-                              , fromDate.ToString(DateTimeFormat)
+                              , fromDate
                               , VehicleLists.Any(s => !string.IsNullOrEmpty(s.VehicleGroupName)) ? string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).Distinct().ToArray()) : "All"
-                              , toDate.ToString(DateTimeFormat)
+                              , toDate
                               , string.Join(',', VehicleLists.Select(s => s.VehicleName).Distinct().ToArray())
                               , FuelDeviationDetails.Where(w => w.FuelEventType == fuelIncrease).Count()
                               , FuelDeviationDetails.Where(w => w.FuelEventType == fuelDecrease).Count()

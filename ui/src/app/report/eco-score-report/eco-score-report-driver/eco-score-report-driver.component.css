@@ -104,12 +104,27 @@
     background-color: #cfebfc !important;
   }
 
-  .barChart {
-    height: 450px;
-    width: 825px;
+  .chartContainer {
+    height: 500px;
+    width: 925px;
   }
 
   .chartTitle {
     font-weight: 700;
     font-size: medium;
+  }
+
+  .enable {
+    /* color: #000000; */
+    color: #00529C;
+  }
+
+  .disable {
+    /* color: #bfbfbf; */
+    color: #CCCCCC;
+  }
+
+  .chartSelection {
+    display: inline-block;
+    cursor: pointer;
   }
