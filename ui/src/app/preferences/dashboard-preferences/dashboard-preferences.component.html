@@ -74,7 +74,7 @@ style='border-radius: 5px 5px 0px 0px;'>
         <div *ngIf="field.translatedName !=='DrivingTime' && field.translatedName !=='IdlingTime'" 
         fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
           <mat-form-field appearance="outline" style='width: 80%'>
-              <input  matInput type="text" value={{field.thresholdValue}}
+              <input  matInput type="text" [formControlName]="field.key+'thresholdValue'"
                   placeholder="{{ 'Set Target' }}" >
               <span *ngIf="field.translatedName =='CO2Emission'" matSuffix>Ton</span>
               <span *ngIf="field.translatedName =='TotalDistance' || 
@@ -89,12 +89,12 @@ style='border-radius: 5px 5px 0px 0px;'>
       <div style="display:inline-block">
       <mat-form-field appearance="outline" style='width: 30%;'>
             <input matInput type="text"
-                placeholder="{{ '' }}" value={{field.thresholdValue}}>
+                placeholder="{{ '' }}" [formControlName]="field.key+'thresholdValue'" >
             <span matSuffix>Hr</span>
         </mat-form-field>
         <mat-form-field appearance="outline" style='width: 30%; margin-left: 4px;'>
             <input matInput type="text"
-                placeholder="{{ '' }}">
+                placeholder="{{ '' }}" [formControlName]="field.key+'thresholdValuemin'">
             <span matSuffix>Min</span>
         </mat-form-field>
         </div>
