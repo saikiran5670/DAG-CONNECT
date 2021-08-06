@@ -16,7 +16,7 @@
       color="primary">{{translationData.lblLastWeek || 'Last 90 days' }}</button>
 
   <div fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-    <div [hidden]="!checkForVehiclePreference('vehicleutilization_distanceperday')" class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+    <div [hidden]="!checkForVehiclePreference('distanceperday')" class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistancePerDay ||
         'Distance Per Day' }}</span>
       <div *ngIf="distanceChartType =='bar'" class="chart-wrapper">
@@ -31,7 +31,7 @@
         </canvas>
       </div>
     </div>
-    <div [hidden]="!checkForVehiclePreference('vehicleutilization_activevehiclesperday')" class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+    <div [hidden]="!checkForVehiclePreference('activevehiclesperday')" class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblActiveVehiclesPerDay
         || 'Active Vehicles Per Day' }}</span>
       <div *ngIf="vehicleChartType =='line'" class="chart-wrapper">
@@ -46,7 +46,7 @@
         </canvas>
       </div>
     </div>
-    <div [hidden]="!checkForVehiclePreference('vehicleutilization_timebasedutilizationrate')" class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="end">
+    <div [hidden]="!checkForVehiclePreference('timebasedutilizationrate')" class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="end">
       <div fxLayout="column">
         <span style='font: 500 14px/30px Roboto, "Helvetica Neue", sans-serif;padding-left: 25%;'>{{
           translationData.lblTimeBasedUtilisationRate || 'Time Based Utilisation Rate' }}</span>
@@ -62,7 +62,7 @@
           </canvas>
         </div>
       </div>
-      <div [hidden]="!checkForVehiclePreference('vehicleutilization_distancebasedutilizationrate')" fxLayout="column">
+      <div [hidden]="!checkForVehiclePreference('distancebasedutilizationrate')" fxLayout="column">
         <span style='font: 500 14px/30px Roboto, "Helvetica Neue", sans-serif;padding-left: 25%;'>{{
           translationData.lblDistanceBasedUtilisationRate || 'Distance Based Utilisation Rate' }}</span>
         <div *ngIf="mileageDChartType == 'doughnut'" class="chart-wrapper">

@@ -27,6 +27,15 @@ namespace net.atos.daf.ct2.reports.repository
 	                on pt.template=pm.template
 	                where vehicle_performance_type= @performancetype
 	                and engine_type = @enginetype";
+                //For now Break behaviour should be common not depends on engine type so removing join and where
+                if (vehiclePerformanceRequest.PerformanceType == "B")
+                {
+                    queryEngineLoadData = @"Select 
+	                   index,range,array_to_string(row, ',','*') as Axisvalues
+	                from master.performancematrix 
+	               where vehicle_performance_type = ('B')";
+                }
+
                 var lstengion = await _dataAccess.QueryAsync<VehicleChartData>(queryEngineLoadData, parameter);
                 vehiclePerformanceChartTemplate.VehChartList = lstengion.ToList();
 

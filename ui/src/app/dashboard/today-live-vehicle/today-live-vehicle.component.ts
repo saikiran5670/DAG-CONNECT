@@ -78,7 +78,7 @@ export class TodayLiveVehicleComponent implements OnInit {
   };
 
   public doughnutChartPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-    beforeDraw(chart) {
+    afterDraw(chart) {
       const ctx = chart.ctx;
 
       ctx.textAlign = 'center';
@@ -120,7 +120,7 @@ export class TodayLiveVehicleComponent implements OnInit {
     }
   };
   public doughnutChartTimePlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-    beforeDraw(chart) {
+    afterDraw(chart) {
       const ctx = chart.ctx;
 
       ctx.textAlign = 'center';
@@ -179,7 +179,7 @@ doughnutChartDistanceBasedData: MultiDataSet = [ [0, 100] ];
   }
 };
 public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-  beforeDraw(chart) {
+  afterDraw(chart) {
     const ctx = chart.ctx;
 
     ctx.textAlign = 'center';
@@ -318,7 +318,7 @@ doughnutDistanceColors: Color[] = [
     let activeVehicleCount = this.liveVehicleData.todayActiveVinCount;
     this.totalVehicles = this.finalVinList.length;
     let activeVehiclePercent = this.dashboardService.calculateTodayLivePercentage(activeVehicleCount,this.totalVehicles);
-    let thresholdValue = 10;
+    let thresholdValue = this.getPreferenceThreshold('activevehicles')['value']; //10;
     let vehicleTarget = this.dashboardService.calculateTargetValue(this.totalVehicles,thresholdValue,1);
     let yesterdayCount = this.liveVehicleData.yesterdayActiveVinCount;
     let activeVehicleChangePercent = this.dashboardService.calculateLastChange(activeVehicleCount,yesterdayCount);
@@ -337,7 +337,7 @@ doughnutDistanceColors: Color[] = [
     this.doughnutChartActiveVehicleData = [[activeVehiclePercent,(100 - activeVehiclePercent)]]
 
     this.doughnutChartPlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -424,11 +424,11 @@ doughnutDistanceColors: Color[] = [
       }
     }
 
-    let _vehicleLimit = 'upper';
-    let _vehicleThreshold = 10;
+    let _vehicleLimit = this.getPreferenceThreshold('activevehicles')['type'];
+    let _vehicleThreshold = this.getPreferenceThreshold('activevehicles')['value'];
      
     switch (_vehicleLimit) {
-      case 'upper':{
+      case 'U':{
         if(_vehicleThreshold < this.liveVehicleData.activeVehicles){ //red
           this.doughnutColors = [
             {
@@ -469,7 +469,7 @@ doughnutDistanceColors: Color[] = [
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_vehicleLimit > this.liveVehicleData.activeVehicles){
             this.doughnutColors = [
               {
@@ -519,7 +519,8 @@ doughnutDistanceColors: Color[] = [
   updateTimeUtilisation(){
     // update time based chart
     let todayTimeRate = this.liveVehicleData.todayTimeBasedUtilizationRate;
-    let timeBasedCalculation = this.dashboardService.calculateKPIPercentage(todayTimeRate,4,7200000,1);
+    let _threshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
+    let timeBasedCalculation = this.dashboardService.calculateKPIPercentage(todayTimeRate,4,_threshold,1);
     let timeBasedPercent = timeBasedCalculation['kpiPercent'];
     this.doughnutChartTimeBasedData = [[timeBasedPercent,(100 - timeBasedPercent)]]
     let timeUtilisationTarget = timeBasedCalculation['cuttOff'];
@@ -557,7 +558,7 @@ doughnutDistanceColors: Color[] = [
 
     }
     this.doughnutChartTimePlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -645,11 +646,12 @@ doughnutDistanceColors: Color[] = [
     }
 
     //time color
-    let _timeRateLimit = 'upper';
-    let _timeThreshold = 10;
+    let _timeRateLimit = this.getPreferenceThreshold('timebasedutilizationrate')['type'];
+    let _timeThreshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
+
      
     switch (_timeRateLimit) {
-      case 'upper':{
+      case 'U':{
         if(_timeThreshold < todayTimeRate){ //red
           this.doughnutColors = [
             {
@@ -690,7 +692,7 @@ doughnutDistanceColors: Color[] = [
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_timeThreshold > this.liveVehicleData.activeVehicles){
             this.doughnutTimeColors = [
               {
@@ -745,8 +747,8 @@ doughnutDistanceColors: Color[] = [
     let todayDistance = this.liveVehicleData.todayDistanceBasedUtilization;
     let lastDistance = this.liveVehicleData.yesterDayDistanceBasedUtilization;
     this.distanceRate = this.reportMapService.getDistance(todayDistance, this.prefUnitFormat);
-
-    let distanceBasedPercent = this.dashboardService.calculateKPIPercentage(todayDistance,4,10,1)["kpiPercent"];
+    let _threshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
+    let distanceBasedPercent = this.dashboardService.calculateKPIPercentage(todayDistance,4,_threshold,1)["kpiPercent"];
     this.doughnutChartDistanceBasedData = [[distanceBasedPercent,(100 - distanceBasedPercent)]]
     let distanceTarget = this.dashboardService.calculateTargetValue(this.totalVehicles,10,1);
     let changePercent = this.dashboardService.calculateLastChange(todayDistance,lastDistance,4);
@@ -763,7 +765,7 @@ doughnutDistanceColors: Color[] = [
 
     }
     this.doughnutChartDistancePlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -852,11 +854,11 @@ doughnutDistanceColors: Color[] = [
     }
 
       //distance color
-      let _distanceRateLimit = 'upper';
-      let _distanceThreshold = 10;
+      let _distanceRateLimit = this.getPreferenceThreshold('distancebasedutilizationrate')['type'];
+      let _distanceThreshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
        
       switch (_distanceRateLimit) {
-        case 'upper':{
+        case 'U':{
           if(_distanceThreshold < todayDistance){ //red
             this.doughnutColors = [
               {
@@ -897,7 +899,7 @@ doughnutDistanceColors: Color[] = [
           }
         }
           break;
-          case 'lower':{
+          case 'L':{
             if(_distanceThreshold > this.liveVehicleData.activeVehicles){
               this.doughnutColors = [
                 {
@@ -953,7 +955,7 @@ doughnutDistanceColors: Color[] = [
     this.router.navigate(['/report/fleetutilisation']);
   }
 
-  
+  //****************************** Preference Functions *************************************//
   checkForPreference(fieldKey) {
     if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
       let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
@@ -966,5 +968,18 @@ doughnutDistanceColors: Color[] = [
       }
     }
     return true;
+  }
+
+  getPreferenceThreshold(fieldKey){
+    let thresholdType = 'U';
+    let thresholdValue = 10;
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
+      let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
+      if (filterData.length > 0) {
+        thresholdType = filterData[0].thresholdType;
+        thresholdValue = filterData[0].thresholdValue;
+      }
+    }
+    return {type:thresholdType , value:thresholdValue};
   }
 }
