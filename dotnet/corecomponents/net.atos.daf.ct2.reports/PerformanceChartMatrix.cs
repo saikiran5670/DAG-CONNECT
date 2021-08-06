@@ -24,12 +24,14 @@ namespace net.atos.daf.ct2.reports
         public int[] IA { get; set; }
         public int[] JA { get; set; }
         public int[] A { get; set; }
-        public int Arra { get; set; }
+        public int ColumnsCount { get; set; }
+        public int RowsCount { get; set; }
+        public int[,] DMatrix { get; set; }
     }
-    public class Program
+    public class PerformanceChartMatrix
     {
 
-        public void Getcombinedmatrix(List<VehPerformanceChartData> chartData)
+        public List<IndexWiseChartData> Getcombinedmatrix(List<VehPerformanceChartData> chartData)
         {
             //Console.WriteLine("Hello World!");
             List<ChartMatrix> matrix = new List<ChartMatrix>();
@@ -39,56 +41,58 @@ namespace net.atos.daf.ct2.reports
                 matdata.A = item.MatrixValue.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
                 matdata.IA = item.CountPerIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
                 matdata.JA = item.ColumnIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+                matdata.DMatrix = ParseSparseMatrix(matdata.A, matdata.IA);//, JA);
+                matdata.ColumnsCount = matdata.DMatrix.GetUpperBound(1) - matdata.DMatrix.GetLowerBound(1) + 1;
+                matdata.RowsCount = matdata.DMatrix.GetUpperBound(0) - matdata.DMatrix.GetLowerBound(0) + 1;
                 matrix.Add(matdata);
             }
             //int engineLoadArrayColsCount = EngineLoadArray.GetUpperBound(1) - EngineLoadArray.GetLowerBound(1) + 1;
-            //int engineLoadArrayRowsCount = EngineLoadArray.GetUpperBound(0) - EngineLoadArray.GetLowerBound(0) + 1;
-            foreach (var item in chartData)
+            //int engineLoadArrayRowsCount = EngineLoadArray.GetUpperBound(0) - EngneLoadArray.GetLowerBound(0) + 1;
+            List<IndexWiseChartData> chartdata = new List<IndexWiseChartData>();
+            foreach (var item in matrix)
             {
 
-                int[] A = item.MatrixValue.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
-                int[] IA = item.CountPerIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
-                int[] JA = item.ColumnIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
-                //int[] A = new int[] { 5, 100, 112, 6, 2, 1, 1, 4, 2, 1, 1, 2, 1, 1, 13, 5, 3, 3, 2, 1, 1, 3, 2, 1, 18, 9, 9, 9, 5, 3, 2, 1, 1, 1, 2, 1, 9, 13, 22, 16, 4, 3, 4, 4, 1, 1, 2, 1, 2, 3, 1, 8, 2, 5, 4, 4, 3, 3, 1, 2, 1, 2, 2, 1, 2, 2, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1 };
-                //int[] IA = new int[] { 0, 7, 14, 24, 36, 49, 59, 70, 77, 81, 83, 84, 84, 84, 84, 84, 84, 84, 84, 84, 84, 84, 84, 84, 84, 84 };
-                //int[] JA = new int[] { 0, 1, 2, 3, 4, 5, 7, 0, 1, 2, 3, 5, 6, 7, 0, 1, 2, 3, 4, 5, 7, 8, 9, 11, 0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 0, 1, 2, 3, 5, 6, 7, 9, 13, 15, 17, 0, 2, 5, 7, 12, 13, 17, 0, 4, 7, 14, 2, 15, 5 };
+                for (int i = 0; i < 10; i++)
+                {
+                    for (int j = 0; j < 10; j++)
+                    {
+                        IndexWiseChartData data = new IndexWiseChartData();
+                        try
+                        {
 
-                //int[] B = new int[] { 217, 7, 5, 7, 1, 2, 2, 10, 2, 17, 6, 11, 8, 3, 2, 1, 1, 3, 12, 48, 70, 24, 12, 6, 5, 1, 1 };
-                //int[] IB = new int[] { 0, 7, 17, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27 };
-                //int[] JB = new int[] { 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+                            if (chartdata.Any(k => k.Xindex == i && k.Yindex == j))
+                            {
+                                chartdata.First(k => k.Xindex == i && k.Yindex == j).Value += item.DMatrix[i, j];
+                            }
+                            else
+                            {
+                                data.Xindex = i;
+                                data.Yindex = j;
+                                data.Value += item.DMatrix[i, j];
+                                chartdata.Add(data);
+                            }
 
-                //int[] C = new int[] { 0, 1, 1, 1, 1, 4, 1, 3, 2, 2, 2, 9, 1, 6, 0, 0, 0, 0, 0, 0 };
-                //int[] IC = new int[] { 0, 1, 1, 1, 4, 5, 5, 8, 8, 11, 11, 11, 14, 14, 17, 17, 20, 20, 20, 20, 20, 20, 20, 20 };
-                //int[] JC = new int[] { 0, 0, 1, 2, 1, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2 };
+                        }
+                        catch (Exception)
+                        {
+                            // If index is not present in matrix it will throw exception we will put 0 in that case.
+                            if (chartdata.Any(k => k.Xindex == i && k.Yindex == j))
+                            {
+                                chartdata.First(k => k.Xindex == i && k.Yindex == j).Value += 0;
+                            }
+                            else
+                            {
+                                data.Xindex = i;
+                                data.Yindex = j;
+                                data.Value += 0;
+                                chartdata.Add(data);
+                            }
+                        }
 
-                var EngineLoadArray = ParseSparseMatrix(A, IA);//, JA);
-                //var speedRPMArray = ParseSparseMatrix(B, IB, JB);
-                //var BrakeArray = ParseSparseMatrix(C, IC, JC);
+                    }
+                }
             }
-            //DisplayMultiDimentionalMatrix(EngineLoadArray, "Engine Load Array");
-            //DisplayMultiDimentionalMatrix(speedRPMArray, "Speed RPM Array");
-            //DisplayMultiDimentionalMatrix(BrakeArray, "Brake Array");
-            //int engineLoadArrayColsCount = EngineLoadArray.GetUpperBound(1) - EngineLoadArray.GetLowerBound(1) + 1;
-            //int engineLoadArrayRowsCount = EngineLoadArray.GetUpperBound(0) - EngineLoadArray.GetLowerBound(0) + 1;
-            int noOfTrips = 2;
-            for (int tripCnt = 0; tripCnt < noOfTrips; tripCnt++)
-            {
-                //var EngineLoadArray = ParseSparseMatrix(A, IA, JA);
-                //int value = 0;
-                //for (int i = 0; i < engineLoadArrayRowsCount; i++)
-                //{
-                //    for (int j = 0; j < engineLoadArrayColsCount; j++)
-                //    {
-                //        value += EngineLoadArray[i, j];
-                //    }
-                //}
-            }
-
-            //int testValue = 0;
-            //foreach (var tst in A)
-            //{
-            //    testValue += tst;
-            //}
+            return chartdata;
         }
 
         public static void DisplayMultiDimentionalMatrix(int[,] matrix, string Name)
