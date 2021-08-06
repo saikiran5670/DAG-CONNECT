@@ -560,16 +560,17 @@ export class FleetkpiComponent implements OnInit {
   getKPIData(){
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
-    this.totalVehicles = 3; //this.finalVinList.length;
+    this.totalVehicles = this.finalVinList.length;
     let _kpiPayload = {
       "startDateTime": _startTime,
       "endDateTime": _endTime,
-      "viNs": [ //this.finalVinList
-        "M4A14532",
-        "XLR0998HGFFT76657",
-        "XLRASH4300G1472w0",
-        "XLR0998HGFFT75550"
-      ]
+      "viNs": this.finalVinList 
+      // [ //this.finalVinList
+      //   "M4A14532",
+      //   "XLR0998HGFFT76657",
+      //   "XLRASH4300G1472w0",
+      //   "XLR0998HGFFT75550"
+      // ]
     }
     this.dashboardService.getFleetKPIData(_kpiPayload).subscribe((kpiData)=>{
       //console.log(kpiData);
@@ -592,7 +593,7 @@ export class FleetkpiComponent implements OnInit {
   updateCO2Emmission(){
     let currentValue = this.kpiData['fleetKpis']['co2Emission'];
     this.currentC02Value =  currentValue > 0  ? currentValue.toFixed(2) : currentValue;
-    let _thresholdValue = 10;
+    let _thresholdValue = this.getPreferenceThreshold('co2emission')['value'];//10;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
     this.cutOffC02Value =  targetValue > 0 ? targetValue.toFixed(2) : targetValue;
@@ -713,8 +714,8 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    let _prefLimit = 'upper';
-    let _prefThreshold = 10;
+    let _prefLimit = this.getPreferenceThreshold('co2emission')['type'];
+    let _prefThreshold = this.getPreferenceThreshold('co2emission')['value'];
      
     switch (_prefLimit) {
       case 'upper':{
@@ -2127,6 +2128,8 @@ export class FleetkpiComponent implements OnInit {
 
   }
 
+  // ***************************** Preference functions *****************************//
+
   checkForPreference(fieldKey) {
     if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
       let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_fleetkpi_'+fieldKey));
@@ -2139,6 +2142,19 @@ export class FleetkpiComponent implements OnInit {
       }
     }
     return true;
+  }
+
+  getPreferenceThreshold(fieldKey){
+    let thresholdType = 'U';
+    let thresholdValue = 10;
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
+      let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_fleetkpi_'+fieldKey));
+      if (filterData.length > 0) {
+        thresholdType = filterData[0].thresholdType;
+        thresholdValue = filterData[0].thresholdValue;
+      }
+    }
+    return {type:thresholdType , value:thresholdValue};
   }
    //********************************** Date Time Functions *******************************************//
    setPrefFormatDate(){

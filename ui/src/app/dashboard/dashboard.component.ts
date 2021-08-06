@@ -173,7 +173,7 @@ export class DashboardComponent implements OnInit {
       });
     });
     let reportId = 18; 
-    this.reportService.getReportUserPreference(reportId).subscribe((prefData: any) => {
+    this.dashboardService.getDashboardPreferences(reportId).subscribe((prefData: any) => {
       this.dashboardPrefData = prefData['userPreferences'];   
         
     }, (error) => {
