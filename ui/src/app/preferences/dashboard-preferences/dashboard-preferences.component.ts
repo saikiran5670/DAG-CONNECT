@@ -16,7 +16,7 @@ export class DashboardPreferencesComponent implements OnInit {
   @Input() reportListData: any;
 
   //dashboard preferences
-  DashboardPreferenceForm = new FormGroup({});
+  dashboardPreferenceForm = new FormGroup({});
   editDashboardFlag: boolean = false;
   displayMessage: any = '';
   updateMsgVisible: boolean = false;
@@ -42,11 +42,7 @@ export class DashboardPreferencesComponent implements OnInit {
 
   ngOnInit() {
   
-    this.DashboardPreferenceForm= this._formBuilder.group({
-      chartType: [],
-      thresholdvalue: [],
-      targetPerDayVehicle: []
-    });
+   
     
   }
 
@@ -221,7 +217,19 @@ export class DashboardPreferencesComponent implements OnInit {
           // }
           _data.translatedName = this.getName(element.name);
           this.fleetKPIColumnData.push(_data);
-          
+
+          this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType));
+          if (element.key.includes('fleetkpi_drivingtime') || element.key.includes('fleetkpi_idlingtime')) {
+           
+            let hms =this.secondsToHms(element.thresholdValue);
+            console.log("hms",hms);
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(element.thresholdValue));
+
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValuemin', new FormControl(element.thresholdValue));
+          }
+          else {
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(element.thresholdValue));
+          }
                  
         }
         else if(section.name.includes('Dashboard.TodayLiveVehicle'))
@@ -265,6 +273,17 @@ export class DashboardPreferencesComponent implements OnInit {
       this.setColumnCheckbox();
   }
 
+  secondsToHms(d) {
+    d = Number(d);
+    var h = Math.floor(d / 3600);
+    var m = Math.floor(d % 3600 / 60);
+    var s = Math.floor(d % 3600 % 60);
+    var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
+    var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
+    var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+    return hDisplay + mDisplay + sDisplay; 
+}
+
   getName(name: any) {
     let updatedName = name.split('.').splice(-1).join('');
     return updatedName;
@@ -293,11 +312,11 @@ export class DashboardPreferencesComponent implements OnInit {
      this[columnData].forEach(element => {
      let sSearch = this[selectionData].selected.filter(item => item.dataAttributeId == element.dataAttributeId);
      console.log("sssearch", sSearch);
-      if(sSearch.length > 0){
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "V", chartType: this.DashboardPreferenceForm.controls.chartType.value? this.DashboardPreferenceForm.controls.chartType.value:element.chartType, thresholdType: this.DashboardPreferenceForm.controls.thresholdvalue.value? this.DashboardPreferenceForm.controls.thresholdvalue.value:element.thresholdType, thresholdValue: this.DashboardPreferenceForm.controls.targetPerDayVehicle.value? parseInt(this.DashboardPreferenceForm.controls.targetPerDayVehicle.value):element.thresholdValue  });
-      }else{
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "V", chartType: "", thresholdType: "", thresholdValue: 0 });
-      }
+     // if(sSearch.length > 0){
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "V", chartType: "", thresholdType: "", thresholdValue: 0 });
+      // }else{
+      //   saveArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "V", chartType: "", thresholdType: "", thresholdValue: 0 });
+      // }
      });
     return saveArr;
   }
