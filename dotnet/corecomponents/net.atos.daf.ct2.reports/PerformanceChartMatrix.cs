@@ -30,6 +30,79 @@ namespace net.atos.daf.ct2.reports
     }
     public class PerformanceChartMatrix
     {
+        public List<KPIs> CalculateKPIData(List<IndexWiseChartData> vehicleChartDatas, double tripDuration, List<KpiDataRange> rangedata)
+        {
+            // List<KpiDataRange> rangeData = await GetRangeData(performanceType);
+            // long multiTripDuration = 0;
+            List<KPIs> lstKpis = new List<KPIs>();
+
+
+            foreach (var item in vehicleChartDatas)
+            {
+                int value = item.Value;
+                foreach (var range in rangedata)
+                {
+                    switch (range.Index)
+                    {
+                        case 0:// " ":
+                            if (value >= range.LowerVal && value <= range.UpperVal)
+                                range.Value += value;
+                            break;
+                        case 1: // "O":
+                            if (value >= range.LowerVal && value <= range.UpperVal)
+                                range.Value += value;
+                            break;
+                        case 2: // "A":
+                            if (value >= range.LowerVal && value <= range.UpperVal)
+                                range.Value += value;
+                            break;
+                        case 3:// "P":
+                            if (value >= range.LowerVal && value <= range.UpperVal)
+                                range.Value += value;
+                            break;
+                        case 4:// "E":
+                            if (value >= range.LowerVal && value <= range.UpperVal)
+                                range.Value += value;
+                            break;
+                        case 5:// "N":
+                            if (value >= range.LowerVal && value <= range.UpperVal)
+                                range.Value += value;
+                            break;
+                        case 6:// "I":
+                            if (value >= range.LowerVal && value <= range.UpperVal)
+                                range.Value += value;
+                            break;
+                        case 7:// "D":
+                            if (value >= range.LowerVal && value <= range.UpperVal)
+                                range.Value += value;
+                            break;
+                        case 8:// "U":
+                            if (value >= range.LowerVal && value <= range.UpperVal)
+                                range.Value += value;
+                            break;
+                        case 9:// " ":
+                            if (value >= range.LowerVal && value <= range.UpperVal)
+                                range.Value += value;
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                }
+
+
+            }
+            foreach (var kpiDict in rangedata)
+            {
+                KPIs kPIs = new KPIs();
+                kPIs.Label = kpiDict.Kpi;
+                kPIs.Value = Math.Round((kpiDict.Value / (tripDuration / 3600) > 0 ? (tripDuration / 3600) : 1), 2);
+                lstKpis.Add(kPIs);
+            }
+            return lstKpis;
+
+        }
 
         public List<IndexWiseChartData> Getcombinedmatrix(List<VehPerformanceChartData> chartData)
         {

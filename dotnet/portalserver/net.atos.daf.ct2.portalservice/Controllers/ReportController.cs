@@ -1629,7 +1629,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response != null)
                 {
                     response.Message = ReportConstants.GET_VEHICLE_PERFORMANCE_SUCCESS_MSG;
-                    return Ok(response.BubbleChartData);
+                    return Ok(response);
                 }
                 else
                 {
