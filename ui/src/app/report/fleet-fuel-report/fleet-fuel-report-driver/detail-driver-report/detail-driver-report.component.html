@@ -525,14 +525,16 @@
                       <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_startdate')">{{ translationData.lblstartDate || 'Start Date' }}         
                       </mat-header-cell>         
                       <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_startdate')">         
-                        <span>{{row.startDate | date:'dd/MM/yyyy hh:mm:ss'}}</span>          
+                        <!-- <span>{{row.startDate | date:'dd/MM/yyyy hh:mm:ss'}}</span>           -->
+                        <span>{{ row.convertedStartTime }}</span>
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="endDate">
                           <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_enddate')">{{ translationData.lblendDate || ' End Date ' }}             
                           </mat-header-cell>              
                           <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_enddate')">              
-                            <span>{{row.endDate | date:'dd/MM/yyyy hh:mm:ss'}}</span>              
+                            <!-- <span>{{row.endDate | date:'dd/MM/yyyy hh:mm:ss'}}</span>               -->
+                            <span>{{ row.convertedEndTime }}</span>
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="averageSpeed">     
