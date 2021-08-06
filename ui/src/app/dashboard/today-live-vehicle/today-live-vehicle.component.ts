@@ -941,4 +941,18 @@ doughnutDistanceColors: Color[] = [
     this.router.navigate(['/report/fleetutilisation']);
   }
 
+  
+  checkForPreference(fieldKey) {
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
+      let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
+      if (filterData.length > 0) {
+        if (filterData[0].state == 'A') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 }

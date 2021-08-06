@@ -414,7 +414,7 @@ setAlertChartData(){
 }
 
 checkForPreference(fieldKey) {
-  if (this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences.length != 0) {
+  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences.length != 0) {
     let filterData = this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_'+fieldKey));
     if (filterData.length > 0) {
       if (filterData[0].state == 'A') {
@@ -428,7 +428,7 @@ checkForPreference(fieldKey) {
 }
 
 checkForVehiclePreference(fieldKey) {
-  if (this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
+  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
     let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_'+fieldKey));
     if (filterData.length > 0) {
       if (filterData[0].state == 'A') {
