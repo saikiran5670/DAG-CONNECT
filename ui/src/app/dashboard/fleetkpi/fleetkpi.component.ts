@@ -552,7 +552,7 @@ export class FleetkpiComponent implements OnInit {
 
     }
     else{
-    //this.getKPIData();
+      this.getKPIData();
 
     }
   }
