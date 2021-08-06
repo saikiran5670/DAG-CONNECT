@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
 
         public string GetReportTemplate(ITemplateManager templateManager, int reportId, EmailEventType evenType, EmailContentType contentType, string languageCode)
         {
-            if (_reportTemplate.Any(w => w.ReportId == reportId && w.LanguageCode == languageCode))
+            if (_reportTemplate.Any(w => w.ReportId == reportId && w.LanguageCode == languageCode && w.EventType == evenType))
             {
                 return _reportTemplate.Where(w => w.ReportId == reportId && w.LanguageCode == languageCode).FirstOrDefault()?.ReportTranslatedContent;
             }
@@ -55,7 +55,8 @@ namespace net.atos.daf.ct2.reportscheduler.helper
                         {
                             ReportId = reportId,
                             ReportTranslatedContent = templateContent,
-                            LanguageCode = languageCode
+                            LanguageCode = languageCode,
+                            EventType = evenType
                         }
                         );
                     return templateContent;
