@@ -309,6 +309,16 @@ style='border-radius: 5px 5px 0px 0px;'>
 </div>
 </ng-container>
 
+        <div
+          *ngIf='editDashboardFlag'
+          fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
+          <button class='resetCancelBtnColor margin-right-10'  mat-raised-button color="primary">{{
+            translationData.lblCancel || 'Cancel' }}</button>
+          <button class='resetCancelBtnColor margin-right-10'  mat-raised-button color="primary">{{
+            translationData.lblReset || 'Reset' }}</button>
+          <button class='no-margin' mat-raised-button color="primary" >{{ (translationData.lblConfirm ||
+            'Confirm') }}</button>
+        </div>
 
 </mat-expansion-panel>
 </form> 
