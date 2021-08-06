@@ -406,12 +406,10 @@ export class AppComponent {
     //  "languageCode": "EN-GB"
     // }
     let refresh = localStorage.getItem('pageRefreshed') == 'true';
-    if(refresh) {
-      this.applyFilterOnOrganization(localStorage.getItem("contextOrgId"));
-      let _orgContextStatus = localStorage.getItem("orgContextStatus");
-      if(_orgContextStatus){
+    let _orgContextStatus = localStorage.getItem("orgContextStatus");
+    if(refresh && _orgContextStatus) {
         this.orgContextType = true;
-      }
+        this.applyFilterOnOrganization(localStorage.getItem("contextOrgId"));
     } else {
       let featureMenuObj = {
         "accountId": parseInt(localStorage.getItem("accountId")),

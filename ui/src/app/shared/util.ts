@@ -47,7 +47,7 @@ export class Util {
         if(_t.length > 0){
             _timezone = _t[1].trim();
         }
-        let _date: any = moment.utc(_utc).tz(_timezone ? _timezone : timeZone).format('YYYY/MM/DD hh:mm:ss');
+        let _date: any = moment.utc(_utc).tz(_timezone ? _timezone : timeZone).format('YYYY/MM/DD HH:mm:ss');
         //let _date: any = moment.utc(_utc).tz(timeZone).format('YYYY/MM/DD hh:mm:ss');
         return (_date);
     }
