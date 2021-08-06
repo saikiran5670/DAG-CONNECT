@@ -37,9 +37,6 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 	LivefleetCurrentTripStatisticsDao currentTripDAO;
 	Co2MasterDao cmDAO;
 	Co2Master cmData;
-
-	LiveFleetPojo currentPosition;// later we have to implement it inside invoke
-
 	private List<Index> queue;
 	private List<Index> synchronizedCopy;
 
@@ -51,9 +48,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		synchronizedCopy = new ArrayList<Index>();
 
 		Index row = index.getValue();
-
-		currentPosition = new LiveFleetPojo();
-
+		
 		try {
 
 			queue.add(row);
@@ -73,8 +68,30 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 							tripID = indexData.getDocument().getTripID();
 						}
 						
-						currentPosition = tripCalculation(row, currentPosition);
+						Double drivingTime=0.0;
+						String vin;
+						if(indexData.getVin()!=null)
+							vin=indexData.getVin();
+						else 
+							vin=indexData.getVid();
+						
+						if(indexData.getVEvtID()!=4) {
+							
+							LiveFleetPojo previousRecordInfo=positionDAO.read(vin, tripID);
+							
+							Double previousMessageTimeStamp=previousRecordInfo.getMessageTimestamp();
+							Double currentMessageTimeStamp=(double) TimeFormatter.getInstance()
+							.convertUTCToEpochMilli(indexData.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT);
+							 drivingTime =( (currentMessageTimeStamp - previousMessageTimeStamp) + previousRecordInfo.getDrivingTime() - indexData.getVIdleDuration());
+							System.out.println("drivingTime-->" + drivingTime);
+						}
+						
+						
+						
+					
+						LiveFleetPojo  currentPosition = tripCalculation(row,drivingTime);
 
+						
 						positionDAO.insert(currentPosition);
 
 					}
@@ -124,7 +141,8 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 
 	}
 
-	public LiveFleetPojo tripCalculation(Index row, LiveFleetPojo currentPosition) {
+	public LiveFleetPojo tripCalculation(Index row,Double drivingTime) {
+		LiveFleetPojo currentPosition= new LiveFleetPojo();
 		System.out.println("Inside Trip Calculation");
 		int varVEvtid = 0;
 		if (row.getVEvtID() != null) {
@@ -149,7 +167,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		currentPosition.setCreated_at_m2m(row.getReceivedTimestamp());
 		currentPosition.setCreated_at_kafka(Long.parseLong(row.getKafkaProcessingTS()));
 		currentPosition.setCreated_at_dm(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
-		System.out.println("Inside Trip Calculation in Mid");
+		
 		if (varGPSLongi == 255.0) {
 			currentPosition.setGpsAltitude(255.0); // gpsAltitude
 			currentPosition.setGpsHeading(255.0); // gpsHeading
@@ -178,11 +196,10 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 			}
 		}
 		Long Fuel_consumption= row.getVUsedFuel();
-		System.out.println("Fuel_Consuption---->"+ Fuel_consumption );
+		
 		if (Fuel_consumption!= null) {
-			System.out.println("Co2-cofficient-->"+cmData.getCoefficient());
-			double co2emission = (Fuel_consumption * cmData.getCoefficient()) / 1000;
 			
+			double co2emission = (Fuel_consumption * cmData.getCoefficient()) / 1000;
 			System.out.println("co2emission-->"+ co2emission);
 			currentPosition.setCo2Emission(co2emission); // co2emission
 			currentPosition.setFuelConsumption(Fuel_consumption.doubleValue());// fuel_consumption
@@ -190,13 +207,50 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 			currentPosition.setCo2Emission(0.0); // co2 emission
 			currentPosition.setFuelConsumption(0.0); // fuel_consumption
 		}
-		System.out.println("Inside Trip Calculation in Mid after");
-		if (varVEvtid == 26 || varVEvtid == 28 || varVEvtid == 29 || varVEvtid == 32 || varVEvtid == 42
-				|| varVEvtid == 43 || varVEvtid == 44 || varVEvtid == 45 || varVEvtid == 46) {
-			currentPosition.setLastOdometerValue(row.getDocument().getVTachographSpeed());// TotalTachoMileage
-		} else {
+		
+		
+		
+		Long[] tachomileageArray = row.getDocument().getTotalTachoMileage();
+		int tachomileagelength = 0;
+		if (tachomileageArray != null)
+			tachomileagelength = tachomileageArray.length;
+		// long[] longtachoMlArray = Arrays.stream(tachomileageArray).mapToLong(i ->
+		// i).toArray();
+		try {
+			if (tachomileagelength > 0) {
+
+				if (tachomileageArray[tachomileagelength - 1] != null
+						&& !"null".equals(tachomileageArray[tachomileagelength - 1])) {
+
+					System.out.println(
+							"odometer value--" + tachomileageArray[tachomileagelength - 1]);
+					currentPosition
+							.setLastOdometerValue(tachomileageArray[tachomileagelength - 1].intValue());
+				} else {
+					System.out.println("odometer value inside else--"
+							+ tachomileageArray);
+					currentPosition.setLastOdometerValue(0);
+				}
+			} else {
+				
+				System.out.println("odometer value when odometer less then 0--"
+						+ tachomileageArray);
+				currentPosition.setLastOdometerValue(0);
+			}
+		} catch(Exception e) {
+			
 			currentPosition.setLastOdometerValue(0);
+			System.out.println();
 		}
+		
+		
+		/*
+		 * if (varVEvtid == 26 || varVEvtid == 28 || varVEvtid == 29 || varVEvtid == 32
+		 * || varVEvtid == 42 || varVEvtid == 43 || varVEvtid == 44 || varVEvtid == 45
+		 * || varVEvtid == 46) {
+		 * currentPosition.setLastOdometerValue(row.getDocument().getVTachographSpeed())
+		 * ;// TotalTachoMileage } else { currentPosition.setLastOdometerValue(0); }
+		 */
 
 		/*if (varVEvtid == 42 || varVEvtid == 43) {
 			currentPosition.setDistUntilNextService(row.getDocument().getVDistanceUntilService());// distance_until_next_service
@@ -205,8 +259,41 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		}*/
 		
 		
-			currentPosition.setDistUntilNextService(0);
-			System.out.println("Inside Trip Calculation in end");
+		currentPosition.setDistUntilNextService(0);
+			
+			
+		currentPosition.setVehMessageType(DafConstants.Index);	
+		
+		currentPosition.setVehicleMsgTriggerTypeId(row.getVEvtID());
+			
+		try {
+			currentPosition.setCreatedDatetime(TimeFormatter.getInstance()
+					.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
+		currentPosition.setReceivedDatetime(row.getReceivedTimestamp());	
+		
+		if(row.getDocument().getGpsSpeed()!=null) 
+			currentPosition.setGpsSpeed(row.getDocument().getGpsSpeed().doubleValue());
+		
+		try {
+			currentPosition.setGpsDatetime(TimeFormatter.getInstance()
+					.convertUTCToEpochMilli(row.getGpsDateTime().toString(), DafConstants.DTM_TS_FORMAT));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(row.getDocument().getVWheelBasedSpeed()!=null)
+			currentPosition.setWheelbasedSpeed(row.getDocument().getVWheelBasedSpeed().doubleValue());  
+		
+		currentPosition.setDriver1Id(row.getDriverID());
+		currentPosition.setDrivingTime(drivingTime.intValue());
+		
+		System.out.println("Inside Trip Calculation in end");
 
 		return currentPosition;
 		
