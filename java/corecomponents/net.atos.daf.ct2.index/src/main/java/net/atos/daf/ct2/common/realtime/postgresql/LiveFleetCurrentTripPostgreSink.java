@@ -256,7 +256,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									// driver behind the wheel
 
 									driving_time += (currentTripPojo.getEnd_time_stamp()
-											- currentTripPojo.getStart_time_stamp());
+											- currentTripPojo.getStart_time_stamp())- indexValue.getVIdleDuration();
 
 									// }
 									currentTripPojo.setDriving_time(driving_time);
