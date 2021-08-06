@@ -183,6 +183,8 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.loadBarChart();
     this.loadPieChart(0);
     this.vehicleSelected=0;
+    this.loadBarChartPerfomance();
+    this.loadPieChartPerformance(0);
   }
 
   hideloader() {
@@ -935,9 +937,30 @@ public barChartLabels: any =[];
 public barChartType = 'bar';
 public barChartLegend = true;
 public barChartData: any =[];
+public barChartPlugins = [{beforeInit: function(chart, options) {
+  chart.legend.afterFit = function() {
+    this.height = this.height + 50;
+  };
+}}];
 public barChartOptions = {
   scaleShowVerticalLines: false,
   responsive: true,
+  scales: {
+    xAxes: [{
+      position: 'bottom',
+      scaleLabel: {
+       display: true,
+       labelString: this.translationData.lblAverageGrossWeight || ' Average Gross Weight'
+      }
+    }],
+    yAxes: [{
+      position: 'left',
+      scaleLabel: {
+        display: true,
+        labelString: this.translationData.lblPercentage || ' Percentage'
+      }
+    }]
+  },
   animation: {
     duration: 0,
     onComplete: function () {
@@ -968,6 +991,43 @@ loadBarChart(){
 
 public barChartLabelsPerformance: any =[];
 public barChartDataPerformance: any =[];
+public barChartOptionsPerformance = {
+  scaleShowVerticalLines: false,
+  responsive: true,
+  scales: {
+    xAxes: [{
+      position: 'bottom',
+      scaleLabel: {
+       display: true,
+       labelString: this.translationData.lblAverageDrivingSpeed || ' Average Driving Speed'
+      }
+    }],
+    yAxes: [{
+      position: 'left',
+      scaleLabel: {
+        display: true,
+        labelString: this.translationData.lblPercentage || ' Percentage'
+      }
+    }]
+  },
+  animation: {
+    duration: 0,
+    onComplete: function () {
+        // render the value of the chart above the bar
+        var ctx = this.chart.ctx;
+        ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, 'normal', Chart.defaults.global.defaultFontFamily);
+        ctx.fillStyle = this.chart.config.options.defaultFontColor;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        this.data.datasets.forEach(function (dataset) {
+            for (var i = 0; i < dataset.data.length; i++) {
+                var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model;
+                ctx.fillText(dataset.data[i] + ' %', model.x, model.y - 5);
+            }
+        });
+    }}
+  };
+
 loadBarChartPerfomance(){
   this.barChartLabelsPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.xAxisLabel;
   this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet.forEach(element => {
@@ -977,54 +1037,6 @@ loadBarChartPerfomance(){
     });
   });
 }
-
-public barChartOptions1 = {
-  options: {
-      title: {
-        display: true,
-        text: ''
-      },
-      scales: {
-        xAxes: [{
-          position: 'bottom',
-          gridLines: {
-            zeroLineColor: "rgba(0,255,0,1)"
-          },
-          scaleLabel: {
-           display: true,
-           labelString: 'x axis'
-          },
-          stacked: true
-        }],
-        yAxes: [{
-          position: 'left',
-          gridLines: {
-            zeroLineColor: "rgba(0,255,0,1)"
-          },
-          scaleLabel: {
-            display: true,
-            labelString: 'y axis'
-          }
-        }]
-      },
-      animation: {
-        duration: 0,
-        onComplete: function () {
-            // render the value of the chart above the bar
-            var ctx = this.chart.ctx;
-            ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, 'normal', Chart.defaults.global.defaultFontFamily);
-            ctx.fillStyle = this.chart.config.options.defaultFontColor;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'bottom';
-            this.data.datasets.forEach(function (dataset) {
-                for (var i = 0; i < dataset.data.length; i++) {
-                    var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model;
-                    ctx.fillText(dataset.data[i], model.x, model.y - 5);
-                }
-            });
-        }}
-    }
-  };
 
    // Pie
    public pieChartOptions: ChartOptions = {
@@ -1039,13 +1051,28 @@ public barChartOptions1 = {
   public pieChartData: SingleDataSet = [];
   public pieChartType: ChartType = 'pie';
   public pieChartLegend = true;
-  public pieChartPlugins = [];
+  public pieChartPlugins = [{beforeInit: function(chart, options) {
+    chart.legend.afterFit = function() {
+      this.height = this.height + 25;
+    };
+  }}];
 
   loadPieChart(index){
     // let chart = [{"data":[100,0,0,0,0,0],"label":"Overall Driver"},{"data":[15,25,35,5,10,10]}];
     if(this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet.length > 0){
       this.pieChartData = this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet[index].data;
       this.pieChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;
+    }
+  }
+
+  public pieChartLabelsPerformance: Label[] = [];
+  public pieChartDataPerformance: SingleDataSet = [];
+
+  loadPieChartPerformance(index){
+    console.log(index);
+    if(this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet.length > 0){
+      this.pieChartDataPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].data;
+      this.pieChartLabelsPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.xAxisLabel;
     }
   }
 

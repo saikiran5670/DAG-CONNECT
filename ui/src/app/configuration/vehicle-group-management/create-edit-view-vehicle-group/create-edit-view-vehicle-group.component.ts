@@ -31,6 +31,8 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   breadcumMsg: any = '';
   duplicateVehicleGroupMsg: boolean = false;
   showVehicleList: boolean = true;
+  duplicateVehicleCheck: boolean = false;
+  existingGroupList:any =[];
 
   constructor(private _formBuilder: FormBuilder, private vehicleService: VehicleService) { }
 
@@ -75,6 +77,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
       this.breadcumMsg = this.getBreadcum();
     }
     this.loadGridData(this.vehicleListData);
+    this.getVehicleGroupDataForCheckDuplicate();
   }
 
   getBreadcum() {
@@ -190,6 +193,11 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
       });
     }
     else{ // update
+      this.checkDuplicateGroupName();
+      if(this.actionType == 'edit' && this.duplicateVehicleCheck){ 
+        this.duplicateVehicleCheck=false;
+        this.duplicateVehicleGroupMsg = true;
+      } else{
       let updateVehGrpObj = {
         id: this.selectedRowData.groupId,
         name: this.vehicleGroupForm.controls.vehicleGroupName.value, 
@@ -208,16 +216,31 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
         }
       });
     }
-    if(this.actionType == 'edit'){ 
-    let vehGrpName = `${this.vehicleGroupForm.controls.vehicleGroupName.value}`;
-        if(vehGrpName==this.selectedRowData.groupName){
-          this.duplicateVehicleGroupMsg = true;
-        }
-    }
+   }
   }
 
+  checkDuplicateGroupName(){
+    if(this.actionType == 'edit'){    
+      let vehGrpName = `${this.vehicleGroupForm.controls.vehicleGroupName.value}`;
+      this.existingGroupList.forEach(element => {
+        let vehicleName = element.groupName;
+        if(vehGrpName==vehicleName){
+            this.duplicateVehicleCheck = true;
+         }
+      });   
+      }
+   }
+    getVehicleGroupDataForCheckDuplicate(){
+      this.vehicleService.getVehicleGroupList(this.accountOrganizationId).subscribe((oldVehGrpData: any) => {
+        this.existingGroupList = oldVehGrpData;
+      }, (error) => {
+        if(error.status == 404){
+          let oldVehGrpData = [];
+        }
+      });
+    }
+
   getVehicleGroupData(){
-    if(!this.duplicateVehicleGroupMsg){
     this.vehicleService.getVehicleGroupList(this.accountOrganizationId).subscribe((vehGrpData: any) => {
       this.goToLandingPage(vehGrpData);
     }, (error) => {
@@ -226,7 +249,6 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
         this.goToLandingPage(vehGrpData);
       }
     });
-   }
   }
 
   goToLandingPage(tableData: any){
