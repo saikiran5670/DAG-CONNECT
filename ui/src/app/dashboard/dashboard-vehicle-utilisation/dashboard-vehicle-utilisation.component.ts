@@ -265,10 +265,7 @@ _fleetTimer : boolean = true;
 
     this.setInitialPref(this.prefData,this.preference);
     // this.setChartData();
-    this.selectionTimeRange('lastweek');
-
-    console.log("prefData = "+this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences);
-     
+    this.selectionTimeRange('lastweek');     
   }
 
   setInitialPref(prefData,preference){
@@ -394,7 +391,7 @@ _fleetTimer : boolean = true;
   }
 
   getVehicleData(){
-    console.log(this.finalVinList);
+
     let startDate = Util.convertDateToUtc(this.startDateValue);
     let endDate = Util.convertDateToUtc(this.endDateValue);
     let _vehiclePayload = {
