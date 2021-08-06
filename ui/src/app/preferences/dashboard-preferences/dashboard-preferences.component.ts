@@ -32,15 +32,21 @@ export class DashboardPreferencesComponent implements OnInit {
   vehicleUtilizationColumnData = [];
   alertLast24HoursColumnData = [];
   todayLiveVehicleColumnData = [];
+ 
 
   
 
-  constructor(private reportService: ReportService) {
+  constructor(private reportService: ReportService,private _formBuilder: FormBuilder) {
     this.loadReportData();
    }
 
   ngOnInit() {
   
+    this.DashboardPreferenceForm= this._formBuilder.group({
+      chartType: [],
+      thresholdvalue: [],
+      targetPerDayVehicle: []
+    });
     
   }
 
@@ -288,7 +294,7 @@ export class DashboardPreferencesComponent implements OnInit {
      let sSearch = this[selectionData].selected.filter(item => item.dataAttributeId == element.dataAttributeId);
      console.log("sssearch", sSearch);
       if(sSearch.length > 0){
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "V", chartType: "", thresholdType: "", thresholdValue: 0 });
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: "A", preferenceType: "V", chartType: this.DashboardPreferenceForm.controls.chartType.value? this.DashboardPreferenceForm.controls.chartType.value:element.chartType, thresholdType: this.DashboardPreferenceForm.controls.thresholdvalue.value? this.DashboardPreferenceForm.controls.thresholdvalue.value:element.thresholdType, thresholdValue: this.DashboardPreferenceForm.controls.targetPerDayVehicle.value? parseInt(this.DashboardPreferenceForm.controls.targetPerDayVehicle.value):element.thresholdValue  });
       }else{
         saveArr.push({ dataAttributeId: element.dataAttributeId, state: "I", preferenceType: "V", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
@@ -331,7 +337,7 @@ export class DashboardPreferencesComponent implements OnInit {
       //this.setDashboardFlag.emit({ flag: false, msg: this.getSuccessMsg() });
       //this.reloadCurrentComponent();
       // if((this.router.url).includes("fleetfuelreport")){
-         this.reloadCurrentComponent();
+        //  this.reloadCurrentComponent();
       // }
     });
   }
