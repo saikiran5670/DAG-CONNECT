@@ -718,7 +718,7 @@ export class FleetkpiComponent implements OnInit {
     let _prefThreshold = this.getPreferenceThreshold('co2emission')['value'];
      
     switch (_prefLimit) {
-      case 'upper':{
+      case 'U':{
         if(_prefThreshold < currentValue){ //red
           this.doughnutColors = [
             {
@@ -759,7 +759,7 @@ export class FleetkpiComponent implements OnInit {
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_prefLimit > currentValue){
             this.doughnutColors = [
               {
@@ -809,7 +809,7 @@ export class FleetkpiComponent implements OnInit {
   updateIdlingTime(){
     let currentValue = this.kpiData['fleetKpis']['idlingTime'];
     this.currentIdlingTime =  this.getTimeDisplay(currentValue);
-    let _thresholdValue = 3600000;
+    let _thresholdValue = this.getPreferenceThreshold('idlingtime')['value']; //3600000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
     this.cutOffIdlingTime =  this.getTimeDisplay(targetValue);
@@ -936,11 +936,11 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    let _prefLimit = 'upper';
-    let _prefThreshold = 10;
+    let _prefLimit = this.getPreferenceThreshold('idlingtime')['type']; 
+    let _prefThreshold = this.getPreferenceThreshold('idlingtime')['value']; 
      
     switch (_prefLimit) {
-      case 'upper':{
+      case 'U':{
         if(_prefThreshold < currentValue){ //red
           this.doughnutIdlingColors = [
             {
@@ -981,7 +981,7 @@ export class FleetkpiComponent implements OnInit {
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_prefLimit > currentValue){
             this.doughnutIdlingColors = [
               {
@@ -1031,7 +1031,7 @@ export class FleetkpiComponent implements OnInit {
   updateDrivingTime(){
     let currentValue = this.kpiData['fleetKpis']['drivingTime'];
     this.currentDrivingTime =  this.getTimeDisplay(currentValue);
-    let _thresholdValue = 3600000;
+    let _thresholdValue = this.getPreferenceThreshold('drivingtime')['value']; //3600000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
     this.cutOffDrivingTime =  this.getTimeDisplay(targetValue);
@@ -1157,11 +1157,11 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    let _prefLimit = 'upper';
-    let _prefThreshold = 10;
+    let _prefLimit = this.getPreferenceThreshold('drivingtime')['type'];
+    let _prefThreshold = this.getPreferenceThreshold('drivingtime')['value'];
      
     switch (_prefLimit) {
-      case 'upper':{
+      case 'U':{
         if(_prefThreshold < currentValue){ //red
           this.doughnutDrivingColors = [
             {
@@ -1202,7 +1202,7 @@ export class FleetkpiComponent implements OnInit {
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_prefLimit > currentValue){
             this.doughnutDrivingColors = [
               {
@@ -1252,7 +1252,7 @@ export class FleetkpiComponent implements OnInit {
   updateDistance(){
     let currentValue = this.kpiData['fleetKpis']['distance'];
     this.currentDistanceValue =  this.reportMapService.getDistance(currentValue, this.prefUnitFormat);
-    let _thresholdValue = 5000000;
+    let _thresholdValue = this.getPreferenceThreshold('totaldistance')['value'];//5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue =this.reportMapService.getDistance(calculationValue['cuttOff'],this.prefUnitFormat); 
     this.cutOffDistanceValue =  this.reportMapService.getDistance(currentValue, this.prefUnitFormat);
@@ -1377,11 +1377,11 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    let _prefLimit = 'upper';
-    let _prefThreshold = 10;
+    let _prefLimit = this.getPreferenceThreshold('totaldistance')['type'];
+    let _prefThreshold = this.getPreferenceThreshold('totaldistance')['value']
      
     switch (_prefLimit) {
-      case 'upper':{
+      case 'U':{
         if(_prefThreshold < currentValue){ //red
           this.doughnutDistanceColors = [
             {
@@ -1422,7 +1422,7 @@ export class FleetkpiComponent implements OnInit {
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_prefLimit > currentValue){
             this.doughnutDistanceColors = [
               {
@@ -1472,7 +1472,7 @@ export class FleetkpiComponent implements OnInit {
   updateFuelConsumed(){
     let currentValue = this.kpiData['fleetKpis']['fuelConsumption'];
     this.currentFuelConsumed=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,false);
-    let _thresholdValue = 5000000;
+    let _thresholdValue = this.getPreferenceThreshold('fuelconsumed')['value']; // 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = this.reportMapService.getFuelConsumedUnits( calculationValue['cuttOff'],this.prefUnitFormat,false);
     this.cutOffFuelConsumed =  this.reportMapService.getFuelConsumedUnits( calculationValue['cuttOff'],this.prefUnitFormat,false);
@@ -1598,11 +1598,11 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    let _prefLimit = 'upper';
-    let _prefThreshold = 10;
+    let _prefLimit = this.getPreferenceThreshold('fuelconsumed')['type'];
+    let _prefThreshold = this.getPreferenceThreshold('fuelconsumed')['value'];
      
     switch (_prefLimit) {
-      case 'upper':{
+      case 'U':{
         if(_prefThreshold < currentValue){ //red
           this.doughnutFuelConsumedColors = [
             {
@@ -1643,7 +1643,7 @@ export class FleetkpiComponent implements OnInit {
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_prefLimit > currentValue){
             this.doughnutFuelConsumedColors = [
               {
@@ -1693,7 +1693,7 @@ export class FleetkpiComponent implements OnInit {
   updateIdlingFuelConsumption(){
     let currentValue = this.kpiData['fleetKpis']['idlingfuelconsumption'];
     this.currentIdlingFuelConsumed=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,false);
-    let _thresholdValue = 5000000;
+    let _thresholdValue = this.getPreferenceThreshold('fuelusedidling')['value']; //5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,false);
     this.cutOffIdlingFuelConsumed =  this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,false);
@@ -1817,11 +1817,11 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    let _prefLimit = 'upper';
-    let _prefThreshold = 10;
+    let _prefLimit = this.getPreferenceThreshold('fuelusedidling')['type'];
+    let _prefThreshold = this.getPreferenceThreshold('fuelusedidling')['value'];
      
     switch (_prefLimit) {
-      case 'upper':{
+      case 'U':{
         if(_prefThreshold < currentValue){ //red
           this.doughnutFuelUsedColors = [
             {
@@ -1862,7 +1862,7 @@ export class FleetkpiComponent implements OnInit {
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_prefLimit > currentValue){
             this.doughnutFuelUsedColors = [
               {
@@ -1912,7 +1912,7 @@ export class FleetkpiComponent implements OnInit {
   updateFuelConsumption(){
     let currentValue = this.kpiData['fleetKpis']['fuelConsumed']; // value of fuel consumption is actually fuelConsumed from api
     this.currentFuelConsumption=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,true);
-    let _thresholdValue = 5000000;
+    let _thresholdValue = this.getPreferenceThreshold('fuelconsumption')['value']; //5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true);
     this.cutOffFuelConsumption = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true);
@@ -2036,11 +2036,11 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    let _prefLimit = 'upper';
-    let _prefThreshold = 10;
+    let _prefLimit = this.getPreferenceThreshold('fuelconsumption')['type'];
+    let _prefThreshold = this.getPreferenceThreshold('fuelconsumption')['value'];
      
     switch (_prefLimit) {
-      case 'upper':{
+      case 'U':{
         if(_prefThreshold < currentValue){ //red
           this.doughnutFuelConsumptionColors = [
             {
@@ -2081,7 +2081,7 @@ export class FleetkpiComponent implements OnInit {
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_prefLimit > currentValue){
             this.doughnutFuelConsumptionColors = [
               {
