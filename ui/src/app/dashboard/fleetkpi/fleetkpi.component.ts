@@ -544,7 +544,7 @@ export class FleetkpiComponent implements OnInit {
   getKPIData(){
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
-    this.totalVehicles = 400; //this.finalVinList.length;
+    this.totalVehicles = 3; //this.finalVinList.length;
     let _kpiPayload = {
       "startDateTime": _startTime,
       "endDateTime": _endTime,
@@ -2112,7 +2112,7 @@ export class FleetkpiComponent implements OnInit {
   }
 
   checkForPreference(fieldKey) {
-    if (this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
       let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_fleetkpi_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {

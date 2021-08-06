@@ -133,10 +133,12 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
+    
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+      code:_langCode,
       type: "Menu",
       name: "",
       value: "",
@@ -145,14 +147,14 @@ export class DashboardComponent implements OnInit {
     }
    
     this.globalSearchFilterData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+   // this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.showLoadingIndicator = true;
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
-      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      this.translationService.getPreferences(_langCode).subscribe((prefData: any) => {
         if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
           this.proceedStep(prefData, this.accountPrefObj.accountPreference);
         }else{ // org pref

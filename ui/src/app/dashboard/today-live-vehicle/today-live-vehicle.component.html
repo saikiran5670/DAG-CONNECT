@@ -12,25 +12,25 @@
     <!-- block data -->
     <div style='margin-bottom: 10px;' *ngIf='liveVehicleData'>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-          <div class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
+          <div [hidden]="!checkForPreference('distance')" class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
             <span>
               <div>{{ translationData.lblDistance || 'Distance' }} </div>
               <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{distance}}{{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </div>
             </span>
           </div>
-          <div class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
+          <div [hidden]="!checkForPreference('drivingtime')" class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
             <span>
               <div>{{ translationData.lblDrivingTime || 'Driving Time' }} </div>
               <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{drivingTime}}</div>
             </span>
           </div>
-            <div class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
+            <div [hidden]="!checkForPreference('drivers')" class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <div>{{ translationData.lblDrivers || 'Drivers' }} </div>
                 <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{liveVehicleData.driverCount}}</div>
               </span>
             </div>
-            <div class="areaWidth  divTile activeClass" fxLayout="column" fxLayoutAlign="left">
+            <div [hidden]="!checkForPreference('criticalalerts')" class="areaWidth  divTile activeClass" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <div>{{ translationData.lblCriticalAlerts || 'Critical Alerts' }}: </div>
                 <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{liveVehicleData.criticleAlertCount}}</div>
@@ -41,7 +41,7 @@
     <!-- Charts  -->
     <div style='margin-bottom: 10px;'  *ngIf='liveVehicleData'>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-          <div class="chartTile col-md-4">
+          <div [hidden]="!checkForPreference('activevehicles')" class="chartTile col-md-4">
             <div class="textDiv">
               <div>{{ translationData.lblActiveVehicles || 'Active Vehicles' }}</div>
               <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{liveVehicleData.todayActiveVinCount}}</div>
@@ -58,7 +58,7 @@
                 </canvas>
               </div>
           </div>
-          <div class="chartTile col-md-4">
+          <div [hidden]="!checkForPreference('timebasedutilizationrate')" class="chartTile col-md-4">
             <div class="textDiv">
               <div>{{ translationData.lblTimeBased || 'Time Based UtiliSation Rate' }} </div>
               <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{timeBasedRate}}</div>
@@ -75,7 +75,7 @@
                 </canvas>
               </div>
           </div>
-          <div class="chartTile col-md-4">
+          <div [hidden]="!checkForPreference('distancebasedutilizationrate')" class="chartTile col-md-4">
             <div class="textDiv">
                 <div>{{ translationData.lblDistanceBased || 'Distance Based Utilisation Rate' }} </div>
                 <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{distanceRate}}{{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </div>

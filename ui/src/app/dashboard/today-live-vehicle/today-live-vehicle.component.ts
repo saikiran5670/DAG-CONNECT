@@ -338,7 +338,7 @@ doughnutDistanceColors: Color[] = [
     
         var text = chart.config.options.title.text;
         // Draw text in center
-        ctx.fillText(activeVehiclePercent + "%", centerX, centerY);
+        ctx.fillText(activeVehiclePercent.toFixed(2) + "%", centerX, centerY);
       }
     }];
 
@@ -357,7 +357,7 @@ doughnutDistanceColors: Color[] = [
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
             tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + vehicleTarget + 
-            '</div><div>Last Change: ' + activeVehicleChangePercent + '%'+
+            '</div><div>Last Change: ' + activeVehicleChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
@@ -941,4 +941,18 @@ doughnutDistanceColors: Color[] = [
     this.router.navigate(['/report/fleetutilisation']);
   }
 
+  
+  checkForPreference(fieldKey) {
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
+      let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
+      if (filterData.length > 0) {
+        if (filterData[0].state == 'A') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 }
