@@ -169,6 +169,7 @@ doughnutChartColors: Color[] = [
     // backgroundColor: ['#69EC0A','#7BC5EC'],
     // backgroundColor: ['#69EC0A','#d62a29'],
     backgroundColor: ['#65C3F7 ','#F4AF85 '],
+    hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
   },
 ];
 doughnutChartLabels2: Label[] = [];
@@ -220,6 +221,7 @@ alertPieChartColors: Color[] = [
   {
     // backgroundColor: ['#69EC0A','#d62a29','#FFD700'],
     backgroundColor: ['#D50017 ','#FB5F01 ','#FFD700 '],
+    hoverBackgroundColor: ['#D50017 ','#FB5F01 ','#FFD700 '],
   },
 ];
 vehicleUtilisationData: any;
@@ -497,16 +499,16 @@ getPreferenceThreshold(fieldKey){
   setChartData(){
     if(this.dashboardPrefData.subReportUserPreferences.length > 0){
     let filterData1 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distanceperday'));
-    filterData1[0].chartType = 'B'  
+    // filterData1[0].chartType = 'B'  
     this.distanceChartType = filterData1[0].chartType == 'L' ? 'line' : 'bar';
      let filterData2 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
-     filterData2[0].chartType = 'L'  
+    //  filterData2[0].chartType = 'L'  
      this.vehicleChartType =  filterData2[0].chartType == 'L' ? 'line' : 'bar';
      let filterData3 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
-     filterData3[0].chartType = 'D'  
+    //  filterData3[0].chartType = 'D'  
      this.timeDChartType =  filterData3[0].chartType == 'P' ? 'pie' : 'doughnut';
      let filterData4 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
-     filterData4[0].chartType = 'D'  
+    //  filterData4[0].chartType = 'D'  
      this.mileageDChartType =  filterData4[0].chartType == 'P' ? 'pie' : 'doughnut';
     }
     //for distance chart
@@ -515,7 +517,9 @@ getPreferenceThreshold(fieldKey){
     this.vehiclecount = [];
     // let timebasedThreshold = 20077;
     // let distancebasedThreshold = 20077;
+    let _prefLimitTime = this.getPreferenceThreshold('timebasedutilizationrate')['type'];
     let timebasedThreshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
+    let _prefLimitDistance = this.getPreferenceThreshold('distancebasedutilizationrate')['type'];
     let distancebasedThreshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
     let percentage2;
     let percentage1;
@@ -634,6 +638,47 @@ getPreferenceThreshold(fieldKey){
     ];
   }
 
+  switch (_prefLimitTime) {
+    case 'U':{
+      if(timebasedThreshold > this.totalDistance){ //red
+        this.doughnutChartColors= [
+          {
+            backgroundColor: ['#65C3F7 ','#F4AF85 '],
+            hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+          },
+        ];
+        }
+      else{
+          this.doughnutChartColors= [
+            {
+              backgroundColor: ['#F4AF85 ','#65C3F7 '],
+              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+
+            }];
+          }
+        }
+              break;
+     case 'L':{
+        if(timebasedThreshold > this.totalDistance){
+          this.doughnutChartColors= [
+            {
+              backgroundColor: ['#F4AF85 ','#65C3F7 '],
+              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+
+            }];
+                }
+                else{
+                  this.doughnutChartColors= [
+                    {
+                      backgroundColor: ['#65C3F7 ','#F4AF85 '],
+                      hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+                    },
+                  ];
+                }
+              }
+            default:
+              break;
+          }
   //for time based utilisation
   if(this.timeDChartType =='doughnut'){
     this.doughnutChartLabels1 = [`Full Utilisation >${this.getHhMmTime(timebasedThreshold)}`,`Under Utilisation < ${this.getHhMmTime(timebasedThreshold)}`];
@@ -651,6 +696,48 @@ getPreferenceThreshold(fieldKey){
   }
 
   //for distance based utilisation
+  switch (_prefLimitDistance) {
+    case 'U':{
+      if(timebasedThreshold > this.totalDistance){ //red
+        this.doughnutChartColors= [
+          {
+            backgroundColor: ['#65C3F7 ','#F4AF85 '],
+            hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+          },
+        ];
+        }
+      else{
+          this.doughnutChartColors= [
+            {
+              backgroundColor: ['#F4AF85 ','#65C3F7 '],
+              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+
+            }];
+          }
+        }
+              break;
+     case 'L':{
+        if(timebasedThreshold > this.totalDistance){
+          this.doughnutChartColors= [
+            {
+              backgroundColor: ['#F4AF85 ','#65C3F7 '],
+              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+
+            }];
+                }
+                else{
+                  this.doughnutChartColors= [
+                    {
+                      backgroundColor: ['#65C3F7 ','#F4AF85 '],
+                      hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+                    },
+                  ];
+                }
+              }
+            default:
+              break;
+          }
+
   let label3;
   if(this.prefUnitFormat == 'dunit_Metric'){
     label3 = 'Km'
