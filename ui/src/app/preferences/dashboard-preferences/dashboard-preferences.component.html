@@ -74,7 +74,7 @@ style='border-radius: 5px 5px 0px 0px;'>
         <div *ngIf="field.translatedName !=='DrivingTime' && field.translatedName !=='IdlingTime'" 
         fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
           <mat-form-field appearance="outline" style='width: 80%'>
-              <input matInput type="text"
+              <input matInput type="text" value={{field.thresholdValue}}
                   placeholder="{{ 'Set Target' }}" >
               <span *ngIf="field.translatedName =='CO2Emission'" matSuffix>Ton</span>
               <span *ngIf="field.translatedName =='TotalDistance' || 
@@ -89,7 +89,7 @@ style='border-radius: 5px 5px 0px 0px;'>
       <div style="display:inline-block">
       <mat-form-field appearance="outline" style='width: 30%;'>
             <input matInput type="text"
-                placeholder="{{ '' }}">
+                placeholder="{{ '' }}" value={{field.thresholdValue}}>
             <span matSuffix>Hr</span>
         </mat-form-field>
         <mat-form-field appearance="outline" style='width: 30%; margin-left: 4px;'>
@@ -155,7 +155,7 @@ style='border-radius: 5px 5px 0px 0px;'>
         <div *ngIf="field.translatedName == 'TimeBasedUtilizationRate'" style="display:inline-block" fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
             <div style="display:inline-block">
             <mat-form-field appearance="outline" style='width: 30%;'>
-                <input matInput type="text"
+                <input matInput type="text" value={{field.thresholdValue}}
                     placeholder="{{ '' }}">
                 <span matSuffix>Hr</span>
             </mat-form-field>
@@ -169,7 +169,7 @@ style='border-radius: 5px 5px 0px 0px;'>
 
         <div *ngIf="field.translatedName == 'DistanceBasedUtilizationRate' || field.translatedName =='ActiveVehicles'" fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
             <mat-form-field appearance="outline" style='width: 80%'>
-                <input matInput type="text"
+                <input matInput type="text" value={{field.thresholdValue}}
                     placeholder="{{ 'Set Target' }}">
                 <span *ngIf="field.translatedName == 'DistanceBasedUtilizationRate'" matSuffix>km</span>
             </mat-form-field>
@@ -236,12 +236,12 @@ style='border-radius: 5px 5px 0px 0px;'>
   <div *ngIf="field.translatedName== 'TimeBasedUtilizationRate'"  fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
    <div style="display:inline-block">
     <mat-form-field appearance="outline" style='width: 30%;'>
-        <input matInput type="text"
+        <input matInput type="text" value={{field.thresholdValue}}
             placeholder="{{ '' }}">
         <span matSuffix>Hr</span>
     </mat-form-field>
     <mat-form-field appearance="outline" style='width: 30%; margin-left: 4px;'>
-        <input matInput type="text"
+        <input matInput type="text" 
             placeholder="{{ '' }}">
         <span matSuffix>Min</span>
     </mat-form-field>
@@ -250,7 +250,7 @@ style='border-radius: 5px 5px 0px 0px;'>
 
 <div  *ngIf="field.translatedName== 'DistanceBasedUtilizationRate'"  fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
     <mat-form-field appearance="outline" style='width: 80%'>
-        <input matInput type="text"
+        <input matInput type="text" value={{field.thresholdValue}}
             placeholder="{{ 'Set Target' }}" >
         <span matSuffix>km</span>
     </mat-form-field>
@@ -309,6 +309,16 @@ style='border-radius: 5px 5px 0px 0px;'>
 </div>
 </ng-container>
 
+        <div
+          *ngIf='editDashboardFlag'
+          fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
+          <button class='resetCancelBtnColor margin-right-10'  mat-raised-button color="primary">{{
+            translationData.lblCancel || 'Cancel' }}</button>
+          <button class='resetCancelBtnColor margin-right-10'  mat-raised-button color="primary">{{
+            translationData.lblReset || 'Reset' }}</button>
+          <button class='no-margin' mat-raised-button color="primary" >{{ (translationData.lblConfirm ||
+            'Confirm') }}</button>
+        </div>
 
 </mat-expansion-panel>
 </form> 
