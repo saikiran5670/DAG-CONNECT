@@ -63,8 +63,9 @@ message FleetKpi {
     double DrivingTime = 4;
     double Distance  = 5;
     double FuelConsumption = 6;
-    double Idlingfuelconsumption = 7;
-    FleetKpi LastChangeKpi = 8;
+    double FuelConsumed = 7;
+    double Idlingfuelconsumption = 8;
+    FleetKpi LastChangeKpi = 9;
 }
 // Start For the Alert24Hours
 message Alert24HoursFilterRequest {
