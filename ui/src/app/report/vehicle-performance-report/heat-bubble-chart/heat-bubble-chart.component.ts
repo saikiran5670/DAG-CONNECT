@@ -34,23 +34,7 @@ export class HeatBubbleChartComponent implements OnInit {
   @Input() searchData;
   @Input() xaxis;
   @Input() yaxis;
-  // @Input() chartName;
   public chartOptions;
-
-  
-  
-  // categories: [
-    //   "600",
-    //   "900",
-    //   "1100",
-    //   "1200",
-    //   "1300",
-    //   "1500",
-    //   "1700",
-    //   "1900",
-    //   "2100",
-    //   ">2100"
-    // ]
 
   constructor() {
 
@@ -61,8 +45,8 @@ export class HeatBubbleChartComponent implements OnInit {
 
     this.chartOptions = {
       series:[{
-        "name": "Ok/Engine Brake Applied",
-        "data": [[0,24, 40], [1,34, 50], [2,44, 60], [3,54, 70]]
+        "name": "",
+        "data": this.searchData?.bubbleData
       }],
       chart: {
         height: 350,
