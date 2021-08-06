@@ -1,6 +1,7 @@
 package net.atos.daf.ct2.etl.trip;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,6 +34,8 @@ import net.atos.daf.ct2.etl.common.postgre.TripSink;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.FlinkUtil;
 import net.atos.daf.ct2.pojo.KafkaRecord;
+import net.atos.daf.ct2.pojo.standard.SpareMatrixAcceleration;
+import net.atos.daf.ct2.pojo.standard.SparseMatrix;
 import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.serde.KafkaMessageSerializeSchema;
 import net.atos.daf.postgre.bo.EcoScore;
@@ -65,9 +68,10 @@ public class TripStreamingJob {
 						 * 
 						 */
 						private static final long serialVersionUID = 1L;
+						ObjectMapper jsonMapper = new ObjectMapper();
 						@Override
 						public TripStatusData map(KafkaRecord<Status> kafkaRec) {
-							return fetchStatusData(kafkaRec.getValue());
+							return fetchStatusData(kafkaRec.getValue(), jsonMapper);
 						}
 					}).filter(rec -> { if(rec.getTripId() == null){
 							logger.info("Data Issue TripId is null, ignoring :: "+ rec); 
@@ -186,7 +190,7 @@ public class TripStreamingJob {
 		return properties;
 	}
 	
-	public static TripStatusData fetchStatusData(Status stsMsg)
+	public static TripStatusData fetchStatusData(Status stsMsg, ObjectMapper jsonMapper)
 	{
 		TripStatusData tripStsData = null;
 		try {
@@ -197,7 +201,7 @@ public class TripStreamingJob {
 			tripStsData.setVin(stsMsg.getVin());
 			tripStsData.setNumberOfIndexMessage(stsMsg.getNumberOfIndexMessage());
 			
-			if (stsMsg.getEventDateTimeFirstIndex() != null) {
+			/*if (stsMsg.getEventDateTimeFirstIndex() != null) {
 				tripStsData.setStartDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
 						stsMsg.getEventDateTimeFirstIndex().toString(),
 						ETLConstants.DATE_FORMAT));
@@ -206,9 +210,19 @@ public class TripStreamingJob {
 					tripStsData.setStartDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
 							stsMsg.getGpsStartDateTime().toString(),
 							ETLConstants.DATE_FORMAT));
+			}*/
+			
+			long evtDateTimeFirstIndex = convertDateStringToTS(stsMsg.getEventDateTimeFirstIndex(),  stsMsg);
+			if (evtDateTimeFirstIndex != 0) {
+				tripStsData.setStartDateTime(evtDateTimeFirstIndex);
+			} else {
+				long gpsStartDateTime = convertDateStringToTS(stsMsg.getGpsStartDateTime(),  stsMsg);
+				
+				if (gpsStartDateTime != 0)
+					tripStsData.setStartDateTime(gpsStartDateTime);
 			}
 
-			if (stsMsg.getEvtDateTime() != null) {
+			/*if (stsMsg.getEvtDateTime() != null) {
 				tripStsData.setEndDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
 						stsMsg.getEvtDateTime().toString(),
 						ETLConstants.DATE_FORMAT));
@@ -217,6 +231,15 @@ public class TripStreamingJob {
 					tripStsData.setEndDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
 							stsMsg.getGpsEndDateTime().toString(),
 							ETLConstants.DATE_FORMAT));
+			}*/
+			
+			long evtDateTime = convertDateStringToTS(stsMsg.getEvtDateTime(),  stsMsg);
+			if (evtDateTime != 0) {
+				tripStsData.setEndDateTime(evtDateTime);
+			} else {
+				long gpsEndDateTime = convertDateStringToTS(stsMsg.getGpsEndDateTime(),  stsMsg);
+				if (gpsEndDateTime != 0)
+					tripStsData.setEndDateTime(gpsEndDateTime);
 			}
 			
 			if (stsMsg.getGpsStopVehDist() != null)
@@ -309,7 +332,46 @@ public class TripStreamingJob {
 					}
 					//distrArrayInt[new Integer(1)];
 				}
+				//Rpm Speed
+				if(Objects.nonNull(stsMsg.getDocument().getVRpmTorque())){
+					SparseMatrix vRpmTorque = stsMsg.getDocument().getVRpmTorque();
 					
+					tripStsData.setRpmTorque(convertToJson(vRpmTorque, jsonMapper));
+					
+					tripStsData.setOrdRpmTorque(vRpmTorque.getOrd());
+					tripStsData.setAbsRpmTorque(vRpmTorque.getAbs());
+					tripStsData.setNonZeroRpmTorqueMatrix(vRpmTorque.getA());
+					tripStsData.setNumValRpmTorque(vRpmTorque.getIa());
+					tripStsData.setClmnIdnxRpmTorque(vRpmTorque.getJa());
+				}
+				
+				//Road Speed
+				if(Objects.nonNull(stsMsg.getDocument().getVSpeedRpm())){
+					SparseMatrix vSpeedRpm = stsMsg.getDocument().getVSpeedRpm();
+					
+					tripStsData.setRpmSpeed(convertToJson(vSpeedRpm, jsonMapper));
+					
+					tripStsData.setOrdRpmSpeed(vSpeedRpm.getOrd());
+					tripStsData.setAbsRpmSpeed(vSpeedRpm.getAbs());
+					tripStsData.setNonZeroRpmSpeedMatrix(vSpeedRpm.getA());
+					tripStsData.setNumValRpmSpeed(vSpeedRpm.getIa());
+					tripStsData.setClmnIdnxRpmSpeed(vSpeedRpm.getJa());
+				}
+				
+				
+				//Acelaration Speed
+				if(Objects.nonNull(stsMsg.getDocument().getVAccelerationSpeed())){
+					SpareMatrixAcceleration aclnMatrix = stsMsg.getDocument().getVAccelerationSpeed();
+					
+					tripStsData.setAclnSpeed(convertToJson(aclnMatrix, jsonMapper));
+					tripStsData.setOrdAclnSpeed(aclnMatrix.getOrd());
+					tripStsData.setAbsAclnSpeed(aclnMatrix.getAbs());
+					tripStsData.setNonZeroAclnSpeedMatrix(aclnMatrix.getA());
+					tripStsData.setNumValAclnSpeed(aclnMatrix.getIa());
+					tripStsData.setClmnIdnxAclnSpeed(aclnMatrix.getJa());
+					tripStsData.setNonZeroBrakePedalAclnSpeedMatrix(aclnMatrix.getA_VBrake());
+					
+				}	
 			}
 			
 			logger.info("tripStsData.getTripCalVehTimeDiffInHr : "+tripStsData.getTripCalVehTimeDiffInHr());
@@ -321,5 +383,30 @@ public class TripStreamingJob {
 			logger.error("Issue while processing record :: "+stsMsg);
 		}
 		return tripStsData;
+	}
+	
+	private static String convertToJson(Object obj, ObjectMapper jsonMapper){
+		try {
+			return jsonMapper.writeValueAsString(obj);
+		} catch (JsonProcessingException e) {
+			logger.error("Issue while parsing Trip into JSON: " +obj  +"  Exception: "+ e.getMessage() );
+			return null;
+		}
+		
+	}
+	
+	private static long convertDateStringToTS(String dateStr, Status stsMsg){
+		try {
+			if(Objects.nonNull(dateStr)){
+				return TimeFormatter.getInstance().convertUTCToEpochMilli(
+						dateStr, ETLConstants.DATE_FORMAT);
+			}else{
+				return 0;
+			}
+		} catch (Exception e) {
+			logger.error("Issue while converting Date String to epoch milli : "+dateStr + " message :"+ stsMsg  +"  Exception: "+ e.getMessage() );
+			return 0;
+		}
+		
 	}
 }

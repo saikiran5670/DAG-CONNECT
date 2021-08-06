@@ -78,4 +78,26 @@ public class TripStatusData implements Serializable {
 	private Long tripCalCrsCntrlDist25To50;
 	private Long tripCalCrsCntrlDist50To75;
 	private Long tripCalCrsCntrlDistAbv75;
+	
+	private String rpmTorque;
+	private Long absRpmTorque;
+	private Long ordRpmTorque;
+	private Object[] nonZeroRpmTorqueMatrix;
+	private Object[] numValRpmTorque;
+	private Object[] clmnIdnxRpmTorque;
+	
+	private String rpmSpeed;
+	private Long absRpmSpeed;
+	private Long ordRpmSpeed;
+	private Object[] nonZeroRpmSpeedMatrix;
+	private Object[] numValRpmSpeed;
+	private Object[] clmnIdnxRpmSpeed;
+	
+	private String aclnSpeed;
+	private Long absAclnSpeed;
+	private Long ordAclnSpeed;
+	private Object[] nonZeroAclnSpeedMatrix;
+	private Object[] nonZeroBrakePedalAclnSpeedMatrix;
+	private Object[] numValAclnSpeed;
+	private Object[] clmnIdnxAclnSpeed;
 }
