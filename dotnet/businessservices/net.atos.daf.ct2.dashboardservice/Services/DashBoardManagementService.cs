@@ -271,9 +271,7 @@ namespace net.atos.daf.ct2.dashboardservice
                     userPreferences = preferences.Where(x => roleBasedUserPreferences.Any(y => y.DataAttributeId == x.DataAttributeId));
                 }
                 else
-                {
-                    userPreferences = roleBasedUserPreferences;
-                }
+                { userPreferences = roleBasedUserPreferences; }
 
                 try
                 {
@@ -283,9 +281,7 @@ namespace net.atos.daf.ct2.dashboardservice
                         response.Message = "No data found";
                     }
                     else
-                    {
-                        response = _mapper.MapReportUserPreferences(userPreferences);
-                    }
+                    { response = _mapper.MapReportUserPreferences(userPreferences); }
                 }
                 catch (Exception ex)
                 {

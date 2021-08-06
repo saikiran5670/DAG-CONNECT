@@ -16,8 +16,7 @@ namespace net.atos.daf.ct2.dashboard.repository
         private static readonly log4net.ILog _log =
           log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public DashBoardRepository(IDataAccess dataAccess
-                                , IDataMartDataAccess dataMartdataAccess)
+        public DashBoardRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             _dataAccess = dataAccess;
             _dataMartdataAccess = dataMartdataAccess;
@@ -45,6 +44,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                                  , SUM(etl_gps_distance)     as distance
                                                                  , SUM(etl_gps_driving_time) as drivingtime
                                                                  , SUM(fuel_consumption)     as fuelconsumption
+                                                                 , SUM(etl_gps_fuel_consumed) as fuelconsumed
                                                                  , SUM(idling_consumption)   as idlingfuelconsumption
                                                                  , SUM(idle_duration)        as idlingtime
                                                                FROM
@@ -62,6 +62,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                           , Round(sum(drivingtime),2)           as drivingtime
                                                           , Round(sum(idlingfuelconsumption),2) as idlingfuelconsumption
                                                           , Round(sum(fuelconsumption),2)       as fuelconsumption
+                                                          , Round(sum(fuelconsumed),2)          as fuelconsumed
                                                           , Round(sum(idlingtime),2)            as idlingtime
                                                         FROM cte_filteredTrip 
                                                         GROUP BY isongoingtrip";
