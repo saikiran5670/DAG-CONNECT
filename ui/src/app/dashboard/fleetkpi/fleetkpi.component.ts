@@ -1909,7 +1909,7 @@ export class FleetkpiComponent implements OnInit {
   }
 
   updateFuelConsumption(){
-    let currentValue = this.kpiData['fleetKpis']['fuelConsumption'];
+    let currentValue = this.kpiData['fleetKpis']['fuelConsumed']; // value of fuel consumption is actually fuelConsumed from api
     this.currentFuelConsumption=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,true);
     let _thresholdValue = 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
@@ -1924,7 +1924,7 @@ export class FleetkpiComponent implements OnInit {
     let caretIcon = '';
 
     if(this.kpiData['fleetKpis']['lastChangeKpi']){
-      let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumption'];
+      let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumed'];
 
       lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
 

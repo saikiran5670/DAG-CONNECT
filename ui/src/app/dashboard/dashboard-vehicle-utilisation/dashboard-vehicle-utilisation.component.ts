@@ -165,7 +165,8 @@ doughnutChartType: ChartType = 'doughnut';
 doughnutChartColors: Color[] = [
   {
     // backgroundColor: ['#69EC0A','#7BC5EC'],
-    backgroundColor: ['#69EC0A','#d62a29'],
+    // backgroundColor: ['#69EC0A','#d62a29'],
+    backgroundColor: ['#65C3F7 ','#F4AF85 '],
   },
 ];
 doughnutChartLabels2: Label[] = [];
@@ -215,7 +216,8 @@ public alertPieChartLabels: Label[] = [];
 public alertPieChartData: SingleDataSet = [];
 alertPieChartColors: Color[] = [
   {
-    backgroundColor: ['#69EC0A','#d62a29','#FFD700'],
+    // backgroundColor: ['#69EC0A','#d62a29','#FFD700'],
+    backgroundColor: ['#D50017 ','#FB5F01 ','#FFD700 '],
   },
 ];
 vehicleUtilisationData: any;
