@@ -108,28 +108,28 @@ namespace net.atos.daf.ct2.reportservice.entity
             return objRequest;
         }
 
-        internal BubbleChartData ToBubbleChartDataResponse(VehPerformanceChartData vhEntity)
-        {
-            var bubbleChartData = new BubbleChartData()
-            {
-                AbsRpmtTrque = vhEntity?.AbsRpmtTrque ?? 0,
-                TripId = vhEntity.TripId ?? string.Empty,
-                ColumnIndex = vhEntity.ColumnIndex ?? string.Empty,
-                CountPerIndex = vhEntity.CountPerIndex ?? string.Empty,
-                MatrixValue = vhEntity.MatrixValue ?? string.Empty,
-                OrdRpmTorque = vhEntity?.OrdRpmTorque ?? 0,
-                Vin = vhEntity.Vin ?? string.Empty
+        //internal BubbleChartData ToBubbleChartDataResponse(VehPerformanceChartData vhEntity)
+        //{
+        //    var bubbleChartData = new BubbleChartData()
+        //    {
+        //        AbsRpmtTrque = vhEntity?.AbsRpmtTrque ?? 0,
+        //        TripId = vhEntity.TripId ?? string.Empty,
+        //        ColumnIndex = vhEntity.ColumnIndex ?? string.Empty,
+        //        CountPerIndex = vhEntity.CountPerIndex ?? string.Empty,
+        //        MatrixValue = vhEntity.MatrixValue ?? string.Empty,
+        //        OrdRpmTorque = vhEntity?.OrdRpmTorque ?? 0,
+        //        Vin = vhEntity.Vin ?? string.Empty
 
-            };
-            if (vhEntity.ListKPIs != null && vhEntity.ListKPIs.Count > 0)
-            {
-                foreach (var item in vhEntity.ListKPIs)
-                {
-                    bubbleChartData.KpiData.Add(ToKpiData(item));
-                }
-            }
-            return bubbleChartData;
-        }
+        //    };
+        //    if (vhEntity.ListKPIs != null && vhEntity.ListKPIs.Count > 0)
+        //    {
+        //        foreach (var item in vhEntity.ListKPIs)
+        //        {
+        //            bubbleChartData.KpiData.Add(ToKpiData(item));
+        //        }
+        //    }
+        //    return bubbleChartData;
+        //}
 
         private KpiData ToKpiData(KPIs item)
         {

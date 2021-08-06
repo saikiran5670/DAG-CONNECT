@@ -153,7 +153,7 @@ namespace net.atos.daf.ct2.reports.repository
                 throw;
             }
         }
-        private async Task<List<KpiDataRange>> GetRangeData(string pType)
+        public async Task<List<KpiDataRange>> GetRangeData(string pType)
         {
             try
             {

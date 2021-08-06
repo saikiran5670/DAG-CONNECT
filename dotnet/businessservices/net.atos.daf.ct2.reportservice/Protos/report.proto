@@ -1349,23 +1349,28 @@ VehPerformanceTemplate VehPerformanceTemplate=3;
  }
  message KpiData{
  string Label =1;
- int32 Value =2;
+ double Value =2;
+ int32 Index =3;
  }
  message BubbleChartData{
  string Vin=1;
  string TripId=2;
  int32 AbsRpmtTrque=3;
  int32 OrdRpmTorque=4;
-string MatrixValue=5;
-string CountPerIndex=6;
- string ColumnIndex=7;
- repeated KpiData KpiData =8;
- 
+ repeated KpiData KpiData = 8;
+ repeated ChartDataSet MatrixData = 9;
+ }
+
+ message ChartDataSet{
+ int32 Xindex=1;
+ int32 Yindex=2;
+ int32 Value = 3;
  }
  message BubbleChartDataResponse{
 string Message = 1;
 Responsecode Code = 2;
-repeated BubbleChartData BubbleChartData = 3;
+repeated KpiData KpiData = 8;
+ repeated ChartDataSet MatrixData = 9;
  }
  message VehPerformanceRequest{     
     string VIN = 1;

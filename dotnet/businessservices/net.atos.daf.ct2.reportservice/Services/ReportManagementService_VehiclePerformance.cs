@@ -100,14 +100,15 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 if (result != null)
                 {
-                    foreach (var chartData in result)
-                    {
-                        response.BubbleChartData.Add(_mapper.ToBubbleChartDataResponse(chartData));
-                    }
-                    //var resChartDetails = JsonConvert.SerializeObject(result);
-                    //response.BubbleChartData.AddRange(
-                    //     JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<BubbleChartData>>(resChartDetails,
-                    //    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+                    //response.BubbleChartData.Add(_mapper.ToBubbleChartDataResponse(result));
+                    var resChartDetails = JsonConvert.SerializeObject(result.ChartData);
+                    response.MatrixData.AddRange(
+                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<ChartDataSet>>(resChartDetails,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+                    var pieChart = JsonConvert.SerializeObject(result.PieChartData);
+                    response.KpiData.AddRange(
+                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<KpiData>>(pieChart,
+                        new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
                     response.Code = Responsecode.Success;
                     response.Message = Responsecode.Success.ToString();
                 }

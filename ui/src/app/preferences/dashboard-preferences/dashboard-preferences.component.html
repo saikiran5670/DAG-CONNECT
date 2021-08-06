@@ -32,14 +32,9 @@
           </span>
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <!-- <div>
-        <app-today-live-vehicle *ngIf='showDashboardReport' [editFlag]='editDashboardFlag'
-          [translationData]='translationData'></app-today-live-vehicle>
-      </div> --> 
-
-   
+       
      <!-- *********Fleet KPI ********** -->
-    <div *ngIf='fleetKPIColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+    <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
    
     <div class='min-width-33-3-per'>
@@ -65,20 +60,45 @@
     </div>      
   </div>
 
+  <ng-container *ngFor="let field of fleetKPIColumnData; let index = index">
   <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
 style='border-radius: 5px 5px 0px 0px;'>
-    <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
-            <mat-checkbox class='custom-checkbox'>
-                <span>{{ 'CO2 Emission' }}</span>
+    <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">  
+        <mat-checkbox class='custom-checkbox'
+        (change)='$event ? selectionForFleetKPIColumns.toggle(field) : null;'
+        [checked]="selectionForFleetKPIColumns.isSelected(field)">
+                <span>{{ field.translatedName }}</span>
             </mat-checkbox>
         </div>
-        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+
+        <div *ngIf="field.translatedName !=='DrivingTime' && field.translatedName !=='IdlingTime'" 
+        fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
           <mat-form-field appearance="outline" style='width: 80%'>
               <input matInput type="text"
                   placeholder="{{ 'Set Target' }}" >
-              <span matSuffix>Ton</span>
+              <span *ngIf="field.translatedName =='CO2Emission'" matSuffix>Ton</span>
+              <span *ngIf="field.translatedName =='TotalDistance' || 
+              field.translatedName =='FuelConsumption'" matSuffix>Km</span>
+              <span *ngIf="field.translatedName =='FuelUsedIdling' || 
+              field.translatedName =='FuelConsumed'" matSuffix>L</span>
           </mat-form-field>
       </div>
+
+      <div *ngIf="field.translatedName =='DrivingTime' || field.translatedName =='IdlingTime'" 
+      style="display:inline-block" fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+      <div style="display:inline-block">
+      <mat-form-field appearance="outline" style='width: 30%;'>
+            <input matInput type="text"
+                placeholder="{{ '' }}">
+            <span matSuffix>Hr</span>
+        </mat-form-field>
+        <mat-form-field appearance="outline" style='width: 30%; margin-left: 4px;'>
+            <input matInput type="text"
+                placeholder="{{ '' }}">
+            <span matSuffix>Min</span>
+        </mat-form-field>
+        </div>
+    </div>
 
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
           <mat-form-field appearance="outline" style='width: 80%'>
@@ -90,82 +110,20 @@ style='border-radius: 5px 5px 0px 0px;'>
           </mat-form-field>
       </div>
   </div>
+</ng-container>
 
-<div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left center"
-style='border-radius: 5px 5px 0px 0px;'>      
-  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
-          <mat-checkbox class='custom-checkbox'>
-              <span>{{ 'Total Distance' }}</span>
-          </mat-checkbox>
-      </div>
-      <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
-        <mat-form-field appearance="outline" style='width: 80%'>
-            <input matInput type="text"
-                placeholder="{{ 'Set Target' }}" >
-            <span matSuffix>km</span>
-        </mat-form-field>
-    </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
-      <mat-form-field appearance="outline" style='width: 80%'>
-          <mat-select [disabled]='upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
-              <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.type">
-              {{ rer.name }}
-              </mat-option>
-          </mat-select>
-      </mat-form-field>
-  </div>
-</div>
-
-<div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
-style='border-radius: 5px 5px 0px 0px;'>
-      <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
-        <mat-checkbox class='custom-checkbox'>
-            <span>{{ 'Driving Time' }}</span>
-        </mat-checkbox>
-    </div>
-    <div style="display:inline-block" fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
-      <mat-form-field appearance="outline" style='width: 30%;'>
-          <input matInput type="text"
-              placeholder="{{ '' }}">
-          <span matSuffix>Hr</span>
-      </mat-form-field>
-      <mat-form-field appearance="outline" style='width: 30%;'>
-          <input matInput type="text"
-              placeholder="{{ '' }}">
-          <span matSuffix>Min</span>
-      </mat-form-field>
-  </div>
-
-  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
-      <mat-form-field appearance="outline" style='width: 80%'>
-          <mat-select [disabled]='upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
-              <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.type">
-              {{ rer.name }}
-              </mat-option>
-          </mat-select>
-      </mat-form-field>
-  </div>
-</div>
-
-<div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left center"
-style='border-radius: 5px 5px 0px 0px;'>
-    <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
-      <mat-checkbox class='custom-checkbox'>
-          <span>{{ 'Fuel Consumption' }}</span>
-      </mat-checkbox>
-  </div>
-  </div>
-
-
-      
+     
     <!-- ********* today live vehicles ********** -->
-    
-    <!-- <form [formGroup]="todayLiveVehicleForm"> -->
+     
     <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
    
     <div class='min-width-33-3-per'>
-    <mat-checkbox class='custom-checkbox'>            
+
+    <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggle("TodayLiveVehicle") : null'
+    [checked]='selectionForTodayLiveVehicleColumns.hasValue() && isAllSelected("TodayLiveVehicle")'
+    [indeterminate]='selectionForTodayLiveVehicleColumns.hasValue() && !isAllSelected("TodayLiveVehicle")'
+    [disabled]='!editDashboardFlag'>            
         <div class='mainTabAlignment'>
             <div>
                 <div class='headerFont'>{{'Today Live Vehicle'}}</div> 
@@ -184,87 +142,40 @@ style='border-radius: 5px 5px 0px 0px;'>
     </div>      
 </div>
 
-<div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
-style='border-radius: 5px 5px 0px 0px;'>
-    <div fxLayout="column" class="areaWidth full-width" fxLayoutGap="0px" fxLayoutAlign="left">           
-            <mat-checkbox class='custom-checkbox'>
-                <span>{{ 'Distance' }}</span>
-            </mat-checkbox>
-        </div>
-</div>
-      
-    <div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left">
-        <div fxLayout="column" class="areaWidth full-width" fxLayoutGap="0px" fxLayoutAlign="left">
-            <mat-checkbox class='custom-checkbox'>
-                <span>{{ 'Driving Time' }}</span>
-            </mat-checkbox>
-        </div>
-    </div>
-
-    <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left">
-        <div fxLayout="column" class="areaWidth full-width" fxLayoutGap="0px" fxLayoutAlign="left">
-            <mat-checkbox class='custom-checkbox'>
-                <span>{{ 'Drivers' }}</span>
-            </mat-checkbox>
-        </div>
-    </div>
-
-    <div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left">
-        <div fxLayout="column" class="areaWidth full-width" fxLayoutGap="0px" fxLayoutAlign="left">   
-            <mat-checkbox class='custom-checkbox'>
-                <span>{{ 'Critical Alerts' }}</span>
-            </mat-checkbox>
-        </div>
-    </div>
-
+    <ng-container *ngFor="let field of todayLiveVehicleColumnData; let index = index">
     <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left">
         <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
-            <mat-checkbox class='custom-checkbox'>
-                <span>{{ 'Time Based Ulitisation Rate' }}</span>
+            <mat-checkbox class='custom-checkbox'
+            (change)='$event ?selectionForTodayLiveVehicleColumns.toggle(field) : null;'
+             [checked]="selectionForTodayLiveVehicleColumns.isSelected(field)">
+                <span>{{ field.translatedName }}</span>
             </mat-checkbox>
         </div>
 
-        <div style="display:inline-block" fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div *ngIf="field.translatedName == 'TimeBasedUtilizationRate'" style="display:inline-block" fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+            <div style="display:inline-block">
             <mat-form-field appearance="outline" style='width: 30%;'>
                 <input matInput type="text"
                     placeholder="{{ '' }}">
                 <span matSuffix>Hr</span>
             </mat-form-field>
-            <mat-form-field appearance="outline" style='width: 30%;'>
+            <mat-form-field appearance="outline" style='width: 30%; margin-left: 4px;'>
                 <input matInput type="text"
                     placeholder="{{ '' }}">
                 <span matSuffix>Min</span>
             </mat-form-field>
+            </div>
         </div>
 
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
-            <mat-form-field appearance="outline" style='width: 80%'>
-                <mat-select [disabled]='upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
-                    <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.type">
-                    {{ rer.name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
-
-    </div>
-
-    <div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left">
-        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">   
-            <mat-checkbox class='custom-checkbox'>
-                <span>{{ 'Distance Based Ulitisation Rate' }}</span>
-            </mat-checkbox>
-        </div>
-
-        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div *ngIf="field.translatedName == 'DistanceBasedUtilizationRate' || field.translatedName =='ActiveVehicles'" fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
             <mat-form-field appearance="outline" style='width: 80%'>
                 <input matInput type="text"
                     placeholder="{{ 'Set Target' }}">
-                <span matSuffix>km</span>
+                <span *ngIf="field.translatedName == 'DistanceBasedUtilizationRate'" matSuffix>km</span>
             </mat-form-field>
         </div>
 
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+        <div *ngIf="field.translatedName == 'TimeBasedUtilizationRate' || field.translatedName == 'DistanceBasedUtilizationRate' || field.translatedName == 'ActiveVehicles'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
             <mat-form-field appearance="outline" style='width: 80%'>
                 <mat-select [disabled]='upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
                     <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.type">
@@ -275,40 +186,21 @@ style='border-radius: 5px 5px 0px 0px;'>
         </div>
 
     </div>
+    </ng-container>
 
-    <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left">
-        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">   
-            <mat-checkbox class='custom-checkbox'>
-                <span>{{ 'Active Vehicle' }}</span>
-            </mat-checkbox>
-        </div>
-
-        <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
-            <mat-form-field appearance="outline" style='width: 80%'>
-                <input matInput type="text" placeholder="{{ 'Set Target' }}">              
-            </mat-form-field>
-        </div>
-
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
-            <mat-form-field appearance="outline" style='width: 80%'>
-                <mat-select [disabled]='upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
-                    <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.type">
-                    {{ rer.name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
-
-    </div>
-<!-- </form> -->
-
+    
  <!-- ********* Vehicle Utilization ********** -->
 
  <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
  style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
 
  <div class='min-width-33-3-per'>
- <mat-checkbox class='custom-checkbox'>            
+   
+ <mat-checkbox class='custom-checkbox' 
+ (change)='$event ? masterToggle("VehicleUtilization") : null'
+ [checked]='selectionForVehicleUtilizationColumns.hasValue() && isAllSelected("VehicleUtilization")'
+ [indeterminate]='selectionForVehicleUtilizationColumns.hasValue() && !isAllSelected("VehicleUtilization")'
+ [disabled]='!editDashboardFlag'>            
      <div class='mainTabAlignment'>
          <div>
              <div class='headerFont'>{{'Vehicle Utilization'}}</div> 
@@ -376,83 +268,6 @@ style='border-radius: 5px 5px 0px 0px;'>
 </div>
 </ng-container>
 
-<!-- <div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left">
-  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">   
-      <mat-checkbox class='custom-checkbox'>
-          <span>{{ 'Distance Per Day' }}</span>
-      </mat-checkbox>
-  </div>
-
-  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
-  </div>
-
-  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
-      <mat-form-field appearance="outline" style='width: 80%'>
-          <mat-select [disabled]='chartSelectionType.length == 0' placeholder="{{'Chart Type' }}">
-              <mat-option *ngFor="let rer of chartSelectionType" [value]="rer.type">
-              {{ rer.name }}
-              </mat-option>
-          </mat-select>
-      </mat-form-field>
-  </div>
-</div> -->
-
-<!-- <div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left">
-  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">   
-      <mat-checkbox class='custom-checkbox'>
-          <span>{{ 'Distance Based Ulitisation Rate' }}</span>
-      </mat-checkbox>
-  </div>
-
-  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
-      <mat-form-field appearance="outline" style='width: 80%'>
-          <input matInput type="text"
-              placeholder="{{ 'Set Target' }}" >
-          <span matSuffix>km</span>
-      </mat-form-field>
-  </div>
-
-  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
-      <mat-form-field appearance="outline" style='width: 80%'>
-          <mat-select [disabled]='chartSelectionType.length == 0' placeholder="{{'Chart Type' }}">
-              <mat-option *ngFor="let rer of chartSelectionType" [value]="rer.type">
-              {{ rer.name }}
-              </mat-option>
-          </mat-select>
-      </mat-form-field>
-  </div>
-</div> -->
-
-<!-- <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left">
-  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
-      <mat-checkbox class='custom-checkbox'>
-          <span>{{ 'Time Based Ulitisation Rate' }}</span>
-      </mat-checkbox>
-  </div>
-
-  <div style="display:inline-block" fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
-      <mat-form-field appearance="outline" style='width: 30%;'>
-          <input matInput type="text"
-              placeholder="{{ '' }}">
-          <span matSuffix>Hr</span>
-      </mat-form-field>
-      <mat-form-field appearance="outline" style='width: 30%;'>
-          <input matInput type="text"
-              placeholder="{{ '' }}">
-          <span matSuffix>Min</span>
-      </mat-form-field>
-  </div>
-
-  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
-      <mat-form-field appearance="outline" style='width: 80%'>
-          <mat-select [disabled]='chartSelectionType.length == 0' placeholder="{{'Chart Type' }}">
-              <mat-option *ngFor="let rer of chartSelectionType" [value]="rer.type">
-              {{ rer.name }}
-              </mat-option>
-          </mat-select>
-      </mat-form-field>
-  </div>
-</div> -->
 
  <!-- ********* Alert Last 24 Hours ********** -->
 
@@ -460,7 +275,13 @@ style='border-radius: 5px 5px 0px 0px;'>
 <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
 style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
 <div class='min-width-33-3-per'>
-<mat-checkbox class='custom-checkbox'>            
+   
+<mat-checkbox class='custom-checkbox'
+(change)='$event ? masterToggle("AlertLast24Hours") : null'
+[checked]='selectionForAlertLast24HoursColumns.hasValue() && isAllSelected("AlertLast24Hours")'
+[indeterminate]='selectionForAlertLast24HoursColumns.hasValue() && !isAllSelected("AlertLast24Hours")'
+[disabled]='!editDashboardFlag'
+>            
     <div class='mainTabAlignment'>
         <div>
             <div class='headerFont'>{{'Alert Last 24 Hours'}}</div> 
@@ -472,10 +293,10 @@ style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
 </div>  
 
 
-<ng-container *ngIf='alertLast24HrsColumnData.length > 0'>
+<ng-container *ngIf='alertLast24HoursColumnData.length > 0'>
 <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
 style='border-radius: 5px 5px 0px 0px;'>
-<ng-container *ngFor="let field of alertLast24HrsColumnData; let index = index">
+<ng-container *ngFor="let field of alertLast24HoursColumnData; let index = index">
    
     <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">           
             <mat-checkbox class='custom-checkbox' (change)='$event ? selectionForAlertLast24HoursColumns.toggle(field) : null;'
