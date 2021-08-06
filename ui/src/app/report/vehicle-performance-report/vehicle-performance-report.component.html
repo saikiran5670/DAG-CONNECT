@@ -89,10 +89,10 @@
 
             <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                    <app-heat-bubble-chart [searchData]="searchResult" [xaxis]="chartXaxis" [yaxis]="chartYaxis" ></app-heat-bubble-chart>
+                    <app-heat-bubble-chart [searchData]="searchResult" [xaxis]="chartXaxis" [yaxis]="chartYaxis" [chartTitle]="bubbleHeatchartTitle"></app-heat-bubble-chart>
                 </div>
                 <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                    <app-pie-chart [chartLabels]="pieChartLabels" [chartData]="pieChartData"></app-pie-chart>
+                    <app-pie-chart [chartLabels]="pieChartLabels" [chartData]="pieChartData" [legends]="legends" [chartTitle]="piechartTitle"></app-pie-chart>
                 </div>
             </div>
 
