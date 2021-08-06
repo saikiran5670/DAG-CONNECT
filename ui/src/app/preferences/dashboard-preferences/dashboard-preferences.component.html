@@ -327,15 +327,42 @@ style='border-radius: 5px 5px 0px 0px;'>
  </div>      
 </div>
 
+<ng-container *ngFor="let field of vehicleUtilizationColumnData; let index = index">
 <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left">
   <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">   
-      <mat-checkbox class='custom-checkbox'>
-          <span>{{ 'Distance Per Day' }}</span>
+      <mat-checkbox class='custom-checkbox'
+      (change)='$event ? selectionForVehicleUtilizationColumns.toggle(field) : null;'
+      [checked]="selectionForVehicleUtilizationColumns.isSelected(field)">
+          <span>{{ field.translatedName }}</span>
       </mat-checkbox>
   </div>
 
-  <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+  <div *ngIf="field.translatedName!== 'TimeBasedUtilizationRate' && field.translatedName!== 'DistanceBasedUtilizationRate'" 
+  fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
   </div>
+
+  <div *ngIf="field.translatedName== 'TimeBasedUtilizationRate'"  fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+   <div style="display:inline-block">
+    <mat-form-field appearance="outline" style='width: 30%;'>
+        <input matInput type="text"
+            placeholder="{{ '' }}">
+        <span matSuffix>Hr</span>
+    </mat-form-field>
+    <mat-form-field appearance="outline" style='width: 30%; margin-left: 4px;'>
+        <input matInput type="text"
+            placeholder="{{ '' }}">
+        <span matSuffix>Min</span>
+    </mat-form-field>
+    </div>
+</div>
+
+<div  *ngIf="field.translatedName== 'DistanceBasedUtilizationRate'"  fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+    <mat-form-field appearance="outline" style='width: 80%'>
+        <input matInput type="text"
+            placeholder="{{ 'Set Target' }}" >
+        <span matSuffix>km</span>
+    </mat-form-field>
+</div>
 
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
       <mat-form-field appearance="outline" style='width: 80%'>
@@ -347,8 +374,9 @@ style='border-radius: 5px 5px 0px 0px;'>
       </mat-form-field>
   </div>
 </div>
+</ng-container>
 
-<div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left">
+<!-- <div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left">
   <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">   
       <mat-checkbox class='custom-checkbox'>
           <span>{{ 'Distance Per Day' }}</span>
@@ -367,9 +395,9 @@ style='border-radius: 5px 5px 0px 0px;'>
           </mat-select>
       </mat-form-field>
   </div>
-</div>
+</div> -->
 
-<div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left">
+<!-- <div fxLayout="row" class='areaWidth full-width padding-10 oddColumnColor' fxLayoutAlign="left">
   <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">   
       <mat-checkbox class='custom-checkbox'>
           <span>{{ 'Distance Based Ulitisation Rate' }}</span>
@@ -393,9 +421,9 @@ style='border-radius: 5px 5px 0px 0px;'>
           </mat-select>
       </mat-form-field>
   </div>
-</div>
+</div> -->
 
-<div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left">
+<!-- <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left">
   <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
       <mat-checkbox class='custom-checkbox'>
           <span>{{ 'Time Based Ulitisation Rate' }}</span>
@@ -424,7 +452,7 @@ style='border-radius: 5px 5px 0px 0px;'>
           </mat-select>
       </mat-form-field>
   </div>
-</div>
+</div> -->
 
  <!-- ********* Alert Last 24 Hours ********** -->
 
@@ -445,7 +473,7 @@ style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
 
 
 <ng-container *ngIf='alertLast24HrsColumnData.length > 0'>
-<div fxLayout="row wrap" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+<div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
 style='border-radius: 5px 5px 0px 0px;'>
 <ng-container *ngFor="let field of alertLast24HrsColumnData; let index = index">
    

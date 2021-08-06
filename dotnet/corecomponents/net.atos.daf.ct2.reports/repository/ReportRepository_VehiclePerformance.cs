@@ -105,7 +105,7 @@ namespace net.atos.daf.ct2.reports.repository
                     {
                         KPIs kPIs = new KPIs();
                         kPIs.Label = kpiDict.Kpi;
-                        kPIs.Value = kpiDict.Value / Convert.ToInt32(multiTripDuration);
+                        kPIs.Value = kpiDict.Value;// != 0 ? (kpiDict.Value / Convert.ToInt32(multiTripDuration)) : kpiDict.Value;
                         lstKpis.Add(kPIs);
                     }
                     trip.ListKPIs = lstKpis;
