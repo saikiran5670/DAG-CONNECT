@@ -10,11 +10,12 @@ import { SingleDataSet, Label, monkeyPatchChartJsLegend, monkeyPatchChartJsToolt
 export class PieChartComponent implements OnInit {
   @Input() chartLabels;
   @Input() chartData;
+  @Input() legends;
   // Pie
   public pieChartOptions: ChartOptions = {
     responsive: true,
     legend: {
-      display: true,
+      display: false,
       position: 'bottom',
       labels: {
         boxWidth: 20
@@ -24,8 +25,13 @@ export class PieChartComponent implements OnInit {
   public pieChartLabels: Label[] = [['Download', 'Sales'], ['In', 'Store', 'Sales'], 'Mail Sales'];
   public pieChartData: SingleDataSet = [300, 500, 100];
   public pieChartType: ChartType = 'pie';
-  public pieChartLegend = true;
+  public pieChartLegend = false;
   public pieChartPlugins = [];
+  public pieChartColors = [
+    {
+      backgroundColor: ['rgba(255,0,0,0.3)', 'rgba(0,255,0,0.3)', 'rgba(0,0,255,0.3)'],
+    },
+  ];
 
   constructor() {
     monkeyPatchChartJsTooltip();
@@ -35,8 +41,13 @@ export class PieChartComponent implements OnInit {
   ngOnInit(): void {
     this.pieChartLabels = this.chartLabels;
     this.pieChartData = this.chartData;
+    this.pieChartColors[0].backgroundColor = [];
+    for(let leg of this.legends) {
+      this.pieChartColors[0].backgroundColor.push(leg.color);
+    }
     console.log("this.chartLabels", this.chartLabels)
     console.log("this.chartData", this.chartData)
+    console.log("this.legends", this.legends)
   }
 
 }

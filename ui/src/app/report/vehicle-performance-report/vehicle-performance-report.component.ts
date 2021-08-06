@@ -17,6 +17,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   search:boolean = false;
   showLoadingIndicator:boolean = false;
   xaxisVaues = [];
+  yaxisVaues = [];
   pieChartLabels = [];
   pieChartData = [];
   performanceTypeLst = [
@@ -28,13 +29,13 @@ export class VehiclePerformanceReportComponent implements OnInit {
     'A':'#75923C',
     'D':'#4AB0BA',
     'E':'#E46D0A',
-    'H':'',
-    'M':'',
+    'H':'#FF0000',
+    'M':'#FFFF00',
     'N':'#CC0000',
     'O':'#00B050',
     'P':'#FFC000',
     'S':'#EEECE1',
-    'T':'',
+    'T':'#FFC000',
     'U':'#659FA4'
   };
   
@@ -42,106 +43,90 @@ export class VehiclePerformanceReportComponent implements OnInit {
   chartYaxis;
   legends = [];
 
-  xaxisE = {
+  commonAxis = {
     type: 'numeric',
     tickPlacement: 'between',
     max: 100,
     tickAmount: 10,
-    title: {
-      text: 'RPM',
-    },
-    labels: {
-      offsetX: 0,
-      offsetY: 0,
-      formatter: (value, index) => {
-        console.log(`yaxis -> value ${value} & index ${index}` )
-        // return value;
-        if(value !== 0) {
-          let newIndex = (index/10)-1;
-          return this.xaxisVaues[newIndex];
-        }
-        return '';
-      },
-      style: {
-        // colors: [],
-        // fontSize: '12px',
-        // fontFamily: 'Helvetica, Arial, sans-serif',
-        // fontWeight: 400,
-        cssClass: 'apexcharts-xaxis-label',
-      }
-    },
     tooltip: {
       enabled: false,
     }
   }
 
-  yaxisE = {
-    type: 'numeric',
-    tickPlacement: 'between',
-    max: 100,
-    tickAmount: 10,
-    labels: {
-      offsetX: 0,
-      offsetY: 15,
-      formatter: (value, index) => {
-        console.log(`yaxis -> value ${value} & index ${index}`)
-        if(index !== 0) {
-          return value;
-        }
-        return ' ';
+  xaxisLabels = {
+    offsetX: 0,
+    offsetY: 0,
+    formatter: (value, index) => {
+      if(value !== 0) {
+        let newIndex = (index/10)-1;
+        return this.xaxisVaues[newIndex];
       }
+      return '';
     },
+    style: {
+      cssClass: 'apexcharts-xaxis-label',
+    }
+  };
+
+  yaxisLabels = {
+    offsetX: 0,
+    offsetY: 15,
+    formatter: (value, index) => {
+      if(index !== 0) {
+        let newIndex = index - 1;
+        return this.yaxisVaues[newIndex];
+      }
+      return '';
+    }
+  };
+
+  xaxisE = {
+    ...this.commonAxis,
+    title: {
+      text: 'RPM',
+    },
+    labels: this.xaxisLabels
+  }
+
+  yaxisE = {
+    ...this.commonAxis,
     title: {
       text: '%',
     },
+    labels: this.yaxisLabels
   }
 
   xaxisS = {
-    type: 'category',
-    tickPlacement: 'between',
+    ...this.commonAxis,
     title: {
-      text: 'RPM',
+      text: 'KM/H',
     },
-    labels: {
-      formatter: (value) => {
-        if(value == 9) {
-          return ">2100";
-        }
-        return value;
-      }
-    },
+    labels: this.xaxisLabels,
   }
 
   yaxisS = {
-    max: 100,
-    tickAmount: 10,
-    title: {
-      text: '%',
-    },
-  }
-
-  xaxisB = {
-    type: 'category',
-    tickPlacement: 'between',
+    ...this.commonAxis,
     title: {
       text: 'RPM',
     },
-    labels: {
-      formatter: (value) => {
-        if(value == 9) {
-          return ">2100";
-        }
-        return value;
-      }
+    labels: this.yaxisLabels
+  }
+
+
+  xaxisB = {
+    ...this.commonAxis,
+    title: {
+      text: 'KM/H',
     },
+    labels: this.xaxisLabels,
   }
 
   yaxisB = {
-    max: 100,
-    tickAmount: 10,
+    ...this.commonAxis,
     title: {
-      text: '%',
+      text: 'M/S2',
     },
+    labels: this.yaxisLabels
   }
 
   constructor(private translationService: TranslationService, private reportService: ReportService) {
@@ -156,7 +141,6 @@ export class VehiclePerformanceReportComponent implements OnInit {
       menuId: 13 //-- for Trip Report
     }
     this.getMenuTranslations(translationObj);
-    this.kpi();
   }
 
   ngOnInit(): void {
@@ -173,6 +157,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
           } else {
             let newkpi = kpi;
             newkpi['color'] = this.colorToLegends[kpi.value];
+            newkpi['transName'] = this.translationData[kpi.name];
             this.legends.push(newkpi);
           }
         }
@@ -182,6 +167,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
 
   getMenuTranslations(translationObj) {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+      this.kpi();
       this.processTranslation(data);
     });
   }
@@ -191,6 +177,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   }
 
   showSearchResult(data) {
+    this.hideSearchResult();
     this.showLoadingIndicator = true;
     let performaceObj = this.performanceTypeLst.filter((item)=>item.value == data.performanceType);
     this.searchResult = data;
@@ -204,9 +191,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
     }
     let req1 = this.reportService.chartTemplate(payload);
     let req2 = this.reportService.chartData(payload);
-    console.log("legends", this.legends)
     forkJoin([req1, req2]).subscribe((res:any) => {
-      console.log("res", res)
       this.searchResult = { ...this.searchResult, ...res[0].vehPerformanceSummary}
       this.searchResult.vehPerformanceCharts = res[0].vehPerformanceCharts;
       this.searchResult.kpiData = res[1].kpiData;
@@ -214,11 +199,14 @@ export class VehiclePerformanceReportComponent implements OnInit {
       this.searchResult.bubbleData = this.transformDataForBubbleChart(res[1].matrixData);
       this.chartXaxis = this["xaxis"+ this.searchResult.performanceType];
       this.chartYaxis = this["yaxis"+ this.searchResult.performanceType];
-      this.xaxisVaues = this.processXaxis(res[0].vehPerformanceCharts)
+      this.xaxisVaues = this.processXaxis(res[0].vehPerformanceCharts);
+      this.yaxisVaues = this.processYaxis(res[0].vehPerformanceCharts);
       this.search = true;
       this.showLoadingIndicator = false;
       this.generatePieChartData(res[1].kpiData);
       console.log("searchResult", this.searchResult)
+      console.log("xaxisVaues", this.xaxisVaues)
+      console.log("yaxisVaues", this.yaxisVaues)
     }, (err) => {
       this.showLoadingIndicator = false;
     });    
@@ -229,11 +217,26 @@ export class VehiclePerformanceReportComponent implements OnInit {
   }
 
   processXaxis(data) {
-    let xaxisObj = data.filter((item)=>item.index == -1);
-    if(xaxisObj[0] && xaxisObj[0].axisvalues) {
-      let tempArr = xaxisObj[0].axisvalues.split(',')
-      tempArr = tempArr.map(el => el.replace(/'/g, ''));
-      console.log(tempArr);
+    if(data.length > 0) {
+      let xaxisObj = data.filter((item)=>item.index == -1);
+      if(xaxisObj[0] && xaxisObj[0].axisvalues) {
+        let tempArr = xaxisObj[0].axisvalues.split(',')
+        tempArr = tempArr.map(el => el.replace(/'/g, ''));
+        console.log(tempArr);
+        return tempArr;
+      }
+    }
+    return [];
+  }
+
+  processYaxis(data) {
+    if(data.length > 0) {
+      let tempArr = [];
+      for(let row of data) {
+        if(row.index != -1) {
+          tempArr.push(row.range);
+        }
+      }
       return tempArr;
     }
     return [];
@@ -252,6 +255,8 @@ export class VehiclePerformanceReportComponent implements OnInit {
   }
 
   generatePieChartData(pieData) {
+    this.pieChartData = [];
+    this.pieChartLabels = [];
     for (let pie of pieData) {
       if (pie.label.trim() != '') {
         let labelObj = this.legends.filter(item => item.value == pie.label.trim());
