@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
         {
             if (_reportTemplate.Any(w => w.ReportId == reportId && w.LanguageCode == languageCode && w.EventType == evenType))
             {
-                return _reportTemplate.Where(w => w.ReportId == reportId && w.LanguageCode == languageCode).FirstOrDefault()?.ReportTranslatedContent;
+                return _reportTemplate.Where(w => w.ReportId == reportId && w.LanguageCode == languageCode && w.EventType == evenType).FirstOrDefault()?.ReportTranslatedContent;
             }
             else
             {
