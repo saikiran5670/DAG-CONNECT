@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { ReportService } from 'src/app/services/report.service';
 import { SelectionModel } from '@angular/cdk/collections';
-import { CloseScrollStrategy } from '@angular/cdk/overlay';
+
 
 @Component({
   selector: 'app-dashboard-preferences',
@@ -188,7 +188,7 @@ export class DashboardPreferencesComponent implements OnInit {
     }
   });
 
-  this. vehicleUtilizationColumnData.forEach(element => {
+  this.vehicleUtilizationColumnData.forEach(element => {
     if (element.state == 'A') {
       this.selectionForVehicleUtilizationColumns.select(element);
     }
@@ -236,6 +236,7 @@ export class DashboardPreferencesComponent implements OnInit {
           // } else {
           //   _data.translatedName = this.getName(element.name);
           // }
+          _data.translatedName = this.getName(element.name);
           this.vehicleUtilizationColumnData.push(_data);
           
         }

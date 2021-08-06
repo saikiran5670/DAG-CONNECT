@@ -230,7 +230,6 @@ namespace net.atos.daf.ct2.dashboardservice
             try
             {
                 DashboardUserPreferenceCreateResponse response = new DashboardUserPreferenceCreateResponse();
-                //var isSuccess = await _dashBoardManager.CreateDashboardUserPreference(_mapper.MapCreateDashboardUserPreferences1(request));
                 var isSuccess = await _reportManager.CreateReportUserPreference(_mapper.MapCreateReportUserPreferences(request));
                 if (isSuccess)
                 {
