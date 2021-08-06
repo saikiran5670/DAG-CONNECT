@@ -43,12 +43,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.Info("GetSubscriptionDetails method in Subscription API called.");
 
-                if (objSubscriptionDetailsRequest.Organization_id == 0)
+                if (objSubscriptionDetailsRequest.Organization_id < 0)
                 {
                     return StatusCode(400, string.Empty);
                 }
-                //Assign context orgId
-                objSubscriptionDetailsRequest.Organization_id = GetContextOrgId();
+
+                //If filter parameter is False then pick OrgId from context, else pick from request
+                if (!objSubscriptionDetailsRequest.Filter)
+                {
+                    //Assign context orgId
+                    objSubscriptionDetailsRequest.Organization_id = GetContextOrgId();
+                }
 
                 SubscriptionBusinessService.SubscriptionDetailsRequest objBusinessEntity = new SubscriptionBusinessService.SubscriptionDetailsRequest();
                 objBusinessEntity.OrganizationId = objSubscriptionDetailsRequest.Organization_id;
