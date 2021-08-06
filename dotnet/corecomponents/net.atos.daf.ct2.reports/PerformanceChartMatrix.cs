@@ -97,6 +97,7 @@ namespace net.atos.daf.ct2.reports
             {
                 KPIs kPIs = new KPIs();
                 kPIs.Label = kpiDict.Kpi;
+                kPIs.Index = kpiDict.Index;
                 kPIs.Value = Math.Round((kpiDict.Value / (tripDuration / 3600) > 0 ? (tripDuration / 3600) : 1), 2);
                 lstKpis.Add(kPIs);
             }

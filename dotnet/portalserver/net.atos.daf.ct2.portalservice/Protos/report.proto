@@ -1350,6 +1350,7 @@ VehPerformanceTemplate VehPerformanceTemplate=3;
  message KpiData{
  string Label =1;
  double Value =2;
+ int32 Index =3;
  }
  message BubbleChartData{
  string Vin=1;

@@ -20,6 +20,7 @@ namespace net.atos.daf.ct2.reports.entity
     {
         public string Label { get; set; }
         public double Value { get; set; }
+        public int Index { get; set; }
     }
 
     public class IndexWiseChartData
