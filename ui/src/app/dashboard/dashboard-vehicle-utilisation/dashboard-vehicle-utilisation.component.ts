@@ -245,6 +245,7 @@ fuelAndDriverCount: any;
 repairAndMaintenanceCount: any;
 toatlSum: any;
 _fleetTimer : boolean = true; 
+totalThresholdDistance: any;
 
   constructor(private router: Router,
               private elRef: ElementRef,
@@ -468,7 +469,7 @@ checkForPreference(fieldKey) {
 
 checkForVehiclePreference(fieldKey) {
   if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
-    let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_'+fieldKey));
+    let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_'+fieldKey));
     if (filterData.length > 0) {
       if (filterData[0].state == 'A') {
         return true;
@@ -478,6 +479,19 @@ checkForVehiclePreference(fieldKey) {
     }
   }
   return true;
+}
+
+getPreferenceThreshold(fieldKey){
+  let thresholdType = 'U';
+  let thresholdValue = 10080;
+  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
+    let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_'+fieldKey));
+    if (filterData.length > 0) {
+      thresholdType = filterData[0].thresholdType;
+      thresholdValue = filterData[0].thresholdValue;
+    }
+  }
+  return {type:thresholdType , value:thresholdValue};
 }
 
   setChartData(){
@@ -495,16 +509,14 @@ checkForVehiclePreference(fieldKey) {
      filterData4[0].chartType = 'D'  
      this.mileageDChartType =  filterData4[0].chartType == 'P' ? 'pie' : 'doughnut';
     }
-    // this.distanceChartType = 'bar';
-    // this.vehicleChartType = 'line';
-    // this.timeDChartType = 'doughnut';
-    // this.mileageDChartType = 'doughnut';
-
     //for distance chart
     this.distance = [];
     this.calenderDate = [];
     this.vehiclecount = [];
-    let timebasedThreshold = 20077;
+    // let timebasedThreshold = 20077;
+    // let distancebasedThreshold = 20077;
+    let timebasedThreshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
+    let distancebasedThreshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
     let percentage2;
     let percentage1;
     this.totalDistance = 0;
@@ -525,16 +537,20 @@ checkForVehiclePreference(fieldKey) {
     });
     if(this.selectionTab == 'lastmonth'){
       this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 30;
+      this.totalThresholdDistance = distancebasedThreshold * this.greaterTimeCount * 30;
     }
     else if(this.selectionTab == 'lastweek'){
       this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 7;
+      this.totalThresholdDistance = distancebasedThreshold * this.greaterTimeCount * 7;
     }
     else if(this.selectionTab == 'last3month'){
       this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 90;
+      this.totalThresholdDistance = distancebasedThreshold * this.greaterTimeCount * 90;
     }
+
     percentage1 = (this.totalDrivingTime/this.totalThreshold)* 100; 
     percentage1 = parseInt(percentage1);
-    percentage2 = (this.totalDistance/this.totalThreshold)* 100;
+    percentage2 = (this.totalDistance/this.totalThresholdDistance)* 100;
     percentage2 = parseInt(percentage2);
 
     if(this.distanceChartType == 'bar'){
