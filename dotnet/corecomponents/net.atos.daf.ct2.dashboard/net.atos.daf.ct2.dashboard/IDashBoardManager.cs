@@ -17,6 +17,5 @@ namespace net.atos.daf.ct2.dashboard
 
         Task<List<Chart_Fleetutilization>> GetUtilizationchartsData(FleetKpiFilter tripFilters);
 
-        Task<bool> CreateDashboardUserPreference(DashboardUserPreferenceCreateRequest request);
     }
 }

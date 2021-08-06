@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                         {
                             if (_notificationConfiguration.IsEmailSend == true)
                             {
-                                await SendEmailNotification(identifiedNotificationRec);
+                                await SendEmailNotification(identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "E").ToList());
                             }
                         }
 
@@ -103,7 +103,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                         {
                             if (_notificationConfiguration.IsSMSSend == true)
                             {
-                                await SendSMS(identifiedNotificationRec);
+                                await SendSMS(identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "S").ToList());
                             }
                         }
 
@@ -111,7 +111,7 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                         {
                             if (_notificationConfiguration.IsWebServiceCall == true)
                             {
-                                await SendViaWebService(identifiedNotificationRec);
+                                await SendViaWebService(identifiedNotificationRec.Where(x => x.NotificationModeType.ToUpper() == "W").ToList());
                             }
                         }
                     }
@@ -208,14 +208,18 @@ namespace net.atos.daf.ct2.notificationservice.HostedServices
                 bool isResult = false;
                 foreach (var item in notificationHistory)
                 {
-                    SMS sms = new SMS();
-                    sms.ToPhoneNumber = item.PhoneNo;
-                    sms.Body = await PrepareSMSBody(item);
-                    var status = await _smsManager.SendSMS(sms);
-                    SMSStatus smsStatus = (SMSStatus)Enum.Parse(typeof(SMSStatus), status);
-                    item.Status = ((char)smsStatus).ToString();
-                    await _notificationIdentifierManager.InsertNotificationSentHistory(item);
-                    isResult = true;
+                    if (!string.IsNullOrEmpty(item.PhoneNo))
+                    {
+                        SMS sms = new SMS();
+                        sms.ToPhoneNumber = item.PhoneNo;
+                        sms.Body = await PrepareSMSBody(item);
+                        var status = await _smsManager.SendSMS(sms);
+                        SMSStatus smsStatus = (SMSStatus)Enum.Parse(typeof(SMSStatus), status);
+                        item.Status = ((char)smsStatus).ToString();
+                        await _notificationIdentifierManager.InsertNotificationSentHistory(item);
+                        isResult = true;
+                    }
+
                 }
                 return isResult;
             }
