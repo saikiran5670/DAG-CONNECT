@@ -6,7 +6,7 @@ import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { BaseChartDirective, Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions } from 'ng2-charts';
 import { stringify } from '@angular/compiler/src/util';
 import { ReportMapService } from '../../report/report-map.service';
-
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-fleetkpi',
@@ -33,6 +33,7 @@ export class FleetkpiComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
   kpiData : any;
+  _fleetTimer : boolean = true; // need to check if fleet from pref
   totalVehicles = 0;
    //CO2 Emission Chart
    currentC02Value : any =  0;
@@ -485,7 +486,16 @@ export class FleetkpiComponent implements OnInit {
        }];
  
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private dashboardService : DashboardService,
-            private reportMapService : ReportMapService) { }
+      private reportMapService : ReportMapService,private messageService: MessageService) {
+        if(this._fleetTimer){
+          this.messageService.getMessage().subscribe(message => {
+            if (message.key.indexOf("refreshData") !== -1) {
+              this.getKPIData();
+            }
+          });
+        }
+        
+    }
 
   ngOnInit(): void {
     this.setInitialPref(this.prefData,this.preference);
@@ -537,8 +547,14 @@ export class FleetkpiComponent implements OnInit {
         break;
       }
     }
+    if(this._fleetTimer){
+      this.messageService.sendMessage('refreshData');
 
-    this.getKPIData();
+    }
+    else{
+      this.getKPIData();
+
+    }
   }
 
   getKPIData(){
@@ -1893,7 +1909,7 @@ export class FleetkpiComponent implements OnInit {
   }
 
   updateFuelConsumption(){
-    let currentValue = this.kpiData['fleetKpis']['fuelConsumption'];
+    let currentValue = this.kpiData['fleetKpis']['fuelConsumed']; // value of fuel consumption is actually fuelConsumed from api
     this.currentFuelConsumption=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,true);
     let _thresholdValue = 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
@@ -1908,7 +1924,7 @@ export class FleetkpiComponent implements OnInit {
     let caretIcon = '';
 
     if(this.kpiData['fleetKpis']['lastChangeKpi']){
-      let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumption'];
+      let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumed'];
 
       lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
 

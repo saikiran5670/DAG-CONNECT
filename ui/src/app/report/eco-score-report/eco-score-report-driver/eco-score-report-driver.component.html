@@ -172,8 +172,7 @@
                 </angular-slickgrid>
               </div>
               <br/>
-            </mat-expansion-panel>
-          </mat-card>
+              <br/>
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="generalChartPanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
@@ -184,25 +183,17 @@
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div fxLayout="row" fxLayoutAlign='left' fxLayoutGap="10px">
-                <div class="areaWidth min-width-15-per" fxLayout="column" (click)="toggleGeneralCharts('bar')" fxLayoutAlign="left">
-                  <i class="fa fa-chart-bar"></i><span class="chartTitle">{{ translationData.lblBarChart || 'Bar Chart' }}</span>
+                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="toggleGeneralCharts('bar')" fxLayoutAlign="left">
+                  <div class="chartSelection" [ngClass]="showGeneralBar ? 'enable' : 'disable'">
+                    <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                    &nbsp;<span class="chartTitle">{{ translationData.lblBarChart || 'Bar Chart' }}</span></div>
                 </div>
-                <i class="fa fa-caret-up"></i>
-                <div class="areaWidth min-width-15-per" fxLayout="column" (click)="toggleGeneralCharts('pie')" fxLayoutAlign="left">
-                  <i class="fa fa-chart-pie"></i><span class="chartTitle">{{ translationData.lblPiechart || 'Pie Chart' }}</span>
+                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="toggleGeneralCharts('pie')" fxLayoutAlign="left">
+                  <div class="chartSelection" [ngClass]="showGeneralPie ? 'enable' : 'disable'">
+                    <i class="fa fa-pie-chart" aria-hidden="true"></i>
+                    &nbsp;<span class="chartTitle">{{ translationData.lblPiechart || 'Pie Chart' }}</span></div>
                 </div>
-                <!-- <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="right"  *ngIf="showGeneralPie">
-                  {{ translationData.lblVehicle || 'Vehicle' }}<br/>
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-select placeholder="Language">
-                      <mat-option *ngFor="let vehicle of vehicleListGeneral" [value]="vehicle.name">
-                        {{ vehicle.name }}
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div> -->
               </div>
-              <!-- <div fxLayout="row" fxLayoutAlign="right"  style="place-content: stretch flex-end;" *ngIf="showGeneralPie"> -->
                 <div style="float: right;" *ngIf="showGeneralPie">
                   {{ translationData.lblVehicle || 'Vehicle' }}<br/>
                   <mat-form-field appearance="outline" class="full-width">
@@ -213,11 +204,10 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
-              <!-- </div> -->
               <br/>
               <br/>
               <br/>
-              <div class="container-fluid barChart" *ngIf="showGeneralBar">
+              <div class="container-fluid chartContainer" *ngIf="showGeneralBar">
                 <div fxLayout="row" fxLayoutAlign='center'>  
                   <span class="chartTitle">{{ translationData.lblAverageGrossWeight || 'Average Gross Weight' }}</span>
                 </div>
@@ -227,10 +217,11 @@
                             [options]="barChartOptions"
                             [legend]="barChartLegend"
                             [chartType]="barChartType"
+                            [plugins]="barChartPlugins"
                             height="225" width="450">
                     </canvas>
               </div>
-              <div class="container-fluid barChart" *ngIf="showGeneralPie">
+              <div class="container-fluid chartContainer" *ngIf="showGeneralPie">
                 <div fxLayout="row" fxLayoutAlign='center'>
                   <span class="chartTitle">{{ translationData.lblAverageGrossWeight || 'Average Gross Weight' }}</span>
                 </div>
@@ -248,6 +239,8 @@
               <br/>
             </mat-expansion-panel>
           </mat-card>
+        </mat-expansion-panel>
+      </mat-card>
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="driverPerformancePanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
@@ -268,8 +261,9 @@
                 (onAngularGridCreated)="angularGridReady($event)"> 
                 </angular-slickgrid>
               </div>
-            </mat-expansion-panel>
-          </mat-card>
+              <br/>
+              <br/>
+              <br/>
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="driverPerformanceChartPanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
@@ -294,40 +288,58 @@
                   [legend]="chartOptionsApex.legend"
                 ></apx-chart>
               </div> -->
-              <div fxLayout="row" fxLayoutAlign='left' fxLayoutGap="10px">
-                <div class="areaWidth min-width-15-per" fxLayout="column" (click)="togglePerformanceCharts('bar')" fxLayoutAlign="left">
-                  <span class="chartTitle">{{ translationData.lblBarChart || 'Bar Chart' }}</span>
+              <div fxLayout="row" fxLayoutAlign='left' fxLayoutGap="10px" style="display: inline-block;">
+                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="togglePerformanceCharts('bar')" fxLayoutAlign="left">
+                  <div class="chartSelection" [ngClass]="showPerformanceBar ? 'enable' : 'disable'">
+                    <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                    &nbsp;<span class="chartTitle">{{ translationData.lblBarChart || 'Bar Chart' }}</span></div>
                 </div>
-                <div class="areaWidth min-width-15-per" fxLayout="column" (click)="togglePerformanceCharts('pie')" fxLayoutAlign="left">
-                  <span class="chartTitle">{{ translationData.lblPiechart || 'Pie Chart' }}</span>
+                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="togglePerformanceCharts('pie')" fxLayoutAlign="left">
+                  <div class="chartSelection" [ngClass]="showPerformancePie ? 'enable' : 'disable'">
+                    <i class="fa fa-pie-chart" aria-hidden="true">
+                    &nbsp;</i><span class="chartTitle">{{ translationData.lblPiechart || 'Pie Chart' }}</span></div>
                 </div>
               </div>
-              <div class="container-fluid" *ngIf="showPerformanceBar">
+              <div style="float: right;" *ngIf="showPerformancePie">
+                {{ translationData.lblVehicle || 'Vehicle' }}<br/>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select [(value)]="vehicleSelected" [disabled]="vehicleListGeneral.length <= 1" (selectionChange)="loadPieChartPerformance($event.value)">
+                    <mat-option *ngFor="let vehicle of vehicleListGeneral" [value]="vehicle.id">
+                      {{ vehicle.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <br/><br/><br/>
+              <div class="container-fluid chartContainer" *ngIf="showPerformanceBar">
                 <div fxLayout="row" fxLayoutAlign='center'>
                   <span class="chartTitle">{{ translationData.lblAverageDrivingSpeed || 'Average Driving Speed' }}</span>
                 </div>
-                <!-- <canvas baseChart
+                <canvas baseChart
                 [datasets]="barChartDataPerformance"
                 [labels]="barChartLabelsPerformance"
-                [options]="barChartOptions"
+                [options]="barChartOptionsPerformance"
                 [legend]="barChartLegend"
                 [chartType]="barChartType"
+                [plugins]="barChartPlugins"
                 height="225" width="450">
-        </canvas> -->
+                </canvas>
               </div>
-              <div class="container-fluid" *ngIf="showPerformancePie">
+              <div class="container-fluid chartContainer" *ngIf="showPerformancePie">
                 <div fxLayout="row" fxLayoutAlign='center'>
                   <span class="chartTitle">{{ translationData.lblAverageDrivingSpeed || 'Average Driving Speed' }}</span>
                 </div>
-                <!-- <canvas baseChart 
-                [data]="pieChartData" 
-                [labels]="pieChartLabels" 
+                <canvas baseChart 
+                [data]="pieChartDataPerformance" 
+                [labels]="pieChartLabelsPerformance" 
                 [chartType]="pieChartType"
                 [options]="pieChartOptions"
                 [plugins]="pieChartPlugins"
                 [legend]="pieChartLegend">
-                </canvas> -->
+                </canvas>
               </div>
             </mat-expansion-panel>
           </mat-card>
+        </mat-expansion-panel>
+      </mat-card>
           <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
