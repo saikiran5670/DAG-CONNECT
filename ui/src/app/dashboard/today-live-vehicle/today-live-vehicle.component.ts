@@ -4,6 +4,7 @@ import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { BaseChartDirective, Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions } from 'ng2-charts';
 import { DashboardService } from '../../services/dashboard.service';
 import { Util } from '../../shared/util';
+import { ReportMapService } from '../../report/report-map.service'
 
 
 @Component({
@@ -210,7 +211,7 @@ doughnutDistanceColors: Color[] = [
     hoverBorderWidth: 7
   }
  ];
-  constructor(private router : Router, private dashboardService : DashboardService) { }
+  constructor(private router : Router, private dashboardService : DashboardService,private reportMapService : ReportMapService) { }
 
   ngOnInit(): void {
     this.setInitialPref(this.prefData,this.preference);
@@ -249,25 +250,46 @@ doughnutDistanceColors: Color[] = [
        if(vehicleData){
           this.liveVehicleData = vehicleData;
           this.totalVehicles =  4//this.finalVinList.length;
-            this.liveVehicleData ={
-                "distance": 0,
-                "drivingTime": 0,
-                "vehicleCount": 2,
-                "driverCount": 0,
-                "criticleAlertCount": 0,
-                "activeVehicles": 2,
-                "timeBaseUtilization": 3600000,
-                "distanceBaseUtilization": 20,
-                "code": 200,
-                "message": "No data found for Today live vehicle details."
-            }
-    
+            // this.liveVehicleData ={
+            //     "distance": 0,
+            //     "drivingTime": 0,
+            //     "vehicleCount": 2,
+            //     "driverCount": 0,
+            //     "criticleAlertCount": 0,
+            //     "activeVehicles": 2,
+            //     "timeBaseUtilization": 3600000,
+            //     "distanceBaseUtilization": 20,
+            //     "code": 200,
+            //     "message": "No data found for Today live vehicle details."
+            // }
+          this.setValues();
           this.updateCharts();
 
        }
     });
     
     
+  }
+
+  distance = 0;
+  drivingTime : any;
+  setValues(){
+    this.distance = this.reportMapService.getDistance(this.liveVehicleData.distance, this.prefUnitFormat);
+    this.drivingTime = this.getTimeDisplay(this.liveVehicleData.drivingTime);
+  }
+
+  getTimeDisplay(_timeValue){
+    let convertedTime = Util.getHhMmTimeFromMS(_timeValue);
+    let convertedTimeDisplay = '';
+    if(convertedTime){
+      if(convertedTime.indexOf(":") != -1){
+        convertedTimeDisplay = convertedTime.split(':')[0] + ' hr ' + convertedTime.split(':')[1] + ' min';
+      }
+    }
+    else{
+      convertedTimeDisplay = '--';
+    }
+    return convertedTimeDisplay;
   }
 
   updateCharts(){
@@ -281,9 +303,13 @@ doughnutDistanceColors: Color[] = [
 
 
   updateActiveVehicle(){
-    let activeVehiclePercent = this.dashboardService.calculateTodayLivePercentage(2,4);
-    let vehicleTarget = this.dashboardService.calculateTargetValue(4,10,1);
-    let activeVehicleChangePercent = this.dashboardService.calculateLastChange(2,1,4);
+    let activeVehicleCount = this.liveVehicleData.todayActiveVinCount;
+    this.totalVehicles = 400;
+    let activeVehiclePercent = this.dashboardService.calculateTodayLivePercentage(activeVehicleCount,this.totalVehicles);
+    let thresholdValue = 10;
+    let vehicleTarget = this.dashboardService.calculateTargetValue(this.totalVehicles,thresholdValue,1);
+    let yesterdayCount = this.liveVehicleData.yesterdayActiveVinCount;
+    let activeVehicleChangePercent = this.dashboardService.calculateLastChange(activeVehicleCount,yesterdayCount);
     let activeVehicleCaretColor = 'caretGreen';
     let caretIcon = ''
     if( activeVehicleChangePercent > 0){
@@ -312,7 +338,7 @@ doughnutDistanceColors: Color[] = [
     
         var text = chart.config.options.title.text;
         // Draw text in center
-        ctx.fillText(activeVehiclePercent + "%", centerX, centerY);
+        ctx.fillText(activeVehiclePercent.toFixed(2) + "%", centerX, centerY);
       }
     }];
 
@@ -331,7 +357,7 @@ doughnutDistanceColors: Color[] = [
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
             tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + vehicleTarget + 
-            '</div><div>Last Change: ' + activeVehicleChangePercent + '%'+
+            '</div><div>Last Change: ' + activeVehicleChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
@@ -480,7 +506,8 @@ doughnutDistanceColors: Color[] = [
 
   updateTimeUtilisation(){
     // update time based chart
-    let timeBasedCalculation = this.dashboardService.calculateKPIPercentage(this.liveVehicleData.timeBaseUtilization,4,7200000,1);
+    let todayTimeRate = this.liveVehicleData.todayTimeBasedUtilizationRate;
+    let timeBasedCalculation = this.dashboardService.calculateKPIPercentage(todayTimeRate,4,7200000,1);
     let timeBasedPercent = timeBasedCalculation['kpiPercent'];
     this.doughnutChartTimeBasedData = [[timeBasedPercent,(100 - timeBasedPercent)]]
     let timeUtilisationTarget = timeBasedCalculation['cuttOff'];
@@ -494,7 +521,7 @@ doughnutDistanceColors: Color[] = [
     else{
       timeRateTarget = '--';
     }
-    let _timeBasedRate = Util.getHhMmTimeFromMS(this.liveVehicleData.timeBaseUtilization);
+    let _timeBasedRate = Util.getHhMmTimeFromMS(todayTimeRate);
     if(_timeBasedRate){
       if(_timeBasedRate.indexOf(":") != -1){
         this.timeBasedRate = _timeBasedRate.split(':')[0] + ' Hr ' + _timeBasedRate.split(':')[1] + ' min';
@@ -502,9 +529,13 @@ doughnutDistanceColors: Color[] = [
     }else{
       this.timeBasedRate = '--';
     }
+
+    let lastTimeRate = this.liveVehicleData.yesterDayTimeBasedUtilizationRate;
+    let timeChangePercent = this.dashboardService.calculateLastChange(todayTimeRate,lastTimeRate);
+
     let activeVehicleCaretColor = 'caretGreen';
     let caretIcon = ''
-    if( timeBasedPercent > 0){
+    if( timeChangePercent > 0){
       activeVehicleCaretColor = 'caretGreen';
       caretIcon = `<i class="fa fa-caret-up tooltipCaret caretClass ${activeVehicleCaretColor}"></i>`;
     }
@@ -527,7 +558,7 @@ doughnutDistanceColors: Color[] = [
     
         var text = chart.config.options.title.text;
         // Draw text in center
-        ctx.fillText(timeBasedPercent + "%", centerX, centerY);
+        ctx.fillText(timeBasedPercent.toFixed(2) + "%", centerX, centerY);
       }
     }];
 
@@ -546,7 +577,7 @@ doughnutDistanceColors: Color[] = [
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
             tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + timeRateTarget + 
-            '</div><div>Last Change: ' + timeBasedPercent + '%'+
+            '</div><div>Last Change: ' + timeChangePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             this._chart.canvas.parentNode.appendChild(tooltipEl);
           }
@@ -607,7 +638,7 @@ doughnutDistanceColors: Color[] = [
      
     switch (_timeRateLimit) {
       case 'upper':{
-        if(_timeThreshold < this.liveVehicleData.activeVehicles){ //red
+        if(_timeThreshold < todayTimeRate){ //red
           this.doughnutColors = [
             {
               backgroundColor: [
@@ -693,17 +724,20 @@ doughnutDistanceColors: Color[] = [
 
   }
 
+  distanceRate : any;
   updateDistanceRate(){
 
     //Distance Based Chart
     
-    
     //let distanceBasedPercent = this.dashboardService.calculateTodayLivePercentage(this.liveVehicleData.distanceBaseUtilization,40)
-    
-    let distanceBasedPercent = this.dashboardService.calculateKPIPercentage(20,4,10,1)["kpiPercent"];
+    let todayDistance = this.liveVehicleData.todayDistanceBasedUtilization;
+    let lastDistance = this.liveVehicleData.yesterDayDistanceBasedUtilization;
+    this.distanceRate = this.reportMapService.getDistance(todayDistance, this.prefUnitFormat);
+
+    let distanceBasedPercent = this.dashboardService.calculateKPIPercentage(todayDistance,4,10,1)["kpiPercent"];
     this.doughnutChartDistanceBasedData = [[distanceBasedPercent,(100 - distanceBasedPercent)]]
-    let distanceTarget = this.dashboardService.calculateTargetValue(4,10,1);
-    let changePercent = this.dashboardService.calculateLastChange(2,1,4);
+    let distanceTarget = this.dashboardService.calculateTargetValue(this.totalVehicles,10,1);
+    let changePercent = this.dashboardService.calculateLastChange(todayDistance,lastDistance,4);
    
     let activeVehicleCaretColor = 'caretGreen';
     let caretIcon = ''
@@ -730,7 +764,7 @@ doughnutDistanceColors: Color[] = [
     
         var text = chart.config.options.title.text;
         // Draw text in center
-        ctx.fillText(distanceBasedPercent + "%", centerX, centerY);
+        ctx.fillText(distanceBasedPercent.toFixed(2) + "%", centerX, centerY);
       }
     }];
 
@@ -749,7 +783,7 @@ doughnutDistanceColors: Color[] = [
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
             tooltipEl.innerHTML = `<div class='dashboardTT'><div>Target: ` + distanceTarget + 
-            '</div><div>Last Change: ' + changePercent + '%'+
+            '</div><div>Last Change: ' + changePercent.toFixed(2) + '%'+
             `<span>${caretIcon}</span></div>`;
             //this.chart3.ElementRef.nativeElement.appendChild()
             this._chart.canvas.parentNode.appendChild(tooltipEl);
@@ -811,7 +845,7 @@ doughnutDistanceColors: Color[] = [
        
       switch (_distanceRateLimit) {
         case 'upper':{
-          if(_distanceThreshold < this.liveVehicleData.activeVehicles){ //red
+          if(_distanceThreshold < todayDistance){ //red
             this.doughnutColors = [
               {
                 backgroundColor: [
@@ -907,4 +941,18 @@ doughnutDistanceColors: Color[] = [
     this.router.navigate(['/report/fleetutilisation']);
   }
 
+  
+  checkForPreference(fieldKey) {
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
+      let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
+      if (filterData.length > 0) {
+        if (filterData[0].state == 'A') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 }

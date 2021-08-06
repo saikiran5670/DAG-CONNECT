@@ -11,6 +11,5 @@ namespace net.atos.daf.ct2.dashboard.repository
         Task<TodayLiveVehicleResponse> GetTodayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest);
         Task<List<Chart_Fleetutilization>> GetUtilizationchartsData(FleetKpiFilter tripFilters);
 
-        Task<bool> CreateDashboardUserPreference(DashboardUserPreferenceCreateRequest request);
     }
 }

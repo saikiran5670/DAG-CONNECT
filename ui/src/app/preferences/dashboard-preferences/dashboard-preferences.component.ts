@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { ReportService } from 'src/app/services/report.service';
 import { SelectionModel } from '@angular/cdk/collections';
-import { CloseScrollStrategy } from '@angular/cdk/overlay';
+
 
 @Component({
   selector: 'app-dashboard-preferences',
@@ -30,7 +30,7 @@ export class DashboardPreferencesComponent implements OnInit {
   selectionForAlertLast24HoursColumns = new SelectionModel(true, []);
   fleetKPIColumnData = [];
   vehicleUtilizationColumnData = [];
-  alertLast24HrsColumnData = [];
+  alertLast24HoursColumnData = [];
   todayLiveVehicleColumnData = [];
 
   
@@ -160,7 +160,7 @@ export class DashboardPreferencesComponent implements OnInit {
   resetColumnData() {
     this.fleetKPIColumnData = [];
     this.vehicleUtilizationColumnData = [];
-    this.alertLast24HrsColumnData = [];
+    this.alertLast24HoursColumnData = [];
     this.todayLiveVehicleColumnData = [];    
   }
 
@@ -182,13 +182,13 @@ export class DashboardPreferencesComponent implements OnInit {
     }
   });
 
-  this.alertLast24HrsColumnData.forEach(element => {
+  this.alertLast24HoursColumnData.forEach(element => {
     if (element.state == 'A') {
       this.selectionForAlertLast24HoursColumns.select(element);
     }
   });
 
-  this. vehicleUtilizationColumnData.forEach(element => {
+  this.vehicleUtilizationColumnData.forEach(element => {
     if (element.state == 'A') {
       this.selectionForVehicleUtilizationColumns.select(element);
     }
@@ -212,8 +212,9 @@ export class DashboardPreferencesComponent implements OnInit {
           //   _data.translatedName = this.getName(element.name);
           //   console.log("translated name1....",_data.translatedName);
           // }
-          // this.fleetKPIColumnData.push(_data);
-          console.log("translated name2....",_data.translatedName);
+          _data.translatedName = this.getName(element.name);
+          this.fleetKPIColumnData.push(_data);
+          
                  
         }
         else if(section.name.includes('Dashboard.TodayLiveVehicle'))
@@ -224,7 +225,7 @@ export class DashboardPreferencesComponent implements OnInit {
           // } else {
           //   _data.translatedName = this.getName(element.name);
           // }
-          
+          _data.translatedName = this.getName(element.name);
           this.todayLiveVehicleColumnData.push(_data);
          
         }
@@ -236,6 +237,7 @@ export class DashboardPreferencesComponent implements OnInit {
           // } else {
           //   _data.translatedName = this.getName(element.name);
           // }
+          _data.translatedName = this.getName(element.name);
           this.vehicleUtilizationColumnData.push(_data);
           
         }
@@ -248,16 +250,11 @@ export class DashboardPreferencesComponent implements OnInit {
           //   _data.translatedName = this.getName(element.name);
           // }
           _data.translatedName = this.getName(element.name);
-          this.alertLast24HrsColumnData.push(_data);         
+          this.alertLast24HoursColumnData.push(_data);         
         }
       });
       });
-
-      console.log("data...", this.fleetKPIColumnData);
-      console.log("data......",this.todayLiveVehicleColumnData);
-      console.log("data....",this.vehicleUtilizationColumnData);
-      console.log("data....",this.alertLast24HrsColumnData);
-        
+     
       this.setColumnCheckbox();
   }
 
@@ -276,6 +273,7 @@ export class DashboardPreferencesComponent implements OnInit {
   }
 
   isAllSelected(section){
+    console.log("section name---->", section);
     const numSelected = this["selectionFor"+section+"Columns"].selected.length;
     let lowerCaseSection = section.charAt(0).toLowerCase() + section.substring(1);
     const numRows = this[lowerCaseSection+"ColumnData"].length;

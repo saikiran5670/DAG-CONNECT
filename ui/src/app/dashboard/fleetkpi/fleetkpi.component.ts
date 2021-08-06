@@ -2112,7 +2112,7 @@ export class FleetkpiComponent implements OnInit {
   }
 
   checkForPreference(fieldKey) {
-    if (this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
       let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_fleetkpi_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {

@@ -87,10 +87,6 @@ namespace net.atos.daf.ct2.dashboard
         }
         #endregion
 
-        public async Task<bool> CreateDashboardUserPreference(DashboardUserPreferenceCreateRequest request)
-        {
-            return await _dashboardRepository.CreateDashboardUserPreference(request);
-        }
     }
 
 
