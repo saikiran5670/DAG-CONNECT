@@ -6,6 +6,7 @@ namespace net.atos.daf.ct2.subscription.entity
         public int Organization_id { get; set; }
         public string Type { get; set; }
         public ActiveState State { get; set; }
+        public bool Filter { get; set; }
     }
 
     public enum ActiveState

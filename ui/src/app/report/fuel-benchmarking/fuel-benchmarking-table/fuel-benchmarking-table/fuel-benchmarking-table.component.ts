@@ -27,6 +27,7 @@ export class FuelBenchmarkingTableComponent implements OnInit {
   @Input() benchmarkSelectionChange: any;
   @Input() vehicleGroupSelected:any;
   @Input() prefUnitFormat:any;
+  @Input() translationData:any;
   //vehicleHeaderCount :any = 0;
   initData: any = [];
   responseDataTP: any = {}

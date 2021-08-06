@@ -33,8 +33,7 @@ namespace net.atos.daf.ct2.kafkacdc
         {
             VehicleAlertRefMsgFormat data = new VehicleAlertRefMsgFormat();
             data.AlertId = alertId;
-            data.VinOps = new List<VehicleStateMsgFormat>();
-            data.VinOps = vehicleAlertRefList.Select(result => new VehicleStateMsgFormat() { VIN = result.VIN, Op = result.Op }).ToList();
+            data.VinOps = vehicleAlertRefList.Count > 0 ? vehicleAlertRefList.Select(result => new VehicleStateMsgFormat() { VIN = result.VIN, Op = result.Op }).ToList() : new List<VehicleStateMsgFormat>(); ;
 
             Payload payload = new Payload()
             {

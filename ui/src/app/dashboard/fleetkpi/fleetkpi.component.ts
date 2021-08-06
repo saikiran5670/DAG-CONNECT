@@ -544,7 +544,7 @@ export class FleetkpiComponent implements OnInit {
   getKPIData(){
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
-    this.totalVehicles = 400; //this.finalVinList.length;
+    this.totalVehicles = 3; //this.finalVinList.length;
     let _kpiPayload = {
       "startDateTime": _startTime,
       "endDateTime": _endTime,
@@ -1454,11 +1454,11 @@ export class FleetkpiComponent implements OnInit {
 
   updateFuelConsumed(){
     let currentValue = this.kpiData['fleetKpis']['fuelConsumption'];
-    this.currentFuelConsumed=  this.reportMapService.getFuelConsumed(currentValue,this.prefUnitFormat);
+    this.currentFuelConsumed=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,false);
     let _thresholdValue = 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
-    let targetValue = this.reportMapService.getFuelConsumed( calculationValue['cuttOff'],this.prefUnitFormat);
-    this.cutOffFuelConsumed =  this.reportMapService.getFuelConsumed( calculationValue['cuttOff'],this.prefUnitFormat);
+    let targetValue = this.reportMapService.getFuelConsumedUnits( calculationValue['cuttOff'],this.prefUnitFormat,false);
+    this.cutOffFuelConsumed =  this.reportMapService.getFuelConsumedUnits( calculationValue['cuttOff'],this.prefUnitFormat,false);
     let currentPercent = calculationValue['kpiPercent'];
 
      
@@ -1675,11 +1675,11 @@ export class FleetkpiComponent implements OnInit {
 
   updateIdlingFuelConsumption(){
     let currentValue = this.kpiData['fleetKpis']['idlingfuelconsumption'];
-    this.currentIdlingFuelConsumed=  this.reportMapService.getFuelConsumed(currentValue,this.prefUnitFormat);
+    this.currentIdlingFuelConsumed=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,false);
     let _thresholdValue = 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
-    let targetValue = this.reportMapService.getFuelConsumed(calculationValue['cuttOff'],this.prefUnitFormat);
-    this.cutOffIdlingFuelConsumed =  this.reportMapService.getFuelConsumed(calculationValue['cuttOff'],this.prefUnitFormat);
+    let targetValue = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,false);
+    this.cutOffIdlingFuelConsumed =  this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,false);
     let currentPercent = calculationValue['kpiPercent'];
      
     let showLastChange = this.showLastChange;
@@ -1894,11 +1894,11 @@ export class FleetkpiComponent implements OnInit {
 
   updateFuelConsumption(){
     let currentValue = this.kpiData['fleetKpis']['fuelConsumption'];
-    this.currentFuelConsumption=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat);
+    this.currentFuelConsumption=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,true);
     let _thresholdValue = 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
-    let targetValue = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat);
-    this.cutOffFuelConsumption = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat);
+    let targetValue = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true);
+    this.cutOffFuelConsumption = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true);
     let currentPercent = calculationValue['kpiPercent'];
     
      
@@ -2112,7 +2112,7 @@ export class FleetkpiComponent implements OnInit {
   }
 
   checkForPreference(fieldKey) {
-    if (this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
       let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_fleetkpi_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
