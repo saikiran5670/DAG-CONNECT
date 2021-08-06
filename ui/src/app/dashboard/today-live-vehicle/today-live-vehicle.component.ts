@@ -78,7 +78,7 @@ export class TodayLiveVehicleComponent implements OnInit {
   };
 
   public doughnutChartPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-    beforeDraw(chart) {
+    afterDraw(chart) {
       const ctx = chart.ctx;
 
       ctx.textAlign = 'center';
@@ -120,7 +120,7 @@ export class TodayLiveVehicleComponent implements OnInit {
     }
   };
   public doughnutChartTimePlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-    beforeDraw(chart) {
+    afterDraw(chart) {
       const ctx = chart.ctx;
 
       ctx.textAlign = 'center';
@@ -179,7 +179,7 @@ doughnutChartDistanceBasedData: MultiDataSet = [ [0, 100] ];
   }
 };
 public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-  beforeDraw(chart) {
+  afterDraw(chart) {
     const ctx = chart.ctx;
 
     ctx.textAlign = 'center';
@@ -337,7 +337,7 @@ doughnutDistanceColors: Color[] = [
     this.doughnutChartActiveVehicleData = [[activeVehiclePercent,(100 - activeVehiclePercent)]]
 
     this.doughnutChartPlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -558,7 +558,7 @@ doughnutDistanceColors: Color[] = [
 
     }
     this.doughnutChartTimePlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -765,7 +765,7 @@ doughnutDistanceColors: Color[] = [
 
     }
     this.doughnutChartDistancePlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
