@@ -72,7 +72,7 @@ export class FleetkpiComponent implements OnInit {
    };
  
    public doughnutChartPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-     beforeDraw(chart) {
+     afterDraw(chart) {
        const ctx = chart.ctx;
  
        ctx.textAlign = 'center';
@@ -143,7 +143,7 @@ export class FleetkpiComponent implements OnInit {
       }
      ];
     public doughnutChartIdlingPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
   
         ctx.textAlign = 'center';
@@ -213,7 +213,7 @@ export class FleetkpiComponent implements OnInit {
        ];
     
       public doughnutChartDrivingPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-        beforeDraw(chart) {
+        afterDraw(chart) {
           const ctx = chart.ctx;
     
           ctx.textAlign = 'center';
@@ -284,7 +284,7 @@ export class FleetkpiComponent implements OnInit {
      ];
   
     public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
   
         ctx.textAlign = 'center';
@@ -345,7 +345,7 @@ export class FleetkpiComponent implements OnInit {
     };
   
     public doughnutChartFuelConsumedPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
   
         ctx.textAlign = 'center';
@@ -407,7 +407,7 @@ export class FleetkpiComponent implements OnInit {
       };
     
       public doughnutChartFuelUsedPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-        beforeDraw(chart) {
+        afterDraw(chart) {
           const ctx = chart.ctx;
     
           ctx.textAlign = 'center';
@@ -468,7 +468,7 @@ export class FleetkpiComponent implements OnInit {
        };
      
        public doughnutChartFuelConsumptionPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-         beforeDraw(chart) {
+         afterDraw(chart) {
            const ctx = chart.ctx;
      
            ctx.textAlign = 'center';
@@ -623,7 +623,7 @@ export class FleetkpiComponent implements OnInit {
     this.doughnutChartData = [[currentPercent,(100 - currentPercent)]]
 
     this.doughnutChartPlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -844,7 +844,7 @@ export class FleetkpiComponent implements OnInit {
     this.doughnutChartIdlingData = [[currentPercent,(100 - currentPercent)]]
 
     this.doughnutChartIdlingPlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -1065,7 +1065,7 @@ export class FleetkpiComponent implements OnInit {
     this.doughnutChartDrivingData = [[currentPercent,(100 - currentPercent)]]
 
     this.doughnutChartDrivingPlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -1284,7 +1284,7 @@ export class FleetkpiComponent implements OnInit {
     this.doughnutChartDistanceData = [[currentPercent,(100 - currentPercent)]]
 
     this.doughnutChartDistancePlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -1507,7 +1507,7 @@ export class FleetkpiComponent implements OnInit {
     let targetUnit = (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallons || 'g') : (this.translationData.lblLtrs || 'L');
 
     this.doughnutChartFuelConsumedPlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -1538,7 +1538,7 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str = `<div class='dashboardTT'><div>Target: ` + (targetValue).toFixed(2) + ` ` + targetUnit
+            let _str = `<div class='dashboardTT'><div>Target: ` + (targetValue) + ` ` + targetUnit
             '</div>';
             if(showLastChange){
               _str += '<div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
@@ -1724,7 +1724,7 @@ export class FleetkpiComponent implements OnInit {
     this.doughnutChartFuelUsedData = [[currentPercent,(100 - currentPercent)]]
 
     this.doughnutChartFuelUsedPlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -1757,7 +1757,7 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str =  `<div class='dashboardTT'><div>Target: ` + (targetValue).toFixed(2) + ' ' + targetUnit
+            let _str =  `<div class='dashboardTT'><div>Target: ` + (targetValue) + ' ' + targetUnit
             '</div>';
             if(showLastChange){
               _str += '<div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
@@ -1944,7 +1944,7 @@ export class FleetkpiComponent implements OnInit {
     this.doughnutChartFuelConsumptionData = [[currentPercent,(100 - currentPercent)]]
 
     this.doughnutChartFuelConsumptionPlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
