@@ -186,7 +186,7 @@ export class FuelDeviationReportComponent implements OnInit {
   fuelDeviationDChartType: ChartType = 'doughnut';
   fuelDeviationDChartColors: Color[] = [
     {
-      backgroundColor: ['#434348','#7cb5ec']
+      backgroundColor: ['#65C3F7','#F4AF85']
     }
   ];
   chartLegend = true;
@@ -212,7 +212,7 @@ export class FuelDeviationReportComponent implements OnInit {
   fuelDeviationPChartPlugins = [];
   fuelDeviationPChartColors: Color[] = [
     {
-      backgroundColor: ['#434348','#7cb5ec']
+      backgroundColor: ['#65C3F7','#F4AF85']
     }
   ];
 
@@ -261,7 +261,7 @@ export class FuelDeviationReportComponent implements OnInit {
   };
   fuelIncLineChartColors: Color[] = [
     {
-      borderColor: '#7BC5EC',
+      borderColor: '#65C3F7',
       backgroundColor: 'rgba(255,255,0,0)',
     },
   ];
@@ -299,7 +299,7 @@ export class FuelDeviationReportComponent implements OnInit {
   };
   fuelDecLineChartColors: Color[] = [
     {
-      borderColor: '#7BC5EC',
+      borderColor: '#F4AF85',
       backgroundColor: 'rgba(255,255,0,0)',
     },
   ];
@@ -1132,8 +1132,8 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       {
         label: this.translationData.lblFuelIncreaseEvents || 'Fuel Increase Events',
         type: 'bar',
-        backgroundColor: '#7BC5EC',
-        hoverBackgroundColor: '#7BC5EC',
+        backgroundColor: '#65C3F7',
+        hoverBackgroundColor: '#65C3F7',
         yAxesID: "y-axis",
         data: this._yIncLine
       }
@@ -1142,8 +1142,8 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       {
         label: this.translationData.lblFuelDecreaseEvents || 'Fuel Decrease Events',
         type: 'bar',
-        backgroundColor: '#7BC5EC',
-        hoverBackgroundColor: '#7BC5EC',
+        backgroundColor: '#F4AF85',
+        hoverBackgroundColor: '#F4AF85',
         yAxesID: "y-axis",
         data: this._yDecLine
       }
@@ -1369,7 +1369,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     })
   
    this.initData.forEach(item => {     
-      worksheet.addRow([item.eventTooltip, item.fuelDiffernce, item.vehicleName, item.vin,
+      worksheet.addRow([item.eventTooltip, item.convertedDifference, item.vehicleName, item.vin,
         item.registrationNo, item.eventDate, item.convertedOdometer, item.convertedStartDate,
         item.convertedEndDate, item.convertedDistance, item.convertedIdleDuration,
         item.convertedAverageSpeed, item.convertedAverageWeight, item.startPosition, item.endPosition, item.convertedFuelConsumed,
@@ -1415,7 +1415,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
             break;
           }
           case 'fuelDiffernce' :{
-            tempObj.push(e.fuelDiffernce);
+            tempObj.push(e.convertedDifference);
             break;
           }
           case 'vehicleName' :{
@@ -1566,7 +1566,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
               <td style='width: 100px;'>${this.translationData.lblEventDescription || 'Event Description'}:</td> <td><b>${eventDescText.eventText}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblDifference || 'Difference'}:</td> <td><b>${element.fuelDiffernce}%</b></td>
+              <td style='width: 100px;'>${this.translationData.lblDifference || 'Difference'}:</td> <td><b>${element.convertedDifference}%</b></td>
             </tr>
           </table>`
         });
@@ -1596,7 +1596,8 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
 
   getEventIcons(eventElement: any){
     let icon: any = '';
-    let colorCode: any = (eventElement.vehicleActivityType == 'R') ? '#00AE10' : '#D50017';
+    //let colorCode: any = (eventElement.vehicleActivityType == 'R') ? '#00AE10' : '#D50017';
+    let colorCode: any = (eventElement.fuelEventType == 'I') ? '#00AE10' : '#D50017';
     switch(eventElement.fuelEventType){
       case 'I': { // increase
         icon = `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
