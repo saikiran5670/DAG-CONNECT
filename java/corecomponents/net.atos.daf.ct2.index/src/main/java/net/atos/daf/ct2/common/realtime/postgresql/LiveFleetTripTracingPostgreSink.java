@@ -73,18 +73,23 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 							vin = indexData.getVin();
 						else
 							vin = indexData.getVid();
-
+						
 						if (indexData.getVEvtID() != 4) {
-
+							
 							LiveFleetPojo previousRecordInfo = positionDAO.read(vin, tripID);
-
+							
 							if (previousRecordInfo != null) {
+								
 								Double previousMessageTimeStamp = previousRecordInfo.getMessageTimestamp();
 								Double currentMessageTimeStamp = (double) TimeFormatter.getInstance()
 										.convertUTCToEpochMilli(indexData.getEvtDateTime().toString(),
 												DafConstants.DTM_TS_FORMAT);
+								Long idleDuration=0L;
+								if(indexData.getVIdleDuration()!=null) {
+									idleDuration=indexData.getVIdleDuration();
+								}
 								drivingTime = ((currentMessageTimeStamp - previousMessageTimeStamp)
-										+ previousRecordInfo.getDrivingTime() - indexData.getVIdleDuration());
+										+ previousRecordInfo.getDrivingTime() - idleDuration);
 							}
 							System.out.println("drivingTime-->" + drivingTime);
 						}

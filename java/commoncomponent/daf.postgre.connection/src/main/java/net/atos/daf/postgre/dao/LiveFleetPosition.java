@@ -50,11 +50,11 @@ public class LiveFleetPosition implements Serializable {
 		ResultSet rs_position = null;
 		LiveFleetPojo previousRecordInfo=null;
 		
+		
 		try {
-
+			
 			if (null != vin && null != (connection = getConnection())) {
-				previousRecordInfo= new LiveFleetPojo();
-
+				
 				stmtReadLivefleetPosition = connection.prepareStatement(READ_LIVEFLEET_POSITION);
 				stmtReadLivefleetPosition.setString(1, vin);
 				stmtReadLivefleetPosition.setString(2, tripId);
@@ -62,7 +62,7 @@ public class LiveFleetPosition implements Serializable {
 				rs_position = stmtReadLivefleetPosition.executeQuery();
 				
 				while (rs_position.next()) {
-					
+					previousRecordInfo= new LiveFleetPojo();
 					previousRecordInfo.setDrivingTime(rs_position.getInt("driving_time"));
 					previousRecordInfo.setMessageTimestamp(rs_position.getDouble("message_time_stamp"));
 					System.out.println("driving Time inside read--" + rs_position.getInt("driving_time"));
