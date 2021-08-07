@@ -508,13 +508,14 @@ export class AppComponent {
         }
       });
     }
-    if(this.timerPrefData && this.timerPrefData.length > 0){
-      let _timeval = this.timerPrefData[0] ? this.timerPrefData[0].thresholdValue : 2; //-- default 2 Mins
-      if(_timeval){
-        localStorage.setItem("liveFleetTimer", (_timeval*60).toString());  // default set
-        this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
-      }
-    }
+    //commented call from fleet overview -not needed
+    // if(this.timerPrefData && this.timerPrefData.length > 0){
+    //   let _timeval = this.timerPrefData[0] ? this.timerPrefData[0].thresholdValue : 2; //-- default 2 Mins
+    //   if(_timeval){
+    //     localStorage.setItem("liveFleetTimer", (_timeval*60).toString());  // default set
+    //     this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
+    //   }
+    // }
   }
 
   getMenu(data: any, from?: any) {
