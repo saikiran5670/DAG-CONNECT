@@ -496,6 +496,7 @@
           <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
         </div>
       </mat-expansion-panel>
+      <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
     </mat-card>
   </form>
 </div>
