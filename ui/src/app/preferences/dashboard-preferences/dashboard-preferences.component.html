@@ -258,13 +258,13 @@ style='border-radius: 5px 5px 0px 0px;'>
 
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
       <mat-form-field appearance="outline" style='width: 80%'>
-          <mat-select *ngIf="field.translatedName== 'DistanceBasedUtilizationRate' || field.translatedName== 'TimeBasedUtilizationRate'" [formControlName]="field.key+'chartType'"  [disabled]='donutPieDD.length == 0' placeholder="{{'Chart Type' }}">
+          <mat-select *ngIf="field.translatedName== 'DistanceBasedUtilizationRate' || field.translatedName== 'TimeBasedUtilizationRate'" [disabled]='donutPieDD.length == 0' placeholder="{{'Chart Type' }}">
               <mat-option *ngFor="let rer of donutPieDD" [value]="rer.type">
               {{ rer.name }}
               </mat-option>
           </mat-select>
 
-          <mat-select *ngIf="field.translatedName== 'DistancePerDay' || field.translatedName== 'ActiveVehiclesPerDay'" [formControlName]="field.key+'chartType'" [disabled]='lineBarDD.length == 0' placeholder="{{'Chart Type' }}">
+          <mat-select *ngIf="field.translatedName== 'DistancePerDay' || field.translatedName== 'ActiveVehiclesPerDay'" [disabled]='lineBarDD.length == 0' placeholder="{{'Chart Type' }}">
             <mat-option *ngFor="let rer of lineBarDD" [value]="rer.type">
             {{ rer.name }}
             </mat-option>
