@@ -126,9 +126,18 @@
                   </div>
                 </mat-panel-title>
               </mat-expansion-panel-header>
+              <span>{{ translationData.lblZoom || 'Zoom:' }}</span>
+              <br/>
+              <button [disabled]="selectionTabTrend == 'today'" (click)="updateOptions('today')" [ngClass]="{'selectedBtn': selectionTabTrend == 'today'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblToday || 'Today' }}</button>
+              <button [disabled]="selectionTabTrend == 'yesterday'" (click)="updateOptions('yesterday')" [ngClass]="{'selectedBtn': selectionTabTrend == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblYesterday || 'Yesterday' }}</button>
+              <button [disabled]="selectionTabTrend == 'lastweek'" (click)="updateOptions('lastweek')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastweek'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastWeek || 'Last Week' }}</button>
+              <button [disabled]="selectionTabTrend == 'lastmonth'" (click)="updateOptions('lastmonth')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastMonth|| 'Last Month' }}</button>
+              <button [disabled]="selectionTabTrend == 'last3month'" (click)="updateOptions('last3month')" [ngClass]="{'selectedBtn': selectionTabTrend == 'last3month'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
+              <button [disabled]="selectionTabTrend == 'last6month'" (click)="updateOptions('last6month')" [ngClass]="{'selectedBtn': selectionTabTrend == 'last6month'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLast6Month|| 'Last 6 Month' }}</button>
+              <button [disabled]="selectionTabTrend == 'lastYear'" (click)="updateOptions('lastYear')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastYear'}" class='no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastYear|| 'Last Year' }}</button>              
               <div id="wrapper">
                 <div id="chart-line">
-                  <apx-chart
+                  <apx-chart #chartObj
                     [series]="chartOptions1.series"
                     [chart]="chartOptions1.chart"
                     [xaxis]="chartOptions1.xaxis"
