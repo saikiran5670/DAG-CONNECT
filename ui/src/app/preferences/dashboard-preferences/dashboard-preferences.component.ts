@@ -324,29 +324,26 @@ export class DashboardPreferencesComponent implements OnInit {
     let saveArr = [];
     this[columnData].forEach(element => {
       let sSearch = this[selectionData].selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-      let thresholdType = this.dashboardPreferenceForm.get([element.key + 'thresholdType']).value;     
+      let thresholdType = this.dashboardPreferenceForm.get([element.key + 'thresholdType']).value;
+      let chartType = this.dashboardPreferenceForm.get([element.key + 'chartType']).value;
       let thresholdValue = this.dashboardPreferenceForm.get([element.key + 'thresholdValue']).value;
-      if (element.key.includes('_fleetkpi_drivingtime') || element.key.includes('_fleetkpi_idlingtime') || element.key.includes('_todaylivevehicle_timebasedutilizationrate') || element.key.includes('_vehicleutilization_timebasedutilizationrate')) {
+      if (element.key.includes('_fleetkpi_drivingtime') || element.key.includes('_fleetkpi_idlingtime') || element.key.includes('_todaylivevehicle_timebasedutilizationrate')) {
         let thresholdValuehrs = thresholdValue * 3600;
         let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin']).value * 60;
         let totalsecs : number = thresholdValuehrs + thresholdValuemin;
         saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: "", thresholdType: thresholdType, thresholdValue: totalsecs });
-      } else if(element.key.includes('_vehicleutilization_distancebasedutilizationrate') || element.key.includes('_vehicleutilization_distanceperday') || element.key.includes('_vehicleutilization_activevehiclesperday')) {
-        let chartType = this.dashboardPreferenceForm.get([element.key + 'chartType']) ? this.dashboardPreferenceForm.get([element.key + 'chartType']).value : "";
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType, thresholdType: thresholdType, thresholdValue: 0 });
+
+      } else if(element.key.includes('_vehicleutilization_distancebasedutilizationrate') ||  element.key.includes('_vehicleutilization_distanceperday') || element.key.includes('_vehicleutilization_activevehiclesperday')) {
+         saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType, thresholdType:"", thresholdValue: parseInt(thresholdValue) });
+
       }
-      else if(element.key.includes('_vehicleutilization_timebasedutilizationrate') )
-      {
-        let chartType = this.dashboardPreferenceForm.get([element.key + 'chartType']) ? this.dashboardPreferenceForm.get([element.key + 'chartType']).value : "";
+      else if(element.key.includes('_vehicleutilization_timebasedutilizationrate')){
         let thresholdValuehrs = thresholdValue * 3600;
         let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin']).value * 60;
         let totalsecs : number = thresholdValuehrs + thresholdValuemin;
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType, thresholdType: thresholdType, thresholdValue: totalsecs });
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType, thresholdType:"", thresholdValue: totalsecs });
       }
       else {
-        let thresholdValuehrs = thresholdValue * 3600;
-        let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin']).value * 60;
-        let totalsecs : number = thresholdValuehrs + thresholdValuemin;
         saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: "", thresholdType: thresholdType, thresholdValue: parseInt(thresholdValue) });
       }
     });

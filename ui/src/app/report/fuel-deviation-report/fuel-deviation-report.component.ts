@@ -637,7 +637,7 @@ export class FuelDeviationReportComponent implements OnInit {
     }
     this.vehicleDD = this.vehicleListData.slice();
     if(this.vehicleDD.length > 0){
-      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All', registrationNo: this.translationData.lblAll || 'All', vin: this.translationData.lblAll || 'All' });
       this.resetFuelDeviationFormControlValue();
     }
     this.setVehicleGroupAndVehiclePreSelection();
@@ -646,6 +646,21 @@ export class FuelDeviationReportComponent implements OnInit {
   setVehicleGroupAndVehiclePreSelection() {
     if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
       this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue)
+    }
+  }
+
+  vehVinRegChecker: any = [
+    { key: 'rp_fd_details_vehiclename', attr: 'vehicleName' }, 
+    { key: 'rp_fd_details_vin', attr: 'vin' },
+    { key: 'rp_fd_details_regplatenumber', attr: 'registrationNo' }
+  ];
+  vehVinRegCheck(item: any){
+    let _s = this.vehVinRegChecker.filter(i => i.key == item.key);
+    if(_s.length > 0){
+      let index = this.vehVinRegChecker.map(i => i.attr).indexOf(_s[0].attr); // find index
+      if (index > -1){
+        this.vehVinRegChecker.splice(index, 1); // removed
+      }
     }
   }
 
@@ -659,6 +674,7 @@ export class FuelDeviationReportComponent implements OnInit {
       let filterPref = this.fuelTableDetailsPrefData.filter(i => i.state == 'I'); // removed unchecked
       if(filterPref.length > 0){
         filterPref.forEach(element => {
+          this.vehVinRegCheck(element);
           let search = this.prefMapData.filter(i => i.key == element.key); // present or not
           if(search.length > 0){
             let index = this.displayedColumns.indexOf(search[0].value); // find index
@@ -975,7 +991,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     if(_val == 0){ //-- all group
       this.vehicleDD = [];
       this.vehicleDD = this.vehicleListData.slice();
-      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All', registrationNo: this.translationData.lblAll || 'All', vin: this.translationData.lblAll || 'All' });
     }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == _val);
       if(search.length > 0){
@@ -1143,7 +1159,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     }
     let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.fuelDeviationForm.controls.vehicle.value));
     if(vehCount.length > 0){
-      vehName = vehCount[0].vehicleName;
+      vehName = (this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? vehCount[0].vin : (this.vehVinRegChecker[0].attr == 'registrationNo') ? vehCount[0].registrationNo : vehCount[0].vehicleName;
     }
     this.tableInfoObj = {
       fromDate: this.formStartDate(this.startDateValue),
@@ -1312,7 +1328,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     let unitValgallon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.translationData.lblgallon || 'gallon');
     
     const header = ['Type', 'Difference (%)', 'Vehicle Name', 'VIN', 'Reg. Plate Number', 'Date', 'Odometer ('+ unitValkm + ')', 'Start Date', 'End Date', 'Distance ('+ unitValkm + ')', 'Idle Duration (hh:mm)', 'Average Speed ('+ unitValkmh + ')', 'Average Weight ('+ unitValton + ')', 'Start Position', 'End Position', 'Fuel Consumed ('+ unitValgallon + ')', 'Driving Time (hh:mm)', 'Alerts'];
-    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Fuel Increase Events', 'Fuel decrease Events', 'Vehicles With Fuel Events'];
+    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', (this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN || 'VIN') : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber || 'Reg. Plate Number') : (this.translationData.lblVehicle || 'Vehicle') , 'Fuel Increase Events', 'Fuel decrease Events', 'Vehicles With Fuel Events'];
     const summaryData= this.excelSummaryData;
     
     //Create workbook and worksheet
@@ -1541,7 +1557,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
               <td style='width: 100px;'>${this.translationData.lblDate || 'Date'}:</td> <td><b>${element.eventDate}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblVehicleName || 'Vehicle Name'}:</td> <td><b>${element.vehicleName}</b></td>
+              <td style='width: 100px;'>${(this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN || 'VIN') : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber || 'Reg. Plate Number') : (this.translationData.lblVehicleName || 'Vehicle Name')}:</td> <td><b>${element[this.vehVinRegChecker[0].attr]}</b></td>
             </tr>
             <tr>
               <td style='width: 100px;'>${this.translationData.lblPosition || 'Position'}:</td> <td><b>${element.geoLocationAddress}</b></td>
