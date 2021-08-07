@@ -1808,11 +1808,23 @@ doc.addPage();
       break;
     }
     case 'idleDuration': { 
-      let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.idleDuration);
+      // let s = this.displayData.forEach(element => {
+      // sum += parseFloat(element.convertedIdleDuration);
+      // });
+      // //sum= sum.toFixed(2)*1;
+      // sum = this.reportMapService.getHhMmTime(sum);
+      // break;
+      let s = this.tripData.forEach(element => {
+        let time: any = 0;
+        time += (element.idleDuration);
+        let data: any = "00:00";
+        let hours = Math.floor(time / 3600);
+        time %= 3600;
+        let minutes = Math.floor(time / 60);
+        let seconds = time % 60;
+        data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
+        sum = data;
       });
-      sum =sum.toFixed(2);
-      break;
     }
     case 'fuelConsumption': { 
       let s = this.displayData.forEach(element => {
