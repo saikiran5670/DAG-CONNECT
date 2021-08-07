@@ -848,6 +848,9 @@ message FleetFuelDetails {
     double CCFuelConsumed = 46;
     int64 CCFuelDistanceNotActive = 47;
     double CCFuelConsumedNotActive = 48;
+    string StartPosition = 49;
+    string EndPosition = 50;
+    double IdleDurationPercentage = 51;
 }
 message FleetFuelDetailsByDriver {
     google.protobuf.StringValue VehicleName = 1;
@@ -893,6 +896,7 @@ message FleetFuelDetailsByDriver {
     double CCFuelConsumed = 41;
     int64 CCFuelDistanceNotActive = 42;
     double CCFuelConsumedNotActive = 43;
+    double IdleDurationPercentage = 44;
 }
 message FleetFuelTripDetails {
     string VehicleName = 1;

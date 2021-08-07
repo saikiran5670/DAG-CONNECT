@@ -367,6 +367,10 @@ export class AppComponent {
     // this.isMobile();
     // this.isTablet();
     // this.isDesktop();
+
+    this.accountService.getAccountPreference(63).subscribe((result: any) => {
+      localStorage.setItem("liveFleetTimer", (result.pageRefreshTime*60).toString());
+    })
     this.subscription = this.messageService.getMessage().subscribe(message => {
       if (message.key.indexOf("refreshTimer") !== -1) {
         this.refreshTimer();
@@ -398,6 +402,7 @@ export class AppComponent {
 
   getNavigationMenu() {
     let parseLanguageCode = JSON.parse(localStorage.getItem("language"))
+    
     //--- accessing getmenufeature api from account --//
     // let featureMenuObj = {
     //  "accountId": 336,
@@ -508,13 +513,14 @@ export class AppComponent {
         }
       });
     }
-    if(this.timerPrefData && this.timerPrefData.length > 0){
-      let _timeval = this.timerPrefData[0] ? this.timerPrefData[0].thresholdValue : 2; //-- default 2 Mins
-      if(_timeval){
-        localStorage.setItem("liveFleetTimer", (_timeval*60).toString());  // default set
-        this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
-      }
-    }
+    //commented call from fleet overview -not needed
+    // if(this.timerPrefData && this.timerPrefData.length > 0){
+    //   let _timeval = this.timerPrefData[0] ? this.timerPrefData[0].thresholdValue : 2; //-- default 2 Mins
+    //   if(_timeval){
+    //     localStorage.setItem("liveFleetTimer", (_timeval*60).toString());  // default set
+    //     this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
+    //   }
+    // }
   }
 
   getMenu(data: any, from?: any) {
@@ -539,6 +545,8 @@ export class AppComponent {
     })
     //console.log("accountNavMenu:: ", landingPageMenus)
     localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
+    localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
+
     let refreshPage = localStorage.getItem('pageRefreshed') == 'true';
     if(refreshPage || from == 'orgContextSwitch'){
       let _feature: any = JSON.parse(localStorage.getItem("accountFeatures"));
