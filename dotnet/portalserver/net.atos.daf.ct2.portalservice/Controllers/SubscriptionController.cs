@@ -61,17 +61,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 objBusinessEntity.State = (SubscriptionBusinessService.StatusType)objSubscriptionDetailsRequest.State;
                 var details = await _subscribeClient.GetAsync(objBusinessEntity);
 
-                if (details.SubscriptionList.Count > 0)
-                {
-                    await _auditHelper.AddLogs(DateTime.Now, "Subscription Component",
-                      "Subscription service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                      "GetSubscriptionDetails method in Subscription controller", _userDetails.AccountId, _userDetails.AccountId, JsonConvert.SerializeObject(details), _userDetails);
-                    return Ok(details);
-                }
-                else
-                {
-                    return StatusCode(500, "Error occurred while processing the request.");
-                }
+                await _auditHelper.AddLogs(DateTime.Now, "Subscription Component",
+                    "Subscription service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                    "GetSubscriptionDetails method in Subscription controller", _userDetails.AccountId, _userDetails.AccountId, JsonConvert.SerializeObject(details), _userDetails);
+                return Ok(details);
             }
             catch (Exception ex)
             {
