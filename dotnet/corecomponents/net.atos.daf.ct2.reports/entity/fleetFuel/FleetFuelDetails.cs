@@ -47,8 +47,7 @@ namespace net.atos.daf.ct2.reports.entity
         public double CCFuelConsumedNotActive { get; set; }
         public string StartPosition { get; set; }
         public string EndPosition { get; set; }
-        public int StartPositionId { get; set; }
-        public int EndPositionId { get; set; }
+        public double IdleDurationPercentage { get; set; }
         //public string DPAAnticipationScore { get; set; } = string.Empty;
         //public string DPABrakingScore{ get; set; } = string.Empty;
         //public string IdlingPTOScore { get; set; } = string.Empty;

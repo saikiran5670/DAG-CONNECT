@@ -152,9 +152,9 @@ namespace net.atos.daf.ct2.account.report
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
                               , await GenerateTable()
                               , fromDate
-                              , VehicleLists.Any(s => !string.IsNullOrEmpty(s.VehicleGroupName)) ? string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).Distinct().ToArray()) : "All"
+                              , VehicleLists.Select(s => s.VehicleGroupName).Distinct().Count() == 1 ? VehicleLists.FirstOrDefault().VehicleGroupName : "All"
                               , toDate
-                              , string.Join(',', VehicleLists.Select(s => s.VehicleName).Distinct().ToArray())
+                              , VehicleLists.Select(s => s.VehicleName).Distinct().Count() == 1 ? VehicleLists.FirstOrDefault().VehicleName : "All"
                               , FleetUtilisationPdfDetails.Count()
                               , Math.Round(FleetUtilisationPdfDetails.Sum(s => s.Distance), 2)
                               , distanceUnit

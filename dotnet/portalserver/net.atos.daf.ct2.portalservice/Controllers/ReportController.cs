@@ -1142,6 +1142,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var data = await _reportServiceClient.GetFleetFuelTripDetailsByVehicleAsync(objFleetFilter);
                 if (data?.FleetFuelDetails?.Count > 0)
                 {
+                    foreach (var item in data.FleetFuelDetails)
+                    {
+                        if (string.IsNullOrEmpty(item.StartPosition) && item.Startpositionlattitude != 0 && item.Startpositionlongitude != 0)
+                        {
+                            var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.Startpositionlattitude, item.Startpositionlongitude);
+                            item.StartPosition = getMapRequestLatest.Address;
+                        }
+                        if (string.IsNullOrEmpty(item.EndPosition) && item.Endpositionlattitude != 0 && item.Endpositionlongitude != 0)
+                        {
+                            var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.Endpositionlattitude, item.Endpositionlongitude);
+                            item.EndPosition = getMapRequestLatest.Address;
+                        }
+                    }
                     data.Message = ReportConstants.GET_FLEET_FUEL_SUCCESS_MSG;
                     return Ok(data);
                 }
@@ -1175,6 +1188,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var data = await _reportServiceClient.GetFleetFuelTripDetailsByDriverAsync(objFleetFilter);
                 if (data?.FleetFuelDetails?.Count > 0)
                 {
+                    foreach (var item in data.FleetFuelDetails)
+                    {
+                        if (string.IsNullOrEmpty(item.StartPosition) && item.Startpositionlattitude != 0 && item.Startpositionlongitude != 0)
+                        {
+                            var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.Startpositionlattitude, item.Startpositionlongitude);
+                            item.StartPosition = getMapRequestLatest.Address;
+                        }
+                        if (string.IsNullOrEmpty(item.EndPosition) && item.Endpositionlattitude != 0 && item.Endpositionlongitude != 0)
+                        {
+                            var getMapRequestLatest = _hereMapAddressProvider.GetAddressObject(item.Endpositionlattitude, item.Endpositionlongitude);
+                            item.EndPosition = getMapRequestLatest.Address;
+                        }
+                    }
                     data.Message = ReportConstants.GET_FLEET_FUEL_SUCCESS_MSG;
                     return Ok(data);
                 }

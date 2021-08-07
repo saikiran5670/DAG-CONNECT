@@ -99,7 +99,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
                                                   		  , SUM(fuel_consumption)                                                  as fuel_consumption
                                                   		  , SUM(co2_emission)                                                      as co2_emission
-                                                  		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end              as idle_duration
+                                                          , SUM(idle_duration) as idle_duration
+                                                  		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end              as idle_duration_percentage
                                                		      , case when SUM(etl_gps_trip_time)>0 then ((SUM(pto_duration)/(SUM(etl_gps_trip_time)/1000))*100)   else 0 end              as pto_duration
                                                		      , case when SUM(etl_gps_trip_time)>0 then ((SUM(harsh_brake_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end       as harsh_brake_duration
                                                		      , case when SUM(etl_gps_trip_time)>0 then ((SUM(heavy_throttle_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end    as heavy_throttle_duration
@@ -136,6 +137,7 @@ namespace net.atos.daf.ct2.reports.repository
                                                   		  , round(fd.fuel_consumption,2)                         As FuelConsumption
                                                   		  , round(fd.co2_emission,2)                             As CO2Emission
                                                   		  , round(fd.idle_duration,2)                                     as IdleDuration
+                                                          , round(fd.idle_duration_percentage,2)                          as IdleDurationPercentage
                                                   		  , round(fd.pto_duration,2)                             as PTODuration
                                                   		  , round(fd.harsh_brake_duration,2)                     As HarshBrakeDuration
                                                   		  , round(fd.heavy_throttle_duration,2)                  As HeavyThrottleDuration
@@ -151,6 +153,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                           , round(fd.CCFuelConsumed,2) as CCFuelConsumed
                                                           , round(fd.etl_gps_distance - fd.CCFuelDistance,2) as CCFuelDistanceNotActive
                                                           , round(fd.fuel_consumed - fd.CCFuelConsumed,2) as CCFuelConsumedNotActive
+                                                          , '' AS StartPosition
+                                                          , '' AS EndPosition
                                                   		FROM
                                                   			CTE_FleetDeatils fd
                                                   			join
@@ -205,7 +209,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , SUM(etl_gps_fuel_consumed)                                             as fuel_consumed
                                                		  , SUM(fuel_consumption)                                                  as fuel_consumption
                                                		  , SUM(co2_emission)                                                      as co2_emission
-                                               		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end              as idle_duration
+                                                      , SUM(idle_duration) as idle_duration
+                                               		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(idle_duration)/(SUM(etl_gps_trip_time)/1000))*100) else 0 end              as idle_duration_percentage
                                                		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(pto_duration)/(SUM(etl_gps_trip_time)/1000))*100)   else 0 end              as pto_duration
                                                		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(harsh_brake_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end       as harsh_brake_duration
                                                		  , case when SUM(etl_gps_trip_time)>0 then ((SUM(heavy_throttle_duration)/(SUM(etl_gps_trip_time)/1000))*100)  else 0 end    as heavy_throttle_duration
@@ -243,7 +248,8 @@ namespace net.atos.daf.ct2.reports.repository
                                                		  , round(fd.fuel_consumed,2)                              As FuelConsumed
                                                		  , round(fd.fuel_consumption,2)                           As FuelConsumption
                                                		  , round(fd.co2_emission,2)                               As CO2Emission
-                                               		  , round(fd.idle_duration,2)                                       as IdleDuration
+                                               		  , round(fd.idle_duration_percentage,2)                            as IdleDurationPercentage
+                                                      , round(fd.idle_duration,2)                                       as IdleDuration
                                                		  , round(fd.pto_duration,2)                               as PTODuration
                                                		  , round(fd.harsh_brake_duration,2)                       As HarshBrakeDuration
                                                		  , round(fd.heavy_throttle_duration,2)                    As HeavyThrottleDuration
@@ -259,12 +265,14 @@ namespace net.atos.daf.ct2.reports.repository
                                                       , round(fd.CCFuelConsumed,2) as CCFuelConsumed
                                                       , round(fd.etl_gps_distance - fd.CCFuelDistance,2) as CCFuelDistanceNotActive
                                                       , round(fd.fuel_consumed - fd.CCFuelConsumed,2) as CCFuelConsumedNotActive
+                                                      , '' AS StartPosition
+                                                      , '' AS EndPosition
                                                		FROM
                                                			CTE_FleetDeatils fd
                                                		    left join
                                                				master.vehicle vh
                                                				on
-                                               					fd.VIN =vh.VIN
+                                               					fd.VIN =vh.VIN                                                  	
                                                	)
                                                SELECT
                                                	COALESCE(dr.first_name,'') || ' ' || COALESCE(dr.last_name,'') as DriverName
@@ -416,7 +424,8 @@ namespace net.atos.daf.ct2.reports.repository
 				  , (etl_gps_fuel_consumed)                                             as fuel_consumed
 				  , (fuel_consumption)                                                  as fuel_consumption
 				  , (co2_emission)                                                      as co2_emission
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)) *100) else 0 end as idle_duration
+                  , idle_duration as idle_duration
+				  , case when (end_time_stamp - start_time_stamp)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)) *100) else 0 end as idle_duration_percentage
 				  , case when (end_time_stamp - start_time_stamp)>0 then ((pto_duration/((end_time_stamp - start_time_stamp)/1000)) *100)  else 0 end   as pto_duration
 				  , case when (end_time_stamp - start_time_stamp)>0 then ((harsh_brake_duration/((end_time_stamp - start_time_stamp)/1000)) *100)  else 0 end as harsh_brake_duration
 				  , case when (end_time_stamp - start_time_stamp)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)) *100)  else 0 end as heavy_throttle_duration
@@ -459,6 +468,7 @@ namespace net.atos.daf.ct2.reports.repository
                    , round((fd.fuel_consumption), 2)           As FuelConsumption
                     , round((fd.co2_emission), 2)           As CO2Emission
                      , round(fd.idle_duration, 2)                                      as IdleDuration
+                    , round(fd.idle_duration_percentage, 2)                                      as IdleDurationPercentage
 				  , round(fd.pto_duration, 2) as PTODuration
 				  , round((fd.harsh_brake_duration), 2)    As HarshBrakeDuration
                    , round((fd.heavy_throttle_duration), 2)    As HeavyThrottleDuration
@@ -482,18 +492,12 @@ namespace net.atos.daf.ct2.reports.repository
                 , round(fd.fuel_consumed - fd.CCFuelConsumed, 2) as CCFuelConsumedNotActive
                 , startgeoaddr.id AS StartPositionId
                 , endgeoaddr.id AS EndPositionId
-                , coalesce(startgeoaddr.address,'') AS StartPosition
-                , coalesce(endgeoaddr.address,'') AS EndPosition
+                , '' AS StartPosition
+                , '' AS EndPosition
                 FROM
                     CTE_FleetDeatils fd
                     left join master.vehicle vh
-                        on fd.VIN = vh.VIN
-                    left JOIN master.geolocationaddress as startgeoaddr
-                            on TRUNC(CAST(startgeoaddr.latitude as numeric),4)= TRUNC(CAST(startpositionlattitude as numeric),4) 
-                               and TRUNC(CAST(startgeoaddr.longitude as numeric),4) = TRUNC(CAST(startpositionlongitude as numeric),4)
-                    left JOIN master.geolocationaddress as endgeoaddr
-                            on TRUNC(CAST(endgeoaddr.latitude as numeric),4)= TRUNC(CAST(endpositionlattitude as numeric),4) 
-                               and TRUNC(CAST(endgeoaddr.longitude as numeric),4) = TRUNC(CAST(endpositionlongitude as numeric),4)
+                        on fd.VIN = vh.VIN                    
 			)
 		SELECT
 
@@ -557,7 +561,8 @@ namespace net.atos.daf.ct2.reports.repository
 				  , (etl_gps_fuel_consumed)                                                  as fuel_consumed
 				  , (fuel_consumption)                                                  as fuel_consumption
 				  , (co2_emission)                                                      as co2_emission
-				  , case when (end_time_stamp - start_time_stamp)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)) *100) else 0 end as idle_duration
+                  , idle_duration as idle_duration
+				  , case when (end_time_stamp - start_time_stamp)>0 then ((idle_duration/((end_time_stamp - start_time_stamp)/1000)) *100) else 0 end as idle_duration_percentage
 				  , case when (end_time_stamp - start_time_stamp)>0 then ((pto_duration/((end_time_stamp - start_time_stamp)/1000)) *100)  else 0 end   as pto_duration
 				  , case when (end_time_stamp - start_time_stamp)>0 then ((harsh_brake_duration/((end_time_stamp - start_time_stamp)/1000)) *100)  else 0 end as harsh_brake_duration
 				  , case when (end_time_stamp - start_time_stamp)>0 then ((heavy_throttle_duration/((end_time_stamp - start_time_stamp)/1000)) *100)  else 0 end as heavy_throttle_duration
@@ -601,6 +606,7 @@ namespace net.atos.daf.ct2.reports.repository
 				  , round((fd.fuel_consumption),2)         As FuelConsumption
 				  , round((fd.co2_emission),2)         As CO2Emission
 				  , round(fd.idle_duration,2)                            as IdleDuration
+                  , round(fd.idle_duration_percentage,2)                            as IdleDurationPercentage
 				  , round(fd.pto_duration,2)                             as PTODuration
 				  , round((fd.harsh_brake_duration),2)    As HarshBrakeDuration
 				  , round((fd.heavy_throttle_duration),2)    As HeavyThrottleDuration
@@ -622,12 +628,15 @@ namespace net.atos.daf.ct2.reports.repository
                   , round(fd.CCFuelConsumed,2) as CCFuelConsumed
                   , round(fd.etl_gps_distance - fd.CCFuelDistance,2) as CCFuelDistanceNotActive
                   , round(fd.fuel_consumed - fd.CCFuelConsumed,2) as CCFuelConsumedNotActive
+                                                          , '' AS StartPosition
+                                                          , '' AS EndPosition
 				FROM
 					CTE_FleetDeatils fd
 				    left join
 						master.vehicle vh
 						on
 							fd.VIN =vh.VIN
+
 			)
 		SELECT
 			COALESCE(dr.first_name,'') || ' ' || COALESCE(dr.last_name,'') as DriverName
