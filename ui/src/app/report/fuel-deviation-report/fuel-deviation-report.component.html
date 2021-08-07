@@ -117,7 +117,8 @@
                 <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)"
                   placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
                   <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
-                    {{ rer.vehicleName }}
+                    <!-- {{ rer.vehicleName }} -->
+                    {{ (vehVinRegChecker && vehVinRegChecker.length > 0) ? rer[vehVinRegChecker[0].attr] : rer.vehicleName }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -170,7 +171,7 @@
                   </div>
                   <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <span>
-                      <span>{{ translationData.lblVehicle || 'Vehicle' }}: </span>
+                      <span>{{ (vehVinRegChecker.length > 0 && vehVinRegChecker[0].attr == 'vin') ? (translationData.lblVIN || 'VIN') : (vehVinRegChecker[0].attr == 'registrationNo') ? (translationData.lblRegPlateNumber || 'Reg. Plate Number') : (translationData.lblVehicle || 'Vehicle') }}: </span>
                       <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
                     </span>
                   </div>
