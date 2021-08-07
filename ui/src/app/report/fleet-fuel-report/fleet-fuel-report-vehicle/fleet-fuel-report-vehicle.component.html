@@ -204,7 +204,7 @@
           </ng-container>
   
           <ng-container matColumnDef="vehicleRegistrationNo">
-            <mat-header-cell [hidden]="!checkForPreference('vehicleranking_registrationno')" *matHeaderCellDef mat-sort-header>{{ translationData.lblPlateNo || 'Plate No' }}
+            <mat-header-cell [hidden]="!checkForPreference('vehicleranking_registrationno')" *matHeaderCellDef mat-sort-header>{{ translationData.lblPlateNo || 'Vehicle Registration Number' }}
             </mat-header-cell>
             <mat-cell [hidden]="!checkForPreference('vehicleranking_registrationno')" *matCellDef="let row" >
               <span>{{row.vehicleRegistrationNo}}</span>
@@ -335,8 +335,8 @@
               </div>
               <div *ngIf="checkForPreference('summary_co2emission')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                 <span>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('co2emission')}}{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || ' Ton') :
-                  (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || ' t') : (translationData.lbltons ||' t') }}
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('co2emission')}}{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || ' t') :
+                  (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || ' Ton') : (translationData.lbltons ||' Ton') }}
                   </span>
               </div>
             </div>
@@ -545,7 +545,7 @@
               </ng-container>
   
               <ng-container matColumnDef="vehicleRegistrationNo">
-                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_vehicleregistrationno')">{{ translationData.lblPlateNo || 'Plate No' }}
+                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_vehicleregistrationno')">{{ translationData.lblPlateNo || 'Vehicle Registration Number' }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" class="text-truncate" [hidden]="!checkForPreference('vehicledetails_vehicleregistrationno')">
                   <span>{{row.vehicleRegistrationNo}}</span>
@@ -616,9 +616,9 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_averagegrossweightcomb')">{{ translationData.lblAverageGrossWeightComb ||
                   'Average
                   Gross Weight Comb' }}
-                  <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || 'Ton') :
-                    (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || 't') : (translationData.lbltons ||
-                    't') }})</span>
+                  <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || 't') :
+                    (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || 'Ton') : (translationData.lbltons ||
+                    'Ton') }})</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_averagegrossweightcomb')">
                   <span>{{row.averageGrossWeightComb}}</span>
@@ -654,9 +654,9 @@
   
               <ng-container matColumnDef="cO2Emission" >
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_co2emission')">{{ translationData.lblCO2Emission || 'CO2 Emission' }}
-                  <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || 'Ton') :
-                    (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || 't') : (translationData.lbltons ||
-                    't') }})</span>
+                  <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || 't') :
+                    (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || 'Ton') : (translationData.lbltons ||
+                    'Ton') }})</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_co2emission')">
                   <span>{{row.cO2Emission}}</span>
@@ -764,7 +764,7 @@
               <ng-container matColumnDef="fuelconsumptionCCnonactive">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_fuelconsumptionccnonactive')">{{ translationData.lblFuelconsumptionCCnonactive ||
                   'Fuel
-                  consumption CC non active' }}
+                  Consumption CC non active' }}
                   <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' ltr/100km') : (prefUnitFormat ==
                     'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') : (translationData.lblgallonmile
                     || ' mpg') }})</span>
@@ -811,20 +811,30 @@
               <ng-container matColumnDef="idlingPTOScore">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">{{ translationData.lblIdlingwithPTOscore || 'Idling
                   with
-                  PTO(hh:mm:ss) score%' }}
+                  PTO(hh:mm:ss) score' }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithpto')">
                   <span>{{row.idlingPTOScore}}</span>
                 </mat-cell>
               </ng-container>
-  
+              
               <ng-container matColumnDef="idlingPTO">
-                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO || 'Idling
-                  without
-                  PTO (hh:mm:ss)%' }}
+                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingWithoutPTO || 'Idling
+                  with
+                  PTO%' }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
                   <span>{{row.idlingPTO}}</span>
+                </mat-cell>
+              </ng-container>
+  
+              <ng-container matColumnDef="idlingWithoutPTO">
+                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">{{ translationData.lblIdlingwithoutPTO || 'Idling
+                  without
+                  PTO (hh:mm:ss)' }}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_idlingwithoutpto')">
+                  <span>{{row.idlingWithoutPTO}}</span>
                 </mat-cell>
               </ng-container>
   
@@ -857,7 +867,7 @@
                 </mat-cell>
               </ng-container>
   
-              <ng-container matColumnDef="averageTrafficClassificationValue">
+             <!-- <ng-container matColumnDef="averageTrafficClassificationValue">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('averageTrafficClassificationValue')">{{ translationData.lblaverageTrafficClassificationValue
                   || 'average TrafficClassification Value' }}
                   <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
@@ -868,11 +878,11 @@
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('averageTrafficClassificationValue')">
                   <span>{{row.averageTrafficClassificationValue}}</span>
                 </mat-cell>
-              </ng-container>
+              </ng-container> -->
   
-              <ng-container matColumnDef="idlingConsumptionValue">
+              <ng-container matColumnDef="idlingConsumptionWithPTO">
                 <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_idlingconsumptionwithpto')">{{ translationData.lblidlingConsumptionValue ||
-                  'idling Consumption Value' }}
+                  'Idling Consumption With PTO' }}
                   <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') :
             (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound ||
             'pound') }})</span> 
