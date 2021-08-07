@@ -89,16 +89,7 @@ export class DashboardPreferencesComponent implements OnInit {
     this.showDashboardReport = false;
   }
 
-  updateEditFleetUtilFlag(retObj: any) {
-    if (retObj) {
-      this.editDashboardFlag = retObj.flag;
-      if (retObj.msg && retObj.msg != '') {
-        this.successMsgBlink(retObj.msg);
-      }
-    } else {
-      this.editDashboardFlag = false; // hard coded
-    }
-  }
+ 
 
   successMsgBlink(msg: any) {
     this.updateMsgVisible = true;
@@ -255,7 +246,7 @@ export class DashboardPreferencesComponent implements OnInit {
           // }
           _data.translatedName = this.getName(element.name);
           this.vehicleUtilizationColumnData.push(_data);
-          this.dashboardPreferenceForm.addControl(element.key + 'chartType', new FormControl(element.chartType));
+          this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType));
           if (element.key.includes('vehicleutilization_timebasedutilizationrate')) {
             let hms = this.secondsToHms(element.thresholdValue);
             let hrs = '';
@@ -324,28 +315,18 @@ export class DashboardPreferencesComponent implements OnInit {
     let saveArr = [];
     this[columnData].forEach(element => {
       let sSearch = this[selectionData].selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-      let thresholdType = this.dashboardPreferenceForm.get([element.key + 'thresholdType']).value;
-      let chartType = this.dashboardPreferenceForm.get([element.key + 'chartType']).value;
+      let thresholdType = this.dashboardPreferenceForm.get([element.key + 'thresholdType']).value;     
       let thresholdValue = this.dashboardPreferenceForm.get([element.key + 'thresholdValue']).value;
-      if (element.key.includes('_fleetkpi_drivingtime') || element.key.includes('_fleetkpi_idlingtime') || element.key.includes('_todaylivevehicle_timebasedutilizationrate')) {
+      if (element.key.includes('_fleetkpi_drivingtime') || element.key.includes('_fleetkpi_idlingtime') || element.key.includes('_todaylivevehicle_timebasedutilizationrate') || element.key.includes('_vehicleutilization_timebasedutilizationrate')) {
         let thresholdValuehrs = thresholdValue * 3600;
         let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin']).value * 60;
         let totalsecs : number = thresholdValuehrs + thresholdValuemin;
         saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: "", thresholdType: thresholdType, thresholdValue: totalsecs });
-
-      } else if(element.key.includes('_vehicleutilization_distancebasedutilizationrate') ||  element.key.includes('_vehicleutilization_distanceperday') || element.key.includes('_vehicleutilization_activevehiclesperday')) {
-         saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType, thresholdType:"", thresholdValue: parseInt(thresholdValue) });
-
-      }
-      else if(element.key.includes('_vehicleutilization_timebasedutilizationrate')){
-        let thresholdValuehrs = thresholdValue * 3600;
-        let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin']).value * 60;
-        let totalsecs : number = thresholdValuehrs + thresholdValuemin;
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType, thresholdType:"", thresholdValue: totalsecs });
-      }
+      } 
       else {
         saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: "", thresholdType: thresholdType, thresholdValue: parseInt(thresholdValue) });
       }
+      
     });
     return saveArr;
   }
@@ -355,6 +336,7 @@ export class DashboardPreferencesComponent implements OnInit {
     this.showDashboardReport = true;
     this.setColumnCheckbox();
   }
+ 
 
   // onReset(){
   //   this.setColumnCheckbox();
@@ -382,6 +364,7 @@ export class DashboardPreferencesComponent implements OnInit {
     }
     this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
       this.loadDashboardPreferences();
+      this.successMsgBlink('Dashboard Preferences Updated Successfully');
       //this.setDashboardFlag.emit({ flag: false, msg: this.getSuccessMsg() });
       //this.reloadCurrentComponent();
       // if((this.router.url).includes("fleetfuelreport")){
