@@ -32,11 +32,21 @@
           </span>
         </mat-panel-title>
       </mat-expansion-panel-header>
-       
+  
+      <div *ngIf='updateMsgVisible' fxLayout="row" fxLayoutAlign="center center"
+      style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-sm'>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+        {{ displayMessage }}
+      </div>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+        <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+      </div>
+    </div>
      <!-- *********Fleet KPI ********** -->
     <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
-   
+
+     
     <div class='min-width-33-3-per'>
     <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggle("FleetKPI") : null'
     [checked]='selectionForFleetKPIColumns.hasValue() && isAllSelected("FleetKPI")'

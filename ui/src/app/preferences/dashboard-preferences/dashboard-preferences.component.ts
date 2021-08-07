@@ -89,16 +89,7 @@ export class DashboardPreferencesComponent implements OnInit {
     this.showDashboardReport = false;
   }
 
-  updateEditFleetUtilFlag(retObj: any) {
-    if (retObj) {
-      this.editDashboardFlag = retObj.flag;
-      if (retObj.msg && retObj.msg != '') {
-        this.successMsgBlink(retObj.msg);
-      }
-    } else {
-      this.editDashboardFlag = false; // hard coded
-    }
-  }
+ 
 
   successMsgBlink(msg: any) {
     this.updateMsgVisible = true;
@@ -335,6 +326,7 @@ export class DashboardPreferencesComponent implements OnInit {
       else {
         saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: "", thresholdType: thresholdType, thresholdValue: parseInt(thresholdValue) });
       }
+      
     });
     return saveArr;
   }
@@ -344,6 +336,7 @@ export class DashboardPreferencesComponent implements OnInit {
     this.showDashboardReport = true;
     this.setColumnCheckbox();
   }
+ 
 
   // onReset(){
   //   this.setColumnCheckbox();
@@ -371,6 +364,7 @@ export class DashboardPreferencesComponent implements OnInit {
     }
     this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
       this.loadDashboardPreferences();
+      this.successMsgBlink('Dashboard Preferences Updated Successfully');
       //this.setDashboardFlag.emit({ flag: false, msg: this.getSuccessMsg() });
       //this.reloadCurrentComponent();
       // if((this.router.url).includes("fleetfuelreport")){
