@@ -88,9 +88,12 @@ style='border-radius: 5px 5px 0px 0px;'>
                   placeholder="{{ 'Set Target' }}" >
               <span *ngIf="field.translatedName =='CO2Emission'" matSuffix>Ton</span>
               <span *ngIf="field.translatedName =='TotalDistance' || 
-              field.translatedName =='FuelConsumption'" matSuffix>Km</span>
+              field.translatedName =='FuelConsumption'" matSuffix>
+              {{prefUnit == 'Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </span>
               <span *ngIf="field.translatedName =='FuelUsedIdling' || 
-              field.translatedName =='FuelConsumed'" matSuffix>L</span>
+              field.translatedName =='FuelConsumed'" matSuffix>
+              {{prefUnit == 'Metric' ?  (this.translationData.lblkms || 'L') : (this.translationData.lblmile || 'G')}}
+            </span>
           </mat-form-field>
       </div>
 
@@ -181,7 +184,9 @@ style='border-radius: 5px 5px 0px 0px;'>
             <mat-form-field appearance="outline" style='width: 80%'>
                 <input matInput  type="text" [formControlName]="field.key+'thresholdValue'"
                     placeholder="{{ 'Set Target' }}">
-                <span *ngIf="field.translatedName == 'DistanceBasedUtilizationRate'" matSuffix>km</span>
+                <span *ngIf="field.translatedName == 'DistanceBasedUtilizationRate'" matSuffix>
+                    {{prefUnit == 'Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}}
+                </span>
             </mat-form-field>
         </div>
 
@@ -262,7 +267,7 @@ style='border-radius: 5px 5px 0px 0px;'>
     <mat-form-field appearance="outline" style='width: 80%'>
         <input  matInput type="text" [formControlName]="field.key+'thresholdValue'"
             placeholder="{{ 'Set Target' }}" >
-        <span matSuffix>km</span>
+        <span matSuffix> {{prefUnit == 'Metric' ? (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}}</span>
     </mat-form-field>
 </div>
 
@@ -330,7 +335,8 @@ style='border-radius: 5px 5px 0px 0px;'>
           fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
           <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
             translationData.lblCancel || 'Cancel' }}</button>
-          <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary">{{
+          <button class='resetCancelBtnColor margin-right-10'
+           (click)='onReset()'mat-raised-button color="primary">{{
             translationData.lblReset || 'Reset' }}</button>
           <button class='no-margin' (click)='onConfirm()' mat-raised-button color="primary" >{{ (translationData.lblConfirm ||
             'Confirm') }}</button>
