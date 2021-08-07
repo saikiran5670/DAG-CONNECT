@@ -2352,12 +2352,11 @@ setVehicleGroupAndVehiclePreSelection() {
       break;
     }
     case 'idleDuration': { 
-        let s = this.displayData.forEach(element => {
-       sum += parseFloat(element.convertedIdleDuration);
-       });
-       //sum= sum.toFixed(2)*1;
-       sum = this.reportMapService.getHhMmTime(sum);
-       break;
+      let s = this.displayData.forEach(element => {
+        sum += parseFloat(element.idleDuration);
+        });
+        sum = this.reportMapService.getHhMmTime(sum);
+        break;
       // let s = this.tripData.forEach(element => {
       //   let time: any = 0;
       //   time += (element.idleDuration);

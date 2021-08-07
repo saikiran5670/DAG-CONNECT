@@ -613,7 +613,7 @@
                           <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idleduration')">{{ translationData.lblIdleDuration || 'Idle Duration(hh:mm)%' }}              
                           </mat-header-cell>          
                           <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_idleduration')">             
-                           <span>{{row.convertedIdleDuration}}</span>              
+                           <span>{{row.idleDurationPercentage}}</span>              
                           </mat-cell>
                         </ng-container>              
                         <ng-container matColumnDef="ptoDuration">              
