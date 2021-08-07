@@ -89,7 +89,7 @@ public class LogisticAlertFunction implements Serializable {
     private static Target getTarget(Status status, AlertUrgencyLevelRefSchema urgency) {
         return Target.builder()
                 .alert(Optional.of(Alert.builder()
-                        .tripid(status.getTransID())
+                        .tripid(status.getDocument().getTripID())
                         .vin(status.getVin())
                         .categoryType(urgency.getAlertCategory())
                         .type(urgency.getAlertType())
