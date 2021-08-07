@@ -32,6 +32,37 @@ export class DashboardService {
     return getHeaderObj;
   }
 
+  getVinsForDashboard(accountId: any, orgId: any) {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+     .get<any[]>(`${this.dashboardServiceUrl}/vins?accountId=${accountId}&organizationId=${orgId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getDashboardPreferences(reportId: any) {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+     .get<any[]>(`${this.dashboardServiceUrl}/preference?reportId=${reportId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  createDashboardPreferences(data: any) {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+     .post<any[]>(`${this.dashboardServiceUrl}/preference/create`,data, headers)
+      .pipe(catchError(this.handleError));
+  }
+  
+
   getTodayLiveVehicleData(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {

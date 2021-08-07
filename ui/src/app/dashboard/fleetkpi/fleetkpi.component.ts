@@ -72,7 +72,7 @@ export class FleetkpiComponent implements OnInit {
    };
  
    public doughnutChartPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-     beforeDraw(chart) {
+     afterDraw(chart) {
        const ctx = chart.ctx;
  
        ctx.textAlign = 'center';
@@ -143,7 +143,7 @@ export class FleetkpiComponent implements OnInit {
       }
      ];
     public doughnutChartIdlingPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
   
         ctx.textAlign = 'center';
@@ -213,7 +213,7 @@ export class FleetkpiComponent implements OnInit {
        ];
     
       public doughnutChartDrivingPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-        beforeDraw(chart) {
+        afterDraw(chart) {
           const ctx = chart.ctx;
     
           ctx.textAlign = 'center';
@@ -284,7 +284,7 @@ export class FleetkpiComponent implements OnInit {
      ];
   
     public doughnutChartDistancePlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
   
         ctx.textAlign = 'center';
@@ -345,7 +345,7 @@ export class FleetkpiComponent implements OnInit {
     };
   
     public doughnutChartFuelConsumedPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
   
         ctx.textAlign = 'center';
@@ -407,7 +407,7 @@ export class FleetkpiComponent implements OnInit {
       };
     
       public doughnutChartFuelUsedPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-        beforeDraw(chart) {
+        afterDraw(chart) {
           const ctx = chart.ctx;
     
           ctx.textAlign = 'center';
@@ -468,7 +468,7 @@ export class FleetkpiComponent implements OnInit {
        };
      
        public doughnutChartFuelConsumptionPlugins: PluginServiceGlobalRegistrationAndOptions[] = [{
-         beforeDraw(chart) {
+         afterDraw(chart) {
            const ctx = chart.ctx;
      
            ctx.textAlign = 'center';
@@ -560,16 +560,17 @@ export class FleetkpiComponent implements OnInit {
   getKPIData(){
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
-    this.totalVehicles = 3; //this.finalVinList.length;
+    this.totalVehicles = this.finalVinList.length;
     let _kpiPayload = {
       "startDateTime": _startTime,
       "endDateTime": _endTime,
-      "viNs": [ //this.finalVinList
-        "M4A14532",
-        "XLR0998HGFFT76657",
-        "XLRASH4300G1472w0",
-        "XLR0998HGFFT75550"
-      ]
+      "viNs": this.finalVinList 
+      // [ //this.finalVinList
+      //   "M4A14532",
+      //   "XLR0998HGFFT76657",
+      //   "XLRASH4300G1472w0",
+      //   "XLR0998HGFFT75550"
+      // ]
     }
     this.dashboardService.getFleetKPIData(_kpiPayload).subscribe((kpiData)=>{
       //console.log(kpiData);
@@ -592,7 +593,7 @@ export class FleetkpiComponent implements OnInit {
   updateCO2Emmission(){
     let currentValue = this.kpiData['fleetKpis']['co2Emission'];
     this.currentC02Value =  currentValue > 0  ? currentValue.toFixed(2) : currentValue;
-    let _thresholdValue = 10;
+    let _thresholdValue = this.getPreferenceThreshold('co2emission')['value'];//10;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
     this.cutOffC02Value =  targetValue > 0 ? targetValue.toFixed(2) : targetValue;
@@ -622,7 +623,7 @@ export class FleetkpiComponent implements OnInit {
     this.doughnutChartData = [[currentPercent,(100 - currentPercent)]]
 
     this.doughnutChartPlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -713,11 +714,11 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    let _prefLimit = 'upper';
-    let _prefThreshold = 10;
+    let _prefLimit = this.getPreferenceThreshold('co2emission')['type'];
+    let _prefThreshold = this.getPreferenceThreshold('co2emission')['value'];
      
     switch (_prefLimit) {
-      case 'upper':{
+      case 'U':{
         if(_prefThreshold < currentValue){ //red
           this.doughnutColors = [
             {
@@ -758,7 +759,7 @@ export class FleetkpiComponent implements OnInit {
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_prefLimit > currentValue){
             this.doughnutColors = [
               {
@@ -808,7 +809,7 @@ export class FleetkpiComponent implements OnInit {
   updateIdlingTime(){
     let currentValue = this.kpiData['fleetKpis']['idlingTime'];
     this.currentIdlingTime =  this.getTimeDisplay(currentValue);
-    let _thresholdValue = 3600000;
+    let _thresholdValue = this.getPreferenceThreshold('idlingtime')['value']; //3600000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
     this.cutOffIdlingTime =  this.getTimeDisplay(targetValue);
@@ -843,7 +844,7 @@ export class FleetkpiComponent implements OnInit {
     this.doughnutChartIdlingData = [[currentPercent,(100 - currentPercent)]]
 
     this.doughnutChartIdlingPlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -935,11 +936,11 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    let _prefLimit = 'upper';
-    let _prefThreshold = 10;
+    let _prefLimit = this.getPreferenceThreshold('idlingtime')['type']; 
+    let _prefThreshold = this.getPreferenceThreshold('idlingtime')['value']; 
      
     switch (_prefLimit) {
-      case 'upper':{
+      case 'U':{
         if(_prefThreshold < currentValue){ //red
           this.doughnutIdlingColors = [
             {
@@ -980,7 +981,7 @@ export class FleetkpiComponent implements OnInit {
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_prefLimit > currentValue){
             this.doughnutIdlingColors = [
               {
@@ -1030,7 +1031,7 @@ export class FleetkpiComponent implements OnInit {
   updateDrivingTime(){
     let currentValue = this.kpiData['fleetKpis']['drivingTime'];
     this.currentDrivingTime =  this.getTimeDisplay(currentValue);
-    let _thresholdValue = 3600000;
+    let _thresholdValue = this.getPreferenceThreshold('drivingtime')['value']; //3600000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = calculationValue['cuttOff'];
     this.cutOffDrivingTime =  this.getTimeDisplay(targetValue);
@@ -1064,7 +1065,7 @@ export class FleetkpiComponent implements OnInit {
     this.doughnutChartDrivingData = [[currentPercent,(100 - currentPercent)]]
 
     this.doughnutChartDrivingPlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -1156,11 +1157,11 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    let _prefLimit = 'upper';
-    let _prefThreshold = 10;
+    let _prefLimit = this.getPreferenceThreshold('drivingtime')['type'];
+    let _prefThreshold = this.getPreferenceThreshold('drivingtime')['value'];
      
     switch (_prefLimit) {
-      case 'upper':{
+      case 'U':{
         if(_prefThreshold < currentValue){ //red
           this.doughnutDrivingColors = [
             {
@@ -1201,7 +1202,7 @@ export class FleetkpiComponent implements OnInit {
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_prefLimit > currentValue){
             this.doughnutDrivingColors = [
               {
@@ -1251,7 +1252,7 @@ export class FleetkpiComponent implements OnInit {
   updateDistance(){
     let currentValue = this.kpiData['fleetKpis']['distance'];
     this.currentDistanceValue =  this.reportMapService.getDistance(currentValue, this.prefUnitFormat);
-    let _thresholdValue = 5000000;
+    let _thresholdValue = this.getPreferenceThreshold('totaldistance')['value'];//5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue =this.reportMapService.getDistance(calculationValue['cuttOff'],this.prefUnitFormat); 
     this.cutOffDistanceValue =  this.reportMapService.getDistance(currentValue, this.prefUnitFormat);
@@ -1283,7 +1284,7 @@ export class FleetkpiComponent implements OnInit {
     this.doughnutChartDistanceData = [[currentPercent,(100 - currentPercent)]]
 
     this.doughnutChartDistancePlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -1376,11 +1377,11 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    let _prefLimit = 'upper';
-    let _prefThreshold = 10;
+    let _prefLimit = this.getPreferenceThreshold('totaldistance')['type'];
+    let _prefThreshold = this.getPreferenceThreshold('totaldistance')['value']
      
     switch (_prefLimit) {
-      case 'upper':{
+      case 'U':{
         if(_prefThreshold < currentValue){ //red
           this.doughnutDistanceColors = [
             {
@@ -1421,7 +1422,7 @@ export class FleetkpiComponent implements OnInit {
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_prefLimit > currentValue){
             this.doughnutDistanceColors = [
               {
@@ -1471,7 +1472,7 @@ export class FleetkpiComponent implements OnInit {
   updateFuelConsumed(){
     let currentValue = this.kpiData['fleetKpis']['fuelConsumption'];
     this.currentFuelConsumed=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,false);
-    let _thresholdValue = 5000000;
+    let _thresholdValue = this.getPreferenceThreshold('fuelconsumed')['value']; // 5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = this.reportMapService.getFuelConsumedUnits( calculationValue['cuttOff'],this.prefUnitFormat,false);
     this.cutOffFuelConsumed =  this.reportMapService.getFuelConsumedUnits( calculationValue['cuttOff'],this.prefUnitFormat,false);
@@ -1506,7 +1507,7 @@ export class FleetkpiComponent implements OnInit {
     let targetUnit = (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallons || 'g') : (this.translationData.lblLtrs || 'L');
 
     this.doughnutChartFuelConsumedPlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -1537,7 +1538,7 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str = `<div class='dashboardTT'><div>Target: ` + (targetValue).toFixed(2) + ` ` + targetUnit
+            let _str = `<div class='dashboardTT'><div>Target: ` + (targetValue) + ` ` + targetUnit
             '</div>';
             if(showLastChange){
               _str += '<div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
@@ -1597,11 +1598,11 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    let _prefLimit = 'upper';
-    let _prefThreshold = 10;
+    let _prefLimit = this.getPreferenceThreshold('fuelconsumed')['type'];
+    let _prefThreshold = this.getPreferenceThreshold('fuelconsumed')['value'];
      
     switch (_prefLimit) {
-      case 'upper':{
+      case 'U':{
         if(_prefThreshold < currentValue){ //red
           this.doughnutFuelConsumedColors = [
             {
@@ -1642,7 +1643,7 @@ export class FleetkpiComponent implements OnInit {
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_prefLimit > currentValue){
             this.doughnutFuelConsumedColors = [
               {
@@ -1692,7 +1693,7 @@ export class FleetkpiComponent implements OnInit {
   updateIdlingFuelConsumption(){
     let currentValue = this.kpiData['fleetKpis']['idlingfuelconsumption'];
     this.currentIdlingFuelConsumed=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,false);
-    let _thresholdValue = 5000000;
+    let _thresholdValue = this.getPreferenceThreshold('fuelusedidling')['value']; //5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,false);
     this.cutOffIdlingFuelConsumed =  this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,false);
@@ -1723,7 +1724,7 @@ export class FleetkpiComponent implements OnInit {
     this.doughnutChartFuelUsedData = [[currentPercent,(100 - currentPercent)]]
 
     this.doughnutChartFuelUsedPlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -1756,7 +1757,7 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str =  `<div class='dashboardTT'><div>Target: ` + (targetValue).toFixed(2) + ' ' + targetUnit
+            let _str =  `<div class='dashboardTT'><div>Target: ` + (targetValue) + ' ' + targetUnit
             '</div>';
             if(showLastChange){
               _str += '<div>Last Change: ' + lastChangePercent.toFixed(2) + '%'+
@@ -1816,11 +1817,11 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    let _prefLimit = 'upper';
-    let _prefThreshold = 10;
+    let _prefLimit = this.getPreferenceThreshold('fuelusedidling')['type'];
+    let _prefThreshold = this.getPreferenceThreshold('fuelusedidling')['value'];
      
     switch (_prefLimit) {
-      case 'upper':{
+      case 'U':{
         if(_prefThreshold < currentValue){ //red
           this.doughnutFuelUsedColors = [
             {
@@ -1861,7 +1862,7 @@ export class FleetkpiComponent implements OnInit {
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_prefLimit > currentValue){
             this.doughnutFuelUsedColors = [
               {
@@ -1909,9 +1910,9 @@ export class FleetkpiComponent implements OnInit {
   }
 
   updateFuelConsumption(){
-    let currentValue = this.kpiData['fleetKpis']['fuelConsumption'];
+    let currentValue = this.kpiData['fleetKpis']['fuelConsumed']; // value of fuel consumption is actually fuelConsumed from api
     this.currentFuelConsumption=  this.reportMapService.getFuelConsumedUnits(currentValue,this.prefUnitFormat,true);
-    let _thresholdValue = 5000000;
+    let _thresholdValue = this.getPreferenceThreshold('fuelconsumption')['value']; //5000000;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true);
     this.cutOffFuelConsumption = this.reportMapService.getFuelConsumedUnits(calculationValue['cuttOff'],this.prefUnitFormat,true);
@@ -1924,7 +1925,7 @@ export class FleetkpiComponent implements OnInit {
     let caretIcon = '';
 
     if(this.kpiData['fleetKpis']['lastChangeKpi']){
-      let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumption'];
+      let lastValue = this.kpiData['fleetKpis']['lastChangeKpi']['fuelConsumed'];
 
       lastChangePercent = this.dashboardService.calculateLastChange(currentValue,lastValue);
 
@@ -1943,7 +1944,7 @@ export class FleetkpiComponent implements OnInit {
     this.doughnutChartFuelConsumptionData = [[currentPercent,(100 - currentPercent)]]
 
     this.doughnutChartFuelConsumptionPlugins = [{
-      beforeDraw(chart) {
+      afterDraw(chart) {
         const ctx = chart.ctx;
     
         ctx.textAlign = 'center';
@@ -2035,11 +2036,11 @@ export class FleetkpiComponent implements OnInit {
       }
     }
 
-    let _prefLimit = 'upper';
-    let _prefThreshold = 10;
+    let _prefLimit = this.getPreferenceThreshold('fuelconsumption')['type'];
+    let _prefThreshold = this.getPreferenceThreshold('fuelconsumption')['value'];
      
     switch (_prefLimit) {
-      case 'upper':{
+      case 'U':{
         if(_prefThreshold < currentValue){ //red
           this.doughnutFuelConsumptionColors = [
             {
@@ -2080,7 +2081,7 @@ export class FleetkpiComponent implements OnInit {
         }
       }
         break;
-        case 'lower':{
+        case 'L':{
           if(_prefLimit > currentValue){
             this.doughnutFuelConsumptionColors = [
               {
@@ -2127,6 +2128,8 @@ export class FleetkpiComponent implements OnInit {
 
   }
 
+  // ***************************** Preference functions *****************************//
+
   checkForPreference(fieldKey) {
     if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
       let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_fleetkpi_'+fieldKey));
@@ -2139,6 +2142,19 @@ export class FleetkpiComponent implements OnInit {
       }
     }
     return true;
+  }
+
+  getPreferenceThreshold(fieldKey){
+    let thresholdType = 'U';
+    let thresholdValue = 10;
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
+      let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_fleetkpi_'+fieldKey));
+      if (filterData.length > 0) {
+        thresholdType = filterData[0].thresholdType;
+        thresholdValue = filterData[0].thresholdValue;
+      }
+    }
+    return {type:thresholdType , value:thresholdValue};
   }
    //********************************** Date Time Functions *******************************************//
    setPrefFormatDate(){

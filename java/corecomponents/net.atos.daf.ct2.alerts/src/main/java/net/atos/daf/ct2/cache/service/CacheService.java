@@ -42,6 +42,7 @@ public class CacheService implements Serializable {
             if (broadcastState.contains(f0.getVin())) {
                 Payload listPayload = broadcastState.get(f0.getVin());
                 vinAlertList = (Set<AlertUrgencyLevelRefSchema>) listPayload.getData().get();
+                vinAlertList.remove(f1);
                 vinAlertList.add(f1);
                 broadcastState.put(f0.getVin(), Payload.builder().data(Optional.of(vinAlertList)).build());
                 logger.info("New alert added for vin : {}, alert definition: {}", f0, f1);

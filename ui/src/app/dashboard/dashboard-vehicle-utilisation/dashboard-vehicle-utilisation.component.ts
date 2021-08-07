@@ -9,6 +9,8 @@ import { Util } from 'src/app/shared/util';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Inject } from '@angular/core';
 import { ReportMapService } from '../../report/report-map.service';
+import { MessageService } from '../../services/message.service';
+
 
 @Component({
   selector: 'app-dashboard-vehicle-utilisation',
@@ -165,7 +167,9 @@ doughnutChartType: ChartType = 'doughnut';
 doughnutChartColors: Color[] = [
   {
     // backgroundColor: ['#69EC0A','#7BC5EC'],
-    backgroundColor: ['#69EC0A','#d62a29'],
+    // backgroundColor: ['#69EC0A','#d62a29'],
+    backgroundColor: ['#65C3F7 ','#F4AF85 '],
+    hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
   },
 ];
 doughnutChartLabels2: Label[] = [];
@@ -215,7 +219,9 @@ public alertPieChartLabels: Label[] = [];
 public alertPieChartData: SingleDataSet = [];
 alertPieChartColors: Color[] = [
   {
-    backgroundColor: ['#69EC0A','#d62a29','#FFD700'],
+    // backgroundColor: ['#69EC0A','#d62a29','#FFD700'],
+    backgroundColor: ['#D50017 ','#FB5F01 ','#FFD700 '],
+    hoverBackgroundColor: ['#D50017 ','#FB5F01 ','#FFD700 '],
   },
 ];
 vehicleUtilisationData: any;
@@ -240,21 +246,29 @@ logisticCount: any;
 fuelAndDriverCount: any;
 repairAndMaintenanceCount: any;
 toatlSum: any;
+_fleetTimer : boolean = true; 
+totalThresholdDistance: any;
 
   constructor(private router: Router,
               private elRef: ElementRef,
               private dashboardService : DashboardService,
               private reportMapService: ReportMapService,
-              @Inject(MAT_DATE_FORMATS) private dateFormats) { }
+              @Inject(MAT_DATE_FORMATS) private dateFormats,
+              private messageService: MessageService) {
+                if(this._fleetTimer){
+                  this.messageService.getMessage().subscribe(message => {
+                    if (message.key.indexOf("refreshData") !== -1) {
+                      this.getVehicleData();
+                    }
+                  });
+                }
+               }
 
   ngOnInit(): void {
 
     this.setInitialPref(this.prefData,this.preference);
     // this.setChartData();
-    this.selectionTimeRange('lastweek');
-
-    console.log("prefData = "+this.dashboardPrefData.subReportUserPreferences[3].subReportUserPreferences);
-     
+    this.selectionTimeRange('lastweek');     
   }
 
   setInitialPref(prefData,preference){
@@ -297,9 +311,14 @@ toatlSum: any;
         break;
       }
     }
+    if(this._fleetTimer){
+      this.messageService.sendMessage('refreshData');
 
-    console.log(this.startDateValue, this.endDateValue);
-    this.getVehicleData();
+    }
+    else{
+      this.getVehicleData();
+    }
+
   }
 
    //********************************** Date Time Functions *******************************************//
@@ -375,7 +394,7 @@ toatlSum: any;
   }
 
   getVehicleData(){
-    console.log(this.finalVinList);
+
     let startDate = Util.convertDateToUtc(this.startDateValue);
     let endDate = Util.convertDateToUtc(this.endDateValue);
     let _vehiclePayload = {
@@ -415,7 +434,6 @@ setAlertChartData(){
     let advisoryPercent = (this.alertsData.advisory/totalAlerts)* 100;
     this.alertPieChartData= [crticalPercent,warningPercent,advisoryPercent];
     this.alertPieChartLabels=  [`Critical (${this.alertsData.critical})`,`Warning (${this.alertsData.warning})`,`Advisory (${this.alertsData.advisory})`];
-    let alertchartdata1 = this.alertPieChartData;
     this.alertPieChartOptions = {
         responsive: true,
         legend: {
@@ -425,14 +443,12 @@ setAlertChartData(){
 
           tooltips: {
             position: 'nearest',
-         borderWidth: 0,
-            callbacks: {
-              afterLabel: function(tooltipItem, data) {
-                // return data.labels[tooltipItem.index] + 
-                // " : " + data[tooltipItem.index]+'%'
-                return '%'
-              }
-            },
+         callbacks: {
+          label: function(tooltipItem, data) {
+            return data.labels[tooltipItem.index] + 
+            " : " + data.datasets[0].data[tooltipItem.index]+'%'
+          }
+        },
       }
     }
   }
@@ -455,7 +471,7 @@ checkForPreference(fieldKey) {
 
 checkForVehiclePreference(fieldKey) {
   if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
-    let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_'+fieldKey));
+    let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_'+fieldKey));
     if (filterData.length > 0) {
       if (filterData[0].state == 'A') {
         return true;
@@ -467,31 +483,44 @@ checkForVehiclePreference(fieldKey) {
   return true;
 }
 
+getPreferenceThreshold(fieldKey){
+  let thresholdType = 'U';
+  let thresholdValue = 10080;
+  if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.length != 0) {
+    let filterData = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_'+fieldKey));
+    if (filterData.length > 0) {
+      thresholdType = filterData[0].thresholdType;
+      thresholdValue = filterData[0].thresholdValue;
+    }
+  }
+  return {type:thresholdType , value:thresholdValue};
+}
+
   setChartData(){
     if(this.dashboardPrefData.subReportUserPreferences.length > 0){
     let filterData1 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distanceperday'));
-    filterData1[0].chartType = 'B'  
+    // filterData1[0].chartType = 'B'  
     this.distanceChartType = filterData1[0].chartType == 'L' ? 'line' : 'bar';
      let filterData2 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
-     filterData2[0].chartType = 'L'  
+    //  filterData2[0].chartType = 'L'  
      this.vehicleChartType =  filterData2[0].chartType == 'L' ? 'line' : 'bar';
      let filterData3 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
-     filterData3[0].chartType = 'D'  
+    //  filterData3[0].chartType = 'D'  
      this.timeDChartType =  filterData3[0].chartType == 'P' ? 'pie' : 'doughnut';
      let filterData4 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
-     filterData4[0].chartType = 'D'  
+    //  filterData4[0].chartType = 'D'  
      this.mileageDChartType =  filterData4[0].chartType == 'P' ? 'pie' : 'doughnut';
     }
-    // this.distanceChartType = 'bar';
-    // this.vehicleChartType = 'line';
-    // this.timeDChartType = 'doughnut';
-    // this.mileageDChartType = 'doughnut';
-
     //for distance chart
     this.distance = [];
     this.calenderDate = [];
     this.vehiclecount = [];
-    let timebasedThreshold = 20077;
+    // let timebasedThreshold = 20077;
+    // let distancebasedThreshold = 20077;
+    let _prefLimitTime = this.getPreferenceThreshold('timebasedutilizationrate')['type'];
+    let timebasedThreshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
+    let _prefLimitDistance = this.getPreferenceThreshold('distancebasedutilizationrate')['type'];
+    let distancebasedThreshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
     let percentage2;
     let percentage1;
     this.totalDistance = 0;
@@ -512,16 +541,20 @@ checkForVehiclePreference(fieldKey) {
     });
     if(this.selectionTab == 'lastmonth'){
       this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 30;
+      this.totalThresholdDistance = distancebasedThreshold * this.greaterTimeCount * 30;
     }
     else if(this.selectionTab == 'lastweek'){
       this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 7;
+      this.totalThresholdDistance = distancebasedThreshold * this.greaterTimeCount * 7;
     }
     else if(this.selectionTab == 'last3month'){
       this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 90;
+      this.totalThresholdDistance = distancebasedThreshold * this.greaterTimeCount * 90;
     }
+
     percentage1 = (this.totalDrivingTime/this.totalThreshold)* 100; 
     percentage1 = parseInt(percentage1);
-    percentage2 = (this.totalDistance/this.totalThreshold)* 100;
+    percentage2 = (this.totalDistance/this.totalThresholdDistance)* 100;
     percentage2 = parseInt(percentage2);
 
     if(this.distanceChartType == 'bar'){
@@ -605,6 +638,47 @@ checkForVehiclePreference(fieldKey) {
     ];
   }
 
+  switch (_prefLimitTime) {
+    case 'U':{
+      if(timebasedThreshold > this.totalDistance){ //red
+        this.doughnutChartColors= [
+          {
+            backgroundColor: ['#65C3F7 ','#F4AF85 '],
+            hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+          },
+        ];
+        }
+      else{
+          this.doughnutChartColors= [
+            {
+              backgroundColor: ['#F4AF85 ','#65C3F7 '],
+              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+
+            }];
+          }
+        }
+              break;
+     case 'L':{
+        if(timebasedThreshold > this.totalDistance){
+          this.doughnutChartColors= [
+            {
+              backgroundColor: ['#F4AF85 ','#65C3F7 '],
+              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+
+            }];
+                }
+                else{
+                  this.doughnutChartColors= [
+                    {
+                      backgroundColor: ['#65C3F7 ','#F4AF85 '],
+                      hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+                    },
+                  ];
+                }
+              }
+            default:
+              break;
+          }
   //for time based utilisation
   if(this.timeDChartType =='doughnut'){
     this.doughnutChartLabels1 = [`Full Utilisation >${this.getHhMmTime(timebasedThreshold)}`,`Under Utilisation < ${this.getHhMmTime(timebasedThreshold)}`];
@@ -622,6 +696,48 @@ checkForVehiclePreference(fieldKey) {
   }
 
   //for distance based utilisation
+  switch (_prefLimitDistance) {
+    case 'U':{
+      if(timebasedThreshold > this.totalDistance){ //red
+        this.doughnutChartColors= [
+          {
+            backgroundColor: ['#65C3F7 ','#F4AF85 '],
+            hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+          },
+        ];
+        }
+      else{
+          this.doughnutChartColors= [
+            {
+              backgroundColor: ['#F4AF85 ','#65C3F7 '],
+              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+
+            }];
+          }
+        }
+              break;
+     case 'L':{
+        if(timebasedThreshold > this.totalDistance){
+          this.doughnutChartColors= [
+            {
+              backgroundColor: ['#F4AF85 ','#65C3F7 '],
+              hoverBackgroundColor: ['#F4AF85 ','#65C3F7 '],
+
+            }];
+                }
+                else{
+                  this.doughnutChartColors= [
+                    {
+                      backgroundColor: ['#65C3F7 ','#F4AF85 '],
+                      hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
+                    },
+                  ];
+                }
+              }
+            default:
+              break;
+          }
+
   let label3;
   if(this.prefUnitFormat == 'dunit_Metric'){
     label3 = 'Km'

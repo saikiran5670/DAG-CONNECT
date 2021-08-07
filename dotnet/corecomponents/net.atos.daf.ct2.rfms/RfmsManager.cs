@@ -29,6 +29,8 @@ namespace net.atos.daf.ct2.rfms
             string visibleVins = string.Empty;
             var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
             int lastVinId = 0;
+            RfmsVehicles rfmsVehicles = new RfmsVehicles();
+            rfmsVehicles.Vehicles = new List<Vehicle>();
             if (visibleVehicles.Count > 0)
             {
                 if (!string.IsNullOrEmpty(lastVin))
@@ -39,9 +41,9 @@ namespace net.atos.daf.ct2.rfms
                         lastVinId = Convert.ToInt32(id.FirstOrDefault());
                 }
                 visibleVins = string.Join(",", visibleVehicles.Select(p => p.VIN.ToString()));
+                rfmsVehicles = await _rfmsRepository.GetVehicles(visibleVins, lastVinId);
 
             }
-            RfmsVehicles rfmsVehicles = await _rfmsRepository.GetVehicles(visibleVins, lastVinId);
 
             if (rfmsVehicles.Vehicles.Count > thresholdValue)
             {

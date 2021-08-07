@@ -94,6 +94,8 @@ public class DafConstants {
 	
 	
 public static final int FUEL_CONSUMPTION_INDICATOR = 2;		
+
+public static final String Index="I";
 	
 	//master datamart
 		public static final String MASTER_POSTGRE_SERVER_NAME = "master_postgre_server_name";
