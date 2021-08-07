@@ -22,6 +22,11 @@ export class TodayLiveVehicleComponent implements OnInit {
   @ViewChild('chart1') chart1 : ElementRef;
   @ViewChild('chart3') chart3 : ElementRef;
 
+  
+  errorMessage : any;
+  dataError : boolean = false;
+  distance = 0;
+  drivingTime : any;
   liveVehicleData:any;
   activeVehiclePercent : Number = 0;
   fileIcon = 'assets/dashboard/greenArrow.svg';
@@ -250,6 +255,7 @@ doughnutDistanceColors: Color[] = [
   }
 
   getLiveVehicleData(){
+    this.dataError = false;
     let _vehiclePayload = {
       "viNs": this.finalVinList
       // [ //this.finalVinList
@@ -278,13 +284,16 @@ doughnutDistanceColors: Color[] = [
           this.updateCharts();
 
        }
+    },(error)=>{
+      if(error.status === 400){
+        this.dataError = true;
+        this.errorMessage = error.error.message;
+      }
     });
     
     
   }
 
-  distance = 0;
-  drivingTime : any;
   setValues(){
     this.distance = this.reportMapService.getDistance(this.liveVehicleData.distance, this.prefUnitFormat);
     this.drivingTime = this.getTimeDisplay(this.liveVehicleData.drivingTime);
