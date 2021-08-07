@@ -100,10 +100,26 @@
           <div class="row">
             <div class="col-md-12">
               <div style="display: block">
-                <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
+                <div id="chart">
+                  <apx-chart
+                    [series]="chartOptions.series"
+                    [chart]="chartOptions.chart"
+                    [xaxis]="chartOptions.xaxis"
+                    [markers]="chartOptions.markers"
+                    [stroke]="chartOptions.stroke"
+                    [yaxis]="chartOptions.yaxis"
+                    [dataLabels]="chartOptions.dataLabels"
+                    [title]="chartOptions.title"
+                    [fill]="chartOptions.fill"
+                    [tooltip]="chartOptions.tooltip"
+                    [legend]="chartOptions.legend"
+                    [plotOptions]='chartOptions.plotOptions'
+                  ></apx-chart>
+                </div>
+                <!-- <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
                   [legend]="barChartLegend" [chartType]="barChartType" 
                   (chartHover)="chartHovered($event)"
-                  (chartClick)="chartClicked($event)" (resetZoom)='onZoomReset()'></canvas>
+                  (chartClick)="chartClicked($event)" (resetZoom)='onZoomReset()'></canvas> -->
                   <!-- <canvas id="chartCanvas" width="600" height="160" style="display: block; height: 160px; width: 600px;"></canvas>
                   <div style="opacity:0;" class="chartTooltip center">
                   </div> -->

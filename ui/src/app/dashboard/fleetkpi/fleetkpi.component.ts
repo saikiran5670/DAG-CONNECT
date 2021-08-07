@@ -1316,7 +1316,7 @@ export class FleetkpiComponent implements OnInit {
           if (!tooltipEl) {
             tooltipEl = document.createElement('div');
             tooltipEl.id = 'chartjs-tooltip';
-            let _str =  `<div class='dashboardTT'><div>Target: ` + (targetValue).toFixed(2) + ' '+ targetUnit +
+            let _str =  `<div class='dashboardTT'><div>Target: ` + (targetValue)+ ' '+ targetUnit +
             '</div>';
             if(showLastChange){
               _str += `<div>Last Change: ` + lastChangePercent.toFixed(2) + '%'+
