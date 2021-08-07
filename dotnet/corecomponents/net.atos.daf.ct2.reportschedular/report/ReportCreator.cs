@@ -87,19 +87,21 @@ namespace net.atos.daf.ct2.reportscheduler.report
 
             Report.SetParameters(ReportSchedulerData, await GetVehicleDetails());
             var pdf = await GetHtmlToPdfDocument();
-            return await _reportSchedulerRepository
-                           .InsertReportPDF(new ScheduledReport
-                           {
-                               Report = _generatePdf.Convert(pdf),
-                               ScheduleReportId = ReportSchedulerData.Id,
-                               StartDate = ReportSchedulerData.StartDate,
-                               EndDate = ReportSchedulerData.EndDate,
-                               Token = Guid.NewGuid(),
-                               FileName = $"{ReportSchedulerData.ReportName}_{ReportSchedulerData.Id}_{DateTime.Now.ToString("ddMMyyyyHHmmss")}",
-                               CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now),
-                               ValidTill = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMonths(3)),
-                               IsMailSend = false
-                           }) > 0;
+            var test = _generatePdf.Convert(pdf);
+            return true;
+            //return await _reportSchedulerRepository
+            //               .InsertReportPDF(new ScheduledReport
+            //               {
+            //                   Report = _generatePdf.Convert(pdf),
+            //                   ScheduleReportId = ReportSchedulerData.Id,
+            //                   StartDate = ReportSchedulerData.StartDate,
+            //                   EndDate = ReportSchedulerData.EndDate,
+            //                   Token = Guid.NewGuid(),
+            //                   FileName = $"{ReportSchedulerData.ReportName}_{ReportSchedulerData.Id}_{DateTime.Now.ToString("ddMMyyyyHHmmss")}",
+            //                   CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now),
+            //                   ValidTill = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMonths(3)),
+            //                   IsMailSend = false
+            //               }) > 0;
         }
 
         private async Task<HtmlToPdfDocument> GetHtmlToPdfDocument()
@@ -109,7 +111,8 @@ namespace net.atos.daf.ct2.reportscheduler.report
                 ColorMode = ColorMode.Color,
                 Orientation = GetOrientation(),
                 PaperSize = GetPaperKind(),
-                Margins = new MarginSettings { Top = 10 }
+                Margins = new MarginSettings { Top = 10 },
+                Out = $@"C:\POC\tst2\1\{ ReportSchedulerData.ReportName }_{ ReportSchedulerData.Id }_{ DateTime.Now.ToString("ddMMyyyyHHmmss") }.pdf"
             };
             var objectSettings = new ObjectSettings
             {

@@ -143,7 +143,7 @@ namespace net.atos.daf.ct2.account.report
                         FuelConsumed = await _unitConversionManager.GetVolume(item.FuelConsumed, VolumeUnit.MilliLiter, UnitToConvert),
                         FuelConsumption = await _unitConversionManager.GetVolumePer100Km(item.Distance, item.FuelConsumed, VolumeUnit.MilliLiter, UnitToConvert),
                         CO2Emission = await _unitConversionManager.GetWeight(item.CO2Emission, WeightUnit.Tons, UnitToConvert),
-                        IdleDuration = item.IdleDuration,
+                        IdleDuration = item.IdleDurationPercentage,
                         PTODuration = item.PTODuration,
                         HarshBrakeDuration = item.HarshBrakeDuration,
                         HeavyThrottleDuration = item.HeavyThrottleDuration,
@@ -189,7 +189,7 @@ namespace net.atos.daf.ct2.account.report
                         FuelConsumed = await _unitConversionManager.GetVolume(item.FuelConsumed, VolumeUnit.MilliLiter, UnitToConvert),
                         FuelConsumption = await _unitConversionManager.GetVolumePer100Km(item.Distance, item.FuelConsumed, VolumeUnit.MilliLiter, UnitToConvert),
                         CO2Emission = await _unitConversionManager.GetWeight(item.CO2Emission, WeightUnit.Tons, UnitToConvert),
-                        IdleDuration = item.IdleDuration,
+                        IdleDuration = item.IdleDurationPercentage,
                         PTODuration = item.PTODuration,
                         HarshBrakeDuration = item.HarshBrakeDuration,
                         HeavyThrottleDuration = item.HeavyThrottleDuration,
@@ -258,8 +258,8 @@ namespace net.atos.daf.ct2.account.report
                                   , distanceUnit
                                   , Math.Round(TotalFuelConsumed, 2)
                                   , volumeUnit
-                                  , TotalIdleDuration
-                                  , "%"
+                                  , await _unitConversionManager.GetTimeSpan(TotalIdleDuration, TimeUnit.Seconds, UnitToConvert)
+                                  , timeSpanUnit
                                   , Math.Round(TotalFuelConsumption, 2)
                                   , volumePer100KmUnit
                                   , Math.Round(TotalCO2Emission, 2)
@@ -290,15 +290,15 @@ namespace net.atos.daf.ct2.account.report
                                   , await GenerateTable()
                                   , fromDate
                                   , toDate
-                                  , VehicleLists.Any(s => !string.IsNullOrEmpty(s.VehicleGroupName)) ? string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).Distinct().ToArray()) : "All"
-                                  , string.Join(',', VehicleLists.Select(s => s.VehicleName).Distinct().ToArray())
+                                  , VehicleLists.Select(s => s.VehicleGroupName).Distinct().Count() == 1 ? VehicleLists.FirstOrDefault().VehicleGroupName : "All"
+                                  , VehicleLists.Select(s => s.VehicleName).Distinct().Count() == 1 ? VehicleLists.FirstOrDefault().VehicleName : "All"
                                   , TotalNumberOfTrips
                                   , Math.Round(TotalDistance, 2)
                                   , distanceUnit
                                   , Math.Round(TotalFuelConsumed, 2)
                                   , volumeUnit
-                                  , TotalIdleDuration
-                                  , "%"
+                                  , await _unitConversionManager.GetTimeSpan(TotalIdleDuration, TimeUnit.Seconds, UnitToConvert)
+                                  , timeSpanUnit
                                   , Math.Round(TotalFuelConsumption, 2)
                                   , volumePer100KmUnit
                                   , Math.Round(TotalCO2Emission, 2)

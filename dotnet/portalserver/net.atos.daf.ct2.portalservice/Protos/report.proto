@@ -848,6 +848,9 @@ message FleetFuelDetails {
     double CCFuelConsumed = 46;
     int64 CCFuelDistanceNotActive = 47;
     double CCFuelConsumedNotActive = 48;
+    string StartPosition = 49;
+    string EndPosition = 50;
+    double IdleDurationPercentage = 51;
 }
 message FleetFuelDetailsByDriver {
     google.protobuf.StringValue VehicleName = 1;
@@ -893,6 +896,7 @@ message FleetFuelDetailsByDriver {
     double CCFuelConsumed = 41;
     int64 CCFuelDistanceNotActive = 42;
     double CCFuelConsumedNotActive = 43;
+    double IdleDurationPercentage = 44;
 }
 message FleetFuelTripDetails {
     string VehicleName = 1;
@@ -1360,7 +1364,7 @@ VehPerformanceTemplate VehPerformanceTemplate=3;
  repeated KpiData KpiData = 8;
  repeated ChartDataSet MatrixData = 9;
  }
- 
+
  message ChartDataSet{
  int32 Xindex=1;
  int32 Yindex=2;
@@ -1379,7 +1383,6 @@ repeated KpiData KpiData = 8;
     int32 OrganizationId = 4;
 
 }
-
 message VehPerformanceTypeRequest{
 
 }
@@ -1393,4 +1396,5 @@ message VehPerformanceTypeResponse{
       string Message = 2;
       Responsecode Code = 3;
 }
+
 // Vehicle Performance End

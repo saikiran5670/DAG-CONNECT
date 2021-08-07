@@ -11,6 +11,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { OrganizationService } from '../../services/organization.service';
 import { FileValidator } from 'ngx-material-file-input';
 import { DriverService } from '../../services/driver.service';
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-account-info-settings',
@@ -93,7 +94,8 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService,
-              private domSanitizer: DomSanitizer, private organizationService: OrganizationService, private driverService: DriverService) { }
+              private domSanitizer: DomSanitizer, private organizationService: OrganizationService, private driverService: DriverService,
+              private messageService : MessageService) { }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -344,7 +346,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   onGeneralSettingsUpdate(){
-
+    this.setTimerValueInLocalStorage(parseInt(this.userSettingsForm.controls.pageRefreshTime.value)); //update timer
     let objData: any = {
       id: (this.accountInfo[0]["preferenceId"] > 0) ? this.accountInfo[0]["preferenceId"] : 0,
       refId: this.accountId,
@@ -581,6 +583,12 @@ export class AccountInfoSettingsComponent implements OnInit {
         break;
       }
     } 
+  }
+
+  setTimerValueInLocalStorage(timerVal: any){
+    let num = (timerVal*60);
+    localStorage.setItem("liveFleetTimer", num.toString());  // default set
+    this.messageService.sendTimerValue(num);
   }
 
   addfile(event: any, clearInput: any){ 

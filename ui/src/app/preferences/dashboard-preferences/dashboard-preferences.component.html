@@ -155,12 +155,12 @@ style='border-radius: 5px 5px 0px 0px;'>
         <div *ngIf="field.translatedName == 'TimeBasedUtilizationRate'" style="display:inline-block" fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
             <div style="display:inline-block">
             <mat-form-field appearance="outline" style='width: 30%;'>
-                <input matInput type="text" value={{field.thresholdValue}}
+                <input matInput type="text" [formControlName]="field.key+'thresholdValue'"
                     placeholder="{{ '' }}">
                 <span matSuffix>Hr</span>
             </mat-form-field>
             <mat-form-field appearance="outline" style='width: 30%; margin-left: 4px;'>
-                <input matInput type="text"
+                <input matInput type="text" [formControlName]="field.key+'thresholdValuemin'"
                     placeholder="{{ '' }}">
                 <span matSuffix>Min</span>
             </mat-form-field>
@@ -169,7 +169,7 @@ style='border-radius: 5px 5px 0px 0px;'>
 
         <div *ngIf="field.translatedName == 'DistanceBasedUtilizationRate' || field.translatedName =='ActiveVehicles'" fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
             <mat-form-field appearance="outline" style='width: 80%'>
-                <input matInput  type="text" value={{field.thresholdValue}}
+                <input matInput  type="text" [formControlName]="field.key+'thresholdValue'"
                     placeholder="{{ 'Set Target' }}">
                 <span *ngIf="field.translatedName == 'DistanceBasedUtilizationRate'" matSuffix>km</span>
             </mat-form-field>
@@ -177,7 +177,7 @@ style='border-radius: 5px 5px 0px 0px;'>
 
         <div *ngIf="field.translatedName == 'TimeBasedUtilizationRate' || field.translatedName == 'DistanceBasedUtilizationRate' || field.translatedName == 'ActiveVehicles'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
             <mat-form-field appearance="outline" style='width: 80%'>
-                <mat-select [disabled]='upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
+                <mat-select [formControlName]="field.key+'thresholdType'" [disabled]='upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
                     <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.type">
                     {{ rer.name }}
                     </mat-option>
@@ -236,12 +236,12 @@ style='border-radius: 5px 5px 0px 0px;'>
   <div *ngIf="field.translatedName== 'TimeBasedUtilizationRate'"  fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
    <div style="display:inline-block">
     <mat-form-field appearance="outline" style='width: 30%;'>
-        <input  matInput type="text" value={{field.thresholdValue}}
+        <input  matInput type="text" [formControlName]="field.key+'thresholdValue'"
             placeholder="{{ '' }}">
         <span matSuffix>Hr</span>
     </mat-form-field>
     <mat-form-field appearance="outline" style='width: 30%; margin-left: 4px;'>
-        <input matInput type="text" 
+        <input matInput type="text" [formControlName]="field.key+'thresholdValuemin'" 
             placeholder="{{ '' }}">
         <span matSuffix>Min</span>
     </mat-form-field>
@@ -250,7 +250,7 @@ style='border-radius: 5px 5px 0px 0px;'>
 
 <div  *ngIf="field.translatedName== 'DistanceBasedUtilizationRate'"  fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
     <mat-form-field appearance="outline" style='width: 80%'>
-        <input  matInput type="text" value={{field.thresholdValue}}
+        <input  matInput type="text" [formControlName]="field.key+'thresholdValue'"
             placeholder="{{ 'Set Target' }}" >
         <span matSuffix>km</span>
     </mat-form-field>
@@ -258,11 +258,17 @@ style='border-radius: 5px 5px 0px 0px;'>
 
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
       <mat-form-field appearance="outline" style='width: 80%'>
-          <mat-select  [disabled]='chartSelectionType.length == 0' placeholder="{{'Chart Type' }}">
-              <mat-option *ngFor="let rer of chartSelectionType" [value]="rer.type">
+          <mat-select *ngIf="field.translatedName== 'DistanceBasedUtilizationRate' || field.translatedName== 'TimeBasedUtilizationRate'" [formControlName]="field.key+'chartType'"  [disabled]='donutPieDD.length == 0' placeholder="{{'Chart Type' }}">
+              <mat-option *ngFor="let rer of donutPieDD" [value]="rer.type">
               {{ rer.name }}
               </mat-option>
           </mat-select>
+
+          <mat-select *ngIf="field.translatedName== 'DistancePerDay' || field.translatedName== 'ActiveVehiclesPerDay'" [formControlName]="field.key+'chartType'" [disabled]='lineBarDD.length == 0' placeholder="{{'Chart Type' }}">
+            <mat-option *ngFor="let rer of lineBarDD" [value]="rer.type">
+            {{ rer.name }}
+            </mat-option>
+        </mat-select>
       </mat-form-field>
   </div>
 </div>
