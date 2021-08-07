@@ -490,8 +490,8 @@ namespace net.atos.daf.ct2.reports.repository
                 , round(fd.CCFuelConsumed, 2) as CCFuelConsumed
                 , round(fd.etl_gps_distance - fd.CCFuelDistance, 2) as CCFuelDistanceNotActive
                 , round(fd.fuel_consumed - fd.CCFuelConsumed, 2) as CCFuelConsumedNotActive
-                , startgeoaddr.id AS StartPositionId
-                , endgeoaddr.id AS EndPositionId
+                , 0 AS StartPositionId
+                , 0 AS EndPositionId
                 , '' AS StartPosition
                 , '' AS EndPosition
                 FROM

@@ -92,7 +92,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 on trpst.trip_id=ld.trip_id
                                 --Join Master.vehicle v
                                 --on ld.vin=v.vin
-                                where (start_time_stamp >= @StartDateTime 
+                                where (end_time_stamp >= @StartDateTime 
 	                                 and end_time_stamp<= @EndDateTime) and 
 	                                 trpst.vin = Any(@vins)
                                 Group by date_trunc('day', to_timestamp(event_time/1000))
