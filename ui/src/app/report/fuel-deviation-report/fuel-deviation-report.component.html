@@ -407,9 +407,9 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="fuelDiffernce">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDifference || 'Difference' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDifference || 'Difference' }} (%)
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.convertedDifference != '' ? row.convertedDifference : '-' }}%</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.convertedDifference != '' ? row.convertedDifference : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="vehicleName">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}</mat-header-cell>
