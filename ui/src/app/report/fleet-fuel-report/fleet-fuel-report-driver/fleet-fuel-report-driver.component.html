@@ -745,8 +745,10 @@
   
             <ng-container matColumnDef="averageGrossWeightComb">
   
-              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_averagegrossweightcomb')">{{ translationData.lblAverageGrossWeightComb || 'Average Gross Weight Comb(Ton)' }}
-  
+              <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_averagegrossweightcomb')">{{ translationData.lblAverageGrossWeightComb || 'Average Gross Weight Comb' }}
+                <span style = "font-weight:normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || ' t') :
+                  (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || ' Ton') : (translationData.lbltons ||' Ton') }})
+                </span>
               </mat-header-cell>
   
               <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_averagegrossweightcomb')">

@@ -118,6 +118,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   targetProfileSelected: Number;
   ecoScoreDriverDetails: any;
   ecoScoreDriverDetailsTrendLine: any;
+  prefObj: any;
   prefMapData: any = [
     {
       key: 'da_report_alldriver_general_driverscount',
@@ -305,6 +306,12 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
       this.prefTimeZone = prefData.timezone[0].value;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
+    }
+    this.prefObj={
+      prefTimeFormat: this.prefTimeFormat,
+      prefTimeZone: this.prefTimeZone,
+      prefDateFormat: this.prefDateFormat,
+      prefUnitFormat: this.prefUnitFormat
     }
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();

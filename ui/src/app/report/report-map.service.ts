@@ -1502,6 +1502,26 @@ export class ReportMapService {
     return _distance;    
   }
 
+  getDashboardDistance(distance: any, unitFormat: any) {
+    // distance in milimeters
+    let _distance: any = 0;
+    switch (unitFormat) {
+      case 'dunit_Metric': {
+        _distance = (distance / 1000000).toFixed(2); //-- km
+        break;
+      }
+      case 'dunit_Imperial':
+      case 'dunit_USImperial': {
+        _distance = (distance / 1609344).toFixed(2); //-- mile
+        break;
+      }
+      default: {
+        _distance = distance.toFixed(2);
+      }
+    }
+    return _distance;
+  }
+
   getAvrgWeight(avgWeight: any, unitFormat: any ){
     let _avgWeight: any = 0;
     switch(unitFormat){
