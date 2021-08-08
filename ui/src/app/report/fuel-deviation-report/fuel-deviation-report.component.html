@@ -401,12 +401,12 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="fuelEventType">
-              <mat-header-cell class="max-width-10-per" *matHeaderCellDef>{{ translationData.lblType || 'Type' }}
+              <mat-header-cell class="max-width-10-per" *matHeaderCellDef mat-sort-header>{{ translationData.lblType || 'Type' }}
               </mat-header-cell>
               <mat-cell class="max-width-10-per" *matCellDef="let row" matTooltip='{{ row.eventTooltip }}'><mat-icon svgIcon="{{ row.svgIcon }}"></mat-icon>
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="fuelDiffernce">
+            <ng-container matColumnDef="convertedDifference">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDifference || 'Difference' }} (%)
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedDifference != '' ? row.convertedDifference : '-' }}</mat-cell>

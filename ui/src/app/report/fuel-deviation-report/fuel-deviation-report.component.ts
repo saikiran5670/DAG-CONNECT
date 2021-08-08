@@ -79,8 +79,8 @@ export class FuelDeviationReportComponent implements OnInit {
   wholeFuelDeviationData: any = [];
   tableInfoObj: any = {};
   fuelDeviationReportId: any = 7; // hard coded for fuel deviation report pref.
-  displayedColumns = ['All', 'fuelEventType', 'fuelDiffernce', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
-  pdfDisplayedColumns = ['All', 'fuelEventType', 'fuelDiffernce', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
+  displayedColumns = ['All', 'fuelEventType', 'convertedDifference', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
+  pdfDisplayedColumns = ['All', 'fuelEventType', 'convertedDifference', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
   startDateValue: any;
   tableExpandPanel: boolean = true;
   last3MonthDate: any;
@@ -129,7 +129,7 @@ export class FuelDeviationReportComponent implements OnInit {
     },
     {
       key: 'rp_fd_details_difference',
-      value: 'fuelDiffernce'
+      value: 'convertedDifference'
     },
     {
       key: 'rp_fd_details_alerts',
@@ -1420,7 +1420,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
             tempObj.push(e.eventTooltip);
             break;
           }
-          case 'fuelDiffernce' :{
+          case 'convertedDifference' :{
             tempObj.push(e.convertedDifference);
             break;
           }
