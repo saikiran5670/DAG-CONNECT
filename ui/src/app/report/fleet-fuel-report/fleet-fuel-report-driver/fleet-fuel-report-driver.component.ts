@@ -41,8 +41,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
   'maxSpeed', 'numberOfTrips', 'averageGrossWeightComb', 'fuelConsumed', 'fuelConsumption', 'cO2Emission', 
   'idleDuration','ptoDuration','harshBrakeDuration','heavyThrottleDuration','cruiseControlDistance3050',
   'cruiseControlDistance5075','cruiseControlDistance75', 'averageTrafficClassification',
-  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','idlingPTOScore','idlingPTO','idlingWithoutPTOpercent','footBrake',
-  'cO2Emmision', 'averageTrafficClassificationValue','idlingConsumptionValue'];
+  'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore','idlingPTOScore','idlingPTO','idlingWithoutPTO','idlingWithoutPTOpercent','footBrake',
+  'cO2Emmision', 'idlingConsumptionWithPTO'];
    detaildisplayedColumns = ['All','vehicleName','vin','vehicleRegistrationNo','startDate','endDate','averageSpeed', 'maxSpeed',  'distance', 'startPosition', 'endPosition',
    'fuelConsumed', 'fuelConsumption', 'cO2Emission',  'idleDuration','ptoDuration','cruiseControlDistance3050','cruiseControlDistance5075','cruiseControlDistance75','heavyThrottleDuration',
    'harshBrakeDuration','averageGrossWeightComb', 'averageTrafficClassification',
@@ -1682,10 +1682,21 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'idleDuration': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.idleDuration);
-      });
-      sum = sum.toFixed(2);
-      break;
+        sum += parseFloat(element.idleDuration);
+        });
+        sum = this.reportMapService.getHhMmTime(sum);
+        break;
+      //  let s = this.tripData.forEach(element => {
+      //    let time: any = 0;
+      //    time += (element.idleDuration);
+      //    let data: any = "00:00";
+      //    let hours = Math.floor(time / 3600);
+      //    time %= 3600;
+      //    let minutes = Math.floor(time / 60);
+      //    let seconds = time % 60;
+      //    data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
+      //    sum = data;
+      //  });
     }
     case 'fuelConsumption': { 
       let s = this.displayData.forEach(element => {

@@ -401,23 +401,23 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="fuelEventType">
-              <mat-header-cell *matHeaderCellDef>{{ translationData.lblType || 'Type' }}
+              <mat-header-cell class="max-width-10-per" *matHeaderCellDef>{{ translationData.lblType || 'Type' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" matTooltip='{{ row.eventTooltip }}'><mat-icon svgIcon="{{ row.svgIcon }}"></mat-icon>
+              <mat-cell class="max-width-10-per" *matCellDef="let row" matTooltip='{{ row.eventTooltip }}'><mat-icon svgIcon="{{ row.svgIcon }}"></mat-icon>
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="fuelDiffernce">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDifference || 'Difference' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.fuelDiffernce != '' ? row.fuelDiffernce : '-' }}%</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.convertedDifference != '' ? row.convertedDifference : '-' }}%</mat-cell>
             </ng-container>
             <ng-container matColumnDef="vehicleName">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}</mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.vehicleName != '' ? row.vehicleName : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="vin">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip='{{ row.vin }}'>{{ row.vin != '' ? row.vin : '-' }}
+              <mat-header-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}</mat-header-cell>
+              <mat-cell *matCellDef="let row" [ngClass]="{'text-truncate': displayedColumns.length > 7}"  matTooltip='{{ row.vin }}'>{{ row.vin != '' ? row.vin : '-' }}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="registrationNo">
@@ -431,8 +431,8 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="odometer">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblkm || 'km') }})</span></mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.convertedOdometer != '' ? row.convertedOdometer : '-' }}</mat-cell>
+              <mat-header-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblkm || 'km') }})</span></mat-header-cell>
+              <mat-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" *matCellDef="let row">{{ row.convertedOdometer != '' ? row.convertedOdometer : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="startTimeStamp">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartDate || 'Start Date' }}

@@ -1153,6 +1153,7 @@ export class ReportMapService {
       element.svgIcon = eventData.svgIcon,
       element.eventTooltip = eventData.eventText,
       element.eventDate = this.getStartTime(element.eventTime, dateFormat, timeFormat, timeZone, true);
+      element.convertedDifference = this.getConvertedDiff(element);
       element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
       element.convertedStartDate = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone, true);
       element.convertedEndDate = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone, true);
@@ -1166,18 +1167,21 @@ export class ReportMapService {
     return gridData;
   }
 
+  getConvertedDiff(item: any){
+    let fuelDiff: any = item.fuelDiffernce;
+    if(item.fuelEventType == 'D'){
+      fuelDiff = parseInt(`-${item.fuelDiffernce}`);
+    }
+    return fuelDiff;
+  }
+
   getEventTooltip(elem: any, transData: any){
     let _eventTxt: any = '';
-    let _svgIcon: any = 'fuel-desc-run';
+    let _svgIcon: any = 'fuel-desc-stop';
     switch(`${elem.fuelEventType}${elem.vehicleActivityType}`){
       case 'IS': {
         _eventTxt = transData.lblFuelIncreaseDuringStop || 'Fuel Increase During Stop';
-        _svgIcon = 'fuel-incr-stop';
-        break;
-      }
-      case 'DS': {
-        _eventTxt = transData.lblFuelDecreaseDuringStop || 'Fuel Decrease During Stop';
-        _svgIcon = 'fuel-desc-stop';
+        _svgIcon = 'fuel-incr-run'; // fuel-incr-stop
         break;
       }
       case 'IR': {
@@ -1185,9 +1189,14 @@ export class ReportMapService {
         _svgIcon = 'fuel-incr-run';
         break;
       }
+      case 'DS': {
+        _eventTxt = transData.lblFuelDecreaseDuringStop || 'Fuel Decrease During Stop';
+        _svgIcon = 'fuel-desc-stop';
+        break;
+      }
       case 'DR': {
         _eventTxt = transData.lblFuelDecreaseDuringRun || 'Fuel Decrease During Run';
-        _svgIcon = 'fuel-desc-run';
+        _svgIcon = 'fuel-desc-stop'; // fuel-desc-run
         break;
       }
     }
@@ -1350,9 +1359,10 @@ export class ReportMapService {
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
       element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
-      element.convertedIdleDuration = element.idleDuration.toFixed(2);
       element.convertedFuelConsumed100Km = this.getFuelConsumptionUnits(element.fuelConsumed, unitFormat);
       element.convertedFuelConsumption = this.getFuelConsumedUnits(element.fuelConsumption, unitFormat);
+      element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
+      //element.convertedIdleDuration =element.idleDuration
       element.dpaScore = parseFloat(element.dpaScore);
       element.dpaScore = element.dpaScore.toFixed(2)*1;
       element.dpaScore = element.dpaScore.toFixed(2);
