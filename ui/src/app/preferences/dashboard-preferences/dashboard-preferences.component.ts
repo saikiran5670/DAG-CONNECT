@@ -199,13 +199,13 @@ export class DashboardPreferencesComponent implements OnInit {
         let _data: any;
         if (section.name.includes('Dashboard.FleetKPI')) {
           _data = element;
-          // if (this.translationData[element.key]) {
-          //   _data.translatedName = this.translationData[element.key];
-          //   console.log("translated name....",_data.translatedName);
-          // } else {
-          //   _data.translatedName = this.getName(element.name);
-          //   console.log("translated name1....",_data.translatedName);
-          // }
+          if (this.translationData[element.key]) {
+            _data.translatedName = this.translationData[element.key];
+            console.log("translated name....",_data.translatedName);
+          } else {
+            _data.translatedName = this.getName(element.name);
+            console.log("translated name1....",_data.translatedName);
+          }
           _data.translatedName = this.getName(element.name);
           this.fleetKPIColumnData.push(_data);
           this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType));
@@ -236,11 +236,11 @@ export class DashboardPreferencesComponent implements OnInit {
           }
         } else if (section.name.includes('Dashboard.TodayLiveVehicle')) {
           _data = element;
-          // if (this.translationData[element.key]) {
-          //   _data.translatedName = this.translationData[element.key];
-          // } else {
-          //   _data.translatedName = this.getName(element.name);
-          // }
+          if (this.translationData[element.key]) {
+            _data.translatedName = this.translationData[element.key];
+          } else {
+            _data.translatedName = this.getName(element.name);
+          }
           _data.translatedName = this.getName(element.name);
           this.todayLiveVehicleColumnData.push(_data);
           this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType));
@@ -266,14 +266,14 @@ export class DashboardPreferencesComponent implements OnInit {
 
         } else if (section.name.includes('Dashboard.VehicleUtilization')) {
           _data = element;
-          // if (this.translationData[element.key]) {
-          //   _data.translatedName = this.translationData[element.key];
-          // } else {
-          //   _data.translatedName = this.getName(element.name);
-          // }
+          if (this.translationData[element.key]) {
+            _data.translatedName = this.translationData[element.key];
+          } else {
+            _data.translatedName = this.getName(element.name);
+          }
           _data.translatedName = this.getName(element.name);
           this.vehicleUtilizationColumnData.push(_data);
-          this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType));
+          this.dashboardPreferenceForm.addControl(element.key + 'chartType', new FormControl(element.chartType));
           if (element.key.includes('vehicleutilization_timebasedutilizationrate')) {
             let hms = this.secondsToHms(element.thresholdValue);
             let hrs = '';
@@ -296,11 +296,11 @@ export class DashboardPreferencesComponent implements OnInit {
 
         } else if (section.name.includes('Dashboard.AlertLast24Hours')) {
           _data = element;
-          // if (this.translationData[element.key]) {
-          //   _data.translatedName = this.translationData[element.key];
-          // } else {
-          //   _data.translatedName = this.getName(element.name);
-          // }
+          if (this.translationData[element.key]) {
+            _data.translatedName = this.translationData[element.key];
+          } else {
+            _data.translatedName = this.getName(element.name);
+          }
           _data.translatedName = this.getName(element.name);
           this.alertLast24HoursColumnData.push(_data);
         }
@@ -348,16 +348,17 @@ export class DashboardPreferencesComponent implements OnInit {
     let saveArr = [];
     this[columnData].forEach(element => {
       let sSearch = this[selectionData].selected.filter(item => item.dataAttributeId == element.dataAttributeId);
-      let thresholdType = this.dashboardPreferenceForm.get([element.key + 'thresholdType']).value;     
-      let thresholdValue = this.dashboardPreferenceForm.get([element.key + 'thresholdValue']).value;
+      let chartType = this.dashboardPreferenceForm.get([element.key + 'chartType'])?.value || '';   
+      let thresholdType = this.dashboardPreferenceForm.get([element.key + 'thresholdType'])?.value || '';     
+      let thresholdValue = this.dashboardPreferenceForm.get([element.key + 'thresholdValue'])?.value || 0;
       if (element.key.includes('_fleetkpi_drivingtime') || element.key.includes('_fleetkpi_idlingtime') || element.key.includes('_todaylivevehicle_timebasedutilizationrate') || element.key.includes('_vehicleutilization_timebasedutilizationrate')) {
         let thresholdValuehrs = thresholdValue * 3600;
-        let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin']).value * 60;
+        let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin'])?.value * 60;
         let totalsecs : number = thresholdValuehrs + thresholdValuemin;
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: "", thresholdType: thresholdType, thresholdValue: totalsecs });
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs });
       } 
       else {
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: "", thresholdType: thresholdType, thresholdValue: parseInt(thresholdValue) });
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType? chartType : '', thresholdType: thresholdType, thresholdValue: parseInt(thresholdValue) });
       }
       
     });
@@ -383,9 +384,10 @@ export class DashboardPreferencesComponent implements OnInit {
     let _alertLast24HoursArr: any = [];
 
     _fleetKPIArr = this.getSaveObject('fleetKPIColumnData', 'selectionForFleetKPIColumns');
-     _vehicleUtilizationArr = this.getSaveObject('vehicleUtilizationColumnData', 'selectionForVehicleUtilizationColumns');
-     _todayLiveVehicleArr = this.getSaveObject('todayLiveVehicleColumnData', 'selectionForTodayLiveVehicleColumns');
-    // _alertLast24HoursArr = this.getSaveObject('alertLast24HoursColumnData', 'selectionForAlertLast24HoursColumns');
+    _todayLiveVehicleArr = this.getSaveObject('todayLiveVehicleColumnData', 'selectionForTodayLiveVehicleColumns');
+    _vehicleUtilizationArr = this.getSaveObject('vehicleUtilizationColumnData', 'selectionForVehicleUtilizationColumns');
+     
+    _alertLast24HoursArr = this.getSaveObject('alertLast24HoursColumnData', 'selectionForAlertLast24HoursColumns');
 
     console.log("save Object", [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr])
    // return [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr];
@@ -411,7 +413,7 @@ export class DashboardPreferencesComponent implements OnInit {
   }
 
   getUnits() {
-    let unitObj = this.generalPreferences.unit.filter(item => item.id == this.unitId);
+    let unitObj = this.generalPreferences?.unit.filter(item => item.id == this.unitId);
     this.prefUnit = unitObj[0].value;
     console.log("Preference ID", this.prefUnit);
     if(unitObj[0].value == 'Imperial') {
