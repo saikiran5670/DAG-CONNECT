@@ -96,14 +96,20 @@ namespace net.atos.daf.ct2.dashboardservice
         {
             try
             {
+                //long l = 1628123515000;
+                //string str = UTCHandling.GetConvertedDateTimeFromUTC(l, "UTC", null);
                 net.atos.daf.ct2.dashboard.entity.TodayLiveVehicleRequest objTodayLiveVehicleRequest = new net.atos.daf.ct2.dashboard.entity.TodayLiveVehicleRequest();
                 objTodayLiveVehicleRequest.VINs = request.VINs.ToList<string>();
                 var filter = DateTime.Now;
-                DateTime datetime = DateTime.Now.AddHours(-filter.Hour).AddMinutes(-filter.Minute)
+                DateTime todayEarlyHr = DateTime.Now.AddHours(-filter.Hour).AddMinutes(-filter.Minute)
                                    .AddSeconds(-filter.Second).AddMilliseconds(-filter.Millisecond);
-                DateTime yesterday = datetime.AddDays(-1);
-                objTodayLiveVehicleRequest.TodayDateTime = UTCHandling.GetUTCFromDateTime(datetime, "UTC");
-                objTodayLiveVehicleRequest.YesterdayDateTime = UTCHandling.GetUTCFromDateTime(yesterday, "UTC");
+                DateTime yesterdayEarlyHr = todayEarlyHr.AddDays(-1);
+                DateTime tomorrowEarlyHr = todayEarlyHr.AddDays(1);
+                DateTime dayBeforeYesterdayEarlyHr = yesterdayEarlyHr.AddDays(-1);
+                objTodayLiveVehicleRequest.TodayDateTime = UTCHandling.GetUTCFromDateTime(todayEarlyHr, "UTC");
+                objTodayLiveVehicleRequest.YesterdayDateTime = UTCHandling.GetUTCFromDateTime(yesterdayEarlyHr, "UTC");
+                objTodayLiveVehicleRequest.TomorrowDateTime = UTCHandling.GetUTCFromDateTime(tomorrowEarlyHr, "UTC");
+                objTodayLiveVehicleRequest.DayDeforeYesterdayDateTime = UTCHandling.GetUTCFromDateTime(dayBeforeYesterdayEarlyHr, "UTC");
                 var data = await _dashBoardManager.GetTodayLiveVinData(objTodayLiveVehicleRequest);
                 TodayLiveVehicleResponse objTodayLiveVehicleResponse = new TodayLiveVehicleResponse();
                 if (data != null && data.TodayActiveVinCount > 0)
@@ -125,7 +131,7 @@ namespace net.atos.daf.ct2.dashboardservice
                 }
                 else
                 {
-                    objTodayLiveVehicleResponse.Code = Responsecode.Failed;
+                    objTodayLiveVehicleResponse.Code = Responsecode.NotFound;
                     objTodayLiveVehicleResponse.Message = DashboardConstants.GET_TODAY_LIVE_VEHICLE_SUCCESS_NODATA_MSG;
                 }
                 return await Task.FromResult(objTodayLiveVehicleResponse);

@@ -24,6 +24,8 @@ namespace net.atos.daf.ct2.dashboard.entity
     {
         public long TodayDateTime { get; set; }
         public long YesterdayDateTime { get; set; }
+        public long TomorrowDateTime { get; set; }
+        public long DayDeforeYesterdayDateTime { get; set; }
         public List<string> VINs { get; set; }
     }
 }
