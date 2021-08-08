@@ -194,7 +194,8 @@ export class FuelDeviationReportComponent implements OnInit {
   public fuelDeviationDChartOptions: ChartOptions = {
     responsive: true,
     legend: {
-      position: 'bottom'
+      position: 'bottom',
+      //onClick: null
     },
     cutoutPercentage: 70
   };
@@ -204,6 +205,7 @@ export class FuelDeviationReportComponent implements OnInit {
     responsive: true,
     legend: {
       position: 'bottom',
+      //onClick: null
     }
   };
   fuelDeviationPChartType: ChartType = 'pie';
@@ -241,6 +243,7 @@ export class FuelDeviationReportComponent implements OnInit {
     responsive: true,
     legend: {
       position: 'bottom',
+      onClick: null
     },
     scales: {
       yAxes: [{
@@ -279,6 +282,7 @@ export class FuelDeviationReportComponent implements OnInit {
     responsive: true,
     legend: {
       position: 'bottom',
+      onClick: null
     },
     scales: {
       yAxes: [{
@@ -313,6 +317,7 @@ export class FuelDeviationReportComponent implements OnInit {
     responsive: true,
     legend: {
       position: 'bottom',
+      onClick: null
     },
     scales: {
       yAxes: [
@@ -352,6 +357,7 @@ export class FuelDeviationReportComponent implements OnInit {
     responsive: true,
     legend: {
       position: 'bottom',
+      onClick: null
     },
     scales: {
       yAxes: [
@@ -1409,7 +1415,8 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
   // }
 
   exportAsPDFFile(){
-  var doc = new jsPDF('p', 'mm', 'a4');
+  //var doc = new jsPDF('p', 'mm', 'a4');
+  var doc = new jsPDF('l', 'mm', 'a4');
   let pdfColumns = this.getPDFExcelHeader(); // this.getPDFHeaders()
   let prepare = []
     this.initData.forEach(e=>{
@@ -1511,24 +1518,24 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
             doc.setFontSize(14);
             var fileTitle = "Fuel Deviation Details";
             var img = "/assets/logo.png";
-            doc.addImage(img, 'JPEG',10,10,0,0);
+            doc.addImage(img, 'JPEG', 10, 10, 0, 0);
   
-            var img = "/assets/logo_daf.png"; 
-            doc.text(fileTitle, 14, 35);
-            doc.addImage(img, 'JPEG',150, 10, 0, 10);            
+            var img = "/assets/logo_daf.png";
+            doc.text(fileTitle, 115, 35); // 14, 35
+            doc.addImage(img, 'JPEG', 250, 10, 0, 10); // 150, 10, 0, 10            
         },
         margin: {
             bottom: 20, 
             top:30 
         }  
       });
-        let fileWidth = 170;
+        let fileWidth = 170; 
         let fileHeight = canvas.height * fileWidth / canvas.width;
         
         const FILEURI = canvas.toDataURL('image/png')
         // let PDF = new jsPDF('p', 'mm', 'a4');
         let position = 0;
-        doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
+        doc.addImage(FILEURI, 'PNG', 60, 40, fileWidth, fileHeight); // 10, 40,
         doc.addPage();
 
       (doc as any).autoTable({
