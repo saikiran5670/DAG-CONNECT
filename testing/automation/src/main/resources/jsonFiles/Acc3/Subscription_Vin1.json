@@ -1,0 +1,11 @@
+{
+  "SubscribeEvent": {
+   "organizationID": "RT12345",
+  "packageId": "TestPackage",
+  "viNs": [ 
+      "XLR0998HGFFT74335"
+
+  ],
+  "startdatetime": ""
+  } 
+}

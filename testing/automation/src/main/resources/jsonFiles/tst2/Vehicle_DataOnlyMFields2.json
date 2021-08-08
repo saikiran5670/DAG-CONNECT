@@ -1,0 +1,21 @@
+{
+  "VehicleUpdatedEvent": {
+    "Vehicle": {
+      "VehicleID": {
+        "VIN": "XLRAEL2700L472836",
+        "LicensePlate": "XCVFD-S371"
+      },
+      "VehicleClassification": {
+        "Make": "DAF"
+      },
+      "VehicleNamedStructure": {
+        "Chassis": {
+          "ID": "0L472836"
+        },
+        "Cabin": {
+          "ID": "0L472836"
+        }
+      }
+    }
+  }
+}

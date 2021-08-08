@@ -1,0 +1,94 @@
+{
+	"VehicleUpdatedEvent": {
+		"Vehicle": {
+			"VehicleID": {
+				"VIN": "",
+				"LicensePlate": "BTXR46",
+				"ManufactureDate": "2008-02-12"
+			},
+			"VehicleClassification": {
+				"Make": "DAF",
+				"Series": {
+					"ID": "XF105"
+				},
+				"Type": {
+					"ID": "FAR 05.410 T S"
+				}
+			},
+			"VehicleNamedStructure": {
+				"Chassis": {
+					"ID": "0E808080",
+					"RearOverhang": "AE 2.55"
+				},
+				"Engine": {
+					"ID": "M-64494",
+					"Type": "MX",
+					"Fuel": "Diesel",
+					"Power": "410 hp / 300 kW",
+					"Coolant": "STD.KLM",
+					"EmissionLevel": "EURO-5"
+				},
+				"Transmission": {
+					"GearBox": {
+						"Type": "12A2130"
+					}
+				},
+				"DriveLine": {
+					"AxleConfiguration": "6X2S/R",
+					"WheelBase": "WB460",
+					"Wheels": {
+						"Tire": {
+							"Size": "fr1, 315/60R22.5"
+						}
+					},
+					"FrontAxle": [
+						{
+							"position": "1",
+							"Type": "150N",
+							"Springs": "front air",
+							"AxleSpecificWheels": {
+								"Tire": {
+									"Size": "fr1, 315/60R22.5"
+								}
+							}
+						}
+					],
+					"RearAxle": [
+						{
+							"position": "1",
+							"Load": "rear 11.50+ 6.70 t",
+							"Ratio": "AAS1347",
+							"AxleSpecificWheels": {
+								"Tire": {
+									"Size": "r1, 315/60R22.5"
+								}
+							}
+						},
+						{
+							"position": "2",
+							"Load": "rear 11.50+ 6.70 t",
+							"AxleSpecificWheels": {
+								"Tire": {
+									"Size": "r2, 315/60R22.5"
+								}
+							}
+						}
+					]
+				},
+				"Cabin": {
+					"ID": "0E808080",
+					"Type": "KT F249",
+					"RoofSpoiler": "roof spoiler aerodyn"
+				}
+			},
+			"VehicleDimensions": {
+				"Weights": {
+					"Weight": {
+						"type": "Gross",
+						"value": "GVM max 25300kg/25"
+					}
+				}
+			}
+		}
+	}
+}
