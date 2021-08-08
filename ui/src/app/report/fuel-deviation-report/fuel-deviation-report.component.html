@@ -431,8 +431,8 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="odometer">
-              <mat-header-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblkm || 'km') }})</span></mat-header-cell>
-              <mat-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" *matCellDef="let row">{{ row.convertedOdometer != '' ? row.convertedOdometer : '-' }}</mat-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblkm || 'km') }})</span></mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ row.convertedOdometer != '' ? row.convertedOdometer : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="startTimeStamp">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartDate || 'Start Date' }}
