@@ -79,7 +79,8 @@ export class FuelDeviationReportComponent implements OnInit {
   wholeFuelDeviationData: any = [];
   tableInfoObj: any = {};
   fuelDeviationReportId: any = 7; // hard coded for fuel deviation report pref.
-  displayedColumns = ['All', 'fuelEventType', 'fuelDiffernce', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
+  displayedColumns = ['All', 'fuelEventType', 'convertedDifference', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
+  pdfDisplayedColumns = ['All', 'fuelEventType', 'convertedDifference', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
   startDateValue: any;
   tableExpandPanel: boolean = true;
   last3MonthDate: any;
@@ -128,7 +129,7 @@ export class FuelDeviationReportComponent implements OnInit {
     },
     {
       key: 'rp_fd_details_difference',
-      value: 'fuelDiffernce'
+      value: 'convertedDifference'
     },
     {
       key: 'rp_fd_details_alerts',
@@ -1316,20 +1317,25 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     ];
   }
 
-  exportAsExcelFile(){    
-    this.getAllSummaryData();
-    const title = this.translationData.lblFuelDeviationReport || 'Fuel Deviation Report';
-    const summary = this.translationData.lblSummarySection || 'Summary Section';
-    const detail = this.translationData.lblDetailSection || 'Detail Section';
+  getPDFExcelHeader(){
+    let col: any = [];
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmile || 'mile');
     let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
     //let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.translationData.lblpound || 'pound');
     let unitValton = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblton || 'ton');
     let unitValgallon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.translationData.lblgallon || 'gallon');
-    
-    const header = ['Type', 'Difference (%)', 'Vehicle Name', 'VIN', 'Reg. Plate Number', 'Date', 'Odometer ('+ unitValkm + ')', 'Start Date', 'End Date', 'Distance ('+ unitValkm + ')', 'Idle Duration (hh:mm)', 'Average Speed ('+ unitValkmh + ')', 'Average Weight ('+ unitValton + ')', 'Start Position', 'End Position', 'Fuel Consumed ('+ unitValgallon + ')', 'Driving Time (hh:mm)', 'Alerts'];
+    col = [`${this.translationData.lblType || 'Type'}`, `${this.translationData.lblDifference || 'Difference'} (%)`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblRegPlateNumber || 'Reg. Plate Number'}`, `${this.translationData.lblDate || 'Date'}`, `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`, `${this.translationData.lblStartDate || 'Start Date'}`, `${this.translationData.lblEndDate || 'End Date'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, `${this.translationData.lblAverageWeight || 'Average Weight'} (${unitValton})`, `${this.translationData.lblStartPosition || 'Start Position'}`, `${this.translationData.lblEndPosition || 'End Position'}`, `${this.translationData.lblFuelConsumed || 'Fuel Consumed'} (${unitValgallon})`, `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAlerts || 'Alerts'}`];
+    return col;
+  }
+
+  exportAsExcelFile(){    
+    this.getAllSummaryData();
+    const title = this.translationData.lblFuelDeviationReport || 'Fuel Deviation Report';
+    const summary = this.translationData.lblSummarySection || 'Summary Section';
+    const detail = this.translationData.lblDetailSection || 'Detail Section';
+    const header = this.getPDFExcelHeader();
     const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', (this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN || 'VIN') : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber || 'Reg. Plate Number') : (this.translationData.lblVehicle || 'Vehicle') , 'Fuel Increase Events', 'Fuel decrease Events', 'Vehicles With Fuel Events'];
-    const summaryData= this.excelSummaryData;
+    const summaryData = this.excelSummaryData;
     
     //Create workbook and worksheet
     let workbook = new Workbook();
@@ -1391,30 +1397,30 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
    })
   }
 
-  getPDFHeaders(){
-    let displayArray: any = [];
-    this.displayedColumns.forEach(i => {
-      let _s = this.prefMapData.filter(item => item.value == i);
-      if (_s.length > 0){          
-        displayArray.push(this.translationData[_s[0].key] ? this.translationData[_s[0].key] : _s[0].value);
-      }
-    })
-    return [displayArray];
-  }
+  // getPDFHeaders(){
+  //   let displayArray: any = [];
+  //   this.displayedColumns.forEach(i => {
+  //     let _s = this.prefMapData.filter(item => item.value == i);
+  //     if (_s.length > 0){          
+  //       displayArray.push(this.translationData[_s[0].key] ? this.translationData[_s[0].key] : _s[0].value);
+  //     }
+  //   })
+  //   return [displayArray];
+  // }
 
   exportAsPDFFile(){
   var doc = new jsPDF('p', 'mm', 'a4');
-  let pdfColumns = this.getPDFHeaders();
+  let pdfColumns = this.getPDFExcelHeader(); // this.getPDFHeaders()
   let prepare = []
     this.initData.forEach(e=>{
       var tempObj = [];
-      this.displayedColumns.forEach(element => {
+      this.pdfDisplayedColumns.forEach(element => {
         switch(element){
           case 'fuelEventType' :{
             tempObj.push(e.eventTooltip);
             break;
           }
-          case 'fuelDiffernce' :{
+          case 'convertedDifference' :{
             tempObj.push(e.convertedDifference);
             break;
           }
@@ -1526,7 +1532,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         doc.addPage();
 
       (doc as any).autoTable({
-      head: pdfColumns,
+      head: [pdfColumns],
       body: prepare,
       theme: 'striped',
       didDrawCell: data => {
