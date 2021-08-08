@@ -194,7 +194,8 @@ export class FuelDeviationReportComponent implements OnInit {
   public fuelDeviationDChartOptions: ChartOptions = {
     responsive: true,
     legend: {
-      position: 'bottom'
+      position: 'bottom',
+      //onClick: null
     },
     cutoutPercentage: 70
   };
@@ -204,6 +205,7 @@ export class FuelDeviationReportComponent implements OnInit {
     responsive: true,
     legend: {
       position: 'bottom',
+      //onClick: null
     }
   };
   fuelDeviationPChartType: ChartType = 'pie';
@@ -241,6 +243,7 @@ export class FuelDeviationReportComponent implements OnInit {
     responsive: true,
     legend: {
       position: 'bottom',
+      onClick: null
     },
     scales: {
       yAxes: [{
@@ -279,6 +282,7 @@ export class FuelDeviationReportComponent implements OnInit {
     responsive: true,
     legend: {
       position: 'bottom',
+      onClick: null
     },
     scales: {
       yAxes: [{
@@ -313,6 +317,7 @@ export class FuelDeviationReportComponent implements OnInit {
     responsive: true,
     legend: {
       position: 'bottom',
+      onClick: null
     },
     scales: {
       yAxes: [
@@ -352,6 +357,7 @@ export class FuelDeviationReportComponent implements OnInit {
     responsive: true,
     legend: {
       position: 'bottom',
+      onClick: null
     },
     scales: {
       yAxes: [
