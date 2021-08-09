@@ -35,6 +35,7 @@ export class HeatBubbleChartComponent implements OnInit {
   @Input() xaxis;
   @Input() yaxis;
   @Input() chartTitle;
+  @Input() backgroundColorPattern;
   public chartOptions;
 
   constructor() {
@@ -45,6 +46,34 @@ export class HeatBubbleChartComponent implements OnInit {
   ngOnInit(): void {
 
     this.chartOptions = {
+      annotations: {
+        position: "back",
+        yaxis: this.backgroundColorPattern,
+        // xaxis: [
+        //   {
+        //     label: {
+        //       text: " "
+        //     },
+        //     x: 20,
+        //     x2: 100,
+        //     fillColor: "#00E396"
+        //   },
+        //   {
+        //     label: {
+        //       text: " "
+        //     },
+        //     x: 0,
+        //     x2: 20,
+        //     fillColor: "yellow"
+        //   }],
+          // points: [{
+          //   x: 0,
+          //   y: 0,
+          //   yAxisIndex: 10,
+          //   seriesIndex: 10,
+          //   fillColor: "#FF5733"
+          // }]
+      },
       series:[{
         "name": "",
         "data": this.searchData?.bubbleData
@@ -75,11 +104,11 @@ export class HeatBubbleChartComponent implements OnInit {
         }
       },
       grid: {
-        // row: {
-        //   colors: ['#F44336', '#E91E63', '#9C27B0']
-        // },
+        row: {
+          colors: ['#FF5733', '#FF5733', '#FF5733', '#FF5733', '#FF5733', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF']
+        },
         // column: {
-        //   colors: ['#F44336', '#E91E63', '#9C27B0']
+        //   colors: ['#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF']
         // }
       }
     };

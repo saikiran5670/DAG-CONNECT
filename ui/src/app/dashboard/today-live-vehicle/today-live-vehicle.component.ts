@@ -289,6 +289,10 @@ doughnutDistanceColors: Color[] = [
         this.dataError = true;
         this.errorMessage = error.error.message;
       }
+      else{
+        this.dataError = true;
+        this.errorMessage = this.translationData.lblTodaysLiveVehicleError || 'No data found for Today live vehicle details'
+      }
     });
     
     

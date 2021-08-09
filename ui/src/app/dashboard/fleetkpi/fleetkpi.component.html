@@ -19,7 +19,7 @@
        <!-- Charts  -->
     <div style='margin-bottom: 10px;'>
       <div fxLayout="row" class="full-width mb-10" fxLayoutGap="10px">
-        <div [hidden]="!checkForPreference('co2emission')" class="chartTile col-md-2">
+        <div [hidden]="!checkForPreference('co2emission')" class="chartTile col-md-2" [ngClass]="{'warningClass':(co2Threshold==0)}">
           <div class="textDiv">
             <div>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</div>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; line-height: 1.5;'>{{currentC02Value}} T <br>
@@ -29,7 +29,7 @@
              -->
           </div>
           
-          <div class="col-md-8 chart-wrapper chartDimension">
+          <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(co2Threshold==0)'>
               <canvas #chart1 baseChart
                 [data]="doughnutChartData"
                 [labels]="doughnutChartLabels"
@@ -39,10 +39,13 @@
                 [plugins]="doughnutChartPlugins">
               </canvas>
             </div>
+            <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(co2Threshold==0)'>
+              <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
+            </div>
         </div>
 
         <!-- Idling Time -->
-        <div [hidden]="!checkForPreference('idlingtime')" class="chartTile col-md-2">
+        <div [hidden]="!checkForPreference('idlingtime')" class="chartTile col-md-2" [ngClass]="{'warningClass':(idlingThreshold==0)}">
           <div class="textDiv">
             <div>{{ translationData.lblIdlingTime || 'Idling Time' }}</div>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5'>{{currentIdlingTime}} <br>
@@ -50,7 +53,7 @@
             
           </div>
           
-          <div class="col-md-8 chart-wrapper chartDimension">
+          <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(idlingThreshold==0)'>
               <canvas #chart2 baseChart
                 [data]="doughnutChartIdlingData"
                 [labels]="idlingChartLabels"
@@ -60,10 +63,13 @@
                 [plugins]="doughnutChartIdlingPlugins">
               </canvas>
             </div>
+            <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(idlingThreshold==0)'>
+              <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
+            </div>
         </div>
 
          <!-- Driving Time -->
-         <div [hidden]="!checkForPreference('drivingtime')" class="chartTile col-md-2">
+         <div [hidden]="!checkForPreference('drivingtime')" class="chartTile col-md-2"  [ngClass]="{'warningClass':(drivingThreshold==0)}">
           <div class="textDiv">
             <div>{{ translationData.lblDrivingTime || 'Driving Time' }}</div>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5'>{{currentDrivingTime}}<br>
@@ -71,7 +77,7 @@
             
           </div>
           
-          <div class="col-md-8 chart-wrapper chartDimension">
+          <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(drivingThreshold==0)'>
               <canvas #chart3 baseChart
                 [data]="doughnutChartDrivingData"
                 [labels]="drivingChartLabels"
@@ -80,6 +86,10 @@
                 [colors]="doughnutDrivingColors"
                 [plugins]="doughnutChartDrivingPlugins">
               </canvas>
+            </div>
+
+            <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(drivingThreshold==0)'>
+              <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
             </div>
         </div>
 
@@ -90,7 +100,7 @@
         <div fxLayout="row" class="full-width mb-10" fxLayoutGap="10px">
  <!-- Distance Chart -->
 
- <div  [hidden]="!checkForPreference('totaldistance')" class="chartTile col-md-2">
+ <div  [hidden]="!checkForPreference('totaldistance')" class="chartTile col-md-2"  [ngClass]="{'warningClass':(distanceThreshold==0)}">
   <div class="textDiv">
     <div>{{ translationData.lblDistance || 'Distance' }}</div>
     <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentDistanceValue}} {{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} <br>
@@ -98,7 +108,7 @@
     
   </div>
   
-  <div class="col-md-8 chart-wrapper chartDimension">
+  <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(distanceThreshold==0)'>
       <canvas #chart4 baseChart
         [data]="doughnutChartDistanceData"
         [labels]="distanceChartLabels"
@@ -108,10 +118,13 @@
         [plugins]="doughnutChartDistancePlugins">
       </canvas>
     </div>
+    <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(distanceThreshold==0)'>
+      <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
+    </div>
 </div>
 
 <!-- Fuel Consumed -->
-<div  [hidden]="!checkForPreference('fuelconsumed')" class="chartTile col-md-2">
+<div  [hidden]="!checkForPreference('fuelconsumed')" class="chartTile col-md-2"  [ngClass]="{'warningClass':(fuelConsumedThreshold==0)}">
   <div class="textDiv">
     <div>{{ translationData.lblFuelConsume || 'Fuel Consumed' }}</div>
     <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }}) <br>
@@ -119,7 +132,7 @@
     
   </div>
   
-  <div class="col-md-8 chart-wrapper chartDimension">
+  <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(fuelConsumedThreshold==0)'>
       <canvas #chart5 baseChart
         [data]="doughnutChartFuelConsumedData"
         [labels]="doughnutChartLabels"
@@ -129,10 +142,13 @@
         [plugins]="doughnutChartFuelConsumedPlugins">
       </canvas>
     </div>
+    <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(fuelConsumedThreshold==0)'>
+      <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
+    </div>
 </div>
 
 <!-- Fuel Used Idling-->
-<div  [hidden]="!checkForPreference('fuelusedidling')"  class="chartTile col-md-2">
+<div  [hidden]="!checkForPreference('fuelusedidling')"  class="chartTile col-md-2"  [ngClass]="{'warningClass':(fuelUsedThreshold==0)}">
   <div class="textDiv">
     <div>{{ translationData.lblFuelUsedByIdling || 'Fuel Used By Idling' }}</div>
     <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentIdlingFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }})<br>
@@ -140,7 +156,7 @@
     
   </div>
   
-  <div class="col-md-8 chart-wrapper chartDimension">
+  <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(fuelUsedThreshold==0)'>
       <canvas #chart6 baseChart
         [data]="doughnutChartFuelUsedData"
         [labels]="doughnutChartFuelUsedLabels"
@@ -150,6 +166,9 @@
         [plugins]="doughnutChartFuelUsedPlugins">
       </canvas>
     </div>
+    <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(fuelUsedThreshold==0)'>
+      <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
+    </div>
 </div>
 
 </div>
@@ -158,7 +177,7 @@
 <div fxLayout="row" class="full-width" fxLayoutGap="10px">
          
            <!-- Fuel Consumption -->
-           <div [hidden]="!checkForPreference('fuelconsumption')"  class="chartTile col-md-2">
+           <div [hidden]="!checkForPreference('fuelconsumption')"  class="chartTile col-md-2"  [ngClass]="{'warningClass':(fuelConsumptionThreshold==0)}">
             <div class="textDiv">
               <div>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</div>
               <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentFuelConsumption}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmpg || 'mpg') : (translationData.lblLtr100Km || 'Ltr/100Km') }})<br>
@@ -166,7 +185,7 @@
               
             </div>
             
-            <div class="col-md-8 chart-wrapper chartDimension">
+            <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(fuelConsumptionThreshold==0)'>
                 <canvas #chart7 baseChart
                   [data]="doughnutChartFuelConsumptionData"
                   [labels]="doughnutChartFuelConsumptionLabels"
@@ -177,7 +196,9 @@
                 </canvas>
               </div>
           </div>
-  
+          <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(fuelConsumptionThreshold==0)'>
+            <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
+          </div>
          
           </div>
     </div>
