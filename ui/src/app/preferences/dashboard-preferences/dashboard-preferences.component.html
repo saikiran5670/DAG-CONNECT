@@ -70,7 +70,7 @@
                             </div>
 
                             <div *ngIf="field.translatedName !=='DrivingTime' && field.translatedName !=='IdlingTime'"
-                                fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px"
+                                fxLayout="column" class="areaWidth full-width min-width-33-3-per targetSpanIcon" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValue'"
@@ -94,7 +94,7 @@
 
                             <div *ngIf="field.translatedName =='DrivingTime' || field.translatedName =='IdlingTime'"
                                 style="display:inline-block" fxLayout="column"
-                                class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+                                class="areaWidth full-width min-width-33-3-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
                                 <div style="display:inline-block">
                                     <mat-form-field appearance="outline" style='width: 30%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="text" placeholder="{{ '' }}"
@@ -167,7 +167,7 @@
                             </div>
 
                             <div *ngIf="field.translatedName == 'TimeBasedUtilizationRate'" style="display:inline-block"
-                                fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px"
+                                fxLayout="column" class="areaWidth full-width min-width-33-3-per targetSpanIcon" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                                 <div style="display:inline-block">
                                     <mat-form-field appearance="outline" style='width: 30%;'>
@@ -184,7 +184,7 @@
                             </div>
 
                             <div *ngIf="field.translatedName == 'DistanceBasedUtilizationRate' || field.translatedName =='ActiveVehicles'"
-                                fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px"
+                                fxLayout="column" class="areaWidth full-width min-width-33-3-per targetSpanIcon" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValue'"
@@ -262,7 +262,7 @@
                             </div>
 
                             <div *ngIf="field.translatedName== 'TimeBasedUtilizationRate'" fxLayout="column"
-                                class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+                                class="areaWidth full-width min-width-33-3-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
                                 <div style="display:inline-block">
                                     <mat-form-field appearance="outline" style='width: 30%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValue'"
@@ -278,7 +278,7 @@
                             </div>
 
                             <div *ngIf="field.translatedName== 'DistanceBasedUtilizationRate'" fxLayout="column"
-                                class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+                                class="areaWidth full-width min-width-33-3-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValue'"
                                         placeholder="{{ 'Set Target' }}">
@@ -326,12 +326,9 @@
                             [checked]='selectionForAlertLast24HoursColumns.hasValue() && isAllSelected("AlertLast24Hours")'
                             [indeterminate]='selectionForAlertLast24HoursColumns.hasValue() && !isAllSelected("AlertLast24Hours")'
                             [disabled]='!editDashboardFlag'>
-                            <div class='mainTabAlignment'>
-                                <div>
-                                    <div class='headerFont'>{{'Alert Last 24 Hours'}}</div>
-                                    <span> (Component view settings)</span>
-                                </div>
-                            </div>
+
+                            <span class='headerFont'>{{
+                                translationData.lblAlertLast24Hours || 'Alert Last 24 Hours' }} <span>({{ translationData.lblComponentviewsettings || 'Component view settings' }})</span></span>
                         </mat-checkbox>
                     </div>
                 </div>
@@ -357,7 +354,7 @@
                     </ng-container>
                 </div>
 
-                <div *ngIf='editDashboardFlag || fleetKPIColumnData.length > 0 || todayLiveVehicleColumnData.length > 0 || vehicleUtilizationColumnData.length > 0 || alertLast24HoursColumnData.length > 0' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
+                <div *ngIf='editDashboardFlag && (fleetKPIColumnData.length > 0 || todayLiveVehicleColumnData.length > 0 || vehicleUtilizationColumnData.length > 0 || alertLast24HoursColumnData.length > 0)' fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end">
                     <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button
                         color="primary">{{
                         translationData.lblCancel || 'Cancel' }}</button>

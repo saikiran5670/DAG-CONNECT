@@ -338,11 +338,13 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 			}
 			table.put(put);
 		} catch (ParseException e) {
-			System.out.println("input message--" +value);
+			System.out.println("status input message--" +value);
 			e.printStackTrace();
 		} catch (IOException e) {
-			System.out.println("input message--" +value);
+			System.out.println("status input message--" +value);
 			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println("status input message--" +value);
 		}
 
 	}
