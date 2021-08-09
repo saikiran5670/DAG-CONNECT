@@ -410,7 +410,10 @@ export class DashboardPreferencesComponent implements OnInit {
 
 
   onReset() {
+    this.dashboardPreferenceForm = new FormGroup({});
     this.setColumnCheckbox();
+    this.resetColumnData();
+    this.prepareDataDashboardPref();
   }
 
   onConfirm() {
