@@ -39,7 +39,12 @@ export class TodayLiveVehicleComponent implements OnInit {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
+  distanceRate : any;
 
+  //threshold 
+  activeThreshold=0;
+  timeBasedThreshold = 0;
+  distanceBasedThreshold = 0;
   //Active Vehicles Chart
   doughnutChartLabels: Label[] = [('Target'), '', ''];
   doughnutChartActiveVehicleData: MultiDataSet = [ [0, 100] ];
@@ -267,7 +272,7 @@ doughnutDistanceColors: Color[] = [
        // console.log(vehicleData);
        if(vehicleData){
           this.liveVehicleData = vehicleData;
-          this.totalVehicles =  4//this.finalVinList.length;
+          this.totalVehicles =  this.finalVinList.length;
             // this.liveVehicleData ={
             //     "distance": 0,
             //     "drivingTime": 0,
@@ -332,6 +337,7 @@ doughnutDistanceColors: Color[] = [
     this.totalVehicles = this.finalVinList.length;
     let activeVehiclePercent = this.dashboardService.calculateTodayLivePercentage(activeVehicleCount,this.totalVehicles);
     let thresholdValue = this.getPreferenceThreshold('activevehicles')['value']; //10;
+    this.activeThreshold = thresholdValue;
     let vehicleTarget = this.dashboardService.calculateTargetValue(this.totalVehicles,thresholdValue,1);
     let yesterdayCount = this.liveVehicleData.yesterdayActiveVinCount;
     let activeVehicleChangePercent = this.dashboardService.calculateLastChange(activeVehicleCount,yesterdayCount);
@@ -533,6 +539,7 @@ doughnutDistanceColors: Color[] = [
     // update time based chart
     let todayTimeRate = this.liveVehicleData.todayTimeBasedUtilizationRate;
     let _threshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
+    this.timeBasedThreshold = _threshold;
     let timeBasedCalculation = this.dashboardService.calculateKPIPercentage(todayTimeRate,4,_threshold,1);
     let timeBasedPercent = timeBasedCalculation['kpiPercent'];
     this.doughnutChartTimeBasedData = [[timeBasedPercent,(100 - timeBasedPercent)]]
@@ -751,7 +758,6 @@ doughnutDistanceColors: Color[] = [
 
   }
 
-  distanceRate : any;
   updateDistanceRate(){
 
     //Distance Based Chart
@@ -761,6 +767,7 @@ doughnutDistanceColors: Color[] = [
     let lastDistance = this.liveVehicleData.yesterDayDistanceBasedUtilization;
     this.distanceRate = this.reportMapService.getDistance(todayDistance, this.prefUnitFormat);
     let _threshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
+    this.distanceBasedThreshold = _threshold;
     let distanceBasedPercent = this.dashboardService.calculateKPIPercentage(todayDistance,4,_threshold,1)["kpiPercent"];
     this.doughnutChartDistanceBasedData = [[distanceBasedPercent,(100 - distanceBasedPercent)]]
     let distanceTarget = this.dashboardService.calculateTargetValue(this.totalVehicles,10,1);
