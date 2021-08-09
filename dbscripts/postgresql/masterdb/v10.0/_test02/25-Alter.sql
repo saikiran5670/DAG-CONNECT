@@ -18,7 +18,7 @@ CREATE TABLE if not exists master.vehiclemsgtriggertype --(master data)
 TABLESPACE pg_default;
 
 ALTER TABLE  master.vehiclemsgtriggertype  
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -44,7 +44,7 @@ CREATE TABLE if not exists master.driverauthequipment --(master data)
 TABLESPACE pg_default;
 
 ALTER TABLE  master.driverauthequipment  
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -70,7 +70,7 @@ CREATE TABLE if not exists master.telltale --(master data)
 TABLESPACE pg_default;
 
 ALTER TABLE  master.telltale  
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -97,7 +97,7 @@ CREATE TABLE if not exists master.telltalestate --(master data)
 TABLESPACE pg_default;
 
 ALTER TABLE  master.telltalestate  
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -136,7 +136,7 @@ alter table  master.notificationhistory  add column if not exists retry int;
 -- TABLESPACE pg_default;
 
 -- ALTER TABLE  master.enginetyperef  
-    -- OWNER to pgadmin;
+    -- OWNER to pgdbmadmin;
 	
 -- Do $$
 -- begin
@@ -165,7 +165,7 @@ alter table  master.notificationhistory  add column if not exists retry int;
 -- TABLESPACE pg_default;
 
 -- ALTER TABLE  master.enginetypeaxisref  
-    -- OWNER to pgadmin;
+    -- OWNER to pgdbmadmin;
 	
 	
 	
@@ -213,7 +213,7 @@ alter table  master.notificationhistory  add column if not exists retry int;
 -- TABLESPACE pg_default;
 
 -- ALTER TABLE  master.enginetypeaxiskpiref  
-    -- OWNER to pgadmin;
+    -- OWNER to pgdbmadmin;
 	
 -- -- Do $$
 -- -- begin
@@ -266,7 +266,7 @@ CREATE TABLE if not exists master.vehicleperformancetemplate --(master data)
 TABLESPACE pg_default;
 
 ALTER TABLE  master.vehicleperformancetemplate  
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 	
 Do $$
 begin
@@ -297,7 +297,7 @@ CREATE TABLE if not exists master.performancematrix --(master data)
 TABLESPACE pg_default;
 
 ALTER TABLE  master.performancematrix  
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 	
 Do $$
 begin
@@ -346,7 +346,7 @@ CREATE TABLE if not exists master.performancekpiranges --(master data)
 TABLESPACE pg_default;
 
 ALTER TABLE  master.performancekpiranges  
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 	
 Do $$
 begin
