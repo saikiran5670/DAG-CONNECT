@@ -997,6 +997,20 @@ export class RouteCalculatingComponent implements OnInit {
     this.plotSeparateVia();
     this.calculateTruckRoute();
   }
+  onReset(){
+  
+    this.corridorName =null;
+    this.searchStr = null;
+    this.strPresentEnd = false;
+    this.searchEndStr = null;
+    this.endAddressPositionLat = 0;
+    this.checkRoutePlot();
+    this.noRouteErr = false;
+    this.ngOnInit();
+    this.clearMap();
+    this.plotStartPoint();
+    this.plotEndPoint();
+  }
 
   calculateTruckRoute(){
     let lineWidth = this.corridorWidthKm;
