@@ -4,7 +4,8 @@ import { ReportService } from 'src/app/services/report.service';
 import { SelectionModel } from '@angular/cdk/collections';
 import { TranslationService } from 'src/app/services/translation.service';
 import { ReportMapService } from '../../report/report-map.service';
-import { DashboardService } from '../../services/dashboard.service'
+import { DashboardService } from '../../services/dashboard.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-preferences',
@@ -18,6 +19,7 @@ export class DashboardPreferencesComponent implements OnInit {
   @Input() reportListData: any;
 
   //dashboard preferences
+  showLoadingIndicator: any = false;
   dashboardPreferenceForm = new FormGroup({});
   editDashboardFlag: boolean = false;
   displayMessage: any = '';
@@ -39,7 +41,7 @@ export class DashboardPreferencesComponent implements OnInit {
   alertLast24HoursColumnData = [];
   todayLiveVehicleColumnData = [];
 
-  constructor(private dashboardService: DashboardService, private reportService: ReportService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportMapService: ReportMapService) {
+  constructor(private dashboardService: DashboardService, private reportService: ReportService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportMapService: ReportMapService, private router: Router) {
     this.loadReportData();
   }
 
@@ -114,7 +116,7 @@ export class DashboardPreferencesComponent implements OnInit {
   }
 
   loadReportData() {
-
+    this.showLoadingIndicator = true;
     this.reportService.getReportDetails().subscribe((reportList: any) => {
 
       this.reportListData = reportList.reportDetails;
@@ -129,15 +131,19 @@ export class DashboardPreferencesComponent implements OnInit {
       this.loadDashboardPreferences();
     }, (error) => {
       console.log('Report not found...', error);
-
+      this.hideloader();
       this.reportListData = [];
     });
   }
 
-
+  hideloader() {
+    // Setting display of spinner
+    this.showLoadingIndicator = false;
+  }
   loadDashboardPreferences() {
 
     this.dashboardService.getDashboardPreferences(this.reportId).subscribe((prefData: any) => {
+      this.hideloader();
       this.initData = prefData['userPreferences'];
       this.getDashboardPreferenceResponse = this.initData;
       console.log("dataaaaaaa--->", this.getDashboardPreferenceResponse);
@@ -148,7 +154,7 @@ export class DashboardPreferencesComponent implements OnInit {
     }, (error) => {
       this.resetColumnData();
       this.initData = [];
-
+      this.hideloader();
     });
   }
 
@@ -208,9 +214,10 @@ export class DashboardPreferencesComponent implements OnInit {
           }
           _data.translatedName = this.getName(element.name);
           this.fleetKPIColumnData.push(_data);
-          this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType));
+          this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType != '' ? element.thresholdType : 'L'));
           if (element.key.includes('fleetkpi_drivingtime') || element.key.includes('fleetkpi_idlingtime')) {
-            let hms = this.secondsToHms(element.thresholdValue);
+            let secondscalc = (element.thresholdValue)/1000;
+            let hms = this.secondsToHms(secondscalc);
             let hrs = '';
             let mins = '';
             if (hms) {
@@ -219,9 +226,14 @@ export class DashboardPreferencesComponent implements OnInit {
             }
             this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(hrs));
             this.dashboardPreferenceForm.addControl(element.key + 'thresholdValuemin', new FormControl(mins));
-          } else if (element.key.includes('fleetkpi_fuelconsumption') || element.key.includes('fleetkpi_totaldistance')) {
-            let thresholdValueKm = this.reportMapService.getDashboardDistance(element.thresholdValue, this.prefUnitFormat);
+          } else if (element.key.includes('fleetkpi_totaldistance')) {
+            let thresholdValueKm = this.reportMapService.getDistance(element.thresholdValue, this.prefUnitFormat);
             this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm));
+          }
+          else if (element.key.includes('fleetkpi_fuelconsumption'))
+          {
+            let thresholdValue_L_100Km = this.reportMapService.getFuelConsumedUnits(element.thresholdValue, this.prefUnitFormat, true);
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValue_L_100Km));
           }
           else if (element.key.includes('fleetkpi_fuelusedidling') || element.key.includes('fleetkpi_fuelconsumed')) {
             let thresholdValueL = this.reportMapService.getFuelConsumedUnits(element.thresholdValue, this.prefUnitFormat, false);
@@ -243,9 +255,10 @@ export class DashboardPreferencesComponent implements OnInit {
           }
           _data.translatedName = this.getName(element.name);
           this.todayLiveVehicleColumnData.push(_data);
-          this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType));
+          this.dashboardPreferenceForm.addControl(element.key + 'thresholdType', new FormControl(element.thresholdType != '' ? element.thresholdType : 'L'));
           if (element.key.includes('todaylivevehicle_timebasedutilizationrate')) {
-            let hms = this.secondsToHms(element.thresholdValue);
+            let secondscalc = (element.thresholdValue)/1000;          
+            let hms = this.secondsToHms(secondscalc);
             let hrs = '';
             let mins = '';
             if (hms) {
@@ -256,7 +269,7 @@ export class DashboardPreferencesComponent implements OnInit {
             this.dashboardPreferenceForm.addControl(element.key + 'thresholdValuemin', new FormControl(mins));
           }
           else if (element.key.includes('todaylivevehicle_distancebasedutilizationrate')) {
-            let thresholdValueKm = this.reportMapService.getDashboardDistance(element.thresholdValue, this.prefUnitFormat);
+            let thresholdValueKm = this.reportMapService.getDistance(element.thresholdValue, this.prefUnitFormat);
             this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm));
           }        
           else {
@@ -272,9 +285,10 @@ export class DashboardPreferencesComponent implements OnInit {
           }
           _data.translatedName = this.getName(element.name);
           this.vehicleUtilizationColumnData.push(_data);
-          this.dashboardPreferenceForm.addControl(element.key + 'chartType', new FormControl(element.chartType));
-          if (element.key.includes('vehicleutilization_timebasedutilizationrate')) {
-            let hms = this.secondsToHms(element.thresholdValue);
+          
+          if (element.key.includes('vehicleutilization_timebasedutilizationrate')) {          
+            let secondscalc = (element.thresholdValue)/1000;          
+            let hms = this.secondsToHms(secondscalc);
             let hrs = '';
             let mins = '';
             if (hms) {
@@ -283,13 +297,16 @@ export class DashboardPreferencesComponent implements OnInit {
             }
             this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(hrs));
             this.dashboardPreferenceForm.addControl(element.key + 'thresholdValuemin', new FormControl(mins));
+            this.dashboardPreferenceForm.addControl(element.key + 'chartType', new FormControl(element.chartType != '' ? element.chartType : 'D'));
           }
           else if (element.key.includes('vehicleutilization_distancebasedutilizationrate')) {
-            let thresholdValueKm = this.reportMapService.getDashboardDistance(element.thresholdValue, this.prefUnitFormat);
+            let thresholdValueKm = this.reportMapService.getDistance(element.thresholdValue, this.prefUnitFormat);
             this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm));
+            this.dashboardPreferenceForm.addControl(element.key + 'chartType', new FormControl(element.chartType != '' ? element.chartType : 'D'));
           }
           else {
             this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(element.thresholdValue));
+            this.dashboardPreferenceForm.addControl(element.key + 'chartType', new FormControl(element.chartType != '' ? element.chartType : 'L'));
           }
 
         } else if (section.name.includes('Dashboard.AlertLast24Hours')) {
@@ -310,6 +327,10 @@ export class DashboardPreferencesComponent implements OnInit {
 
   secondsToHms(d) {
     d = Number(d);
+    if(d== 0)
+    {
+      return "0,0";
+    }
     var h = Math.floor(d / 3600);
     var m = Math.floor(d % 3600 / 60);
     var s = Math.floor(d % 3600 % 60);
@@ -353,17 +374,26 @@ export class DashboardPreferencesComponent implements OnInit {
         let thresholdValuehrs = thresholdValue * 3600;
         let thresholdValuemin = this.dashboardPreferenceForm.get([element.key + 'thresholdValuemin'])?.value * 60;
         let totalsecs: number = thresholdValuehrs + thresholdValuemin;
-        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs });
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalsecs * 1000 });
       }
 
-      else if (element.key.includes('fleetkpi_fuelconsumption') || element.key.includes('fleetkpi_totaldistance') || element.key.includes('todaylivevehicle_distancebasedutilizationrate') || element.key.includes('vehicleutilization_distancebasedutilizationrate')) {
+      else if (element.key.includes('fleetkpi_totaldistance') || element.key.includes('todaylivevehicle_distancebasedutilizationrate') || element.key.includes('vehicleutilization_distancebasedutilizationrate')) {
         
-        let totalmilimeters = this.prefUnitFormat == 'dunit_Imperial' ? thresholdValue * 1609344 : thresholdValue * 1000000;
+        let totalmilimeters = this.prefUnitFormat == 'dunit_Imperial' ? thresholdValue * 1609.344 : thresholdValue * 1000;
        
         saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalmilimeters });
 
       }
+      else if(element.key.includes('fleetkpi_fuelconsumption'))
+      {
+        let totalmililitres = this.prefUnitFormat == 'dunit_Imperial' ? 1.6/(3.78 * thresholdValue) : thresholdValue * 0.01;
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalmililitres });
+      }
+      else if (element.key.includes('fleetkpi_fuelusedidling') || element.key.includes('fleetkpi_fuelconsumed')) {
+        let totalmililitres = this.prefUnitFormat == 'dunit_Imperial' ? thresholdValue * 3785.41 : thresholdValue * 1000;
 
+        saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: totalmililitres });
+      }    
       else {
         saveArr.push({ dataAttributeId: element.dataAttributeId, state: sSearch.length > 0 ? "A" : "I", preferenceType: "V", chartType: chartType ? chartType : '', thresholdType: thresholdType, thresholdValue: parseInt(thresholdValue) });
       }
@@ -409,9 +439,9 @@ export class DashboardPreferencesComponent implements OnInit {
       this.successMsgBlink('Dashboard Preferences Updated Successfully');
       //this.setDashboardFlag.emit({ flag: false, msg: this.getSuccessMsg() });
       //this.reloadCurrentComponent();
-      // if((this.router.url).includes("fleetfuelreport")){
-      //  this.reloadCurrentComponent();
-      // }
+      if((this.router.url).includes("dashboard")){
+       this.reloadCurrentComponent();
+      }
     });
   }
 
