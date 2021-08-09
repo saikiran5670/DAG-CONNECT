@@ -312,11 +312,13 @@ public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>>
 
 			table.put(put);
 		} catch (ParseException e) {
-			System.out.println("input message--" +value);
+			System.out.println("Moniter input message--" +value);
 			e.printStackTrace();
 		} catch (IOException e) {
-			System.out.println("input message--" +value);
+			System.out.println("Moniter input message--" +value);
 			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println("Moniter input message--" +value);
 		}
 
 	}
