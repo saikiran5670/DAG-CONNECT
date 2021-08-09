@@ -19,7 +19,7 @@
        <!-- Charts  -->
     <div style='margin-bottom: 10px;'>
       <div fxLayout="row" class="full-width mb-10" fxLayoutGap="10px">
-        <div [hidden]="!checkForPreference('co2emission')" class="chartTile col-md-2">
+        <div [hidden]="!checkForPreference('co2emission') || co2Threshold==0" class="chartTile col-md-2">
           <div class="textDiv">
             <div>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</div>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; line-height: 1.5;'>{{currentC02Value}} T <br>
@@ -42,7 +42,7 @@
         </div>
 
         <!-- Idling Time -->
-        <div [hidden]="!checkForPreference('idlingtime')" class="chartTile col-md-2">
+        <div [hidden]="!checkForPreference('idlingtime')" class="chartTile col-md-2" [ngClass]="{'warningClass':(idlingThreshold==0)}">
           <div class="textDiv">
             <div>{{ translationData.lblIdlingTime || 'Idling Time' }}</div>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5'>{{currentIdlingTime}} <br>
@@ -50,7 +50,7 @@
             
           </div>
           
-          <div class="col-md-8 chart-wrapper chartDimension">
+          <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(idlingThreshold==0)'>
               <canvas #chart2 baseChart
                 [data]="doughnutChartIdlingData"
                 [labels]="idlingChartLabels"
@@ -59,6 +59,9 @@
                 [colors]="doughnutIdlingColors"
                 [plugins]="doughnutChartIdlingPlugins">
               </canvas>
+            </div>
+            <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(idlingThreshold==0)'>
+              <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{'Chart not applicable for zero threshold value'}}
             </div>
         </div>
 

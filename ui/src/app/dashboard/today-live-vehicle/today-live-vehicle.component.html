@@ -11,7 +11,7 @@
     </button>
     <!-- block data -->
     <mat-error *ngIf="dataError">
-      {{ translationData.lblTodaysLiveVehicleError || errorMessage }}
+      {{ translationData.lblTodaysLiveVehicleError || 'errorMessage' }}
   </mat-error>
     <div style='margin-bottom: 10px;' *ngIf='liveVehicleData'>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
