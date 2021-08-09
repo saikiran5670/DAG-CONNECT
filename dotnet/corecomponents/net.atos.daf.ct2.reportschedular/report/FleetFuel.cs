@@ -290,7 +290,7 @@ namespace net.atos.daf.ct2.account.report
                                   , await GenerateTable()
                                   , fromDate
                                   , toDate
-                                  , VehicleLists.Select(s => s.VehicleGroupName).Distinct().Count() == 1 ? VehicleLists.FirstOrDefault().VehicleGroupName : "All"
+                                  , VehicleLists.Select(s => s.VehicleGroupName).Distinct().Count() == 1 ? string.IsNullOrEmpty(VehicleLists.FirstOrDefault().VehicleGroupName) ? "All" : VehicleLists.FirstOrDefault().VehicleGroupName : "All"
                                   , VehicleLists.Select(s => s.VehicleName).Distinct().Count() == 1 ? VehicleLists.FirstOrDefault().VehicleName : "All"
                                   , TotalNumberOfTrips
                                   , Math.Round(TotalDistance, 2)
