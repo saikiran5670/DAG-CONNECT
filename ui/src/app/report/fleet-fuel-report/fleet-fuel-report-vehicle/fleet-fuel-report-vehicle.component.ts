@@ -1720,9 +1720,9 @@ setVehicleGroupAndVehiclePreSelection() {
             doc.addImage(img, 'JPEG',150, 10, 0, 10);            
         },
         margin: {
-            bottom: 20, 
-            top:30 
-        }  
+          bottom: 30, 
+          top:40 
+         }  
       });
 
        (doc as any).autoTable({
@@ -1733,7 +1733,7 @@ setVehicleGroupAndVehiclePreSelection() {
            //console.log(data.column.index)
          }
        })
-doc.addPage();
+        doc.addPage();
         let fileWidth = 170;
         let fileHeight = canvas.height * fileWidth / canvas.width;
         
@@ -1741,7 +1741,7 @@ doc.addPage();
         // let PDF = new jsPDF('p', 'mm', 'a4');
         let position = 0;
         doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
-        doc.addPage();
+        doc.addPage('a1','p');
 
       (doc as any).autoTable({
       head: pdfColumns,
