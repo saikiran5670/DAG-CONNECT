@@ -126,6 +126,9 @@ export class EcoScoreReportDriverComponent implements OnInit {
  seriesData: any=[];
  seriesDataFull: any=[];
  yAxisSeries: any=[];
+ minValue: number=0;
+ maxValue: number=0;
+ isFirstRecord = true;
 
   ngOnInit(): void {
     console.log("ecoScoreDriverInfo"+JSON.stringify(this.ecoScoreDriverInfo));
@@ -252,7 +255,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
     }];
   }
 
-
   doughnutChartType: ChartType = 'doughnut';
   doughnutColors: Color[] = [
     {
@@ -287,8 +289,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
       ],
       hoverBorderWidth: 7
     }
-   ];
-   
+   ];   
 
   doughnutChartOptions: ChartOptions = {
     responsive: true,
@@ -320,15 +321,11 @@ export class EcoScoreReportDriverComponent implements OnInit {
     }
   };
 
-  @ViewChild("chartObj") chart: ChartComponent;
+  @ViewChild("trendLineChart") trendLineChart: ChartComponent;
+  @ViewChild("brushChart") brushChart: ChartComponent;
   public chartOptionsApex: Partial<ChartOptionsApex>;
 
-  constructor(private reportService: ReportService) {
-    // this.chart.render().then(()=>{
-    //   this.updateOptions("today");
-    // });
-    
-  }
+  constructor(private reportService: ReportService) {}
 
   loadTrendLine(){
     // this.getSeriesData();
@@ -345,15 +342,9 @@ export class EcoScoreReportDriverComponent implements OnInit {
         },
         events:{
           beforeMount: function (chartContext, options){
-            // this.chart.hideSeries("Eco Score");
           },
           animationEnd: function (chartContext, options){
-            // this.updateOptions();
-            // this.kpiList.forEach((element, index) => {
-            //   // if(index>2){
-            //     this.chart.hideSeries(element);
-            //   // }
-            // });
+            // this.hideSeries()
           }
         }
       },
@@ -472,10 +463,13 @@ export class EcoScoreReportDriverComponent implements OnInit {
 
   loadBrushChart(){
     this.chartOptions2 = {
-      series: this.seriesData,
+      series: [{
+        name: '',
+        data: [[ this.minValue, 0], [this.maxValue, 0]]
+      }],
       chart: {
         id: "chart1",
-        height: 130,
+        height: 100,
         type: "area",
         brush: {
            target: "chart2",
@@ -483,10 +477,10 @@ export class EcoScoreReportDriverComponent implements OnInit {
         },
         selection: {
           enabled: true,
-        //   xaxis: {
-        //     min: this.minValue,
-        //     max: this.maxValue
-        //   }
+          // xaxis: {
+          //   min: this.getLastYear(),
+          //   max: this.getTodayDate()
+          // }
         }
       },
       // colors: ["#008FFB"],
@@ -515,7 +509,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
       }
     };
   }
-
  
   getSeriesData() {
     let dataSeries=[];
@@ -529,10 +522,10 @@ export class EcoScoreReportDriverComponent implements OnInit {
               name: _name[0].value + ' - ' + vehicle.vehicleName,
               data: ((vehicle.kpiInfo)[key].uoM === 'hh:mm:ss') ? this.formatTime((vehicle.kpiInfo)[key].data, false) : this.formatData((vehicle.kpiInfo)[key].data, false)
             });
-            this.seriesData.push({
-              name: '',
-              data: ((vehicle.kpiInfo)[key].uoM === 'hh:mm:ss') ? this.formatTime((vehicle.kpiInfo)[key].data, true) : this.formatData((vehicle.kpiInfo)[key].data, true)
-            });
+            // this.seriesData.push({
+            //   name: '',
+            //   data: ((vehicle.kpiInfo)[key].uoM === 'hh:mm:ss') ? this.formatTime((vehicle.kpiInfo)[key].data, true) : this.formatData((vehicle.kpiInfo)[key].data, true)
+            // });
             this.yAxisSeries.push({
                 axisTicks: {
                   show: true
@@ -558,39 +551,28 @@ export class EcoScoreReportDriverComponent implements OnInit {
               }
             );
             this.kpiName.push(_name[0].value + ' - ' + vehicle.vehicleName);
-        }
+        // }
     }
-  // }
+  }
     });
     this.kpiList = [...new Set(this.kpiName)];
-    console.log("datas"+JSON.stringify(dataSeries));
-    console.log("datas kpi"+JSON.stringify(this.kpiList));
+    // console.log("datas"+JSON.stringify(dataSeries));
+    // console.log("datas kpi"+JSON.stringify(this.kpiList));
     this.seriesDataFull=dataSeries;
     this.loadTrendLine();
     this.loadBrushChart();
-    // this.loadTrendLine();
     setTimeout(() => {
       this.apexChartHideSeries();
     }, 1000);
     return dataSeries;
   }
 
-  minValue: number=0;
-  maxValue: number=0;
   formatData(data, isBrushChart){
     let result = [];
-    let isFirstRecord = true;
     for (var i in data) {      
       let val = (new Date(i)).getTime();
+      this.calMinMaxValue(val);
       let temp = Number.parseFloat(data[i]);
-      // if(isFirstRecord){
-      //   this.minValue=val;
-      //   this.maxValue=val;
-      //   isFirstRecord = false;
-      // } else {
-      //   if(val<this.minValue) this.minValue=val
-      //   else if(val>this.maxValue) this.maxValue=val;
-      // }
       if(temp == 0)
         temp = 0.2
       if(isBrushChart)
@@ -598,8 +580,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
       else
         result.push([val, temp]);
     }
-    // console.log((new Date(this.minValue))+' '+(new Date(this.maxValue)));
-    // console.log(this.minValue+' '+this.maxValue);
     return result;
   }
 
@@ -608,12 +588,10 @@ export class EcoScoreReportDriverComponent implements OnInit {
     for (var i in data) {
       let arr = data[i].substr(0, data[i].lastIndexOf(":"));
       let temp = Number.parseFloat((arr.split(":").join(".")));
-      // let tempVal = (temp.toString()).split("00").join("0");
-      // if(tempVal == '00.00')
-      //   tempVal = '0.0';
       if(temp == 0)
         temp = 0.2
       let val = (new Date(i)).getTime();
+      this.calMinMaxValue(val);
       if(isBrushChart)
         result.push([val, 0]);
       else
@@ -622,7 +600,16 @@ export class EcoScoreReportDriverComponent implements OnInit {
     return result;
   }
 
-  
+  calMinMaxValue(val){
+    if(this.isFirstRecord){
+      this.minValue=val;
+      this.maxValue=val;
+      this.isFirstRecord = false;
+    } else {
+      if(val<this.minValue) this.minValue=val
+      else if(val>this.maxValue) this.maxValue=val;
+    }
+  }
 
   public updateOptions(option: any): void {
     let updateOptionsData = {
@@ -670,7 +657,8 @@ export class EcoScoreReportDriverComponent implements OnInit {
       }
     }
     this.selectionTabTrend = option;
-    this.chart.updateOptions(updateOptionsData[option], false, true, true);
+    this.trendLineChart.updateOptions(updateOptionsData[option], false, true, true);
+    this.brushChart.updateOptions(updateOptionsData[option], false, true, true);
   }
 
   getTodayDate(){
@@ -681,7 +669,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
   getYesterdaysDate() {
     var date = Util.getUTCDate(this.prefObj.prefTimeZone);
     date.setDate(date.getDate()-1);
-    console.log(date);
     return date.getTime();
   }
 
@@ -718,7 +705,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   apexChartHideSeries(){
     this.kpiList.forEach((element, index) => {
       // if(index>2){
-        this.chart.hideSeries(element);
+        this.trendLineChart.hideSeries(element);
       // }
     });
   }
