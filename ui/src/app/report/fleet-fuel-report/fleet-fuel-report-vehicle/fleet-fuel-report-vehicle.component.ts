@@ -705,11 +705,11 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
       this.barChartLabels.push(resultDate);
       this.barData.push(e.numberofTrips);
-      //let convertedFuelConsumed = e.fuelConsumed / 1000;
-      this.fuelConsumedChart.push(e.convertedFuelConsumed100Km);
+      let convertedFuelConsumed = e.fuelConsumed / 1000;
+      this.fuelConsumedChart.push(convertedFuelConsumed);
       this.co2Chart.push(e.co2Emission);
       this.distanceChart.push(e.distance);
-      this.fuelConsumptionChart.push(e.convertedFuelConsumption);
+      this.fuelConsumptionChart.push(e.fuelConsumtion);
       let minutes = this.convertTimeToMinutes(e.idleDuration);
       // this.idleDuration.push(e.idleDuration);
       this.idleDuration.push(minutes);
@@ -1499,12 +1499,13 @@ setVehicleGroupAndVehiclePreSelection() {
 
 
   exportAsPDFFile(){
-   
+    
     var doc = new jsPDF('p', 'mm', 'a4');
    let rankingPdfColumns = [this.rankingColumns];
    let prepareRanking = [];
 
    this.rankingData.forEach(e => {
+
     var dataObj =[];
      this.rankingColumns.forEach(element => {
     switch(element){
@@ -1534,14 +1535,14 @@ setVehicleGroupAndVehiclePreSelection() {
     });
    
 
-    // (doc as any).autoTable({
-    //   head: rankingPdfColumns,
-    //   body: prepareRanking,
-    //   theme: 'striped',
-    //   didDrawCell: data => {
-    //     //console.log(data.column.index)
-    //   }
-    // })
+    //  (doc as any).autoTable({
+    //    head: rankingPdfColumns,
+    //    body: prepareRanking,
+    //    theme: 'striped',
+    //    didDrawCell: data => {
+    //      //console.log(data.column.index)
+    //    }
+    //  })
 
 
   let pdfColumns = [this.displayedColumns];
@@ -1722,14 +1723,14 @@ setVehicleGroupAndVehiclePreSelection() {
         }  
       });
 
-      (doc as any).autoTable({
-        head: rankingPdfColumns,
-        body: prepareRanking,
-        theme: 'striped',
-        didDrawCell: data => {
-          //console.log(data.column.index)
-        }
-      })
+       (doc as any).autoTable({
+         head: rankingPdfColumns,
+         body: prepareRanking,
+         theme: 'striped',
+         didDrawCell: data => {
+           //console.log(data.column.index)
+         }
+       })
 doc.addPage();
         let fileWidth = 170;
         let fileHeight = canvas.height * fileWidth / canvas.width;

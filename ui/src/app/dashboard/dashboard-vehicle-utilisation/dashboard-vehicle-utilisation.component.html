@@ -50,31 +50,37 @@
       <div fxLayout="column">
         <span style='font: 500 14px/30px Roboto, "Helvetica Neue", sans-serif;padding-left: 25%;'>{{
           translationData.lblTimeBasedUtilisationRate || 'Time Based Utilisation Rate' }}</span>
-        <div *ngIf="timeDChartType =='doughnut'" class="chart-wrapper">
+        <div *ngIf="timeDChartType =='doughnut' && !(timebasedThreshold==0)" class="chart-wrapper">
           <canvas baseChart [data]="doughnutChartData1" [chartType]="doughnutChartType" [labels]="doughnutChartLabels1"
             [colors]="doughnutChartColors" [options]="doughnut_barOptions" [legend]="barChartLegend">
           </canvas>
         </div>
-        <div *ngIf="timeDChartType =='pie'" class="chart-wrapper">
+        <div *ngIf="timeDChartType =='pie' && !(timebasedThreshold==0)" class="chart-wrapper">
           <canvas baseChart [data]="timePieChartData" [labels]="timePieChartLabels" [chartType]="pieChartType"
             [colors]="doughnutChartColors" [options]="pieChartOptions" [plugins]="pieChartPlugins"
             [legend]="barChartLegend">
           </canvas>
         </div>
+        <div  *ngIf="(timebasedThreshold==0)" class="warn1">
+          <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{'Chart not applicable for zero threshold value'}}
+        </div>
       </div>
       <div [hidden]="!checkForVehiclePreference('distancebasedutilizationrate')" fxLayout="column">
         <span style='font: 500 14px/30px Roboto, "Helvetica Neue", sans-serif;padding-left: 25%;'>{{
           translationData.lblDistanceBasedUtilisationRate || 'Distance Based Utilisation Rate' }}</span>
-        <div *ngIf="mileageDChartType == 'doughnut'" class="chart-wrapper">
+        <div *ngIf="mileageDChartType == 'doughnut' && !(distancebasedThreshold==0)" class="chart-wrapper">
           <canvas baseChart [data]="doughnutChartData2" [chartType]="doughnutChartType" [labels]="doughnutChartLabels2"
             [colors]="doughnutChartColors" [options]="doughnut_barOptions" [legend]="barChartLegend">
           </canvas>
         </div>
-        <div *ngIf="mileageDChartType == 'pie'" class="chart-wrapper">
+        <div *ngIf="mileageDChartType == 'pie'  && !(distancebasedThreshold==0)" class="chart-wrapper">
           <canvas baseChart [data]="mileagePieChartData" [labels]="mileagePieChartLabels" [chartType]="pieChartType"
             [colors]="doughnutChartColors" [options]="pieChartOptions" [plugins]="pieChartPlugins"
             [legend]="barChartLegend">
           </canvas>
+        </div>
+        <div  *ngIf="(distancebasedThreshold==0)" class="warn2">
+          <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{'Chart not applicable for zero threshold value'}}
         </div>
       </div>
     </div>

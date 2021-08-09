@@ -246,6 +246,8 @@ repairAndMaintenanceCount: any;
 toatlSum: any;
 _fleetTimer : boolean = true; 
 totalThresholdDistance: any;
+timebasedThreshold: any;
+distancebasedThreshold: any;
 
   constructor(private router: Router,
               private elRef: ElementRef,
@@ -515,9 +517,9 @@ getPreferenceThreshold(fieldKey){
     this.calenderDate = [];
     this.vehiclecount = [];
     let _prefLimitTime = this.getPreferenceThreshold('timebasedutilizationrate')['type'];
-    let timebasedThreshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
+    this.timebasedThreshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
     let _prefLimitDistance = this.getPreferenceThreshold('distancebasedutilizationrate')['type'];
-    let distancebasedThreshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
+    this.distancebasedThreshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
     let percentage2;
     let percentage1;
     this.totalDistance = 0;
@@ -537,16 +539,16 @@ getPreferenceThreshold(fieldKey){
         this.greaterTimeCount = this.greaterTimeCount + 1;
     });
     if(this.selectionTab == 'lastmonth'){
-      this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 30;
-      this.totalThresholdDistance = distancebasedThreshold * this.greaterTimeCount * 30;
+      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 30;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 30;
     }
     else if(this.selectionTab == 'lastweek'){
-      this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 7;
-      this.totalThresholdDistance = distancebasedThreshold * this.greaterTimeCount * 7;
+      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 7;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 7;
     }
     else if(this.selectionTab == 'last3month'){
-      this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 90;
-      this.totalThresholdDistance = distancebasedThreshold * this.greaterTimeCount * 90;
+      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 90;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 90;
     }
 
     percentage1 = (this.totalDrivingTime/this.totalThreshold)* 100; 
@@ -637,7 +639,7 @@ getPreferenceThreshold(fieldKey){
 
   switch (_prefLimitTime) {
     case 'U':{
-      if(timebasedThreshold > this.totalDistance){ //red
+      if(this.timebasedThreshold > this.totalDistance){ //red
         this.doughnutChartColors= [
           {
             backgroundColor: ['#65C3F7 ','#F4AF85 '],
@@ -656,7 +658,7 @@ getPreferenceThreshold(fieldKey){
         }
               break;
      case 'L':{
-        if(timebasedThreshold > this.totalDistance){
+        if(this.timebasedThreshold > this.totalDistance){
           this.doughnutChartColors= [
             {
               backgroundColor: ['#F4AF85 ','#65C3F7 '],
@@ -694,7 +696,7 @@ getPreferenceThreshold(fieldKey){
       },
         }
     }
-    this.doughnutChartLabels1 = [`Full Utilisation >${this.getHhMmTime(timebasedThreshold)}`,`Under Utilisation < ${this.getHhMmTime(timebasedThreshold)}`];
+    this.doughnutChartLabels1 = [`Full Utilisation >${this.getHhMmTime(this.timebasedThreshold)}`,`Under Utilisation < ${this.getHhMmTime(this.timebasedThreshold)}`];
     // this.doughnutChartData1 = [[55, 25, 20]];
     if(percentage1 > 100){
       this.doughnutChartData1 = [percentage1, 0];
@@ -720,7 +722,7 @@ getPreferenceThreshold(fieldKey){
       },
         }
       }
-    this.timePieChartLabels = [`Full Utilisation >${this.getHhMmTime(timebasedThreshold)}`,`Under Utilisation < ${this.getHhMmTime(timebasedThreshold)}`];
+    this.timePieChartLabels = [`Full Utilisation >${this.getHhMmTime(this.timebasedThreshold)}`,`Under Utilisation < ${this.getHhMmTime(this.timebasedThreshold)}`];
     if(percentage1 > 100){
       this.timePieChartData = [percentage1, 0];
     }
@@ -732,7 +734,7 @@ getPreferenceThreshold(fieldKey){
   //for distance based utilisation
   switch (_prefLimitDistance) {
     case 'U':{
-      if(timebasedThreshold > this.totalDistance){ //red
+      if(this.timebasedThreshold > this.totalDistance){ //red
         this.doughnutChartColors= [
           {
             backgroundColor: ['#65C3F7 ','#F4AF85 '],
@@ -751,7 +753,7 @@ getPreferenceThreshold(fieldKey){
         }
               break;
      case 'L':{
-        if(timebasedThreshold > this.totalDistance){
+        if(this.timebasedThreshold > this.totalDistance){
           this.doughnutChartColors= [
             {
               backgroundColor: ['#F4AF85 ','#65C3F7 '],
