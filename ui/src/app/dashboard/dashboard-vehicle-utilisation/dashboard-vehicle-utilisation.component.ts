@@ -515,6 +515,7 @@ getPreferenceThreshold(fieldKey){
     this.calenderDate = [];
     this.vehiclecount = [];
     let _prefLimitTime = this.getPreferenceThreshold('timebasedutilizationrate')['type'];
+    _prefLimitTime = 'U';
     this.timebasedThreshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
     let _prefLimitDistance = this.getPreferenceThreshold('distancebasedutilizationrate')['type'];
     this.distancebasedThreshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
@@ -656,7 +657,7 @@ getPreferenceThreshold(fieldKey){
         }
               break;
      case 'L':{
-        if(this.timebasedThreshold > this.totalDistance){
+        if(this.timebasedThreshold < this.totalDistance){
           this.doughnutChartColors= [
             {
               backgroundColor: ['#F4AF85 ','#65C3F7 '],
@@ -753,7 +754,7 @@ getPreferenceThreshold(fieldKey){
         }
               break;
      case 'L':{
-        if(this.timebasedThreshold > this.totalDistance){
+        if(this.timebasedThreshold < this.totalDistance){
           this.doughnutChartColors= [
             {
               backgroundColor: ['#F4AF85 ','#65C3F7 '],
