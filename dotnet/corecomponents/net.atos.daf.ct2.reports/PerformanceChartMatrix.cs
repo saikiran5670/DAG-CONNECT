@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using net.atos.daf.ct2.reports.entity;
 
@@ -32,10 +28,8 @@ namespace net.atos.daf.ct2.reports
     {
         public List<KPIs> CalculateKPIData(List<IndexWiseChartData> vehicleChartDatas, double tripDuration, List<KpiDataRange> rangedata)
         {
-            // List<KpiDataRange> rangeData = await GetRangeData(performanceType);
-            // long multiTripDuration = 0;
             List<KPIs> lstKpis = new List<KPIs>();
-
+            vehicleChartDatas = vehicleChartDatas.Where(s => s.Value != 0).ToList();
 
             foreach (var item in vehicleChartDatas)
             {
@@ -93,12 +87,13 @@ namespace net.atos.daf.ct2.reports
 
 
             }
+            var totalTripDurationinHr = (tripDuration / 3600);
             foreach (var kpiDict in rangedata)
             {
                 KPIs kPIs = new KPIs();
                 kPIs.Label = kpiDict.Kpi;
                 kPIs.Index = kpiDict.Index;
-                kPIs.Value = Math.Round((kpiDict.Value / (tripDuration / 3600) > 0 ? (tripDuration / 3600) : 1), 2);
+                kPIs.Value = totalTripDurationinHr > 0 ? Math.Round((kpiDict.Value / totalTripDurationinHr), 4) : kPIs.Value;
                 lstKpis.Add(kPIs);
             }
             return lstKpis;

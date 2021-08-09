@@ -153,8 +153,9 @@
 
   
 
-  <div *ngIf = '!vehicleSelected'>
+  <div  *ngIf = '!vehicleSelected'>
     <!-- Ranking section -->
+    <div *ngIf = '!showRanking'>
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
       <mat-expansion-panel [(expanded)]="isRankingOpen" class="full-width" fxLayoutGap="10px"
       (opened)="isRankingOpen == true" (closed)="isRankingOpen == false">
@@ -232,7 +233,7 @@
         <!-- </div> -->
       </mat-expansion-panel>
     </mat-card>
-  
+  </div>
   
   
   
