@@ -1102,23 +1102,25 @@ getLast3MonthDate(){
     return date;
   }
 
+  showRanking : boolean = false;
   onReset(){
-    this.isSummaryOpen= false;
-    this.isRankingOpen=  false;
-    this.isDetailsOpen=false;
-    this.isChartsOpen= false;
+    // this.isRankingOpen=  false;
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
-    // this.vehicleGroupListData = this.vehicleGroupListData;
-    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    // this.updateDataSource(this.tripData);
-    // this.tableInfoObj = {};
-    // this.selectedPOI.clear();
-    this.resetTripFormControlValue();
-    this.filterDateData(); // extra addded as per discuss with Atul
+    this.FuelData =[];
+    this.tableInfoObj = [];
+    // this.rankingData =[];
+    // this.dataSource2 =[];
+    // this.rankingColumns=[];
+    this.displayData =[];
+    this.vehicleSelected = false;
+    this.showRanking = true;
+   this.updateDataSource(this.tripData);
+    //this.resetTripFormControlValue();
+    this.filterDateData();
   }
   
   endTimeChanged(selectedTime: any) {
