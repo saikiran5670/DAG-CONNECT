@@ -35,7 +35,7 @@ CREATE TABLE if not exists tripdetail.multi_day_trip_statistics --(master data)
 TABLESPACE pg_default;
 
 ALTER TABLE  tripdetail.multi_day_trip_statistics  
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
