@@ -294,7 +294,7 @@ doughnutDistanceColors: Color[] = [
         this.dataError = true;
         this.errorMessage = error.error.message;
       }
-      else{
+      else if(error.status === 404){
         this.dataError = true;
         this.errorMessage = this.translationData.lblTodaysLiveVehicleError || 'No data found for Today live vehicle details'
       }
@@ -980,7 +980,7 @@ doughnutDistanceColors: Color[] = [
   //****************************** Preference Functions *************************************//
   checkForPreference(fieldKey) {
     if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
-      let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
+      let filterData = this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
           return true;
@@ -995,8 +995,8 @@ doughnutDistanceColors: Color[] = [
   getPreferenceThreshold(fieldKey){
     let thresholdType = 'U';
     let thresholdValue = 10;
-    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
-      let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
+      let filterData = this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
       if (filterData.length > 0) {
         thresholdType = filterData[0].thresholdType;
         thresholdValue = filterData[0].thresholdValue;
