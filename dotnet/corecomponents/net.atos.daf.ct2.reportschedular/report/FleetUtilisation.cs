@@ -152,7 +152,7 @@ namespace net.atos.daf.ct2.account.report
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
                               , await GenerateTable()
                               , fromDate
-                              , VehicleLists.Select(s => s.VehicleGroupName).Distinct().Count() == 1 ? VehicleLists.FirstOrDefault().VehicleGroupName : "All"
+                              , VehicleLists.Select(s => s.VehicleGroupName).Distinct().Count() == 1 ? string.IsNullOrEmpty(VehicleLists.FirstOrDefault().VehicleGroupName) ? "All" : VehicleLists.FirstOrDefault().VehicleGroupName : "All"
                               , toDate
                               , VehicleLists.Select(s => s.VehicleName).Distinct().Count() == 1 ? VehicleLists.FirstOrDefault().VehicleName : "All"
                               , FleetUtilisationPdfDetails.Count()

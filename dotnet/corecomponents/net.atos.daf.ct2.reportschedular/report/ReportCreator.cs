@@ -114,6 +114,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
             var objectSettings = new ObjectSettings
             {
                 PagesCount = true,
+                WebSettings = { DefaultEncoding = "utf-8" },
                 HtmlContent = await Report.GenerateTemplate(await GetLogoImage()),
                 HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
                 FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Left = $"Support: {ReportSingleton.GetInstance().GetDAFSupportEmailId()}", Spacing = 0 }

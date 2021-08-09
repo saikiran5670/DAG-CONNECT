@@ -368,9 +368,9 @@ export class AppComponent {
     // this.isTablet();
     // this.isDesktop();
 
-    this.accountService.getAccountPreference(63).subscribe((result: any) => {
-      localStorage.setItem("liveFleetTimer", (result.pageRefreshTime*60).toString());
-    })
+    //this.accountService.getAccountPreference(63).subscribe((result: any) => {
+      
+   // })
     this.subscription = this.messageService.getMessage().subscribe(message => {
       if (message.key.indexOf("refreshTimer") !== -1) {
         this.refreshTimer();
@@ -424,7 +424,9 @@ export class AppComponent {
       }
       this.accountService.getMenuFeatures(featureMenuObj).subscribe((result: any) => {
         this.getMenu(result, 'orgRoleChange');
-        this.getReportDetails();
+        this.timeLeft = Number.parseInt(localStorage.getItem("liveFleetTimer"));
+
+        //this.getReportDetails();
       }, (error) => {
         console.log(error);
       });
@@ -492,12 +494,12 @@ export class AppComponent {
     }else{
       this.reportId = 17; //- hard coded for Fleet Overview
     }
-    this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
-      let _prefData = prefData['userPreferences'];
-      this.getTranslatedColumnName(_prefData);
-    }, (error)=>{
-      console.log('Pref not found...')
-    });
+    // this.reportService.getReportUserPreference(this.reportId).subscribe((prefData : any) => {
+    //   let _prefData = prefData['userPreferences'];
+    //   this.getTranslatedColumnName(_prefData);
+    // }, (error)=>{
+    //   console.log('Pref not found...')
+    // });
   }
 
   timerPrefData: any = [];
