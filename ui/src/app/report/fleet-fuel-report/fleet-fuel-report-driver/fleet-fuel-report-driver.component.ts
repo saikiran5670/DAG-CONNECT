@@ -1069,18 +1069,30 @@ setStartEndDateTime(date: any, timeObj: any, type: any){
 
   advanceFilterOpen : boolean = false;
   onReset(){
+    // this.isSummaryOpen= false;
+    // this.isRankingOpen=  false;
+    // this.isDetailsOpen=false;
+    // this.isChartsOpen= false;
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
-    // this.vehicleGroupListData = this.vehicleGroupListData;
-    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    this.updateDataSource(this.tripData);
-    this.tableInfoObj = {};
-    this.advanceFilterOpen = false;
-    //this.selectedPOI.clear();
-    this.resetTripFormControlValue();
+    this.FuelData =[];
+    this.tableInfoObj = [];
+    this.detailSummaryObj =[];
+    this.resetChartData();
+    this.displayData =[];
+    this.driverSelected= false;
+    
+    //this.displayedColumns =[];
+    //this.fleetFuelSearchData=[];
+     //this.vehicleGroupListData = this.vehicleGroupListData;
+     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+   this.updateDataSource(this.tripData);
+    // this.tableInfoObj = {};
+    // this.selectedPOI.clear();
+    //this.resetTripFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
   }
   
