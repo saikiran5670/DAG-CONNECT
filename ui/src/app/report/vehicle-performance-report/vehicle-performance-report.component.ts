@@ -73,7 +73,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   };
 
   yaxisLabels = {
-    offsetX: 0,
+    offsetX: 5,
     offsetY: 15,
     formatter: (value, index) => {
       if(index !== 0) {
@@ -96,6 +96,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
     ...this.commonAxis,
     title: {
       text: '%',
+      offsetX: 5,
     },
     labels: this.yaxisLabels
   }
@@ -112,6 +113,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
     ...this.commonAxis,
     title: {
       text: 'RPM',
+      offsetX: 5,
     },
     labels: this.yaxisLabels
   }
@@ -129,6 +131,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
     ...this.commonAxis,
     title: {
       text: 'M/S2',
+      offsetX: 5,
     },
     labels: this.yaxisLabels
   }
@@ -286,7 +289,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
       let newArr = [];
       newArr.push((bubble.xindex*10) - 5 < 0 ? 0 : (bubble.xindex*10) - 5);
       newArr.push((bubble.yindex*10) + 5 < 0 ? 0 : (bubble.yindex*10) + 5);
-      newArr.push(bubble.value);
+      newArr.push(Math.abs(bubble.value));
       bubbleChartData.push(newArr);
     }
     return bubbleChartData;

@@ -327,11 +327,14 @@
           <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblTimeZone || 'Time Zone' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-select placeholder="Time Zone" formControlName="timeZone" (selectionChange)="onDropdownChange($event, 'timeZone')">
+             
+              <mat-select placeholder="TimeZone" 
+                          formControlName="timeZone"
+                           (selectionChange)="onDropdownChange($event, 'timeZone')">
                 <mat-option>
-                  <ngx-mat-select-search></ngx-mat-select-search>
+                  <ngx-mat-select-search (keyup)="filterTimezones(timesearch.value)" #timesearch><mat-icon (click)="resetTimezoneFilter()" ngxMatSelectSearchClear>close</mat-icon></ngx-mat-select-search>
                 </mat-option>
-                <mat-option *ngFor="let rer of timezoneDropdownData" [value]="rer.id">
+                <mat-option *ngFor="let rer of filteredTimezones | async" [value]="rer.id">
                   {{ rer.value }}
                 </mat-option>
               </mat-select>

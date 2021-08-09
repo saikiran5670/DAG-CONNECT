@@ -380,7 +380,8 @@ namespace net.atos.daf.ct2.driver
 
                         string queryDriver = @"select acc.email as Account, COALESCE(acc.first_name, '') as FirstName, COALESCE(acc.last_name, '') as LastName, drv.driver_id_ext as DriverId
                                             from master.driver drv inner join master.account acc on drv.email = acc.email
-                                            where drv.driver_id_ext = @DriverId and drv.organization_id = @OrgId";
+                                            where drv.driver_id_ext = @DriverId and drv.organization_id = @OrgId
+                                            and drv.state='A' and acc.state='A'";
                         var driverAccount = await _dataAccess.QueryFirstOrDefaultAsync<ProvisioningDriver>(queryDriver, parameters);
                         if (driverAccount != null)
                             return driverAccount;
@@ -434,7 +435,8 @@ namespace net.atos.daf.ct2.driver
 
                     string queryDriver = @"select acc.email as Account, COALESCE(acc.first_name, '') as FirstName, COALESCE(acc.last_name, '') as LastName, drv.driver_id_ext as DriverId 
                                             from master.driver drv inner join master.account acc on drv.email = acc.email
-                                            where drv.driver_id_ext = ANY(@DriverIds) and drv.organization_id = @OrgId";
+                                            where drv.driver_id_ext = ANY(@DriverIds) and drv.organization_id = @OrgId
+                                            and drv.state='A' and acc.state='A'";
                     driverAccounts = await _dataAccess.QueryAsync<ProvisioningDriver>(queryDriver, parameters);
                 }
 

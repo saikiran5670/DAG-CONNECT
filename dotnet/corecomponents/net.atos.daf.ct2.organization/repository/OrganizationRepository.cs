@@ -1297,7 +1297,7 @@ namespace net.atos.daf.ct2.organization.repository
                                         where ors.state='A'
                                         and case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date >= now()::date 
                                                 else COALESCE(end_date,0) = 0 end
-                                        and veh.VIN = ANY(@VINs) and orm.owner_org_id = veh.organization_id and ors.code = 'owner'";
+                                        and veh.VIN = ANY(@VINs) and orm.owner_org_id = veh.organization_id and ors.code = 'Owner'";
                     var ownerOrgIds = await _dataAccess.QueryAsync<int>(queryOrg, parameters);
 
                     parameters = new DynamicParameters();
@@ -1312,7 +1312,7 @@ namespace net.atos.daf.ct2.organization.repository
                                 where ors.state='A'
                                 and case when COALESCE(end_date,0) != 0 then to_timestamp(COALESCE(end_date)/1000)::date >= now()::date 
                                          else COALESCE(end_date,0) = 0 end
-                                and orm.vehicle_group_id=grp.id and orm.owner_org_id = ANY(@OwnerOrgs) and ors.code <> 'owner'";
+                                and orm.vehicle_group_id=grp.id and orm.owner_org_id = ANY(@OwnerOrgs) and ors.code <> 'Owner'";
                     var visibleOrgIds = await _dataAccess.QueryAsync<int>(queryOrg, parameters);
 
                     // Merge all Org Ids
@@ -1321,7 +1321,7 @@ namespace net.atos.daf.ct2.organization.repository
                     parameters = new DynamicParameters();
                     parameters.Add("@OrgIds", finalOrgIds.ToArray());
 
-                    queryOrg = @"select org_id as OrgId, name as Name from master.organization where id = ANY(@OrgIds)";
+                    queryOrg = @"select org_id as OrgId, name as Name from master.organization where id = ANY(@OrgIds) and state='A'";
                     return await _dataAccess.QueryAsync<ProvisioningOrganisation>(queryOrg, parameters);
                 }
                 return new List<ProvisioningOrganisation>().AsEnumerable();

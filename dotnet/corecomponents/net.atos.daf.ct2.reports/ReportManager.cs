@@ -767,6 +767,7 @@ namespace net.atos.daf.ct2.reports
             var chartdata = objmat.Getcombinedmatrix(chartRawdata.Where(i => i.ColumnIndex != null).ToList());
             //CalculateKPIData(List<IndexWiseChartData> vehicleChartDatas, double tripDuration, List<KpiDataRange> rangedata)
             charts.ChartData = chartdata;
+            chartdata = vehiclePerformanceRequest.PerformanceType == "B" ? chartdata.Select(x => { x.Value = -x.Value; return x; }).ToList() : chartdata;
             charts.PieChartData = objmat.CalculateKPIData(chartdata, chartRawdata.Sum(i => i.TripDuration), await _reportRepository.GetRangeData(vehiclePerformanceRequest.PerformanceType));
             return charts;
         }
