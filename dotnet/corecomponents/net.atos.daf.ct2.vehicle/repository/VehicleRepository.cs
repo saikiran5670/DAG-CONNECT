@@ -2370,7 +2370,8 @@ namespace net.atos.daf.ct2.vehicle.repository
 
                         string queryDriver = @"select exists (select 1
                                         from master.driver drv inner join master.account acc on drv.email = acc.email
-                                        where drv.driver_id_ext = @DriverId and drv.organization_id = @OrgId)";
+                                        where drv.driver_id_ext = @DriverId and drv.organization_id = @OrgId
+                                        and drv.state='A' and acc.state='A')";
                         var driverExists = await _dataAccess.ExecuteScalarAsync<bool>(queryDriver, parameters);
                         if (driverExists)
                         {
