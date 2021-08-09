@@ -206,11 +206,11 @@ export class SubscriptionManagementComponent implements OnInit {
     this.subscriptionService.getOrganizations(inputData).subscribe((data: any) => {
       if(data){
         this.organizationList = data["organizationList"];    
-        var newRole = {
-          "id":0,
-          "name":"All"
-        }
-        this.organizationList.push(newRole);
+        // var newRole = {
+        //   "id":0,
+        //   "name":"All"
+        // }
+        // this.organizationList.push(newRole);
         localStorage.setItem("allOrgList", JSON.stringify(this.organizationList));    
       }
     });

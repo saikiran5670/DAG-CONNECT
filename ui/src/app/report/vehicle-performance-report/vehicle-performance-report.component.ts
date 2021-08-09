@@ -248,6 +248,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   }
 
   processYaxis(data) {
+    this.backgroundColorPattern = [];
     if(data.length > 0) {
       let tempArr = [];
       for(let row of data) {
@@ -259,8 +260,11 @@ export class VehiclePerformanceReportComponent implements OnInit {
           for(let color of colors) {
             let colorObj = {
               y: row.index * 10,
-              y2: row.range,
+              y2: ((row.index * 10) + 10),
               offsetX: offsetX,
+              opacity: 1,
+              strokeDashArray: 0,
+              borderColor: '#fff',
               width: JSON.stringify(width),
               fillColor: this.colorToLegends[color]
             }
@@ -281,7 +285,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
     for(let bubble of bubbleData) {
       let newArr = [];
       newArr.push((bubble.xindex*10) - 5 < 0 ? 0 : (bubble.xindex*10) - 5);
-      newArr.push((bubble.yindex*10) - 5 < 0 ? 0 : (bubble.yindex*10) - 5);
+      newArr.push((bubble.yindex*10) + 5 < 0 ? 0 : (bubble.yindex*10) + 5);
       newArr.push(bubble.value);
       bubbleChartData.push(newArr);
     }
