@@ -94,8 +94,9 @@ export class AccountInfoSettingsComponent implements OnInit {
     return date > now;
   }
 
-/** list of banks filtered by search keyword */
- public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
+  
+  public filteredTimezones: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService,
               private domSanitizer: DomSanitizer, private organizationService: OrganizationService, private driverService: DriverService,
@@ -201,6 +202,9 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.languageDropdownData.sort(this.compare);    
       this.resetLanguageFilter();
       this.timezoneDropdownData = dropDownData.timezone;
+      console.log("timezoneDropdownData=>", this.timezoneDropdownData);
+      this.timezoneDropdownData.sort(this.compare);
+      this.resetTimezoneFilter();
       this.unitDropdownData = dropDownData.unit;
       this.currencyDropdownData = dropDownData.currency;
       this.dateFormatDropdownData = dropDownData.dateformat;
@@ -238,6 +242,10 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
   resetLanguageFilter(){
     this.filteredLanguages.next(this.languageDropdownData.slice());
+  }
+
+  resetTimezoneFilter(){
+    this.filteredTimezones.next(this.timezoneDropdownData.slice());
   }
   
   compare(a, b) {
@@ -654,6 +662,23 @@ export class AccountInfoSettingsComponent implements OnInit {
      console.log("this.filteredLanguages", this.filteredLanguages);
 
 
+   }
+
+   filterTimezones(timesearch){
+     console.log("filterTimezones called");
+     if(!this.timezoneDropdownData){
+       return;
+     }
+     if(!timesearch){
+       this.resetTimezoneFilter();
+       return;
+      } else{
+        timesearch = timesearch.toLowerCase();
+      }
+      this.filteredTimezones.next(
+        this.timezoneDropdownData.filter(item=> item.value.toLowerCase().indexOf(timesearch) > -1)
+      );
+      console.log("this.filteredTimezones", this.filteredTimezones);
    }
  
 }
