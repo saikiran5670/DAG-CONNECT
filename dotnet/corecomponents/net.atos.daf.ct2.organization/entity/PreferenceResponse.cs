@@ -12,6 +12,8 @@ namespace net.atos.daf.ct2.organization.entity
         public int DateFormatType { get; set; }
         public int TimeFormat { get; set; }
         public string LandingPageDisplay { get; set; }
+        public int PageRefreshTime { get; set; }
+
     }
     public class OrganizationDetailsResponse
     {
@@ -32,5 +34,6 @@ namespace net.atos.daf.ct2.organization.entity
         public string Unit { get; set; }
         public string DateFormatType { get; set; }
         public string TimeFormat { get; set; }
+        public int PageRefreshTime { get; set; }
     }
 }

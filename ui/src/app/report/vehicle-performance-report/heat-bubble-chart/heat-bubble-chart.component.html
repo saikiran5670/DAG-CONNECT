@@ -1,0 +1,17 @@
+<div id="chart">
+    <h2 style="text-align: center; font-size: 16px; font-weight: 600;">{{ chartTitle || 'Engine Operational Performance' }}</h2>
+    <apx-chart
+      [series]="chartOptions.series"
+      [chart]="chartOptions.chart"
+      [xaxis]="chartOptions.xaxis"
+      [fill]="chartOptions.fill"
+      [dataLabels]="chartOptions.dataLabels"
+      [title]="chartOptions.title"
+      [yaxis]="chartOptions.yaxis"
+      [tooltip]="chartOptions.tooltip"
+      [theme]="chartOptions.theme"
+      [annotations]="chartOptions.annotations"
+    ></apx-chart>
+  </div>
+
+        <!-- [grid]="chartOptions.grid" -->

@@ -34,18 +34,18 @@ namespace net.atos.daf.ct2.reports.repository
 	                    , trpst.idle_duration as IdleDuration
 	                    , ROUND(trpst.average_speed,2) as AverageSpeed
 	                    , ROUND(trpst.average_weight,2) as AverageWeight
-                        , startgeoaddr.id AS StartPositionId
-                        , endgeoaddr.id AS EndPositionId
-                        , coalesce(startgeoaddr.address,'') AS StartPosition
-                        , coalesce(endgeoaddr.address,'') AS EndPosition
+                        , 0 AS StartPositionId
+                        , 0 AS EndPositionId
+                        , '' AS StartPosition
+                        , '' AS EndPosition
 	                    , trpst.etl_gps_fuel_consumed as FuelConsumed
 	                    , trpst.etl_gps_driving_time as DrivingTime
 	                    , (select count(1) from tripdetail.tripalert where trip_id = trpst .trip_id and type in ('P','L','T') ) as Alerts
 	                    , trpst.vin as VIN
 	                    , CASE WHEN v.registration_no IS NULL THEN '' ELSE v.registration_no END as RegistrationNo
 	                    , CASE WHEN v.name IS NULL THEN '' ELSE v.name END as VehicleName
-                        , geoaddr.id as GeoLocationAddressId
-	                    , coalesce(geoaddr.address,'') as GeoLocationAddress
+                        , 0 as GeoLocationAddressId
+	                    , '' as GeoLocationAddress
                         , trpst.start_position_lattitude AS StartPositionLattitude
 	                    , trpst.start_position_longitude AS StartPositionLongitude
 	                    , trpst.end_position_lattitude AS EndPositionLattitude
@@ -59,15 +59,7 @@ namespace net.atos.daf.ct2.reports.repository
 		                                            )
 	                     Left JOIN master.vehicle as v 
 	 	                    ON v.vin = trpst.vin
-	                     left JOIN master.geolocationaddress as geoaddr
-                            on TRUNC(CAST(geoaddr.latitude as numeric),4)= TRUNC(CAST(fueldev.latitude as numeric),4) 
-                               and TRUNC(CAST(geoaddr.longitude as numeric),4) = TRUNC(CAST(fueldev.longitude as numeric),4)
-                         left JOIN master.geolocationaddress as startgeoaddr
-                            on TRUNC(CAST(startgeoaddr.latitude as numeric),4)= TRUNC(CAST(trpst.start_position_lattitude as numeric),4) 
-                               and TRUNC(CAST(startgeoaddr.longitude as numeric),4) = TRUNC(CAST(trpst.start_position_longitude as numeric),4)
-                        left JOIN master.geolocationaddress as endgeoaddr
-                            on TRUNC(CAST(endgeoaddr.latitude as numeric),4)= TRUNC(CAST(trpst.end_position_lattitude as numeric),4) 
-                               and TRUNC(CAST(endgeoaddr.longitude as numeric),4) = TRUNC(CAST(trpst.end_position_longitude as numeric),4)";
+	                     ";
 
                 var parameter = new DynamicParameters();
                 parameter.Add("@StartDateTime", fuelDeviationFilters.StartDateTime);
@@ -100,7 +92,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 on trpst.trip_id=ld.trip_id
                                 --Join Master.vehicle v
                                 --on ld.vin=v.vin
-                                where (start_time_stamp >= @StartDateTime 
+                                where (end_time_stamp >= @StartDateTime 
 	                                 and end_time_stamp<= @EndDateTime) and 
 	                                 trpst.vin = Any(@vins)
                                 Group by date_trunc('day', to_timestamp(event_time/1000))
@@ -113,7 +105,7 @@ namespace net.atos.daf.ct2.reports.repository
                 return _dataMartdataAccess.QueryAsync<FuelDeviationCharts>(query, parameter);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

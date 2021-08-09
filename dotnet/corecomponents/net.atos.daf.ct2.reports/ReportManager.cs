@@ -746,22 +746,34 @@ namespace net.atos.daf.ct2.reports
         }
         #endregion
 
-
-
         #region Vehicle Performance Report
-        public async Task<EngineLoadDistributionTemplate> GetEngineLoadTemplate(int enginetypeid)
+        public async Task<VehiclePerformanceChartTemplate> GetVehPerformanceChartTemplate(VehiclePerformanceRequest vehiclePerformanceRequest)
         {
-            var enginetemplate = await _reportRepository.GetEngineLoadDistribution(enginetypeid);
+            var enginetemplate = await _reportRepository.GetVehPerformanceChartTemplate(vehiclePerformanceRequest);
 
-            EngineLoadDistributionTemplate engineloadtemplate = new EngineLoadDistributionTemplate();
             //We will bind data here
-            return engineloadtemplate;
+            return enginetemplate;
         }
+        public async Task<VehiclePerformanceSummary> GetVehPerformanceSummaryDetails(string vin)
+        {
+            return await _reportRepository.GetVehPerformanceSummaryDetails(vin);
 
-
-
-
-
+        }
+        public async Task<VehiclePerformanceData> GetVehPerformanceBubbleChartData(VehiclePerformanceRequest vehiclePerformanceRequest)
+        {
+            PerformanceChartMatrix objmat = new PerformanceChartMatrix();
+            VehiclePerformanceData charts = new VehiclePerformanceData();
+            var chartRawdata = await _reportRepository.GetVehPerformanceBubbleChartData(vehiclePerformanceRequest);
+            var chartdata = objmat.Getcombinedmatrix(chartRawdata.Where(i => i.ColumnIndex != null).ToList());
+            //CalculateKPIData(List<IndexWiseChartData> vehicleChartDatas, double tripDuration, List<KpiDataRange> rangedata)
+            charts.ChartData = chartdata;
+            charts.PieChartData = objmat.CalculateKPIData(chartdata, chartRawdata.Sum(i => i.TripDuration), await _reportRepository.GetRangeData(vehiclePerformanceRequest.PerformanceType));
+            return charts;
+        }
+        public async Task<List<VehPerformanceProperty>> GetVehPerformanceType()
+        {
+            return await _reportRepository.GetVehPerformanceType();
+        }
         #endregion
     }
 }

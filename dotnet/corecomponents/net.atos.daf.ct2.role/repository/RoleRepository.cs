@@ -106,11 +106,11 @@ namespace net.atos.daf.ct2.role.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@roleid", roleid);
 
-                string RoleQueryStatement = @"SELECT ar.account_id as accountid, ar.role_id as roleid, a.salutation as salutation, a.first_name as firstname, a.last_name as lastname
+                string roleQueryStatement = @"SELECT distinct ar.account_id as accountid, ar.role_id as roleid, a.salutation as salutation, a.first_name as firstname, a.last_name as lastname
                                             FROM master.accountrole ar left join master.account a
                                             on ar.account_id= a.id
                                             where role_id=@roleid";
-                var accounts = await _dataAccess.QueryAsync<AssignedRoles>(RoleQueryStatement, parameter);
+                var accounts = await _dataAccess.QueryAsync<AssignedRoles>(roleQueryStatement, parameter);
 
                 return accounts;
 

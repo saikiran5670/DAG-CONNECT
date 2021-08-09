@@ -106,7 +106,18 @@ export class CreateEditViewAlertsComponent implements OnInit {
   periodForm: any;
   alertFilterRefs: any = [];
   ui: any;
+  isExpandedOpen: boolean = false;
+  isExpandedOpenAlert: boolean = true;
+  filterDetailsErrorMsg:any;
+  filterDetailsCheck:boolean = false;
   isNotificationFormValid: boolean= true;
+  isNotifyEmailValid:  boolean= true;
+  isAdvancedAlertPayload:  boolean= true;
+  isFormValidate :  boolean= true;
+  isEnteringZone: boolean= true;
+  isValidityCalender: boolean= true;
+  isFiltersDetailsValidate: boolean= true;
+  
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
 
@@ -161,7 +172,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
       alertCategory: ['', [Validators.required]],
       alertType: ['', [Validators.required]],
       applyOn: ['G', [Validators.required]],
-      vehicleGroup: [''],
+      // vehicleGroup: [''],
+      vehicleGroup: ['',[Validators.required]],
       vehicle: [''],
       statusMode: ['A', [Validators.required]],
       alertLevel: ['C', [Validators.required]],
@@ -221,7 +233,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
         alertTypeMap.set(element.featureKey, element.featureKey);
       });
 
-      if(alertTypeMap != undefined){
+           if(alertTypeMap != undefined){
         this.alertCategoryTypeMasterData.forEach(element => {
           if(alertTypeMap.get(element.key)){
             element["value"]= this.translationData[element["key"]];
@@ -229,7 +241,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
           }
         });
       }
-      
+     
       if(this.alertTypeList.length != 0){
         this.alertCategoryTypeMasterData.forEach(element => {
           this.alertTypeList.forEach(item => {
@@ -311,12 +323,16 @@ export class CreateEditViewAlertsComponent implements OnInit {
         this.loadPOIData();
         this.loadGeofenceData();
         this.loadGroupData();
+        this.selectedPOI.clear();
+        this.selectedGeofence.clear();
+        this.selectedGroup.clear();
       }
       else if(this.alert_type_selected === 'C'){ // Exiting Corridor
         if(this.actionType == 'edit' || this.actionType == 'duplicate'){
           this.alertForm.get('alertLevel').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType);
         }
         this.loadCorridorData();
+        this.selectedCorridor.clear();       
       }
     }
     else if(this.alert_category_selected == 'R'){ // Repair and maintenance
@@ -530,7 +546,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     if(this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.onChangeAlertType(this.selectedRowData.type);
     }
-    this.alertForm.get('vehicle').setValue('');
+    this.alertForm.get('vehicle').setValue('');    
   // this.isUnsubscribedVehicle= false;
   let alertTypeObj = this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_type_selected && item.parentEnum == this.alert_category_selected)[0];
     if(value == 'ALL'){
@@ -605,6 +621,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
 PoiCheckboxClicked(event: any, row: any) {
   if(event.checked){ //-- add new marker
     this.markerArray.push(row);
+    this.moveMapToSelectedPOI(this.map, row.latitude, row.longitude);
   }else{ //-- remove existing marker
     //It will filter out checked points only
     let arr = this.markerArray.filter(item => item.id != row.id);
@@ -670,6 +687,7 @@ PoiCheckboxClicked(event: any, row: any) {
 
     if(event.checked){ 
       this.geoMarkerArray.push(row);
+      this.addMarkersAndSetViewBoundsGeofence(this.map, row);
     }else{ 
       let arr = this.geoMarkerArray.filter(item => item.id != row.id);
       this.geoMarkerArray = arr;
@@ -887,6 +905,28 @@ PoiCheckboxClicked(event: any, row: any) {
         }
     }
 
+    moveMapToSelectedPOI(map, lat, lon){
+      map.setCenter({lat:lat, lng:lon});
+      map.setZoom(16);
+    }
+  
+    addMarkersAndSetViewBoundsGeofence(map, row) {
+      let group = new H.map.Group();
+      let locationObjArray= [];
+      row.nodes.forEach(element => {
+        locationObjArray.push(new H.map.Marker({lat:element.latitude, lng:element.longitude}))
+      });    
+    
+      // add markers to the group
+      group.addObjects(locationObjArray);
+      map.addObject(group);
+    
+      // get geo bounding box for the group and set it to the map
+      map.getViewModel().setLookAtData({
+        bounds: group.getBoundingBox()
+      });
+    }  
+
     corridorCheckboxClicked(event, row){
       if(event.checked){ //-- add new marker
         this.markerArray.push(row);
@@ -906,10 +946,16 @@ PoiCheckboxClicked(event: any, row: any) {
       // lineString.pushPoint({lat:48.8567, lng:2.3508});
       // lineString.pushPoint({lat:52.5166, lng:13.3833});
       });
-  
-      this.map.addObject(new H.map.Polyline(
+      
+      let group= new H.map.Group();
+      group.addObjects([new H.map.Polyline(
         lineString, { style: { lineWidth: 4 }}
-      ));
+      )]);
+      this.map.addObject(group);
+
+      this.map.getViewModel().setLookAtData({
+        bounds: group.getBoundingBox()
+      });
     }
   
 
@@ -1365,7 +1411,7 @@ PoiCheckboxClicked(event: any, row: any) {
     this.backToPage.emit(emitObj);
   }
 
-  onApplyOnChange(event){
+  onApplyOnChange(event){   
     this.selectedApplyOn = event.value;
   }
 
@@ -1382,23 +1428,96 @@ PoiCheckboxClicked(event: any, row: any) {
     // this.loadScheduledReports();
     this.isNotificationFormValid= objData.isValidInput;
   }
+  
+  onNotifyEmailValid(objData){ 
+    this.isNotifyEmailValid = objData.isValidInput;
+  }
+  onAdvancedAlertPayload(objData){ 
+    this.isAdvancedAlertPayload = objData.isValidInput;
+  }  
+  onValidityCalender(objData){ 
+    this.isValidityCalender = objData.isValidInput;
+    this.isExpandedOpen=true;
+  }
 
-  onCreateUpdate(){
+  onCreateUpdate(){  
+    this.alertForm.markAllAsTouched();    
+    if (!this.alertForm.valid) {      
+      this.alertForm.markAllAsTouched();
+      this.scrollToFirstInvalidControl();
+    }
+    else 
+    {
+     
+      //this.alertForm.controls["vehicle"].setValidators([Validators.required]);
+      this.alertForm.markAllAsTouched();
+     // this.alertForm.controls["criticalLevelThreshold"].setValidators([Validators.required]);         
+      this.scrollToVehicleInvalidControl();      
+      this.alertForm.markAllAsTouched();
+      this.scrollToFiltersDetailsInvalidControl();      
+    }
+     // Entering Zone, Exiting Zone
+     if(this.alert_category_selected == 'L' && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X')){
+      if ((this.selectedPOI.selected.length == 0) && (this.selectedGeofence.selected.length == 0) && (this.selectedGroup.selected.length == 0)){
+         const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'searchForLevelPOI' + '"]');
+         if (invalidControl) {          
+           invalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+           this.isEnteringZone =false; 
+           this.isExpandedOpen=true;         
+         }        
+       }
+       else{
+        this.isEnteringZone =true; 
+       }
+    }
+    // Exiting Corridor
+    if(this.alert_category_selected == 'L' && this.alert_type_selected === 'C'){ 
+      if(this.selectedCorridor.selected.length == 0){
+        const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'searchCorridor' + '"]');
+        if (invalidControl) {          
+          invalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+          this.isEnteringZone =false;   
+          this.isExpandedOpen=true;      
+        }  
+      } else{
+        this.isEnteringZone =true; 
+       }
+    }
+
+    if(this.isFormValidate)
+    {
     let urgencylevelStartDate = 0;
     let urgencylevelEndDate = 0;
     if(this.panelOpenState){
       this.notifications= this.notificationComponent.getNotificationDetails();
-      //console.log(this.notifications);
+      //console.log(this.notifications); 
+    }
+    if(this.alert_category_selected == 'L' && this.alert_type_selected === 'S'){ //Hours of Service
+      let alertTimingRefHoursOfService = this.periodSelectionComponent.getAlertTimingPayload();
+      if(alertTimingRefHoursOfService.length>0)
+      {
+        this.isValidityCalender
+      }
     }
     let periodType = 'A';
       if(this.openAdvancedFilter == true){
         let alertAdvancedPayload = this.alertAdvancedComponent.getAdvancedFilterAlertPayload();
-        this.alertFilterRefs = alertAdvancedPayload["advancedAlertPayload"];
-        periodType = this.alertFilterRefs[0].alertTimingDetails.length == 0 ? 'A' : 'C'; 
+        this.alertFilterRefs = [];
+        if(alertAdvancedPayload!=undefined){
+        this.alertFilterRefs =alertAdvancedPayload["advancedAlertPayload"];
         urgencylevelStartDate = alertAdvancedPayload["urgencylevelStartDate"];
         urgencylevelEndDate = alertAdvancedPayload["urgencylevelEndDate"];
+        }
+        if(this.alertFilterRefs.length > 0 ){
+          this.alertFilterRefs=  alertAdvancedPayload["advancedAlertPayload"].filter(i=>i!=undefined);
+          if(this.alertFilterRefs.length>0){
+            periodType = this.alertFilterRefs[0].alertTimingDetails.length == 0 ? 'A' : 'C'; 
+          }
+        }
+       
       }
-
+   if(this.isNotifyEmailValid && this.isAdvancedAlertPayload && this.isEnteringZone && this.isValidityCalender && this.isFiltersDetailsValidate)
+   {
     this.isDuplicateAlert= false;
     let alertUrgencyLevelRefs= [];
     let alertLandmarkRefs= [];
@@ -1457,8 +1576,7 @@ PoiCheckboxClicked(event: any, row: any) {
 
       // Entering Zone, Exiting Zone
       if(this.alert_category_selected == 'L' && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X')){
-        
-        if(this.selectedPOI.selected.length > 0){
+       if(this.selectedPOI.selected.length > 0){
           if(this.actionType == 'create' || this.actionType == 'duplicate'){
             this.selectedPOI.selected.forEach(element => {
               let tempObj= {
@@ -1691,7 +1809,7 @@ PoiCheckboxClicked(event: any, row: any) {
     if(this.actionType == 'create' || this.actionType == 'duplicate'){
         let createAlertObjData= {
           "organizationId": this.accountOrganizationId,
-          "name": this.alertForm.get('alertName').value,
+          "name": this.alertForm.get('alertName').value.trim(),
           "category": this.alert_category_selected,
           "type": this.alert_type_selected,
           "validityPeriodType": "A",
@@ -1722,12 +1840,12 @@ PoiCheckboxClicked(event: any, row: any) {
           else if(error.status == 409 && error.error.includes('Duplicate notification recipient label')){
             this.notificationComponent.duplicateRecipientLabel();
           }
-        })
+        })      
     }
     else if(this.actionType == 'edit'){
       let editAlertObjData= {
         "organizationId": this.accountOrganizationId,
-        "name": this.alertForm.get('alertName').value,
+        "name": this.alertForm.get('alertName').value.trim(),
         "category": this.alert_category_selected,
         "type": this.alert_type_selected,
         "validityPeriodType": "A",
@@ -1757,6 +1875,130 @@ PoiCheckboxClicked(event: any, row: any) {
 
     }
   }
+}
+}
+
+  private scrollToFirstInvalidControl() {     
+    //const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'alertName' + '"]');
+     const invalidControl: HTMLElement = this.el.nativeElement.querySelector(
+        "form .ng-invalid"
+      );  
+    if (invalidControl) {  
+      //invalidControl.scrollIntoView({ behavior: 'smooth' });
+      this.isExpandedOpenAlert=true;
+      invalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      this.isFormValidate=false;   
+    }
+    else{     
+      this.isFormValidate=true;
+     }
+    
+  }
+  
+  private scrollToVehicleInvalidControl() {     
+    let invalidControl: HTMLElement ;   
+    if(this.selectedApplyOn == 'G'){
+      
+    if((this.alertForm.controls.vehicleGroup.value == '' || this.alertForm.controls.vehicleGroup.value == 'ALL'))
+    {
+      invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'vehicleGroup' + '"]');
+    }    
+    
+   }
+    else {       
+        if((this.alertForm.controls.vehicle.value == '' || this.isUnsubscribedVehicle)){
+          this.alertForm.get('vehicle').setValue('');  
+         invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'vehicle' + '"]');
+        }   
+    } 
+     if (invalidControl) {  
+         this.isExpandedOpenAlert=true;
+         invalidControl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });     
+         this.isFormValidate=false;
+     }
+     else{
+      this.isFormValidate=true;
+     }
+    
+  }
+  
+  
+  private scrollToFiltersDetailsInvalidControl() {     
+    let invalidControl: HTMLElement ;  
+    this.filterDetailsErrorMsg='';
+    // if( (this.alert_category_selected != 'R' && this.alert_type_selected != 'S' &&
+    // (this.selectedPOI.selected.length == 0 && this.selectedGeofence.selected.length == 0 && this.selectedGroup.selected.length == 0) &&
+    // (this.selectedCorridor.selected.length == 0)))
+   if((this.alert_category_selected === 'L' && (this.alert_type_selected === 'H' || this.alert_type_selected === 'Y' || this.alert_type_selected === 'D' || this.alert_type_selected === 'U' || this.alert_type_selected === 'G')) || 
+   (this.alert_category_selected === 'F' && (this.alert_type_selected === 'P' || this.alert_type_selected === 'L' || this.alert_type_selected === 'T' || this.alert_type_selected === 'I' || this.alert_type_selected === 'A' || this.alert_type_selected === 'F' )))    
+      {
+     if(this.filterDetailsCheck)
+     {
+        if((!this.isWarningLevelSelected && !this.isAdvisoryLevelSelected && !this.isCriticalLevelSelected))
+        {
+          this.isExpandedOpen=true;    
+          this.filterDetailsCheck=true;
+          this.isFiltersDetailsValidate=false;   
+          invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'levelType' + '"]');
+          this.filterDetailsErrorMsg ='Please select atleast one alerts level';
+        }
+        else if((!this.isWarningLevelSelected && !this.isAdvisoryLevelSelected && this.isCriticalLevelSelected && (this.alertForm.get('criticalLevelThreshold').value == '')))
+        {
+          this.alertForm.get('criticalLevelThreshold').setValue('');  
+          invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'criticalLevelThreshold' + '"]');
+        }
+        else if((this.isWarningLevelSelected && !this.isAdvisoryLevelSelected && !this.isCriticalLevelSelected && (this.alertForm.get('warningLevelThreshold').value == ''))){
+          this.alertForm.get('warningLevelThreshold').setValue('');  
+          invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'warningLevelThreshold' + '"]');
+          }
+        else if((!this.isWarningLevelSelected && this.isAdvisoryLevelSelected && !this.isCriticalLevelSelected && (this.alertForm.get('advisoryLevelThreshold').value == ''))){
+          this.alertForm.get('advisoryLevelThreshold').setValue('');  
+          invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'advisoryLevelThreshold' + '"]');
+        }
+        this.filterDetailsCheck=false;
+      }
+      else if((!this.isCriticalLevelSelected && !this.isWarningLevelSelected && !this.isAdvisoryLevelSelected)){
+        this.isExpandedOpen=true;    
+        this.filterDetailsCheck=true;
+        this.isFiltersDetailsValidate=false;   
+        invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'levelType' + '"]');
+        this.filterDetailsErrorMsg ='Please select atleast one alerts level';
+      }
+       else if((this.isCriticalLevelSelected && ((this.alertForm.get('criticalLevelThreshold').value == ''))))
+        {
+         // this.alertForm.get('criticalLevelThreshold').setValue(''); 
+          invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'criticalLevelThreshold' + '"]');
+        }
+        else if((this.isWarningLevelSelected && (this.alertForm.get('warningLevelThreshold').value == '')) ||
+        ((this.isWarningLevelSelected && this.isCriticalLevelSelected) && this.alertForm.get('warningLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value)) 
+        {
+         // this.alertForm.get('warningLevelThreshold').setValue('');  
+          invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'warningLevelThreshold' + '"]');
+          this.filterDetailsErrorMsg ='Warning value should be less than critical value';
+        }
+        else if((this.isAdvisoryLevelSelected && (this.alertForm.get('advisoryLevelThreshold').value == '')) ||
+        ((this.isAdvisoryLevelSelected && this.isWarningLevelSelected ) && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('warningLevelThreshold').value ) ||
+        ((this.isAdvisoryLevelSelected && this.isCriticalLevelSelected) && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value ))
+        {
+         // this.alertForm.get('advisoryLevelThreshold').setValue(''); 
+        invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'advisoryLevelThreshold' + '"]');
+        this.filterDetailsErrorMsg ='Advisory value should be less than critical & warning value';
+      }           
+    }
+    else{
+      invalidControl=null;  
+      this.isFiltersDetailsValidate=true;  
+    }
+    if (invalidControl) {         
+      // invalidControl.focus()
+     invalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+     this.isFiltersDetailsValidate=false;
+    }else{
+      this.isFiltersDetailsValidate=true;
+     }
+    
+  }
+  
 
   getAlertCreatedMessage() {
     let alertName = `${this.alertForm.controls.alertName.value}`;

@@ -93,7 +93,12 @@ namespace net.atos.daf.ct2.reports.repository
         #endregion
 
         #region Vehicle Performance Report
-        Task<List<EngineLoadDistributionTemplate>> GetEngineLoadDistribution(int enginetypeid);
+        Task<VehiclePerformanceChartTemplate> GetVehPerformanceChartTemplate(VehiclePerformanceRequest vehiclePerformanceRequest);
+
+        Task<VehiclePerformanceSummary> GetVehPerformanceSummaryDetails(string vin);
+        Task<List<VehPerformanceChartData>> GetVehPerformanceBubbleChartData(VehiclePerformanceRequest vehiclePerformanceRequest);
+        Task<List<VehPerformanceProperty>> GetVehPerformanceType();
+        Task<List<KpiDataRange>> GetRangeData(string pType);
         #endregion
     }
 }

@@ -23,6 +23,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.confluentkafka\net.atos.daf.ct2.confluentkafka.csproj" />
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.email\net.atos.daf.ct2.email.csproj" />
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.notification\net.atos.daf.ct2.notification.csproj" />
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.sms\net.atos.daf.ct2.sms.csproj" />
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.webservice\net.atos.daf.ct2.webservice.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.notificationengine\net.atos.daf.ct2.notificationengine.csproj" />
   </ItemGroup>
 

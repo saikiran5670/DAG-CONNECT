@@ -18,4 +18,5 @@ public class DafConstants {
 		public static final String DRIVER_ACTIVITY_READ = "select code,start_time from livefleet.livefleet_trip_driver_activity  where driver_id = ? order by id DESC limit 1";
 		public static final String DRIVER_ACTIVITY_UPDATE = "UPDATE livefleet.livefleet_trip_driver_activity  SET end_time = ?, duration = ?, modified_at = extract(epoch from now()) * 1000 WHERE driver_id IN ( SELECT driver_id FROM livefleet.livefleet_trip_driver_activity WHERE driver_id = ? ORDER BY id DESC LIMIT 1 ) AND id IN ( SELECT id FROM livefleet.livefleet_trip_driver_activity WHERE driver_id = ? ORDER BY id DESC LIMIT 1 )";
 		public static final String TRIP_LEVEL_AGGREGATION = "T";
+		public static final Long ZERO =0L;
 }

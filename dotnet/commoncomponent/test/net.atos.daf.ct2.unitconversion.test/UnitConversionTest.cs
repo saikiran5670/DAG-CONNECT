@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.unitconversion.test
                                    .GetVolume(123123.58
                                    , VolumeUnit.MilliLiter
                                    , UnitToConvert.Metric);
-            Assert.IsTrue(result == 0.12);
+            Assert.IsTrue(result == 123.12);
         }
 
         [TestCategory("Unit-Test-Case")]
@@ -80,7 +80,7 @@ namespace net.atos.daf.ct2.unitconversion.test
                                    .GetWeight(123.58
                                    , WeightUnit.KiloGram
                                    , UnitToConvert.Metric);
-            Assert.IsTrue(result == 123.58);
+            Assert.IsTrue(result == 0.12);
         }
 
 
@@ -163,7 +163,7 @@ namespace net.atos.daf.ct2.unitconversion.test
                                    .GetWeight(123.58
                                    , WeightUnit.KiloGram
                                    , UnitToConvert.Imperial);
-            Assert.IsTrue(result == 272.49);
+            Assert.IsTrue(result == 0.14);
         }
 
 
@@ -177,7 +177,33 @@ namespace net.atos.daf.ct2.unitconversion.test
                                    .GetVolumePerDistance(123.58
                                    , VolumePerDistanceUnit.MilliLiterPerMeter
                                    , UnitToConvert.Imperial);
-            Assert.IsTrue(result == 52.54);
+            Assert.IsTrue(result == 43.75);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for GetVolumePer100Km Imperial Success case")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetVolumePer100Km_Imperial_Success()
+        {
+            var result = await _unitConversionManager
+                                   .GetVolumePer100Km(70000,10000
+                                   , VolumeUnit.MilliLiter
+                                   , UnitToConvert.Imperial);
+            Assert.IsTrue(result == 19.77);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for GetVolumePer100Km Metric Success case")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetVolumePer100Km_Metric_Success()
+        {
+            var result = await _unitConversionManager
+                                   .GetVolumePer100Km(70000, 10000
+                                   , VolumeUnit.MilliLiter
+                                   , UnitToConvert.Metric);
+            Assert.IsTrue(result == 14.29);
         }
     }
 }

@@ -98,7 +98,7 @@ namespace net.atos.daf.ct2.unitconversion
                             result = value / 4546;
                             break;
                         case UnitToConvert.Metric:
-                            result = value / 1e+6; //need to check
+                            result = value / 1000;
                             break;
                     }
                     break;
@@ -141,10 +141,10 @@ namespace net.atos.daf.ct2.unitconversion
                     switch (convertTo)
                     {
                         case UnitToConvert.Imperial:
-                            result = ((distance / 1609.344) / (fuelconsumed / 4546));
+                            result = fuelconsumed > 0 ? ((distance / 1609.344) / (fuelconsumed / 4546)) : 0;
                             break;
                         case UnitToConvert.Metric:
-                            result = ((fuelconsumed / 1000) / (distance / 1000)) * 100;
+                            result = distance > 0 ? ((fuelconsumed / 1000) / (distance / 1000)) * 100 : 0;
                             break;
                     }
                     break;

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.email.Enum;
+using net.atos.daf.ct2.map;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reportscheduler.entity;
@@ -30,6 +31,8 @@ namespace net.atos.daf.ct2.account.report
         private readonly IUnitManager _unitManager;
         private readonly EmailEventType _evenType;
         private readonly EmailContentType _contentType;
+        private readonly IMapManager _mapManager;
+        private readonly MapHelper _mapHelper;
 
         public string VIN { get; private set; }
         public string TimeZoneName { get; private set; }
@@ -55,7 +58,7 @@ namespace net.atos.daf.ct2.account.report
                           IReportSchedulerRepository reportSchedularRepository,
                           IVisibilityManager visibilityManager, ITemplateManager templateManager,
                           IUnitConversionManager unitConversionManager, IUnitManager unitManager,
-                          EmailEventType evenType, EmailContentType contentType)
+                          EmailEventType evenType, EmailContentType contentType, IMapManager mapManager)
         {
             ReportManager = reportManager;
             _reportSchedularRepository = reportSchedularRepository;
@@ -65,6 +68,8 @@ namespace net.atos.daf.ct2.account.report
             _unitManager = unitManager;
             _evenType = evenType;
             _contentType = contentType;
+            _mapManager = mapManager;
+            _mapHelper = new MapHelper(_mapManager);
         }
 
         public void SetParameters(ReportCreationScheduler reportSchedulerData, IEnumerable<VehicleList> vehicleLists)
@@ -114,8 +119,8 @@ namespace net.atos.daf.ct2.account.report
                         IdleDuration = await _unitConversionManager.GetTimeSpan(item.IdleDuration, TimeUnit.Seconds, UnitToConvert),
                         AverageSpeed = (int)await _unitConversionManager.GetSpeed(item.AverageSpeed, SpeedUnit.MeterPerMilliSec, UnitToConvert),
                         AverageWeight = await _unitConversionManager.GetWeight(item.AverageWeight, WeightUnit.KiloGram, UnitToConvert),
-                        StartPosition = item.StartPosition,
-                        EndPosition = item.EndPosition,
+                        StartPosition = string.IsNullOrEmpty(item.StartPosition) ? await _mapHelper.GetAddress(item.StartPositionLattitude, item.StartPositionLongitude) : item.StartPosition,
+                        EndPosition = string.IsNullOrEmpty(item.EndPosition) ? await _mapHelper.GetAddress(item.EndPositionLattitude, item.EndPositionLongitude) : item.EndPosition,
                         FuelConsumed = await _unitConversionManager.GetVolume(item.FuelConsumed, VolumeUnit.MilliLiter, UnitToConvert),
                         DrivingTime = await _unitConversionManager.GetTimeSpan(item.DrivingTime, TimeUnit.Seconds, UnitToConvert),
                         Alerts = item.Alerts
@@ -132,27 +137,25 @@ namespace net.atos.daf.ct2.account.report
         public async Task<string> GenerateTemplate(byte[] logoBytes)
         {
             if (!IsAllParameterSet) throw new Exception(TripReportConstants.ALL_PARAM_MSG);
-            var fromDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(FromDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
-            var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
+            var fromDate = TimeZoneHelper.GetDateTimeFromUTC(FromDate, TimeZoneName, DateTimeFormat);
+            var toDate = TimeZoneHelper.GetDateTimeFromUTC(ToDate, TimeZoneName, DateTimeFormat);
 
             StringBuilder html = new StringBuilder();
-            //ReportTemplateSingleto.
-            //                        GetInstance()
-            //                        .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
-            //                                        _contentType, ReportSchedulerData.Code)
             var timeSpanUnit = await _unitManager.GetTimeSpanUnit(UnitToConvert);
             var distanceUnit = await _unitManager.GetDistanceUnit(UnitToConvert);
             var fuelIncrease = (char)FuelType.Increase;
             var fuelDecrease = (char)FuelType.Decrease;
-            html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE_FUEL_DEVIATION
-            //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
+            html.AppendFormat(ReportTemplateSingleto.
+                                    GetInstance()
+                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
+                                                        _contentType, ReportSchedulerData.Code)
                               , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
                               , await GenerateTable()
-                              , fromDate.ToString(DateTimeFormat)
-                              , VehicleLists.Any(s => !string.IsNullOrEmpty(s.VehicleGroupName)) ? string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).Distinct().ToArray()) : "All"
-                              , toDate.ToString(DateTimeFormat)
-                              , string.Join(',', VehicleLists.Select(s => s.VehicleName).Distinct().ToArray())
+                              , fromDate
+                              , VehicleLists.Select(s => s.VehicleGroupName).Distinct().Count() == 1 ? VehicleLists.FirstOrDefault().VehicleGroupName : "All"                              
+                              , toDate
+                              , VehicleLists.Select(s => s.VehicleName).Distinct().Count() == 1 ? VehicleLists.FirstOrDefault().VehicleName : "All"
                               , FuelDeviationDetails.Where(w => w.FuelEventType == fuelIncrease).Count()
                               , FuelDeviationDetails.Where(w => w.FuelEventType == fuelDecrease).Count()
                               , FuelDeviationDetails.Select(w => w.VIN).Distinct().Count()

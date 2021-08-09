@@ -45,6 +45,9 @@ rpc GetFuelBenchmarkByTimePeriod (FuelBenchmarkTimePeriodRequest) returns (FuelB
 rpc GetEcoScoreReportSingleDriver (GetEcoScoreReportSingleDriverRequest) returns (GetEcoScoreReportSingleDriverResponse);
 rpc GetAssociatedVehiclGroup (VehicleListRequest) returns (AssociatedVehicleResponse);
 rpc GetEcoScoreReportTrendlines (GetEcoScoreReportSingleDriverRequest) returns (GetEcoScoreReportTrendlinesResponse);
+rpc GetVehiclePerformanceChartTemplate(VehPerformanceRequest) returns (VehPerformanceResponse);
+rpc GetVehPerformanceBubbleChartData(BubbleChartDataRequest) returns (BubbleChartDataResponse);
+rpc GetVehPerformanceType(VehPerformanceTypeRequest) returns (VehPerformanceTypeResponse);
 }
 
 message VehicleHealthReportRequest{
@@ -845,6 +848,9 @@ message FleetFuelDetails {
     double CCFuelConsumed = 46;
     int64 CCFuelDistanceNotActive = 47;
     double CCFuelConsumedNotActive = 48;
+    string StartPosition = 49;
+    string EndPosition = 50;
+    double IdleDurationPercentage = 51;
 }
 message FleetFuelDetailsByDriver {
     google.protobuf.StringValue VehicleName = 1;
@@ -890,6 +896,7 @@ message FleetFuelDetailsByDriver {
     double CCFuelConsumed = 41;
     int64 CCFuelDistanceNotActive = 42;
     double CCFuelConsumedNotActive = 43;
+    double IdleDurationPercentage = 44;
 }
 message FleetFuelTripDetails {
     string VehicleName = 1;
@@ -1309,3 +1316,85 @@ message GetEcoScoreReportTrendlinesResponse {
  repeated EcoScoreTrendlines Trendlines = 3 ;
 }
 /// END: Eco Score Report Single Driver
+// Vehicle Performance
+
+message BubbleChartDataRequest{
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    string VIN = 3;
+    string PerformanceType= 4;
+    int32 AccountId = 5;
+    int32 OrganizationId = 6;
+
+}
+
+message VehPerformanceCharts{
+string IsDefault =3;
+string Index =4;
+string Range =5;
+string Axisvalues =6;
+}
+message VehPerformanceResponse{
+string Message = 1;
+Responsecode Code = 2;
+VehPerformanceTemplate VehPerformanceTemplate=3;
+
+ }
+
+ message VehPerformanceTemplate
+ {
+ repeated VehPerformanceCharts VehPerformanceCharts = 1;
+ VehPerformanceSummary VehPerformanceSummary =2; 
+}
+ message VehPerformanceSummary{
+      string ModelType = 1;
+      string EngineType = 2;
+      string Vin = 3;
+ }
+ message KpiData{
+ string Label =1;
+ double Value =2;
+ int32 Index =3;
+ }
+ message BubbleChartData{
+ string Vin=1;
+ string TripId=2;
+ int32 AbsRpmtTrque=3;
+ int32 OrdRpmTorque=4;
+ repeated KpiData KpiData = 8;
+ repeated ChartDataSet MatrixData = 9;
+ }
+
+ message ChartDataSet{
+ int32 Xindex=1;
+ int32 Yindex=2;
+ int32 Value = 3;
+ }
+ message BubbleChartDataResponse{
+string Message = 1;
+Responsecode Code = 2;
+repeated KpiData KpiData = 8;
+ repeated ChartDataSet MatrixData = 9;
+ }
+ message VehPerformanceRequest{     
+    string VIN = 1;
+    string PerformanceType= 2; 
+    int32 AccountId = 3;
+    int32 OrganizationId = 4;
+
+}
+message VehPerformanceTypeRequest{
+
+}
+message VehPerformanceType{
+      string Name = 1;
+      string Value = 2;
+      string Type = 3;
+}
+message VehPerformanceTypeResponse{
+      repeated VehPerformanceType VehPerformanceType =1;
+      string Message = 2;
+      Responsecode Code = 3;
+}
+
+// Vehicle Performance End

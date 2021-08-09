@@ -1,0 +1,146 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: provisioningdataservice-deployment
+  labels:
+    app.kubernetes.io/name: provisioningdataservice
+    app.kubernetes.io/type: dataservice
+spec:
+  template:
+    metadata:
+      annotations:
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+      labels:
+        app.kubernetes.io/name: provisioningdataservice
+        app.kubernetes.io/type: dataservice
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 3000
+        fsGroup: 10001
+        runAsNonRoot: true
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - provisioningdataservice
+              - key: app.kubernetes.io/type
+                operator: In
+                values:
+                - dataservice
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: provisioningdataservice-container
+        image: #{acrurl}#/provisioningdataservice
+        imagePullPolicy: "Always"
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+             - all
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        env:
+        - name: ASPNETCORE_URLS
+          value: "http://*:8080"
+        - name: COMPlus_EnableDiagnostics
+          value: "0"
+        ports:
+          - containerPort: 8080
+      - name: filebeatservice-container
+        image: #{acrurl}#/filebeat
+        imagePullPolicy: "Always"
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: filebeatdata 
+          mountPath: /usr/share/filebeat/data
+        - name: certs
+          mountPath: /certs
+          readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+             - all
+        resources:
+          limits:
+            cpu: 50m
+            memory: 50Mi
+          requests:
+            cpu: 20m
+            memory: 20Mi
+        env:
+        - name: serviceName
+          value: "provisioningdataservice"
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: filebeatdata
+        emptyDir: {}
+      - name: certs
+        secret:
+          secretName: filebeat
+      nodeSelector:
+        agentpool: npuser01         
+  selector:
+    matchLabels:
+        app.kubernetes.io/name: provisioningdataservice
+        app.kubernetes.io/type: dataservice
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: provisioningdataservice
+  labels:
+    svc.kubernetes.io/name: provisioningdataservice
+    svc.kubernetes.io/type: dataservice
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+ #   traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
+ #   traefik.ingress.kubernetes.io/service.sticky.cookie.secure: "true"
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: provisioningdataservice
+    app.kubernetes.io/type: dataservice
+
+---
+kind: HorizontalPodAutoscaler 
+apiVersion: autoscaling/v2beta1 
+metadata: 
+  name: provisioningdataservice-hpa
+  labels:
+    hpa.kubernetes.io/name: provisioningdataservice
+    hpa.kubernetes.io/type: dataservice 
+spec: 
+  maxReplicas: 5 
+  minReplicas: 2
+  scaleTargetRef: 
+    apiVersion: apps/v1 
+    kind: Deployment 
+    name: provisioningdataservice-deployment 
+  metrics: 
+  - type: Resource 
+    resource: 
+      name: cpu 
+      targetAverageUtilization: 70

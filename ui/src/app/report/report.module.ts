@@ -34,6 +34,8 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { FuelDeviationReportComponent } from './fuel-deviation-report/fuel-deviation-report.component';
 import { VehiclePerformanceReportComponent } from './vehicle-performance-report/vehicle-performance-report.component';
 import { SearchCriteriaComponent } from './vehicle-performance-report/search-criteria/search-criteria.component';
+import { PieChartComponent } from './vehicle-performance-report/pie-chart/pie-chart.component';
+import { HeatBubbleChartComponent } from './vehicle-performance-report/heat-bubble-chart/heat-bubble-chart.component';
 
 // import interactionPlugin from '@fullcalendar/interaction';
 
@@ -51,7 +53,7 @@ export const MY_DATE_FORMAT = {
 }
 
 @NgModule({
-  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent, EcoScoreReportComponent, EcoScoreDriverCompareComponent, EcoScoreReportDriverComponent, FuelBenchmarkingComponent, DetailDriverReportComponent, FuelBenchmarkingTableComponent, VehicletripComponent, FuelDeviationReportComponent, VehiclePerformanceReportComponent, SearchCriteriaComponent],
+  declarations: [ReportComponent, TripReportComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent, FleetFuelReportComponent, FleetFuelReportVehicleComponent, FleetFuelReportDriverComponent, EcoScoreReportComponent, EcoScoreDriverCompareComponent, EcoScoreReportDriverComponent, FuelBenchmarkingComponent, DetailDriverReportComponent, FuelBenchmarkingTableComponent, VehicletripComponent, FuelDeviationReportComponent, VehiclePerformanceReportComponent, SearchCriteriaComponent, PieChartComponent, HeatBubbleChartComponent],
   imports: [
     CommonModule,
     ReportRoutingModule,

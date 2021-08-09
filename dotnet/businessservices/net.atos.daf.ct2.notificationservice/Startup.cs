@@ -43,8 +43,8 @@ namespace net.atos.daf.ct2.notificationservice
                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
 
-            services.AddTransient<ITripAlertManager, TripAlertManager>();
-            services.AddTransient<ITripAlertRepository, TripAlertRepository>();
+            //services.AddTransient<ITripAlertManager, TripAlertManager>();
+            //services.AddTransient<ITripAlertRepository, TripAlertRepository>();
             services.AddTransient<INotificationIdentifierManager, NotificationIdentifierManager>();
             services.AddTransient<INotificationIdentifierRepository, NotificationIdentifierRepository>();
             services.AddTransient<IEmailNotificationManager, EmailNotificationManager>();

@@ -79,7 +79,8 @@ export class FuelDeviationReportComponent implements OnInit {
   wholeFuelDeviationData: any = [];
   tableInfoObj: any = {};
   fuelDeviationReportId: any = 7; // hard coded for fuel deviation report pref.
-  displayedColumns = ['All', 'fuelEventType', 'fuelDiffernce', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
+  displayedColumns = ['All', 'fuelEventType', 'convertedDifference', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
+  pdfDisplayedColumns = ['All', 'fuelEventType', 'convertedDifference', 'vehicleName', 'vin', 'registrationNo', 'eventTime', 'odometer', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed', 'drivingTime', 'alerts'];
   startDateValue: any;
   tableExpandPanel: boolean = true;
   last3MonthDate: any;
@@ -128,7 +129,7 @@ export class FuelDeviationReportComponent implements OnInit {
     },
     {
       key: 'rp_fd_details_difference',
-      value: 'fuelDiffernce'
+      value: 'convertedDifference'
     },
     {
       key: 'rp_fd_details_alerts',
@@ -180,29 +181,31 @@ export class FuelDeviationReportComponent implements OnInit {
     fuelDecrease: false,
     fuelVehicleEvent: false
   }
-  //- doughnut chart
+  //- fuel deviation doughnut chart
   fuelDeviationDChartLabels: Label[] = [];
   fuelDeviationDChartData: any = [];
   fuelDeviationDChartType: ChartType = 'doughnut';
   fuelDeviationDChartColors: Color[] = [
     {
-      backgroundColor: ['#434348','#7cb5ec']
+      backgroundColor: ['#65C3F7','#F4AF85']
     }
   ];
   chartLegend = true;
   public fuelDeviationDChartOptions: ChartOptions = {
     responsive: true,
     legend: {
-      position: 'bottom'
+      position: 'bottom',
+      //onClick: null
     },
     cutoutPercentage: 70
   };
 
-  //- pie chart
+  //- fuel deviation pie chart
   fuelDeviationPChartOptions: ChartOptions = {
     responsive: true,
     legend: {
       position: 'bottom',
+      //onClick: null
     }
   };
   fuelDeviationPChartType: ChartType = 'pie';
@@ -212,7 +215,7 @@ export class FuelDeviationReportComponent implements OnInit {
   fuelDeviationPChartPlugins = [];
   fuelDeviationPChartColors: Color[] = [
     {
-      backgroundColor: ['#434348','#7cb5ec']
+      backgroundColor: ['#65C3F7','#F4AF85']
     }
   ];
 
@@ -230,6 +233,164 @@ export class FuelDeviationReportComponent implements OnInit {
       dChart: false
     }
   };
+
+  //- fuel increase line chart
+  _xIncLine: any = [];
+  _yIncLine: any = [];
+  fuelIncLineChartData: ChartDataSets[] = [];
+  fuelIncLineChartLabels: Label[] = this._xIncLine;
+  fuelIncLineChartOptions = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+      onClick: null
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          steps: 10,
+          stepSize: 1,
+          // max:10,
+          beginAtZero: true,
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Values(Fuel Increase Events)'    
+        }
+      }]
+    }
+  };
+  fuelIncLineChartColors: Color[] = [
+    {
+      borderColor: '#65C3F7',
+      backgroundColor: 'rgba(255,255,0,0)',
+    },
+  ];
+  fuelIncLineChartLegend = true;
+  fuelIncLineChartPlugins = [];
+  fuelIncLineChartType = 'line';
+
+  //- fuel decrease line chart
+  _xDecLine: any = [];
+  _yDecLine: any = [];
+  fuelDecLineChartData: ChartDataSets[] = [];
+  fuelDecLineChartLabels: Label[] = this._xDecLine;
+  fuelDecLineChartOptions = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+      onClick: null
+    },
+    scales: {
+      yAxes: [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          steps: 10,
+          stepSize: 1,
+          // max:10,
+          beginAtZero: true,
+        },
+        scaleLabel: {
+          display: true,
+          labelString: 'Values(Fuel Decrease Events)'    
+        }
+      }]
+    }
+  };
+  fuelDecLineChartColors: Color[] = [
+    {
+      borderColor: '#F4AF85',
+      backgroundColor: 'rgba(255,255,0,0)',
+    },
+  ];
+  fuelDecLineChartLegend = true;
+  fuelDecLineChartPlugins = [];
+  fuelDecLineChartType = 'line';
+  
+  //-- fuel Increase Bar chart
+  fuelIncBarChartOptions: any = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+      onClick: null
+    },
+    scales: {
+      yAxes: [
+        {
+          id: "y-axis",
+          position: 'left',
+          type: 'linear',
+          ticks: {
+            beginAtZero: true,
+            steps: 10,
+            stepSize: 1,
+          },
+          scaleLabel: {
+            display: true,
+            labelString: 'Values (Fuel Increase Events)'    
+          }
+        }
+      ],
+      xAxes:[
+        {
+          barThickness: 2,
+          gridLines: {
+            drawOnChartArea: false
+          }
+        }
+      ]
+    }
+  };
+  fuelIncBarChartLabels: Label[] = [];
+  fuelIncBarChartType: ChartType = 'bar';
+  fuelIncBarChartLegend = true;
+  fuelIncBarChartPlugins = [];
+  fuelIncBarChartData: any[] = [];
+
+  //-- fuel Decrease Bar chart
+  fuelDecBarChartOptions: any = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+      onClick: null
+    },
+    scales: {
+      yAxes: [
+        {
+          id: "y-axis",
+          position: 'left',
+          type: 'linear',
+          ticks: {
+            beginAtZero: true,
+            steps: 10,
+            stepSize: 1,
+          },
+          scaleLabel: {
+            display: true,
+            labelString: 'Values (Fuel Decrease Events)'    
+          }
+        }
+      ],
+      xAxes:[
+        {
+          barThickness: 2,
+          gridLines: {
+            drawOnChartArea: false
+          }
+        }
+      ]
+    }
+  };
+  fuelDecBarChartLabels: Label[] = [];
+  fuelDecBarChartType: ChartType = 'bar';
+  fuelDecBarChartLegend = true;
+  fuelDecBarChartPlugins = [];
+  fuelDecBarChartData: any[] = [];
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private organizationService: OrganizationService, private _formBuilder: FormBuilder, private translationService: TranslationService, private reportService: ReportService, private reportMapService: ReportMapService, private completerService: CompleterService, private configService: ConfigService, private hereService: HereService, private matIconRegistry: MatIconRegistry,private domSanitizer: DomSanitizer) { 
     this.map_key = this.configService.getSettings("hereMap").api_key;
@@ -483,7 +644,7 @@ export class FuelDeviationReportComponent implements OnInit {
     }
     this.vehicleDD = this.vehicleListData.slice();
     if(this.vehicleDD.length > 0){
-      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All', registrationNo: this.translationData.lblAll || 'All', vin: this.translationData.lblAll || 'All' });
       this.resetFuelDeviationFormControlValue();
     }
     this.setVehicleGroupAndVehiclePreSelection();
@@ -492,6 +653,21 @@ export class FuelDeviationReportComponent implements OnInit {
   setVehicleGroupAndVehiclePreSelection() {
     if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
       this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue)
+    }
+  }
+
+  vehVinRegChecker: any = [
+    { key: 'rp_fd_details_vehiclename', attr: 'vehicleName' }, 
+    { key: 'rp_fd_details_vin', attr: 'vin' },
+    { key: 'rp_fd_details_regplatenumber', attr: 'registrationNo' }
+  ];
+  vehVinRegCheck(item: any){
+    let _s = this.vehVinRegChecker.filter(i => i.key == item.key);
+    if(_s.length > 0){
+      let index = this.vehVinRegChecker.map(i => i.attr).indexOf(_s[0].attr); // find index
+      if (index > -1){
+        this.vehVinRegChecker.splice(index, 1); // removed
+      }
     }
   }
 
@@ -505,6 +681,7 @@ export class FuelDeviationReportComponent implements OnInit {
       let filterPref = this.fuelTableDetailsPrefData.filter(i => i.state == 'I'); // removed unchecked
       if(filterPref.length > 0){
         filterPref.forEach(element => {
+          this.vehVinRegCheck(element);
           let search = this.prefMapData.filter(i => i.key == element.key); // present or not
           if(search.length > 0){
             let index = this.displayedColumns.indexOf(search[0].value); // find index
@@ -821,7 +998,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     if(_val == 0){ //-- all group
       this.vehicleDD = [];
       this.vehicleDD = this.vehicleListData.slice();
-      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+      this.vehicleDD.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All', registrationNo: this.translationData.lblAll || 'All', vin: this.translationData.lblAll || 'All' });
     }else{
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == _val);
       if(search.length > 0){
@@ -877,6 +1054,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
         //console.log(_fuelDeviationData);
         this.reportService.getFuelDeviationReportCharts(reportDataObj).subscribe((_fuelDeviationChartData: any) => {
           this.hideloader();
+          this.resetChartData();
           this.setChartsSection(_fuelDeviationChartData);
           this.setSummarySection(_fuelDeviationData.data);
           this.fuelDeviationData = this.reportMapService.convertFuelDeviationDataBasedOnPref(_fuelDeviationData.data, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone, this.translationData);
@@ -884,6 +1062,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
           this.updateDataSource(this.fuelDeviationData);
         }, (error) => {
           this.hideloader();
+          this.resetChartData();
           console.log("No charts data available...");
         });
       }, (error)=>{
@@ -902,10 +1081,19 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     this.fuelDeviationDChartLabels = [];
     this.fuelDeviationPChartData = [];
     this.fuelDeviationPChartLabels = [];
+    this.fuelIncLineChartData = [];
+    this.fuelDecLineChartData = [];
+    this.fuelIncBarChartData = [];
+    this.fuelDecBarChartData = [];
+    this.fuelIncBarChartLabels = [];
+    this.fuelDecBarChartLabels = [];
+    this._xIncLine = [];
+    this._yIncLine = [];
+    this._xDecLine = [];
+    this._yDecLine = [];
   }
 
   setSummarySection(data: any){
-    this.resetChartData();
     if(data && data.length > 0){
       let _totalIncCount: any = data.filter(i => i.fuelEventType == 'I');
       let _totalDecCount: any = data.filter(i => i.fuelEventType == 'D');
@@ -923,7 +1111,51 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     }
   }
 
-  setChartsSection(_chartData: any){ }
+  setChartsSection(_chartData: any){ 
+    if(_chartData && _chartData.data && _chartData.data.length > 0){
+      _chartData.data.forEach(element => {
+        let _d = this.reportMapService.getStartTime(element.date, this.prefDateFormat, this.prefTimeZone, this.prefTimeZone, false);
+        this._xIncLine.push(_d);
+        this._xDecLine.push(_d);
+        this._yIncLine.push(element.increaseEvent);
+        this._yDecLine.push(element.decreaseEvent);
+      });
+      this.assignDataToCharts();
+    }
+  }
+
+  assignDataToCharts(){
+    this.fuelIncLineChartLabels = this._xIncLine;
+    this.fuelDecLineChartLabels = this._xDecLine;
+    this.fuelIncBarChartLabels = this._xIncLine;
+    this.fuelDecBarChartLabels = this._xDecLine;
+    this.fuelIncLineChartData = [
+      { data: this._yIncLine, label: this.translationData.lblFuelIncreaseEvents || 'Fuel Increase Events' },
+    ];
+    this.fuelDecLineChartData = [
+      { data: this._yDecLine, label: this.translationData.lblFuelDecreaseEvents || 'Fuel Decrease Events' },
+    ];
+    this.fuelIncBarChartData = [
+      {
+        label: this.translationData.lblFuelIncreaseEvents || 'Fuel Increase Events',
+        type: 'bar',
+        backgroundColor: '#65C3F7',
+        hoverBackgroundColor: '#65C3F7',
+        yAxesID: "y-axis",
+        data: this._yIncLine
+      }
+    ];
+    this.fuelDecBarChartData = [
+      {
+        label: this.translationData.lblFuelDecreaseEvents || 'Fuel Decrease Events',
+        type: 'bar',
+        backgroundColor: '#F4AF85',
+        hoverBackgroundColor: '#F4AF85',
+        yAxesID: "y-axis",
+        data: this._yDecLine
+      }
+    ];
+  }
 
   setTableInfo(){
     let vehName: any = '';
@@ -934,7 +1166,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     }
     let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.fuelDeviationForm.controls.vehicle.value));
     if(vehCount.length > 0){
-      vehName = vehCount[0].vehicleName;
+      vehName = (this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? vehCount[0].vin : (this.vehVinRegChecker[0].attr == 'registrationNo') ? vehCount[0].registrationNo : vehCount[0].vehicleName;
     }
     this.tableInfoObj = {
       fromDate: this.formStartDate(this.startDateValue),
@@ -1091,20 +1323,25 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     ];
   }
 
+  getPDFExcelHeader(){
+    let col: any = [];
+    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmile || 'mile');
+    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
+    //let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.translationData.lblpound || 'pound');
+    let unitValton = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblton || 'ton');
+    let unitValgallon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.translationData.lblgallon || 'gallon');
+    col = [`${this.translationData.lblType || 'Type'}`, `${this.translationData.lblDifference || 'Difference'} (%)`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblRegPlateNumber || 'Reg. Plate Number'}`, `${this.translationData.lblDate || 'Date'}`, `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`, `${this.translationData.lblStartDate || 'Start Date'}`, `${this.translationData.lblEndDate || 'End Date'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, `${this.translationData.lblAverageWeight || 'Average Weight'} (${unitValton})`, `${this.translationData.lblStartPosition || 'Start Position'}`, `${this.translationData.lblEndPosition || 'End Position'}`, `${this.translationData.lblFuelConsumed || 'Fuel Consumed'} (${unitValgallon})`, `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAlerts || 'Alerts'}`];
+    return col;
+  }
+
   exportAsExcelFile(){    
     this.getAllSummaryData();
     const title = this.translationData.lblFuelDeviationReport || 'Fuel Deviation Report';
     const summary = this.translationData.lblSummarySection || 'Summary Section';
     const detail = this.translationData.lblDetailSection || 'Detail Section';
-    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmile || 'mile');
-    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
-    let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.translationData.lblpound || 'pound');
-    let unitValton = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblton || 'ton');
-    let unitValgallon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr || 'ltr') : (this.translationData.lblgallon || 'gallon');
-    
-    const header = ['Type', 'Difference (%)', 'Vehicle Name', 'VIN', 'Reg. Plate Number', 'Date', 'Odometer ('+ unitValkm + ')', 'Start Date', 'End Date', 'Distance ('+ unitValkm + ')', 'Idle Duration (hh:mm)', 'Average Speed ('+ unitValkmh + ')', 'Average Weight ('+ unitValton + ')', 'Start Position', 'End Position', 'Fuel Consumed ('+ unitValgallon + ')', 'Driving Time (hh:mm)', 'Alerts'];
-    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Fuel Increase Events', 'Fuel decrease Events', 'Vehicles With Fuel Events'];
-    const summaryData= this.excelSummaryData;
+    const header = this.getPDFExcelHeader();
+    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', (this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN || 'VIN') : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber || 'Reg. Plate Number') : (this.translationData.lblVehicle || 'Vehicle') , 'Fuel Increase Events', 'Fuel decrease Events', 'Vehicles With Fuel Events'];
+    const summaryData = this.excelSummaryData;
     
     //Create workbook and worksheet
     let workbook = new Workbook();
@@ -1144,7 +1381,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     })
   
    this.initData.forEach(item => {     
-      worksheet.addRow([item.eventTooltip, item.fuelDiffernce, item.vehicleName, item.vin,
+      worksheet.addRow([item.eventTooltip, item.convertedDifference, item.vehicleName, item.vin,
         item.registrationNo, item.eventDate, item.convertedOdometer, item.convertedStartDate,
         item.convertedEndDate, item.convertedDistance, item.convertedIdleDuration,
         item.convertedAverageSpeed, item.convertedAverageWeight, item.startPosition, item.endPosition, item.convertedFuelConsumed,
@@ -1166,31 +1403,32 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
    })
   }
 
-  getPDFHeaders(){
-    let displayArray: any = [];
-    this.displayedColumns.forEach(i => {
-      let _s = this.prefMapData.filter(item => item.value == i);
-      if (_s.length > 0){          
-        displayArray.push(this.translationData[_s[0].key] ? this.translationData[_s[0].key] : _s[0].value);
-      }
-    })
-    return [displayArray];
-  }
+  // getPDFHeaders(){
+  //   let displayArray: any = [];
+  //   this.displayedColumns.forEach(i => {
+  //     let _s = this.prefMapData.filter(item => item.value == i);
+  //     if (_s.length > 0){          
+  //       displayArray.push(this.translationData[_s[0].key] ? this.translationData[_s[0].key] : _s[0].value);
+  //     }
+  //   })
+  //   return [displayArray];
+  // }
 
   exportAsPDFFile(){
-  var doc = new jsPDF('p', 'mm', 'a4');
-  let pdfColumns = this.getPDFHeaders();
+  //var doc = new jsPDF('p', 'mm', 'a4');
+  var doc = new jsPDF('l', 'mm', 'a4');
+  let pdfColumns = this.getPDFExcelHeader(); // this.getPDFHeaders()
   let prepare = []
     this.initData.forEach(e=>{
       var tempObj = [];
-      this.displayedColumns.forEach(element => {
+      this.pdfDisplayedColumns.forEach(element => {
         switch(element){
           case 'fuelEventType' :{
             tempObj.push(e.eventTooltip);
             break;
           }
-          case 'fuelDiffernce' :{
-            tempObj.push(e.fuelDiffernce);
+          case 'convertedDifference' :{
+            tempObj.push(e.convertedDifference);
             break;
           }
           case 'vehicleName' :{
@@ -1262,7 +1500,12 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
       prepare.push(tempObj);    
     });
     
-    let DATA = document.getElementById('fuelSummaryCharts');
+    let DATA: any;
+    if(this.chartExpandPanel){ // charts expand
+      DATA = document.getElementById('fuelSummaryCharts'); // summary + charts
+    }else{
+      DATA = document.getElementById('fuelSummary'); // only summary
+    }
     html2canvas( DATA)
     .then(canvas => {  
       (doc as any).autoTable({
@@ -1275,28 +1518,28 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
             doc.setFontSize(14);
             var fileTitle = "Fuel Deviation Details";
             var img = "/assets/logo.png";
-            doc.addImage(img, 'JPEG',10,10,0,0);
+            doc.addImage(img, 'JPEG', 10, 10, 0, 0);
   
-            var img = "/assets/logo_daf.png"; 
-            doc.text(fileTitle, 14, 35);
-            doc.addImage(img, 'JPEG',150, 10, 0, 10);            
+            var img = "/assets/logo_daf.png";
+            doc.text(fileTitle, 115, 35); // 14, 35
+            doc.addImage(img, 'JPEG', 250, 10, 0, 10); // 150, 10, 0, 10            
         },
         margin: {
             bottom: 20, 
             top:30 
         }  
       });
-        let fileWidth = 170;
+        let fileWidth = 170; 
         let fileHeight = canvas.height * fileWidth / canvas.width;
         
         const FILEURI = canvas.toDataURL('image/png')
         // let PDF = new jsPDF('p', 'mm', 'a4');
         let position = 0;
-        doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
+        doc.addImage(FILEURI, 'PNG', 60, 40, fileWidth, fileHeight); // 10, 40,
         doc.addPage();
 
       (doc as any).autoTable({
-      head: pdfColumns,
+      head: [pdfColumns],
       body: prepare,
       theme: 'striped',
       didDrawCell: data => {
@@ -1327,7 +1570,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
               <td style='width: 100px;'>${this.translationData.lblDate || 'Date'}:</td> <td><b>${element.eventDate}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblVehicleName || 'Vehicle Name'}:</td> <td><b>${element.vehicleName}</b></td>
+              <td style='width: 100px;'>${(this.vehVinRegChecker.length > 0 && this.vehVinRegChecker[0].attr == 'vin') ? (this.translationData.lblVIN || 'VIN') : (this.vehVinRegChecker[0].attr == 'registrationNo') ? (this.translationData.lblRegPlateNumber || 'Reg. Plate Number') : (this.translationData.lblVehicleName || 'Vehicle Name')}:</td> <td><b>${element[this.vehVinRegChecker[0].attr]}</b></td>
             </tr>
             <tr>
               <td style='width: 100px;'>${this.translationData.lblPosition || 'Position'}:</td> <td><b>${element.geoLocationAddress}</b></td>
@@ -1336,7 +1579,7 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
               <td style='width: 100px;'>${this.translationData.lblEventDescription || 'Event Description'}:</td> <td><b>${eventDescText.eventText}</b></td>
             </tr>
             <tr>
-              <td style='width: 100px;'>${this.translationData.lblDifference || 'Difference'}:</td> <td><b>${element.fuelDiffernce}%</b></td>
+              <td style='width: 100px;'>${this.translationData.lblDifference || 'Difference'}:</td> <td><b>${element.convertedDifference}%</b></td>
             </tr>
           </table>`
         });
@@ -1366,7 +1609,8 @@ changeEndDateEvent(event: MatDatepickerInputEvent<any>){
 
   getEventIcons(eventElement: any){
     let icon: any = '';
-    let colorCode: any = (eventElement.vehicleActivityType == 'R') ? '#00AE10' : '#D50017';
+    //let colorCode: any = (eventElement.vehicleActivityType == 'R') ? '#00AE10' : '#D50017';
+    let colorCode: any = (eventElement.fuelEventType == 'I') ? '#00AE10' : '#D50017';
     switch(eventElement.fuelEventType){
       case 'I': { // increase
         icon = `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">

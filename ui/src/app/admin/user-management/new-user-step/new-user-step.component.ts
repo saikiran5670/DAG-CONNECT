@@ -77,6 +77,7 @@ export class NewUserStepComponent implements OnInit {
   @Input() privilegeAccess: any;
   prefId: any = 0;
   orgDefaultFlag: any;
+  contextOrgName: any;
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -109,6 +110,10 @@ export class NewUserStepComponent implements OnInit {
   }
 
   ngOnInit() {
+    // if(localStorage.getItem('contextOrgId') == localStorage.getItem('accountOrganizationId'))
+    //   this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    // else 
+    //   this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.firstFormGroup = this._formBuilder.group({
       salutation: ['', [Validators.required]],
@@ -136,7 +141,8 @@ export class NewUserStepComponent implements OnInit {
       ]
     });
     this.orgName = localStorage.getItem("organizationName");
-    this.firstFormGroup.get('organization').setValue(this.orgName);
+    this.contextOrgName = localStorage.getItem("contextOrgName");
+    this.firstFormGroup.get('organization').setValue(this.contextOrgName);
     this.secondFormGroup = this._formBuilder.group({
       secondCtrl: ['', Validators.required]
     });

@@ -146,6 +146,7 @@ namespace net.atos.daf.ct2.accountservice
             preference.IconId = request.IconId;
             preference.IconByte = request.IconByte;
             preference.CreatedBy = request.CreatedBy;
+            preference.PageRefreshTime = request.PageRefreshTime;
             return preference;
         }
         public AccountPreference ToPreferenceEntity(Preference.AccountPreference entity)
@@ -165,6 +166,7 @@ namespace net.atos.daf.ct2.accountservice
             if (entity.IconByte != null && entity.IconByte.Length > 0)
                 request.IconByte = entity.IconByte;
             request.CreatedBy = entity.CreatedBy;
+            request.PageRefreshTime = entity.PageRefreshTime;
             return request;
         }
         // group mapping

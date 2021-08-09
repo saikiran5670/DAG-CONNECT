@@ -128,5 +128,42 @@ namespace net.atos.daf.ct2.reports.test
             var result = await _reportManager.GetFilteredFuelDeviation(fuelDeviationFilterRequest);
             Assert.IsNotNull(result);
         }
+
+        #region Vehicle Performance
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get vehicle performance Summary")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetVehPerformanceSummaryDetails()
+        {
+            var vin = "31";
+            var result = await _reportManager.GetVehPerformanceSummaryDetails(vin);
+            Assert.IsNotNull(result);
+        }
+
+        #endregion
+
+        #region Vehicle Performance
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get vehicle performance Summary")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetVehChartData()
+        {
+
+            var chart = new VehiclePerformanceRequest
+            {
+                StartTime = 1623332206000,
+                EndTime = 1623332267000,
+                Vin = "XLR0998HGFFT76657",
+                PerformanceType = "E",
+
+            };
+            var result = await _reportManager.GetVehPerformanceBubbleChartData(chart);
+            Assert.IsNotNull(result);
+            //}
+
+            #endregion
+        }
     }
 }

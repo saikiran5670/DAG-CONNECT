@@ -136,26 +136,25 @@ namespace net.atos.daf.ct2.account.report
         public async Task<string> GenerateTemplate(byte[] logoBytes)
         {
             if (!IsAllParameterSet) throw new Exception(TripReportConstants.ALL_PARAM_MSG);
-            var fromDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(FromDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
-            var toDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(ToDate, TimeConstants.UTC, $"{DateFormatName} {TimeFormatName}"));
+            var fromDate = TimeZoneHelper.GetDateTimeFromUTC(FromDate, TimeZoneName, DateTimeFormat);
+            var toDate = TimeZoneHelper.GetDateTimeFromUTC(ToDate, TimeZoneName, DateTimeFormat);
 
             StringBuilder html = new StringBuilder();
-            //ReportTemplateSingleto.
-            //                        GetInstance()
-            //                        .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
-            //                                        _contentType, ReportSchedulerData.Code)
+
             var timeSpanUnit = await _unitManager.GetTimeSpanUnit(UnitToConvert);
             var distanceUnit = await _unitManager.GetDistanceUnit(UnitToConvert);
 
-            html.AppendFormat(ReportTemplateContants.REPORT_TEMPLATE_FLEET_UTILISATION
-            //, Path.Combine(Directory.GetCurrentDirectory(), "assets", "style.css")
+            html.AppendFormat(ReportTemplateSingleto.
+                                    GetInstance()
+                                    .GetReportTemplate(_templateManager, ReportSchedulerData.ReportId, _evenType,
+                                                    _contentType, ReportSchedulerData.Code)
                               , logoBytes != null ? string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(logoBytes))
                                                 : ImageSingleton.GetInstance().GetDefaultLogo()
                               , await GenerateTable()
-                              , fromDate.ToString(DateTimeFormat)
-                              , VehicleLists.Any(s => !string.IsNullOrEmpty(s.VehicleGroupName)) ? string.Join(',', VehicleLists.Select(s => s.VehicleGroupName).Distinct().ToArray()) : "All"
-                              , toDate.ToString(DateTimeFormat)
-                              , string.Join(',', VehicleLists.Select(s => s.VehicleName).Distinct().ToArray())
+                              , fromDate
+                              , VehicleLists.Select(s => s.VehicleGroupName).Distinct().Count() == 1 ? VehicleLists.FirstOrDefault().VehicleGroupName : "All"
+                              , toDate
+                              , VehicleLists.Select(s => s.VehicleName).Distinct().Count() == 1 ? VehicleLists.FirstOrDefault().VehicleName : "All"
                               , FleetUtilisationPdfDetails.Count()
                               , Math.Round(FleetUtilisationPdfDetails.Sum(s => s.Distance), 2)
                               , distanceUnit
@@ -169,9 +168,9 @@ namespace net.atos.daf.ct2.account.report
                               , timeSpanUnit
                               , timeSpanUnit
                               , timeSpanUnit
-                              , distanceUnit
                               , await _unitManager.GetSpeedUnit(UnitToConvert)
                               , await _unitManager.GetWeightUnit(UnitToConvert)
+                              , distanceUnit
                               , distanceUnit
                               , ImageSingleton.GetInstance().GetLogo()
                 );

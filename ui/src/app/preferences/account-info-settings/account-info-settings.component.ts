@@ -11,6 +11,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { OrganizationService } from '../../services/organization.service';
 import { FileValidator } from 'ngx-material-file-input';
 import { DriverService } from '../../services/driver.service';
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-account-info-settings',
@@ -54,6 +55,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   timeFormatData: any;
   vehicleDisplayData: any;
   landingPageDisplayData: any;
+  pageRefreshTimeData: any;
   orgName: any;
   accountId: any;
   blobId: number= 0;
@@ -92,7 +94,8 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService,
-              private domSanitizer: DomSanitizer, private organizationService: OrganizationService, private driverService: DriverService) { }
+              private domSanitizer: DomSanitizer, private organizationService: OrganizationService, private driverService: DriverService,
+              private messageService : MessageService) { }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -123,8 +126,8 @@ export class AccountInfoSettingsComponent implements OnInit {
       uploadBrandLogo: [
         undefined,
         [FileValidator.maxContentSize(this.maxSize)]
-      ]
-    });
+      ],
+      pageRefreshTime: ['',[Validators.min(0), Validators.max(60)]] });
     // this.changePictureFlag = true;
     // this.isSelectPictureConfirm = true;
     this.orgName = localStorage.getItem("organizationName");
@@ -201,6 +204,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       if(preferenceId > 0){ //-- account pref
         this.accountService.getAccountPreference(preferenceId).subscribe(resp => {
           this.accountPreferenceData = resp;
+          this.pageRefreshTimeData = this.accountPreferenceData.pageRefreshTime;
           this.uploadLogo= resp["iconByte"] != "" ?  this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + resp["iconByte"]) : this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + defaultIcon);
           if(resp["iconByte"] == "")
             this.isDefaultBrandLogo= true;
@@ -251,6 +255,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.userSettingsForm.get('timeFormat').setValue(this.timeFormatData.length > 0 ? this.timeFormatData[0].id : this.timeFormatDropdownData[0].id);
       this.userSettingsForm.get('vehDisplay').setValue(this.vehicleDisplayData.length > 0 ? this.vehicleDisplayData[0].id : this.vehicleDisplayDropdownData[0].id);
       this.userSettingsForm.get('landingPage').setValue(this.landingPageDisplayData.length > 0 ? this.landingPageDisplayData[0].id : this.landingPageDisplayDropdownData[0].id);
+      this.userSettingsForm.get('pageRefreshTime').setValue(this.pageRefreshTimeData);
     });
     if(this.accountInfo[0]["preferenceId"] > 0){
       this.setDefaultOrgVal(false); //-- normal color
@@ -341,7 +346,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   onGeneralSettingsUpdate(){
-
+    this.setTimerValueInLocalStorage(parseInt(this.userSettingsForm.controls.pageRefreshTime.value)); //update timer
     let objData: any = {
       id: (this.accountInfo[0]["preferenceId"] > 0) ? this.accountInfo[0]["preferenceId"] : 0,
       refId: this.accountId,
@@ -350,6 +355,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       unitId: this.userSettingsForm.controls.unit.value ? this.userSettingsForm.controls.unit.value : this.unitDropdownData[0].id,
       currencyId: this.userSettingsForm.controls.currency.value ? this.userSettingsForm.controls.currency.value : this.currencyDropdownData[0].id,
       dateFormatTypeId: this.userSettingsForm.controls.dateFormat.value ? this.userSettingsForm.controls.dateFormat.value : this.dateFormatDropdownData[0].id,
+      pageRefreshTime: this.userSettingsForm.controls.pageRefreshTime.value ? parseInt(this.userSettingsForm.controls.pageRefreshTime.value) : 1,
       timeFormatId: this.userSettingsForm.controls.timeFormat.value ? this.userSettingsForm.controls.timeFormat.value : this.timeFormatDropdownData[0].id,
       vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : this.vehicleDisplayDropdownData[0].id,
       landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : this.landingPageDisplayDropdownData[0].id,
@@ -577,6 +583,12 @@ export class AccountInfoSettingsComponent implements OnInit {
         break;
       }
     } 
+  }
+
+  setTimerValueInLocalStorage(timerVal: any){
+    let num = (timerVal*60);
+    localStorage.setItem("liveFleetTimer", num.toString());  // default set
+    this.messageService.sendTimerValue(num);
   }
 
   addfile(event: any, clearInput: any){ 

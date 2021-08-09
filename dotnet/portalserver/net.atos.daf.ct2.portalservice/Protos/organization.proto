@@ -35,7 +35,7 @@ service OrganizationService {
   rpc GetOrgRelationshipMapping (OrgRelationshipMappingGetRequest) returns (OrgRelationshipGetResponse);
   rpc GetAllOrganizations (OrganizationByID) returns (OrganizationprimaryFieldsListResponse);
   rpc GetLevelByRoleId (LevelByRoleRequest) returns (LevelResponse);
-  rpc GetAllOrganizationsForContext(google.protobuf.Empty) returns(GetAllContextOrgsResponse);
+  rpc GetAllOrganizationsForContext (google.protobuf.Empty) returns(GetAllContextOrgsResponse);
 }
 
 message OrganizationprimaryFieldsListResponse{
@@ -267,6 +267,8 @@ message OrganizationGetData {
         string DriverId =10;
         int32 TimeFormatId=11;
         int32 LandingPageDisplayId=12;
+        int32 PageRefreshTime=13;
+
     }
     message AccountPreferenceResponse
     {
@@ -301,7 +303,8 @@ message OrganizationGetData {
         int32 Currency =5;
         int32 Unit = 6;        
         int32 DateFormat =7;
-        int32 TimeFormat=8;      
+        int32 TimeFormat=8;
+        int32 PageRefreshTime=9;   
     }
    message OrganizationPreferenceResponse
     {
@@ -328,6 +331,7 @@ message OrganizationGetData {
     google.protobuf.StringValue DateFormat =15;
     google.protobuf.StringValue TimeFormat=16;   
     int32 preferenceId=17;
+    int32 PageRefreshTime=18;
 }
 
 message ListOfOrganization {

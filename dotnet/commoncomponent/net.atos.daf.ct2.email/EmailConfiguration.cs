@@ -8,5 +8,6 @@
         public string FromName { get; set; }
         public bool IsReplyAllowed { get; set; }
         public string ReplyToAddress { get; set; }
+        public string DAFSupportEmailId { get; set; }
     }
 }

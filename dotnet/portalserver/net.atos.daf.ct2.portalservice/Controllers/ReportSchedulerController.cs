@@ -99,9 +99,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                 vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
                                 if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
                                 vehicleGroupRequest.GroupType = "S";
-                                vehicleGroupRequest.RefId = scheduledReportVehicleRef[0].VehicleGroupId;
+                                vehicleGroupRequest.RefId = item.VehicleId;
                                 vehicleGroupRequest.FunctionEnum = "N";
-                                vehicleGroupRequest.OrganizationId = GetContextOrgId();
+                                vehicleGroupRequest.OrganizationId = request.OrganizationId;
                                 vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
                                 vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
                                 objScheduledReportVehicleRef.VehicleGroupId = response.VehicleGroup.Id;
@@ -136,9 +136,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                 vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
                                 if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
                                 vehicleGroupRequest.GroupType = "S";
-                                vehicleGroupRequest.RefId = item.VehicleGroupId;
+                                vehicleGroupRequest.RefId = item.VehicleId;
                                 vehicleGroupRequest.FunctionEnum = "N";
-                                vehicleGroupRequest.OrganizationId = GetContextOrgId();
+                                vehicleGroupRequest.OrganizationId = request.OrganizationId;
                                 vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
                                 vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
                                 item.VehicleGroupId = response.VehicleGroup.Id;

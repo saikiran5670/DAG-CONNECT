@@ -291,7 +291,7 @@ export class ReportMapService {
     return homeMarker;
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any){
+  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any, _displayRouteView?: any, _displayPOIList?: any, _searchMarker?: any, _herePOI?: any, row?: any){
     this.clearRoutesFromMap();
     if(_herePOI){
       this.showHereMapPOI(_herePOI, _selectedRoutes, _ui);
@@ -383,8 +383,18 @@ export class ReportMapService {
           }
         }
         this.hereMap.addObject(this.group);
-        this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
+        if(elem.id == row.id){
+          let grp= new H.map.Group();
+          grp.addObjects([this.startMarker, this.endMarker]);
+          this.hereMap.addObject(grp);
+          this.hereMap.getViewModel().setLookAtData({
+            bounds: grp.getBoundingBox()
+          });
+        }
+        
+        // this.hereMap.setCenter({lat: this.startAddressPositionLat, lng: this.startAddressPositionLong}, 'default');
       });
+      
       this.makeCluster(_selectedRoutes, _ui);
     }else{
       if(_displayPOIList.length > 0 || (_searchMarker && _searchMarker.lat && _searchMarker.lng) || (_herePOI && _herePOI.length > 0)){
@@ -962,8 +972,8 @@ export class ReportMapService {
 
   afterPlusClick(_selectedRoutes: any, _ui: any){
     this.hereMap.removeLayer(this.clusteringLayer);
-    this.hereMap.setCenter({lat: _selectedRoutes[0].startPositionLattitude, lng: _selectedRoutes[0].startPositionLongitude}, 'default');
-    this.hereMap.setZoom(10);
+    // this.hereMap.setCenter({lat: _selectedRoutes[0].startPositionLattitude, lng: _selectedRoutes[0].startPositionLongitude}, 'default');
+    // this.hereMap.setZoom(10);
     if(_selectedRoutes.length > 1){
       let _arr = _selectedRoutes.filter((elem, index) => _selectedRoutes.findIndex(obj => obj.startPositionLattitude === elem.startPositionLattitude && obj.startPositionLongitude === elem.startPositionLongitude) === index);
       let _a: any = [];
@@ -1143,6 +1153,7 @@ export class ReportMapService {
       element.svgIcon = eventData.svgIcon,
       element.eventTooltip = eventData.eventText,
       element.eventDate = this.getStartTime(element.eventTime, dateFormat, timeFormat, timeZone, true);
+      element.convertedDifference = this.getConvertedDiff(element);
       element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
       element.convertedStartDate = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone, true);
       element.convertedEndDate = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone, true);
@@ -1156,18 +1167,21 @@ export class ReportMapService {
     return gridData;
   }
 
+  getConvertedDiff(item: any){
+    let fuelDiff: any = item.fuelDiffernce;
+    if(item.fuelEventType == 'D'){
+      fuelDiff = parseInt(`-${item.fuelDiffernce}`);
+    }
+    return fuelDiff;
+  }
+
   getEventTooltip(elem: any, transData: any){
     let _eventTxt: any = '';
-    let _svgIcon: any = 'fuel-desc-run';
+    let _svgIcon: any = 'fuel-desc-stop';
     switch(`${elem.fuelEventType}${elem.vehicleActivityType}`){
       case 'IS': {
         _eventTxt = transData.lblFuelIncreaseDuringStop || 'Fuel Increase During Stop';
-        _svgIcon = 'fuel-incr-stop';
-        break;
-      }
-      case 'DS': {
-        _eventTxt = transData.lblFuelDecreaseDuringStop || 'Fuel Decrease During Stop';
-        _svgIcon = 'fuel-desc-stop';
+        _svgIcon = 'fuel-incr-run'; // fuel-incr-stop
         break;
       }
       case 'IR': {
@@ -1175,9 +1189,14 @@ export class ReportMapService {
         _svgIcon = 'fuel-incr-run';
         break;
       }
+      case 'DS': {
+        _eventTxt = transData.lblFuelDecreaseDuringStop || 'Fuel Decrease During Stop';
+        _svgIcon = 'fuel-desc-stop';
+        break;
+      }
       case 'DR': {
         _eventTxt = transData.lblFuelDecreaseDuringRun || 'Fuel Decrease During Run';
-        _svgIcon = 'fuel-desc-run';
+        _svgIcon = 'fuel-desc-stop'; // fuel-desc-run
         break;
       }
     }
@@ -1187,6 +1206,7 @@ export class ReportMapService {
   miliLitreToLitre(_data: any){
       return (_data/1000).toFixed(2);
   }
+  
 
   miliLitreToGallon(_data: any){
     let litre: any = this.miliLitreToLitre(_data);
@@ -1308,39 +1328,88 @@ export class ReportMapService {
     return gridData;
   }
 
+
+  // Fuel Benchmarking data conversions
+  getConvertedFuelBenchmarkingData(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
+    // gridData.forEach(element => {
+      gridData = JSON.parse(gridData);
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = this.getFuelConsumedUnits(gridData.fuelBenchmarkDetails.averageFuelConsumption, unitFormat, true);
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = this.getFuelConsumedUnits(gridData.fuelBenchmarkDetails.totalFuelConsumed, unitFormat, false);
+      gridData.fuelBenchmarkDetails.convertedTotalMileage = this.convertDistanceUnits(gridData.fuelBenchmarkDetails.totalMileage, unitFormat);
+
+    // });
+    if(unitFormat == 'dunit_Imperial') {
+      gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " mi"
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " gal"
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " mpg"
+    }else if(unitFormat == 'dunit_Metric') {
+      gridData.fuelBenchmarkDetails.convertedTotalMileage = gridData.fuelBenchmarkDetails.convertedTotalMileage + " km"
+      gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed = gridData.fuelBenchmarkDetails.convertedTotalFuelConsumed + " ltr"
+      gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption = gridData.fuelBenchmarkDetails.convertedAvgFuelConsumption + " ltr/100km"
+    }
+    return JSON.stringify(gridData);
+  }
+
+
+
   getConvertedFleetFuelDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
-      element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
-      element.convertedAverageDistance = this.getDistance(element.averageDistancePerDay, unitFormat);
-      element.convertedDistance = this.getDistance(element.distance, unitFormat);
+      element.convertedStartTime = this.getStartTime(element.startDate, dateFormat, timeFormat, timeZone,true);
+      element.convertedEndTime = this.getEndTime(element.endDate, dateFormat, timeFormat, timeZone,true);
+      element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
+      element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
+      element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
+      element.convertedFuelConsumed100Km = this.getFuelConsumptionUnits(element.fuelConsumed, unitFormat);
+      element.convertedFuelConsumption = this.getFuelConsumedUnits(element.fuelConsumption, unitFormat);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
-      element.convertedFuelConsumed100Km = this.getFuelConsumed(element.fuelConsumption, unitFormat);
-      // element.dpaScore = element.dpaScore.toFixed(2);
+      //element.convertedIdleDuration =element.idleDuration
+      element.dpaScore = parseFloat(element.dpaScore);
+      element.dpaScore = element.dpaScore.toFixed(2)*1;
+      element.dpaScore = element.dpaScore.toFixed(2);
 
             //for 2 decimal points
-            element.convertedDistance = parseFloat(element.convertedDistance);
-            element.convertedDistance = element.convertedDistance.toFixed(2)*1;
-            element.convertedAverageDistance = parseFloat(element.convertedAverageDistance);
-            element.convertedAverageDistance = element.convertedAverageDistance.toFixed(2)*1;
-            element.convertedAverageSpeed =parseFloat(element.convertedAverageSpeed);
-            element.convertedAverageSpeed =element.convertedAverageSpeed.toFixed(2)*1;
-            element.averageGrossWeightComb =parseFloat(element.averageGrossWeightComb);
-            element.averageGrossWeightComb =element.averageGrossWeightComb.toFixed(2)*1;
-            element.fuelConsumed =parseFloat(element.fuelConsumed);
-            element.fuelConsumed =element.fuelConsumed.toFixed(2)*1;
-            element.fuelConsumption =parseFloat(element.fuelConsumption);
-            element.fuelConsumption =element.fuelConsumption.toFixed(2)*1;
-            element.cO2Emission =parseFloat(element.cO2Emission);
-            element.cO2Emission =element.cO2Emission.toFixed(2)*1;
-            element.harshBrakeDuration = parseFloat(element.harshBrakeDuration);
-            element.harshBrakeDuration =element.harshBrakeDuration.toFixed(2)*1;
-            element.heavyThrottleDuration = parseFloat(element.heavyThrottleDuration);
-            element.heavyThrottleDuration= element.heavyThrottleDuration.toFixed(2)*1;
-            element.dpaScore = parseFloat(element.dpaScore);
-            element.dpaScore = element.dpaScore.toFixed(2)*1;
+            // element.convertedDistance = parseFloat(element.convertedDistance);
+            // element.convertedDistance = element.convertedDistance.toFixed(2)*1;
+            // element.convertedAverageDistance = parseFloat(element.convertedAverageDistance);
+            // element.convertedAverageDistance = element.convertedAverageDistance.toFixed(2)*1;
+            // element.convertedAverageSpeed =parseFloat(element.convertedAverageSpeed);
+            // element.convertedAverageSpeed =element.convertedAverageSpeed.toFixed(2)*1;
+            // element.averageGrossWeightComb =parseFloat(element.averageGrossWeightComb);
+            // element.averageGrossWeightComb =element.averageGrossWeightComb.toFixed(2)*1;
+            // element.fuelConsumed =parseFloat(element.fuelConsumed);
+            // element.fuelConsumed =element.fuelConsumed.toFixed(2)*1;
+            // element.fuelConsumption =parseFloat(element.fuelConsumption);
+            // element.fuelConsumption =element.fuelConsumption.toFixed(2)*1;
+            // element.cO2Emission =parseFloat(element.cO2Emission);
+            // element.cO2Emission =element.cO2Emission.toFixed(2)*1;
+            // element.harshBrakeDuration = parseFloat(element.harshBrakeDuration);
+            // element.harshBrakeDuration =element.harshBrakeDuration.toFixed(2)*1;
+            // element.heavyThrottleDuration = parseFloat(element.heavyThrottleDuration);
+            // element.heavyThrottleDuration= element.heavyThrottleDuration.toFixed(2)*1;
+            // element.dpaScore = parseFloat(element.dpaScore);
+            // element.dpaScore = element.dpaScore.toFixed(2)*1;
     });
     return gridData;
   }
+  getFuelConsumptionUnits(fuelConsumption: any, unitFormat: any, litreFlag?: boolean){
+    let _fuelConsumption: any = 0;
+    switch(unitFormat){
+      case 'dunit_Metric': { 
+        _fuelConsumption =   this.miliLitreToLitre(fuelConsumption); //-- Ltr/100Km / ltr
+        break;
+      }
+      case 'dunit_Imperial':{
+        _fuelConsumption =  this.miliLitreToGallon(fuelConsumption); // mpg / gallon
+        break;
+      }
+      default: {
+        _fuelConsumption =  this.miliLitreToLitre(fuelConsumption); // Ltr/100Km / ltr
+      }
+    }
+    return _fuelConsumption; 
+  }
+
+ 
 
   getDriverTimeDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     //gridData.forEach(element => {
@@ -1392,6 +1461,9 @@ export class ReportMapService {
     return eTime;
   }
 
+ 
+
+
   getFuelConsumedUnits(fuelConsumed: any, unitFormat: any, litreFlag?: boolean){
     let _fuelConsumed: any = 0;
     switch(unitFormat){
@@ -1428,6 +1500,26 @@ export class ReportMapService {
       }
     }
     return _distance;    
+  }
+
+  getDashboardDistance(distance: any, unitFormat: any) {
+    // distance in milimeters
+    let _distance: any = 0;
+    switch (unitFormat) {
+      case 'dunit_Metric': {
+        _distance = (distance / 1000000).toFixed(2); //-- km
+        break;
+      }
+      case 'dunit_Imperial':
+      case 'dunit_USImperial': {
+        _distance = (distance / 1609344).toFixed(2); //-- mile
+        break;
+      }
+      default: {
+        _distance = distance.toFixed(2);
+      }
+    }
+    return _distance;
   }
 
   getAvrgWeight(avgWeight: any, unitFormat: any ){

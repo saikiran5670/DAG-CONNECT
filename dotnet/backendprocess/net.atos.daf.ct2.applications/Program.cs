@@ -6,6 +6,8 @@ using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.map;
+using net.atos.daf.ct2.map.repository;
 using net.atos.daf.ct2.notification;
 using net.atos.daf.ct2.notification.repository;
 using net.atos.daf.ct2.reports;
@@ -67,6 +69,8 @@ namespace net.atos.daf.ct2.applications
                             services.AddTransient<ITemplateManager, TemplateManager>();
                             services.AddTransient<IUnitConversionManager, UnitConversionManager>();
                             services.AddTransient<IUnitManager, UnitManager>();
+                            services.AddTransient<IMapRepository, MapRepository>();
+                            services.AddTransient<IMapManager, MapManager>();
                             services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
                             services.AddHostedService<ReportCreationSchedulerWorker>();
                         }

@@ -1,4 +1,4 @@
-import { Input } from '@angular/core';
+import { Input, Output, EventEmitter, ElementRef } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup,FormBuilder, FormArray, FormControl } from '@angular/forms';
 import { CustomValidators } from 'src/app/shared/custom.validators';
@@ -14,6 +14,7 @@ export class PeriodSelectionFilterComponent implements OnInit {
 @Input() translationData : any = [];
 @Input() selectedRowData: any;
 @Input() actionType: any;
+@Output() isValidityCalender = new EventEmitter<any>();
 isMondaySelected:  boolean= false;
 periodSelectionForm: FormGroup;
 localStLanguage: any;
@@ -25,7 +26,7 @@ timings: any = [];
 weekDaySelected: boolean = false;
 checkboxChecked: boolean = false;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private el: ElementRef) { }
 
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -270,6 +271,21 @@ getAlertTimingPayload(){
   let weekDay : any;
   let customTime : any;
   let tempObj: any;
+  let weekDaysList = this.weekDays().controls.filter(i=>i['controls'].daySelection.value!="");
+  if (weekDaysList.length == 0) {
+    this.periodSelectionForm.markAllAsTouched(); 
+    this.scrollToCalenderControl();       
+     let emitCustomObj = {
+        isValidInput: false
+      }  
+      this.isValidityCalender.emit(emitCustomObj);        
+  }
+  else{
+    let emitCustomObj = {
+      isValidInput: true
+    }  
+    this.isValidityCalender.emit(emitCustomObj);    
+  }
   this.weekDays().controls.forEach((element, index) => {
     weekDay = element['controls'];
     if (weekDay.daySelection.value) {
@@ -355,4 +371,10 @@ convertTimeToSeconds(time:any){
   
 }
 
+private scrollToCalenderControl() {    
+  const invalidControl: HTMLElement = this.el.nativeElement.querySelector('[formcontrolname="' + 'dayCalender' + '"]');
+  if (invalidControl) {       
+    invalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }       
+}
 }

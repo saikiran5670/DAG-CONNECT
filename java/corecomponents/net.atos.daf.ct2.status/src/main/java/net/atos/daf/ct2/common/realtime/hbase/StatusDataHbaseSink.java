@@ -12,6 +12,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.common.realtime.dataprocess.StatusDataProcess;
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.pojo.KafkaRecord;
@@ -70,13 +71,21 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 	}
 
 	public void invoke(KafkaRecord<Status> value, Context context) throws Exception {
-
+		Long currentTimeStamp=TimeFormatter.getInstance().getCurrentUTCTime();
+		
+		
+		
+		if(value.getValue().getEvtDateTime()!=null) {
+		      currentTimeStamp = TimeFormatter.getInstance().convertUTCToEpochMilli(
+		                        value.getValue().getEvtDateTime(), DafConstants.DTM_TS_FORMAT);
+		}
+		
 		Put put = new Put(Bytes.toBytes(value.getValue().getTransID() + "_" + value.getValue().getDocument().getTripID()
-				+ "_" + value.getValue().getVid() + "_" + value.getValue().getReceivedTimestamp()));
+				+ "_" + value.getValue().getVid() + "_" + currentTimeStamp));
 
 		log.info("Status Data Row_Key :: "
 				+ (value.getValue().getTransID() + "_" + value.getValue().getDocument().getTripID() + "_"
-						+ value.getValue().getVid() + "_" + value.getValue().getReceivedTimestamp()));
+						+ value.getValue().getVid() + "_" + currentTimeStamp));
 		// we have commented some of the below column values as we need to use them in
 		// future
 		put.addColumn(Bytes.toBytes("f"), Bytes.toBytes("DocFormat"),

@@ -254,9 +254,13 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									// driver working, loading/unloading
 									// indexValue.getDocument().getDriver1WorkingState().intValue() == 3) { //
 									// driver behind the wheel
-
+									Long idleDuration=0L;
+									if(indexValue.getVIdleDuration()!=null) {
+										idleDuration=indexValue.getVIdleDuration();
+									}
+									
 									driving_time += (currentTripPojo.getEnd_time_stamp()
-											- currentTripPojo.getStart_time_stamp());
+											- currentTripPojo.getStart_time_stamp())- idleDuration;
 
 									// }
 									currentTripPojo.setDriving_time(driving_time);

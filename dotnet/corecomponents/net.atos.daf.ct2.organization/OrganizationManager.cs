@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.organization.entity;
@@ -96,9 +97,10 @@ namespace net.atos.daf.ct2.organization
 
         #region Provisioning Data Service
 
-        public async Task<bool> GetOrganisationList(ProvisioningOrganisationDataServiceRequest request)
+        public async Task<ProvisioningOrganisationDataServiceResponse> GetOrganisationList(ProvisioningOrganisationDataServiceRequest request)
         {
-            return await _organizationRepository.GetOrganisationList(request);
+            var provisioningOrganisations = await _organizationRepository.GetOrganisationList(request);
+            return new ProvisioningOrganisationDataServiceResponse { Organisations = provisioningOrganisations.ToList() };
         }
 
         #endregion

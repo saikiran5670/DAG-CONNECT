@@ -24,6 +24,7 @@ using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.repository;
 using net.atos.daf.ct2.provisioningdataservice.CustomAttributes;
+using net.atos.daf.ct2.driver;
 
 namespace net.atos.daf.ct2.provisioningdataservice
 {
@@ -69,14 +70,16 @@ namespace net.atos.daf.ct2.provisioningdataservice
 
             services.AddSingleton<IPostConfigureOptions<BasicAuthenticationOptions>, BasicAuthenticationPostConfigureOptions>();
             services.AddTransient<IBasicAuthenticationService, BasicAuthenticationService>();
-            services.AddTransient<IOrganizationManager, OrganizationManager>();
             services.AddTransient<IGroupManager, GroupManager>();
             services.AddTransient<IGroupRepository, GroupRepository>();
             services.AddTransient<ISubscriptionManager, SubscriptionManager>();
             services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
+            services.AddTransient<IOrganizationManager, OrganizationManager>();
             services.AddTransient<IOrganizationRepository, OrganizationRepository>();
             services.AddTransient<IVehicleManager, VehicleManager>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
+            services.AddTransient<IDriverManager, DriverManager>();
+            services.AddTransient<IDriverRepository, DriverRepository>();
 
             services.AddControllers();
             services.AddMvc()

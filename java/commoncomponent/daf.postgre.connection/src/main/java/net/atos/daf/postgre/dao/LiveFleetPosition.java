@@ -19,9 +19,8 @@ public class LiveFleetPosition implements Serializable {
 
 	private Connection connection;
 
-	private static final String READ_LIVEFLEET_POSITION = "SELECT distance_until_next_service from livefleet.livefleet_position_statistics WHERE vin = ? ORDER BY created_at_m2m DESC limit 1";
-	private static final String INSERT_LIVEFLEET_POSITION = "INSERT INTO livefleet.livefleet_position_statistics ( trip_id    , vin    ,message_time_stamp    ,gps_altitude    ,gps_heading    ,gps_latitude    ,gps_longitude    ,co2_emission    ,fuel_consumption    , last_odometer_val  ,distance_until_next_service    , created_at_m2m    ,created_at_kafka    ,created_at_dm , veh_message_type   ) VALUES (?,	?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    )";
-
+	private static final String READ_LIVEFLEET_POSITION = "SELECT * from livefleet.livefleet_position_statistics WHERE vin = ? and trip_id=? ORDER BY created_at_m2m DESC limit 1";
+	private static final String INSERT_LIVEFLEET_POSITION = "INSERT INTO livefleet.livefleet_position_statistics ( trip_id    , vin    ,message_time_stamp    ,gps_altitude    ,gps_heading    ,gps_latitude    ,gps_longitude    ,co2_emission    ,fuel_consumption    , last_odometer_val  ,distance_until_next_service    , created_at_m2m    ,created_at_kafka    ,created_at_dm , veh_message_type,  vehicle_msg_trigger_type_id, created_datetime,received_datetime,gps_speed,gps_datetime,wheelbased_speed,tachgraph_speed,driver1_id, vehicle_msg_trigger_additional_info, driver_auth_equipment_type_id, card_replacement_index, oem_driver_id_type, oem_driver_id, pto_id, telltale_id, oem_telltale , telltale_state_id, driving_time) VALUES (?,	?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? ,?  )";
 		public boolean insert(LiveFleetPojo currentPosition)
 			throws TechnicalException, SQLException {
 		PreparedStatement stmt_insert_livefleet_position;
@@ -45,25 +44,28 @@ public class LiveFleetPosition implements Serializable {
 		return result;
 	}
 
-	public int read(String vin) throws TechnicalException, SQLException {
+	public LiveFleetPojo read(String vin, String tripId) throws TechnicalException, SQLException {
 
-		PreparedStatement stmt_read_livefleet_position = null;
+		PreparedStatement stmtReadLivefleetPosition = null;
 		ResultSet rs_position = null;
-		int distance_until_next_service = 0;
-
+		LiveFleetPojo previousRecordInfo=null;
+		
+		
 		try {
-
+			
 			if (null != vin && null != (connection = getConnection())) {
+				
+				stmtReadLivefleetPosition = connection.prepareStatement(READ_LIVEFLEET_POSITION);
+				stmtReadLivefleetPosition.setString(1, vin);
+				stmtReadLivefleetPosition.setString(2, tripId);
 
-				stmt_read_livefleet_position = connection.prepareStatement(READ_LIVEFLEET_POSITION);
-				stmt_read_livefleet_position.setString(1, vin);
-
-				rs_position = stmt_read_livefleet_position.executeQuery();
+				rs_position = stmtReadLivefleetPosition.executeQuery();
 				
 				while (rs_position.next()) {
-
-					distance_until_next_service = rs_position.getInt("distance_until_next_service");
-
+					previousRecordInfo= new LiveFleetPojo();
+					previousRecordInfo.setDrivingTime(rs_position.getInt("driving_time"));
+					previousRecordInfo.setMessageTimestamp(rs_position.getDouble("message_time_stamp"));
+					System.out.println("driving Time inside read--" + rs_position.getInt("driving_time"));
 				}
 				
 				rs_position.close();
@@ -83,15 +85,13 @@ public class LiveFleetPosition implements Serializable {
 			}
 		}
 
-		return distance_until_next_service;
+		return previousRecordInfo;
 
 	}
 
 	private PreparedStatement fillStatement(PreparedStatement stmt_insert_livefleet_position,
 			LiveFleetPojo currentPosition) throws SQLException {
 		
-		System.out.println("Inside fillstatement");
-
 		if (currentPosition.getTripId() != null)
 			stmt_insert_livefleet_position.setString(1, currentPosition.getTripId());
 		else
@@ -164,116 +164,103 @@ public class LiveFleetPosition implements Serializable {
 		
 		stmt_insert_livefleet_position.setString(15, "I");
 		
+		if (currentPosition.getVehicleMsgTriggerTypeId() != null)
+			stmt_insert_livefleet_position.setInt(16, currentPosition.getVehicleMsgTriggerTypeId());
+		else
+			stmt_insert_livefleet_position.setInt(16, 0);
+		
+		if (currentPosition.getCreatedDatetime() != null)
+			stmt_insert_livefleet_position.setLong(17, currentPosition.getCreatedDatetime());
+		else
+			stmt_insert_livefleet_position.setLong(17, 0);
+	
+					
+		if (currentPosition.getReceivedDatetime() != null)
+			stmt_insert_livefleet_position.setLong(18, currentPosition.getReceivedDatetime());
+		else
+			stmt_insert_livefleet_position.setLong(18, 0);
+		
+		if (currentPosition.getGpsSpeed() != null)
+			stmt_insert_livefleet_position.setDouble(19, currentPosition.getGpsSpeed());
+		else
+			stmt_insert_livefleet_position.setDouble(19, 0);
+		
+		if (currentPosition.getGpsDatetime() != null)
+			stmt_insert_livefleet_position.setLong(20, currentPosition.getGpsDatetime());
+		else
+			stmt_insert_livefleet_position.setLong(20, 0);
+		
+		if (currentPosition.getWheelbasedSpeed() != null)
+			stmt_insert_livefleet_position.setDouble(21, currentPosition.getWheelbasedSpeed());
+		else
+			stmt_insert_livefleet_position.setDouble(21, 0);
+		
+		if (currentPosition.getTachgraphSpeed() != null)
+			stmt_insert_livefleet_position.setDouble(22, currentPosition.getTachgraphSpeed());
+		else
+			stmt_insert_livefleet_position.setDouble(22, 0);
+		
+		if (currentPosition.getDriver1Id() != null)
+			stmt_insert_livefleet_position.setString(23, currentPosition.getDriver1Id());
+		else
+			stmt_insert_livefleet_position.setString(23, "");
+		
+		if (currentPosition.getVehicleMsgTriggerAdditionalInfo() != null)
+			stmt_insert_livefleet_position.setString(24, currentPosition.getVehicleMsgTriggerAdditionalInfo());
+		else
+			stmt_insert_livefleet_position.setString(24, "");
+		
+		if (currentPosition.getDriverAuthEquipmentTypeId() != null)
+			stmt_insert_livefleet_position.setInt(25, currentPosition.getDriverAuthEquipmentTypeId());
+		else
+			stmt_insert_livefleet_position.setInt(25, 0);
+		
+		if (currentPosition.getCardReplacementIndex() != null)
+			stmt_insert_livefleet_position.setString(26, currentPosition.getCardReplacementIndex());
+		else
+			stmt_insert_livefleet_position.setString(26, "");
+		
+		if (currentPosition.getOem_driver_id_type() != null)
+			stmt_insert_livefleet_position.setString(27, currentPosition.getOem_driver_id_type());
+		else
+			stmt_insert_livefleet_position.setString(27, "");
+		
+		if (currentPosition.getOem_driver_id() != null)
+			stmt_insert_livefleet_position.setString(28, currentPosition.getOem_driver_id());
+		else
+			stmt_insert_livefleet_position.setString(28, "");
+		
+		if (currentPosition.getPto_id() != null)
+			stmt_insert_livefleet_position.setString(29, currentPosition.getPto_id());
+		else
+			stmt_insert_livefleet_position.setString(29, "");
+		
+		if (currentPosition.getTelltale_id() != null)
+			stmt_insert_livefleet_position.setInt(30, currentPosition.getTelltale_id());
+		else
+			stmt_insert_livefleet_position.setInt(30, 0);
+		
+		if (currentPosition.getOem_telltale() != null)
+			stmt_insert_livefleet_position.setString(31, currentPosition.getOem_telltale());
+		else
+			stmt_insert_livefleet_position.setString(31, "");
+		
+		if (currentPosition.getTelltale_state_id() != null)
+			stmt_insert_livefleet_position.setInt(32, currentPosition.getTelltale_state_id());
+		else
+			stmt_insert_livefleet_position.setInt(32, 0);
+		
+		if (currentPosition.getDrivingTime() != null)
+			stmt_insert_livefleet_position.setInt(33, currentPosition.getDrivingTime());
+		else
+			stmt_insert_livefleet_position.setInt(33, 0);
+		
+	
 		System.out.println("Inside fillstatement End");
 		return stmt_insert_livefleet_position;
 	}
 
-	/*
-	 * private PreparedStatement fillStatement(PreparedStatement
-	 * stmt_insert_livefleet_position, Monitor row, Long fuel_consumption,
-	 * Co2Master cm) throws SQLException { int varVEvtid = 0; if
-	 * (row.getVEvtID() != null) {
-	 * 
-	 * varVEvtid = row.getVEvtID(); }
-	 * 
-	 * double varGPSLongi = 0; if (row.getGpsLongitude() != null) { varGPSLongi
-	 * = row.getGpsLongitude(); }
-	 * 
-	 * long varReceievedTimeStamp = 0; if (row.getReceivedTimestamp() != null) {
-	 * 
-	 * varReceievedTimeStamp = row.getReceivedTimestamp(); }
-	 * 
-	 * String varTripID = row.getDocument().getTripID();
-	 * 
-	 * if (varTripID != null) { stmt_insert_livefleet_position.setString(1,
-	 * row.getDocument().getTripID()); // tripID }
-	 * 
-	 * else if (row.getRoName() != null) {
-	 * stmt_insert_livefleet_position.setString(1, row.getRoName()); } else {
-	 * stmt_insert_livefleet_position.setString(1, "TRIP_ID NOT AVAILABLE"); }
-	 * 
-	 * if (row.getVin() != null) stmt_insert_livefleet_position.setString(2,
-	 * (String) row.getVin()); // vin else if (row.getVid() != null) {
-	 * stmt_insert_livefleet_position.setString(2, (String) row.getVid()); }
-	 * else { stmt_insert_livefleet_position.setString(2, "VIN NOT AVAILABLE");
-	 * }
-	 * 
-	 * if (varReceievedTimeStamp != 0) {
-	 * stmt_insert_livefleet_position.setLong(3, row.getReceivedTimestamp()); //
-	 * message_time_stamp stmt_insert_livefleet_position.setLong(12,
-	 * row.getReceivedTimestamp()); // created_at_m2m
-	 * stmt_insert_livefleet_position.setLong(13, row.getReceivedTimestamp());
-	 * // created_at_kafka stmt_insert_livefleet_position.setLong(14,
-	 * row.getReceivedTimestamp()); // created_at_dm }
-	 * 
-	 * else { stmt_insert_livefleet_position.setLong(3, 0); //
-	 * message_time_stamp stmt_insert_livefleet_position.setLong(12, 0); //
-	 * created_at_m2m stmt_insert_livefleet_position.setLong(13, 0); //
-	 * created_at_kafka stmt_insert_livefleet_position.setLong(14, 0); //
-	 * created_at_dm }
-	 * 
-	 * if (varGPSLongi == 255.0) {
-	 * 
-	 * stmt_insert_livefleet_position.setDouble(4, 255.0);
-	 * stmt_insert_livefleet_position.setDouble(5, 255.0);
-	 * stmt_insert_livefleet_position.setDouble(6, 255.0);
-	 * stmt_insert_livefleet_position.setDouble(7, 255.0);
-	 * 
-	 * } else {
-	 * 
-	 * if (row.getGpsAltitude() != null)
-	 * stmt_insert_livefleet_position.setDouble(4, row.getGpsAltitude()); else
-	 * stmt_insert_livefleet_position.setDouble(4, 0); if (row.getGpsHeading()
-	 * != null) stmt_insert_livefleet_position.setDouble(5,
-	 * row.getGpsHeading()); else stmt_insert_livefleet_position.setDouble(5,
-	 * 0); if (row.getGpsLatitude() != null)
-	 * stmt_insert_livefleet_position.setDouble(6, row.getGpsLatitude()); else
-	 * stmt_insert_livefleet_position.setDouble(6, 0); if (row.getGpsLongitude()
-	 * != null) stmt_insert_livefleet_position.setDouble(7,
-	 * row.getGpsLongitude()); else stmt_insert_livefleet_position.setDouble(7,
-	 * 0);
-	 * 
-	 * }
-	 * 
-	 * if (fuel_consumption != null) {
-	 * 
-	 * double co2emission = (fuel_consumption * cm.getCoefficient_D()) / 1000;
-	 * 
-	 * System.out.println("  In fillStatement co2emission-- > " + co2emission);
-	 * 
-	 * stmt_insert_livefleet_position.setDouble(8, co2emission); // co2emission
-	 * 
-	 * System.out.println(" In fillStatement fuel_consumption --> " +
-	 * fuel_consumption);
-	 * 
-	 * stmt_insert_livefleet_position.setDouble(9, fuel_consumption); //
-	 * fuel_consumption
-	 * 
-	 * }
-	 * 
-	 * else {
-	 * 
-	 * stmt_insert_livefleet_position.setDouble(8, 0); // co2 emission
-	 * 
-	 * stmt_insert_livefleet_position.setDouble(9, 0); // fuel_consumption
-	 * 
-	 * }
-	 * 
-	 * if (varVEvtid == 26 || varVEvtid == 28 || varVEvtid == 29 || varVEvtid ==
-	 * 32 || varVEvtid == 42 || varVEvtid == 43 || varVEvtid == 44 || varVEvtid
-	 * == 45 || varVEvtid == 46) { stmt_insert_livefleet_position.setLong(10,
-	 * row.getDocument().getVTachographSpeed()); // TotalTachoMileage } else {
-	 * stmt_insert_livefleet_position.setLong(10, 0); }
-	 * 
-	 * if (varVEvtid == 42 || varVEvtid == 43) {
-	 * stmt_insert_livefleet_position.setLong(11,
-	 * row.getDocument().getVDistanceUntilService());//
-	 * distance_until_next_service
-	 * 
-	 * } else { stmt_insert_livefleet_position.setLong(11, 0); }
-	 * 
-	 * return stmt_insert_livefleet_position; }
-	 */
+	
 	public Connection getConnection() {
 		return connection;
 	}

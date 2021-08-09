@@ -242,6 +242,8 @@ message AccountFilter {
         int32 IconId =12;
         string IconByte =13;
         int32 CreatedBy=14;
+        int32 PageRefreshTime=15;
+
     }
     message AccountPreferenceResponse
     {

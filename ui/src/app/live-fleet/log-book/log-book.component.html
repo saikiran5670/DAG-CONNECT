@@ -26,7 +26,7 @@
 </div> -->
 
 <!-- <div class="bgtrans"> -->
-  <div *ngIf='showBack' fxLayout="row" fxLayoutAlign="end">
+  <div *ngIf='showBack && !this._state.fromDashboard ' fxLayout="row" fxLayoutAlign="end">
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
       <span class='custom-font' (click)="backToVehicleDetail()">
         <span><&nbsp;</span>

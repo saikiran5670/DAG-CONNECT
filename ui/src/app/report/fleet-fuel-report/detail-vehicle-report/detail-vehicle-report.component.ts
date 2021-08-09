@@ -992,7 +992,7 @@ createEndMarker(){
     if(event.checked){
       
       this.rowdata.push(row);
-      this.mapService.viewselectedroutes(this.rowdata, this.displayRouteView,this.trackType);
+      this.mapService.viewselectedroutes(this.rowdata, this.displayRouteView,this.trackType, row);
 
       let _ui = this.reportMapService.getUI();
      // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
@@ -2240,10 +2240,22 @@ setVehicleGroupAndVehiclePreSelection() {
     }
     case 'idleDuration': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.idleDuration);
-      });
-      sum = this.reportMapService.getHhMmTime(sum);
-      break;
+        sum += parseFloat(element.convertedIdleDuration);
+        });
+        //sum= sum.toFixed(2)*1;
+        sum = this.reportMapService.getHhMmTime(sum);
+        break;
+      // let s = this.tripData.forEach(element => {
+      //   let time: any = 0;
+      //   time += (element.idleDuration);
+      //   let data: any = "00:00";
+      //   let hours = Math.floor(time / 3600);
+      //   time %= 3600;
+      //   let minutes = Math.floor(time / 60);
+      //   let seconds = time % 60;
+      //   data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
+      //   sum = data;
+      // });
     }
     case 'fuelConsumption': { 
       let s = this.displayData.forEach(element => {

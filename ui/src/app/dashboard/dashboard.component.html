@@ -33,9 +33,9 @@
             [plugins]="stack_barChartPlugins" [legend]="stack_barChartLegend" [chartType]="stack_barChartType">
           </canvas>
         </div> -->
-        <!-- <app-fleetkpi [translationData] ="translationData"></app-fleetkpi>
-        <app-today-live-vehicle [translationData] ="translationData"></app-today-live-vehicle>
-        <app-dashboard-vehicle-utilisation [translationData] ="translationData"></app-dashboard-vehicle-utilisation> --> 
+        <app-fleetkpi *ngIf='finalVinList.length > 0' [translationData] ="translationData"  [finalVinList]='finalVinList' [prefData]='prefData' [preference]='preference' [dashboardPrefData] ="dashboardPrefData"></app-fleetkpi>
+        <app-today-live-vehicle *ngIf='finalVinList.length > 0' [translationData] ="translationData" [finalVinList]='finalVinList' [prefData]='prefData' [preference]='preference' [dashboardPrefData] ="dashboardPrefData"></app-today-live-vehicle>
+        <app-dashboard-vehicle-utilisation *ngIf='finalVinList.length > 0'  [translationData] ="translationData" [finalVinList]='finalVinList' [prefData]='prefData' [preference]='preference' [dashboardPrefData] ="dashboardPrefData"></app-dashboard-vehicle-utilisation>
       <!-- </div>
     </mat-card-content>
    </mat-card> -->
