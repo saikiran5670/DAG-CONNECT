@@ -59,7 +59,7 @@
                                 class='mandatoryColor'>*</span>
                         </mat-label>
                         <mat-form-field appearance="outline">
-                            <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)"
+                            <mat-select (selectionChange)="onVehicleChange($event)"
                                 placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}"
                                 formControlName="vehicleName">
                                 <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
@@ -94,7 +94,7 @@
                                         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width"
                                             class="timepicker" style='margin-top: 4px;'>
                                             <span class='timeAdjustSpan'>{{ startTimeDisplay }}</span>
-                                            <input [max]='selectedEndTime' [(ngModel)]="selectedStartTime"
+                                            <input [max]='searchForm.get("endTime").value'
                                                 class='inputBox' [format]="prefTimeFormat"
                                                 [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true"
                                                 formControlName="startTime" readonly>
@@ -123,7 +123,7 @@
                                         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width"
                                             class="timepicker" style='margin-top: 4px;'>
                                             <span class='timeAdjustSpan'>{{ endTimeDisplay }}</span>
-                                            <input [min]='selectedStartTime' [(ngModel)]="selectedEndTime"
+                                            <input [min]="searchForm.get('startTime').value"
                                                 class='inputBox' [format]="prefTimeFormat"
                                                 [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true"
                                                 formControlName="endTime" readonly>

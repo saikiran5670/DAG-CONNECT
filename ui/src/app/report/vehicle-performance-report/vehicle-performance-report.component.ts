@@ -58,14 +58,17 @@ export class VehiclePerformanceReportComponent implements OnInit {
   }
 
   xaxisLabels = {
-    offsetX: -10,
+    offsetX: -8,
     offsetY: 0,
     formatter: (value, index) => {
-      if(value !== 0) {
-        let newIndex = (index/10)-1;
+      let newIndex = (index/10)-1;
+      if(this.xaxisVaues[newIndex]) {
         return this.xaxisVaues[newIndex];
       }
-      return '';
+      if(value == 0) {
+        return '';
+      }
+      return value;
     },
     style: {
       cssClass: 'apexcharts-xaxis-label',
