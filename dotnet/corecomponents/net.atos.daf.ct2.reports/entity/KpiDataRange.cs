@@ -9,8 +9,8 @@ namespace net.atos.daf.ct2.reports.entity
         public string PerformanceType { get; set; }
         public int Index { get; set; }
         public string Kpi { get; set; }
-        public int LowerVal { get; set; }
-        public int UpperVal { get; set; }
+        public double LowerVal { get; set; }
+        public double UpperVal { get; set; }
         public int Value { get; set; }
     }
 }
