@@ -499,17 +499,16 @@ getPreferenceThreshold(fieldKey){
   setChartData(){
     if(this.dashboardPrefData.subReportUserPreferences.length > 0){
     let filterData1 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distanceperday'));
-  
     this.distanceChartType = filterData1[0].chartType == 'L' ? 'line' : 'bar';
-     let filterData2 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
- 
+     
+    let filterData2 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
      this.vehicleChartType =  filterData2[0].chartType == 'L' ? 'line' : 'bar';
-     let filterData3 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
- 
-     this.timeDChartType =  filterData3[0].chartType == 'P' ? 'pie' : 'doughnut';
-     let filterData4 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
- 
-     this.mileageDChartType =  filterData4[0].chartType == 'P' ? 'pie' : 'doughnut';
+     
+    let filterData3 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_timebasedutilizationrate'));
+    this.timeDChartType =  filterData3[0].chartType == 'P' ? 'pie' : 'doughnut';
+
+    let filterData4 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distancebasedutilizationrate'));
+    this.mileageDChartType =  filterData4[0].chartType == 'P' ? 'pie' : 'doughnut';
 
     }
     //for distance chart
