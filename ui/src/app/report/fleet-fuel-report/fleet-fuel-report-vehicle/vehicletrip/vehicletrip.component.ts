@@ -2312,7 +2312,7 @@ setVehicleGroupAndVehiclePreSelection() {
         // let PDF = new jsPDF('p', 'mm', 'a4');
         let position = 0;
         doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
-        doc.addPage();
+        doc.addPage('a1','p');
 
       (doc as any).autoTable({
       head: pdfColumns,
