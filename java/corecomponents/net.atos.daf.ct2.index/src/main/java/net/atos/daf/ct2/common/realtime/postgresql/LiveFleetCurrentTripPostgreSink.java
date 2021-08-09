@@ -256,7 +256,8 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 									// driver behind the wheel
 									Long idleDuration=0L;
 									if(indexValue.getVIdleDuration()!=null) {
-										idleDuration=indexValue.getVIdleDuration();
+										idleDuration=(indexValue.getVIdleDuration()) * 1000;  //later we will keep in constant
+										
 									}
 									
 									driving_time += (currentTripPojo.getEnd_time_stamp()

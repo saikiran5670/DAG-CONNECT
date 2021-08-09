@@ -86,7 +86,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 												DafConstants.DTM_TS_FORMAT);
 								Long idleDuration=0L;
 								if(indexData.getVIdleDuration()!=null) {
-									idleDuration=indexData.getVIdleDuration();
+									idleDuration=(indexData.getVIdleDuration() * 1000); //later need to keep in constant
 								}
 								drivingTime = ((currentMessageTimeStamp - previousMessageTimeStamp)
 										+ previousRecordInfo.getDrivingTime() - idleDuration);
