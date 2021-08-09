@@ -1058,7 +1058,7 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 
   exportAsPDFFile(){
    
-    var doc = new jsPDF();
+    var doc = new jsPDF('p', 'mm', 'a3');
 
     (doc as any).autoTable({
       styles: {
@@ -1067,18 +1067,18 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
       },       
       didDrawPage: function(data) {     
           // Header
-          doc.setFontSize(14);
+          doc.setFontSize(16);
           var fileTitle = "Driver Details";
           var img = "/assets/logo.png";
-          doc.addImage(img, 'JPEG',10,10,0,0);
+          doc.addImage(img, 'JPEG',10,8,0,0);
  
           var img = "/assets/logo_daf.png"; 
           doc.text(fileTitle, 14, 35);
-          doc.addImage(img, 'JPEG',150, 10, 0, 10);            
+          doc.addImage(img, 'JPEG',250, 10, 0, 8);            
       },
       margin: {
-          bottom: 20, 
-          top:30 
+        bottom: 30, 
+        top:40
       }
   });
 

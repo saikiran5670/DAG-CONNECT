@@ -343,7 +343,8 @@
                                 fxLayoutAlign="left">
                                 <mat-checkbox class='custom-checkbox'
                                     (change)='$event ? selectionForAlertLast24HoursColumns.toggle(field) : null;'
-                                    [checked]="selectionForAlertLast24HoursColumns.isSelected(field)">
+                                    [checked]="selectionForAlertLast24HoursColumns.isSelected(field)"
+                                    [disabled]='!editDashboardFlag'>
                                     <span>{{ field.translatedName }}</span>
                                 </mat-checkbox>
                             </div>
