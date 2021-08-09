@@ -172,17 +172,38 @@ export class DashboardComponent implements OnInit {
         }
       });
     });
-    let reportId = 18; 
-    this.dashboardService.getDashboardPreferences(reportId).subscribe((prefData: any) => {
-      this.dashboardPrefData = prefData['userPreferences'];   
-        
-    }, (error) => {
-      this.dashboardPrefData = [];
-      
-    });
    
   }
 
+  loadReportData() {
+    let reportListData;
+    this.showLoadingIndicator = true;
+    this.reportService.getReportDetails().subscribe((reportList: any) => {
+
+      reportListData = reportList.reportDetails;
+      let repoId: any= reportListData.filter(i => i.name == 'Dashboard');
+      let reportId;
+      if (repoId.length > 0) {
+        reportId= repoId[0].id;
+      } 
+      else {
+        reportId = 18;
+      }
+      this.dashboardService.getDashboardPreferences(reportId).subscribe((prefData: any) => {
+        this.dashboardPrefData = prefData['userPreferences'];
+        this.getVinsForDashboard();
+      }, (error) => {
+        this.dashboardPrefData = [];
+        this.getVinsForDashboard();
+      });
+    }, (error) => {
+      console.log('Report not found...', error);
+      this.hideloader();
+      reportListData = [];
+    });
+
+  }
+  
   sendMessage(): void {
     // send message to subscribers via observable subject
     this.messageService.sendMessage('refreshTimer');
@@ -193,14 +214,20 @@ export class DashboardComponent implements OnInit {
   }
 
   proceedStep(prefData: any, preference: any){
+    this.prefData = prefData;
+    this.preference = preference;
+    this.loadReportData();
+  }
+
+  getVinsForDashboard(){
     this.dashboardService.getVinsForDashboard(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-      this.prefData = prefData;
-      this.preference = preference;
+
       this.hideloader();
       this.processVins(tripData);
 
     });
   }
+
   processVins(tripData){
     let _vinList = tripData['vehicleDetailsWithAccountVisibiltyList'].map(x=>x.vin);
     if(_vinList.length > 0){

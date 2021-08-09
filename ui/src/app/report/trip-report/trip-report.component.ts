@@ -849,7 +849,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   }
 
   exportAsPDFFile() {
-    var doc = new jsPDF();
+    var doc = new jsPDF('p', 'mm', 'a2');
     (doc as any).autoTable({
       styles: {
         cellPadding: 0.5,
@@ -857,18 +857,18 @@ export class TripReportComponent implements OnInit, OnDestroy {
       },
       didDrawPage: function (data) {
         // Header
-        doc.setFontSize(14);
+        doc.setFontSize(20);
         var fileTitle = "Trip Details";
         var img = "/assets/logo.png";
         doc.addImage(img, 'JPEG', 10, 10, 0, 0);
 
         var img = "/assets/logo_daf.png";
-        doc.text(fileTitle, 14, 35);
-        doc.addImage(img, 'JPEG', 150, 10, 0, 10);
+        doc.text(fileTitle, 14, 40);
+        doc.addImage(img, 'JPEG', 370, 15, 0, 10);
       },
       margin: {
-        bottom: 20,
-        top: 30
+        bottom: 30,
+        top: 45
       }
     });
 

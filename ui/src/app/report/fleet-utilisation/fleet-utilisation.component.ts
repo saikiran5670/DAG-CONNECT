@@ -1662,7 +1662,7 @@ getAllSummaryData(){
         },       
         didDrawPage: function(data) {     
             // Header
-            doc.setFontSize(14);
+            doc.setFontSize(16);
             var fileTitle = "Trip Fleet Utilisation Details";
             var img = "/assets/logo.png";
             doc.addImage(img, 'JPEG',10,10,0,0);
@@ -1672,8 +1672,8 @@ getAllSummaryData(){
             doc.addImage(img, 'JPEG',150, 10, 0, 10);            
         },
         margin: {
-            bottom: 20, 
-            top:30 
+            bottom: 30, 
+            top:40
         }  
       });
         let fileWidth = 170;
@@ -1683,7 +1683,7 @@ getAllSummaryData(){
         // let PDF = new jsPDF('p', 'mm', 'a4');
         let position = 0;
         doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
-        doc.addPage();
+        doc.addPage('a2','p');
 
       (doc as any).autoTable({
       head: pdfColumns,

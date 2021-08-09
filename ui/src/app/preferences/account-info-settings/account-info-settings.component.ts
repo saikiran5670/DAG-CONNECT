@@ -132,7 +132,7 @@ export class AccountInfoSettingsComponent implements OnInit {
         undefined,
         [FileValidator.maxContentSize(this.maxSize)]
       ],
-      pageRefreshTime: ['',[Validators.min(0), Validators.max(60)]] });
+      pageRefreshTime: ['',[Validators.min(1), Validators.max(60)]] });
     // this.changePictureFlag = true;
     // this.isSelectPictureConfirm = true;
     this.orgName = localStorage.getItem("organizationName");
@@ -232,9 +232,11 @@ export class AccountInfoSettingsComponent implements OnInit {
             timezoneId: data.timezone,
             unitId: data.unit,
             vehicleDisplayId: data.vehicleDisplay,
+            pageRefreshTime : 1,
             landingPageDisplayId: this.landingPageDisplayDropdownData[0].id //-- set default landing page for org
             //landingPageDisplayId: data.landingPageDisplay
           };
+          
           this.goForword(this.orgDefaultPreference);
         });
       }

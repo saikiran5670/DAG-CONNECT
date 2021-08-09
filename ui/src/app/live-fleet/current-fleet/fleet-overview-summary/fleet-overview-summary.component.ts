@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { MessageService } from 'src/app/services/message.service';
 import { ReportService } from 'src/app/services/report.service';
 import { Util } from 'src/app/shared/util';
+import { FleetMapService } from '../fleet-map.service';
 
 @Component({
   selector: 'app-fleet-overview-summary',
@@ -39,7 +40,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   unitValkm: string;
   filterInvoked: boolean = false;
 
-  constructor(private messageService: MessageService, private reportService: ReportService) {
+  constructor(private messageService: MessageService, private reportService: ReportService, private fleetMapService: FleetMapService) {
     this.unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
     this.loadData();
     this.subscription = this.messageService.getMessage().subscribe(message => {
@@ -87,7 +88,8 @@ export class FleetOverviewSummaryComponent implements OnInit {
     // We use these empty structures as placeholders for dynamic theming.
     scales: { xAxes: [{
       ticks: {
-        beginAtZero: true
+        beginAtZero: true,
+        stepSize: 1
       },
       gridLines: {
         display: true,
@@ -204,15 +206,14 @@ export class FleetOverviewSummaryComponent implements OnInit {
     this.totalVehicle = uniqueVin.length;
 
     this.summaryData.forEach(element => {
-      totalDriveTime += element.drivingTime;
+      if(element.drivingTime)
+        totalDriveTime += element.drivingTime;
       if(element.tripDistance){
         tripDistance += element.tripDistance;
       }
-
       if(element.vehicleDrivingStatusType && element.vehicleDrivingStatusType === 'D'){
         this.movedVehicle += 1;
       }
-
       if(element.vehicleHealthStatusType){
         if(element.vehicleHealthStatusType === 'N'){
           this.noAction += 1;
@@ -224,20 +225,19 @@ export class FleetOverviewSummaryComponent implements OnInit {
         if(element.latestWarningType && element.latestWarningType === 'C')
           this.criticalAlert += 1;
       }
-
-      if(element.tripDistance){
-        tripDistance += element.tripDistance;
-      }
     });
   }
-  this.mileageDone = (this.prefUnitFormat == 'dunit_Metric' ? tripDistance : (tripDistance * 0.621371)) + ' ' + this.unitValkm;
-  let totDriveTime = (Util.getHhMmTime(totalDriveTime)).split(':');
+  //this.mileageDone = (this.prefUnitFormat == 'dunit_Metric' ? tripDistance : (tripDistance * 0.621371)) + ' ' + this.unitValkm;
+  let milDone = this.fleetMapService.getDistance(tripDistance, this.prefUnitFormat);
+  this.mileageDone = milDone + ' ' + this.unitValkm;
+  let totDriveTime = (Util.getHhMmTime((totalDriveTime/1000).toFixed(0))).split(':');
   this.driveTime = totDriveTime[0] + (this.translationData.lblhh || ' hh ') + totDriveTime[1] + (this.translationData.lblmm || ' mm');
   this.barChartData = [
     { data: [this.movedVehicle, this.totalVehicle], label: '', barThickness: 16, barPercentage: 0.5 }
   ];
   //Fleet Mileage rate
-  this.mileageRate = (tripDistance/Number.parseInt(localStorage.getItem('liveFleetMileageThreshold'))) * 100;
+  let milRate = (Number.parseFloat(this.mileageDone)/Number.parseInt(localStorage.getItem('liveFleetMileageThreshold'))) * 100;
+  this.mileageRate = Number.parseFloat(((Number.parseFloat(milDone)/Number.parseInt(localStorage.getItem('liveFleetMileageThreshold'))) * 100).toFixed(2));
   this.doughnutChartDataMileage = [ [this.mileageRate, 100-this.mileageRate] ];
   //Fleet Utilization rate
   this.utilizationRate = (this.movedVehicle/Number.parseInt(localStorage.getItem('liveFleetUtilizationThreshold'))) * 100;
