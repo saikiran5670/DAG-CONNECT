@@ -11,7 +11,7 @@
     <None Remove="assets\Chart.min.js" />
     <None Remove="assets\DAFLogo.png" />
     <None Remove="assets\logo.png" />
-    <None Remove="assets\logo_daf.svg" />
+    <None Remove="assets\logo_daf.png" />
     <None Remove="assets\style.css" />
     <None Remove="assets\WallImg2.jpg" />
     <None Remove="libwkhtmltox.dll" />
@@ -23,7 +23,7 @@
     <Content Include="assets\logo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\logo_daf.svg">
+    <Content Include="assets\logo_daf.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="assets\style.css">

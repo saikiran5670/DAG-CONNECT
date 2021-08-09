@@ -29,8 +29,6 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   searchExpandPanel: boolean = true;
   formSubmitted: boolean = false;
   selectionTab: string = 'today';
-  selectedStartTime: any = '00:00';
-  selectedEndTime: any = '23:59';
   prefTimeFormat: any = 12;
   prefTimeZone: any;
   prefDateFormat;
@@ -65,8 +63,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       performanceType: ['', [Validators.required]],
       startDate: ['', []],
       endDate: ['', []],
-      startTime: ['', []],
-      endTime: ['', []]
+      startTime: ['00:00', []],
+      endTime: ['23:59', []]
     });
   }
 
@@ -92,36 +90,36 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       case 'today': {
         this.selectionTab = 'today';
         this.setDefaultStartEndTime();
-        this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start'));
-        this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end'));
+        this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.getTodayDate(), this.searchForm.get('startTime').value, 'start'));
+        this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.getTodayDate(), this.searchForm.get('endTime').value, 'end'));
         break;
       }
       case 'yesterday': {
         this.selectionTab = 'yesterday';
         this.setDefaultStartEndTime();
-        this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start'));
-        this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end'));
+        this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.getYesterdaysDate(), this.searchForm.get('startTime').value, 'start'));
+        this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.getYesterdaysDate(), this.searchForm.get('endTime').value, 'end'));
         break;
       }
       case 'lastweek': {
         this.selectionTab = 'lastweek';
         this.setDefaultStartEndTime();
-        this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start'));
-        this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end'));
+        this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.getLastWeekDate(), this.searchForm.get('startTime').value, 'start'));
+        this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.getYesterdaysDate(), this.searchForm.get('endTime').value, 'end'));
         break;
       }
       case 'lastmonth': {
         this.selectionTab = 'lastmonth';
         this.setDefaultStartEndTime();
-        this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start'));
-        this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end'));
+        this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.getLastMonthDate(), this.searchForm.get('startTime').value, 'start'));
+        this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.getYesterdaysDate(), this.searchForm.get('endTime').value, 'end'));
         break;
       }
       case 'last3month': {
         this.selectionTab = 'last3month';
         this.setDefaultStartEndTime();
-        this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start'));
-        this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end'));
+        this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.getLast3MonthDate(), this.searchForm.get('startTime').value, 'start'));
+        this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.getYesterdaysDate(), this.searchForm.get('endTime').value, 'end'));
         break;
       }
     }
@@ -137,22 +135,24 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
-    let _x = timeObj.split(":")[0];
-    let _y = timeObj.split(":")[1];
-    if (this.prefTimeFormat == 12) {
-      if (_y.split(' ')[1] == 'AM' && _x == 12) {
-        date.setHours(0);
+    if(date){
+      let _x = timeObj.split(":")[0];
+      let _y = timeObj.split(":")[1];
+      if (this.prefTimeFormat == 12) {
+        if (_y.split(' ')[1] == 'AM' && _x == 12) {
+          date.setHours(0);
+        } else {
+          date.setHours(_x);
+        }
+        date.setMinutes(_y.split(' ')[0]);
       } else {
         date.setHours(_x);
+        date.setMinutes(_y);
       }
-      date.setMinutes(_y.split(' ')[0]);
-    } else {
-      date.setHours(_x);
-      date.setMinutes(_y);
-    }
 
-    date.setSeconds(type == 'start' ? '00' : '59');
-    return date;
+      date.setSeconds(type == 'start' ? '00' : '59');
+      return date;
+    }
   }
 
   setPrefFormatDate() {
@@ -180,32 +180,47 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   getTodayDate() {
-    let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
-    return _todayDate;
+    if(this.prefTimeZone) {
+      let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
+      return _todayDate;
+    }
+    return null;
   }
 
   getYesterdaysDate() {
-    var date = Util.getUTCDate(this.prefTimeZone);
-    date.setDate(date.getDate() - 1);
-    return date;
+    if(this.prefTimeZone) {
+      var date = Util.getUTCDate(this.prefTimeZone);
+      date.setDate(date.getDate() - 1);
+      return date;
+    }
+    return null;
   }
 
   getLastWeekDate() {
-    var date = Util.getUTCDate(this.prefTimeZone);
-    date.setDate(date.getDate() - 7);
-    return date;
+    if(this.prefTimeZone) {
+      var date = Util.getUTCDate(this.prefTimeZone);
+      date.setDate(date.getDate() - 7);
+      return date;
+    }
+    return null;
   }
 
   getLastMonthDate() {
-    var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth() - 1);
-    return date;
+    if(this.prefTimeZone) {
+      var date = Util.getUTCDate(this.prefTimeZone);
+      date.setMonth(date.getMonth() - 1);
+      return date;
+    }
+    return null;
   }
 
   getLast3MonthDate() {
-    var date = Util.getUTCDate(this.prefTimeZone);
-    date.setMonth(date.getMonth() - 3);
-    return date;
+    if(this.prefTimeZone) {
+      var date = Util.getUTCDate(this.prefTimeZone);
+      date.setMonth(date.getMonth() - 3);
+      return date;
+    }
+    return null;
   }
 
   proceedStep(prefData: any, preference: any) {
@@ -291,34 +306,34 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   setDefaultStartEndTime() {
     if (!this.internalSelection && !this.utilsService.isEmpty(this.globalSearchFilterData)) {
       if (this.prefTimeFormat == this.globalSearchFilterData.filterPrefTimeFormat) { // same format
-        this.selectedStartTime = this.globalSearchFilterData.startTimeStamp;
-        this.selectedEndTime = this.globalSearchFilterData.endTimeStamp;
+        this.searchForm.get('startTime').setValue(this.globalSearchFilterData.startTimeStamp);
+        this.searchForm.get('endTime').setValue(this.globalSearchFilterData.endTimeStamp);
         this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.globalSearchFilterData.startTimeStamp}:00` : this.globalSearchFilterData.startTimeStamp;
         this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.globalSearchFilterData.endTimeStamp}:59` : this.globalSearchFilterData.endTimeStamp;
       } else { // different format
         if (this.prefTimeFormat == 12) { // 12
-          this.selectedStartTime = this._get12Time(this.globalSearchFilterData.startTimeStamp);
-          this.selectedEndTime = this._get12Time(this.globalSearchFilterData.endTimeStamp);
-          this.startTimeDisplay = this.selectedStartTime;
-          this.endTimeDisplay = this.selectedEndTime;
+          this.searchForm.get('startTime').setValue(this._get12Time(this.globalSearchFilterData.startTimeStamp));
+          this.searchForm.get('endTime').setValue(this._get12Time(this.globalSearchFilterData.endTimeStamp));
+          this.startTimeDisplay = this.searchForm.get('startTime').value;
+          this.endTimeDisplay = this.searchForm.get('endTime').value;
         } else { // 24
-          this.selectedStartTime = this.get24Time(this.globalSearchFilterData.startTimeStamp);
-          this.selectedEndTime = this.get24Time(this.globalSearchFilterData.endTimeStamp);
-          this.startTimeDisplay = `${this.selectedStartTime}:00`;
-          this.endTimeDisplay = `${this.selectedEndTime}:59`;
+          this.searchForm.get('startTime').setValue(this.get24Time(this.globalSearchFilterData.startTimeStamp));
+          this.searchForm.get('endTime').setValue(this.get24Time(this.globalSearchFilterData.endTimeStamp));
+          this.startTimeDisplay = `${this.searchForm.get('startTime').value}:00`;
+          this.endTimeDisplay = `${this.searchForm.get('endTime').value}:59`;
         }
       }
     } else {
       if (this.prefTimeFormat == 24) {
         this.startTimeDisplay = '00:00:00';
         this.endTimeDisplay = '23:59:59';
-        this.selectedStartTime = "00:00";
-        this.selectedEndTime = "23:59";
+        this.searchForm.get('startTime').setValue("00:00");
+        this.searchForm.get('endTime').setValue("23:59");
       } else {
         this.startTimeDisplay = '12:00 AM';
         this.endTimeDisplay = '11:59 PM';
-        this.selectedStartTime = "00:00";
-        this.selectedEndTime = "23:59";
+        this.searchForm.get('startTime').setValue("00:00");
+        this.searchForm.get('endTime').setValue("23:59");
       }
     }
 
@@ -333,12 +348,12 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       }
       let startDateFromSearch = new Date(this.globalSearchFilterData.startDateStamp);
       let endDateFromSearch = new Date(this.globalSearchFilterData.endDateStamp);
-      this.searchForm.get('startDate').setValue(this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start'));
-      this.searchForm.get("endDate").setValue(this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end'));
+      this.searchForm.get('startDate').setValue(this.setStartEndDateTime(startDateFromSearch, this.searchForm.get('startTime').value, 'start'));
+      this.searchForm.get("endDate").setValue(this.setStartEndDateTime(endDateFromSearch, this.searchForm.get('endTime').value, 'end'));
     } else {
       this.selectionTab = 'today';
-      this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start'));
-      this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end'));
+      this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.getTodayDate(), this.searchForm.get('startTime').value, 'start'));
+      this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.getTodayDate(), this.searchForm.get('endTime').value, 'end'));
       this.last3MonthDate = this.getLast3MonthDate();
       this.todayDate = this.getTodayDate();
     }
@@ -397,28 +412,28 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>) {
     this.internalSelection = true;
-    this.searchForm.get('startDate').setValue(this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start'));
+    this.searchForm.get('startDate').setValue(this.setStartEndDateTime(event.value._d, this.searchForm.get('startTime').value, 'start'));
     this.resetDropdownValues(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>) {
     this.internalSelection = true;
-    this.searchForm.get("endDate").setValue(this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end'));
+    this.searchForm.get("endDate").setValue(this.setStartEndDateTime(event.value._d, this.searchForm.get('endTime').value, 'end'));
     this.resetDropdownValues(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   endTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.selectedEndTime = selectedTime;
+    this.searchForm.get('endTime').setValue(selectedTime);
     if (this.prefTimeFormat == 24) {
       this.endTimeDisplay = selectedTime + ':59';
     }
     else {
       this.endTimeDisplay = selectedTime;
     }
-    this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.searchForm.get("endDate").value, this.selectedEndTime, 'end'));
+    this.searchForm.get("endDate").setValue(this.setStartEndDateTime(this.searchForm.get("endDate").value, this.searchForm.get('endTime').value, 'end'));
     this.resetDropdownValues(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -454,13 +469,13 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   startTimeChanged(selectedTime: any) {
     this.internalSelection = true;
-    this.selectedStartTime = selectedTime;
+    this.searchForm.get('startTime').setValue(selectedTime);
     if (this.prefTimeFormat == 24) {
       this.startTimeDisplay = selectedTime + ':00';
     } else {
       this.startTimeDisplay = selectedTime;
     }
-    this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.searchForm.get('startDate').value, this.selectedStartTime, 'start'));
+    this.searchForm.get('startDate').setValue(this.setStartEndDateTime(this.searchForm.get('startDate').value, this.searchForm.get('startTime').value, 'start'));
     this.resetDropdownValues(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
