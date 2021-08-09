@@ -226,10 +226,10 @@ export class VehiclePerformanceReportComponent implements OnInit {
       this.piechartTitle = "Engine Operational Performance";
       this.bubbleHeatchartTitle = "Engine Load Distribution";
     } else if(performanceType == 'S') {
-      this.piechartTitle = "Road Speed Performance";
+      this.piechartTitle = "Road Speed Performance (%)";
       this.bubbleHeatchartTitle = "Road Speed Distribution";
     } else {
-      this.piechartTitle = "Brake Performance";
+      this.piechartTitle = "Brake Performance (%)";
       this.bubbleHeatchartTitle = "Brake Behavior Distribution";
     }
   }
