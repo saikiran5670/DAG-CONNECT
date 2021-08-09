@@ -727,7 +727,7 @@ export class FleetkpiComponent implements OnInit {
      
     switch (_prefLimit) {
       case 'U':{
-        if(_prefThreshold < currentValue){ //red
+        if(calculationValue['cuttOff'] < currentValue){ //red
           this.doughnutColors = [
             {
               backgroundColor: [
@@ -768,7 +768,7 @@ export class FleetkpiComponent implements OnInit {
       }
         break;
         case 'L':{
-          if(_prefLimit > currentValue){
+          if(calculationValue['cuttOff'] > currentValue){
             this.doughnutColors = [
               {
                 backgroundColor: [
@@ -950,7 +950,7 @@ export class FleetkpiComponent implements OnInit {
      
     switch (_prefLimit) {
       case 'U':{
-        if(_prefThreshold < currentValue){ //red
+        if(calculationValue['cuttOff'] < currentValue){ //red
           this.doughnutIdlingColors = [
             {
               backgroundColor: [
@@ -991,7 +991,7 @@ export class FleetkpiComponent implements OnInit {
       }
         break;
         case 'L':{
-          if(_prefLimit > currentValue){
+          if(calculationValue['cuttOff'] > currentValue){
             this.doughnutIdlingColors = [
               {
                 backgroundColor: [
@@ -1172,7 +1172,7 @@ export class FleetkpiComponent implements OnInit {
      
     switch (_prefLimit) {
       case 'U':{
-        if(_prefThreshold < currentValue){ //red
+        if(calculationValue['cuttOff'] < currentValue){ //red
           this.doughnutDrivingColors = [
             {
               backgroundColor: [
@@ -1213,7 +1213,7 @@ export class FleetkpiComponent implements OnInit {
       }
         break;
         case 'L':{
-          if(_prefLimit > currentValue){
+          if(calculationValue['cuttOff'] > currentValue){
             this.doughnutDrivingColors = [
               {
                 backgroundColor: [
@@ -1266,7 +1266,7 @@ export class FleetkpiComponent implements OnInit {
     this.distanceThreshold = _thresholdValue;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue =this.reportMapService.getDistance(calculationValue['cuttOff'],this.prefUnitFormat); 
-    this.cutOffDistanceValue =  this.reportMapService.getDistance(targetValue, this.prefUnitFormat);
+    this.cutOffDistanceValue = targetValue;
     let currentPercent = calculationValue['kpiPercent'];
 
     
@@ -1393,7 +1393,7 @@ export class FleetkpiComponent implements OnInit {
      
     switch (_prefLimit) {
       case 'U':{
-        if(_prefThreshold < currentValue){ //red
+        if(calculationValue['cuttOff'] < currentValue){ //red
           this.doughnutDistanceColors = [
             {
               backgroundColor: [
@@ -1434,7 +1434,7 @@ export class FleetkpiComponent implements OnInit {
       }
         break;
         case 'L':{
-          if(_prefLimit > currentValue){
+          if(calculationValue['cuttOff'] > currentValue){
             this.doughnutDistanceColors = [
               {
                 backgroundColor: [
@@ -1487,7 +1487,7 @@ export class FleetkpiComponent implements OnInit {
     this.fuelConsumedThreshold = _thresholdValue;
     let calculationValue = this.dashboardService.calculateKPIPercentage(currentValue,this.totalVehicles,_thresholdValue,this.totalDays);
     let targetValue = this.reportMapService.getFuelConsumedUnits( calculationValue['cuttOff'],this.prefUnitFormat,false);
-    this.cutOffFuelConsumed =  this.reportMapService.getFuelConsumedUnits( calculationValue['cuttOff'],this.prefUnitFormat,false);
+    this.cutOffFuelConsumed = this.reportMapService.getFuelConsumedUnits( calculationValue['cuttOff'],this.prefUnitFormat,false);
     let currentPercent = calculationValue['kpiPercent'];
 
      
@@ -1615,7 +1615,7 @@ export class FleetkpiComponent implements OnInit {
      
     switch (_prefLimit) {
       case 'U':{
-        if(_prefThreshold < currentValue){ //red
+        if(calculationValue['cuttOff'] < currentValue){ //red
           this.doughnutFuelConsumedColors = [
             {
               backgroundColor: [
@@ -1656,7 +1656,7 @@ export class FleetkpiComponent implements OnInit {
       }
         break;
         case 'L':{
-          if(_prefLimit > currentValue){
+          if(calculationValue['cuttOff'] > currentValue){
             this.doughnutFuelConsumedColors = [
               {
                 backgroundColor: [
@@ -1835,7 +1835,7 @@ export class FleetkpiComponent implements OnInit {
      
     switch (_prefLimit) {
       case 'U':{
-        if(_prefThreshold < currentValue){ //red
+        if(calculationValue['cuttOff'] < currentValue){ //red
           this.doughnutFuelUsedColors = [
             {
               backgroundColor: [
@@ -1876,7 +1876,7 @@ export class FleetkpiComponent implements OnInit {
       }
         break;
         case 'L':{
-          if(_prefLimit > currentValue){
+          if(calculationValue['cuttOff'] > currentValue){
             this.doughnutFuelUsedColors = [
               {
                 backgroundColor: [
@@ -2055,7 +2055,7 @@ export class FleetkpiComponent implements OnInit {
      
     switch (_prefLimit) {
       case 'U':{
-        if(_prefThreshold < currentValue){ //red
+        if(calculationValue['cuttOff'] < currentValue){ //red
           this.doughnutFuelConsumptionColors = [
             {
               backgroundColor: [
@@ -2096,7 +2096,7 @@ export class FleetkpiComponent implements OnInit {
       }
         break;
         case 'L':{
-          if(_prefLimit > currentValue){
+          if(calculationValue['cuttOff'] > currentValue){
             this.doughnutFuelConsumptionColors = [
               {
                 backgroundColor: [
