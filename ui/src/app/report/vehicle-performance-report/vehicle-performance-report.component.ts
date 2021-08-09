@@ -73,7 +73,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   };
 
   yaxisLabels = {
-    offsetX: 0,
+    offsetX: 5,
     offsetY: 15,
     formatter: (value, index) => {
       if(index !== 0) {
@@ -96,6 +96,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
     ...this.commonAxis,
     title: {
       text: '%',
+      offsetX: 5,
     },
     labels: this.yaxisLabels
   }
@@ -112,6 +113,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
     ...this.commonAxis,
     title: {
       text: 'RPM',
+      offsetX: 5,
     },
     labels: this.yaxisLabels
   }
@@ -129,6 +131,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
     ...this.commonAxis,
     title: {
       text: 'M/S2',
+      offsetX: 5,
     },
     labels: this.yaxisLabels
   }
@@ -248,6 +251,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   }
 
   processYaxis(data) {
+    this.backgroundColorPattern = [];
     if(data.length > 0) {
       let tempArr = [];
       for(let row of data) {
@@ -259,8 +263,11 @@ export class VehiclePerformanceReportComponent implements OnInit {
           for(let color of colors) {
             let colorObj = {
               y: row.index * 10,
-              y2: row.range,
+              y2: ((row.index * 10) + 10),
               offsetX: offsetX,
+              opacity: 1,
+              strokeDashArray: 0,
+              borderColor: '#fff',
               width: JSON.stringify(width),
               fillColor: this.colorToLegends[color]
             }
@@ -281,7 +288,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
     for(let bubble of bubbleData) {
       let newArr = [];
       newArr.push((bubble.xindex*10) - 5 < 0 ? 0 : (bubble.xindex*10) - 5);
-      newArr.push((bubble.yindex*10) - 5 < 0 ? 0 : (bubble.yindex*10) - 5);
+      newArr.push((bubble.yindex*10) + 5 < 0 ? 0 : (bubble.yindex*10) + 5);
       newArr.push(bubble.value);
       bubbleChartData.push(newArr);
     }

@@ -44,13 +44,13 @@
     <!-- Charts  -->
     <div style='margin-bottom: 10px;'  *ngIf='liveVehicleData'>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-          <div [hidden]="!checkForPreference('activevehicles')" class="chartTile col-md-4">
+          <div [hidden]="!checkForPreference('activevehicles')" class="chartTile col-md-4"  [ngClass]="{'warningClass':(activeThreshold==0)}">
             <div class="textDiv">
               <div>{{ translationData.lblActiveVehicles || 'Active Vehicles' }}</div>
               <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;'>{{liveVehicleData.todayActiveVinCount}}</div>
             </div>
             
-            <div class="col-md-8 chart-wrapper chartDimension">
+            <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(activeThreshold==0)'>
                 <canvas #chart1 baseChart
                   [data]="doughnutChartActiveVehicleData"
                   [labels]="doughnutChartLabels"
@@ -60,14 +60,17 @@
                   [plugins]="doughnutChartPlugins">
                 </canvas>
               </div>
+              <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(activeThreshold==0)'>
+                <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
+              </div>
           </div>
-          <div [hidden]="!checkForPreference('timebasedutilizationrate')" class="chartTile col-md-4">
+          <div [hidden]="!checkForPreference('timebasedutilizationrate')" class="chartTile col-md-4"  [ngClass]="{'warningClass':(timeBasedThreshold==0)}">
             <div class="textDiv">
               <div>{{ translationData.lblTimeBased || 'Time Based UtiliSation Rate' }} </div>
               <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{timeBasedRate}}</div>
             </div>
             
-            <div class="col-md-8 chart-wrapper chartDimension">
+            <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(timeBasedThreshold==0)'>
                 <canvas #chart2 baseChart
                   [data]="doughnutChartTimeBasedData"
                   [labels]="doughnutChartTimeBasedLabels"
@@ -77,14 +80,17 @@
                   [plugins]="doughnutChartTimePlugins">
                 </canvas>
               </div>
+              <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(timeBasedThreshold==0)'>
+                <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
+              </div>
           </div>
-          <div [hidden]="!checkForPreference('distancebasedutilizationrate')" class="chartTile col-md-4">
+          <div [hidden]="!checkForPreference('distancebasedutilizationrate')" class="chartTile col-md-4" [ngClass]="{'warningClass':(distanceBasedThreshold==0)}">
             <div class="textDiv">
                 <div>{{ translationData.lblDistanceBased || 'Distance Based Utilisation Rate' }} </div>
                 <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;'>{{distanceRate}}{{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </div>
             </div>
               
-            <div class="col-md-8 chart-wrapper chartDimension">
+            <div class="col-md-8 chart-wrapper chartDimension" *ngIf='!(distanceBasedThreshold==0)'>
                 <canvas #chart3 baseChart
                   [data]="doughnutChartDistanceBasedData"
                   [labels]="doughnutChartDistanceBasedLabels"
@@ -93,6 +99,9 @@
                   [colors]="doughnutDistanceColors"
                   [plugins]="doughnutChartDistancePlugins">
                 </canvas>
+              </div>
+              <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(distanceBasedThreshold==0)'>
+                <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
               </div>
             </div>
         </div>

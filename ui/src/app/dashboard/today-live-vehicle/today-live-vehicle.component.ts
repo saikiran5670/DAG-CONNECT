@@ -39,7 +39,12 @@ export class TodayLiveVehicleComponent implements OnInit {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
+  distanceRate : any;
 
+  //threshold 
+  activeThreshold=0;
+  timeBasedThreshold = 0;
+  distanceBasedThreshold = 0;
   //Active Vehicles Chart
   doughnutChartLabels: Label[] = [('Target'), '', ''];
   doughnutChartActiveVehicleData: MultiDataSet = [ [0, 100] ];
@@ -267,7 +272,7 @@ doughnutDistanceColors: Color[] = [
        // console.log(vehicleData);
        if(vehicleData){
           this.liveVehicleData = vehicleData;
-          this.totalVehicles =  4//this.finalVinList.length;
+          this.totalVehicles =  this.finalVinList.length;
             // this.liveVehicleData ={
             //     "distance": 0,
             //     "drivingTime": 0,
@@ -289,7 +294,7 @@ doughnutDistanceColors: Color[] = [
         this.dataError = true;
         this.errorMessage = error.error.message;
       }
-      else{
+      else if(error.status === 404){
         this.dataError = true;
         this.errorMessage = this.translationData.lblTodaysLiveVehicleError || 'No data found for Today live vehicle details'
       }
@@ -332,6 +337,7 @@ doughnutDistanceColors: Color[] = [
     this.totalVehicles = this.finalVinList.length;
     let activeVehiclePercent = this.dashboardService.calculateTodayLivePercentage(activeVehicleCount,this.totalVehicles);
     let thresholdValue = this.getPreferenceThreshold('activevehicles')['value']; //10;
+    this.activeThreshold = thresholdValue;
     let vehicleTarget = this.dashboardService.calculateTargetValue(this.totalVehicles,thresholdValue,1);
     let yesterdayCount = this.liveVehicleData.yesterdayActiveVinCount;
     let activeVehicleChangePercent = this.dashboardService.calculateLastChange(activeVehicleCount,yesterdayCount);
@@ -442,7 +448,7 @@ doughnutDistanceColors: Color[] = [
      
     switch (_vehicleLimit) {
       case 'U':{
-        if(_vehicleThreshold < this.liveVehicleData.activeVehicles){ //red
+        if(vehicleTarget < this.liveVehicleData.activeVehicles){ //red
           this.doughnutColors = [
             {
               backgroundColor: [
@@ -483,7 +489,7 @@ doughnutDistanceColors: Color[] = [
       }
         break;
         case 'L':{
-          if(_vehicleLimit > this.liveVehicleData.activeVehicles){
+          if(vehicleTarget > this.liveVehicleData.activeVehicles){
             this.doughnutColors = [
               {
                 backgroundColor: [
@@ -533,7 +539,8 @@ doughnutDistanceColors: Color[] = [
     // update time based chart
     let todayTimeRate = this.liveVehicleData.todayTimeBasedUtilizationRate;
     let _threshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
-    let timeBasedCalculation = this.dashboardService.calculateKPIPercentage(todayTimeRate,4,_threshold,1);
+    this.timeBasedThreshold = _threshold;
+    let timeBasedCalculation = this.dashboardService.calculateKPIPercentage(todayTimeRate,this.totalVehicles,_threshold,1);
     let timeBasedPercent = timeBasedCalculation['kpiPercent'];
     this.doughnutChartTimeBasedData = [[timeBasedPercent,(100 - timeBasedPercent)]]
     let timeUtilisationTarget = timeBasedCalculation['cuttOff'];
@@ -665,7 +672,7 @@ doughnutDistanceColors: Color[] = [
      
     switch (_timeRateLimit) {
       case 'U':{
-        if(_timeThreshold < todayTimeRate){ //red
+        if(timeBasedCalculation['cuttOff'] < todayTimeRate){ //red
           this.doughnutColors = [
             {
               backgroundColor: [
@@ -706,7 +713,7 @@ doughnutDistanceColors: Color[] = [
       }
         break;
         case 'L':{
-          if(_timeThreshold > this.liveVehicleData.activeVehicles){
+          if(timeBasedCalculation['cuttOff'] > todayTimeRate){
             this.doughnutTimeColors = [
               {
                 backgroundColor: [
@@ -751,7 +758,6 @@ doughnutDistanceColors: Color[] = [
 
   }
 
-  distanceRate : any;
   updateDistanceRate(){
 
     //Distance Based Chart
@@ -761,9 +767,12 @@ doughnutDistanceColors: Color[] = [
     let lastDistance = this.liveVehicleData.yesterDayDistanceBasedUtilization;
     this.distanceRate = this.reportMapService.getDistance(todayDistance, this.prefUnitFormat);
     let _threshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
-    let distanceBasedPercent = this.dashboardService.calculateKPIPercentage(todayDistance,4,_threshold,1)["kpiPercent"];
+    this.distanceBasedThreshold = _threshold;
+    let distanceBasedPercent = this.dashboardService.calculateKPIPercentage(todayDistance,this.totalVehicles,_threshold,1)["kpiPercent"];
+    let distancecutOff = this.dashboardService.calculateKPIPercentage(todayDistance,this.totalVehicles,_threshold,1)["cuttOff"];
+    
     this.doughnutChartDistanceBasedData = [[distanceBasedPercent,(100 - distanceBasedPercent)]]
-    let distanceTarget = this.dashboardService.calculateTargetValue(this.totalVehicles,10,1);
+    let distanceTarget = this.dashboardService.calculateTargetValue(this.totalVehicles,_threshold,1);
     let changePercent = this.dashboardService.calculateLastChange(todayDistance,lastDistance,4);
    
     let activeVehicleCaretColor = 'caretGreen';
@@ -872,7 +881,7 @@ doughnutDistanceColors: Color[] = [
        
       switch (_distanceRateLimit) {
         case 'U':{
-          if(_distanceThreshold < todayDistance){ //red
+          if(distancecutOff < todayDistance){ //red
             this.doughnutColors = [
               {
                 backgroundColor: [
@@ -913,7 +922,7 @@ doughnutDistanceColors: Color[] = [
         }
           break;
           case 'L':{
-            if(_distanceThreshold > this.liveVehicleData.activeVehicles){
+            if(distancecutOff > todayDistance){
               this.doughnutColors = [
                 {
                   backgroundColor: [
@@ -971,7 +980,7 @@ doughnutDistanceColors: Color[] = [
   //****************************** Preference Functions *************************************//
   checkForPreference(fieldKey) {
     if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
-      let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
+      let filterData = this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
       if (filterData.length > 0) {
         if (filterData[0].state == 'A') {
           return true;
@@ -986,8 +995,8 @@ doughnutDistanceColors: Color[] = [
   getPreferenceThreshold(fieldKey){
     let thresholdType = 'U';
     let thresholdValue = 10;
-    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.length != 0) {
-      let filterData = this.dashboardPrefData.subReportUserPreferences[0].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.length != 0) {
+      let filterData = this.dashboardPrefData.subReportUserPreferences[1].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_todaylivevehicle_'+fieldKey));
       if (filterData.length > 0) {
         thresholdType = filterData[0].thresholdType;
         thresholdValue = filterData[0].thresholdValue;
