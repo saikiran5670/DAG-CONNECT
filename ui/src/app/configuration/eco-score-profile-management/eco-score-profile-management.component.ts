@@ -76,6 +76,7 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   deleteButton : boolean = true;
   inputBox : boolean = true;
   isData: boolean = false;
+  units: any = {};
   
 
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private reportMapService: ReportMapService,  private organizationService: OrganizationService,private reportService: ReportService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,) { }
@@ -138,6 +139,12 @@ export class EcoScoreProfileManagementComponent implements OnInit {
       this.prefTimeZone = prefData.timezone[0].value;
       this.prefDateFormat = prefData.dateformat[0].name;
       this.prefUnitFormat = prefData.unit[0].name;
+    }
+    this.units = {
+      prefTimeFormat : this.prefTimeFormat,
+      prefTimeZone : this.prefTimeZone,
+      prefDateFormat : this.prefDateFormat,
+      prefUnitFormat : this.prefUnitFormat,
     }
     this.loadProfileData();
   }
