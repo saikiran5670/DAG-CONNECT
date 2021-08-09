@@ -233,7 +233,7 @@
                 fxLayoutAlign="left">
                 <mat-form-field appearance="outline">
                   <input matInput (keyup)="applyFilterForPOI($event.target.value)"
-                    placeholder="{{ translationData.lblSearch || 'Search' }}">
+                    placeholder="{{ translationData.lblSearch || 'Search' }}" formControlName="searchPOIData">
                   <span matPrefix>
                     <mat-icon>search</mat-icon>
                   </span>

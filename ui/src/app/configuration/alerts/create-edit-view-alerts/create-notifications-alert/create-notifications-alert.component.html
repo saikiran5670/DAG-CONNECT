@@ -96,7 +96,7 @@
             <div [formGroupName]="i">
                 <!-- For email -->
                 <mat-card class='mat-elevation-z' *ngIf="(contactModeType == 'E' && addEmailFlag) || emailCount > 0"
-                    style="border: 1px solid #000">
+                    style="border: 1px solid #ddd;box-shadow: 1px 1px 5px 1px #ddd;margin-bottom: 10px;">
                     <mat-panel-title>
                         <!-- <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 80%;'>{{
                 translationData.lblRecipientLabel02 || 'Recipient Label 02' }}</span>
@@ -106,6 +106,10 @@
                                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
 
                                     translationData.lblRecipientLabel02 || 'Recipient Label' }} </span>
+                                    <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
+                                        <mat-icon style="color: red;cursor: pointer; position: absolute;top: 20px;right: 20px;" (click)="deleteEmailNotificationRow(i)">
+                                            deleteicon</mat-icon>
+                                    </div>
                                 <div class="ng-autocomplete">
                                     <ng-autocomplete [data]="notificationReceipients" [searchKeyword]="keyword"
                                         (selected)='deleteEmailNotificationRow(i); addMultipleItems(false, $event);'
@@ -122,10 +126,7 @@
                 </mat-form-field> -->
                                 <!-- <span style="margin-left: 5px;">{{item['controls']['emailRecipientLabel'].value}}</span> -->
                             </div>
-                            <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
-                                <mat-icon style="color: red;cursor: pointer;" (click)="deleteEmailNotificationRow(i)">
-                                    deleteicon</mat-icon>
-                            </div>
+                            
                         </div>
                     </mat-panel-title>
                     <div fxLayout="row" class="full-width filter-direction" fxLayoutAlign="space-between">
@@ -262,7 +263,7 @@
             <div [formGroupName]="i">
                 <!-- For webservice -->
                 <mat-card class='mat-elevation-z' *ngIf="(contactModeType == 'W' && addWsFlag) || wsCount > 0"
-                    style="border: 1px solid #000;">
+                    style="border: 1px solid #ddd;box-shadow: 1px 1px 5px 1px #ddd;margin-bottom: 10px;">
                     <mat-panel-title>
                         <div fxLayout="row" fxLayoutAlign="space-between" style="width: 100%;">
                             <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="right" class="areawidth">
@@ -271,6 +272,10 @@
 
                                     <!-- <span style="margin-left: 5px;">{{item['controls']['webRecipientLabel'].value}}</span> -->
                                 </span>
+                                <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
+                                    <mat-icon style="color: red;cursor: pointer;position: absolute;top: 20px;right: 20px;" (click)="deleteWebNotificationRow(i)">
+                                        deleteicon</mat-icon>
+                                </div>
                                 <div class="ng-autocomplete">
                                     <ng-autocomplete [data]="notificationReceipients" [searchKeyword]="keyword"
                                         (selected)='deleteWebNotificationRow(i); addMultipleItems(false, $event);'
@@ -285,11 +290,7 @@
                 <input matInput
                     formControlName="webRecipientLabel" >
             </mat-form-field> -->
-                            </div>
-                            <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
-                                <mat-icon style="color: red;cursor: pointer;" (click)="deleteWebNotificationRow(i)">
-                                    deleteicon</mat-icon>
-                            </div>
+                            </div>                            
                         </div>
                     </mat-panel-title>
                     <div fxLayout="row" class="full-width filter-direction" fxLayoutAlign="space-between">
@@ -310,8 +311,8 @@
                                         }}
                                     </mat-error>
                                 </div>
-                                <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="right">
-                                    <div class="margin-bottom-sm">
+                                <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="right" >
+                                    <div class="margin-bottom-sm" style="margin-top: 18px;">
                                         <mat-radio-group (change)="onRadioButtonChange($event)"
                                             formControlName="authentication">
                                             <mat-radio-button style='margin-right: 20px;' [checked]="true" value="N">{{
@@ -456,13 +457,17 @@
             <div [formGroupName]="i">
                 <!-- For email -->
                 <mat-card class='mat-elevation-z' *ngIf="(contactModeType == 'E' && addSmsFlag) || smsCount > 0"
-                    style="border: 1px solid #000">
+                    style="border: 1px solid #ddd;box-shadow: 1px 1px 5px 1px #ddd;margin-bottom: 10px;">
                     <mat-panel-title>
                         <div fxLayout="row" fxLayoutAlign="space-between" class="margin-bottom-sm" style="width: 100%;">
                             <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="right" class="areawidth">
                                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
 
                                     translationData.lblRecipientLabel02 || 'Recipient Label' }} </span>
+                                    <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
+                                        <mat-icon style="color: red;cursor: pointer;position: absolute;top: 20px;right: 20px;" (click)="deleteSMSNotificationRow(i)">
+                                            deleteicon</mat-icon>
+                                    </div>
                                 <div class="ng-autocomplete">
                                     <ng-autocomplete [data]="notificationReceipients" [searchKeyword]="keyword"
                                         (selected)='deleteSMSNotificationRow(i); addMultipleItems(false, $event);'
@@ -473,11 +478,7 @@
                                         <a [innerHTML]="item.recipientLabel"></a>
                                     </ng-template>
                                 </div>
-                            </div>
-                            <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
-                                <mat-icon style="color: red;cursor: pointer;" (click)="deleteSMSNotificationRow(i)">
-                                    deleteicon</mat-icon>
-                            </div>
+                            </div>                           
                         </div>
                     </mat-panel-title>
                     <div fxLayout="row" class="full-width filter-direction" fxLayoutAlign="space-between">
@@ -857,8 +858,8 @@
 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
     fxLayoutGap="10px">
     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-        <a class="linkBtn" (click)="onClickAdvancedFilter()"> Advanced Filter <mat-icon
-                class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' :
+        <a class="linkBtn" (click)="onClickAdvancedFilter()" style="margin-top: 10px;"> Advanced Filter <mat-icon
+                class='font-size-20' style="position: absolute;"> {{ openAdvancedFilter ? 'keyboard_arrow_up' :
                 'keyboard_arrow_down' }}</mat-icon></a>
     </div>
     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -870,7 +871,8 @@
         <app-notification-advanced-filter [translationData]='translationData'
             [alert_category_selected]='alert_category_selected'
             [alert_type_selected]='alert_type_selected' [selectedRowData]='selectedRowData'
-            [actionType]='actionType'>
+            [actionType]='actionType' 
+            (isValidityAlwaysCustom) = 'onValidityAlwaysCustom($event)'>
         </app-notification-advanced-filter>
     </mat-card>
 </div>

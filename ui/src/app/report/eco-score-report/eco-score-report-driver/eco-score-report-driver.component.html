@@ -137,7 +137,7 @@
               <button [disabled]="selectionTabTrend == 'lastYear'" (click)="updateOptions('lastYear')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastYear'}" class='no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastYear|| 'Last Year' }}</button>              
               <div id="wrapper">
                 <div id="chart-line">
-                  <apx-chart #chartObj
+                  <apx-chart #trendLineChart
                     [series]="chartOptions1.series"
                     [chart]="chartOptions1.chart"
                     [xaxis]="chartOptions1.xaxis"
@@ -149,7 +149,7 @@
                   ></apx-chart>
                 </div>
                 <div id="chart-line2">
-                  <apx-chart
+                  <apx-chart #brushChart
                     [series]="chartOptions2.series"
                     [chart]="chartOptions2.chart"
                     [xaxis]="chartOptions2.xaxis"

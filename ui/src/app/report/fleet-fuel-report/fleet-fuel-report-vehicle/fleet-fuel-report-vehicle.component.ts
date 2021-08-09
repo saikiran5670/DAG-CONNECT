@@ -705,11 +705,11 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
       this.barChartLabels.push(resultDate);
       this.barData.push(e.numberofTrips);
-      //let convertedFuelConsumed = e.fuelConsumed / 1000;
-      this.fuelConsumedChart.push(e.convertedFuelConsumed100Km);
+      let convertedFuelConsumed = e.fuelConsumed / 1000;
+      this.fuelConsumedChart.push(convertedFuelConsumed);
       this.co2Chart.push(e.co2Emission);
       this.distanceChart.push(e.distance);
-      this.fuelConsumptionChart.push(e.convertedFuelConsumption);
+      this.fuelConsumptionChart.push(e.fuelConsumtion);
       let minutes = this.convertTimeToMinutes(e.idleDuration);
       // this.idleDuration.push(e.idleDuration);
       this.idleDuration.push(minutes);
@@ -1407,7 +1407,7 @@ setVehicleGroupAndVehiclePreSelection() {
     'Max Speed('+unitValkmh+')', 'Number Of Trips', 'Average Gross Weight Comb('+unitValkg1+')','fuelConsumed('+unitValuekm+')', 'fuelConsumption('+unitVal100km+')',  
     'CO2 Emission('+ unitValkg1+')','Idle Duration(%)','PTO Duration(%)','HarshBrakeDuration(%)','Heavy Throttle Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')%',
     'Cruise Control Distance 50-75('+unitValkmh+')%','Cruise Control Distance>75('+unitValkmh+')%', 'Average Traffic Classification',
-    'CC Fuel Consumption('+unitVal100km+')','fuel Consumption CC Non Active('+unitVal100km+')','Idling Consumption','Dpa Score','DPA Anticipation Score%','DPA Breaking Score%', 
+    'CC Fuel Consumption('+unitVal100km+')','Fuel Consumption CC Non Active('+unitVal100km+')','Idling Consumption','Dpa Score','DPA Anticipation Score%','DPA Breaking Score%', 
     'Idling PTO (hh:mm:ss) Score','Idling PTO%','Idling Without PTO (hh:mm:ss)','Idling Without PTO%','Foot Brake',
     'CO2 Emmision(gr/km)','Idling Consumption With PTO('+unitValkg+')'];
     const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed('+unitValuekm+')', 'Idle Duration(hh:mm)','Fuel Consumption('+unitVal100km+')', 'CO2 Emission('+ unitValkg1+')'];
@@ -1499,12 +1499,13 @@ setVehicleGroupAndVehiclePreSelection() {
 
 
   exportAsPDFFile(){
-   
+    
     var doc = new jsPDF('p', 'mm', 'a4');
    let rankingPdfColumns = [this.rankingColumns];
    let prepareRanking = [];
 
    this.rankingData.forEach(e => {
+
     var dataObj =[];
      this.rankingColumns.forEach(element => {
     switch(element){
@@ -1534,14 +1535,14 @@ setVehicleGroupAndVehiclePreSelection() {
     });
    
 
-    // (doc as any).autoTable({
-    //   head: rankingPdfColumns,
-    //   body: prepareRanking,
-    //   theme: 'striped',
-    //   didDrawCell: data => {
-    //     //console.log(data.column.index)
-    //   }
-    // })
+    //  (doc as any).autoTable({
+    //    head: rankingPdfColumns,
+    //    body: prepareRanking,
+    //    theme: 'striped',
+    //    didDrawCell: data => {
+    //      //console.log(data.column.index)
+    //    }
+    //  })
 
 
   let pdfColumns = [this.displayedColumns];
@@ -1722,14 +1723,14 @@ setVehicleGroupAndVehiclePreSelection() {
         }  
       });
 
-      (doc as any).autoTable({
-        head: rankingPdfColumns,
-        body: prepareRanking,
-        theme: 'striped',
-        didDrawCell: data => {
-          //console.log(data.column.index)
-        }
-      })
+       (doc as any).autoTable({
+         head: rankingPdfColumns,
+         body: prepareRanking,
+         theme: 'striped',
+         didDrawCell: data => {
+           //console.log(data.column.index)
+         }
+       })
 doc.addPage();
         let fileWidth = 170;
         let fileHeight = canvas.height * fileWidth / canvas.width;

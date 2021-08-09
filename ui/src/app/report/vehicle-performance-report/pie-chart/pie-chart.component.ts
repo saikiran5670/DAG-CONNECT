@@ -12,25 +12,29 @@ export class PieChartComponent implements OnInit {
   @Input() chartData;
   @Input() legends;
   @Input() chartTitle;
+  @Input() pieChartColor;
   // Pie
   public pieChartOptions: ChartOptions = {
     responsive: true,
     legend: {
-      display: false,
+      display: true,
       position: 'bottom',
       labels: {
-        boxWidth: 20
+        boxWidth: 15
       }
     }
   };
-  public pieChartLabels: Label[] = ['Optimum', 'Harsh Brake', 'Moderate'];
-  public pieChartData: SingleDataSet = [300, 500, 100];
+  public pieChartLabels: Label[] = [];
+  // ['Optimum', 'Harsh Brake', 'Moderate'];
+  public pieChartData: SingleDataSet = []
+  // [300, 500, 100];
   public pieChartType: ChartType = 'pie';
-  public pieChartLegend = false;
+  public pieChartLegend = true;
   public pieChartPlugins = [];
   public pieChartColors = [
     {
-      backgroundColor: ['#00B050', '#FF0000', '#FFFF00'],
+      backgroundColor: [],
+      // ['#00B050', '#FF0000', '#FFFF00'],
     },
   ];
 
@@ -42,18 +46,10 @@ export class PieChartComponent implements OnInit {
   ngOnInit(): void {
     this.pieChartLabels = this.chartLabels;
     this.pieChartData = this.chartData;
-    this.pieChartColors[0].backgroundColor = [];
-    for(let label of this.pieChartLabels) {
-      for(let leg of this.legends) {
-        if(label == leg.transName) {
-          this.pieChartColors[0].backgroundColor.push(leg.color);
-          break;
-        }
-      }
-    }
+    this.pieChartColors[0].backgroundColor = this.pieChartColor;
     console.log("this.chartLabels", this.chartLabels)
     console.log("this.chartData", this.chartData)
-    console.log("this.legends", this.legends)
+    console.log("this.pieChartColor", this.pieChartColor)
   }
 
 }
