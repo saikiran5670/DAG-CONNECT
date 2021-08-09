@@ -127,7 +127,7 @@ namespace net.atos.daf.ct2.dashboard.repository
 					SUM(lcts.trip_distance) as TodayDistanceBasedUtilization,
 					COUNT(ta.urgency_level_type) As criticlealertcount
 					FROM livefleet.livefleet_current_trip_statistics lcts
-					LEFT JOIN tripdetail.tripalert ta ON lcts.vin = ta.vin
+					LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
 					WHERE (lcts.start_time_stamp >= @todaydatetime --(today) 
 							and lcts.start_time_stamp <= @tomorrowdatetime) --(Tomorrow)
 							AND (lcts.end_time_stamp >= @todaydatetime --(today)
@@ -162,7 +162,7 @@ namespace net.atos.daf.ct2.dashboard.repository
 					COUNT(ta.urgency_level_type) As criticlealertcount
 					FROM livefleet.livefleet_current_trip_statistics lcts
 					RIGHT JOIN livefleet.livefleet_position_statistics position on lcts.trip_id = position.trip_id
-					LEFT JOIN tripdetail.tripalert ta ON lcts.vin = ta.vin
+					LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
 					WHERE (lcts.start_time_stamp > @yesterdaydatetime --(YESTERDAY)
 						      and lcts.start_time_stamp < @todaydatetime --(Today)
 						      ) AND lcts.end_time_stamp > @todaydatetime--(Today) 
