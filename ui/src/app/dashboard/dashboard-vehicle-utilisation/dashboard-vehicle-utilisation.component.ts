@@ -509,7 +509,6 @@ getPreferenceThreshold(fieldKey){
 
     let filterData4 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distancebasedutilizationrate'));
     this.mileageDChartType =  filterData4[0].chartType == 'P' ? 'pie' : 'doughnut';
-
     }
     //for distance chart
     this.distance = [];
@@ -695,7 +694,7 @@ getPreferenceThreshold(fieldKey){
       },
         }
     }
-    this.doughnutChartLabels1 = [`Full Utilisation >${this.getHhMmTime(this.timebasedThreshold)}`,`Under Utilisation < ${this.getHhMmTime(this.timebasedThreshold)}`];
+    this.doughnutChartLabels1 = [`Full Utilisation >${this.getTimeDisplay(this.timebasedThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.timebasedThreshold)}`];
     // this.doughnutChartData1 = [[55, 25, 20]];
     if(percentage1 > 100){
       this.doughnutChartData1 = [percentage1, 0];
@@ -722,7 +721,7 @@ getPreferenceThreshold(fieldKey){
       },
         }
       }
-    this.timePieChartLabels = [`Full Utilisation >${this.getHhMmTime(this.timebasedThreshold)}`,`Under Utilisation < ${this.getHhMmTime(this.timebasedThreshold)}`];
+    this.timePieChartLabels = [`Full Utilisation >${this.getHhMmTime(this.timebasedThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.timebasedThreshold)}`];
     if(percentage1 > 100){
       this.timePieChartData = [percentage1, 0];
     }
@@ -870,6 +869,20 @@ getPreferenceThreshold(fieldKey){
       }
     };
     this.router.navigate(['fleetoverview/logbook'], navigationExtras);
+  }
+
+  getTimeDisplay(_timeValue){
+    let convertedTime = Util.getHhMmTimeFromMS(_timeValue);
+    let convertedTimeDisplay = '';
+    if(convertedTime){
+      if(convertedTime.indexOf(":") != -1){
+        convertedTimeDisplay = convertedTime.split(':')[0] + ' Hr ' + convertedTime.split(':')[1] + ' min';
+      }
+    }
+    else{
+      convertedTimeDisplay = '--';
+    }
+    return convertedTimeDisplay;
   }
 
 }
