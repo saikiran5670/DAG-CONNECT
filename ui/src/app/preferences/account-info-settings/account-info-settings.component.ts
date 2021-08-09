@@ -12,6 +12,7 @@ import { OrganizationService } from '../../services/organization.service';
 import { FileValidator } from 'ngx-material-file-input';
 import { DriverService } from '../../services/driver.service';
 import { MessageService } from '../../services/message.service';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'app-account-info-settings',
@@ -92,6 +93,9 @@ export class AccountInfoSettingsComponent implements OnInit {
     now.setDate(now.getDate() - 1);
     return date > now;
   }
+
+/** list of banks filtered by search keyword */
+ public filteredLanguages: ReplaySubject<String[]> = new ReplaySubject<String[]>(1);
 
   constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService,
               private domSanitizer: DomSanitizer, private organizationService: OrganizationService, private driverService: DriverService,
@@ -193,6 +197,9 @@ export class AccountInfoSettingsComponent implements OnInit {
     this.translationService.getPreferences(languageCode).subscribe((data: any) => {
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;
+      console.log("languageDropdownData=>", this.languageDropdownData);
+      this.languageDropdownData.sort(this.compare);    
+      this.resetLanguageFilter();
       this.timezoneDropdownData = dropDownData.timezone;
       this.unitDropdownData = dropDownData.unit;
       this.currencyDropdownData = dropDownData.currency;
@@ -228,6 +235,19 @@ export class AccountInfoSettingsComponent implements OnInit {
         });
       }
     }, (error) => {  });
+  }
+  resetLanguageFilter(){
+    this.filteredLanguages.next(this.languageDropdownData.slice());
+  }
+  
+  compare(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
   }
 
   goForword(prefInfo: any){
@@ -618,5 +638,22 @@ export class AccountInfoSettingsComponent implements OnInit {
    deleteBrandLogo(){
      this.uploadLogo= "";
    }
+   filterLanguages(search){
+     if(!this.languageDropdownData){
+       return;
+     }
+     if(!search){
+       this.resetLanguageFilter();
+       return;
+     } else {
+       search = search.toLowerCase();
+     }
+     this.filteredLanguages.next(
+       this.languageDropdownData.filter(item=> item.value.toLowerCase().indexOf(search) > -1)
+     );
+     console.log("this.filteredLanguages", this.filteredLanguages);
 
+
+   }
+ 
 }

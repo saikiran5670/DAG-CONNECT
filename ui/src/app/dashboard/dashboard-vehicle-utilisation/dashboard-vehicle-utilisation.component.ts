@@ -702,7 +702,8 @@ getPreferenceThreshold(fieldKey){
       this.doughnutChartData1 = [percentage1, 0];
     }
     else{
-    this.doughnutChartData1 = [percentage1, 100- percentage1];
+      let underUtilisation = (100- percentage1).toFixed(2);
+    this.doughnutChartData1 = [percentage1, underUtilisation];
     }
   }
   else{
@@ -727,7 +728,8 @@ getPreferenceThreshold(fieldKey){
       this.timePieChartData = [percentage1, 0];
     }
     else{
-    this.timePieChartData = [percentage1, 100- percentage1];
+      let underUtilisation = (100- percentage1).toFixed(2);
+    this.timePieChartData = [percentage1, underUtilisation];
     }
   }
 
@@ -787,7 +789,8 @@ getPreferenceThreshold(fieldKey){
     this.doughnutChartData2 = [percentage2, 0];
     }
     else{
-      this.doughnutChartData2 = [percentage2, 100-percentage2];
+      let underUtilisation = (100-percentage2).toFixed(2);
+      this.doughnutChartData2 = [percentage2, underUtilisation];
     }
   }
   else{
@@ -813,7 +816,8 @@ getPreferenceThreshold(fieldKey){
     this.mileagePieChartData = [percentage2, 0];
     }
     else{
-    this.mileagePieChartData = [percentage2, 100-percentage2];
+      let underUtilisation = (100-percentage2).toFixed(2);
+    this.mileagePieChartData = [percentage2, underUtilisation];
     }
     }
 
