@@ -35,6 +35,7 @@ export class HeatBubbleChartComponent implements OnInit {
   @Input() xaxis;
   @Input() yaxis;
   @Input() chartTitle;
+  @Input() backgroundColorPattern;
   public chartOptions;
 
   constructor() {
@@ -45,19 +46,49 @@ export class HeatBubbleChartComponent implements OnInit {
   ngOnInit(): void {
 
     this.chartOptions = {
+      annotations: {
+        position: "back",
+        yaxis: this.backgroundColorPattern,
+        // xaxis: [
+        //   {
+        //     label: {
+        //       text: " "
+        //     },
+        //     x: 20,
+        //     x2: 100,
+        //     fillColor: "#00E396"
+        //   },
+        //   {
+        //     label: {
+        //       text: " "
+        //     },
+        //     x: 0,
+        //     x2: 20,
+        //     fillColor: "yellow"
+        //   }],
+          // points: [{
+          //   x: 0,
+          //   y: 0,
+          //   yAxisIndex: 10,
+          //   seriesIndex: 10,
+          //   fillColor: "#FF5733"
+          // }]
+      },
       series:[{
         "name": "",
         "data": this.searchData?.bubbleData
       }],
       chart: {
         height: 350,
-        type: "bubble"
+        type: "bubble",
+        background: '#fff'
       },
       dataLabels: {
         enabled: false
       },
       fill: {
-        type: "gradient"
+        type: "solid",
+        colors: ["#716968"]
       },
       // title: {
       //   text: this.chartTitle
@@ -75,11 +106,21 @@ export class HeatBubbleChartComponent implements OnInit {
         }
       },
       grid: {
-        // row: {
-        //   colors: ['#F44336', '#E91E63', '#9C27B0']
-        // },
+        row: {
+          colors: [({ value, seriesIndex, w }) => {
+            console.log(`value => ${value} ::  seriesIndex => ${seriesIndex} :: w => ${w}`)
+            console.log('w', w)
+            if(value < 55) {
+                return '#7E36AF'
+            } else if (value >= 55 && value < 80) {
+                return '#164666'
+            } else {
+                return '#D9534F'
+            }
+          }]
+        },
         // column: {
-        //   colors: ['#F44336', '#E91E63', '#9C27B0']
+        //   colors: ['#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF']
         // }
       }
     };

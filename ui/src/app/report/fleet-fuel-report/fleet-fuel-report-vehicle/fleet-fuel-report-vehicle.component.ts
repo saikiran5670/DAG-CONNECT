@@ -705,11 +705,11 @@ export class FleetFuelReportVehicleComponent implements OnInit {
       let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
       this.barChartLabels.push(resultDate);
       this.barData.push(e.numberofTrips);
-      //let convertedFuelConsumed = e.fuelConsumed / 1000;
-      this.fuelConsumedChart.push(e.convertedFuelConsumed100Km);
+      let convertedFuelConsumed = e.fuelConsumed / 1000;
+      this.fuelConsumedChart.push(convertedFuelConsumed);
       this.co2Chart.push(e.co2Emission);
       this.distanceChart.push(e.distance);
-      this.fuelConsumptionChart.push(e.convertedFuelConsumption);
+      this.fuelConsumptionChart.push(e.fuelConsumtion);
       let minutes = this.convertTimeToMinutes(e.idleDuration);
       // this.idleDuration.push(e.idleDuration);
       this.idleDuration.push(minutes);
@@ -1102,23 +1102,25 @@ getLast3MonthDate(){
     return date;
   }
 
+  showRanking : boolean = false;
   onReset(){
-    this.isSummaryOpen= false;
-    this.isRankingOpen=  false;
-    this.isDetailsOpen=false;
-    this.isChartsOpen= false;
+    // this.isRankingOpen=  false;
     this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.tripData = [];
     this.vehicleListData = [];
-    // this.vehicleGroupListData = this.vehicleGroupListData;
-    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    // this.updateDataSource(this.tripData);
-    // this.tableInfoObj = {};
-    // this.selectedPOI.clear();
-    this.resetTripFormControlValue();
-    this.filterDateData(); // extra addded as per discuss with Atul
+    this.FuelData =[];
+    this.tableInfoObj = [];
+    // this.rankingData =[];
+    // this.dataSource2 =[];
+    // this.rankingColumns=[];
+    this.displayData =[];
+    this.vehicleSelected = false;
+    this.showRanking = true;
+   this.updateDataSource(this.tripData);
+    //this.resetTripFormControlValue();
+    this.filterDateData();
   }
   
   endTimeChanged(selectedTime: any) {
@@ -1499,12 +1501,13 @@ setVehicleGroupAndVehiclePreSelection() {
 
 
   exportAsPDFFile(){
-   
+    
     var doc = new jsPDF('p', 'mm', 'a4');
    let rankingPdfColumns = [this.rankingColumns];
    let prepareRanking = [];
 
    this.rankingData.forEach(e => {
+
     var dataObj =[];
      this.rankingColumns.forEach(element => {
     switch(element){
@@ -1534,14 +1537,14 @@ setVehicleGroupAndVehiclePreSelection() {
     });
    
 
-    // (doc as any).autoTable({
-    //   head: rankingPdfColumns,
-    //   body: prepareRanking,
-    //   theme: 'striped',
-    //   didDrawCell: data => {
-    //     //console.log(data.column.index)
-    //   }
-    // })
+    //  (doc as any).autoTable({
+    //    head: rankingPdfColumns,
+    //    body: prepareRanking,
+    //    theme: 'striped',
+    //    didDrawCell: data => {
+    //      //console.log(data.column.index)
+    //    }
+    //  })
 
 
   let pdfColumns = [this.displayedColumns];
@@ -1722,14 +1725,14 @@ setVehicleGroupAndVehiclePreSelection() {
         }  
       });
 
-      (doc as any).autoTable({
-        head: rankingPdfColumns,
-        body: prepareRanking,
-        theme: 'striped',
-        didDrawCell: data => {
-          //console.log(data.column.index)
-        }
-      })
+       (doc as any).autoTable({
+         head: rankingPdfColumns,
+         body: prepareRanking,
+         theme: 'striped',
+         didDrawCell: data => {
+           //console.log(data.column.index)
+         }
+       })
 doc.addPage();
         let fileWidth = 170;
         let fileHeight = canvas.height * fileWidth / canvas.width;

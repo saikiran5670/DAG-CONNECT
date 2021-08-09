@@ -165,7 +165,8 @@ export class SubscriptionManagementComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     this.accountDetails = JSON.parse(localStorage.getItem('accountInfo'));
-    this.organisationData = this.accountDetails["organization"];    
+    // this.organisationData = this.accountDetails["organization"];    
+    this.organisationData = JSON.parse(localStorage.getItem('allOrgList'));
   
     let translationObj = {
       id: 0,
@@ -204,7 +205,13 @@ export class SubscriptionManagementComponent implements OnInit {
     }
     this.subscriptionService.getOrganizations(inputData).subscribe((data: any) => {
       if(data){
-        this.organizationList = data["organizationList"];        
+        this.organizationList = data["organizationList"];    
+        // var newRole = {
+        //   "id":0,
+        //   "name":"All"
+        // }
+        // this.organizationList.push(newRole);
+        localStorage.setItem("allOrgList", JSON.stringify(this.organizationList));    
       }
     });
   }

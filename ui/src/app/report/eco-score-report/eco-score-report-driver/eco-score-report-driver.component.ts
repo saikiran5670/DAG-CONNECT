@@ -200,7 +200,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.vehicleSelected=0;
     this.loadBarChartPerfomance();
     this.loadPieChartPerformance(0);
-    console.log(this.prefObj);
   }
 
   hideloader() {
@@ -328,7 +327,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
   constructor(private reportService: ReportService) {}
 
   loadTrendLine(){
-    // this.getSeriesData();
     this.chartOptions1 = {
       series: this.seriesDataFull,
       chart: {
@@ -355,6 +353,10 @@ export class EcoScoreReportDriverComponent implements OnInit {
       dataLabels: {
         enabled: false
       },
+      legend: {
+        position: 'right',
+        horizontalAlign: 'right'
+      },
       fill: {
         opacity: 1
       },
@@ -364,100 +366,8 @@ export class EcoScoreReportDriverComponent implements OnInit {
       xaxis: {
         type: "datetime"
       },
-      yaxis: this.yAxisSeries
-      // yaxis: [
-      //   {
-      //     axisTicks: {
-      //       show: true
-      //     },
-      //     axisBorder: {
-      //       show: true,
-      //       color: "#008FFB"
-      //     },
-      //     labels: {
-      //       style: {
-      //         // color: "#008FFB"
-      //       }
-      //     },
-      //     title: {
-      //       text: "Income (thousand crores)",
-      //       style: {
-      //         color: "#008FFB"
-      //       }
-      //     },
-      //     tooltip: {
-      //       enabled: true
-      //     }
-      //   },
-      //   {
-      //     seriesName: "Income",
-      //     opposite: true,
-      //     axisTicks: {
-      //       show: true
-      //     },
-      //     axisBorder: {
-      //       show: true,
-      //       color: "#00E396"
-      //     },
-      //     labels: {
-      //       style: {
-      //         // color: "#00E396"
-      //       }
-      //     },
-      //     title: {
-      //       text: "Operating Cashflow (thousand crores)",
-      //       style: {
-      //         color: "#00E396"
-      //       }
-      //     }
-      //   },
-      //   {
-      //     seriesName: "Revenue",
-      //     opposite: true,
-      //     axisTicks: {
-      //       show: true
-      //     },
-      //     axisBorder: {
-      //       show: true,
-      //       color: "#FEB019"
-      //     },
-      //     labels: {
-      //       style: {
-      //         // color: "#FEB019"
-      //       }
-      //     },
-      //     title: {
-      //       text: "Revenue (thousand crores)",
-      //       style: {
-      //         color: "#FEB019"
-      //       }
-      //     }
-      //   },
-      //   {
-      //     seriesName: "EcoScore",
-      //     opposite: true,
-      //     axisTicks: {
-      //       show: true
-      //     },
-      //     axisBorder: {
-      //       show: true,
-      //       color: "#00E396"
-      //     },
-      //     labels: {
-      //       style: {
-      //         // color: "#00E396"
-      //       }
-      //     },
-      //     title: {
-      //       text: "EcoScore",
-      //       style: {
-      //         color: "#00E396"
-      //       }
-      //     }
-      //   }
-      // ],
+      yaxis: this.yAxisSeries      
     };
-    // this.chart.render();
     
   }
 
@@ -477,6 +387,10 @@ export class EcoScoreReportDriverComponent implements OnInit {
         },
         selection: {
           enabled: true,
+          fill: {
+            color: '#64b5f6',
+            opacity: 1
+          },
           // xaxis: {
           //   min: this.getLastYear(),
           //   max: this.getTodayDate()
@@ -522,10 +436,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
               name: _name[0].value + ' - ' + vehicle.vehicleName,
               data: ((vehicle.kpiInfo)[key].uoM === 'hh:mm:ss') ? this.formatTime((vehicle.kpiInfo)[key].data, false) : this.formatData((vehicle.kpiInfo)[key].data, false)
             });
-            // this.seriesData.push({
-            //   name: '',
-            //   data: ((vehicle.kpiInfo)[key].uoM === 'hh:mm:ss') ? this.formatTime((vehicle.kpiInfo)[key].data, true) : this.formatData((vehicle.kpiInfo)[key].data, true)
-            // });
             this.yAxisSeries.push({
                 axisTicks: {
                   show: true

@@ -49,80 +49,6 @@ namespace net.atos.daf.ct2.reports.repository
             }
 
         }
-
-
-        public async Task CalculateKPIData(List<VehPerformanceChartData> vehicleChartDatas, string performanceType)
-        {
-            List<KpiDataRange> rangeData = await GetRangeData(performanceType);
-            long multiTripDuration = 0;
-            foreach (var trip in vehicleChartDatas)
-            {
-
-                if (trip.MatrixValue != null)
-                {
-                    multiTripDuration += trip.TripDuration;
-                    var matrixValues = trip.MatrixValue.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
-                    foreach (var value in matrixValues)
-                    {
-                        foreach (var range in rangeData)
-                        {
-                            switch (range.Kpi)
-                            {
-                                case "O":
-                                    if (value >= range.LowerVal && value <= range.UpperVal)
-                                        range.Value += value;
-                                    break;
-                                case "A":
-                                    if (value >= range.LowerVal && value <= range.UpperVal)
-                                        range.Value += value;
-                                    break;
-                                case "P":
-                                    if (value >= range.LowerVal && value <= range.UpperVal)
-                                        range.Value += value;
-                                    break;
-                                case "E":
-                                    if (value >= range.LowerVal && value <= range.UpperVal)
-                                        range.Value += value;
-                                    break;
-                                case "N":
-                                    if (value >= range.LowerVal && value <= range.UpperVal)
-                                        range.Value += value;
-                                    break;
-                                case "I":
-                                    if (value >= range.LowerVal && value <= range.UpperVal)
-                                        range.Value += value;
-                                    break;
-                                case "D":
-                                    if (value >= range.LowerVal && value <= range.UpperVal)
-                                        range.Value += value;
-                                    break;
-                                case "U":
-                                    if (value >= range.LowerVal && value <= range.UpperVal)
-                                        range.Value += value;
-                                    break;
-
-                                default:
-                                    break;
-                            }
-
-                        }
-
-                    }
-
-                    List<KPIs> lstKpis = new List<KPIs>();
-                    foreach (var kpiDict in rangeData)
-                    {
-                        KPIs kPIs = new KPIs();
-                        kPIs.Label = kpiDict.Kpi;
-                        kPIs.Value = kpiDict.Value;// != 0 ? (kpiDict.Value / Convert.ToInt32(multiTripDuration)) : kpiDict.Value;
-                        lstKpis.Add(kPIs);
-                    }
-                    trip.ListKPIs = lstKpis;
-                }
-
-            }
-
-        }
         public async Task<VehiclePerformanceSummary> GetVehPerformanceSummaryDetails(string vin)
         {
             try
@@ -149,11 +75,8 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@performancetype", vehiclePerformanceRequest.PerformanceType);
                 parameter.Add("@StartDateTime", vehiclePerformanceRequest.StartTime);
                 parameter.Add("@EndDateTime", vehiclePerformanceRequest.EndTime);
-                //var vehPerformanceChartData = new List<VehPerformanceChartData>();
                 string query = GetQueryAsPerPerformanceType(vehiclePerformanceRequest);
-                //var lstengion = (List<VehPerformanceChartData>)await _dataMartdataAccess.QueryAsync<VehPerformanceChartData>(query, parameter);
                 var lstengion = await _dataMartdataAccess.QueryAsync<VehPerformanceChartData>(query, parameter);
-                await CalculateKPIData(lstengion.ToList(), vehiclePerformanceRequest.PerformanceType);
                 return lstengion.ToList();
             }
             catch (Exception Ex)
@@ -196,7 +119,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 etl_gps_driving_time as TripDuration
                                 FROM tripdetail.trip_statistics 
                                 where vin = @vin and
-                               is_ongoing_trip = false AND end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
+                               is_ongoing_trip = false AND start_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
                     break;
                 case "S":
                     query = @"SELECT id as Id, trip_id as TripId, vin as Vin, 
@@ -209,7 +132,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 etl_gps_driving_time as TripDuration
                                 FROM tripdetail.trip_statistics 
                                 where vin = @vin and
-                               is_ongoing_trip = false AND end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
+                               is_ongoing_trip = false AND start_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
                     break;
                 case "B":
                     query = @"SELECT id as Id, trip_id as TripId, vin as Vin, 
@@ -222,7 +145,7 @@ namespace net.atos.daf.ct2.reports.repository
                                     etl_gps_driving_time as TripDuration
                                     FROM tripdetail.trip_statistics 
                                     where vin = @vin and
-                                    is_ongoing_trip = false AND end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
+                                    is_ongoing_trip = false AND start_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime";
                     break;
                 default:
                     break;

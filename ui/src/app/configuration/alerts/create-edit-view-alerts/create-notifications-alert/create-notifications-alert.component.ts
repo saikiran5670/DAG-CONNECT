@@ -47,6 +47,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
   notifications: any = [];
   openAdvancedFilter: boolean = false;
   phoneNumber= '';
+  isValidityAlwaysCustom:  boolean = true;
   contactModes: any = [
     {
       id: 'W',
@@ -127,8 +128,12 @@ export class CreateNotificationsAlertComponent implements OnInit {
   CountryISO;
   preferredCountries: CountryISO[];
   isDuplicateRecipientLabel: boolean= false;
+  isEmailValidate:boolean=true;
+  isWebValidate:boolean=true;
+  isMobileValdate:boolean=true;
   @Output() backToPage = new EventEmitter<any>();
-
+  @Output() isNotifyEmailValid = new EventEmitter<any>();
+  
   @ViewChild(NotificationAdvancedFilterComponent)
   notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
 
@@ -156,7 +161,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
         ]
       });
     console.log(this.selectedRowData);
-
+   
     this.SearchCountryField = SearchCountryField;
     // TooltipLabel = TooltipLabel;
     this.CountryISO = CountryISO;
@@ -283,7 +288,9 @@ export class CreateNotificationsAlertComponent implements OnInit {
     });
   }
 
-  addMultipleItems(isButtonClicked: boolean, data?: any): void {
+  addMultipleItems(isButtonClicked: boolean, data?: any): void {    
+    // this.notificationForm.controls["recipientLabel"].setValidators([Validators.required]);
+    // this.notificationForm.controls["contactMode"].setValidators([Validators.required]);
     if (isButtonClicked) {
       this.contactModeType = this.notificationForm.get("contactMode").value;
       //this is for email
@@ -592,14 +599,25 @@ export class CreateNotificationsAlertComponent implements OnInit {
   }
 
   getNotificationDetails(): any {
+    // if (!this.notificationForm.valid) {  
+    //   this.notificationForm.markAllAsTouched();       
+    //   this.scrollToFirstInvalidControl();
+    // }
     this.isDuplicateRecipientLabel= false;
     this.notificationReceipients = [];
     let WsData;
     let EmailData;
     let smsData;
     let webPayload = {};
-
-    if (this.FormWebArray && this.FormWebArray.length > 0) {
+    
+    if (this.FormWebArray && this.FormWebArray.length > 0) {  
+      if (!this.notificationForm.get('FormWebArray').valid) {  
+        this.notificationForm.get('FormWebArray').markAllAsTouched();       
+        this.scrollToWebInvalidControl();  
+      }
+      else{
+        this.isWebValidate=true;
+      }  
       if (this.actionType == 'create' || this.actionType == 'duplicate') {
         this.FormWebArray.controls.forEach((element, index) => {
           let webNotificationLimits = [];
@@ -710,7 +728,14 @@ export class CreateNotificationsAlertComponent implements OnInit {
 
     if (this.FormEmailArray && this.FormEmailArray.length > 0) {
       let emailPayload = {};
-
+      if (!this.notificationForm.get('FormEmailArray').valid) {  
+        this.notificationForm.get('FormEmailArray').markAllAsTouched();       
+        this.scrollToEmailInvalidControl(); 
+      }
+      else{
+        this.isEmailValidate=true;
+      }  
+      console.log('notificationForm:'+ this.notificationForm.get('FormEmailArray').valid);
       if (this.actionType == 'create' || this.actionType == 'duplicate') {
         this.FormEmailArray.controls.forEach((item, index) => {
           let emailNotificationLimits = [];
@@ -818,7 +843,13 @@ export class CreateNotificationsAlertComponent implements OnInit {
 
     if (this.FormSMSArray && this.FormSMSArray.length > 0) {
       let smsPayload = {};
-      
+      if (!this.notificationForm.get('FormSMSArray').valid) {  
+        this.notificationForm.get('FormSMSArray').markAllAsTouched();       
+        this.scrollToSMSInvalidControl();   
+      }
+      else{
+        this.isMobileValdate=true;
+      }  
       if (this.actionType == 'create' || this.actionType == 'duplicate') {
         this.FormSMSArray.controls.forEach((item, index) => {
           let smsNotificationLimits = [];
@@ -927,6 +958,12 @@ export class CreateNotificationsAlertComponent implements OnInit {
     let notificationAdvancedFilterObj;
     if (this.openAdvancedFilter) {
       notificationAdvancedFilterObj = this.notificationAdvancedFilterComponent.getNotificationAdvancedFilter();
+     if(notificationAdvancedFilterObj.validityType=='C'){
+      // let emitEmailObj = {
+      //   isValidInput: this.isValidityAlwaysCustom
+      // }  
+      // this.isNotifyEmailValid.emit(emitEmailObj); 
+     }
     }
     if (this.actionType == 'create' || this.actionType == 'duplicate') {
       this.notifications = [
@@ -957,8 +994,72 @@ export class CreateNotificationsAlertComponent implements OnInit {
         }
       ]
     }
-
+    if(!this.isMobileValdate || !this.isWebValidate || !this.isEmailValidate || !this.isValidityAlwaysCustom){
+        let emitEmailObj = {
+          isValidInput: false
+        }  
+        this.isNotifyEmailValid.emit(emitEmailObj);  
+    }
+    else{
+      let emitEmailObj = {
+        isValidInput: true
+      } 
+      this.isNotifyEmailValid.emit(emitEmailObj);
+    }
     return this.notifications;
   }
 
+  onValidityAlwaysCustom(objData){ 
+    this.isValidityAlwaysCustom = objData.isValidInput;
+  }
+
+  private scrollToEmailInvalidControl() {    
+    let invalidControl: HTMLElement ; 
+    //this.notificationForm.controls.FormEmailArray['emailAddress'].Invalid
+    if(this.FormEmailArray.at(this.emailIndex).get("emailAddress").value =='' || this.FormEmailArray.at(this.emailIndex).get("emailAddress").invalid){
+      invalidControl =  this.el.nativeElement.querySelector('[formcontrolname="' + 'emailAddress' + '"]');
+     }  
+    if (invalidControl) {       
+      invalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      this.isEmailValidate=false;
+    }else{
+      this.isEmailValidate=true;
+    }     
+  }
+  private scrollToWebInvalidControl() {
+    let invalidControl: HTMLElement;
+    if(this.FormWebArray.at(this.wsIndex).get("webURL").value ==''){
+      invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'webURL' + '"]');
+     }   
+     else{
+      if(this.FormWebArray.at(this.wsIndex).get("authentication").value == 'A'){
+        if(this.FormWebArray.at(this.wsIndex).get("loginId").value == '' || this.FormWebArray.at(this.wsIndex).get("loginId").invalid){
+        invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'loginId' + '"]');
+        }
+        else if( this.FormWebArray.at(this.wsIndex).get("password").value==''){
+          invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'password' + '"]');
+        }
+      }
+     }
+    if (invalidControl) {       
+      invalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      this.isWebValidate=false;
+    }else{
+      this.isWebValidate=true;
+    }   
+  }
+  private scrollToSMSInvalidControl() {
+    let invalidControl: HTMLElement;    
+  
+    if(this.notificationForm.get('FormSMSArray').invalid || this.phoneNumber==null){      
+      invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'mobileNumber' + '"]');
+     }     
+    if (invalidControl) {       
+      invalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      this.isMobileValdate=false;
+    }else{
+      this.isMobileValdate=true;
+    }   
+  }
+  
 }

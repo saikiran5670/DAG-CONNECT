@@ -166,8 +166,6 @@ doughnutChartData1: any = [];
 doughnutChartType: ChartType = 'doughnut';
 doughnutChartColors: Color[] = [
   {
-    // backgroundColor: ['#69EC0A','#7BC5EC'],
-    // backgroundColor: ['#69EC0A','#d62a29'],
     backgroundColor: ['#65C3F7 ','#F4AF85 '],
     hoverBackgroundColor: ['#65C3F7 ','#F4AF85 '],
   },
@@ -248,6 +246,8 @@ repairAndMaintenanceCount: any;
 toatlSum: any;
 _fleetTimer : boolean = true; 
 totalThresholdDistance: any;
+timebasedThreshold: any;
+distancebasedThreshold: any;
 
   constructor(private router: Router,
               private elRef: ElementRef,
@@ -432,7 +432,7 @@ setAlertChartData(){
     let crticalPercent = (this.alertsData.critical/totalAlerts)* 100; 
     let warningPercent = (this.alertsData.warning/totalAlerts)* 100;
     let advisoryPercent = (this.alertsData.advisory/totalAlerts)* 100;
-    this.alertPieChartData= [crticalPercent,warningPercent,advisoryPercent];
+    this.alertPieChartData= [parseFloat(crticalPercent.toFixed(2)),parseFloat(warningPercent.toFixed(2)),parseFloat(advisoryPercent.toFixed(2))];
     this.alertPieChartLabels=  [`Critical (${this.alertsData.critical})`,`Warning (${this.alertsData.warning})`,`Advisory (${this.alertsData.advisory})`];
     this.alertPieChartOptions = {
         responsive: true,
@@ -499,28 +499,26 @@ getPreferenceThreshold(fieldKey){
   setChartData(){
     if(this.dashboardPrefData.subReportUserPreferences.length > 0){
     let filterData1 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distanceperday'));
-    // filterData1[0].chartType = 'B'  
     this.distanceChartType = filterData1[0].chartType == 'L' ? 'line' : 'bar';
-     let filterData2 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
-    //  filterData2[0].chartType = 'L'  
+     
+    let filterData2 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
      this.vehicleChartType =  filterData2[0].chartType == 'L' ? 'line' : 'bar';
-     let filterData3 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
-    //  filterData3[0].chartType = 'D'  
-     this.timeDChartType =  filterData3[0].chartType == 'P' ? 'pie' : 'doughnut';
-     let filterData4 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
-    //  filterData4[0].chartType = 'D'  
-     this.mileageDChartType =  filterData4[0].chartType == 'P' ? 'pie' : 'doughnut';
+     
+    let filterData3 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_timebasedutilizationrate'));
+    this.timeDChartType =  filterData3[0].chartType == 'P' ? 'pie' : 'doughnut';
+
+    let filterData4 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distancebasedutilizationrate'));
+    this.mileageDChartType =  filterData4[0].chartType == 'P' ? 'pie' : 'doughnut';
     }
     //for distance chart
     this.distance = [];
     this.calenderDate = [];
     this.vehiclecount = [];
-    // let timebasedThreshold = 20077;
-    // let distancebasedThreshold = 20077;
     let _prefLimitTime = this.getPreferenceThreshold('timebasedutilizationrate')['type'];
-    let timebasedThreshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
+    _prefLimitTime = 'U';
+    this.timebasedThreshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
     let _prefLimitDistance = this.getPreferenceThreshold('distancebasedutilizationrate')['type'];
-    let distancebasedThreshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
+    this.distancebasedThreshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
     let percentage2;
     let percentage1;
     this.totalDistance = 0;
@@ -540,22 +538,22 @@ getPreferenceThreshold(fieldKey){
         this.greaterTimeCount = this.greaterTimeCount + 1;
     });
     if(this.selectionTab == 'lastmonth'){
-      this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 30;
-      this.totalThresholdDistance = distancebasedThreshold * this.greaterTimeCount * 30;
+      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 30;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 30;
     }
     else if(this.selectionTab == 'lastweek'){
-      this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 7;
-      this.totalThresholdDistance = distancebasedThreshold * this.greaterTimeCount * 7;
+      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 7;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 7;
     }
     else if(this.selectionTab == 'last3month'){
-      this.totalThreshold = timebasedThreshold * this.greaterTimeCount * 90;
-      this.totalThresholdDistance = distancebasedThreshold * this.greaterTimeCount * 90;
+      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 90;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 90;
     }
 
     percentage1 = (this.totalDrivingTime/this.totalThreshold)* 100; 
-    percentage1 = parseInt(percentage1);
+    percentage1 = parseFloat(percentage1).toFixed(2);
     percentage2 = (this.totalDistance/this.totalThresholdDistance)* 100;
-    percentage2 = parseInt(percentage2);
+    percentage2 = parseFloat(percentage2).toFixed(2);
 
     if(this.distanceChartType == 'bar'){
         let label1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
@@ -640,7 +638,7 @@ getPreferenceThreshold(fieldKey){
 
   switch (_prefLimitTime) {
     case 'U':{
-      if(timebasedThreshold > this.totalDistance){ //red
+      if(this.timebasedThreshold > this.totalDistance){ //red
         this.doughnutChartColors= [
           {
             backgroundColor: ['#65C3F7 ','#F4AF85 '],
@@ -659,7 +657,7 @@ getPreferenceThreshold(fieldKey){
         }
               break;
      case 'L':{
-        if(timebasedThreshold > this.totalDistance){
+        if(this.timebasedThreshold < this.totalDistance){
           this.doughnutChartColors= [
             {
               backgroundColor: ['#F4AF85 ','#65C3F7 '],
@@ -681,24 +679,63 @@ getPreferenceThreshold(fieldKey){
           }
   //for time based utilisation
   if(this.timeDChartType =='doughnut'){
-    this.doughnutChartLabels1 = [`Full Utilisation >${this.getHhMmTime(timebasedThreshold)}`,`Under Utilisation < ${this.getHhMmTime(timebasedThreshold)}`];
+    this.doughnut_barOptions = {
+      responsive: true,
+      legend: {
+        position: 'bottom',
+      },
+
+        tooltips: {
+          position: 'nearest',
+       callbacks: {
+        label: function(tooltipItem, data) {
+          return data.labels[tooltipItem.index] + 
+          " : " + data.datasets[0].data[tooltipItem.index]+'%'
+        }
+      },
+        }
+    }
+    this.doughnutChartLabels1 = [`Full Utilisation >${this.getTimeDisplay(this.timebasedThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.timebasedThreshold)}`];
     // this.doughnutChartData1 = [[55, 25, 20]];
     if(percentage1 > 100){
-      this.doughnutChartData1 = [percentage1];
+      this.doughnutChartData1 = [percentage1, 0];
     }
     else{
-    this.doughnutChartData1 = [percentage1, 100- percentage1];
+      let underUtilisation = (100- percentage1).toFixed(2);
+    this.doughnutChartData1 = [percentage1, underUtilisation];
     }
   }
   else{
-    this.timePieChartLabels = [`Full Utilisation >${this.getHhMmTime(timebasedThreshold)}`,`Under Utilisation < ${this.getHhMmTime(timebasedThreshold)}`];
-    this.timePieChartData = [percentage1, 100- percentage1];
+    this.pieChartOptions = {
+      responsive: true,
+      legend: {
+        position: 'bottom',
+      },
+
+        tooltips: {
+          position: 'nearest',
+       callbacks: {
+        label: function(tooltipItem, data) {
+          return data.labels[tooltipItem.index] + 
+          " : " + data.datasets[0].data[tooltipItem.index]+'%'
+        }
+      },
+        }
+      }
+    this.timePieChartLabels = [`Full Utilisation >${this.getHhMmTime(this.timebasedThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.timebasedThreshold)}`];
+    if(percentage1 > 100){
+      this.timePieChartData = [percentage1, 0];
+    }
+    else{
+      let underUtilisation = (100- percentage1).toFixed(2);
+    this.timePieChartData = [percentage1, underUtilisation];
+    }
   }
 
   //for distance based utilisation
   switch (_prefLimitDistance) {
     case 'U':{
-      if(timebasedThreshold > this.totalDistance){ //red
+      if(this.timebasedThreshold > this.totalDistance){ //red
         this.doughnutChartColors= [
           {
             backgroundColor: ['#65C3F7 ','#F4AF85 '],
@@ -717,7 +754,7 @@ getPreferenceThreshold(fieldKey){
         }
               break;
      case 'L':{
-        if(timebasedThreshold > this.totalDistance){
+        if(this.timebasedThreshold < this.totalDistance){
           this.doughnutChartColors= [
             {
               backgroundColor: ['#F4AF85 ','#65C3F7 '],
@@ -748,20 +785,42 @@ getPreferenceThreshold(fieldKey){
   if(this.mileageDChartType =='doughnut'){
     this.doughnutChartLabels2 = [`Full Utilisation >${this.reportMapService.convertDistanceUnits(this.totalDistance,this.prefUnitFormat)}${label3}`,`Under Utilisation <${this.reportMapService.convertDistanceUnits(this.totalDistance,this.prefUnitFormat)}${label3}`];
     if(percentage2 > 100){
-    this.doughnutChartData2 = [percentage2];
+    this.doughnutChartData2 = [percentage2, 0];
     }
     else{
-      this.doughnutChartData2 = [percentage2, 100-percentage2];
+      let underUtilisation = (100-percentage2).toFixed(2);
+      this.doughnutChartData2 = [percentage2, underUtilisation];
     }
   }
   else{
-    this.mileagePieChartLabels= ['Full Utilisation >7000km','Under Utilisation <7000km'];
-    this.mileagePieChartData = [percentage2, 100-percentage2];
+    this.pieChartOptions = {
+      responsive: true,
+      legend: {
+        position: 'bottom',
+      },
+        // cutoutPercentage: 80,
+
+        tooltips: {
+          position: 'nearest',
+       callbacks: {
+        label: function(tooltipItem, data) {
+          return data.labels[tooltipItem.index] + 
+          " : " + data.datasets[0].data[tooltipItem.index]+'%'
+        }
+      },
+        }
+      }
+    this.mileagePieChartLabels= [`Full Utilisation >${this.reportMapService.convertDistanceUnits(this.totalDistance,this.prefUnitFormat)}${label3}`,`Under Utilisation <${this.reportMapService.convertDistanceUnits(this.totalDistance,this.prefUnitFormat)}${label3}`];
+    if(percentage2 > 100){
+    this.mileagePieChartData = [percentage2, 0];
+    }
+    else{
+      let underUtilisation = (100-percentage2).toFixed(2);
+    this.mileagePieChartData = [percentage2, underUtilisation];
+    }
     }
 
-  //for alert level pie chart
-  // this.alertPieChartData= [5, 74, 10];
-  // this.alertPieChartLabels=  ['Critical','Warning','Advisory'];
+    
   }
 
   getHhMmTime(totalSeconds: any){
@@ -811,6 +870,20 @@ getPreferenceThreshold(fieldKey){
       }
     };
     this.router.navigate(['fleetoverview/logbook'], navigationExtras);
+  }
+
+  getTimeDisplay(_timeValue){
+    let convertedTime = Util.getHhMmTimeFromMS(_timeValue);
+    let convertedTimeDisplay = '';
+    if(convertedTime){
+      if(convertedTime.indexOf(":") != -1){
+        convertedTimeDisplay = convertedTime.split(':')[0] + ' Hr ' + convertedTime.split(':')[1] + ' min';
+      }
+    }
+    else{
+      convertedTimeDisplay = '--';
+    }
+    return convertedTimeDisplay;
   }
 
 }
