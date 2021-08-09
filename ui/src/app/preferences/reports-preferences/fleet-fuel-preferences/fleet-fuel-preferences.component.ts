@@ -6,7 +6,7 @@ import { ReportService } from 'src/app/services/report.service';
 @Component({
   selector: 'app-fleet-fuel-preferences',
   templateUrl: './fleet-fuel-preferences.component.html',
-  styleUrls: ['./fleet-fuel-preferences.component.css']
+  styleUrls: ['./fleet-fuel-preferences.component.less']
 })
 export class FleetFuelPreferencesComponent implements OnInit {
   @Input() tabName: string;
