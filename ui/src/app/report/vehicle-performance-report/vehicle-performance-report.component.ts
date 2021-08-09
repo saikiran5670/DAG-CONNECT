@@ -20,6 +20,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   yaxisVaues = [];
   pieChartLabels = [];
   pieChartData = [];
+  pieChartColors = [];
   piechartTitle = '';
   bubbleHeatchartTitle = '';
   performanceTypeLst = [
@@ -44,6 +45,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   chartXaxis;
   chartYaxis;
   legends = [];
+  backgroundColorPattern = [];
 
   commonAxis = {
     type: 'numeric',
@@ -56,7 +58,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
   }
 
   xaxisLabels = {
-    offsetX: 0,
+    offsetX: -10,
     offsetY: 0,
     formatter: (value, index) => {
       if(value !== 0) {
@@ -184,7 +186,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
     let performaceObj = this.performanceTypeLst.filter((item)=>item.value == data.performanceType);
     this.searchResult = data;
     this.searchResult['performanceTypeLabel'] = this.translationData[performaceObj[0].name];
-    this.searchResult['lbl'] = 'lbl' + this.translationData[performaceObj[0].name].replace(/ /g, '');
+    this.searchResult['lbl'] = 'lbl' + this.translationData[performaceObj[0].name]?.replace(/ /g, '');
     let payload =  {
       "vin": this.searchResult.vin,
       "performanceType": this.searchResult.performanceType,
@@ -251,8 +253,24 @@ export class VehiclePerformanceReportComponent implements OnInit {
       for(let row of data) {
         if(row.index != -1) {
           tempArr.push(row.range);
+          let colors = row.axisvalues.split(',')
+          let offsetX = 0;
+          let width = 41;
+          for(let color of colors) {
+            let colorObj = {
+              y: row.index * 10,
+              y2: row.range,
+              offsetX: offsetX,
+              width: JSON.stringify(width),
+              fillColor: this.colorToLegends[color]
+            }
+            this.backgroundColorPattern.push(colorObj);
+            offsetX = offsetX + 41;
+            width = width - 41;
+          }
         }
       }
+      console.log("this.backgroundColorPattern", this.backgroundColorPattern)
       return tempArr;
     }
     return [];
@@ -262,8 +280,8 @@ export class VehiclePerformanceReportComponent implements OnInit {
     let bubbleChartData = [];
     for(let bubble of bubbleData) {
       let newArr = [];
-      newArr.push(bubble.xindex*10);
-      newArr.push(bubble.yindex*10);
+      newArr.push((bubble.xindex*10) - 5 < 0 ? 0 : (bubble.xindex*10) - 5);
+      newArr.push((bubble.yindex*10) - 5 < 0 ? 0 : (bubble.yindex*10) - 5);
       newArr.push(bubble.value);
       bubbleChartData.push(newArr);
     }
@@ -273,16 +291,33 @@ export class VehiclePerformanceReportComponent implements OnInit {
   generatePieChartData(pieData) {
     this.pieChartData = [];
     this.pieChartLabels = [];
+    this.pieChartColors = [];
     for (let pie of pieData) {
-      if (pie.label.trim() != '') {
-        let labelObj = this.legends.filter(item => item.value == pie.label.trim());
+      let pieLabel = pie.label.trim();
+      if (pieLabel != '') {
+        let labelObj = this.legends.filter(item => item.value == pieLabel);
         if (labelObj && labelObj[0]) {
           this.pieChartLabels.push(this.translationData[labelObj[0].name]);
         } else {
-          this.pieChartLabels.push(pie.label.trim());
+          this.pieChartLabels.push(pieLabel);
         }
         this.pieChartData.push(pie.value);
+        this.pieChartColors.push(this.colorToLegends[pieLabel]);
       }
+    }
+    if(this.searchResult.performanceType != 'E') {
+      this.updateDataPercent(pieData);
+    }
+  }
+
+  updateDataPercent(pieData) {
+    let sumOfNum = this.pieChartData.reduce((a, b) => a + b);
+    let percentPerNum = 100 / sumOfNum;
+    let tempArr = [ ...this.pieChartData ];
+    this.pieChartData = [];
+    for(let tA of tempArr) {
+      let percent = tA*percentPerNum;
+      this.pieChartData.push(percent.toFixed(2));
     }
   }
 
