@@ -228,7 +228,8 @@ export class FleetOverviewSummaryComponent implements OnInit {
     });
   }
   //this.mileageDone = (this.prefUnitFormat == 'dunit_Metric' ? tripDistance : (tripDistance * 0.621371)) + ' ' + this.unitValkm;
-  this.mileageDone = this.fleetMapService.getDistance(tripDistance, this.prefUnitFormat) + ' ' + this.unitValkm;
+  let milDone = this.fleetMapService.getDistance(tripDistance, this.prefUnitFormat);
+  this.mileageDone = milDone + ' ' + this.unitValkm;
   let totDriveTime = (Util.getHhMmTime((totalDriveTime/1000).toFixed(0))).split(':');
   this.driveTime = totDriveTime[0] + (this.translationData.lblhh || ' hh ') + totDriveTime[1] + (this.translationData.lblmm || ' mm');
   this.barChartData = [
@@ -236,7 +237,7 @@ export class FleetOverviewSummaryComponent implements OnInit {
   ];
   //Fleet Mileage rate
   let milRate = (Number.parseFloat(this.mileageDone)/Number.parseInt(localStorage.getItem('liveFleetMileageThreshold'))) * 100;
-  this.mileageRate = Number.parseFloat(((Number.parseFloat(this.mileageDone)/Number.parseInt(localStorage.getItem('liveFleetMileageThreshold'))) * 100).toFixed(2));
+  this.mileageRate = Number.parseFloat(((Number.parseFloat(milDone)/Number.parseInt(localStorage.getItem('liveFleetMileageThreshold'))) * 100).toFixed(2));
   this.doughnutChartDataMileage = [ [this.mileageRate, 100-this.mileageRate] ];
   //Fleet Utilization rate
   this.utilizationRate = (this.movedVehicle/Number.parseInt(localStorage.getItem('liveFleetUtilizationThreshold'))) * 100;
