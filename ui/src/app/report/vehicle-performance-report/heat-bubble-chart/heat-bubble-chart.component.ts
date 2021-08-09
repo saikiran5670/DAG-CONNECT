@@ -80,13 +80,15 @@ export class HeatBubbleChartComponent implements OnInit {
       }],
       chart: {
         height: 350,
-        type: "bubble"
+        type: "bubble",
+        background: '#fff'
       },
       dataLabels: {
         enabled: false
       },
       fill: {
-        type: "gradient"
+        type: "solid",
+        colors: ["#716968"]
       },
       // title: {
       //   text: this.chartTitle
@@ -105,7 +107,17 @@ export class HeatBubbleChartComponent implements OnInit {
       },
       grid: {
         row: {
-          colors: ['#FF5733', '#FF5733', '#FF5733', '#FF5733', '#FF5733', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF']
+          colors: [({ value, seriesIndex, w }) => {
+            console.log(`value => ${value} ::  seriesIndex => ${seriesIndex} :: w => ${w}`)
+            console.log('w', w)
+            if(value < 55) {
+                return '#7E36AF'
+            } else if (value >= 55 && value < 80) {
+                return '#164666'
+            } else {
+                return '#D9534F'
+            }
+          }]
         },
         // column: {
         //   colors: ['#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF']
