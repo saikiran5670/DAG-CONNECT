@@ -497,7 +497,7 @@ getPreferenceThreshold(fieldKey){
 }
 
   setChartData(){
-    if(this.dashboardPrefData.subReportUserPreferences.length > 0){
+    if(this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[2].length > 0){
     let filterData1 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distanceperday'));
     this.distanceChartType = filterData1[0].chartType == 'L' ? 'line' : 'bar';
      
@@ -509,6 +509,12 @@ getPreferenceThreshold(fieldKey){
 
     let filterData4 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distancebasedutilizationrate'));
     this.mileageDChartType =  filterData4[0].chartType == 'P' ? 'pie' : 'doughnut';
+    }
+    else{
+      this.distanceChartType ='bar';
+      this.vehicleChartType = 'line';
+      this.timeDChartType= 'pie';
+      this.mileageDChartType= 'pie';
     }
     //for distance chart
     this.distance = [];
@@ -722,7 +728,7 @@ getPreferenceThreshold(fieldKey){
       },
         }
       }
-    this.timePieChartLabels = [`Full Utilisation >${this.getHhMmTime(this.timebasedThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.timebasedThreshold)}`];
+    this.timePieChartLabels = [`Full Utilisation >${this.getTimeDisplay(this.timebasedThreshold)}`,`Under Utilisation < ${this.getTimeDisplay(this.timebasedThreshold)}`];
     if(percentage1 > 100){
       this.timePieChartData = [percentage1, 0];
     }
