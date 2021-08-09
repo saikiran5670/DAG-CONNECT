@@ -289,7 +289,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
       let newArr = [];
       newArr.push((bubble.xindex*10) - 5 < 0 ? 0 : (bubble.xindex*10) - 5);
       newArr.push((bubble.yindex*10) + 5 < 0 ? 0 : (bubble.yindex*10) + 5);
-      newArr.push(bubble.value);
+      newArr.push(Math.abs(bubble.value));
       bubbleChartData.push(newArr);
     }
     return bubbleChartData;

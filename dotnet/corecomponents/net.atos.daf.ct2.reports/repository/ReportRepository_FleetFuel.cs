@@ -489,15 +489,19 @@ namespace net.atos.daf.ct2.reports.repository
                 , round(fd.CCFuelDistance, 2) as CCFuelDistance
                 , round(fd.CCFuelConsumed, 2) as CCFuelConsumed
                 , round(fd.etl_gps_distance - fd.CCFuelDistance, 2) as CCFuelDistanceNotActive
-                , round(fd.fuel_consumed - fd.CCFuelConsumed, 2) as CCFuelConsumedNotActive
-                , 0 AS StartPositionId
-                , 0 AS EndPositionId
-                , '' AS StartPosition
-                , '' AS EndPosition
+                , round(fd.fuel_consumed - fd.CCFuelConsumed, 2) as CCFuelConsumedNotActive                
+                , coalesce(startgeoaddr.address,'') AS StartPosition
+                        , coalesce(endgeoaddr.address,'') AS EndPosition
                 FROM
                     CTE_FleetDeatils fd
                     left join master.vehicle vh
-                        on fd.VIN = vh.VIN                    
+                        on fd.VIN = vh.VIN 
+                    left JOIN master.geolocationaddress as startgeoaddr
+                            on TRUNC(CAST(startgeoaddr.latitude as numeric),4)= TRUNC(CAST(fd.startpositionlattitude as numeric),4) 
+                               and TRUNC(CAST(startgeoaddr.longitude as numeric),4) = TRUNC(CAST(fd.startpositionlongitude as numeric),4)
+                     left JOIN master.geolocationaddress as endgeoaddr
+                            on TRUNC(CAST(endgeoaddr.latitude as numeric),4)= TRUNC(CAST(fd.endpositionlattitude as numeric),4) 
+                               and TRUNC(CAST(endgeoaddr.longitude as numeric),4) = TRUNC(CAST(fd.endpositionlongitude as numeric),4)
 			)
 		SELECT
 
@@ -628,14 +632,20 @@ namespace net.atos.daf.ct2.reports.repository
                   , round(fd.CCFuelConsumed,2) as CCFuelConsumed
                   , round(fd.etl_gps_distance - fd.CCFuelDistance,2) as CCFuelDistanceNotActive
                   , round(fd.fuel_consumed - fd.CCFuelConsumed,2) as CCFuelConsumedNotActive
-                                                          , '' AS StartPosition
-                                                          , '' AS EndPosition
+                        , coalesce(startgeoaddr.address,'') AS StartPosition
+                        , coalesce(endgeoaddr.address,'') AS EndPosition
 				FROM
 					CTE_FleetDeatils fd
 				    left join
 						master.vehicle vh
 						on
 							fd.VIN =vh.VIN
+                     left JOIN master.geolocationaddress as startgeoaddr
+                            on TRUNC(CAST(startgeoaddr.latitude as numeric),4)= TRUNC(CAST(fd.startpositionlattitude as numeric),4) 
+                               and TRUNC(CAST(startgeoaddr.longitude as numeric),4) = TRUNC(CAST(fd.startpositionlongitude as numeric),4)
+                     left JOIN master.geolocationaddress as endgeoaddr
+                            on TRUNC(CAST(endgeoaddr.latitude as numeric),4)= TRUNC(CAST(fd.endpositionlattitude as numeric),4) 
+                               and TRUNC(CAST(endgeoaddr.longitude as numeric),4) = TRUNC(CAST(fd.endpositionlongitude as numeric),4) 
 
 			)
 		SELECT
