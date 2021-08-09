@@ -146,7 +146,7 @@ export class DashboardPreferencesComponent implements OnInit {
       this.hideloader();
       this.initData = prefData['userPreferences'];
       this.getDashboardPreferenceResponse = this.initData;
-      console.log("dataaaaaaa--->", this.getDashboardPreferenceResponse);
+      //console.log("dataaaaaaa--->", this.getDashboardPreferenceResponse);
       this.getUnits();
       this.resetColumnData();
       this.prepareDataDashboardPref();
@@ -207,10 +207,10 @@ export class DashboardPreferencesComponent implements OnInit {
           _data = element;
           if (this.translationData[element.key]) {
             _data.translatedName = this.translationData[element.key];
-            console.log("translated name....", _data.translatedName);
+            //console.log("translated name....", _data.translatedName);
           } else {
             _data.translatedName = this.getName(element.name);
-            console.log("translated name1....", _data.translatedName);
+            //console.log("translated name1....", _data.translatedName);
           }
           _data.translatedName = this.getName(element.name);
           this.fleetKPIColumnData.push(_data);
@@ -362,8 +362,8 @@ export class DashboardPreferencesComponent implements OnInit {
   }
 
   getSaveObject(columnData, selectionData) {
-    console.log("selcted data", selectionData);
-    console.log("coloumn dataaaa", columnData);
+    // console.log("selcted data", selectionData);
+    // console.log("coloumn dataaaa", columnData);
     let saveArr = [];
     this[columnData].forEach(element => {
       let sSearch = this[selectionData].selected.filter(item => item.dataAttributeId == element.dataAttributeId);
@@ -429,7 +429,7 @@ export class DashboardPreferencesComponent implements OnInit {
 
     _alertLast24HoursArr = this.getSaveObject('alertLast24HoursColumnData', 'selectionForAlertLast24HoursColumns');
 
-    console.log("save Object", [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr])
+    //console.log("save Object", [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr])
     // return [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr];
 
 
@@ -455,7 +455,7 @@ export class DashboardPreferencesComponent implements OnInit {
   getUnits() {
     let unitObj = this.generalPreferences?.unit.filter(item => item.id == this.unitId);
     this.prefUnit = unitObj[0].value;
-    console.log("Preference ID", this.prefUnit);
+    //console.log("Preference ID", this.prefUnit);
     if (unitObj[0].value == 'Imperial') {
 
       this.prefUnitFormat = 'dunit_Imperial';

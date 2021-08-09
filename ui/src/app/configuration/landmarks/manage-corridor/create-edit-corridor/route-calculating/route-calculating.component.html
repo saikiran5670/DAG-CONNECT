@@ -159,6 +159,9 @@
 <div *ngIf="actionType !== 'view'" class="col-sm-4 areaWidth">
     <button mat-button color="primary" (click)="searchRoute()" [disabled]='searchDisable'>
         {{ translationData.lblSearch || 'Search'}}
+    </button> &nbsp;&nbsp;&nbsp;&nbsp;
+    <button mat-button color="primary" (click)="onReset()" [disabled]='searchDisable'>
+        {{translationData.lblReset || 'Reset'}}
     </button>
 </div> 
 </div>
