@@ -56,6 +56,7 @@ export class DashboardService {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
     };
     return this.httpClient
      .post<any[]>(`${this.dashboardServiceUrl}/preference/create`,data, headers)

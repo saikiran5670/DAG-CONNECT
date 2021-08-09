@@ -22,6 +22,9 @@ import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { BaseChartDirective, Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions, SingleDataSet } from 'ng2-charts';
 import { ReportService } from 'src/app/services/report.service';
 import * as Chart from 'chart.js';
+import { formatDate } from '@angular/common';
+import * as ApexCharts from 'apexcharts';
+import { Util } from 'src/app/shared/util';
 
 export type ChartOptionsApex = {
   series: ApexAxisChartSeries;
@@ -40,7 +43,7 @@ export type ChartOptionsApex = {
 @Component({
   selector: 'app-eco-score-report-driver',
   templateUrl: './eco-score-report-driver.component.html',
-  styleUrls: ['./eco-score-report-driver.component.css'],
+  styleUrls: ['./eco-score-report-driver.component.less'],
   encapsulation: ViewEncapsulation.None
 })
 export class EcoScoreReportDriverComponent implements OnInit {
@@ -52,6 +55,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   @Input() prefUnitFormat: any;
   @Input() generalColumnData: any;
   @Input() driverPerformanceColumnData: any;
+  @Input() prefObj: any={};
   fromDisplayDate: any;
   toDisplayDate : any;
   selectedVehicleGroup : string;
@@ -116,6 +120,15 @@ export class EcoScoreReportDriverComponent implements OnInit {
  showPerformancePie: boolean=false;
  vehicleLimitExceeds: boolean=false;
  vehicleSelected: number;
+ selectionTabTrend: string;
+ kpiName: any=[];
+ kpiList: any=[];
+ seriesData: any=[];
+ seriesDataFull: any=[];
+ yAxisSeries: any=[];
+ minValue: number=0;
+ maxValue: number=0;
+ isFirstRecord = true;
 
   ngOnInit(): void {
     console.log("ecoScoreDriverInfo"+JSON.stringify(this.ecoScoreDriverInfo));
@@ -142,19 +155,21 @@ export class EcoScoreReportDriverComponent implements OnInit {
       "reportId": 10,
       "uoM": "Metric"
     }  
-    this.reportService.getEcoScoreSingleDriver(searchDataParam).subscribe((_driver: any) => {            
-      // console.log(_driver);
-      // this.loadOverallPerfomance();
-      this.hideloader();
-    }, (error)=>{
-      this.hideloader();
-    });
+    // this.reportService.getEcoScoreSingleDriver(searchDataParam).subscribe((_driver: any) => {            
+    //   // console.log(_driver);
+    //   // this.loadOverallPerfomance();
+    //   this.hideloader();
+    // }, (error)=>{
+    //   this.hideloader();
+    // });
 
     this.showLoadingIndicator = true;
     this.reportService.getEcoScoreSingleDriverTrendLines(searchDataParam).subscribe((_trendLine: any) => {  
-      // this.ecoScoreDriverDetailsTrendLine = _trendLine;
-      // console.log("trendlines "+JSON.stringify(_trendLine));
-      // console.log("trendlines "+_trendLine);
+       this.ecoScoreDriverDetailsTrendLine = _trendLine;
+       //this.ecoScoreDriverDetailsTrendLine=JSON.parse('{"code":200,"trendlines":[{"vin":"Overall","vehicleName":"Overall","kpiInfo":{"ecoScoreCompany":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"06/10/2021":"4.6","06/21/2021":"4.5","07/26/2021":"0.0","07/27/2021":"4.4","07/28/2021":"3.5","07/29/2021":"3.7","07/30/2021":"3.9"}},"ecoScore":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"06/10/2021":"4.1","06/21/2021":"4.2","07/26/2021":"0.0","07/27/2021":"4.4","07/28/2021":"3.5","07/29/2021":"3.7","07/30/2021":"3.9"}},"fuelConsumption":{"name":"EcoScore.DriverPerformance.FuelConsumption","key":"rp_fuelconsumption","uoM":"Ltrs /100 km","data":{"06/10/2021":"18.7","06/21/2021":"14.7","07/26/2021":"2.8","07/27/2021":"11.3","07/28/2021":"8.3","07/29/2021":"28.5","07/30/2021":"29.7"}},"cruiseControlUsage":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage","key":"rp_cruisecontrolusage","uoM":"%","data":{"06/10/2021":"45.3","06/21/2021":"40.8","07/26/2021":"0.0","07/27/2021":"5.6","07/28/2021":"0.0","07/29/2021":"7.1","07/30/2021":"7.3"}},"cruiseControlUsage3050":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage30-50km/h(%)","key":"rp_CruiseControlUsage30","uoM":"km/h(%)","data":{"06/10/2021":"0.6","06/21/2021":"0.1","07/26/2021":"0.0","07/27/2021":"5.6","07/28/2021":"0.0","07/29/2021":"3.5","07/30/2021":"0.6"}},"cruiseControlUsage5075":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage50-75km/h(%)","key":"rp_cruisecontroldistance50","uoM":"km/h(%)","data":{"06/10/2021":"9.1","06/21/2021":"8.1","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"3.6","07/30/2021":"4.1"}},"cruiseControlUsage75":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage>75km/h(%)","key":"rp_cruisecontroldistance75","uoM":"km/h(%)","data":{"06/10/2021":"35.6","06/21/2021":"32.7","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"0.0","07/30/2021":"2.6"}},"idling":{"name":"EcoScore.DriverPerformance.FuelConsumption.Idling(%)","key":"rp_idling","uoM":"%","data":{"06/10/2021":"12.6","06/21/2021":"20.2","07/26/2021":"30.6","07/27/2021":"33.2","07/28/2021":"19.1","07/29/2021":"30.9","07/30/2021":"33.3"}},"brakingScore":{"name":"EcoScore.DriverPerformance.BrakingScore","key":"rp_brakingscore","uoM":"","data":{"06/10/2021":"1.7","06/21/2021":"0.9","07/26/2021":"0.0","07/27/2021":"0.9","07/28/2021":"0.9","07/29/2021":"1.4","07/30/2021":"1.4"}},"harshBraking":{"name":"EcoScore.DriverPerformance.BrakingScore.HarshBraking(%)","key":"rp_harshbraking","uoM":"%","data":{"06/10/2021":"1340.8","06/21/2021":"2080.5","07/26/2021":"608.7","07/27/2021":"168.3","07/28/2021":"1306.7","07/29/2021":"3674.4","07/30/2021":"2333.1"}},"anticipationScore":{"name":"EcoScore.DriverPerformance.AnticipationScore","key":"rp_anticipationscore","uoM":"","data":{"06/10/2021":"6.5","06/21/2021":"7.6","07/26/2021":"8.8","07/27/2021":"7.8","07/28/2021":"6.1","07/29/2021":"6.0","07/30/2021":"6.4"}}}}],"message":"Eco-Score Trendline Report details fetched successfully."}');
+      //  this.ecoScoreDriverDetailsTrendLine=JSON.parse('{"code":200,"message":"Eco-Score Trendline Report details fetched successfully.","trendlines":[{"vin":"Overall","vehicleName":"Overall","kpiInfo":{"ecoScoreCompany":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"06/10/2021":"4.6","06/21/2021":"4.5","07/26/2021":"0.0","07/27/2021":"4.4","07/28/2021":"3.5","07/29/2021":"3.7","07/30/2021":"3.9"}},"ecoScore":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"06/10/2021":"4.1","06/21/2021":"4.2","07/26/2021":"0.0","07/27/2021":"4.4","07/28/2021":"3.5","07/29/2021":"3.7","07/30/2021":"3.9"}},"fuelConsumption":{"name":"EcoScore.DriverPerformance.FuelConsumption","key":"rp_fuelconsumption","uoM":"Ltrs /100 km","data":{"06/10/2021":"18.7","06/21/2021":"14.7","07/26/2021":"2.8","07/27/2021":"11.3","07/28/2021":"8.3","07/29/2021":"28.5","07/30/2021":"29.7"}},"cruiseControlUsage":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage","key":"rp_cruisecontrolusage","uoM":"%","data":{"06/10/2021":"45.3","06/21/2021":"40.8","07/26/2021":"0.0","07/27/2021":"5.6","07/28/2021":"0.0","07/29/2021":"7.1","07/30/2021":"7.3"}},"cruiseControlUsage3050":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage30-50km/h(%)","key":"rp_CruiseControlUsage30","uoM":"km/h(%)","data":{"06/10/2021":"0.6","06/21/2021":"0.1","07/26/2021":"0.0","07/27/2021":"5.6","07/28/2021":"0.0","07/29/2021":"3.5","07/30/2021":"0.6"}},"cruiseControlUsage5075":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage50-75km/h(%)","key":"rp_cruisecontroldistance50","uoM":"km/h(%)","data":{"06/10/2021":"9.1","06/21/2021":"8.1","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"3.6","07/30/2021":"4.1"}},"cruiseControlUsage75":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage>75km/h(%)","key":"rp_cruisecontroldistance75","uoM":"km/h(%)","data":{"06/10/2021":"35.6","06/21/2021":"32.7","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"0.0","07/30/2021":"2.6"}},"averageDrivingSpeed":{"name":"EcoScore.DriverPerformance.FuelConsumption.AverageDrivingSpeed","key":"rp_averagedrivingspeed","uoM":"km/h","data":{"06/10/2021":"49.8","06/21/2021":"59.3","07/26/2021":"14.6","07/27/2021":"19.0","07/28/2021":"23.6","07/29/2021":"31.2","07/30/2021":"31.0"}},"averageSpeed":{"name":"EcoScore.DriverPerformance.FuelConsumption.AverageSpeed","key":"rp_averagespeed","uoM":"km/h","data":{"06/10/2021":"43.5","06/21/2021":"47.4","07/26/2021":"10.1","07/27/2021":"12.7","07/28/2021":"19.1","07/29/2021":"21.6","07/30/2021":"20.7"}},"heavyThrottling":{"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottling(%)","key":"rp_heavythrottling","uoM":"%","data":{"06/10/2021":"66.4","06/21/2021":"174.2","07/26/2021":"5.0","07/27/2021":"19.4","07/28/2021":"55.5","07/29/2021":"67.4","07/30/2021":"61.7"}},"idling":{"name":"EcoScore.DriverPerformance.FuelConsumption.Idling(%)","key":"rp_idling","uoM":"%","data":{"06/10/2021":"12.6","06/21/2021":"20.2","07/26/2021":"30.6","07/27/2021":"33.2","07/28/2021":"19.1","07/29/2021":"30.9","07/30/2021":"33.3"}},"brakingScore":{"name":"EcoScore.DriverPerformance.BrakingScore","key":"rp_brakingscore","uoM":"","data":{"06/10/2021":"1.7","06/21/2021":"0.9","07/26/2021":"0.0","07/27/2021":"0.9","07/28/2021":"0.9","07/29/2021":"1.4","07/30/2021":"1.4"}},"anticipationScore":{"name":"EcoScore.DriverPerformance.AnticipationScore","key":"rp_anticipationscore","uoM":"","data":{"06/10/2021":"6.5","06/21/2021":"7.6","07/26/2021":"8.8","07/27/2021":"7.8","07/28/2021":"6.1","07/29/2021":"6.0","07/30/2021":"6.4"}},"harshBraking":{"name":"EcoScore.DriverPerformance.BrakingScore.HarshBraking(%)","key":"rp_harshbraking","uoM":"%","data":{"06/10/2021":"1340.8","06/21/2021":"2080.5","07/26/2021":"608.7","07/27/2021":"168.3","07/28/2021":"1306.7","07/29/2021":"3674.4","07/30/2021":"2333.1"}},"ptoUsage":{"name":"EcoScore.DriverPerformance.FuelConsumption.PTOUsage(%)","key":"rp_ptousage","uoM":"%","data":{"06/10/2021":"0.2","06/21/2021":"0.0","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"0.0","07/30/2021":"0.0"}}}}]}');
+      // this.ecoScoreDriverDetailsTrendLine=JSON.parse('{"code":200,"message":"Eco-Score Trendline Report details fetched successfully.","trendlines":[{"vin":"Overall","vehicleName":"Overall","kpiInfo":{"ecoScoreCompany":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"06/10/2021":"4.6","06/21/2021":"4.5","07/26/2021":"0.0","07/27/2021":"4.4","07/28/2021":"3.5","07/29/2021":"3.7","07/30/2021":"3.9"}},"ecoScore":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"06/10/2021":"4.1","06/21/2021":"4.2","07/26/2021":"0.0","07/27/2021":"4.4","07/28/2021":"3.5","07/29/2021":"3.7","07/30/2021":"3.9"}},"fuelConsumption":{"name":"EcoScore.DriverPerformance.FuelConsumption","key":"rp_fuelconsumption","uoM":"Ltrs /100 km","data":{"06/10/2021":"18.7","06/21/2021":"14.7","07/26/2021":"2.8","07/27/2021":"11.3","07/28/2021":"8.3","07/29/2021":"28.5","07/30/2021":"29.7"}},"cruiseControlUsage":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage","key":"rp_cruisecontrolusage","uoM":"%","data":{"06/10/2021":"45.3","06/21/2021":"40.8","07/26/2021":"0.0","07/27/2021":"5.6","07/28/2021":"0.0","07/29/2021":"7.1","07/30/2021":"7.3"}},"cruiseControlUsage3050":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage30-50km/h(%)","key":"rp_CruiseControlUsage30","uoM":"km/h(%)","data":{"06/10/2021":"0.6","06/21/2021":"0.1","07/26/2021":"0.0","07/27/2021":"5.6","07/28/2021":"0.0","07/29/2021":"3.5","07/30/2021":"0.6"}},"cruiseControlUsage5075":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage50-75km/h(%)","key":"rp_cruisecontroldistance50","uoM":"km/h(%)","data":{"06/10/2021":"9.1","06/21/2021":"8.1","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"3.6","07/30/2021":"4.1"}},"cruiseControlUsage75":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage>75km/h(%)","key":"rp_cruisecontroldistance75","uoM":"km/h(%)","data":{"06/10/2021":"35.6","06/21/2021":"32.7","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"0.0","07/30/2021":"2.6"}},"ptoUsage":{"name":"EcoScore.DriverPerformance.FuelConsumption.PTOUsage(%)","key":"rp_ptousage","uoM":"%","data":{"06/10/2021":"0.0","06/21/2021":"0.0","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"0.0","07/30/2021":"0.0"}},"averageDrivingSpeed":{"name":"EcoScore.DriverPerformance.FuelConsumption.AverageDrivingSpeed","key":"rp_averagedrivingspeed","uoM":"km/h","data":{"06/10/2021":"49.8","06/21/2021":"59.3","07/26/2021":"14.6","07/27/2021":"19.0","07/28/2021":"23.6","07/29/2021":"31.2","07/30/2021":"31.0"}},"averageSpeed":{"name":"EcoScore.DriverPerformance.FuelConsumption.AverageSpeed","key":"rp_averagespeed","uoM":"km/h","data":{"06/10/2021":"43.5","06/21/2021":"47.4","07/26/2021":"10.1","07/27/2021":"12.7","07/28/2021":"19.1","07/29/2021":"21.6","07/30/2021":"20.7"}},"heavyThrottling":{"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottling(%)","key":"rp_heavythrottling","uoM":"%","data":{"06/10/2021":"66.4","06/21/2021":"174.2","07/26/2021":"5.0","07/27/2021":"19.4","07/28/2021":"55.5","07/29/2021":"67.4","07/30/2021":"61.7"}},"idling":{"name":"EcoScore.DriverPerformance.FuelConsumption.Idling(%)","key":"rp_idling","uoM":"%","data":{"06/10/2021":"12.6","06/21/2021":"20.2","07/26/2021":"30.6","07/27/2021":"33.2","07/28/2021":"19.1","07/29/2021":"30.9","07/30/2021":"33.3"}},"idleDuration":{"name":"EcoScore.DriverPerformance.FuelConsumption.IdleDuration","key":"rp_idleduration","uoM":"hh:mm:ss","data":{"06/10/2021":"00:11:24","06/21/2021":"00:10:48","07/26/2021":"00:10:08","07/27/2021":"00:45:32","07/28/2021":"00:14:19","07/29/2021":"01:19:26","07/30/2021":"01:25:25"}},"brakingScore":{"name":"EcoScore.DriverPerformance.BrakingScore","key":"rp_brakingscore","uoM":"","data":{"06/10/2021":"1.7","06/21/2021":"0.9","07/26/2021":"0.0","07/27/2021":"0.9","07/28/2021":"0.9","07/29/2021":"1.4","07/30/2021":"1.4"}},"anticipationScore":{"name":"EcoScore.DriverPerformance.AnticipationScore","key":"rp_anticipationscore","uoM":"","data":{"06/10/2021":"6.5","06/21/2021":"7.6","07/26/2021":"8.8","07/27/2021":"7.8","07/28/2021":"6.1","07/29/2021":"6.0","07/30/2021":"6.4"}}}}]}');
+       this.getSeriesData();
       this.hideloader();
      }, (error)=>{
       this.hideloader();
@@ -185,6 +200,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.vehicleSelected=0;
     this.loadBarChartPerfomance();
     this.loadPieChartPerformance(0);
+    console.log(this.prefObj);
   }
 
   hideloader() {
@@ -239,7 +255,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
     }];
   }
 
-
   doughnutChartType: ChartType = 'doughnut';
   doughnutColors: Color[] = [
     {
@@ -274,8 +289,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
       ],
       hoverBorderWidth: 7
     }
-   ];
-   
+   ];   
 
   doughnutChartOptions: ChartOptions = {
     responsive: true,
@@ -307,43 +321,31 @@ export class EcoScoreReportDriverComponent implements OnInit {
     }
   };
 
-  @ViewChild("chart") chart: ChartComponent;
+  @ViewChild("trendLineChart") trendLineChart: ChartComponent;
+  @ViewChild("brushChart") brushChart: ChartComponent;
   public chartOptionsApex: Partial<ChartOptionsApex>;
 
-  constructor(private reportService: ReportService) {
-    
+  constructor(private reportService: ReportService) {}
+
+  loadTrendLine(){
+    // this.getSeriesData();
     this.chartOptions1 = {
-      series: [
-        {
-          name: "series1",
-          data: this.generateDayWiseTimeSeries(
-            new Date("15 Apr 2017").getTime(),
-            185,
-            {
-              min: 30,
-              max: 90
-            }
-          )
-        },
-        {
-          name: "series2",
-          data: this.generateDayWiseTimeSeries(
-            new Date("15 Mar 2017").getTime(),
-            185,
-            {
-              min: 30,
-              max: 90
-            }
-          )
-        }
-      ],
+      series: this.seriesDataFull,
       chart: {
         id: "chart2",
         type: "line",
-        height: 230,
+        height: 430,
+        width: 900,
         toolbar: {
           autoSelected: "pan",
           show: false
+        },
+        events:{
+          beforeMount: function (chartContext, options){
+          },
+          animationEnd: function (chartContext, options){
+            // this.hideSeries()
+          }
         }
       },
       // colors: ["#546E7A"],
@@ -362,127 +364,123 @@ export class EcoScoreReportDriverComponent implements OnInit {
       xaxis: {
         type: "datetime"
       },
-      yaxis: [
-        {
-          axisTicks: {
-            show: true
-          },
-          axisBorder: {
-            show: true,
-            color: "#008FFB"
-          },
-          labels: {
-            style: {
-              // color: "#008FFB"
-            }
-          },
-          title: {
-            text: "Income (thousand crores)",
-            style: {
-              color: "#008FFB"
-            }
-          },
-          tooltip: {
-            enabled: true
-          }
-        },
-        {
-          seriesName: "Income",
-          opposite: true,
-          axisTicks: {
-            show: true
-          },
-          axisBorder: {
-            show: true,
-            color: "#00E396"
-          },
-          labels: {
-            style: {
-              // color: "#00E396"
-            }
-          },
-          title: {
-            text: "Operating Cashflow (thousand crores)",
-            style: {
-              color: "#00E396"
-            }
-          }
-        },
-        {
-          seriesName: "Revenue",
-          opposite: true,
-          axisTicks: {
-            show: true
-          },
-          axisBorder: {
-            show: true,
-            color: "#FEB019"
-          },
-          labels: {
-            style: {
-              // color: "#FEB019"
-            }
-          },
-          title: {
-            text: "Revenue (thousand crores)",
-            style: {
-              color: "#FEB019"
-            }
-          }
-        },
-        {
-          seriesName: "EcoScore",
-          opposite: true,
-          axisTicks: {
-            show: true
-          },
-          axisBorder: {
-            show: true,
-            color: "#00E396"
-          },
-          labels: {
-            style: {
-              // color: "#00E396"
-            }
-          },
-          title: {
-            text: "EcoScore",
-            style: {
-              color: "#00E396"
-            }
-          }
-        }
-      ],
+      yaxis: this.yAxisSeries
+      // yaxis: [
+      //   {
+      //     axisTicks: {
+      //       show: true
+      //     },
+      //     axisBorder: {
+      //       show: true,
+      //       color: "#008FFB"
+      //     },
+      //     labels: {
+      //       style: {
+      //         // color: "#008FFB"
+      //       }
+      //     },
+      //     title: {
+      //       text: "Income (thousand crores)",
+      //       style: {
+      //         color: "#008FFB"
+      //       }
+      //     },
+      //     tooltip: {
+      //       enabled: true
+      //     }
+      //   },
+      //   {
+      //     seriesName: "Income",
+      //     opposite: true,
+      //     axisTicks: {
+      //       show: true
+      //     },
+      //     axisBorder: {
+      //       show: true,
+      //       color: "#00E396"
+      //     },
+      //     labels: {
+      //       style: {
+      //         // color: "#00E396"
+      //       }
+      //     },
+      //     title: {
+      //       text: "Operating Cashflow (thousand crores)",
+      //       style: {
+      //         color: "#00E396"
+      //       }
+      //     }
+      //   },
+      //   {
+      //     seriesName: "Revenue",
+      //     opposite: true,
+      //     axisTicks: {
+      //       show: true
+      //     },
+      //     axisBorder: {
+      //       show: true,
+      //       color: "#FEB019"
+      //     },
+      //     labels: {
+      //       style: {
+      //         // color: "#FEB019"
+      //       }
+      //     },
+      //     title: {
+      //       text: "Revenue (thousand crores)",
+      //       style: {
+      //         color: "#FEB019"
+      //       }
+      //     }
+      //   },
+      //   {
+      //     seriesName: "EcoScore",
+      //     opposite: true,
+      //     axisTicks: {
+      //       show: true
+      //     },
+      //     axisBorder: {
+      //       show: true,
+      //       color: "#00E396"
+      //     },
+      //     labels: {
+      //       style: {
+      //         // color: "#00E396"
+      //       }
+      //     },
+      //     title: {
+      //       text: "EcoScore",
+      //       style: {
+      //         color: "#00E396"
+      //       }
+      //     }
+      //   }
+      // ],
     };
+    // this.chart.render();
+    
+  }
 
+  loadBrushChart(){
     this.chartOptions2 = {
-      series: [
-        {
-          name: "",
-          data: this.generateDayWiseTimeSeries(
-            new Date("15 Apr 2017").getTime(),
-            185,
-            {
-              min: 0,
-              max: 0
-            }
-          )
-        }
-      ],
+      series: [{
+        name: '',
+        data: [[ this.minValue, 0], [this.maxValue, 0]]
+      }],
       chart: {
         id: "chart1",
-        height: 130,
+        height: 100,
         type: "area",
         brush: {
-          target: "chart2",
-          enabled: true
+           target: "chart2",
+           enabled: true
         },
         selection: {
           enabled: true,
-          xaxis: {
-            min: new Date("19 Jun 2017").getTime(),
-            max: new Date("14 Aug 2017").getTime()
-          }
+          // xaxis: {
+          //   min: this.getLastYear(),
+          //   max: this.getTodayDate()
+          // }
         }
       },
       // colors: ["#008FFB"],
@@ -511,9 +509,207 @@ export class EcoScoreReportDriverComponent implements OnInit {
       }
     };
   }
+ 
+  getSeriesData() {
+    let dataSeries=[];
+    this.ecoScoreDriverDetailsTrendLine.trendlines.forEach((vehicle, index) => {
+      // if(index == 0){
+      for (var key in vehicle.kpiInfo) {
+        if ((vehicle.kpiInfo).hasOwnProperty(key)) {
+          let _key = (vehicle.kpiInfo)[key].key;
+          let _name = this.translationData._key || this.translationDataLocal.filter(obj=>obj.key === _key);
+            dataSeries.push({
+              name: _name[0].value + ' - ' + vehicle.vehicleName,
+              data: ((vehicle.kpiInfo)[key].uoM === 'hh:mm:ss') ? this.formatTime((vehicle.kpiInfo)[key].data, false) : this.formatData((vehicle.kpiInfo)[key].data, false)
+            });
+            // this.seriesData.push({
+            //   name: '',
+            //   data: ((vehicle.kpiInfo)[key].uoM === 'hh:mm:ss') ? this.formatTime((vehicle.kpiInfo)[key].data, true) : this.formatData((vehicle.kpiInfo)[key].data, true)
+            // });
+            this.yAxisSeries.push({
+                axisTicks: {
+                  show: true
+                },
+                axisBorder: {
+                  show: true,
+                  // color: "#008FFB"
+                },
+                labels: {
+                  style: {
+                    // color: "#008FFB"
+                  }
+                },
+                title: {
+                  text: key,
+                  // style: {
+                  //   color: "#008FFB"
+                  // }
+                },
+                tooltip: {
+                  enabled: true
+                }
+              }
+            );
+            this.kpiName.push(_name[0].value + ' - ' + vehicle.vehicleName);
+        // }
+    }
+  }
+    });
+    this.kpiList = [...new Set(this.kpiName)];
+    // console.log("datas"+JSON.stringify(dataSeries));
+    // console.log("datas kpi"+JSON.stringify(this.kpiList));
+    this.seriesDataFull=dataSeries;
+    this.loadTrendLine();
+    this.loadBrushChart();
+    setTimeout(() => {
+      this.apexChartHideSeries();
+    }, 1000);
+    return dataSeries;
+  }
 
+  formatData(data, isBrushChart){
+    let result = [];
+    for (var i in data) {      
+      let val = (new Date(i)).getTime();
+      this.calMinMaxValue(val);
+      let temp = Number.parseFloat(data[i]);
+      if(temp == 0)
+        temp = 0.2
+      if(isBrushChart)
+        result.push([val, 0]);
+      else
+        result.push([val, temp]);
+    }
+    return result;
+  }
 
- // @ViewChild("chart") chartBrush: ChartComponent;
+  formatTime(data, isBrushChart){
+    let result = [];
+    for (var i in data) {
+      let arr = data[i].substr(0, data[i].lastIndexOf(":"));
+      let temp = Number.parseFloat((arr.split(":").join(".")));
+      if(temp == 0)
+        temp = 0.2
+      let val = (new Date(i)).getTime();
+      this.calMinMaxValue(val);
+      if(isBrushChart)
+        result.push([val, 0]);
+      else
+        result.push([val, temp]);
+    }
+    return result;
+  }
+
+  calMinMaxValue(val){
+    if(this.isFirstRecord){
+      this.minValue=val;
+      this.maxValue=val;
+      this.isFirstRecord = false;
+    } else {
+      if(val<this.minValue) this.minValue=val
+      else if(val>this.maxValue) this.maxValue=val;
+    }
+  }
+
+  public updateOptions(option: any): void {
+    let updateOptionsData = {
+      "today": {
+        xaxis: {
+          min: this.getTodayDate(),
+          max: this.getTodayDate()
+        }
+      },
+      "yesterday": {
+        xaxis: {
+          min: this.getYesterdaysDate(),
+          max: this.getYesterdaysDate()
+        }
+      },
+      "lastweek": {
+        xaxis: {
+          min: this.getLastWeekDate(),
+          max: this.getTodayDate()
+        }
+      },
+      "lastmonth": {
+        xaxis: {
+          min: this.getLastMonthDate(),
+          max: this.getTodayDate()
+        }
+      },
+      "last3month": {
+        xaxis: {
+          min: this.getLast3MonthDate(),
+          max: this.getTodayDate()
+        }
+      },
+      "last6month": {
+        xaxis: {
+          min: this.getLast6MonthDate(),
+          max: this.getTodayDate()
+        }
+      },
+      "lastYear": {
+        xaxis: {
+          min: this.getLastYear(),
+          max: this.getTodayDate()
+        }
+      }
+    }
+    this.selectionTabTrend = option;
+    this.trendLineChart.updateOptions(updateOptionsData[option], false, true, true);
+    this.brushChart.updateOptions(updateOptionsData[option], false, true, true);
+  }
+
+  getTodayDate(){
+    let _todayDate: any = Util.getUTCDate(this.prefObj.prefTimeZone);
+    return _todayDate.getTime();
+  }
+
+  getYesterdaysDate() {
+    var date = Util.getUTCDate(this.prefObj.prefTimeZone);
+    date.setDate(date.getDate()-1);
+    return date.getTime();
+  }
+
+  getLastWeekDate() {
+    var date = Util.getUTCDate(this.prefObj.prefTimeZone);
+    date.setDate(date.getDate()-7);
+    return date.getTime();
+  }
+
+  getLastMonthDate(){
+    var date = Util.getUTCDate(this.prefObj.prefTimeZone);
+    date.setMonth(date.getMonth()-1);
+    return date.getTime();
+  }
+
+  getLast3MonthDate(){
+    var date = Util.getUTCDate(this.prefObj.prefTimeZone);
+    date.setMonth(date.getMonth()-3);
+    return date.getTime();
+  }
+
+  getLast6MonthDate(){
+    var date = Util.getUTCDate(this.prefObj.prefTimeZone);
+    date.setMonth(date.getMonth()-6);
+    return date.getTime();
+  }
+
+  getLastYear(){
+    var date = Util.getUTCDate(this.prefObj.prefTimeZone);
+    date.setMonth(date.getMonth()-12);
+    return date.getTime();
+  }
+
+  apexChartHideSeries(){
+    this.kpiList.forEach((element, index) => {
+      // if(index>2){
+        this.trendLineChart.hideSeries(element);
+      // }
+    });
+  }
+  
   public chartOptions1: Partial<ChartOptionsApex>;
   public chartOptions2: Partial<ChartOptionsApex>;
 

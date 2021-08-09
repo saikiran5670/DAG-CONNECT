@@ -357,14 +357,14 @@
               <mat-cell *matCellDef="let row">{{ row.events != '' ? row.events : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="vin">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
+              <mat-header-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
               </mat-header-cell>
-              <mat-cell class="text-truncate" matTooltip='{{ row.vin }}' *matCellDef="let row">{{  row.vin != '' ? row.vin : '-' }}</mat-cell>
+              <mat-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" matTooltip='{{ row.vin }}' *matCellDef="let row">{{  row.vin != '' ? row.vin : '-' }}</mat-cell>
             </ng-container>           
             <ng-container matColumnDef="odometer">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblkm || 'km') }})</span>
+              <mat-header-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblkm || 'km') }})</span>
               </mat-header-cell>
-              <mat-cell class="text-truncate" matTooltip='{{ row.convertedOdometer }}' *matCellDef="let row">{{ row.convertedOdometer != '' ? row.convertedOdometer : '-' }}</mat-cell>
+              <mat-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" matTooltip='{{ row.convertedOdometer }}' *matCellDef="let row">{{ row.convertedOdometer != '' ? row.convertedOdometer : '-' }}</mat-cell>
             </ng-container>          
               <ng-container matColumnDef="vehicleName">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}

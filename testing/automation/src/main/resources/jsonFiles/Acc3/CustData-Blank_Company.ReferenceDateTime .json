@@ -1,0 +1,20 @@
+{
+   "CompanyUpdatedEvent": {
+      "Company": {
+         "type": "FleetManager",
+         "ID": "ACC386616",         
+         "Name": "ACC3_Connect_Trucks",
+         "Address":
+            {
+               "type": "Home",
+               "Street": "Aegonplien",
+               "StreetNumber": "50",
+               "PostalCode": "2591AB",
+               "City": "Denhag",
+               "CountryCode": "NL"
+            },      
+      "ReferenceDateTime": "" 
+      }
+   }
+}
+

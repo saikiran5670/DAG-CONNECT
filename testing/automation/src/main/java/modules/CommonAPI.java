@@ -170,7 +170,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.customer_data;
 	    	String request = Constants.update;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");//"jtcadmin@ct2.net","123456");//
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
 	    	}	
 	    public static void KeyHandover() throws Exception {
 	    	Log.info("Updating Customer data");
@@ -178,7 +178,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.customer_data;
 	    	String request = Constants.keyhandover;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"jtcadmin@ct2.net","123456");//"ulka.pate@atos.net", "Ulka@1234567");
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
 	    	}
 	    public static void Vehicle_Data() throws Exception {
 	    	Log.info("Updating Vehicle data");
@@ -186,7 +186,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Vehicle_data;
 	    	String request = Constants.update;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"jtcadmin@ct2.net","123456");//"ulka.pate@atos.net", "Ulka@1234567");
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
 	    	}	
 	    public static void Vehicle_DataWithInvalidUser() throws Exception {
 	    	Log.info("Updating vehicle data with invalid user");
@@ -194,7 +194,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Vehicle_data;
 	    	String request = Constants.update;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"jtcadmin@ct2.net","123456");//"ulka.pate@atos.net", "Ulka@1234567");//
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@123456u7");
 	    	}	
 	    public static void Subscription() throws Exception {
 	    	Log.info("Updating Subscription of package");
@@ -202,7 +202,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Subscription;
 	    	String request = Constants.update;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");//"jtcadmin@ct2.net","123456");//
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
 	    	}	
 	   // Subscription_withAuth
 	    
@@ -212,7 +212,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Subscription;
 	    	String request = Constants.update;
-	    	CommonAPI.Subscriptions_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");//"jtcadmin@ct2.net","123456");//
+	    	CommonAPI.Subscriptions_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
 	    	}	
 	    
 	    public static void GetVehicleMillage_withAuth() throws Exception {
@@ -221,7 +221,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Vehicle;
 	    	String request = Constants.VhMileage;
-	    	CommonAPI.getRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567","Accept","since","vehicles");//"jtcadmin@ct2.net","123456");//
+	    	CommonAPI.getRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567","Accept","since","vehicles");
 	    	}	    
 	    public static void GetVehicleNameList_withAuth() throws Exception {
 	    	Log.info("Updating Subscription of package");
@@ -229,8 +229,8 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Vehicle;
 	    	String request = Constants.VhNameList;
-	    	CommonAPI.getRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567","Content-Type","since","vehicles");//"jtcadmin@ct2.net","123456");//
-	    	}	    
+	    	CommonAPI.getRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567","Content-Type","since","vehicles");	
+	    }	    
 	    
 //***************************Common Functions************************************************************
 	    public static String encode(String str1, String str2) {
