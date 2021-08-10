@@ -460,6 +460,16 @@ namespace net.atos.daf.ct2.vehicle
                 List<VisibilityVehicle> vehicles = new List<VisibilityVehicle>();
                 var vehicleGroups = await _vehicleRepository.GetVehicleGroupsByOrganization(orgId);
 
+                if (vehicleGroups.Any(x => x.GroupType.Equals("D") && x.GroupMethod.Equals("A")))
+                {
+                    var dynamicAllGrp = vehicleGroups.Where(x => x.GroupType.Equals("D") && x.GroupMethod.Equals("A")).First();
+                    var oemGrps = vehicleGroups.Where(x => x.GroupType.Equals("D") && x.GroupMethod.Equals("M"));
+                    var nonDynamicGrps = vehicleGroups.Where(x => !x.GroupType.Equals("D"));
+                    var finalVehicleGroups = nonDynamicGrps.Concat(new List<VehicleGroupDetails>() { dynamicAllGrp });
+
+                    vehicleGroups = finalVehicleGroups.Concat(oemGrps);
+                }
+
                 foreach (var vehicleGroup in vehicleGroups)
                 {
                     switch (vehicleGroup.GroupType)
