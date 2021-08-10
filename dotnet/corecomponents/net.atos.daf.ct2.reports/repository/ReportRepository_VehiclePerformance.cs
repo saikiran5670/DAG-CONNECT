@@ -44,17 +44,25 @@ namespace net.atos.daf.ct2.reports.repository
 	               where vehicle_performance_type = ('B')";
                 }
 
+
                 var lstengion = await _dataAccess.QueryAsync<VehicleChartData>(queryEngineLoadData, parameter);
                 // adding condition to get default engine type mx
-
-                if (lstengion.Where(e => e.Enginetype == vehSummary.EngineType).ToList().Count > 0)
+                if (vehiclePerformanceRequest.PerformanceType != "B")
                 {
-                    vehiclePerformanceChartTemplate.VehChartList = lstengion.Where(e => e.Enginetype == vehSummary.EngineType).ToList();
+                    if (lstengion.Where(e => e.Enginetype == vehSummary.EngineType).ToList().Count > 0)
+                    {
+                        vehiclePerformanceChartTemplate.VehChartList = lstengion.Where(e => e.Enginetype == vehSummary.EngineType).ToList();
+                    }
+                    else
+                    {
+                        vehiclePerformanceChartTemplate.VehChartList = lstengion.Where(e => e.Enginetype == "MX").ToList();
+                    }
                 }
                 else
                 {
-                    vehiclePerformanceChartTemplate.VehChartList = lstengion.Where(e => e.Enginetype == "MX").ToList();
+                    vehiclePerformanceChartTemplate.VehChartList = lstengion.ToList();
                 }
+
 
 
 
