@@ -124,8 +124,8 @@ namespace net.atos.daf.ct2.dashboardservice
                     objTodayLiveVehicleResponse.CriticleAlertCount = data.CriticleAlertCount;
                     //objTodayLiveVehicleResponse.YesterdayVin = data.YesterdayVin;
                     objTodayLiveVehicleResponse.YesterdayActiveVinCount = data.YesterdayActiveVinCount;
-                    objTodayLiveVehicleResponse.YesterDayTimeBasedUtilizationRate = data.YesterDayTimeBasedUtilizationRate;
-                    objTodayLiveVehicleResponse.YesterDayDistanceBasedUtilization = data.YesterDayDistanceBasedUtilization;
+                    objTodayLiveVehicleResponse.YesterDayTimeBasedUtilizationRate = data.YesterdayTimeBasedUtilizationRate;
+                    objTodayLiveVehicleResponse.YesterDayDistanceBasedUtilization = data.YesterdayDistanceBasedUtilization;
                     objTodayLiveVehicleResponse.Code = Responsecode.Success;
                     objTodayLiveVehicleResponse.Message = DashboardConstants.GET_TODAY_LIVE_VEHICLE_SUCCESS_MSG;
                 }

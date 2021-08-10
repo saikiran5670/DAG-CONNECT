@@ -105,7 +105,8 @@ namespace net.atos.daf.ct2.dashboard.repository
 
         }
 
-        public async Task<TodayLiveVehicleResponse> GetTodayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest)
+        #region TodayLive Functionality
+        public async Task<List<TodayLiveVehicleData>> GetTodayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest)
         {
             try
             {
@@ -115,98 +116,49 @@ namespace net.atos.daf.ct2.dashboard.repository
                 parameter.Add("@yesterdaydatetime", objTodayLiveVehicleRequest.YesterdayDateTime);
                 parameter.Add("@tomorrowdatetime", objTodayLiveVehicleRequest.TomorrowDateTime);
                 parameter.Add("@dayBeforeYesterdaydatetime", objTodayLiveVehicleRequest.DayDeforeYesterdayDateTime);
-                string query = @"WITH CTE_Today as
-				(
-					SELECT 
-					lcts.vin as TodayVin ,
-					SUM(lcts.trip_distance) as distance, 
-					SUM(lcts.driving_time) as drivingtime,
-					COUNT(lcts.driver1_id) as Drivercount,
-					COUNT(lcts.vin) as TodayActiveVinCount,
-					SUM(lcts.driving_time) as TodayTimeBasedUtilizationRate, 
-					SUM(lcts.trip_distance) as TodayDistanceBasedUtilization,
-					COUNT(ta.urgency_level_type) As criticlealertcount
-					FROM livefleet.livefleet_current_trip_statistics lcts
-					LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
-					WHERE (lcts.start_time_stamp >= @todaydatetime --(today) 
-							and lcts.start_time_stamp <= @tomorrowdatetime) --(Tomorrow)
-							AND (lcts.end_time_stamp >= @todaydatetime --(today)
-							and lcts.end_time_stamp <= @tomorrowdatetime) -- (tomorrow)
-							AND lcts.vin = Any(@Vins)
-					GROUP BY TodayVin
-				)
-			  , cte_yesterday as
-				(
-					SELECT 
-						vin as yesterdayVin ,
-						COUNT(vin) as YesterdayActiveVinCount ,
-						SUM(driving_time) as YesterDayTimeBasedUtilizationRate, 
-						SUM(trip_distance) as YesterDayDistanceBasedUtilization
-						FROM livefleet.livefleet_current_trip_statistics 
-						WHERE (start_time_stamp >= @yesterdaydatetime --(yesterday) 
-							and start_time_stamp <= @todaydatetime) --(today)
-							AND (end_time_stamp >= @yesterdaydatetime --(yesterday)
-							and end_time_stamp <= @todaydatetime) -- (today)
-							AND vin = Any(@Vins)
-						GROUP BY yesterdayVin                                            	
-				)
-				,cte_tripstart_yesterday_tripend_today as(
-				SELECT 
-					position.vin as TodayVin ,
-					SUM(position.last_odometer_val) as distance, 
-					SUM(position.driving_time) as drivingtime,
-					COUNT(position.driver1_id) as Drivercount,
-					COUNT(position.vin) as TodayActiveVinCount,
-					SUM(position.driving_time) as TodayTimeBasedUtilizationRate, 
-					SUM(position.last_odometer_val) as TodayDistanceBasedUtilization,
-					COUNT(ta.urgency_level_type) As criticlealertcount
-					FROM livefleet.livefleet_current_trip_statistics lcts
-					RIGHT JOIN livefleet.livefleet_position_statistics position on lcts.trip_id = position.trip_id
-					LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
-					WHERE (lcts.start_time_stamp > @yesterdaydatetime --(YESTERDAY)
-						      and lcts.start_time_stamp < @todaydatetime --(Today)
-						      ) AND lcts.end_time_stamp > @todaydatetime--(Today) 
-					        AND position.Veh_Message_Type = 'I'
-							AND lcts.vin = Any(@Vins)
-					GROUP BY TodayVin
-				)
-				, cte_tripstart_daybeforeyesterday_tripend_yesterday as(
-					SELECT 
-						position.vin as yesterdayVin ,
-						COUNT(position.vin) as YesterdayActiveVinCount ,
-						SUM(position.driving_time) as YesterDayTimeBasedUtilizationRate, 
-						SUM(position.last_odometer_val) as YesterDayDistanceBasedUtilization
-						FROM livefleet.livefleet_current_trip_statistics lcts
-					    LEFT JOIN livefleet.livefleet_position_statistics position on lcts.trip_id = position.trip_id
-						WHERE (lcts.start_time_stamp > @dayBeforeYesterdaydatetime --(DaybeforeYESTERDAY 00hr)
-						      and lcts.start_time_stamp < @yesterdaydatetime) --(yesterday 00hr)
-						      AND lcts.end_time_stamp > @yesterdaydatetime    --(yesterday 00hr) 
-							  AND lcts.vin = Any(@Vins)
-					          AND position.Veh_Message_Type = 'I'
-						GROUP BY yesterdayVin     
-				)
-			SELECT --t.TodayVin,
-			SUM(t.distance)+SUM(tytt.distance) as distance, 
-			SUM(t.drivingtime)+SUM(tytt.drivingtime) as drivingtime,
-			SUM(t.Drivercount)+SUM(tytt.Drivercount) as Drivercount,
-			SUM(t.TodayActiveVinCount)+SUM(tytt.TodayActiveVinCount) as TodayActiveVinCount,
-			SUM(t.TodayTimeBasedUtilizationRate)+SUM(tytt.TodayTimeBasedUtilizationRate) as TodayTimeBasedUtilizationRate,
-			SUM(t.TodayDistanceBasedUtilization)+SUM(tytt.TodayDistanceBasedUtilization) as TodayDistanceBasedUtilization,
-			SUM(t.criticlealertcount)+SUM(tytt.criticlealertcount) As criticlealertcount,
-			--y.yesterdayVin,
-			SUM(y.YesterdayActiveVinCount)+SUM(tdty.YesterdayActiveVinCount) as YesterdayActiveVinCount,
-			SUM(y.YesterDayTimeBasedUtilizationRate)+SUM(tdty.YesterDayTimeBasedUtilizationRate) as YesterDayTimeBasedUtilizationRate,
-			SUM(y.YesterDayDistanceBasedUtilization)+SUM(tdty.YesterDayDistanceBasedUtilization)  as YesterDayDistanceBasedUtilization
-			FROM
-				CTE_Today t
-			INNER JOIN	
-				cte_yesterday y on t.TodayVin = y.yesterdayVin
-			INNER JOIN
-			   cte_tripstart_yesterday_tripend_today tytt on t.TodayVin = tytt.TodayVin
-			INNER JOIN
-			   cte_tripstart_daybeforeyesterday_tripend_yesterday tdty on t.TodayVin = tdty.yesterdayVin";
-                var data = await _dataMartdataAccess.QueryAsync<TodayLiveVehicleResponse>(query, parameter);
-                return data.FirstOrDefault();
+                string queryToday = @"WITH cte_filterToday as
+                        (
+                        SELECT 
+                        lcts.vin as TodayVin ,
+                        SUM(lcts.trip_distance) as distance, 
+                        SUM(lcts.driving_time) as drivingtime,
+                        COUNT(ta.urgency_level_type) As criticlealertcount
+                        FROM livefleet.livefleet_current_trip_statistics lcts
+                        LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
+                        WHERE (lcts.start_time_stamp >= @todaydatetime --(today) 
+			                        and lcts.start_time_stamp <= @tomorrowdatetime) --(Tomorrow)
+			                        AND (lcts.end_time_stamp >= @todaydatetime --(today)
+			                        and lcts.end_time_stamp <= @tomorrowdatetime ) -- (tomorrow)
+			                        AND lcts.vin = Any(@Vins)
+                         GROUP BY TodayVin
+                        ), cte_filterTripEndedToday as
+                        (
+                        SELECT 
+                        position.vin as TodayVin ,
+                        SUM(position.last_odometer_val) as distance, 
+                        SUM(position.driving_time) as drivingtime,
+                        COUNT(ta.urgency_level_type) As criticlealertcount
+                        FROM livefleet.livefleet_current_trip_statistics lcts
+                        RIGHT JOIN livefleet.livefleet_position_statistics position on lcts.trip_id = position.trip_id
+                        LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
+                        WHERE (lcts.start_time_stamp > @yesterdaydatetime --(YESTERDAY)
+		                          and lcts.start_time_stamp < @todaydatetime --(Today)
+		                          ) AND lcts.end_time_stamp > @todaydatetime--(Today) 
+		                        AND position.Veh_Message_Type = 'I'
+		                        AND lcts.vin = Any(@Vins)
+                        GROUP BY TodayVin                                           	
+                        )
+                        SELECT 
+                        t.todayvin,
+                        SUM(t.distance)+SUM(tet.distance) as todaydistance,
+                        SUM(t.drivingtime)+SUM(tet.drivingtime) as todaydrivingtime,
+                        SUM(t.criticlealertcount)+SUM(tet.criticlealertcount) as todayalertcount
+                        FROM cte_filterToday t
+                        INNER JOIN cte_filterTripEndedToday tet on t.TodayVin = tet.TodayVin
+                        GROUP BY t.todayvin";
+                var dataToday = await _dataMartdataAccess.QueryAsync<TodayLiveVehicleData>(queryToday, parameter);
+
+                return dataToday.ToList();
             }
             catch (System.Exception ex)
             {
@@ -214,6 +166,60 @@ namespace net.atos.daf.ct2.dashboard.repository
             }
 
         }
+        public async Task<List<TodayLiveVehicleData>> GetYesterdayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@Vins", objTodayLiveVehicleRequest.VINs);
+                parameter.Add("@todaydatetime", objTodayLiveVehicleRequest.TodayDateTime);
+                parameter.Add("@yesterdaydatetime", objTodayLiveVehicleRequest.YesterdayDateTime);
+                parameter.Add("@tomorrowdatetime", objTodayLiveVehicleRequest.TomorrowDateTime);
+                parameter.Add("@dayBeforeYesterdaydatetime", objTodayLiveVehicleRequest.DayDeforeYesterdayDateTime);
+                string queryYesterday = @"
+                        WITH cte_filterYesterday as
+                        (
+                        SELECT 
+                        vin as YesterdayVin ,
+                        SUM(driving_time) as drivingtime, 
+                        SUM(trip_distance) as distance
+                        FROM livefleet.livefleet_current_trip_statistics 
+                        WHERE (start_time_stamp >= 1628467200000 --(yesterday) 
+	                        and start_time_stamp <= 1628553600000) --(today)
+	                        AND (end_time_stamp >= 1628467200000 --(yesterday)
+	                        and end_time_stamp <= 1628553600000) -- (today)
+	                        AND vin in ('XLR0998HGFFT76657','XLR0998HGFFT74611')--= Any(@Vins)
+                        GROUP BY YesterdayVin
+                        ), cte_filtertripendedyesterday as (
+                        SELECT 
+                        position.vin as YesterdayVin ,
+                        SUM(position.driving_time) as drivingtime, 
+                        SUM(position.last_odometer_val) as distance
+                        FROM livefleet.livefleet_current_trip_statistics lcts
+                        LEFT JOIN livefleet.livefleet_position_statistics position on lcts.trip_id = position.trip_id
+                        WHERE (lcts.start_time_stamp > 1628380800000 --(DaybeforeYESTERDAY 00hr)
+	                          and lcts.start_time_stamp < 1628467200000) --(yesterday 00hr)
+	                          AND lcts.end_time_stamp > 1628467200000    --(yesterday 00hr) 
+	                          AND lcts.vin in ('XLR0998HGFFT76657','XLR0998HGFFT74611')--= Any(@Vins)
+	                          AND position.Veh_Message_Type = 'I'
+                        GROUP BY YesterdayVin
+                        )
+                        SELECT 
+                        y.yesterdayvin,
+                        SUM(y.distance)+SUM(tey.distance) as yesterdaydistance,
+                        SUM(y.drivingtime)+SUM(tey.drivingtime) as yesterdaydrivingtime
+                        FROM cte_filterYesterday y
+                        INNER JOIN  cte_filtertripendedyesterday tey on y.YesterdayVin = tey.YesterdayVin
+                        GROUP BY y.YesterdayVin";
+                var dataYesterday = await _dataMartdataAccess.QueryAsync<TodayLiveVehicleData>(queryYesterday, parameter);
+                return dataYesterday.ToList();
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
 
         #region Fleet utilization
 

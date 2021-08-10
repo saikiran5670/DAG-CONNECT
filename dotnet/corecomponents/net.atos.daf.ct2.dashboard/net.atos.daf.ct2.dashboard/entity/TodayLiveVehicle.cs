@@ -7,7 +7,7 @@ namespace net.atos.daf.ct2.dashboard.entity
     public class TodayLiveVehicleResponse
     {
         public string TodayVin { get; set; }
-        public double Distance { get; set; }
+        public long Distance { get; set; }
         public long DrivingTime { get; set; }
         public int DriverCount { get; set; }
         public int TodayActiveVinCount { get; set; }
@@ -16,8 +16,18 @@ namespace net.atos.daf.ct2.dashboard.entity
         public int CriticleAlertCount { get; set; }
         public string YesterdayVin { get; set; }
         public int YesterdayActiveVinCount { get; set; }
-        public long YesterDayTimeBasedUtilizationRate { get; set; }
-        public long YesterDayDistanceBasedUtilization { get; set; }
+        public long YesterdayTimeBasedUtilizationRate { get; set; }
+        public long YesterdayDistanceBasedUtilization { get; set; }
+    }
+    public class TodayLiveVehicleData
+    {
+        public string TodayVin { get; set; }
+        public long TodayDistance { get; set; }
+        public long TodayDrivingTime { get; set; }
+        public int TodayAlertCount { get; set; }
+        public string YesterdayVin { get; set; }
+        public long YesterdayDistance { get; set; }
+        public long YesterdayDrivingTime { get; set; }
     }
 
     public class TodayLiveVehicleRequest
