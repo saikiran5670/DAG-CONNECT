@@ -3,6 +3,7 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { OrganizationService } from 'src/app/services/organization.service';
 import { ReportSchedulerService } from 'src/app/services/report.scheduler.service';
 import { TranslationService } from 'src/app/services/translation.service';
 import { VehicleService } from 'src/app/services/vehicle.service';
@@ -49,19 +50,26 @@ export class ReportSchedulerComponent implements OnInit {
   ReportTypeList: any= [];
   StatusList: any= [];
   reportSchedulerParameterData: any= {};
-
+  prefTimeFormat: any= 24; //-- coming from pref setting
+  prefTimeZone: any; //-- coming from pref setting
+  prefDateFormat: any = 'DD/MM/YYYY'; //-- coming from pref setting
+  accountPrefObj: any;
 
   constructor(
     private translationService: TranslationService,
     private dialog: MatDialog,
     private vehicleService: VehicleService,
     private reportSchedulerService: ReportSchedulerService,
-    private dialogService: ConfirmDialogService ) { }
+    private dialogService: ConfirmDialogService,
+    private organizationService: OrganizationService,
+    ) { }
   
     ngOnInit() {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
       this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
       this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+      this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
+
       let translationObj = {
         id: 0,
         code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -72,8 +80,22 @@ export class ReportSchedulerComponent implements OnInit {
         menuId: 19 //-- for report scheduler
       }
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-        this.processTranslation(data);    
-        this.loadScheduledReports();  
+        this.processTranslation(data);  
+        this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+          if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+            this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+          }else{ // org pref
+            this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+              this.proceedStep(prefData, orgPref);
+            }, (error) => { // failed org API
+              let pref: any = {};
+              this.proceedStep(prefData, pref);
+            });
+          }
+          this.loadScheduledReports();  
+        }, error => {
+          this.loadScheduledReports();  
+        });  
       }); 
 
       this.reportSchedulerService.getReportSchedulerParameter(this.accountId, this.accountOrganizationId).subscribe(parameterData => {
@@ -89,6 +111,46 @@ export class ReportSchedulerComponent implements OnInit {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
+
+  
+  proceedStep(prefData: any, preference: any){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+    }else{
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+    }
+    this.setPrefFormatDate();
+  }
+
+  setPrefFormatDate(){
+    switch(this.prefDateFormat){
+      case 'ddateformat_dd/mm/yyyy': {
+        this.prefDateFormat = "DD/MM/YYYY";
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        this.prefDateFormat = "MM/DD/YYYY";
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        this.prefDateFormat = "DD-MM-YYYY";
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        this.prefDateFormat = "MM-DD-YYYY";
+        break;
+      }
+      default:{
+        this.prefDateFormat = "MM/DD/YYYY";
+      }
+    }
+  }
+
 
   removeDuplicates(originalArray, prop) {
     var newArray = [];
@@ -190,8 +252,8 @@ export class ReportSchedulerComponent implements OnInit {
     initdata[index].recipientList = recipientTxt.slice(0, -2); 
     initdata[index].driverList = driverTxt.slice(0, -2);
     initdata[index].vehicleGroupAndVehicleList = vehicleGroupTxt == "" ? vehicleGroupTxt : vehicleGroupTxt.slice(0, -2);
-    initdata[index].lastScheduleRunDate = element.lastScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.lastScheduleRunDate, "MM/DD/YYYY");
-    initdata[index].nextScheduleRunDate = Util.convertUtcToDateFormat(element.nextScheduleRunDate, "MM/DD/YYYY");
+    initdata[index].lastScheduleRunDate= element.lastScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.lastScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
+    initdata[index].nextScheduleRunDate= element.nextScheduleRunDate == 0 ? '-' : Util.convertUtcToDateFormat(element.nextScheduleRunDate, this.prefDateFormat, this.prefTimeZone);
     initdata[index].isDriver = this.ReportTypeList.filter(item => item.id == initdata[index].reportId)[0].isDriver == 'Y' ? true : false;
   });
   

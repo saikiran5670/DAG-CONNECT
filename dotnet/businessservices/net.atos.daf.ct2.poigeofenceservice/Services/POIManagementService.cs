@@ -332,7 +332,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 return await Task.FromResult(new TripResponce
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetAllTripDetails get faile due to - " + ex.Message
+                    Message = "GetAllTripDetails get failed due to - " + ex.Message
                 });
             }
         }
@@ -355,7 +355,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 return await Task.FromResult(new AddTripAddressResponse
                 {
                     Responsecode = Responsecode.Failed,
-                    Message = "Update tripdetail.trip_statistics start position and end position get faile due to - " + ex.Message
+                    Message = "Update tripdetail.trip_statistics start position and end position get failed due to - " + ex.Message
                 });
             }
         }
