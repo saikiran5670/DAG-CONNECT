@@ -764,10 +764,10 @@ namespace net.atos.daf.ct2.reports
             PerformanceChartMatrix objmat = new PerformanceChartMatrix();
             VehiclePerformanceData charts = new VehiclePerformanceData();
             var chartRawdata = await _reportRepository.GetVehPerformanceBubbleChartData(vehiclePerformanceRequest);
-            var chartdata = objmat.Getcombinedmatrix(chartRawdata.Where(i => i.ColumnIndex != null).ToList());
+            var chartdata = objmat.Getcombinedmatrix(chartRawdata.Where(i => i.ColumnIndex != null).ToList(), vehiclePerformanceRequest.PerformanceType);
             //CalculateKPIData(List<IndexWiseChartData> vehicleChartDatas, double tripDuration, List<KpiDataRange> rangedata)
             charts.ChartData = chartdata;
-            chartdata = vehiclePerformanceRequest.PerformanceType == "B" ? chartdata.Select(x => { x.Value = -x.Value; return x; }).ToList() : chartdata;
+            // chartdata = vehiclePerformanceRequest.PerformanceType == "B" ? chartdata.Select(x => { x.Value = -x.Value; return x; }).ToList() : chartdata;
             charts.PieChartData = objmat.CalculateKPIData(chartdata, chartRawdata.Sum(i => i.TripDuration), await _reportRepository.GetRangeData(vehiclePerformanceRequest.PerformanceType));
             return charts;
         }
