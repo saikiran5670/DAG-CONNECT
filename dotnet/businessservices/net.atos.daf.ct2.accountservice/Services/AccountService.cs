@@ -317,7 +317,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Change Password faile due to with reason : " + ex.Message
+                    Message = "Account Change Password failed due to with reason : " + ex.Message
                 });
             }
         }
@@ -397,7 +397,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountDataList
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get faile due to with reason : " + ex.Message
+                    Message = "Get failed due to with reason : " + ex.Message
                 });
             }
         }
