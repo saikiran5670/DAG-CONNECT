@@ -4,7 +4,7 @@ using System.Text;
 
 namespace net.atos.daf.ct2.kafkacdc.repository
 {
-    public interface IPackageAlertCDCRepository
+    public interface IPackageAlertCdcRepository
     {
     }
 }
