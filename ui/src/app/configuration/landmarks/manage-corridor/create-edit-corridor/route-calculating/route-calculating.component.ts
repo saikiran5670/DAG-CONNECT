@@ -1010,6 +1010,8 @@ export class RouteCalculatingComponent implements OnInit {
     this.clearMap();
     this.plotStartPoint();
     this.plotEndPoint();
+    this.corridorWidth = 100;
+    this.corridorFormGroup.controls.widthInput.setValue(0.1);
   }
 
   calculateTruckRoute(){
