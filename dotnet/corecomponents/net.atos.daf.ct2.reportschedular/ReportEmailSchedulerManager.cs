@@ -86,6 +86,57 @@ namespace net.atos.daf.ct2.reportscheduler
             return reportsSent;
         }
 
+        public async Task<bool> UpdateMissingSchedulerFrequecy()
+        {
+            var flag = true;
+            try
+            {
+                foreach (var item in await _reportSchedulerRepository.GetMissingSchedulerData())
+                {
+                    try
+                    {
+                        var nextUpdatedDate = await UpdateNextTimeDate(item);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex.Source == "Npgsql" && ex.InnerException != null && ex.InnerException.Message.Contains("Timeout"))
+                        {
+                            flag = false;
+                            await AddAuditLog($"SchedulerId: {item.SchedulerId}, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_SQL_TIMEOUT, item.SchedulerId);
+                        }
+                        else
+                        {
+                            flag = false;
+                            await AddAuditLog($"SchedulerId: {item.SchedulerId}, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_MSG, item.SchedulerId);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                flag = false;
+                await AddAuditLog($"Failed to run, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED);
+            }
+            return flag;
+        }
+
+        private async Task AddAuditLog(string message, AuditTrailEnum.Event_status eventStatus, string updated_data = CreationConstants.LOG_MISSING_MSG, int sourceObjectId = 0)
+        {
+            await _auditlog.AddLogs(new AuditTrail
+            {
+                Created_at = DateTime.Now,
+                Performed_at = DateTime.Now,
+                Performed_by = 2,
+                Component_name = "Report_Creation_Scheduler",
+                Service_name = "reportscheduler.CoreComponent",
+                Event_type = AuditTrailEnum.Event_type.CREATE,
+                Event_status = eventStatus,
+                Message = message,
+                Sourceobject_id = sourceObjectId,
+                Targetobject_id = 0,
+                Updated_data = updated_data
+            });
+        }
         private async Task AddAuditLog(bool isSuccess, string emailId)
         {
 
@@ -162,5 +213,25 @@ namespace net.atos.daf.ct2.reportscheduler
             return enumtype;
         }
 
+        private async Task<int> UpdateNextTimeDate(ReportEmailFrequency emailItem)
+        {
+            try
+            {
+                if (emailItem.FrequencyType == TimeFrequenyType.Daily || emailItem.FrequencyType == TimeFrequenyType.Weekly || emailItem.FrequencyType == TimeFrequenyType.BiWeekly)
+                {
+                    return await _reportSchedulerRepository.UpdateTimeRangeByDate(emailItem);
+
+                }
+                else
+                {
+                    return await _reportSchedulerRepository.UpdateTimeRangeByCalenderTime(emailItem);
+                }
+            }
+            catch (Exception ex)
+            {
+                await AddAuditLog($"UpdateNextTimeDate : Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_MISSING_MSG, emailItem.SchedulerId);
+                return 0;
+            }
+        }
     }
 }
