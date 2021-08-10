@@ -20,9 +20,14 @@ namespace net.atos.daf.ct2.driver
         {
             return await _driverRepository.ImportDrivers(driver, orgid);
         }
-        public async Task<IEnumerable<DriverResponse>> GetDriver(int OrganizationId, int DriverID)
+        public async Task<IEnumerable<DriverResponse>> GetDriver(int organizationId, int driverID)
         {
-            return await _driverRepository.GetDriver(OrganizationId, DriverID);
+            return await _driverRepository.GetDriver(organizationId, driverID);
+        }
+
+        public async Task<DriverLookupResponse> GetDriver(string driverId, string email)
+        {
+            return await _driverRepository.GetDriver(driverId, email);
         }
 
         public async Task<Driver> UpdateDriver(Driver driver)
@@ -57,5 +62,10 @@ namespace net.atos.daf.ct2.driver
         }
 
         #endregion
+
+        public Task<bool> CheckIfDriverExists(string driverId, string organisationId, string email)
+        {
+            return Task.FromResult(true);
+        }
     }
 }

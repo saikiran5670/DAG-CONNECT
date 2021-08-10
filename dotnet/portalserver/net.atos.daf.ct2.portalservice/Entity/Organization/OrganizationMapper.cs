@@ -94,7 +94,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
             preference.DateFormatId = request.DateFormatId;
             preference.TimeFormatId = request.TimeFormatId;
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
-            
+
             return preference;
         }
         public AccountBusinessService.AccountPreference ToAccountPreference(AccountBusinessService.AccountPreference request)

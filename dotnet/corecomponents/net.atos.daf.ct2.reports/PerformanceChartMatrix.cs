@@ -100,7 +100,7 @@ namespace net.atos.daf.ct2.reports
 
         }
 
-        public List<IndexWiseChartData> Getcombinedmatrix(List<VehPerformanceChartData> chartData)
+        public List<IndexWiseChartData> Getcombinedmatrix(List<VehPerformanceChartData> chartData, string performanceType)
         {
             //Console.WriteLine("Hello World!");
             List<ChartMatrix> matrix = new List<ChartMatrix>();
@@ -110,6 +110,8 @@ namespace net.atos.daf.ct2.reports
                 matdata.A = item.MatrixValue.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
                 matdata.IA = item.CountPerIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
                 matdata.JA = item.ColumnIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+                matdata.A = performanceType == "B" ? matdata.A.Select(x => -x).ToArray() : matdata.A;
+
                 matdata.DMatrix = ParseSparseMatrix(matdata.A, matdata.IA);//, JA);
                 matdata.ColumnsCount = matdata.DMatrix.GetUpperBound(1) - matdata.DMatrix.GetLowerBound(1) + 1;
                 matdata.RowsCount = matdata.DMatrix.GetUpperBound(0) - matdata.DMatrix.GetLowerBound(0) + 1;
