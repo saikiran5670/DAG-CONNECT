@@ -1,8 +1,8 @@
 <mat-card class='mat-elevation-z no-padding margin-bottom-xlg margin-top-20 background-transparent'>
     <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
     <form [formGroup]="dashboardPreferenceForm">
-        <div *ngIf="!showLoadingIndicator">
-            <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px"
+        <div *ngIf="!showLoadingIndicator" class='dashboardPref'>
+            <mat-expansion-panel class="full-width margin-bottom-15"
                 [(expanded)]="showDashboardReport" (opened)="showDashboardReport == true"
                 (closed)="showDashboardReport == false">
                 <mat-expansion-panel-header class="full-width">
@@ -30,36 +30,30 @@
                 </div>
                 <!-- *********Fleet KPI ********** -->
                 <div *ngIf='fleetKPIColumnData && fleetKPIColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
-                    style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
-
-
-                    <div class='min-width-33-3-per'>
+                    style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;' fxLayoutGap="10px">
+                    <div fxLayout="column" fxLayoutGap="3px" class='min-width-45-per'>
                         <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggle("FleetKPI") : null'
                             [checked]='selectionForFleetKPIColumns.hasValue() && isAllSelected("FleetKPI")'
                             [indeterminate]='selectionForFleetKPIColumns.hasValue() && !isAllSelected("FleetKPI")'
                             [disabled]='!editDashboardFlag'>
-                            <div class='mainTabAlignment'>
-                                <div>
-                                    <div class='headerFont'>{{'Fleet KPI'}}</div>
-                                    <span> (Component view settings)</span>
-                                </div>
-                            </div>
+                            <span class='headerFont'>{{
+                                translationData.lblFleetKPI || 'Fleet KPI' }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings || 'Component view settings' }})</span></span>
                         </mat-checkbox>
                     </div>
 
-                    <div class='min-width-33-3-per headerFont mainTabAlignment'>
+                    <div fxLayout="column" fxLayoutGap="3px" class='min-width-25-per headerFont'>
                         {{'Target Per Day Per Vehicle'}}
                     </div>
 
-                    <div class='min-width-33-3-per headerFont mainTabAlignment'>
+                    <div fxLayout="column" fxLayoutGap="3px" class='min-width-25-per headerFont'>
                         {{'Thereshold Type'}}
                     </div>
                 </div>
                 <div *ngIf='fleetKPIColumnData && fleetKPIColumnData.length > 0'>
                     <ng-container *ngFor="let field of fleetKPIColumnData; let index = index">
-                        <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
-                            style='border-radius: 5px 5px 0px 0px;'>
-                            <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px"
+                        <div [ngClass]="{'oddColumnColor': (index % 2) != 0}" fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+                            style='border-radius: 5px 5px 0px 0px;' fxLayoutGap="10px">
+                            <div fxLayout="column" class="areaWidth min-width-45-per" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                                 <mat-checkbox class='custom-checkbox' 
                                     (change)='$event ? selectionForFleetKPIColumns.toggle(field) : null;'
@@ -70,7 +64,7 @@
                             </div>
 
                             <div *ngIf="field.translatedName !=='DrivingTime' && field.translatedName !=='IdlingTime'"
-                                fxLayout="column" class="areaWidth full-width min-width-33-3-per targetSpanIcon" fxLayoutGap="0px"
+                                fxLayout="column" class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValue'"
@@ -93,15 +87,15 @@
                             </div>
 
                             <div *ngIf="field.translatedName =='DrivingTime' || field.translatedName =='IdlingTime'"
-                                style="display:inline-block" fxLayout="column"
-                                class="areaWidth full-width min-width-33-3-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
-                                <div style="display:inline-block">
-                                    <mat-form-field appearance="outline" style='width: 30%;'>
+                                style="display: inline-block" fxLayout="column"
+                                class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
+                                <div style="display: inline-block">
+                                    <mat-form-field appearance="outline" style='width: 38%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="text" placeholder="{{ '' }}"
                                             [formControlName]="field.key+'thresholdValue'">
                                         <span matSuffix>Hr</span>
                                     </mat-form-field>
-                                    <mat-form-field appearance="outline" style='width: 30%; margin-left: 4px;'>
+                                    <mat-form-field appearance="outline" style='width: 38%; margin-left: 4%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="text" placeholder="{{ '' }}"
                                             [formControlName]="field.key+'thresholdValuemin'">
                                         <span matSuffix>Min</span>
@@ -110,7 +104,7 @@
                             </div>
 
                             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
-                                class="areaWidth min-width-33-3-per">
+                                class="areaWidth min-width-25-per">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <mat-select [formControlName]="field.key+'thresholdType'"
                                         [disabled]='!editDashboardFlag || upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
@@ -127,37 +121,31 @@
 
                 <!-- ********* today live vehicles ********** -->
 
-                <div *ngIf='todayLiveVehicleColumnData && todayLiveVehicleColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
-                    style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
-
-                    <div class='min-width-33-3-per'>
-
+                <div *ngIf='todayLiveVehicleColumnData && todayLiveVehicleColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 margin-top-20' fxLayoutAlign="left center"
+                    style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;' fxLayoutGap="10px">
+                    <div fxLayout="column" fxLayoutGap="3px" class='min-width-45-per'>
                         <mat-checkbox class='custom-checkbox'
                             (change)='$event ? masterToggle("TodayLiveVehicle") : null'
                             [checked]='selectionForTodayLiveVehicleColumns.hasValue() && isAllSelected("TodayLiveVehicle")'
                             [indeterminate]='selectionForTodayLiveVehicleColumns.hasValue() && !isAllSelected("TodayLiveVehicle")'
                             [disabled]='!editDashboardFlag'>
-                            <div class='mainTabAlignment'>
-                                <div>
-                                    <div class='headerFont'>{{'Today Live Vehicle'}}</div>
-                                    <span> (Component view settings)</span>
-                                </div>
-                            </div>
+                            <span class='headerFont'>{{
+                                translationData.lblTodayLiveVehicle || 'Today Live Vehicle' }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings || 'Component view settings' }})</span></span>
                         </mat-checkbox>
                     </div>
 
-                    <div class='min-width-33-3-per headerFont mainTabAlignment'>
+                    <div fxLayout="column" fxLayoutGap="3px" class='min-width-25-per headerFont'>
                         {{'Target Per Day Per Vehicle'}}
                     </div>
 
-                    <div class='min-width-33-3-per headerFont mainTabAlignment'>
+                    <div fxLayout="column" fxLayoutGap="3px" class='min-width-25-per headerFont'>
                         {{'Thereshold Type'}}
                     </div>
                 </div>
                 <div *ngIf='todayLiveVehicleColumnData && todayLiveVehicleColumnData.length > 0'>
                     <ng-container *ngFor="let field of todayLiveVehicleColumnData; let index = index">
-                        <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left">
-                            <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px"
+                        <div [ngClass]="{'oddColumnColor': (index % 2) != 0}" fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center" fxLayoutGap="10px">
+                            <div fxLayout="column" class="areaWidth min-width-45-per" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                                 <mat-checkbox class='custom-checkbox'
                                     (change)='$event ?selectionForTodayLiveVehicleColumns.toggle(field) : null;'
@@ -167,15 +155,15 @@
                             </div>
 
                             <div *ngIf="field.translatedName == 'TimeBasedUtilizationRate'" style="display:inline-block"
-                                fxLayout="column" class="areaWidth full-width min-width-33-3-per targetSpanIcon" fxLayoutGap="0px"
+                                fxLayout="column" class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                                 <div style="display:inline-block">
-                                    <mat-form-field appearance="outline" style='width: 30%;'>
+                                    <mat-form-field appearance="outline" style='width: 38%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValue'"
                                             placeholder="{{ '' }}">
                                         <span matSuffix>Hr</span>
                                     </mat-form-field>
-                                    <mat-form-field appearance="outline" style='width: 30%; margin-left: 4px;'>
+                                    <mat-form-field appearance="outline" style='width: 38%; margin-left: 4%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValuemin'"
                                             placeholder="{{ '' }}">
                                         <span matSuffix>Min</span>
@@ -184,7 +172,7 @@
                             </div>
 
                             <div *ngIf="field.translatedName == 'DistanceBasedUtilizationRate' || field.translatedName =='ActiveVehicles'"
-                                fxLayout="column" class="areaWidth full-width min-width-33-3-per targetSpanIcon" fxLayoutGap="0px"
+                                fxLayout="column" class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValue'"
@@ -199,7 +187,7 @@
 
                             <div *ngIf="field.translatedName == 'TimeBasedUtilizationRate' || field.translatedName == 'DistanceBasedUtilizationRate' || field.translatedName == 'ActiveVehicles'"
                                 fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
-                                class="areaWidth min-width-33-3-per">
+                                class="areaWidth min-width-25-per">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <mat-select [formControlName]="field.key+'thresholdType'"
                                         [disabled]='!editDashboardFlag || upperLowerDD.length == 0' placeholder="{{'Threshold Type' }}">
@@ -217,37 +205,30 @@
 
                 <!-- ********* Vehicle Utilization ********** -->
 
-                <div *ngIf='vehicleUtilizationColumnData && vehicleUtilizationColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
-                    style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
-
-                    <div class='min-width-33-3-per'>
-
+                <div *ngIf='vehicleUtilizationColumnData && vehicleUtilizationColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 margin-top-20' fxLayoutAlign="left center"
+                    style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;' fxLayoutGap="10px">
+                    <div fxLayout="column" fxLayoutGap="3px" class='min-width-45-per'>
                         <mat-checkbox class='custom-checkbox'
                             (change)='$event ? masterToggle("VehicleUtilization") : null'
                             [checked]='selectionForVehicleUtilizationColumns.hasValue() && isAllSelected("VehicleUtilization")'
                             [indeterminate]='selectionForVehicleUtilizationColumns.hasValue() && !isAllSelected("VehicleUtilization")'
                             [disabled]='!editDashboardFlag'>
-                            <div class='mainTabAlignment'>
-                                <div>
-                                    <div class='headerFont'>{{'Vehicle Utilization'}}</div>
-                                    <span> (Component view settings)</span>
-                                </div>
-                            </div>
+                            <span class='headerFont'>{{
+                                translationData.lblVehicleUtilization || 'Vehicle Utilization' }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings || 'Component view settings' }})</span></span>
                         </mat-checkbox>
                     </div>
-
-                    <div class='min-width-33-3-per headerFont mainTabAlignment'>
+                    <div fxLayout="column" fxLayoutGap="3px"  class='min-width-25-per headerFont'>
                         {{'Target Per Day Per Vehicle'}}
                     </div>
 
-                    <div class='min-width-33-3-per headerFont mainTabAlignment'>
+                    <div fxLayout="column" fxLayoutGap="3px"  class='min-width-25-per headerFont'>
                         {{'Chart Type'}}
                     </div>
                 </div>
                 <div *ngIf='vehicleUtilizationColumnData && vehicleUtilizationColumnData.length > 0'>
                     <ng-container *ngFor="let field of vehicleUtilizationColumnData; let index = index">
-                        <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left">
-                            <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px"
+                        <div [ngClass]="{'oddColumnColor': (index % 2) != 0}" fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center" fxLayoutGap="10px">
+                            <div fxLayout="column" class="areaWidth min-width-45-per" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                                 <mat-checkbox class='custom-checkbox'
                                     (change)='$event ? selectionForVehicleUtilizationColumns.toggle(field) : null;'
@@ -257,19 +238,19 @@
                             </div>
 
                             <div *ngIf="field.translatedName!== 'TimeBasedUtilizationRate' && field.translatedName!== 'DistanceBasedUtilizationRate'"
-                                fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px"
+                                fxLayout="column" class="areaWidth min-width-25-per" fxLayoutGap="0px"
                                 fxLayoutAlign="left">
                             </div>
 
                             <div *ngIf="field.translatedName== 'TimeBasedUtilizationRate'" fxLayout="column"
-                                class="areaWidth full-width min-width-33-3-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
+                                class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
                                 <div style="display:inline-block">
-                                    <mat-form-field appearance="outline" style='width: 30%;'>
+                                    <mat-form-field appearance="outline" style='width: 38%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValue'"
                                             placeholder="{{ '' }}">
                                         <span matSuffix>Hr</span>
                                     </mat-form-field>
-                                    <mat-form-field appearance="outline" style='width: 30%; margin-left: 4px;'>
+                                    <mat-form-field appearance="outline" style='width: 38%; margin-left: 4%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValuemin'"
                                             placeholder="{{ '' }}">
                                         <span matSuffix>Min</span>
@@ -278,7 +259,7 @@
                             </div>
 
                             <div *ngIf="field.translatedName== 'DistanceBasedUtilizationRate'" fxLayout="column"
-                                class="areaWidth full-width min-width-33-3-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
+                                class="areaWidth min-width-25-per targetSpanIcon" fxLayoutGap="0px" fxLayoutAlign="left">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValue'"
                                         placeholder="{{ 'Set Target' }}">
@@ -288,7 +269,7 @@
                             </div>
 
                             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"
-                                class="areaWidth min-width-33-3-per">
+                                class="areaWidth min-width-25-per">
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <mat-select
                                         *ngIf="field.translatedName== 'DistanceBasedUtilizationRate' || field.translatedName== 'TimeBasedUtilizationRate'"
@@ -317,18 +298,16 @@
                 <!-- ********* Alert Last 24 Hours ********** -->
 
 
-                <div *ngIf='vehicleUtilizationColumnData && vehicleUtilizationColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
+                <div *ngIf='vehicleUtilizationColumnData && vehicleUtilizationColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 margin-top-20' fxLayoutAlign="left center"
                     style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
-                    <div class='min-width-33-3-per'>
-
+                    <div class='min-width-45-per'>
                         <mat-checkbox class='custom-checkbox'
                             (change)='$event ? masterToggle("AlertLast24Hours") : null'
                             [checked]='selectionForAlertLast24HoursColumns.hasValue() && isAllSelected("AlertLast24Hours")'
                             [indeterminate]='selectionForAlertLast24HoursColumns.hasValue() && !isAllSelected("AlertLast24Hours")'
                             [disabled]='!editDashboardFlag'>
-
                             <span class='headerFont'>{{
-                                translationData.lblAlertLast24Hours || 'Alert Last 24 Hours' }} <span>({{ translationData.lblComponentviewsettings || 'Component view settings' }})</span></span>
+                                translationData.lblAlertLast24Hours || 'Alert Last 24 Hours' }} <span class='font-weight-normal'>({{ translationData.lblComponentviewsettings || 'Component view settings' }})</span></span>
                         </mat-checkbox>
                     </div>
                 </div>
@@ -336,10 +315,9 @@
                 <div *ngIf='vehicleUtilizationColumnData && vehicleUtilizationColumnData.length > 0'>
                     <ng-container *ngIf='alertLast24HoursColumnData.length > 0'>
                         <div fxLayout="row" class='areaWidth full-width padding-10' fxLayoutAlign="left center"
-                            style='border-radius: 5px 5px 0px 0px;'>
+                            style='border-radius: 5px 5px 0px 0px;' fxLayoutGap="30px">
                             <ng-container *ngFor="let field of alertLast24HoursColumnData; let index = index">
-
-                                <div fxLayout="column" class="areaWidth full-width min-width-33-3-per" fxLayoutGap="0px"
+                                <div fxLayout="column" class="areaWidth min-width-15-per" fxLayoutGap="0px"
                                     fxLayoutAlign="left">
                                     <mat-checkbox class='custom-checkbox'
                                         (change)='$event ? selectionForAlertLast24HoursColumns.toggle(field) : null;'

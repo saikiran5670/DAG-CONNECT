@@ -132,7 +132,13 @@ export class AccountInfoSettingsComponent implements OnInit {
         undefined,
         [FileValidator.maxContentSize(this.maxSize)]
       ],
-      pageRefreshTime: ['',[Validators.min(1), Validators.max(60)]] });
+      pageRefreshTime: ['', [Validators.required]]
+     },{
+      validator: [
+        CustomValidators.numberFieldValidation('pageRefreshTime', 60),
+        CustomValidators.numberMinFieldValidation('pageRefreshTime', 1)
+      ]
+    });
     // this.changePictureFlag = true;
     // this.isSelectPictureConfirm = true;
     this.orgName = localStorage.getItem("organizationName");
@@ -682,5 +688,16 @@ export class AccountInfoSettingsComponent implements OnInit {
       );
       console.log("this.filteredTimezones", this.filteredTimezones);
    }
+
+   keyPressNumbers(event: any){
+    var charCode = (event.which) ? event.which : event.keyCode;
+    // Only Numbers 0-9
+    if ((charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+      return false;
+    } else {
+      return true;
+    }
+  }
  
 }
