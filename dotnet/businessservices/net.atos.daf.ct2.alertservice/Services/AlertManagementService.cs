@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 if (id > 0)
                 {
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(request.AlertId, "S");
+                    await _alertCdcHelper.TriggerAlertCdc(request.AlertId, "I");
                 }
                 return await Task.FromResult(new AlertResponse
                 {
@@ -250,7 +250,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 if (alert.Id > 0)
                 {
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(alert.Id, "I");
+                    await _alertCdcHelper.TriggerAlertCdc(alert.Id, "A");
                 }
                 return await Task.FromResult(new AlertResponse
                 {

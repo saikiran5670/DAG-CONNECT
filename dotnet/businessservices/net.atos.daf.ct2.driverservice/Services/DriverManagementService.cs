@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.driverservice
                 return await Task.FromResult(new DriverDataList
                 {
                     Code = Responcecode.Failed,
-                    Message = "Driver get faile due to - " + ex.Message
+                    Message = "Driver get failed due to - " + ex.Message
                     //Driver = null
                 });
             }

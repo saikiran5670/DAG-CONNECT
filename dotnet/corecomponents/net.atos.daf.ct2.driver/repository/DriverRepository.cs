@@ -37,10 +37,10 @@ namespace net.atos.daf.ct2.driver
                 parameter.Add("@id", driverId);
                 parameter.Add("@state", "A");
 
-                var QueryStatement = @" SELECT id, organization_id,driver_id_ext, first_name FirstName, last_name LastName, email Email, status Status, state State,opt_in OptIn,modified_at ModifiedAt,modified_by ModifiedBy,created_at CreatedAt
+                var queryStatement = @" SELECT id, organization_id,driver_id_ext, first_name FirstName, last_name LastName, email Email, status Status, state State,opt_in OptIn,modified_at ModifiedAt,modified_by ModifiedBy,created_at CreatedAt
                                     from master.driver where organization_id=@organization_id and (id=@id OR @id=0) and state=@state";
 
-                return await _dataAccess.QueryAsync<DriverResponse>(QueryStatement, parameter);
+                return await _dataAccess.QueryAsync<DriverResponse>(queryStatement, parameter);
             }
             catch (Exception ex)
             {
@@ -50,6 +50,27 @@ namespace net.atos.daf.ct2.driver
             }
         }
 
+        public async Task<DriverLookupResponse> GetDriver(string driverId, string email)
+        {
+            try
+            {
+                var response = new DriverLookupResponse();
+                var parameter = new DynamicParameters();
+                parameter.Add("@DriverId", driverId);
+                parameter.Add("@Email", email);
+
+                var queryStatement = @"SELECT first_name FirstName, last_name LastName, organization_id as OrganizationId, org.name as OrganizationName
+                                    from master.driver drv inner join master.organization org on org.id=drv.organization_id
+                                    where driver_id_ext = @DriverId and email = @Email";
+
+                response.DriverLookup = await _dataAccess.QueryAsync<DriverLookup>(queryStatement, parameter);
+                return response;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         public async Task<Driver> UpdateDriver(Driver driver)
         {

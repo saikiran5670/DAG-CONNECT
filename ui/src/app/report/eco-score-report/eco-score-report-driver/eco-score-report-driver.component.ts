@@ -56,6 +56,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   @Input() generalColumnData: any;
   @Input() driverPerformanceColumnData: any;
   @Input() prefObj: any={};
+  @Input() selectionTab: string;
   fromDisplayDate: any;
   toDisplayDate : any;
   selectedVehicleGroup : string;
@@ -71,6 +72,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   driverPerformanceChartPanel: boolean = true;
   showLoadingIndicator: boolean = false;
   translationDataLocal: any=[];
+  translationDataTrendLineLocal: any=[];
   trendLinesInfotemp: any = [
     'The trendlines represent the following results on 1 or more KPI element(s) over a period of time:',
     '1. Driver results per vehicle',
@@ -129,9 +131,14 @@ export class EcoScoreReportDriverComponent implements OnInit {
  minValue: number=0;
  maxValue: number=0;
  isFirstRecord = true;
+ selectionLimitYesterday: boolean=false;
+ selectionLimitLastWeek: boolean=false;
+ selectionLimitLastMonth: boolean=false;
+ selectionLimitLast3Month: boolean=false;
+ selectionLimitLast6Month: boolean=false;
+ selectionLimitLastYear: boolean=false;
 
   ngOnInit(): void {
-    console.log("ecoScoreDriverInfo"+JSON.stringify(this.ecoScoreDriverInfo));
     this.fromDisplayDate = this.ecoScoreDriverInfo.startDate;
     this.toDisplayDate = this.ecoScoreDriverInfo.endDate;
     this.selectedVehicleGroup = this.ecoScoreDriverInfo.vehicleGroup;
@@ -142,6 +149,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.checkPrefData();
     this.loadOverallPerfomance();
+    this.trendLineSelectionLimit();
     let searchDataParam = {
       "startDateTime":1204336888377,
       "endDateTime":1820818919744,
@@ -320,6 +328,50 @@ export class EcoScoreReportDriverComponent implements OnInit {
     }
   };
 
+  trendLineSelectionLimit(){
+    switch(this.selectionTab) {
+      case 'today':{
+        this.selectionLimitYesterday = true;
+        this.selectionLimitLastWeek=true;
+        this.selectionLimitLastMonth=true;
+        this.selectionLimitLast3Month=true;
+        this.selectionLimitLast6Month=true;
+        this.selectionLimitLastYear=true;
+        break;
+      }
+      case 'yesterday':{
+        this.selectionLimitLastWeek=true;
+        this.selectionLimitLastMonth=true;
+        this.selectionLimitLast3Month=true;
+        this.selectionLimitLast6Month=true;
+        this.selectionLimitLastYear=true;
+        break;
+      }
+      case 'lastweek':{
+        this.selectionLimitLastMonth=true;
+        this.selectionLimitLast3Month=true;
+        this.selectionLimitLast6Month=true;
+        this.selectionLimitLastYear=true;
+        break;
+      }
+      case 'lastmonth':{
+        this.selectionLimitLast3Month=true;
+        this.selectionLimitLast6Month=true;
+        this.selectionLimitLastYear=true;
+        break;
+      }
+      case 'last3month':{
+        this.selectionLimitLast6Month=true;
+        this.selectionLimitLastYear=true;
+        break;
+      }
+      case 'last6month':{
+        this.selectionLimitLastYear=true;
+          break;
+      }
+    }
+  }
+
   @ViewChild("trendLineChart") trendLineChart: ChartComponent;
   @ViewChild("brushChart") brushChart: ChartComponent;
   public chartOptionsApex: Partial<ChartOptionsApex>;
@@ -433,11 +485,18 @@ export class EcoScoreReportDriverComponent implements OnInit {
       for (var key in vehicle.kpiInfo) {
         if ((vehicle.kpiInfo).hasOwnProperty(key)) {
           let _key = (vehicle.kpiInfo)[key].key;
-          let _name = this.translationData._key || this.translationDataLocal.filter(obj=>obj.key === _key);
-          let seriesName =  _name[0].value + ' - ' + vehicle.vehicleName;
+          let _name = this.translationData._key || this.translationDataTrendLineLocal.filter(obj=>obj.key === _key);
+          let unit = (vehicle.kpiInfo)[key].uoM;
+          if(unit && unit.indexOf("(%)") <= 0)
+            unit = ' (' + unit + ')';
+          if(!unit) unit = '';
+          let val = 'driver';
+          if(key.indexOf("Company") !== -1)
+            val = 'company';
+          let seriesName =  _name[0].value + ' ' + unit + ' - '+ val + ' - ' + vehicle.vehicleName;
             dataSeries.push({
               name: seriesName,
-              data: ((vehicle.kpiInfo)[key].uoM === 'hh:mm:ss') ? this.formatTime((vehicle.kpiInfo)[key].data, seriesName, false) : this.formatData((vehicle.kpiInfo)[key].data, seriesName, false)
+              data: ((vehicle.kpiInfo)[key].uoM === 'hh:mm:ss') ? this.formatTime((vehicle.kpiInfo)[key].data, false) : this.formatData((vehicle.kpiInfo)[key].data, false)
             });
             this.yAxisSeries.push({
                 axisTicks: {
@@ -463,7 +522,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
                 }
               }
             );
-            this.kpiName.push(_name[0].value + ' - ' + vehicle.vehicleName);
+            this.kpiName.push(seriesName);
         // }
     }
   }
@@ -482,7 +541,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
 
   zeroDataSeries: any=[];
   
-  formatData(data, seriesName, isBrushChart){
+  formatData(data, isBrushChart){
     let result = [];
     // let isZeroSeries = true;
     for (var i in data) {      
@@ -506,7 +565,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
     return result;
   }
 
-  formatTime(data, seriesName, isBrushChart){
+  formatTime(data, isBrushChart){
     let result = [];
     // let isZeroSeries = true;
     for (var i in data) {
@@ -747,25 +806,64 @@ export class EcoScoreReportDriverComponent implements OnInit {
       { key:'rp_averagedistanceperday' , value:'Average distance per day' },
       { key:'rp_driverperformance' , value:'Driver Performance' },
       { key:'rp_ecoscore' , value:'Eco Score' },
+      { key:'rp_fuelconsumption' , value:'Fuel Consumption (ltrs/100km)' },
+      { key:'rp_fuelconsumption_I' , value:'Fuel Consumption (mpg)' },
+      { key:'rp_braking' , value:'Braking (%)' },
+      { key:'rp_anticipationscore' , value:'Anticipation Score' },
+      { key:'rp_averagedrivingspeed' , value:'Average Driving Speed' },
+      { key:'rp_idleduration' , value:'Idle Duration (hh:mm:ss)' },
+      { key:'rp_idling' , value:'Idling (%)' },
+      { key:'rp_heavythrottleduration' , value:'Heavy Throttle Duration (hh:mm:ss)' },
+      { key:'rp_heavythrottling' , value:'Heavy Throttling (%)' },
+      { key:'rp_averagespeed' , value:'Average Speed' },
+      { key:'rp_ptoduration' , value:'PTO Duration (hh:mm:ss)' },
+      { key:'rp_ptousage' , value:'PTO Usage (%)' },
+      { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage 30-50 km/h (%)' },
+      { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage > 75 km/h (%)' },
+      { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage 50-75 km/h (%)' },
+      { key:'rp_CruiseControlUsage30_I' , value:'Cruise Control Usage 15-30 mph (%)' },
+      { key:'rp_CruiseControlUsage75_I' , value:'Cruise Control Usage >45 mph (%)' },
+      { key:'rp_CruiseControlUsage50_I' , value:'Cruise Control Usage 30-45 mph (%)' },
+      { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage (%)' },
+      { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage 50-75 km/h (%)' },
+      { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage 30-50 km/h (%)' },
+      { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage > 75 km/h (%)' },
+      { key:'rp_cruisecontroldistance50_I' , value:'Cruise Control Usage 30-45 mph (%)' },
+      { key:'rp_cruisecontroldistance30_I' , value:'Cruise Control Usage 15-30 mph (%)' },
+      { key:'rp_cruisecontroldistance75_I' , value:'Cruise Control Usage >45 km/h (%)' },
+      { key:'rp_harshbraking' , value:'Harsh Braking (%)' },
+      { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration (hh:mm:ss)' },
+      { key:'rp_brakeduration' , value:'Brake Duration (hh:mm:ss)' },
+      { key:'rp_brakingscore' , value:'Braking Score' }
+     ];
+     this.translationDataTrendLineLocal = [
+      { key:'rp_general' , value:'General' },
+      { key:'rp_averagegrossweight' , value:'Average Gross Weight' },
+      { key:'rp_distance' , value:'Distance' },
+      { key:'rp_numberoftrips' , value:'Number of Trips' },
+      { key:'rp_numberofvehicles' , value:'Number of vehicles' },
+      { key:'rp_averagedistanceperday' , value:'Average distance per day' },
+      { key:'rp_driverperformance' , value:'Driver Performance' },
+      { key:'rp_ecoscore' , value:'Eco Score' },
       { key:'rp_fuelconsumption' , value:'Fuel Consumption' },
-      { key:'rp_braking' , value:'Braking(%)' },
+      { key:'rp_braking' , value:'Braking' },
       { key:'rp_anticipationscore' , value:'Anticipation Score' },
       { key:'rp_averagedrivingspeed' , value:'Average Driving Speed' },
       { key:'rp_idleduration' , value:'Idle Duration' },
-      { key:'rp_idling' , value:'Idling(%)' },
+      { key:'rp_idling' , value:'Idling' },
       { key:'rp_heavythrottleduration' , value:'Heavy Throttle Duration' },
-      { key:'rp_heavythrottling' , value:'Heavy Throttling(%)' },
+      { key:'rp_heavythrottling' , value:'Heavy Throttling' },
       { key:'rp_averagespeed' , value:'Average Speed' },
-      { key:'rp_ptoduration' , value:'PTO Duration' },
-      { key:'rp_ptousage' , value:'PTO Usage(%)' },
-      { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage 30-50 km/h(%)' },
-      { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage > 75 km/h(%)' },
-      { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage 50-75 km/h(%)' },
-      { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage' },
-      { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage 50-75 km/h(%)' },
-      { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage 30-50 km/h(%)' },
-      { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage > 75 km/h(%)' },
-      { key:'rp_harshbraking' , value:'Harsh Braking(%)' },
+      { key:'rp_ptoduration' , value:'PTO Duration (hh:mm:ss)' },
+      { key:'rp_ptousage' , value:'PTO Usage' },
+      { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage' },
+      { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage' },
+      { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage' },
+      { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage (%)' },
+      { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage' },
+      { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage' },
+      { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage' },
+      { key:'rp_harshbraking' , value:'Harsh Braking' },
       { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration' },
       { key:'rp_brakeduration' , value:'Brake Duration' },
       { key:'rp_brakingscore' , value:'Braking Score' }
@@ -902,26 +1000,17 @@ export class EcoScoreReportDriverComponent implements OnInit {
     if (value === null || value === undefined || dataContext === undefined) {
       return '';
     }
-    let key='';
-    if(this.prefUnitFormat === 'dunit_Imperial' && value.toLowerCase().indexOf("rp_cruisecontrol") !== -1){
-      key = value;
-      value = "rp_cruisecontrolusage";
+    if(this.prefUnitFormat === 'dunit_Imperial' && (value.toLowerCase().indexOf("30") !== -1
+        || value.toLowerCase().indexOf("50") !== -1 || value.toLowerCase().indexOf("75") !== -1)
+        || value.toLowerCase().indexOf("rp_fuelconsumption") !== -1){
+      value += "_I";
     }
     var foundValue = this.translationData.value || this.translationDataLocal.filter(obj=>obj.key === value);
-
     if(foundValue === undefined || foundValue === null || foundValue.length === 0)
       value = value;
     else
       value = foundValue[0].value;
     
-    if(this.prefUnitFormat === 'dunit_Imperial' && key){
-      if(key.indexOf("30") !== -1)
-        value += ' 15-30 mph(%)'
-      else if(key.indexOf("50") !== -1)
-        value += ' 30-45 mph(%)'
-      else if(key.indexOf("75") !== -1)
-        value += ' >45 mph(%)'
-    }
     const gridOptions = grid.getOptions() as GridOption;
     const treeLevelPropName = gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName || '__treeLevel';
     if (value === null || value === undefined || dataContext === undefined) {
@@ -1093,8 +1182,23 @@ public barChartOptions = {
       scaleLabel: {
         display: true,
         labelString: this.translationData.lblPercentage || ' Percentage'
+      },
+      ticks: {
+        stepValue: 10,
+        max: 100,
+        beginAtZero: true,
+        callback: function(value, index, values) {
+            return  value + ' %';
+        }
       }
     }]
+  },
+  tooltips: {
+    callbacks: {
+        label: function(tooltipItem, data) {
+            return tooltipItem.yLabel + ' %';
+        }
+    }
   },
   animation: {
     duration: 0,
@@ -1112,7 +1216,7 @@ public barChartOptions = {
             }
         });
     }}
-};
+  };
 
 loadBarChart(){
   this.barChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;
@@ -1142,8 +1246,23 @@ public barChartOptionsPerformance = {
       scaleLabel: {
         display: true,
         labelString: this.translationData.lblPercentage || ' Percentage'
+      },
+      ticks: {
+        stepValue: 10,
+        max: 100,
+        beginAtZero: true,
+        callback: function(value, index, values) {
+            return  value + ' %';
+        }
       }
     }]
+  },
+  tooltips: {
+    callbacks: {
+        label: function(tooltipItem, data) {
+            return tooltipItem.yLabel + ' %';
+        }
+    }
   },
   animation: {
     duration: 0,
@@ -1178,7 +1297,19 @@ loadBarChartPerfomance(){
     responsive: true,
     legend : {
       display: true
-    }
+    },
+    tooltips: {
+      callbacks: {
+        title: function(tooltipItem, data) {
+          return (data['labels'][tooltipItem[0]['index']]).toString();
+        },
+        label: function(tooltipItem, data) {
+        	var dataset = data.datasets[tooltipItem.datasetIndex];
+          var currentValue = dataset.data[tooltipItem.index];     
+          return currentValue + "%";
+        }
+      }
+    } 
   };
   // public pieChartLabels: Label[] = [['Download', 'Sales'], ['In', 'Store', 'Sales'], 'Mail Sales'];
   // public pieChartData: SingleDataSet = [300, 500, 100];

@@ -9,6 +9,7 @@ namespace net.atos.daf.ct2.reports.entity
     }
     public class VehicleChartData
     {
+        public string Enginetype { get; set; }
         public bool IsDefault { get; set; }
         public int Index { get; set; }
         public string Range { get; set; }
