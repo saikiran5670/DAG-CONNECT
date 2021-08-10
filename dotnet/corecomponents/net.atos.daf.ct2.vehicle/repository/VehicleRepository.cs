@@ -2196,7 +2196,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@Organization_id", orgId);
 
                 string query =
-                    @"SELECT grp.id, grp.group_type as GroupType, grp.function_enum as GroupMethod, grp.ref_id as RefId 
+                    @"SELECT DISTINCT grp.id, grp.group_type as GroupType, grp.function_enum as GroupMethod, grp.ref_id as RefId 
                       FROM master.group grp
 	                  INNER JOIN master.groupref gref ON (gref.group_id=grp.id OR grp.group_type='D' OR grp.group_type='S') AND grp.object_type='V'
 	                  WHERE grp.organization_id=@Organization_id";
@@ -2370,7 +2370,8 @@ namespace net.atos.daf.ct2.vehicle.repository
 
                         string queryDriver = @"select exists (select 1
                                         from master.driver drv inner join master.account acc on drv.email = acc.email
-                                        where drv.driver_id_ext = @DriverId and drv.organization_id = @OrgId)";
+                                        where drv.driver_id_ext = @DriverId and drv.organization_id = @OrgId
+                                        and drv.state='A' and acc.state='A')";
                         var driverExists = await _dataAccess.ExecuteScalarAsync<bool>(queryDriver, parameters);
                         if (driverExists)
                         {
