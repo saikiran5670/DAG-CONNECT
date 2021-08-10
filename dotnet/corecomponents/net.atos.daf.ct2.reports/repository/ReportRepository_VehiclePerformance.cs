@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.reports.repository
                 var vehiclePerformanceChartTemplate = new VehiclePerformanceChartTemplate();
                 var vehSummary = await GetVehPerformanceSummaryDetails(vehiclePerformanceRequest.Vin);
                 vehiclePerformanceChartTemplate.VehiclePerformanceSummary = vehSummary;
-                parameter.Add("@enginetype", vehSummary.EngineType);
+                parameter.Add("@enginetype", vehSummary.EngineType ?? "");
                 parameter.Add("@performancetype", vehiclePerformanceRequest.PerformanceType);
                 string queryEngineLoadData = @"
 	                Select engine_type as Enginetype,is_default as IsDefault, index,range,array_to_string(row, ',','*') as Axisvalues
