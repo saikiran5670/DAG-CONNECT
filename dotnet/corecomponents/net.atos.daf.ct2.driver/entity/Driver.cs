@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using static net.atos.daf.ct2.utilities.CommonEnums;
 
 namespace net.atos.daf.ct2.driver.entity
@@ -53,5 +54,18 @@ namespace net.atos.daf.ct2.driver.entity
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int OrganizationId { get; set; }
+    }
+
+    public class DriverLookupResponse
+    {
+        public IEnumerable<DriverLookup> DriverLookup { get; set; }
+    }
+
+    public class DriverLookup
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string OrganizationId { get; set; }
+        public string OrganizationName { get; set; }
     }
 }

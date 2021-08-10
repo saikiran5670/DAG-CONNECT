@@ -56,6 +56,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   @Input() generalColumnData: any;
   @Input() driverPerformanceColumnData: any;
   @Input() prefObj: any={};
+  @Input() selectionTab: string;
   fromDisplayDate: any;
   toDisplayDate : any;
   selectedVehicleGroup : string;
@@ -71,6 +72,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
   driverPerformanceChartPanel: boolean = true;
   showLoadingIndicator: boolean = false;
   translationDataLocal: any=[];
+  translationDataTrendLineLocal: any=[];
   trendLinesInfotemp: any = [
     'The trendlines represent the following results on 1 or more KPI element(s) over a period of time:',
     '1. Driver results per vehicle',
@@ -129,9 +131,14 @@ export class EcoScoreReportDriverComponent implements OnInit {
  minValue: number=0;
  maxValue: number=0;
  isFirstRecord = true;
+ selectionLimitYesterday: boolean=false;
+ selectionLimitLastWeek: boolean=false;
+ selectionLimitLastMonth: boolean=false;
+ selectionLimitLast3Month: boolean=false;
+ selectionLimitLast6Month: boolean=false;
+ selectionLimitLastYear: boolean=false;
 
   ngOnInit(): void {
-    console.log("ecoScoreDriverInfo"+JSON.stringify(this.ecoScoreDriverInfo));
     this.fromDisplayDate = this.ecoScoreDriverInfo.startDate;
     this.toDisplayDate = this.ecoScoreDriverInfo.endDate;
     this.selectedVehicleGroup = this.ecoScoreDriverInfo.vehicleGroup;
@@ -142,6 +149,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.checkPrefData();
     this.loadOverallPerfomance();
+    this.trendLineSelectionLimit();
     let searchDataParam = {
       "startDateTime":1204336888377,
       "endDateTime":1820818919744,
@@ -320,6 +328,50 @@ export class EcoScoreReportDriverComponent implements OnInit {
     }
   };
 
+  trendLineSelectionLimit(){
+    switch(this.selectionTab) {
+      case 'today':{
+        this.selectionLimitYesterday = true;
+        this.selectionLimitLastWeek=true;
+        this.selectionLimitLastMonth=true;
+        this.selectionLimitLast3Month=true;
+        this.selectionLimitLast6Month=true;
+        this.selectionLimitLastYear=true;
+        break;
+      }
+      case 'yesterday':{
+        this.selectionLimitLastWeek=true;
+        this.selectionLimitLastMonth=true;
+        this.selectionLimitLast3Month=true;
+        this.selectionLimitLast6Month=true;
+        this.selectionLimitLastYear=true;
+        break;
+      }
+      case 'lastweek':{
+        this.selectionLimitLastMonth=true;
+        this.selectionLimitLast3Month=true;
+        this.selectionLimitLast6Month=true;
+        this.selectionLimitLastYear=true;
+        break;
+      }
+      case 'lastmonth':{
+        this.selectionLimitLast3Month=true;
+        this.selectionLimitLast6Month=true;
+        this.selectionLimitLastYear=true;
+        break;
+      }
+      case 'last3month':{
+        this.selectionLimitLast6Month=true;
+        this.selectionLimitLastYear=true;
+        break;
+      }
+      case 'last6month':{
+        this.selectionLimitLastYear=true;
+          break;
+      }
+    }
+  }
+
   @ViewChild("trendLineChart") trendLineChart: ChartComponent;
   @ViewChild("brushChart") brushChart: ChartComponent;
   public chartOptionsApex: Partial<ChartOptionsApex>;
@@ -433,8 +485,15 @@ export class EcoScoreReportDriverComponent implements OnInit {
       for (var key in vehicle.kpiInfo) {
         if ((vehicle.kpiInfo).hasOwnProperty(key)) {
           let _key = (vehicle.kpiInfo)[key].key;
-          let _name = this.translationData._key || this.translationDataLocal.filter(obj=>obj.key === _key);
-          let seriesName =  _name[0].value + ' - ' + vehicle.vehicleName;
+          let _name = this.translationData._key || this.translationDataTrendLineLocal.filter(obj=>obj.key === _key);
+          let unit = (vehicle.kpiInfo)[key].uoM;
+          if(unit && unit.indexOf("(%)") <= 0)
+            unit = ' (' + unit + ')';
+          if(!unit) unit = '';
+          let val = 'driver';
+          if(key.indexOf("Company") !== -1)
+            val = 'company';
+          let seriesName =  _name[0].value + ' ' + unit + ' - '+ val + ' - ' + vehicle.vehicleName;
             dataSeries.push({
               name: seriesName,
               data: ((vehicle.kpiInfo)[key].uoM === 'hh:mm:ss') ? this.formatTime((vehicle.kpiInfo)[key].data, false) : this.formatData((vehicle.kpiInfo)[key].data, false)
@@ -463,7 +522,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
                 }
               }
             );
-            this.kpiName.push(_name[0].value + ' - ' + vehicle.vehicleName);
+            this.kpiName.push(seriesName);
         // }
     }
   }
@@ -775,6 +834,38 @@ export class EcoScoreReportDriverComponent implements OnInit {
       { key:'rp_harshbraking' , value:'Harsh Braking (%)' },
       { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration (hh:mm:ss)' },
       { key:'rp_brakeduration' , value:'Brake Duration (hh:mm:ss)' },
+      { key:'rp_brakingscore' , value:'Braking Score' }
+     ];
+     this.translationDataTrendLineLocal = [
+      { key:'rp_general' , value:'General' },
+      { key:'rp_averagegrossweight' , value:'Average Gross Weight' },
+      { key:'rp_distance' , value:'Distance' },
+      { key:'rp_numberoftrips' , value:'Number of Trips' },
+      { key:'rp_numberofvehicles' , value:'Number of vehicles' },
+      { key:'rp_averagedistanceperday' , value:'Average distance per day' },
+      { key:'rp_driverperformance' , value:'Driver Performance' },
+      { key:'rp_ecoscore' , value:'Eco Score' },
+      { key:'rp_fuelconsumption' , value:'Fuel Consumption' },
+      { key:'rp_braking' , value:'Braking' },
+      { key:'rp_anticipationscore' , value:'Anticipation Score' },
+      { key:'rp_averagedrivingspeed' , value:'Average Driving Speed' },
+      { key:'rp_idleduration' , value:'Idle Duration' },
+      { key:'rp_idling' , value:'Idling' },
+      { key:'rp_heavythrottleduration' , value:'Heavy Throttle Duration' },
+      { key:'rp_heavythrottling' , value:'Heavy Throttling' },
+      { key:'rp_averagespeed' , value:'Average Speed' },
+      { key:'rp_ptoduration' , value:'PTO Duration (hh:mm:ss)' },
+      { key:'rp_ptousage' , value:'PTO Usage' },
+      { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage' },
+      { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage' },
+      { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage' },
+      { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage (%)' },
+      { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage' },
+      { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage' },
+      { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage' },
+      { key:'rp_harshbraking' , value:'Harsh Braking' },
+      { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration' },
+      { key:'rp_brakeduration' , value:'Brake Duration' },
       { key:'rp_brakingscore' , value:'Braking Score' }
      ];
   }
@@ -1209,6 +1300,9 @@ loadBarChartPerfomance(){
     },
     tooltips: {
       callbacks: {
+        title: function(tooltipItem, data) {
+          return (data['labels'][tooltipItem[0]['index']]).toString();
+        },
         label: function(tooltipItem, data) {
         	var dataset = data.datasets[tooltipItem.datasetIndex];
           var currentValue = dataset.data[tooltipItem.index];     

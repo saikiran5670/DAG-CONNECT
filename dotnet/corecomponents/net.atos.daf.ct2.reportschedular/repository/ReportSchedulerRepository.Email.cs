@@ -48,6 +48,38 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             }
         }
 
+        public Task<IEnumerable<ReportEmailFrequency>> GetMissingSchedulerData()
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@now_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                #region Query GetReportCreationScheduler
+                var query = @"select rs.id as SchedulerId, rs.organization_id as OrganizationId, rs.report_id as ReportId, 
+                            rs.frequency_type as FrequecyType,
+							rs.status as Status, 
+                            rs.type as Type, 
+							rs.start_date as StartDate,
+							rs.end_date as EndDate,
+                             rs.last_schedule_run_date as LastScheduleRunDate, 
+                            rs.next_schedule_run_date as NextScheduleRunDate,  
+                            rs.created_by as CreatedBy
+                            from master.reportscheduler rs              
+								 left join master.scheduledreport sr 
+                                    on sr.schedule_report_id = rs.id AND rs.next_schedule_run_date < @now_date 
+                                        and rs.start_date = sr.start_date and  sr.end_date = rs.end_date
+                                       and rs.status = 'A'  
+                            where sr.id is null 
+							order by rs.next_schedule_run_date";
+                #endregion
+                return _dataAccess.QueryAsync<ReportEmailFrequency>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<int> UpdateTimeRangeByDate(ReportEmailFrequency reportEmailFrequency)
         {
             try
