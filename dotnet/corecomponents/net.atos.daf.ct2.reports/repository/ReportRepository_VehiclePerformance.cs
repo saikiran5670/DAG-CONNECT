@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.reports.repository
                 // adding condition to get default engine type mx
                 if (vehiclePerformanceRequest.PerformanceType != "B")
                 {
-                    if (lstengion.Where(e => e.Enginetype == vehSummary.EngineType).ToList().Count > 0)
+                    if (lstengion.Where(e => e.Enginetype == (vehSummary.EngineType ?? "")).ToList().Count > 0)
                     {
                         vehiclePerformanceChartTemplate.VehChartList = lstengion.Where(e => e.Enginetype == vehSummary.EngineType).ToList();
                     }
