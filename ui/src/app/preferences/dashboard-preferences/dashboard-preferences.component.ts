@@ -228,19 +228,19 @@ export class DashboardPreferencesComponent implements OnInit {
             this.dashboardPreferenceForm.addControl(element.key + 'thresholdValuemin', new FormControl(mins,[Validators.min(0),Validators.max(60)]));
           } else if (element.key.includes('fleetkpi_totaldistance')) {
             let thresholdValueKm = this.reportMapService.getDistance(element.thresholdValue, this.prefUnitFormat);
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm,[Validators.min(0),Validators.max(10000)]));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm,[Validators.min(0),Validators.max(10000),Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]));
           }
           else if (element.key.includes('fleetkpi_fuelconsumption'))
           {
             let thresholdValue_L_100Km = this.reportMapService.getFuelConsumedUnits(element.thresholdValue, this.prefUnitFormat, true);
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValue_L_100Km,[Validators.min(0),Validators.max(10000)]));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValue_L_100Km,[Validators.min(0),Validators.max(10000),Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]));
           }
           else if (element.key.includes('fleetkpi_fuelusedidling') || element.key.includes('fleetkpi_fuelconsumed')) {
             let thresholdValueL = this.reportMapService.getFuelConsumedUnits(element.thresholdValue, this.prefUnitFormat, false);
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueL,[Validators.min(0),element.key.includes('fleetkpi_fuelusedidling') ? Validators.max(10000) :  Validators.max(1000) ]));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueL,[Validators.min(0),element.key.includes('fleetkpi_fuelusedidling') ? Validators.max(10000) :  Validators.max(1000), Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]));
           }
           else {
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(element.thresholdValue, [Validators.min(0),Validators.max(1000)]));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(element.thresholdValue, [Validators.min(0),Validators.max(1000),Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]));
           }
         } else if (section.name.includes('Dashboard.TodayLiveVehicle')) {
           _data = element;
@@ -266,7 +266,7 @@ export class DashboardPreferencesComponent implements OnInit {
           }
           else if (element.key.includes('todaylivevehicle_distancebasedutilizationrate')) {
             let thresholdValueKm = this.reportMapService.getDistance(element.thresholdValue, this.prefUnitFormat);
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm, [Validators.min(0),Validators.max(10000)]));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm, [Validators.min(0),Validators.max(10000),Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]));
           }        
           else {
             this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(element.thresholdValue,[Validators.min(0),Validators.max(10000)]));
@@ -297,7 +297,8 @@ export class DashboardPreferencesComponent implements OnInit {
           }
           else if (element.key.includes('vehicleutilization_distancebasedutilizationrate')) {
             let thresholdValueKm = this.reportMapService.getDistance(element.thresholdValue, this.prefUnitFormat);
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm, [Validators.min(0),Validators.max(10000)]));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm, [Validators.min(0),Validators.max(10000),
+              Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]));
             this.dashboardPreferenceForm.addControl(element.key + 'chartType', new FormControl(element.chartType != '' ? element.chartType : 'D'));
           }
           else {
