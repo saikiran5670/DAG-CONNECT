@@ -497,24 +497,26 @@ getPreferenceThreshold(fieldKey){
 }
 
   setChartData(){
-    if(this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[2].length > 0){
-    let filterData1 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distanceperday'));
-    this.distanceChartType = filterData1[0].chartType == 'L' ? 'line' : 'bar';
-     
-    let filterData2 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
-     this.vehicleChartType =  filterData2[0].chartType == 'L' ? 'line' : 'bar';
-     
-    let filterData3 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_timebasedutilizationrate'));
-    this.timeDChartType =  filterData3[0].chartType == 'P' ? 'pie' : 'doughnut';
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 0) {
+      let dashboardVehicleutilization = this.dashboardPrefData.subReportUserPreferences.filter((item) => item.key == 'rp_db_dashboard_vehicleutilization')[0];
+      if (dashboardVehicleutilization && dashboardVehicleutilization.subReportUserPreferences.length > 0) {
+        let filterData1 = dashboardVehicleutilization.subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distanceperday'));
+        this.distanceChartType = filterData1[0].chartType == 'L' ? 'line' : 'bar';
 
-    let filterData4 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distancebasedutilizationrate'));
-    this.mileageDChartType =  filterData4[0].chartType == 'P' ? 'pie' : 'doughnut';
-    }
-    else{
-      this.distanceChartType ='bar';
-      this.vehicleChartType = 'line';
-      this.timeDChartType= 'pie';
-      this.mileageDChartType= 'pie';
+        let filterData2 = dashboardVehicleutilization.subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
+        this.vehicleChartType = filterData2[0].chartType == 'L' ? 'line' : 'bar';
+
+        let filterData3 = dashboardVehicleutilization.subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_timebasedutilizationrate'));
+        this.timeDChartType = filterData3[0].chartType == 'P' ? 'pie' : 'doughnut';
+
+        let filterData4 = dashboardVehicleutilization.subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distancebasedutilizationrate'));
+        this.mileageDChartType = filterData4[0].chartType == 'P' ? 'pie' : 'doughnut';
+      } else {
+        this.distanceChartType = 'bar';
+        this.vehicleChartType = 'line';
+        this.timeDChartType = 'pie';
+        this.mileageDChartType = 'pie';
+      }
     }
     //for distance chart
     this.distance = [];
