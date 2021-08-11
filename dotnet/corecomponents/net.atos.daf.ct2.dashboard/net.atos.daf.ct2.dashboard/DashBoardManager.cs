@@ -79,7 +79,6 @@ namespace net.atos.daf.ct2.dashboard
         {
             TodayLiveVehicleResponse objTodayResponse = new TodayLiveVehicleResponse();
             var todayData = await _dashboardRepository.GetTodayLiveVinData(objTodayLiveVehicleRequest);
-            var yesterdayData = await _dashboardRepository.GetYesterdayLiveVinData(objTodayLiveVehicleRequest);
             if (todayData != null && todayData.Count > 0)
             {
                 objTodayResponse.TodayActiveVinCount = objTodayResponse.DriverCount = todayData.Count;//Current trip table driver1_id data is not in sink with driver table Data processingteam need to do that
@@ -89,15 +88,16 @@ namespace net.atos.daf.ct2.dashboard
                     objTodayResponse.Distance += todayData[i].TodayDistance;
                     objTodayResponse.TodayTimeBasedUtilizationRate += todayData[i].TodayDrivingTime;
                     objTodayResponse.DrivingTime += todayData[i].TodayDrivingTime;
-                }
-            }
-            if (yesterdayData != null && yesterdayData.Count > 0)
-            {
-                objTodayResponse.YesterdayActiveVinCount = yesterdayData.Count;
-                for (int i = 0; i < yesterdayData.Count; i++)
+                }//Tobe called only when there is Today live data.
+                var yesterdayData = await _dashboardRepository.GetYesterdayLiveVinData(objTodayLiveVehicleRequest);
+                if (yesterdayData != null && yesterdayData.Count > 0)
                 {
-                    objTodayResponse.YesterdayDistanceBasedUtilization += yesterdayData[i].YesterdayDistance;
-                    objTodayResponse.YesterdayTimeBasedUtilizationRate += yesterdayData[i].YesterdayDrivingTime;
+                    objTodayResponse.YesterdayActiveVinCount = yesterdayData.Count;
+                    for (int i = 0; i < yesterdayData.Count; i++)
+                    {
+                        objTodayResponse.YesterdayDistanceBasedUtilization += yesterdayData[i].YesterdayDistance;
+                        objTodayResponse.YesterdayTimeBasedUtilizationRate += yesterdayData[i].YesterdayDrivingTime;
+                    }
                 }
             }
             return objTodayResponse;
