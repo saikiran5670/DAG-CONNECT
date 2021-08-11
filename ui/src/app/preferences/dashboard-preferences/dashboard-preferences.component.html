@@ -104,18 +104,18 @@
                                             No negative values allowed
                                            </mat-error>
                                            <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('max')">
-                                            Hrs max allowed- 24
+                                           hh:mm max allowed- 23:60
                                            </mat-error>
                                     </mat-form-field>
                                     <mat-form-field appearance="outline" style='width: 38%; margin-left: 4%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="text" placeholder="{{ '' }}"
                                             [formControlName]="field.key+'thresholdValuemin'">
                                         <span matSuffix>Min</span>
-                                        <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
+                                        <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValuemin').hasError('min')">
                                             No negative values allowed
                                            </mat-error>
-                                           <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('max')">
-                                            Minutes max allowed- 59
+                                           <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValuemin').hasError('max')">
+                                            hh:mm max allowed- 23:60
                                            </mat-error>
                                     </mat-form-field>
                                 </div>
@@ -180,11 +180,23 @@
                                         <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValue'"
                                             placeholder="{{ '' }}">
                                         <span matSuffix>Hr</span>
+                                        <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
+                                            No negative values allowed
+                                           </mat-error>
+                                           <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('max')">
+                                            hh:mm max allowed- 23:60
+                                           </mat-error>
                                     </mat-form-field>
                                     <mat-form-field appearance="outline" style='width: 38%; margin-left: 4%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValuemin'"
                                             placeholder="{{ '' }}">
                                         <span matSuffix>Min</span>
+                                        <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValuemin').hasError('min')">
+                                            No negative values allowed
+                                           </mat-error>
+                                           <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValuemin').hasError('max')">
+                                            hh:mm max allowed- 23:60
+                                           </mat-error>
                                     </mat-form-field>
                                 </div>
                             </div>
@@ -200,6 +212,12 @@
                                         ||
                                         'Miles')}}
                                     </span>
+                                    <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
+                                        No negative values allowed
+                                       </mat-error>
+                                       <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('max')">
+                                        Max value allowed- 10000
+                                       </mat-error>
                                 </mat-form-field>
                             </div>
 
@@ -267,11 +285,23 @@
                                         <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValue'"
                                             placeholder="{{ '' }}">
                                         <span matSuffix>Hr</span>
+                                        <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
+                                            No negative values allowed
+                                           </mat-error>
+                                           <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('max')">
+                                            hh:mm max allowed- 23:60
+                                           </mat-error>
                                     </mat-form-field>
                                     <mat-form-field appearance="outline" style='width: 38%; margin-left: 4%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValuemin'"
                                             placeholder="{{ '' }}">
                                         <span matSuffix>Min</span>
+                                        <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValuemin').hasError('min')">
+                                            No negative values allowed
+                                           </mat-error>
+                                           <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValuemin').hasError('max')">
+                                            hh:mm max allowed- 23:60
+                                           </mat-error>
                                     </mat-form-field>
                                 </div>
                             </div>
@@ -281,6 +311,12 @@
                                 <mat-form-field appearance="outline" style='width: 80%'>
                                     <input [readonly]='!editDashboardFlag' matInput type="text" [formControlName]="field.key+'thresholdValue'"
                                         placeholder="{{ 'Set Target' }}">
+                                        <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
+                                            No negative values allowed
+                                           </mat-error>
+                                           <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('max')">
+                                            Max value allowed- 10000
+                                           </mat-error>
                                     <span matSuffix> {{prefUnit == 'Metric' ? (translationData.lblkms || 'Km') :
                                         (translationData.lblmile || 'Miles')}}</span>
                                 </mat-form-field>

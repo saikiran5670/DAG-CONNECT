@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import {
   ChartComponent,
   ApexAxisChartSeries,
@@ -57,6 +57,8 @@ export class EcoScoreReportDriverComponent implements OnInit {
   @Input() driverPerformanceColumnData: any;
   @Input() prefObj: any={};
   @Input() selectionTab: string;
+  @Input() trendLineSearchDataParam: any;
+  @Output() vehicleLimitExceeds = new EventEmitter<object>();
   fromDisplayDate: any;
   toDisplayDate : any;
   selectedVehicleGroup : string;
@@ -120,7 +122,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
  showGeneralPie: boolean=false;
  showPerformanceBar: boolean=true;
  showPerformancePie: boolean=false;
- vehicleLimitExceeds: boolean=false;
  vehicleSelected: number;
  selectionTabTrend: string;
  kpiName: any=[];
@@ -198,8 +199,12 @@ export class EcoScoreReportDriverComponent implements OnInit {
       vins.push(element.vin);
      });
      let uniq = [...new Set(vins)];
-     if(uniq.length>20)
-      this.vehicleLimitExceeds = true;
+     if(uniq.length>0){
+      let emitObj = {
+        limitExceeds: true
+      }
+        this.vehicleLimitExceeds.emit(emitObj);
+    }
      this.tableColumns();
     this.defineGrid();
    // this.loadData();
