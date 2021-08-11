@@ -10,6 +10,7 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Inject } from '@angular/core';
 import { ReportMapService } from '../../report/report-map.service';
 import { MessageService } from '../../services/message.service';
+import { DataInterchangeService } from '../../services/data-interchange.service'
 
 
 @Component({
@@ -248,11 +249,13 @@ _fleetTimer : boolean = true;
 totalThresholdDistance: any;
 timebasedThreshold: any;
 distancebasedThreshold: any;
+totalActiveVehicles : any = 0;
 
   constructor(private router: Router,
               private elRef: ElementRef,
               private dashboardService : DashboardService,
               private reportMapService: ReportMapService,
+              private dataInterchangeService : DataInterchangeService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private messageService: MessageService) {
                 if(this._fleetTimer){
@@ -262,6 +265,12 @@ distancebasedThreshold: any;
                     }
                   });
                 }
+
+                this.dataInterchangeService.fleetKpiInterface$.subscribe(data=>{
+                  if(data){
+                    this.totalActiveVehicles = data['fleetKpis']['vehicleCount'];
+                  }
+                })
                }
 
   ngOnInit(): void {
