@@ -175,7 +175,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 								} catch(Exception e) {
 									
 									currentTripPojo.setOdometer_val(0L);
-									System.out.println();
+									System.out.println("exception in setting odometer");
 								}
 							
 
