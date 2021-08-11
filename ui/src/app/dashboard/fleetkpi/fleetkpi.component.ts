@@ -7,6 +7,7 @@ import { BaseChartDirective, Color, Label, MultiDataSet, PluginServiceGlobalRegi
 import { stringify } from '@angular/compiler/src/util';
 import { ReportMapService } from '../../report/report-map.service';
 import { MessageService } from '../../services/message.service';
+import { DataInterchangeService } from '../../services/data-interchange.service'
 
 @Component({
   selector: 'app-fleetkpi',
@@ -495,7 +496,7 @@ export class FleetkpiComponent implements OnInit {
        }];
  
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private dashboardService : DashboardService,
-      private reportMapService : ReportMapService,private messageService: MessageService) {
+      private reportMapService : ReportMapService,private messageService: MessageService,private dataInterchangeService: DataInterchangeService) {
         if(this._fleetTimer){
           this.messageService.getMessage().subscribe(message => {
             if (message.key.indexOf("refreshData") !== -1) {
@@ -587,6 +588,8 @@ export class FleetkpiComponent implements OnInit {
       this.kpiData = kpiData;
       this.activeVehicles = kpiData['fleetKpis']['vehicleCount'];
       this.updateCharts();
+      this.dataInterchangeService.getFleetData(kpiData);
+
 
     })
   }
