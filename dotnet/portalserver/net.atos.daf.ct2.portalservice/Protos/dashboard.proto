@@ -30,7 +30,7 @@ message TodayLiveVehicleRequest{
 
 message TodayLiveVehicleResponse{
     string TodayVin = 1;
-    double Distance = 2;
+    int64 Distance = 2;
     int64 DrivingTime = 3;
     int32 DriverCount  = 4;
     int32 TodayActiveVinCount = 5;
