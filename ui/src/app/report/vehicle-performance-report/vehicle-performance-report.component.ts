@@ -23,6 +23,58 @@ export class VehiclePerformanceReportComponent implements OnInit {
   pieChartColors = [];
   piechartTitle = '';
   bubbleHeatchartTitle = '';
+  defualtData = [
+    [
+      0,
+      5,
+      0
+    ],
+    [
+      0,
+      15,
+      0
+    ],
+    [
+      0,
+      25,
+      0
+    ],
+    [
+      0,
+      35,
+      0
+    ],
+    [
+      0,
+      45,
+      0
+    ],
+    [
+      0,
+      55,
+      0
+    ],
+    [
+      0,
+      65,
+      0
+    ],
+    [
+      0,
+      75,
+      0
+    ],
+    [
+      0,
+      85,
+      0
+    ],
+    [
+      0,
+      95,
+      0
+    ],
+  ]
   performanceTypeLst = [
     { name: "Engine Load Collective",  value: "E" },
     { name: "Road Speed Collective",  value: "S" },
@@ -58,14 +110,17 @@ export class VehiclePerformanceReportComponent implements OnInit {
   }
 
   xaxisLabels = {
-    offsetX: -10,
+    offsetX: -8,
     offsetY: 0,
     formatter: (value, index) => {
-      if(value !== 0) {
-        let newIndex = (index/10)-1;
+      let newIndex = (index/10)-1;
+      if(this.xaxisVaues[newIndex]) {
         return this.xaxisVaues[newIndex];
       }
-      return '';
+      if(value == 0) {
+        return '';
+      }
+      return value;
     },
     style: {
       cssClass: 'apexcharts-xaxis-label',
@@ -261,6 +316,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
           let offsetX = 0;
           let width = 41;
           for(let color of colors) {
+            let leg = this.legends.filter((item) => item.value == color);
             let colorObj = {
               y: row.index * 10,
               y2: ((row.index * 10) + 10),
@@ -269,7 +325,8 @@ export class VehiclePerformanceReportComponent implements OnInit {
               strokeDashArray: 0,
               borderColor: '#fff',
               width: JSON.stringify(width),
-              fillColor: this.colorToLegends[color]
+              fillColor: this.colorToLegends[color],
+              labelName: this.translationData[leg[0].name]
             }
             this.backgroundColorPattern.push(colorObj);
             offsetX = offsetX + 41;
@@ -285,9 +342,10 @@ export class VehiclePerformanceReportComponent implements OnInit {
 
   transformDataForBubbleChart(bubbleData) {
     let bubbleChartData = [];
+    bubbleChartData.push(...this.defualtData);
     for(let bubble of bubbleData) {
       let newArr = [];
-      newArr.push((bubble.xindex*10) - 5 < 0 ? 0 : (bubble.xindex*10) - 5);
+      newArr.push((bubble.xindex*10) + 5 < 0 ? 0 : (bubble.xindex*10) + 5);
       newArr.push((bubble.yindex*10) + 5 < 0 ? 0 : (bubble.yindex*10) + 5);
       newArr.push(Math.abs(bubble.value));
       bubbleChartData.push(newArr);

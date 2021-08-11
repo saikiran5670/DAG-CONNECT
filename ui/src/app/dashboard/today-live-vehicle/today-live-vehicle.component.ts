@@ -31,6 +31,7 @@ export class TodayLiveVehicleComponent implements OnInit {
   activeVehiclePercent : Number = 0;
   fileIcon = 'assets/dashboard/greenArrow.svg';
   totalVehicles : number = 0;
+  activeVehicleTotalCount : number = 0;
   timeBasedRate : any;
   _fleetTimer : boolean = true;
   @Input() finalVinList : any;
@@ -334,6 +335,8 @@ doughnutDistanceColors: Color[] = [
 
   updateActiveVehicle(){
     let activeVehicleCount = this.liveVehicleData.todayActiveVinCount;
+    this.activeVehicleTotalCount = this.liveVehicleData.todayActiveVinCount;
+
     this.totalVehicles = this.finalVinList.length;
     let activeVehiclePercent = this.dashboardService.calculateTodayLivePercentage(activeVehicleCount,this.totalVehicles);
     let thresholdValue = this.getPreferenceThreshold('activevehicles')['value']; //10;
@@ -353,7 +356,13 @@ doughnutDistanceColors: Color[] = [
 
     }
 
-    this.doughnutChartActiveVehicleData = [[activeVehiclePercent,(100 - activeVehiclePercent)]]
+    let nextPercent = 100 - activeVehiclePercent;
+
+    if(activeVehiclePercent > 100){
+      nextPercent = 0;
+    }
+
+    this.doughnutChartActiveVehicleData = [[activeVehiclePercent,(nextPercent)]]
 
     this.doughnutChartPlugins = [{
       afterDraw(chart) {
@@ -448,7 +457,7 @@ doughnutDistanceColors: Color[] = [
      
     switch (_vehicleLimit) {
       case 'U':{
-        if(vehicleTarget < this.liveVehicleData.activeVehicles){ //red
+        if(_vehicleThreshold < activeVehicleCount){ //red
           this.doughnutColors = [
             {
               backgroundColor: [
@@ -489,7 +498,7 @@ doughnutDistanceColors: Color[] = [
       }
         break;
         case 'L':{
-          if(vehicleTarget > this.liveVehicleData.activeVehicles){
+          if(_vehicleThreshold > activeVehicleCount){ //red
             this.doughnutColors = [
               {
                 backgroundColor: [
@@ -540,9 +549,15 @@ doughnutDistanceColors: Color[] = [
     let todayTimeRate = this.liveVehicleData.todayTimeBasedUtilizationRate;
     let _threshold = this.getPreferenceThreshold('timebasedutilizationrate')['value'];
     this.timeBasedThreshold = _threshold;
-    let timeBasedCalculation = this.dashboardService.calculateKPIPercentage(todayTimeRate,this.totalVehicles,_threshold,1);
+    let timeBasedCalculation = this.dashboardService.calculateKPIPercentage(todayTimeRate,this.activeVehicleTotalCount,_threshold,1);
     let timeBasedPercent = timeBasedCalculation['kpiPercent'];
-    this.doughnutChartTimeBasedData = [[timeBasedPercent,(100 - timeBasedPercent)]]
+    let nextPercent = 100 - timeBasedPercent;
+
+    if(timeBasedPercent > 100){
+      nextPercent = 0;
+    }
+
+    this.doughnutChartTimeBasedData = [[timeBasedPercent,(nextPercent)]]
     let timeUtilisationTarget = timeBasedCalculation['cuttOff'];
     let timeTarget = Util.getHhMmTimeFromMS(timeUtilisationTarget);
     let timeRateTarget = '';
@@ -673,7 +688,7 @@ doughnutDistanceColors: Color[] = [
     switch (_timeRateLimit) {
       case 'U':{
         if(timeBasedCalculation['cuttOff'] < todayTimeRate){ //red
-          this.doughnutColors = [
+          this.doughnutTimeColors = [
             {
               backgroundColor: [
                 "#ff0000",
@@ -692,7 +707,7 @@ doughnutDistanceColors: Color[] = [
            ];
         }
         else{
-          this.doughnutColors = [
+          this.doughnutTimeColors = [
             {
               backgroundColor: [
                 "#89c64d",
@@ -733,7 +748,7 @@ doughnutDistanceColors: Color[] = [
              ];
           }
           else{
-            this.doughnutColors = [
+            this.doughnutTimeColors = [
               {
                 backgroundColor: [
                   "#89c64d",
@@ -768,11 +783,15 @@ doughnutDistanceColors: Color[] = [
     this.distanceRate = this.reportMapService.getDistance(todayDistance, this.prefUnitFormat);
     let _threshold = this.getPreferenceThreshold('distancebasedutilizationrate')['value'];
     this.distanceBasedThreshold = _threshold;
-    let distanceBasedPercent = this.dashboardService.calculateKPIPercentage(todayDistance,this.totalVehicles,_threshold,1)["kpiPercent"];
-    let distancecutOff = this.dashboardService.calculateKPIPercentage(todayDistance,this.totalVehicles,_threshold,1)["cuttOff"];
-    
-    this.doughnutChartDistanceBasedData = [[distanceBasedPercent,(100 - distanceBasedPercent)]]
-    let distanceTarget = this.dashboardService.calculateTargetValue(this.totalVehicles,_threshold,1);
+    let distanceBasedPercent = this.dashboardService.calculateKPIPercentage(todayDistance,this.activeVehicleTotalCount,_threshold,1)["kpiPercent"];
+    let distancecutOff = this.dashboardService.calculateKPIPercentage(todayDistance,this.activeVehicleTotalCount,_threshold,1)["cuttOff"];
+    let nextPercent = 100 - distanceBasedPercent;
+
+    if(distanceBasedPercent > 100){
+      nextPercent = 0;
+    }
+    this.doughnutChartDistanceBasedData = [[distanceBasedPercent,(nextPercent)]]
+    let distanceTarget = this.dashboardService.calculateTargetValue(this.activeVehicleTotalCount,_threshold,1);
     let changePercent = this.dashboardService.calculateLastChange(todayDistance,lastDistance,4);
    
     let activeVehicleCaretColor = 'caretGreen';
@@ -882,7 +901,7 @@ doughnutDistanceColors: Color[] = [
       switch (_distanceRateLimit) {
         case 'U':{
           if(distancecutOff < todayDistance){ //red
-            this.doughnutColors = [
+            this.doughnutDistanceColors = [
               {
                 backgroundColor: [
                   "#ff0000",
@@ -923,7 +942,7 @@ doughnutDistanceColors: Color[] = [
           break;
           case 'L':{
             if(distancecutOff > todayDistance){
-              this.doughnutColors = [
+              this.doughnutDistanceColors = [
                 {
                   backgroundColor: [
                     "#ff0000",
@@ -942,7 +961,7 @@ doughnutDistanceColors: Color[] = [
                ];
             }
             else{
-              this.doughnutColors = [
+              this.doughnutDistanceColors = [
                 {
                   backgroundColor: [
                     "#89c64d",

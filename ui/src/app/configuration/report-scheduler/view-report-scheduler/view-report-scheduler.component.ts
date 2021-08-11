@@ -84,8 +84,8 @@ export class ViewReportSchedulerComponent implements OnInit {
     this.scheduledReportList= this.selectedRowData[0].scheduledReport;
     this.scheduledReportList.forEach(element => {
       element.reportName=this.selectedRowData[0].reportName;
-      element.startDate= Util.convertUtcToDateFormat(element.startDate, this.prefDateFormat+"  hh:mm:ss");
-      element.endDate= Util.convertUtcToDateFormat(element.endDate, this.prefDateFormat+"  hh:mm:ss")
+      element.startDate= Util.convertUtcToDateFormat(element.startDate, this.prefDateFormat+"  HH:mm:ss", this.prefTimeZone);
+      element.endDate= Util.convertUtcToDateFormat(element.endDate, this.prefDateFormat+"  HH:mm:ss",  this.prefTimeZone)
     });
 
     this.updateDatasource();
@@ -181,12 +181,12 @@ export class ViewReportSchedulerComponent implements OnInit {
   timeRangeSelection(timeRange){
     switch(timeRange){
       case 'D' : {
-        this.startDate= Util.utcToDateConversion(this.selectedRowData[0].startDate);
+        this.startDate= Util.convertUtcToDateNoFormat(this.selectedRowData[0].startDate, this.prefTimeZone);
         let _h= this.startDate.getHours();
         let _m= this.startDate.getMinutes();
         let _s= this.startDate.getSeconds();
         this.startDate= (_h > 10 ? _h : "0"+_h) + ":" + (_m > 10 ? _m : "0"+_m) + ":" + (_s > 10 ? _s : "0"+_s);
-        this.endDate= Util.utcToDateConversion(this.selectedRowData[0].endDate);
+        this.endDate= Util.convertUtcToDateNoFormat(this.selectedRowData[0].endDate, this.prefTimeZone);
         this.endDate= this.endDate.getHours()+":"+this.endDate.getMinutes()+":"+this.endDate.getSeconds();
         // this.startDate= "00:00:00";
         // this.endDate= "23:59:59";
@@ -200,9 +200,9 @@ export class ViewReportSchedulerComponent implements OnInit {
         break;
       }
       case 'B' : {
-        // this.startDate= Util.convertUtcToDateFormat(this.selectedRowData[0].startDate, this.prefDateFormat);
-        this.endDate=  Util.convertUtcToDateFormat(this.selectedRowData[0].endDate, this.prefDateFormat);
-        this.startDate= new Date(this.selectedRowData[0].endDate);
+        // this.endDate=  Util.convertUtcToDateFormat(this.selectedRowData[0].endDate, this.prefDateFormat, this.prefTimeZone);
+        this.endDate= Util.convertUtcToDateFormat(this.selectedRowData[0].endDate, this.prefDateFormat, this.prefTimeZone);
+        this.startDate= new Date(Util.convertUtcToDateNoFormat(this.selectedRowData[0].endDate, this.prefTimeZone));
         this.startDate.setDate(this.startDate.getDate() - 13);
         this.startDate= moment(this.startDate).format(this.prefDateFormat);
         break;

@@ -438,16 +438,26 @@
         </div>
 
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg mobile-view" fxLayoutGap="10px">
-          <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.landingPage}" class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
-            <mat-form-field appearance="outline" style='width: 70%'>
-              <input matInput type="text" formControlName="pageRefreshTime">
-              <span matSuffix>min</span> 
-              <mat-error style="margin-top: 10px;" *ngIf="userSettingsForm.get('pageRefreshTime').hasError('min') || userSettingsForm.get('pageRefreshTime').hasError('max')">
-                Please set time in mentioned range
-               </mat-error>     
-            </mat-form-field>
-            <span>(min 1min and max 60min)</span>
+          <div class="areaWidth min-width-50-per mobile-margin-right-0 targetSpanIcon" fxLayout="column">
+            <div fxLayout="row" class='areaWidth' fxLayoutAlign="left center">
+              <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
+            </div>
+            <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.landingPage}" fxLayout="row" fxLayoutAlign="left center">
+              <mat-form-field appearance="outline" style='width: 35%'>
+                <input matInput maxlength="2" type="text" formControlName="pageRefreshTime" (keypress)="keyPressNumbers($event)">
+                <span matSuffix>min</span>   
+              </mat-form-field>
+              <span style="margin: 10px 0px 0px 10px;">({{ translationData.lbl || 'minimum 1 min or maximum 60 min' }})</span>
+            </div>
+            <mat-error [ngClass]="{'errorClass': userSettingsForm.get('pageRefreshTime').hasError('required')}" *ngIf="userSettingsForm.get('pageRefreshTime').hasError('required')">
+              {{ translationData.lblPleaseEnterTimerValue || 'Please Enter Timer Value' }}
+            </mat-error>
+            <mat-error [ngClass]="{'errorClass': userSettingsForm.get('pageRefreshTime').hasError('cannotExceedMaxValue')}" *ngIf="userSettingsForm.get('pageRefreshTime').hasError('cannotExceedMaxValue')">
+                {{ translationData.lbl || 'Timer Value cannot be greater than 60' }}
+            </mat-error>
+            <mat-error [ngClass]="{'errorClass': userSettingsForm.get('pageRefreshTime').hasError('cannotExceedMinValue')}" *ngIf="userSettingsForm.get('pageRefreshTime').hasError('cannotExceedMinValue')">
+                {{ translationData.lbl || 'Timer Value cannot be less than 1' }}
+            </mat-error>
           </div>
         </div>
 
@@ -456,7 +466,7 @@
             (click)='onEditGeneralSettingsCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
           <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary" 
                             (click)='onResetGeneralSettings()'>{{ translationData.lblReset || 'Reset' }}</button>
-          <button class='mobile-full-width' mat-raised-button color="primary" type="submit"
+          <button [disabled]='!userSettingsForm.valid' class='mobile-full-width' mat-raised-button color="primary" type="submit"
             (click)='onGeneralSettingsUpdate()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
         </div>
       </form>

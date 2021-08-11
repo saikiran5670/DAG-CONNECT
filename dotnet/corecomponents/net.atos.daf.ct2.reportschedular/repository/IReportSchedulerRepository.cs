@@ -39,6 +39,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         Task<int> UpdateTimeRangeByDate(ReportEmailFrequency reportEmailFrequency);
         Task<int> UpdateTimeRangeByCalenderTime(ReportEmailFrequency reportEmailFrequency);
         Task<int> UpdateIsMailSend(Guid token, bool isMailSend);
+        Task<IEnumerable<ReportEmailFrequency>> GetMissingSchedulerData();
 
     }
 }

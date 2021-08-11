@@ -100,9 +100,15 @@ export class HeatBubbleChartComponent implements OnInit {
       },
       tooltip: {
         custom: function({series, seriesIndex, dataPointIndex, w}) {
-          return '<div class="arrow_box">' +
-            '<span>' +  w.globals.initialSeries[seriesIndex].data[dataPointIndex][2] + '</span><br/>' +
-            '</div>'
+          let yaxis = w.config.annotations.yaxis;
+          let yaxis1 = w.globals.initialSeries[seriesIndex].data[dataPointIndex][1] + 5;
+          let filterData = yaxis.filter((item)=>item.y2 == yaxis1)
+          let xaxis = (w.globals.initialSeries[seriesIndex].data[dataPointIndex][0] - 5)/10;
+          return `<div style="text-align:center; padding: 10px; border: 1px dotted #000; display: inline-block;">
+          <span style="margin-bottom: 0;">${filterData[xaxis].labelName}</span><br/>
+          <span style="margin-bottom: 0; font-weight: 600;"><label style="width:12px; height:12px; background-color:${filterData[xaxis].fillColor}; border-radius: 50%; display:'inline-block'; vertical-align: -3px;">&nbsp;</label>
+          ${w.globals.initialSeries[seriesIndex].data[dataPointIndex][2]}</span>
+        </div>`
         }
       },
       grid: {

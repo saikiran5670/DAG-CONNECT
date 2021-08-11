@@ -10,6 +10,7 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Inject } from '@angular/core';
 import { ReportMapService } from '../../report/report-map.service';
 import { MessageService } from '../../services/message.service';
+import { DataInterchangeService } from '../../services/data-interchange.service'
 
 
 @Component({
@@ -248,11 +249,13 @@ _fleetTimer : boolean = true;
 totalThresholdDistance: any;
 timebasedThreshold: any;
 distancebasedThreshold: any;
+totalActiveVehicles : any = 0;
 
   constructor(private router: Router,
               private elRef: ElementRef,
               private dashboardService : DashboardService,
               private reportMapService: ReportMapService,
+              private dataInterchangeService : DataInterchangeService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private messageService: MessageService) {
                 if(this._fleetTimer){
@@ -262,6 +265,12 @@ distancebasedThreshold: any;
                     }
                   });
                 }
+
+                this.dataInterchangeService.fleetKpiInterface$.subscribe(data=>{
+                  if(data){
+                    this.totalActiveVehicles = data['fleetKpis']['vehicleCount'];
+                  }
+                })
                }
 
   ngOnInit(): void {
@@ -497,24 +506,26 @@ getPreferenceThreshold(fieldKey){
 }
 
   setChartData(){
-    if(this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences[2].length > 0){
-    let filterData1 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distanceperday'));
-    this.distanceChartType = filterData1[0].chartType == 'L' ? 'line' : 'bar';
-     
-    let filterData2 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
-     this.vehicleChartType =  filterData2[0].chartType == 'L' ? 'line' : 'bar';
-     
-    let filterData3 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_timebasedutilizationrate'));
-    this.timeDChartType =  filterData3[0].chartType == 'P' ? 'pie' : 'doughnut';
+    if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 0) {
+      let dashboardVehicleutilization = this.dashboardPrefData.subReportUserPreferences.filter((item) => item.key == 'rp_db_dashboard_vehicleutilization')[0];
+      if (dashboardVehicleutilization && dashboardVehicleutilization.subReportUserPreferences.length > 0) {
+        let filterData1 = dashboardVehicleutilization.subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distanceperday'));
+        this.distanceChartType = filterData1[0].chartType == 'L' ? 'line' : 'bar';
 
-    let filterData4 = this.dashboardPrefData.subReportUserPreferences[2].subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distancebasedutilizationrate'));
-    this.mileageDChartType =  filterData4[0].chartType == 'P' ? 'pie' : 'doughnut';
-    }
-    else{
-      this.distanceChartType ='bar';
-      this.vehicleChartType = 'line';
-      this.timeDChartType= 'pie';
-      this.mileageDChartType= 'pie';
+        let filterData2 = dashboardVehicleutilization.subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_activevehiclesperday'));
+        this.vehicleChartType = filterData2[0].chartType == 'L' ? 'line' : 'bar';
+
+        let filterData3 = dashboardVehicleutilization.subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_timebasedutilizationrate'));
+        this.timeDChartType = filterData3[0].chartType == 'P' ? 'pie' : 'doughnut';
+
+        let filterData4 = dashboardVehicleutilization.subReportUserPreferences.filter(item => item.key.includes('rp_db_dashboard_vehicleutilization_distancebasedutilizationrate'));
+        this.mileageDChartType = filterData4[0].chartType == 'P' ? 'pie' : 'doughnut';
+      } else {
+        this.distanceChartType = 'bar';
+        this.vehicleChartType = 'line';
+        this.timeDChartType = 'pie';
+        this.mileageDChartType = 'pie';
+      }
     }
     //for distance chart
     this.distance = [];
@@ -541,19 +552,19 @@ getPreferenceThreshold(fieldKey){
 
         this.totalDistance = this.totalDistance + element.distance;
         this.totalDrivingTime = this.totalDrivingTime + element.drivingtime;
-        this.greaterTimeCount = this.greaterTimeCount + 1;
+        // this.greaterTimeCount = this.greaterTimeCount + 1;
     });
     if(this.selectionTab == 'lastmonth'){
-      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 30;
-      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 30;
+      this.totalThreshold = this.timebasedThreshold * this.totalActiveVehicles * 30;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.totalActiveVehicles * 30;
     }
     else if(this.selectionTab == 'lastweek'){
-      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 7;
-      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 7;
+      this.totalThreshold = this.timebasedThreshold * this.totalActiveVehicles * 7;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.totalActiveVehicles * 7;
     }
     else if(this.selectionTab == 'last3month'){
-      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 90;
-      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 90;
+      this.totalThreshold = this.timebasedThreshold * this.totalActiveVehicles * 90;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.totalActiveVehicles * 90;
     }
 
     percentage1 = (this.totalDrivingTime/this.totalThreshold)* 100; 

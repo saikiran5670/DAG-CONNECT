@@ -190,7 +190,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 return await Task.FromResult(new VehicleListResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get faile due to with reason : " + ex.Message
+                    Message = "Get failed due to with reason : " + ex.Message
                 });
             }
 
@@ -861,7 +861,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 return await Task.FromResult(new VehicleDetailsResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get faile due to with reason : " + ex.Message
+                    Message = "Get failed due to with reason : " + ex.Message
                 });
             }
         }
@@ -932,7 +932,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 return await Task.FromResult(new VehicleGroupLandingResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get faile due to with reason : " + ex.Message
+                    Message = "Get failed due to with reason : " + ex.Message
                 });
             }
 
@@ -965,7 +965,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 return await Task.FromResult(new VehicleListResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get faile due to with reason : " + ex.Message
+                    Message = "Get failed due to with reason : " + ex.Message
                 });
             }
         }
@@ -995,7 +995,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 return await Task.FromResult(new VehicleListResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get faile due to with reason : " + ex.Message
+                    Message = "Get failed due to with reason : " + ex.Message
                 });
             }
         }
@@ -1026,7 +1026,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 return await Task.FromResult(new VehicleListResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get faile due to with reason : " + ex.Message
+                    Message = "Get failed due to with reason : " + ex.Message
                 });
             }
         }
@@ -1057,7 +1057,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 return await Task.FromResult(new VehicleListResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get faile due to with reason : " + ex.Message
+                    Message = "Get failed due to with reason : " + ex.Message
                 });
             }
 

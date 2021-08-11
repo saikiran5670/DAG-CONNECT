@@ -71,7 +71,7 @@ export class SubscriptionManagementComponent implements OnInit {
       value: '1'
     },
     {
-      name: 'Expired',
+      name: 'Inactive',
       value: '2'
     }
   ];
