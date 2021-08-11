@@ -10,6 +10,7 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { Inject } from '@angular/core';
 import { ReportMapService } from '../../report/report-map.service';
 import { MessageService } from '../../services/message.service';
+import { DataInterchangeService } from '../../services/data-interchange.service'
 
 
 @Component({
@@ -248,11 +249,13 @@ _fleetTimer : boolean = true;
 totalThresholdDistance: any;
 timebasedThreshold: any;
 distancebasedThreshold: any;
+totalActiveVehicles : any = 0;
 
   constructor(private router: Router,
               private elRef: ElementRef,
               private dashboardService : DashboardService,
               private reportMapService: ReportMapService,
+              private dataInterchangeService : DataInterchangeService,
               @Inject(MAT_DATE_FORMATS) private dateFormats,
               private messageService: MessageService) {
                 if(this._fleetTimer){
@@ -262,6 +265,12 @@ distancebasedThreshold: any;
                     }
                   });
                 }
+
+                this.dataInterchangeService.fleetKpiInterface$.subscribe(data=>{
+                  if(data){
+                    this.totalActiveVehicles = data['fleetKpis']['vehicleCount'];
+                  }
+                })
                }
 
   ngOnInit(): void {
@@ -543,19 +552,19 @@ getPreferenceThreshold(fieldKey){
 
         this.totalDistance = this.totalDistance + element.distance;
         this.totalDrivingTime = this.totalDrivingTime + element.drivingtime;
-        this.greaterTimeCount = this.greaterTimeCount + 1;
+        // this.greaterTimeCount = this.greaterTimeCount + 1;
     });
     if(this.selectionTab == 'lastmonth'){
-      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 30;
-      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 30;
+      this.totalThreshold = this.timebasedThreshold * this.totalActiveVehicles * 30;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.totalActiveVehicles * 30;
     }
     else if(this.selectionTab == 'lastweek'){
-      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 7;
-      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 7;
+      this.totalThreshold = this.timebasedThreshold * this.totalActiveVehicles * 7;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.totalActiveVehicles * 7;
     }
     else if(this.selectionTab == 'last3month'){
-      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 90;
-      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 90;
+      this.totalThreshold = this.timebasedThreshold * this.totalActiveVehicles * 90;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.totalActiveVehicles * 90;
     }
 
     percentage1 = (this.totalDrivingTime/this.totalThreshold)* 100; 

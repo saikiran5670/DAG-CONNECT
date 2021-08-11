@@ -457,7 +457,7 @@ doughnutDistanceColors: Color[] = [
      
     switch (_vehicleLimit) {
       case 'U':{
-        if(vehicleTarget < this.liveVehicleData.activeVehicles){ //red
+        if(_vehicleThreshold < activeVehicleCount){ //red
           this.doughnutColors = [
             {
               backgroundColor: [
@@ -498,7 +498,7 @@ doughnutDistanceColors: Color[] = [
       }
         break;
         case 'L':{
-          if(vehicleTarget > this.liveVehicleData.activeVehicles){
+          if(_vehicleThreshold > activeVehicleCount){ //red
             this.doughnutColors = [
               {
                 backgroundColor: [
@@ -688,7 +688,7 @@ doughnutDistanceColors: Color[] = [
     switch (_timeRateLimit) {
       case 'U':{
         if(timeBasedCalculation['cuttOff'] < todayTimeRate){ //red
-          this.doughnutColors = [
+          this.doughnutTimeColors = [
             {
               backgroundColor: [
                 "#ff0000",
@@ -707,7 +707,7 @@ doughnutDistanceColors: Color[] = [
            ];
         }
         else{
-          this.doughnutColors = [
+          this.doughnutTimeColors = [
             {
               backgroundColor: [
                 "#89c64d",
@@ -748,7 +748,7 @@ doughnutDistanceColors: Color[] = [
              ];
           }
           else{
-            this.doughnutColors = [
+            this.doughnutTimeColors = [
               {
                 backgroundColor: [
                   "#89c64d",
@@ -901,7 +901,7 @@ doughnutDistanceColors: Color[] = [
       switch (_distanceRateLimit) {
         case 'U':{
           if(distancecutOff < todayDistance){ //red
-            this.doughnutColors = [
+            this.doughnutDistanceColors = [
               {
                 backgroundColor: [
                   "#ff0000",
@@ -942,7 +942,7 @@ doughnutDistanceColors: Color[] = [
           break;
           case 'L':{
             if(distancecutOff > todayDistance){
-              this.doughnutColors = [
+              this.doughnutDistanceColors = [
                 {
                   backgroundColor: [
                     "#ff0000",
@@ -961,7 +961,7 @@ doughnutDistanceColors: Color[] = [
                ];
             }
             else{
-              this.doughnutColors = [
+              this.doughnutDistanceColors = [
                 {
                   backgroundColor: [
                     "#89c64d",

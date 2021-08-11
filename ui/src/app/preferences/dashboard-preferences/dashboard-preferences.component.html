@@ -83,6 +83,12 @@
                                         {{prefUnit == 'Metric' ? (translationData.lbl || 'L') : (translationData.lbl ||
                                         'G')}}
                                     </span>
+                                    <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
+                                        No negative values allowed
+                                       </mat-error>
+                                       <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('max')">
+                                        Max value exceeded
+                                       </mat-error>
                                 </mat-form-field>
                             </div>
 
@@ -94,11 +100,23 @@
                                         <input [readonly]='!editDashboardFlag' matInput type="text" placeholder="{{ '' }}"
                                             [formControlName]="field.key+'thresholdValue'">
                                         <span matSuffix>Hr</span>
+                                        <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
+                                            No negative values allowed
+                                           </mat-error>
+                                           <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('max')">
+                                            Hrs max allowed- 24
+                                           </mat-error>
                                     </mat-form-field>
                                     <mat-form-field appearance="outline" style='width: 38%; margin-left: 4%;'>
                                         <input [readonly]='!editDashboardFlag' matInput type="text" placeholder="{{ '' }}"
                                             [formControlName]="field.key+'thresholdValuemin'">
                                         <span matSuffix>Min</span>
+                                        <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('min')">
+                                            No negative values allowed
+                                           </mat-error>
+                                           <mat-error style="margin-top: 10px;" *ngIf="dashboardPreferenceForm.get(field.key + 'thresholdValue').hasError('max')">
+                                            Minutes max allowed- 59
+                                           </mat-error>
                                     </mat-form-field>
                                 </div>
                             </div>
@@ -339,7 +357,7 @@
                     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button
                         color="primary">{{
                         translationData.lblReset || 'Reset' }}</button>
-                    <button [disabled]='(selectionForFleetKPIColumns.selected.length == 0 && fleetKPIColumnData.length > 0) || (selectionForVehicleUtilizationColumns.selected.length == 0 && vehicleUtilizationColumnData.length > 0) || (selectionForTodayLiveVehicleColumns.selected.length == 0 && todayLiveVehicleColumnData.length > 0) || (selectionForAlertLast24HoursColumns.selected.length == 0 && alertLast24HoursColumnData.length > 0)' class='no-margin' (click)='onConfirm()' mat-raised-button color="primary">{{
+                    <button [disabled]='!dashboardPreferenceForm.valid ||(selectionForFleetKPIColumns.selected.length == 0 && fleetKPIColumnData.length > 0) || (selectionForVehicleUtilizationColumns.selected.length == 0 && vehicleUtilizationColumnData.length > 0) || (selectionForTodayLiveVehicleColumns.selected.length == 0 && todayLiveVehicleColumnData.length > 0) || (selectionForAlertLast24HoursColumns.selected.length == 0 && alertLast24HoursColumnData.length > 0)' class='no-margin' (click)='onConfirm()' mat-raised-button color="primary">{{
                         (translationData.lblConfirm ||
                         'Confirm') }}</button>
                 </div>
