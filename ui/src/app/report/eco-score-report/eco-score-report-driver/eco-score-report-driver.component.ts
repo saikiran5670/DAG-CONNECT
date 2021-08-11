@@ -158,7 +158,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
       vins.push(element.vin);
      });
     let uniq = [...new Set(vins)];
-    if(uniq.length>0){
+    if(uniq.length>20){
       let emitObj = {
         limitExceeds: true
       }
@@ -739,7 +739,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
       { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage > 75 km/h (%)' },
       { key:'rp_cruisecontroldistance50_I' , value:'Cruise Control Usage 30-45 mph (%)' },
       { key:'rp_cruisecontroldistance30_I' , value:'Cruise Control Usage 15-30 mph (%)' },
-      { key:'rp_cruisecontroldistance75_I' , value:'Cruise Control Usage >45 km/h (%)' },
+      { key:'rp_cruisecontroldistance75_I' , value:'Cruise Control Usage >45 mph (%)' },
       { key:'rp_harshbraking' , value:'Harsh Braking (%)' },
       { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration (hh:mm:ss)' },
       { key:'rp_brakeduration' , value:'Brake Duration (hh:mm:ss)' },
@@ -915,8 +915,8 @@ export class EcoScoreReportDriverComponent implements OnInit {
       return '';
     }
     if(this.prefUnitFormat === 'dunit_Imperial' && (value.toLowerCase().indexOf("30") !== -1
-        || value.toLowerCase().indexOf("50") !== -1 || value.toLowerCase().indexOf("75") !== -1)
-        || value.toLowerCase().indexOf("rp_fuelconsumption") !== -1){
+        || value.toLowerCase().indexOf("50") !== -1 || value.toLowerCase().indexOf("75") !== -1
+        || value.toLowerCase().indexOf("rp_fuelconsumption") !== -1)){
       value += "_I";
     }
     var foundValue = this.translationData.value || this.translationDataLocal.filter(obj=>obj.key === value);
