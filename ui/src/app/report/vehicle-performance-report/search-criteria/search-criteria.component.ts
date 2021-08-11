@@ -130,10 +130,10 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   resetDropdownValues() {
-    this.searchForm.get('vehicleGroup').setValue('');
+    this.searchForm.get('vehicleGroup').setValue(0);
     this.searchForm.get('vehicleName').setValue('');
-    this.searchForm.get('vehicleName').disable();
-    this.searchForm.get('performanceType').setValue('');
+    // this.searchForm.get('vehicleName').disable();
+    this.searchForm.get('performanceType').setValue('E');
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
@@ -524,6 +524,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.formSubmitted = false;
     this.resetDropdownValues();
     this.selectionTimeRange('today');
+    this.searchForm.get('vehicleGroup').setValue(0);
+    this.searchForm.get('performanceType').setValue('E');
     this.hideSearchResult.emit();
   }
 
