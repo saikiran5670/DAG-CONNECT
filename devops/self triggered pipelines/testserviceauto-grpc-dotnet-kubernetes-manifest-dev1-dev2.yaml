@@ -69,6 +69,7 @@ spec:
           value: "0"
         ports:
           - containerPort: 8080
+          - containerPort: 80
       - name: filebeatservice-container
         image: #{acrurl}#/filebeat
         imagePullPolicy: "Always"

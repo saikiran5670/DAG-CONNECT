@@ -37,11 +37,15 @@ export class HeatBubbleChartComponent implements OnInit {
   @Input() chartTitle;
   @Input() backgroundColorPattern;
   public chartOptions;
+  zoom = [
+    { "zValue": 0.5, "zName": "50%" },
+    { "zValue": 1, "zName": "100%" },
+    { "zValue": 1.5, "zName": "150%" },
+    { "zValue": 2, "zName": "200%" }
+  ];
+  selectedZoom = 1;
 
-  constructor() {
-
-  }
-
+  constructor() { }
 
   ngOnInit(): void {
 
@@ -49,30 +53,6 @@ export class HeatBubbleChartComponent implements OnInit {
       annotations: {
         position: "back",
         yaxis: this.backgroundColorPattern,
-        // xaxis: [
-        //   {
-        //     label: {
-        //       text: " "
-        //     },
-        //     x: 20,
-        //     x2: 100,
-        //     fillColor: "#00E396"
-        //   },
-        //   {
-        //     label: {
-        //       text: " "
-        //     },
-        //     x: 0,
-        //     x2: 20,
-        //     fillColor: "yellow"
-        //   }],
-          // points: [{
-          //   x: 0,
-          //   y: 0,
-          //   yAxisIndex: 10,
-          //   seriesIndex: 10,
-          //   fillColor: "#FF5733"
-          // }]
       },
       series:[{
         "name": "",
@@ -81,7 +61,13 @@ export class HeatBubbleChartComponent implements OnInit {
       chart: {
         height: 350,
         type: "bubble",
-        background: '#fff'
+        background: '#fff',
+        toolbar: {
+          show: false,
+        },
+        zoom: {
+          enabled: false,
+        }
       },
       dataLabels: {
         enabled: false
@@ -90,9 +76,6 @@ export class HeatBubbleChartComponent implements OnInit {
         type: "solid",
         colors: ["#716968"]
       },
-      // title: {
-      //   text: this.chartTitle
-      // },
       xaxis: this.xaxis,
       yaxis: this.yaxis,
       theme: {
@@ -100,9 +83,15 @@ export class HeatBubbleChartComponent implements OnInit {
       },
       tooltip: {
         custom: function({series, seriesIndex, dataPointIndex, w}) {
-          return '<div class="arrow_box">' +
-            '<span>' +  w.globals.initialSeries[seriesIndex].data[dataPointIndex][2] + '</span><br/>' +
-            '</div>'
+          let yaxis = w.config.annotations.yaxis;
+          let yaxis1 = w.globals.initialSeries[seriesIndex].data[dataPointIndex][1] + 5;
+          let filterData = yaxis.filter((item)=>item.y2 == yaxis1)
+          let xaxis = (w.globals.initialSeries[seriesIndex].data[dataPointIndex][0] - 5)/10;
+          return `<div style="text-align:center; padding: 10px; border: 1px dotted #000; display: inline-block;">
+          <span style="margin-bottom: 0;">${filterData[xaxis].labelName}</span><br/>
+          <span style="margin-bottom: 0; font-weight: 600;"><label style="width:12px; height:12px; background-color:${filterData[xaxis].fillColor}; border-radius: 50%; display:'inline-block'; vertical-align: -3px;">&nbsp;</label>
+          ${w.globals.initialSeries[seriesIndex].data[dataPointIndex][2]}</span>
+        </div>`
         }
       },
       grid: {
@@ -119,9 +108,6 @@ export class HeatBubbleChartComponent implements OnInit {
             }
           }]
         },
-        // column: {
-        //   colors: ['#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF']
-        // }
       }
     };
 

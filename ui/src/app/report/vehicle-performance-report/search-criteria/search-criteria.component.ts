@@ -58,9 +58,9 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.searchForm = this.formBuilder.group({
-      vehicleGroup: ['', [Validators.required]],
+      vehicleGroup: [0, [Validators.required]],
       vehicleName: ['', [Validators.required]],
-      performanceType: ['', [Validators.required]],
+      performanceType: ['E', [Validators.required]],
       startDate: ['', []],
       endDate: ['', []],
       startTime: ['00:00', []],
@@ -70,11 +70,13 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
 
   getPreferences() {
     this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      console.log("prefData", prefData)
       if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
         this.proceedStep(prefData, this.accountPrefObj.accountPreference);
       } else { // org pref
         this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
           this.proceedStep(prefData, orgPref);
+          console.log("orgPref", orgPref)
         }, (error) => { // failed org API
           let pref: any = {};
           this.proceedStep(prefData, pref);
