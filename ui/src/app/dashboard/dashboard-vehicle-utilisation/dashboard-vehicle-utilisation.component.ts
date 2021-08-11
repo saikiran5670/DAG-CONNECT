@@ -552,19 +552,19 @@ getPreferenceThreshold(fieldKey){
 
         this.totalDistance = this.totalDistance + element.distance;
         this.totalDrivingTime = this.totalDrivingTime + element.drivingtime;
-        this.greaterTimeCount = this.greaterTimeCount + 1;
+        // this.greaterTimeCount = this.greaterTimeCount + 1;
     });
     if(this.selectionTab == 'lastmonth'){
-      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 30;
-      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 30;
+      this.totalThreshold = this.timebasedThreshold * this.totalActiveVehicles * 30;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.totalActiveVehicles * 30;
     }
     else if(this.selectionTab == 'lastweek'){
-      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 7;
-      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 7;
+      this.totalThreshold = this.timebasedThreshold * this.totalActiveVehicles * 7;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.totalActiveVehicles * 7;
     }
     else if(this.selectionTab == 'last3month'){
-      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 90;
-      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 90;
+      this.totalThreshold = this.timebasedThreshold * this.totalActiveVehicles * 90;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.totalActiveVehicles * 90;
     }
 
     percentage1 = (this.totalDrivingTime/this.totalThreshold)* 100; 
