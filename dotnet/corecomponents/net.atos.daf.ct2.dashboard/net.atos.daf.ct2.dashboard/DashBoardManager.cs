@@ -77,7 +77,30 @@ namespace net.atos.daf.ct2.dashboard
         }
         public async Task<TodayLiveVehicleResponse> GetTodayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest)
         {
-            return await _dashboardRepository.GetTodayLiveVinData(objTodayLiveVehicleRequest);
+            TodayLiveVehicleResponse objTodayResponse = new TodayLiveVehicleResponse();
+            var todayData = await _dashboardRepository.GetTodayLiveVinData(objTodayLiveVehicleRequest);
+            if (todayData != null && todayData.Count > 0)
+            {
+                objTodayResponse.TodayActiveVinCount = objTodayResponse.DriverCount = todayData.Count;//Current trip table driver1_id data is not in sink with driver table Data processingteam need to do that
+                for (int i = 0; i < todayData.Count; i++)
+                {
+                    objTodayResponse.TodayDistanceBasedUtilization += todayData[i].TodayDistance;
+                    objTodayResponse.Distance += todayData[i].TodayDistance;
+                    objTodayResponse.TodayTimeBasedUtilizationRate += todayData[i].TodayDrivingTime;
+                    objTodayResponse.DrivingTime += todayData[i].TodayDrivingTime;
+                }//Tobe called only when there is Today live data.
+                var yesterdayData = await _dashboardRepository.GetYesterdayLiveVinData(objTodayLiveVehicleRequest);
+                if (yesterdayData != null && yesterdayData.Count > 0)
+                {
+                    objTodayResponse.YesterdayActiveVinCount = yesterdayData.Count;
+                    for (int i = 0; i < yesterdayData.Count; i++)
+                    {
+                        objTodayResponse.YesterdayDistanceBasedUtilization += yesterdayData[i].YesterdayDistance;
+                        objTodayResponse.YesterdayTimeBasedUtilizationRate += yesterdayData[i].YesterdayDrivingTime;
+                    }
+                }
+            }
+            return objTodayResponse;
         }
 
         #region Utilization
