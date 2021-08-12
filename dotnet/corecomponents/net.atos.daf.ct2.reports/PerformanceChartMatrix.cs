@@ -261,13 +261,13 @@ namespace net.atos.daf.ct2.reports
                                         if (value > range.LowerVal && value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value < -0.5)
+                                            if (value > -0.25)
                                             {
-                                                y = 1;
+                                                y = 0;
                                             }
                                             else
                                             {
-                                                y = 2;
+                                                y = 1;
                                             }
                                         }
 
@@ -276,13 +276,13 @@ namespace net.atos.daf.ct2.reports
                                         if (value >= range.LowerVal && value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value <= -0.75)
+                                            if (value >= -0.75)
                                             {
-                                                y = 3;
+                                                y = 2;
                                             }
                                             else
                                             {
-                                                y = 4;
+                                                y = 3;
                                             }
                                         }
                                         break;
@@ -290,13 +290,13 @@ namespace net.atos.daf.ct2.reports
                                         if (value >= range.LowerVal && value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value <= -1.25)
+                                            if (value >= -1.25)
                                             {
-                                                y = 5;
+                                                y = 4;
                                             }
                                             else
                                             {
-                                                y = 6;
+                                                y = 5;
                                             }
                                         }
                                         break;
@@ -304,27 +304,27 @@ namespace net.atos.daf.ct2.reports
                                         if (value >= range.LowerVal && value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value <= -2)
+                                            if (value >= -2)
                                             {
-                                                y = 7;
+                                                y = 6;
                                             }
                                             else
                                             {
-                                                y = 8;
+                                                y = 7;
                                             }
                                         }
                                         break;
                                     case 5:// "N":
-                                        if (value >= range.LowerVal && value < range.UpperVal)
+                                        if (value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value <= -3)
+                                            if (value >= -3)
                                             {
-                                                y = 9;
+                                                y = 8;
                                             }
                                             else
                                             {
-                                                y = 10;
+                                                y = 9;
                                             }
                                         }
                                         break;
@@ -357,8 +357,9 @@ namespace net.atos.daf.ct2.reports
                             else
                             {
                                 data.Xindex = i;
-                                data.Yindex = y > 0 ? y : j;
-                                data.Value += item.DMatrix[i, j];
+                                //Skip records which dont fall in KPI
+                                data.Yindex = y;
+                                data.Value += value;
                                 result.ChartData.Add(data);
                             }
 
