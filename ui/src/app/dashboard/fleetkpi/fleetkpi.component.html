@@ -195,10 +195,12 @@
                   [plugins]="doughnutChartFuelConsumptionPlugins">
                 </canvas>
               </div>
-          </div>
-          <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(fuelConsumptionThreshold==0)'>
-            <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
-          </div>
+         
+              <div class="col-md-8 chart-wrapper chartDimension warningTextDiv" *ngIf='(fuelConsumptionThreshold==0)'>
+                <i class="fa fa-exclamation-circle mr-1 warningIcon"></i> {{translationData.lblThresholdError || 'Chart not applicable for zero threshold value'}}
+              </div>
+            </div>
+          
          
           </div>
     </div>

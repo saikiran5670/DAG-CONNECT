@@ -106,7 +106,7 @@ export class DashboardService {
   }
 
   calculateLastChange(currentValue,lastValue,totalValue?){
-    let _lastChange = ((currentValue - lastValue)/currentValue)*100;
+    let _lastChange = ((currentValue - lastValue)/lastValue)*100;
     return _lastChange;
   }
 
