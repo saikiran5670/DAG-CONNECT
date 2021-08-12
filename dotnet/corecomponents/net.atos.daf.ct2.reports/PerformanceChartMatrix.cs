@@ -350,15 +350,15 @@ namespace net.atos.daf.ct2.reports
                                 }
 
                             }
-                            if (result.ChartData.Any(k => k.Xindex == i && k.Yindex == (y > 0 ? y : j)))
+                            if (result.ChartData.Any(k => k.Xindex == i && k.Yindex == y))
                             {
-                                result.ChartData.First(k => k.Xindex == i && k.Yindex == (y > 0 ? y : j)).Value += value;
+                                result.ChartData.First(k => k.Xindex == i && k.Yindex == y).Value += value;
                             }
                             else
                             {
                                 data.Xindex = i;
                                 //Skip records which dont fall in KPI
-                                data.Yindex = (y > 0 ? y : 10);
+                                data.Yindex = y;
                                 data.Value += value;
                                 result.ChartData.Add(data);
                             }
