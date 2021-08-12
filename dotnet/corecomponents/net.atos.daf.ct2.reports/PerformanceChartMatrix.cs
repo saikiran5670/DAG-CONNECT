@@ -263,11 +263,11 @@ namespace net.atos.daf.ct2.reports
                                             range.Value += value;
                                             if (value < -0.5)
                                             {
-                                                y = 1;
+                                                y = 0;
                                             }
                                             else
                                             {
-                                                y = 2;
+                                                y = 1;
                                             }
                                         }
 
@@ -278,11 +278,11 @@ namespace net.atos.daf.ct2.reports
                                             range.Value += value;
                                             if (value <= -0.75)
                                             {
-                                                y = 3;
+                                                y = 2;
                                             }
                                             else
                                             {
-                                                y = 4;
+                                                y = 3;
                                             }
                                         }
                                         break;
@@ -292,11 +292,11 @@ namespace net.atos.daf.ct2.reports
                                             range.Value += value;
                                             if (value <= -1.25)
                                             {
-                                                y = 5;
+                                                y = 4;
                                             }
                                             else
                                             {
-                                                y = 6;
+                                                y = 5;
                                             }
                                         }
                                         break;
@@ -306,11 +306,11 @@ namespace net.atos.daf.ct2.reports
                                             range.Value += value;
                                             if (value <= -2)
                                             {
-                                                y = 7;
+                                                y = 6;
                                             }
                                             else
                                             {
-                                                y = 8;
+                                                y = 7;
                                             }
                                         }
                                         break;
@@ -320,11 +320,11 @@ namespace net.atos.daf.ct2.reports
                                             range.Value += value;
                                             if (value <= -3)
                                             {
-                                                y = 9;
+                                                y = 8;
                                             }
                                             else
                                             {
-                                                y = 10;
+                                                y = 9;
                                             }
                                         }
                                         break;
@@ -350,15 +350,16 @@ namespace net.atos.daf.ct2.reports
                                 }
 
                             }
-                            if (result.ChartData.Any(k => k.Xindex == i && k.Yindex == y))
+                            if (result.ChartData.Any(k => k.Xindex == i && k.Yindex == (y > 0 ? y : j)))
                             {
-                                result.ChartData.First(k => k.Xindex == i && k.Yindex == y).Value += value;
+                                result.ChartData.First(k => k.Xindex == i && k.Yindex == (y > 0 ? y : j)).Value += value;
                             }
                             else
                             {
                                 data.Xindex = i;
-                                data.Yindex = y > 0 ? y : j;
-                                data.Value += item.DMatrix[i, j];
+                                //Skip records which dont fall in KPI
+                                data.Yindex = (y > 0 ? y : 10);
+                                data.Value += value;
                                 result.ChartData.Add(data);
                             }
 
