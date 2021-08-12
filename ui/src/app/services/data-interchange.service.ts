@@ -19,7 +19,8 @@ export class DataInterchangeService {
     profilePictureInterface$= this.profilePictureInterfaceSource.asObservable();
     private detailDataSource = new Subject<any>();
     detailDataInterface$= this.detailDataSource.asObservable();
-    
+    private fleetKpiSource = new Subject<any>();
+    fleetKpiInterface$= this.fleetKpiSource.asObservable();
     constructor(){ }
 
     getDataInterface(data: any) {
@@ -53,5 +54,10 @@ export class DataInterchangeService {
     getVehicleData(data: any){
         this.detailDataSource.next(data);
     }
+
+    getFleetData(data: any){
+        this.fleetKpiSource.next(data);
+    }
+
 
 }   

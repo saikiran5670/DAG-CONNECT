@@ -40,7 +40,7 @@ export class DashboardPreferencesComponent implements OnInit {
   vehicleUtilizationColumnData = [];
   alertLast24HoursColumnData = [];
   todayLiveVehicleColumnData = [];
-
+ 
   constructor(private dashboardService: DashboardService, private reportService: ReportService, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportMapService: ReportMapService, private router: Router) {
     this.loadReportData();
   }
@@ -224,27 +224,23 @@ export class DashboardPreferencesComponent implements OnInit {
               hrs = hms.split(',')[0];
               mins = hms.split(',')[1];
             }
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(hrs));
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValuemin', new FormControl(mins));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(hrs,[Validators.min(0),Validators.max(23)]));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValuemin', new FormControl(mins,[Validators.min(0),Validators.max(60)]));
           } else if (element.key.includes('fleetkpi_totaldistance')) {
             let thresholdValueKm = this.reportMapService.getDistance(element.thresholdValue, this.prefUnitFormat);
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm,[Validators.min(0),Validators.max(10000),Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]));
           }
           else if (element.key.includes('fleetkpi_fuelconsumption'))
           {
             let thresholdValue_L_100Km = this.reportMapService.getFuelConsumedUnits(element.thresholdValue, this.prefUnitFormat, true);
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValue_L_100Km));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValue_L_100Km,[Validators.min(0),Validators.max(10000),Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]));
           }
           else if (element.key.includes('fleetkpi_fuelusedidling') || element.key.includes('fleetkpi_fuelconsumed')) {
             let thresholdValueL = this.reportMapService.getFuelConsumedUnits(element.thresholdValue, this.prefUnitFormat, false);
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueL));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueL,[Validators.min(0),element.key.includes('fleetkpi_fuelusedidling') ? Validators.max(10000) :  Validators.max(1000), Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]));
           }
-          // else if (element.key.includes('fleetkpi_fuelconsumption') || element.key.includes('fleetkpi_totaldistance')) {
-          //   let thresholdValueKm = this.reportMapService.getDistance(element.thresholdValue, this.prefUnitFormat);
-          //   this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm));
-          // }
           else {
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(element.thresholdValue));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(element.thresholdValue, [Validators.min(0),Validators.max(1000),Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]));
           }
         } else if (section.name.includes('Dashboard.TodayLiveVehicle')) {
           _data = element;
@@ -265,15 +261,15 @@ export class DashboardPreferencesComponent implements OnInit {
               hrs = hms.split(',')[0];
               mins = hms.split(',')[1];
             }
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(hrs));
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValuemin', new FormControl(mins));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(hrs,[Validators.min(0),Validators.max(23)]));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValuemin', new FormControl(mins,[Validators.min(0),Validators.max(60)]));
           }
           else if (element.key.includes('todaylivevehicle_distancebasedutilizationrate')) {
             let thresholdValueKm = this.reportMapService.getDistance(element.thresholdValue, this.prefUnitFormat);
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm, [Validators.min(0),Validators.max(10000),Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]));
           }        
           else {
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(element.thresholdValue));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(element.thresholdValue,[Validators.min(0),Validators.max(10000)]));
           }
 
         } else if (section.name.includes('Dashboard.VehicleUtilization')) {
@@ -295,13 +291,14 @@ export class DashboardPreferencesComponent implements OnInit {
               hrs = hms.split(',')[0];
               mins = hms.split(',')[1];
             }
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(hrs));
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValuemin', new FormControl(mins));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(hrs,[Validators.min(0),Validators.max(23)]));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValuemin', new FormControl(mins,[Validators.min(0),Validators.max(60)]));
             this.dashboardPreferenceForm.addControl(element.key + 'chartType', new FormControl(element.chartType != '' ? element.chartType : 'D'));
           }
           else if (element.key.includes('vehicleutilization_distancebasedutilizationrate')) {
             let thresholdValueKm = this.reportMapService.getDistance(element.thresholdValue, this.prefUnitFormat);
-            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm));
+            this.dashboardPreferenceForm.addControl(element.key + 'thresholdValue', new FormControl(thresholdValueKm, [Validators.min(0),Validators.max(10000),
+              Validators.pattern('^\-?[0-9]+(?:\.[0-9]{1,2})?$')]));
             this.dashboardPreferenceForm.addControl(element.key + 'chartType', new FormControl(element.chartType != '' ? element.chartType : 'D'));
           }
           else {

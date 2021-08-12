@@ -2,6 +2,7 @@ package net.atos.daf.ct2.main;
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.util.Objects;
 
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
@@ -95,7 +96,7 @@ public class FuelDeviationJob {
 
 		} catch (Exception e) {
 			fuelDeviationJob.auditFuelDevialJobDetails(envParams, "FuelDeviation streaming job failed ::" + e.getMessage());
-			logger.error("FuelDeviationJob failed, reason :: " + e);
+			logger.error("Issue FuelDeviationJob failed, reason :: " + e);
 			e.printStackTrace();
 		}
 
@@ -107,7 +108,12 @@ public class FuelDeviationJob {
 		try {
 
 			fuelStopObj.setVid(idxMsg.getVid());
-			fuelStopObj.setVin(idxMsg.getVin());
+			
+			if(Objects.nonNull(idxMsg.getVin()))
+				fuelStopObj.setVin(idxMsg.getVin());
+			else
+				fuelStopObj.setVin(idxMsg.getVid());
+			
 			if (idxMsg.getEvtDateTime() != null) {
 				fuelStopObj.setEvtDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
 						idxMsg.getEvtDateTime().toString(), FuelDeviationConstants.DATE_FORMAT));
@@ -115,8 +121,10 @@ public class FuelDeviationJob {
 				fuelStopObj.setEvtDateTime(FuelDeviationConstants.ZERO_VAL);
 
 			if (idxMsg.getDocument() != null) {
-				fuelStopObj.setTripId(idxMsg.getDocument().getTripID());
-
+				if(Objects.nonNull(idxMsg.getDocument().getTripID()))
+					fuelStopObj.setTripId(idxMsg.getDocument().getTripID());
+				else
+					fuelStopObj.setTripId("UNKNOWN");
 				//cross verify
 				if (idxMsg.getDocument().getVFuelLevel1() != null)
 					fuelStopObj.setVFuelLevel(BigDecimal.valueOf(idxMsg.getDocument().getVFuelLevel1()));
