@@ -93,7 +93,7 @@ namespace net.atos.daf.ct2.reports
                 KPIs kPIs = new KPIs();
                 kPIs.Label = kpiDict.Kpi;
                 kPIs.Index = kpiDict.Index;
-                kPIs.Value = totalTripDurationinHr > 0 ? Math.Round((kpiDict.Value / totalTripDurationinHr), 4) : kPIs.Value;
+                kPIs.Value = totalTripDurationinHr > 0 ? (kpiDict.Value / totalTripDurationinHr) : kPIs.Value;
                 lstKpis.Add(kPIs);
             }
             return lstKpis;
@@ -261,7 +261,7 @@ namespace net.atos.daf.ct2.reports
                                         if (value > range.LowerVal && value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value > -0.5)
+                                            if (value < -0.5)
                                             {
                                                 y = 1;
                                             }
@@ -276,7 +276,7 @@ namespace net.atos.daf.ct2.reports
                                         if (value >= range.LowerVal && value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value >= -0.75)
+                                            if (value <= -0.75)
                                             {
                                                 y = 3;
                                             }
@@ -290,7 +290,7 @@ namespace net.atos.daf.ct2.reports
                                         if (value >= range.LowerVal && value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value >= -1.25)
+                                            if (value <= -1.25)
                                             {
                                                 y = 5;
                                             }
@@ -304,7 +304,7 @@ namespace net.atos.daf.ct2.reports
                                         if (value >= range.LowerVal && value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value >= -2)
+                                            if (value <= -2)
                                             {
                                                 y = 7;
                                             }
@@ -318,7 +318,7 @@ namespace net.atos.daf.ct2.reports
                                         if (value >= range.LowerVal && value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value >= -3)
+                                            if (value <= -3)
                                             {
                                                 y = 9;
                                             }
