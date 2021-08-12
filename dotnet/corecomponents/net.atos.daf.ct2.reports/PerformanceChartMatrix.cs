@@ -253,20 +253,17 @@ namespace net.atos.daf.ct2.reports
                                 {
                                     case 0:// " ":
                                         if (value >= range.LowerVal && value <= range.UpperVal)
-                                            range.Value += value;
-                                        break;
-                                    case 1: // "O":
-                                        if (value > range.LowerVal && value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value > -0.25)
-                                            {
-                                                y = 0;
-                                            }
-                                            else
-                                            {
-                                                y = 1;
-                                            }
+                                            y = 0;
+                                        }
+
+                                        break;
+                                    case 1: // "O":
+                                        if (value >= range.LowerVal && value < range.UpperVal)
+                                        {
+                                            range.Value += value;
+                                            y = 1;
                                         }
 
                                         break;
@@ -274,73 +271,65 @@ namespace net.atos.daf.ct2.reports
                                         if (value >= range.LowerVal && value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value >= -0.75)
-                                            {
-                                                y = 2;
-                                            }
-                                            else
-                                            {
-                                                y = 3;
-                                            }
+                                            y = 2;
+
                                         }
                                         break;
                                     case 3:// "P":
                                         if (value >= range.LowerVal && value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value >= -1.25)
-                                            {
-                                                y = 4;
-                                            }
-                                            else
-                                            {
-                                                y = 5;
-                                            }
+                                            y = 3;
+
                                         }
                                         break;
                                     case 4:// "E":
                                         if (value >= range.LowerVal && value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value >= -2)
-                                            {
-                                                y = 6;
-                                            }
-                                            else
-                                            {
-                                                y = 7;
-                                            }
+                                            y = 4;
+
                                         }
                                         break;
                                     case 5:// "N":
-                                        if (value < range.UpperVal)
+                                        if (value >= range.LowerVal && value < range.UpperVal)
                                         {
                                             range.Value += value;
-                                            if (value >= -3)
-                                            {
-                                                y = 8;
-                                            }
-                                            else
-                                            {
-                                                y = 9;
-                                            }
+                                            y = 5;
+
                                         }
                                         break;
                                     case 6:// "I":
                                         if (value >= range.LowerVal && value < range.UpperVal)
+                                        {
                                             range.Value += value;
+                                            y = 6;
+
+                                        }
                                         break;
                                     case 7:// "D":
-                                        if (value >= range.LowerVal && value <= range.UpperVal)
+                                        if (value >= range.LowerVal && value < range.UpperVal)
+                                        {
                                             range.Value += value;
+                                            y = 7;
+
+                                        }
                                         break;
                                     case 8:// "U":
-                                        if (value > range.LowerVal && value < range.UpperVal)
+                                        if (value >= range.LowerVal && value < range.UpperVal)
+                                        {
                                             range.Value += value;
+                                            y = 8;
+
+                                        }
                                         break;
                                     case 9:// " ":
-                                        if (value > range.LowerVal && value < range.UpperVal)
+                                        if (value >= range.LowerVal && value < range.UpperVal)
+                                        {
                                             range.Value += value;
+                                            y = 9;
+
+                                        }
                                         break;
 
                                     default:
