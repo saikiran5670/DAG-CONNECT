@@ -291,6 +291,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.alert_category_selected= value;
     this.alertForm.get('alertType').setValue('');
     this.alertTypeByCategoryList= this.alertTypeList.filter(item => item.parentEnum == value);
+    //On 12-08-2021 removed the alert type "Excessive under utilization in days" by adding below line as discussed this will not need anymore.
+    this.alertTypeByCategoryList = this.alertTypeByCategoryList.filter(item => item.enum != 'Y');
   }
 
   onChangeAlertType(value){
@@ -393,12 +395,13 @@ export class CreateEditViewAlertsComponent implements OnInit {
       }
 
       switch(this.alert_category_selected+this.alert_type_selected){
-        case "LY": { //Excessive under utilization in days
-          this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
-          this.unitForThreshold= this.translationData.lblDays ? this.translationData.lblDays : "Days";
-          this.unitTypeEnum= "D";
-          break;
-        }
+        //On 12-08-2021 removed the alert type "Excessive under utilization in days" as discussed this will not need anymore.
+        // case "LY": { //Excessive under utilization in days
+        //   this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
+        //   this.unitForThreshold= this.translationData.lblDays ? this.translationData.lblDays : "Days";
+        //   this.unitTypeEnum= "D";
+        //   break;
+        // }
         case "LH": { //Excessive under utilization in hours
           this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
           this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
