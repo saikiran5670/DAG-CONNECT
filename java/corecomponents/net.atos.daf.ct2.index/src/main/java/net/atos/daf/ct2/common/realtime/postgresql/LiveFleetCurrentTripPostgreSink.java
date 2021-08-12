@@ -303,9 +303,9 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 
 							else { // trip starts, so insert
 
-								if (row.getEvtDateTime() != null)
+								if (indexValue.getEvtDateTime() != null)
 									currentTripPojo.setStart_time_stamp(TimeFormatter.getInstance()
-											.convertUTCToEpochMilli(row.getEvtDateTime(), DafConstants.DTM_TS_FORMAT));
+											.convertUTCToEpochMilli(indexValue.getEvtDateTime(), DafConstants.DTM_TS_FORMAT));
 
 								currentTripPojo.setStart_position_lattitude(indexValue.getGpsLatitude());
 								currentTripPojo.setStart_position_longitude(indexValue.getGpsLongitude());

@@ -1,4 +1,13 @@
 <div class="bgtrans">
+  <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
+  style='padding:10px; color:#fff; background: #5dc24e;'>
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+    {{ feautreCreatedMsg }}
+  </div>
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+    <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+  </div>
+  </div>
   <form [formGroup]="ecoScoreForm">
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
       <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
@@ -345,7 +354,10 @@
     ></app-driver-time-detail>
   </div> -->
   <div *ngIf="ecoScoreDriver">
-    <app-eco-score-report-driver (backToMainPage)='backToMainPage()' [ecoScoreDriverInfo]="selectedDriverData" [ecoScoreDriverDetails]="ecoScoreDriverDetails" [ecoScoreDriverDetailsTrendLine]="ecoScoreDriverDetailsTrendLine" [generalColumnData]='generalColumnData' [driverPerformanceColumnData]='driverPerformanceColumnData' [translationData]="translationData" [prefUnitFormat]='prefUnitFormat' [prefObj]='prefObj' [selectionTab]='selectionTab'></app-eco-score-report-driver>
+    <app-eco-score-report-driver (backToMainPage)='backToMainPage()' [ecoScoreDriverInfo]="selectedDriverData" [ecoScoreDriverDetails]="ecoScoreDriverDetails" 
+    [ecoScoreDriverDetailsTrendLine]="ecoScoreDriverDetailsTrendLine" [generalColumnData]='generalColumnData' [driverPerformanceColumnData]='driverPerformanceColumnData' 
+    [translationData]="translationData" [prefUnitFormat]='prefUnitFormat' [prefObj]='prefObj' [selectionTab]='selectionTab' [trendLineSearchDataParam]='trendLineSearchDataParam'
+     (vehicleLimitExceeds)='vehicleLimitExceeds($event)'></app-eco-score-report-driver>
   </div>
   <div *ngIf="compareEcoScore">
     <app-eco-score-driver-compare (backToMainPage)='backToMainPage()' [compareEcoScore]="compareDriverEcoScoreSearchParam" [generalColumnData]='generalColumnData' [driverPerformanceColumnData]='driverPerformanceColumnData' [prefUnitFormat]='prefUnitFormat'></app-eco-score-driver-compare>

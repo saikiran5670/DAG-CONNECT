@@ -505,6 +505,43 @@ getPreferenceThreshold(fieldKey){
   return {type:thresholdType , value:thresholdValue};
 }
 
+formStartDate(date: any){
+  let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
+  let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
+  let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
+  let _d = (date.getDate() < 10) ? ('0'+date.getDate()): date.getDate();
+  let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
+  let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
+  let _date: any;
+  let _time: any;
+  if(this.prefTimeFormat == 12){
+    _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours()-12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
+  }else{
+    _time = `${h}:${m}:${s}`;
+  }
+  switch(this.prefDateFormat){
+    case 'ddateformat_dd/mm/yyyy': {
+      _date = `${_d}/${_m}/${_y} `;
+      break;
+    }
+    case 'ddateformat_mm/dd/yyyy': {
+      _date = `${_m}/${_d}/${_y} `;
+      break;
+    }
+    case 'ddateformat_dd-mm-yyyy': {
+      _date = `${_d}-${_m}-${_y}`;
+      break;
+    }
+    case 'ddateformat_mm-dd-yyyy': {
+      _date = `${_m}-${_d}-${_y} `;
+      break;
+    }
+    default:{
+      _date = `${_m}/${_d}/${_y} `;
+    }
+  }
+  return _date;
+}
   setChartData(){
     if (this.dashboardPrefData.subReportUserPreferences && this.dashboardPrefData.subReportUserPreferences.length > 0) {
       let dashboardVehicleutilization = this.dashboardPrefData.subReportUserPreferences.filter((item) => item.key == 'rp_db_dashboard_vehicleutilization')[0];
@@ -544,7 +581,9 @@ getPreferenceThreshold(fieldKey){
     this.vehicleUtilisationData.forEach(element => {
       var date = new Date(element.calenderDate);
       const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-      let resultDate = [date.getDate() + ' ' +months[date.getMonth()],date.getFullYear()];
+      // let resultDate = [date.getDate() + ' ' +months[date.getMonth()],date.getFullYear()];
+      let resultDate = new Date (date.getDate() + ' ' +months[date.getMonth()] +' '+ date.getFullYear());
+      resultDate = this.formStartDate(resultDate); 
       let distance = this.reportMapService.convertDistanceUnits(element.distanceperday,this.prefUnitFormat);
       this.distance.push(distance);
       this.calenderDate.push(resultDate);
@@ -552,19 +591,19 @@ getPreferenceThreshold(fieldKey){
 
         this.totalDistance = this.totalDistance + element.distance;
         this.totalDrivingTime = this.totalDrivingTime + element.drivingtime;
-        this.greaterTimeCount = this.greaterTimeCount + 1;
+        // this.greaterTimeCount = this.greaterTimeCount + 1;
     });
     if(this.selectionTab == 'lastmonth'){
-      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 30;
-      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 30;
+      this.totalThreshold = this.timebasedThreshold * this.totalActiveVehicles * 30;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.totalActiveVehicles * 30;
     }
     else if(this.selectionTab == 'lastweek'){
-      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 7;
-      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 7;
+      this.totalThreshold = this.timebasedThreshold * this.totalActiveVehicles * 7;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.totalActiveVehicles * 7;
     }
     else if(this.selectionTab == 'last3month'){
-      this.totalThreshold = this.timebasedThreshold * this.greaterTimeCount * 90;
-      this.totalThresholdDistance = this.distancebasedThreshold * this.greaterTimeCount * 90;
+      this.totalThreshold = this.timebasedThreshold * this.totalActiveVehicles * 90;
+      this.totalThresholdDistance = this.distancebasedThreshold * this.totalActiveVehicles * 90;
     }
 
     percentage1 = (this.totalDrivingTime/this.totalThreshold)* 100; 
