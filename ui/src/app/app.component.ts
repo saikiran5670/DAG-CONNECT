@@ -781,8 +781,10 @@ export class AppComponent {
         this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
 
         this.organizationService.getAllOrganizations().subscribe((data: any) => {
+          console.log("organizationService Data", data);
           if (data) {
             this.organizationList = data["organizationList"];
+            this.organizationList.sort(this.compare);
             let _contextOrgId = parseInt(localStorage.getItem("contextOrgId"));
             let _orgId: any;
             if (_contextOrgId) {
