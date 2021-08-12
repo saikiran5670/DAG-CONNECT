@@ -37,11 +37,15 @@ export class HeatBubbleChartComponent implements OnInit {
   @Input() chartTitle;
   @Input() backgroundColorPattern;
   public chartOptions;
+  zoom = [
+    { "zValue": 0.5, "zName": "50%" },
+    { "zValue": 1, "zName": "100%" },
+    { "zValue": 1.5, "zName": "150%" },
+    { "zValue": 2, "zName": "200%" }
+  ];
+  selectedZoom = 1;
 
-  constructor() {
-
-  }
-
+  constructor() { }
 
   ngOnInit(): void {
 
@@ -49,30 +53,6 @@ export class HeatBubbleChartComponent implements OnInit {
       annotations: {
         position: "back",
         yaxis: this.backgroundColorPattern,
-        // xaxis: [
-        //   {
-        //     label: {
-        //       text: " "
-        //     },
-        //     x: 20,
-        //     x2: 100,
-        //     fillColor: "#00E396"
-        //   },
-        //   {
-        //     label: {
-        //       text: " "
-        //     },
-        //     x: 0,
-        //     x2: 20,
-        //     fillColor: "yellow"
-        //   }],
-          // points: [{
-          //   x: 0,
-          //   y: 0,
-          //   yAxisIndex: 10,
-          //   seriesIndex: 10,
-          //   fillColor: "#FF5733"
-          // }]
       },
       series:[{
         "name": "",
@@ -81,7 +61,13 @@ export class HeatBubbleChartComponent implements OnInit {
       chart: {
         height: 350,
         type: "bubble",
-        background: '#fff'
+        background: '#fff',
+        toolbar: {
+          show: false,
+        },
+        zoom: {
+          enabled: false,
+        }
       },
       dataLabels: {
         enabled: false
@@ -90,9 +76,6 @@ export class HeatBubbleChartComponent implements OnInit {
         type: "solid",
         colors: ["#716968"]
       },
-      // title: {
-      //   text: this.chartTitle
-      // },
       xaxis: this.xaxis,
       yaxis: this.yaxis,
       theme: {
@@ -125,9 +108,6 @@ export class HeatBubbleChartComponent implements OnInit {
             }
           }]
         },
-        // column: {
-        //   colors: ['#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF', '#336DFF']
-        // }
       }
     };
 

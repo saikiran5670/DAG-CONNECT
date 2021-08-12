@@ -1,28 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
-import {
-  ChartComponent,
-  ApexAxisChartSeries,
-  ApexChart,
-  ApexFill,
-  ApexTooltip,
-  ApexXAxis,
-  ApexLegend,
-  ApexDataLabels,
-  ApexTitleSubtitle,
-  ApexYAxis
-} from "ng-apexcharts";
-import {
-  AngularGridInstance,
-  Column,
-  FieldType,
-  GridOption,
-  Formatter,
-} from 'angular-slickgrid';
-import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
-import { BaseChartDirective, Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions, SingleDataSet } from 'ng2-charts';
+import { ChartComponent, ApexAxisChartSeries, ApexChart, ApexFill, ApexTooltip, ApexXAxis, ApexLegend, ApexDataLabels,
+        ApexTitleSubtitle, ApexYAxis } from "ng-apexcharts";
+import { AngularGridInstance, Column, FieldType, GridOption, Formatter, } from 'angular-slickgrid';
+import { ChartOptions, ChartType } from 'chart.js';
+import { Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions, SingleDataSet } from 'ng2-charts';
 import { ReportService } from 'src/app/services/report.service';
 import * as Chart from 'chart.js';
-import { formatDate } from '@angular/common';
 import * as ApexCharts from 'apexcharts';
 import { Util } from 'src/app/shared/util';
 
@@ -59,6 +42,11 @@ export class EcoScoreReportDriverComponent implements OnInit {
   @Input() selectionTab: string;
   @Input() trendLineSearchDataParam: any;
   @Output() vehicleLimitExceeds = new EventEmitter<object>();
+  @ViewChild("trendLineChart") trendLineChart: ChartComponent;
+  @ViewChild("brushChart") brushChart: ChartComponent;
+  public chartOptionsApex: Partial<ChartOptionsApex>;
+  public chartOptions1: Partial<ChartOptionsApex>;
+  public chartOptions2: Partial<ChartOptionsApex>;
   fromDisplayDate: any;
   toDisplayDate : any;
   selectedVehicleGroup : string;
@@ -138,8 +126,13 @@ export class EcoScoreReportDriverComponent implements OnInit {
  selectionLimitLast3Month: boolean=false;
  selectionLimitLast6Month: boolean=false;
  selectionLimitLastYear: boolean=false;
+ public pluginsCommon: PluginServiceGlobalRegistrationAndOptions[];
+
+ constructor(private reportService: ReportService) {}
 
   ngOnInit(): void {
+    this.translationUpdate();
+    this.getSeriesData();
     this.fromDisplayDate = this.ecoScoreDriverInfo.startDate;
     this.toDisplayDate = this.ecoScoreDriverInfo.endDate;
     this.selectedVehicleGroup = this.ecoScoreDriverInfo.vehicleGroup;
@@ -151,63 +144,28 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.checkPrefData();
     this.loadOverallPerfomance();
     this.trendLineSelectionLimit();
-    let searchDataParam = {
-      "startDateTime":1204336888377,
-      "endDateTime":1820818919744,
-      "viNs": [
-        "XLR0998HGFFT76666","XLR0998HGFFT76657","XLRASH4300G1472w0","XLR0998HGFFT74600"
-        ],
-      "driverId":"NL B000384974000000",
-      "minTripDistance":0,
-      "minDriverTotalDistance": 0,
-      "targetProfileId": 2,
-      "reportId": 10,
-      "uoM": "Metric"
-    }  
-    // this.reportService.getEcoScoreSingleDriver(searchDataParam).subscribe((_driver: any) => {            
-    //   // console.log(_driver);
-    //   // this.loadOverallPerfomance();
-    //   this.hideloader();
-    // }, (error)=>{
-    //   this.hideloader();
-    // });
-
     this.showLoadingIndicator = true;
-    this.reportService.getEcoScoreSingleDriverTrendLines(searchDataParam).subscribe((_trendLine: any) => {  
-       this.ecoScoreDriverDetailsTrendLine = _trendLine;
-       //this.ecoScoreDriverDetailsTrendLine=JSON.parse('{"code":200,"trendlines":[{"vin":"Overall","vehicleName":"Overall","kpiInfo":{"ecoScoreCompany":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"06/10/2021":"4.6","06/21/2021":"4.5","07/26/2021":"0.0","07/27/2021":"4.4","07/28/2021":"3.5","07/29/2021":"3.7","07/30/2021":"3.9"}},"ecoScore":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"06/10/2021":"4.1","06/21/2021":"4.2","07/26/2021":"0.0","07/27/2021":"4.4","07/28/2021":"3.5","07/29/2021":"3.7","07/30/2021":"3.9"}},"fuelConsumption":{"name":"EcoScore.DriverPerformance.FuelConsumption","key":"rp_fuelconsumption","uoM":"Ltrs /100 km","data":{"06/10/2021":"18.7","06/21/2021":"14.7","07/26/2021":"2.8","07/27/2021":"11.3","07/28/2021":"8.3","07/29/2021":"28.5","07/30/2021":"29.7"}},"cruiseControlUsage":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage","key":"rp_cruisecontrolusage","uoM":"%","data":{"06/10/2021":"45.3","06/21/2021":"40.8","07/26/2021":"0.0","07/27/2021":"5.6","07/28/2021":"0.0","07/29/2021":"7.1","07/30/2021":"7.3"}},"cruiseControlUsage3050":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage30-50km/h(%)","key":"rp_CruiseControlUsage30","uoM":"km/h(%)","data":{"06/10/2021":"0.6","06/21/2021":"0.1","07/26/2021":"0.0","07/27/2021":"5.6","07/28/2021":"0.0","07/29/2021":"3.5","07/30/2021":"0.6"}},"cruiseControlUsage5075":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage50-75km/h(%)","key":"rp_cruisecontroldistance50","uoM":"km/h(%)","data":{"06/10/2021":"9.1","06/21/2021":"8.1","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"3.6","07/30/2021":"4.1"}},"cruiseControlUsage75":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage>75km/h(%)","key":"rp_cruisecontroldistance75","uoM":"km/h(%)","data":{"06/10/2021":"35.6","06/21/2021":"32.7","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"0.0","07/30/2021":"2.6"}},"idling":{"name":"EcoScore.DriverPerformance.FuelConsumption.Idling(%)","key":"rp_idling","uoM":"%","data":{"06/10/2021":"12.6","06/21/2021":"20.2","07/26/2021":"30.6","07/27/2021":"33.2","07/28/2021":"19.1","07/29/2021":"30.9","07/30/2021":"33.3"}},"brakingScore":{"name":"EcoScore.DriverPerformance.BrakingScore","key":"rp_brakingscore","uoM":"","data":{"06/10/2021":"1.7","06/21/2021":"0.9","07/26/2021":"0.0","07/27/2021":"0.9","07/28/2021":"0.9","07/29/2021":"1.4","07/30/2021":"1.4"}},"harshBraking":{"name":"EcoScore.DriverPerformance.BrakingScore.HarshBraking(%)","key":"rp_harshbraking","uoM":"%","data":{"06/10/2021":"1340.8","06/21/2021":"2080.5","07/26/2021":"608.7","07/27/2021":"168.3","07/28/2021":"1306.7","07/29/2021":"3674.4","07/30/2021":"2333.1"}},"anticipationScore":{"name":"EcoScore.DriverPerformance.AnticipationScore","key":"rp_anticipationscore","uoM":"","data":{"06/10/2021":"6.5","06/21/2021":"7.6","07/26/2021":"8.8","07/27/2021":"7.8","07/28/2021":"6.1","07/29/2021":"6.0","07/30/2021":"6.4"}}}}],"message":"Eco-Score Trendline Report details fetched successfully."}');
-      //  this.ecoScoreDriverDetailsTrendLine=JSON.parse('{"code":200,"message":"Eco-Score Trendline Report details fetched successfully.","trendlines":[{"vin":"Overall","vehicleName":"Overall","kpiInfo":{"ecoScoreCompany":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"06/10/2021":"4.6","06/21/2021":"4.5","07/26/2021":"0.0","07/27/2021":"4.4","07/28/2021":"3.5","07/29/2021":"3.7","07/30/2021":"3.9"}},"ecoScore":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"06/10/2021":"4.1","06/21/2021":"4.2","07/26/2021":"0.0","07/27/2021":"4.4","07/28/2021":"3.5","07/29/2021":"3.7","07/30/2021":"3.9"}},"fuelConsumption":{"name":"EcoScore.DriverPerformance.FuelConsumption","key":"rp_fuelconsumption","uoM":"Ltrs /100 km","data":{"06/10/2021":"18.7","06/21/2021":"14.7","07/26/2021":"2.8","07/27/2021":"11.3","07/28/2021":"8.3","07/29/2021":"28.5","07/30/2021":"29.7"}},"cruiseControlUsage":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage","key":"rp_cruisecontrolusage","uoM":"%","data":{"06/10/2021":"45.3","06/21/2021":"40.8","07/26/2021":"0.0","07/27/2021":"5.6","07/28/2021":"0.0","07/29/2021":"7.1","07/30/2021":"7.3"}},"cruiseControlUsage3050":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage30-50km/h(%)","key":"rp_CruiseControlUsage30","uoM":"km/h(%)","data":{"06/10/2021":"0.6","06/21/2021":"0.1","07/26/2021":"0.0","07/27/2021":"5.6","07/28/2021":"0.0","07/29/2021":"3.5","07/30/2021":"0.6"}},"cruiseControlUsage5075":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage50-75km/h(%)","key":"rp_cruisecontroldistance50","uoM":"km/h(%)","data":{"06/10/2021":"9.1","06/21/2021":"8.1","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"3.6","07/30/2021":"4.1"}},"cruiseControlUsage75":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage>75km/h(%)","key":"rp_cruisecontroldistance75","uoM":"km/h(%)","data":{"06/10/2021":"35.6","06/21/2021":"32.7","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"0.0","07/30/2021":"2.6"}},"averageDrivingSpeed":{"name":"EcoScore.DriverPerformance.FuelConsumption.AverageDrivingSpeed","key":"rp_averagedrivingspeed","uoM":"km/h","data":{"06/10/2021":"49.8","06/21/2021":"59.3","07/26/2021":"14.6","07/27/2021":"19.0","07/28/2021":"23.6","07/29/2021":"31.2","07/30/2021":"31.0"}},"averageSpeed":{"name":"EcoScore.DriverPerformance.FuelConsumption.AverageSpeed","key":"rp_averagespeed","uoM":"km/h","data":{"06/10/2021":"43.5","06/21/2021":"47.4","07/26/2021":"10.1","07/27/2021":"12.7","07/28/2021":"19.1","07/29/2021":"21.6","07/30/2021":"20.7"}},"heavyThrottling":{"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottling(%)","key":"rp_heavythrottling","uoM":"%","data":{"06/10/2021":"66.4","06/21/2021":"174.2","07/26/2021":"5.0","07/27/2021":"19.4","07/28/2021":"55.5","07/29/2021":"67.4","07/30/2021":"61.7"}},"idling":{"name":"EcoScore.DriverPerformance.FuelConsumption.Idling(%)","key":"rp_idling","uoM":"%","data":{"06/10/2021":"12.6","06/21/2021":"20.2","07/26/2021":"30.6","07/27/2021":"33.2","07/28/2021":"19.1","07/29/2021":"30.9","07/30/2021":"33.3"}},"brakingScore":{"name":"EcoScore.DriverPerformance.BrakingScore","key":"rp_brakingscore","uoM":"","data":{"06/10/2021":"1.7","06/21/2021":"0.9","07/26/2021":"0.0","07/27/2021":"0.9","07/28/2021":"0.9","07/29/2021":"1.4","07/30/2021":"1.4"}},"anticipationScore":{"name":"EcoScore.DriverPerformance.AnticipationScore","key":"rp_anticipationscore","uoM":"","data":{"06/10/2021":"6.5","06/21/2021":"7.6","07/26/2021":"8.8","07/27/2021":"7.8","07/28/2021":"6.1","07/29/2021":"6.0","07/30/2021":"6.4"}},"harshBraking":{"name":"EcoScore.DriverPerformance.BrakingScore.HarshBraking(%)","key":"rp_harshbraking","uoM":"%","data":{"06/10/2021":"1340.8","06/21/2021":"2080.5","07/26/2021":"608.7","07/27/2021":"168.3","07/28/2021":"1306.7","07/29/2021":"3674.4","07/30/2021":"2333.1"}},"ptoUsage":{"name":"EcoScore.DriverPerformance.FuelConsumption.PTOUsage(%)","key":"rp_ptousage","uoM":"%","data":{"06/10/2021":"0.2","06/21/2021":"0.0","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"0.0","07/30/2021":"0.0"}}}}]}');
-      // this.ecoScoreDriverDetailsTrendLine=JSON.parse('{"code":200,"message":"Eco-Score Trendline Report details fetched successfully.","trendlines":[{"vin":"Overall","vehicleName":"Overall","kpiInfo":{"ecoScoreCompany":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"06/10/2021":"4.6","06/21/2021":"4.5","07/26/2021":"0.0","07/27/2021":"4.4","07/28/2021":"3.5","07/29/2021":"3.7","07/30/2021":"3.9"}},"ecoScore":{"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","uoM":"","data":{"06/10/2021":"4.1","06/21/2021":"4.2","07/26/2021":"0.0","07/27/2021":"4.4","07/28/2021":"3.5","07/29/2021":"3.7","07/30/2021":"3.9"}},"fuelConsumption":{"name":"EcoScore.DriverPerformance.FuelConsumption","key":"rp_fuelconsumption","uoM":"Ltrs /100 km","data":{"06/10/2021":"18.7","06/21/2021":"14.7","07/26/2021":"2.8","07/27/2021":"11.3","07/28/2021":"8.3","07/29/2021":"28.5","07/30/2021":"29.7"}},"cruiseControlUsage":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage","key":"rp_cruisecontrolusage","uoM":"%","data":{"06/10/2021":"45.3","06/21/2021":"40.8","07/26/2021":"0.0","07/27/2021":"5.6","07/28/2021":"0.0","07/29/2021":"7.1","07/30/2021":"7.3"}},"cruiseControlUsage3050":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage30-50km/h(%)","key":"rp_CruiseControlUsage30","uoM":"km/h(%)","data":{"06/10/2021":"0.6","06/21/2021":"0.1","07/26/2021":"0.0","07/27/2021":"5.6","07/28/2021":"0.0","07/29/2021":"3.5","07/30/2021":"0.6"}},"cruiseControlUsage5075":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage50-75km/h(%)","key":"rp_cruisecontroldistance50","uoM":"km/h(%)","data":{"06/10/2021":"9.1","06/21/2021":"8.1","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"3.6","07/30/2021":"4.1"}},"cruiseControlUsage75":{"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage>75km/h(%)","key":"rp_cruisecontroldistance75","uoM":"km/h(%)","data":{"06/10/2021":"35.6","06/21/2021":"32.7","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"0.0","07/30/2021":"2.6"}},"ptoUsage":{"name":"EcoScore.DriverPerformance.FuelConsumption.PTOUsage(%)","key":"rp_ptousage","uoM":"%","data":{"06/10/2021":"0.0","06/21/2021":"0.0","07/26/2021":"0.0","07/27/2021":"0.0","07/28/2021":"0.0","07/29/2021":"0.0","07/30/2021":"0.0"}},"averageDrivingSpeed":{"name":"EcoScore.DriverPerformance.FuelConsumption.AverageDrivingSpeed","key":"rp_averagedrivingspeed","uoM":"km/h","data":{"06/10/2021":"49.8","06/21/2021":"59.3","07/26/2021":"14.6","07/27/2021":"19.0","07/28/2021":"23.6","07/29/2021":"31.2","07/30/2021":"31.0"}},"averageSpeed":{"name":"EcoScore.DriverPerformance.FuelConsumption.AverageSpeed","key":"rp_averagespeed","uoM":"km/h","data":{"06/10/2021":"43.5","06/21/2021":"47.4","07/26/2021":"10.1","07/27/2021":"12.7","07/28/2021":"19.1","07/29/2021":"21.6","07/30/2021":"20.7"}},"heavyThrottling":{"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottling(%)","key":"rp_heavythrottling","uoM":"%","data":{"06/10/2021":"66.4","06/21/2021":"174.2","07/26/2021":"5.0","07/27/2021":"19.4","07/28/2021":"55.5","07/29/2021":"67.4","07/30/2021":"61.7"}},"idling":{"name":"EcoScore.DriverPerformance.FuelConsumption.Idling(%)","key":"rp_idling","uoM":"%","data":{"06/10/2021":"12.6","06/21/2021":"20.2","07/26/2021":"30.6","07/27/2021":"33.2","07/28/2021":"19.1","07/29/2021":"30.9","07/30/2021":"33.3"}},"idleDuration":{"name":"EcoScore.DriverPerformance.FuelConsumption.IdleDuration","key":"rp_idleduration","uoM":"hh:mm:ss","data":{"06/10/2021":"00:11:24","06/21/2021":"00:10:48","07/26/2021":"00:10:08","07/27/2021":"00:45:32","07/28/2021":"00:14:19","07/29/2021":"01:19:26","07/30/2021":"01:25:25"}},"brakingScore":{"name":"EcoScore.DriverPerformance.BrakingScore","key":"rp_brakingscore","uoM":"","data":{"06/10/2021":"1.7","06/21/2021":"0.9","07/26/2021":"0.0","07/27/2021":"0.9","07/28/2021":"0.9","07/29/2021":"1.4","07/30/2021":"1.4"}},"anticipationScore":{"name":"EcoScore.DriverPerformance.AnticipationScore","key":"rp_anticipationscore","uoM":"","data":{"06/10/2021":"6.5","06/21/2021":"7.6","07/26/2021":"8.8","07/27/2021":"7.8","07/28/2021":"6.1","07/29/2021":"6.0","07/30/2021":"6.4"}}}}]}');
-       this.getSeriesData();
-      // this.hideloader();
-     }, (error)=>{
-      this.hideloader();
-     });
-
-     this.translationUpdate();
-     this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet.forEach((element, index) => {
+    this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet.forEach((element, index) => {
        this.vehicleListGeneral.push({
          id: index,
          name: element.label
        })
      });
-    // this.ecoScoreDriverDetails = JSON.parse('{"code":200,"message":"Eco-Score Report details fetched successfully.","drivers":[{"driverName":"Hero Honda","driverId":"NL B000384974000000"}],"compareDrivers":{"dataAttributeId":221,"name":"EcoScore","key":"rp_ecoscore","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":234,"name":"EcoScore.General","key":"rp_general","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":235,"name":"EcoScore.General.AverageGrossweight","key":"rp_averagegrossweight","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":236,"name":"EcoScore.General.Distance","key":"rp_distance","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"65.6"}],"subCompareDrivers":[]},{"dataAttributeId":237,"name":"EcoScore.General.NumberOfTrips","key":"rp_numberoftrips","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"6.0"}],"subCompareDrivers":[]},{"dataAttributeId":238,"name":"EcoScore.General.NumberOfVehicles","key":"rp_numberofvehicles","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"6.0"}],"subCompareDrivers":[]},{"dataAttributeId":239,"name":"EcoScore.General.AverageDistancePerDay","key":"rp_averagedistanceperday","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"65.6"}],"subCompareDrivers":[]}]},{"dataAttributeId":243,"name":"EcoScore.DriverPerformance","key":"rp_driverperformance","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":244,"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","limitType":"N","limitValue":10,"targetValue":10,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"4.1"}],"subCompareDrivers":[]},{"dataAttributeId":245,"name":"EcoScore.DriverPerformance.FuelConsumption","key":"rp_fuelconsumption","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"18.7"}],"subCompareDrivers":[{"dataAttributeId":246,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage","key":"rp_cruisecontrolusage","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"45.3"}],"subCompareDrivers":[{"dataAttributeId":247,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage30-50km/h(%)","key":"rp_CruiseControlUsage30","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"0.6"}],"subCompareDrivers":[]},{"dataAttributeId":248,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage50-75km/h(%)","key":"rp_cruisecontroldistance50","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"9.1"}],"subCompareDrivers":[]},{"dataAttributeId":249,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage>75km/h(%)","key":"rp_cruisecontroldistance75","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"35.6"}],"subCompareDrivers":[]}]},{"dataAttributeId":250,"name":"EcoScore.DriverPerformance.FuelConsumption.PTOUsage(%)","key":"rp_ptousage","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":251,"name":"EcoScore.DriverPerformance.FuelConsumption.PTODuration","key":"rp_ptoduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":252,"name":"EcoScore.DriverPerformance.FuelConsumption.AverageDrivingSpeed","key":"rp_averagedrivingspeed","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"49.8"}],"subCompareDrivers":[]},{"dataAttributeId":253,"name":"EcoScore.DriverPerformance.FuelConsumption.AverageSpeed","key":"rp_averagespeed","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"43.5"}],"subCompareDrivers":[]},{"dataAttributeId":254,"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottling(%)","key":"rp_heavythrottling","limitType":"X","limitValue":48.9,"targetValue":48.9,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"66.4"}],"subCompareDrivers":[]},{"dataAttributeId":255,"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottleDuration","key":"rp_heavythrottleduration","limitType":"X","limitValue":3560,"targetValue":3560,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"36.0"}],"subCompareDrivers":[]},{"dataAttributeId":256,"name":"EcoScore.DriverPerformance.FuelConsumption.Idling(%)","key":"rp_idling","limitType":"X","limitValue":23.7,"targetValue":23.7,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"12.6"}],"subCompareDrivers":[]},{"dataAttributeId":257,"name":"EcoScore.DriverPerformance.FuelConsumption.IdleDuration","key":"rp_idleduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"684.0"}],"subCompareDrivers":[]}]},{"dataAttributeId":258,"name":"EcoScore.DriverPerformance.BrakingScore","key":"rp_brakingscore","limitType":"N","limitValue":7.5,"targetValue":7.5,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"1.7"}],"subCompareDrivers":[{"dataAttributeId":259,"name":"EcoScore.DriverPerformance.BrakingScore.HarshBraking(%)","key":"rp_harshbraking","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"1340.8"}],"subCompareDrivers":[]},{"dataAttributeId":260,"name":"EcoScore.DriverPerformance.BrakingScore.HarshBrakeDuration","key":"rp_harshbrakeduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"72.0"}],"subCompareDrivers":[]},{"dataAttributeId":261,"name":"EcoScore.DriverPerformance.BrakingScore.Braking(%)","key":"rp_braking","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":262,"name":"EcoScore.DriverPerformance.BrakingScore.BrakeDuration","key":"rp_brakeduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"-68390.1"}],"subCompareDrivers":[]}]},{"dataAttributeId":263,"name":"EcoScore.DriverPerformance.AnticipationScore","key":"rp_anticipationscore","limitType":"N","limitValue":7.5,"targetValue":7.5,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"6.5"}],"subCompareDrivers":[]}]}]}}');
-     this.driverDetails = this.ecoScoreDriverDetails.singleDriver;
-     this.driverDetailsGen = this.ecoScoreDriverDetails.singleDriver.filter(a => a.headerType.indexOf("VIN_") !== -1);
-     let vins=[];
+    this.driverDetails = this.ecoScoreDriverDetails.singleDriver;
+    this.driverDetailsGen = this.ecoScoreDriverDetails.singleDriver.filter(a => a.headerType.indexOf("VIN_") !== -1);
+    let vins=[];
     this.driverDetails.forEach(element => {
       vins.push(element.vin);
      });
-     let uniq = [...new Set(vins)];
-     if(uniq.length>0){
+    let uniq = [...new Set(vins)];
+    if(uniq.length>20){
       let emitObj = {
         limitExceeds: true
       }
         this.vehicleLimitExceeds.emit(emitObj);
     }
-     this.tableColumns();
+    this.tableColumns();
     this.defineGrid();
-   // this.loadData();
     this.loadBarChart();
     this.loadPieChart(0);
     this.vehicleSelected=0;
@@ -219,7 +177,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.showLoadingIndicator = false;
   }
 
-  public pluginsCommon: PluginServiceGlobalRegistrationAndOptions[];
   // Doughnut - Eco-Score
   doughnutChartLabelsEcoScore: Label[];
   doughnutChartDataEcoScore: MultiDataSet;
@@ -234,7 +191,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
   doughnutChartDataBrakingScore: MultiDataSet;
 
   loadOverallPerfomance(){
-    console.log(this.ecoScoreDriverDetails.overallPerformance.ecoScore.score);
     // Doughnut - Eco-Score
     this.doughnutChartLabelsEcoScore = [(this.translationData.lblEcoScore || 'Eco-Score'), '', ''];
     this.doughnutChartDataEcoScore= [ [this.ecoScoreDriverDetails.overallPerformance.ecoScore.score, this.ecoScoreDriverDetails.overallPerformance.ecoScore.targetValue] ];
@@ -245,7 +201,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
     if(this.prefUnitFormat == 'dunit_Imperial')
       fuelConsumption = (235.215/fuelConsumption).toFixed(3);
     this.doughnutChartDataFuelConsumption= [ [fuelConsumption, 100-fuelConsumption] ];
-
     // Doughnut - Anticipation Score
     this.doughnutChartLabelsAnticipationScore = [(this.translationData.lblAnticipationScore || 'Anticipation Score'), '', ''];
     this.doughnutChartDataAnticipationScore= [ [this.ecoScoreDriverDetails.overallPerformance.anticipationScore.score, this.ecoScoreDriverDetails.overallPerformance.anticipationScore.targetValue] ];
@@ -377,12 +332,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
     }
   }
 
-  @ViewChild("trendLineChart") trendLineChart: ChartComponent;
-  @ViewChild("brushChart") brushChart: ChartComponent;
-  public chartOptionsApex: Partial<ChartOptionsApex>;
-
-  constructor(private reportService: ReportService) {}
-
   loadTrendLine(){
     this.chartOptions1 = {
       series: this.seriesDataFull,
@@ -449,14 +398,9 @@ export class EcoScoreReportDriverComponent implements OnInit {
           fill: {
             color: '#64b5f6',
             opacity: 1
-          },
-          // xaxis: {
-          //   min: this.getLastYear(),
-          //   max: this.getTodayDate()
-          // }
+          }
         }
       },
-      // colors: ["#008FFB"],
       fill: {
         type: "gradient",
         gradient: {
@@ -490,6 +434,8 @@ export class EcoScoreReportDriverComponent implements OnInit {
       for (var key in vehicle.kpiInfo) {
         if ((vehicle.kpiInfo).hasOwnProperty(key)) {
           let _key = (vehicle.kpiInfo)[key].key;
+          if(this.prefUnitFormat.indexOf("Imperial") !== -1 && (_key.indexOf("30") !== -1 || _key.indexOf("50") !== -1 || _key.indexOf("75") !== -1))
+            _key += '_I';
           let _name = this.translationData._key || this.translationDataTrendLineLocal.filter(obj=>obj.key === _key);
           let unit = (vehicle.kpiInfo)[key].uoM;
           if(unit && unit.indexOf("(%)") <= 0)
@@ -528,13 +474,11 @@ export class EcoScoreReportDriverComponent implements OnInit {
               }
             );
             this.kpiName.push(seriesName);
-        // }
-    }
-  }
+          }
+        }
+      // }
     });
     this.kpiList = [...new Set(this.kpiName)];
-    // console.log("datas"+JSON.stringify(dataSeries));
-    // console.log("datas kpi"+JSON.stringify(this.kpiList));
     this.seriesDataFull=dataSeries;
     this.loadTrendLine();
     this.loadBrushChart();
@@ -543,44 +487,26 @@ export class EcoScoreReportDriverComponent implements OnInit {
     }, 1000);
     return dataSeries;
   }
-
-  zeroDataSeries: any=[];
   
   formatData(data, isBrushChart){
     let result = [];
-    // let isZeroSeries = true;
     for (var i in data) {      
       let val = (new Date(i)).getTime();
       this.calMinMaxValue(val);
       let temp = Number.parseFloat(data[i]);
-      // if(isZeroSeries && temp != 0){
-      //   isZeroSeries = false;
-      // }
-      // if(temp == 0)
-      //   temp = 0.2
       if(isBrushChart)
         result.push([val, 0]);
       else
         result.push([val, temp]);
     }
-    // if(isZeroSeries) this.zeroDataSeries.push(seriesName);
-    // if(isZeroSeries){
-    //   result = [];
-    // }
     return result;
   }
 
   formatTime(data, isBrushChart){
     let result = [];
-    // let isZeroSeries = true;
     for (var i in data) {
       let arr = data[i].substr(0, data[i].lastIndexOf(":"));
       let temp = Number.parseFloat((arr.split(":").join(".")));
-      // if(isZeroSeries && temp != 0){
-      //   isZeroSeries = false;
-      // }
-      // if(temp == 0)
-      //   temp = 0.2
       let val = (new Date(i)).getTime();
       this.calMinMaxValue(val);
       if(isBrushChart)
@@ -588,10 +514,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
       else
         result.push([val, temp]);
     }
-    // if(isZeroSeries) this.zeroDataSeries.push(seriesName);
-    // if(isZeroSeries){
-    //   result = [];
-    // }
     return result;
   }
 
@@ -669,7 +591,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
   getYesterdaysDate() {
     var date = Util.getUTCDate(this.prefObj.prefTimeZone);
     date.setDate(date.getDate()-1);
-    // console.log(date.getTime());
     return date.getTime();
   }
 
@@ -705,31 +626,14 @@ export class EcoScoreReportDriverComponent implements OnInit {
 
   apexChartHideSeries(){
     this.kpiList.forEach((element, index) => {
-      // if(index>2){
         this.trendLineChart.hideSeries(element);
         if((this.kpiList.length-1) == index)
           this.hideloader();
-      // }
     });
-  }
-  
-  public chartOptions1: Partial<ChartOptionsApex>;
-  public chartOptions2: Partial<ChartOptionsApex>;
-
-  public generateDayWiseTimeSeries(baseval, count, yrange) {
-    var i = 0;
-    var series = [];
-    while (i < count) {
-      var x = baseval;
-      var y =
-        Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
-
-      series.push([x, y]);
-      baseval += 86400000;
-      i++;
+    if(this.kpiList.length>0){
+      this.trendLineChart.showSeries(this.kpiList[0]);
+      this.trendLineChart.showSeries(this.kpiList[1]);
     }
-    console.log(JSON.stringify(series));
-    return series;
   }
 
   checkPrefData(){
@@ -835,7 +739,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
       { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage > 75 km/h (%)' },
       { key:'rp_cruisecontroldistance50_I' , value:'Cruise Control Usage 30-45 mph (%)' },
       { key:'rp_cruisecontroldistance30_I' , value:'Cruise Control Usage 15-30 mph (%)' },
-      { key:'rp_cruisecontroldistance75_I' , value:'Cruise Control Usage >45 km/h (%)' },
+      { key:'rp_cruisecontroldistance75_I' , value:'Cruise Control Usage >45 mph (%)' },
       { key:'rp_harshbraking' , value:'Harsh Braking (%)' },
       { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration (hh:mm:ss)' },
       { key:'rp_brakeduration' , value:'Brake Duration (hh:mm:ss)' },
@@ -859,15 +763,21 @@ export class EcoScoreReportDriverComponent implements OnInit {
       { key:'rp_heavythrottleduration' , value:'Heavy Throttle Duration' },
       { key:'rp_heavythrottling' , value:'Heavy Throttling' },
       { key:'rp_averagespeed' , value:'Average Speed' },
-      { key:'rp_ptoduration' , value:'PTO Duration (hh:mm:ss)' },
+      { key:'rp_ptoduration' , value:'PTO Duration' },
       { key:'rp_ptousage' , value:'PTO Usage' },
-      { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage' },
-      { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage' },
-      { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage' },
-      { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage (%)' },
-      { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage' },
-      { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage' },
-      { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage' },
+      { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage 30-50' },
+      { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage >75' },
+      { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage 50-75' },
+      { key:'rp_CruiseControlUsage30_I' , value:'Cruise Control Usage 15-30'},
+      { key:'rp_CruiseControlUsage50_I' , value:'Cruise Control Usage 30-45'},
+      { key:'rp_CruiseControlUsage75_I' , value:'Cruise Control Usage >75'},
+      { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage' },
+      { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage 50-75' },
+      { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage 30-50' },
+      { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage >75' },
+      { key:'rp_cruisecontroldistance30_I' , value:'Cruise Control Usage 15-30' },
+      { key:'rp_cruisecontroldistance50_I' , value:'Cruise Control Usage 30-45' },
+      { key:'rp_cruisecontroldistance75_I' , value:'Cruise Control Usage >45' },
       { key:'rp_harshbraking' , value:'Harsh Braking' },
       { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration' },
       { key:'rp_brakeduration' , value:'Brake Duration' },
@@ -1000,14 +910,13 @@ export class EcoScoreReportDriverComponent implements OnInit {
     };
   }
 
-
   treeFormatter: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
     if (value === null || value === undefined || dataContext === undefined) {
       return '';
     }
     if(this.prefUnitFormat === 'dunit_Imperial' && (value.toLowerCase().indexOf("30") !== -1
-        || value.toLowerCase().indexOf("50") !== -1 || value.toLowerCase().indexOf("75") !== -1)
-        || value.toLowerCase().indexOf("rp_fuelconsumption") !== -1){
+        || value.toLowerCase().indexOf("50") !== -1 || value.toLowerCase().indexOf("75") !== -1
+        || value.toLowerCase().indexOf("rp_fuelconsumption") !== -1)){
       value += "_I";
     }
     var foundValue = this.translationData.value || this.translationDataLocal.filter(obj=>obj.key === value);
@@ -1145,22 +1054,11 @@ export class EcoScoreReportDriverComponent implements OnInit {
   }
   
   loadData() {
-    // this.ecoScoreDriverDetails = JSON.parse('{"code":200,"message":"Eco-Score Report details fetched successfully.","drivers":[{"driverName":"Hero Honda","driverId":"NL B000384974000000"}],"compareDrivers":{"dataAttributeId":221,"name":"EcoScore","key":"rp_ecoscore","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":234,"name":"EcoScore.General","key":"rp_general","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":235,"name":"EcoScore.General.AverageGrossweight","key":"rp_averagegrossweight","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":236,"name":"EcoScore.General.Distance","key":"rp_distance","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"65.6"}],"subCompareDrivers":[]},{"dataAttributeId":237,"name":"EcoScore.General.NumberOfTrips","key":"rp_numberoftrips","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"6.0"}],"subCompareDrivers":[]},{"dataAttributeId":238,"name":"EcoScore.General.NumberOfVehicles","key":"rp_numberofvehicles","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"6.0"}],"subCompareDrivers":[]},{"dataAttributeId":239,"name":"EcoScore.General.AverageDistancePerDay","key":"rp_averagedistanceperday","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[{"driverId":"NL B000384974000000","value":"65.6"}],"subCompareDrivers":[]}]},{"dataAttributeId":243,"name":"EcoScore.DriverPerformance","key":"rp_driverperformance","limitType":"","limitValue":0,"targetValue":0,"rangeValueType":"","score":[],"subCompareDrivers":[{"dataAttributeId":244,"name":"EcoScore.DriverPerformance.EcoScore","key":"rp_ecoscore","limitType":"N","limitValue":10,"targetValue":10,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"4.1"}],"subCompareDrivers":[]},{"dataAttributeId":245,"name":"EcoScore.DriverPerformance.FuelConsumption","key":"rp_fuelconsumption","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"18.7"}],"subCompareDrivers":[{"dataAttributeId":246,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage","key":"rp_cruisecontrolusage","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"45.3"}],"subCompareDrivers":[{"dataAttributeId":247,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage30-50km/h(%)","key":"rp_CruiseControlUsage30","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"0.6"}],"subCompareDrivers":[]},{"dataAttributeId":248,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage50-75km/h(%)","key":"rp_cruisecontroldistance50","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"9.1"}],"subCompareDrivers":[]},{"dataAttributeId":249,"name":"EcoScore.DriverPerformance.FuelConsumption.CruiseControlUsage.CruiseControlUsage>75km/h(%)","key":"rp_cruisecontroldistance75","limitType":"N","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"35.6"}],"subCompareDrivers":[]}]},{"dataAttributeId":250,"name":"EcoScore.DriverPerformance.FuelConsumption.PTOUsage(%)","key":"rp_ptousage","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":251,"name":"EcoScore.DriverPerformance.FuelConsumption.PTODuration","key":"rp_ptoduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":252,"name":"EcoScore.DriverPerformance.FuelConsumption.AverageDrivingSpeed","key":"rp_averagedrivingspeed","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"49.8"}],"subCompareDrivers":[]},{"dataAttributeId":253,"name":"EcoScore.DriverPerformance.FuelConsumption.AverageSpeed","key":"rp_averagespeed","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"43.5"}],"subCompareDrivers":[]},{"dataAttributeId":254,"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottling(%)","key":"rp_heavythrottling","limitType":"X","limitValue":48.9,"targetValue":48.9,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"66.4"}],"subCompareDrivers":[]},{"dataAttributeId":255,"name":"EcoScore.DriverPerformance.FuelConsumption.HeavyThrottleDuration","key":"rp_heavythrottleduration","limitType":"X","limitValue":3560,"targetValue":3560,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"36.0"}],"subCompareDrivers":[]},{"dataAttributeId":256,"name":"EcoScore.DriverPerformance.FuelConsumption.Idling(%)","key":"rp_idling","limitType":"X","limitValue":23.7,"targetValue":23.7,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"12.6"}],"subCompareDrivers":[]},{"dataAttributeId":257,"name":"EcoScore.DriverPerformance.FuelConsumption.IdleDuration","key":"rp_idleduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"684.0"}],"subCompareDrivers":[]}]},{"dataAttributeId":258,"name":"EcoScore.DriverPerformance.BrakingScore","key":"rp_brakingscore","limitType":"N","limitValue":7.5,"targetValue":7.5,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"1.7"}],"subCompareDrivers":[{"dataAttributeId":259,"name":"EcoScore.DriverPerformance.BrakingScore.HarshBraking(%)","key":"rp_harshbraking","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"1340.8"}],"subCompareDrivers":[]},{"dataAttributeId":260,"name":"EcoScore.DriverPerformance.BrakingScore.HarshBrakeDuration","key":"rp_harshbrakeduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"72.0"}],"subCompareDrivers":[]},{"dataAttributeId":261,"name":"EcoScore.DriverPerformance.BrakingScore.Braking(%)","key":"rp_braking","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"0.0"}],"subCompareDrivers":[]},{"dataAttributeId":262,"name":"EcoScore.DriverPerformance.BrakingScore.BrakeDuration","key":"rp_brakeduration","limitType":"X","limitValue":0,"targetValue":0,"rangeValueType":"T","score":[{"driverId":"NL B000384974000000","value":"-68390.1"}],"subCompareDrivers":[]}]},{"dataAttributeId":263,"name":"EcoScore.DriverPerformance.AnticipationScore","key":"rp_anticipationscore","limitType":"N","limitValue":7.5,"targetValue":7.5,"rangeValueType":"D","score":[{"driverId":"NL B000384974000000","value":"6.5"}],"subCompareDrivers":[]}]}]}}');
     let res = (JSON.stringify(this.ecoScoreDriverDetails)).replace(/dataAttributeId/g, "id");
     let fin = JSON.parse(res);
     this.datasetHierarchical = fin.singleDriverKPIInfo.subSingleDriver[1].subSingleDriver;
     this.datasetGen = fin.singleDriverKPIInfo.subSingleDriver[0].subSingleDriver; 
-    // this.datasetHierarchical = fin.compareDrivers.subCompareDrivers[1].subCompareDrivers;
-    // this.datasetGen = fin.compareDrivers.subCompareDrivers[0].subCompareDrivers; 
  }
-
-// public barChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;//['sagar', 'laxman', 'nimesh', 'vishal', 'nilam'];
-// public barChartType = 'bar';
-// public barChartLegend = true;
-// public barChartData = [
-//   {data: [65, 59, 80, 60, 50], label: 'Remote'},
-//   {data: [28, 48, 40, 81], label: 'Visit'}
-// ];
 
 public barChartLabels: any =[];
 public barChartType = 'bar';
@@ -1287,15 +1185,15 @@ public barChartOptionsPerformance = {
     }}
   };
 
-loadBarChartPerfomance(){
-  this.barChartLabelsPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.xAxisLabel;
-  this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet.forEach(element => {
-    this.barChartDataPerformance.push({
-      data: element.data,
-      label: element.label
+  loadBarChartPerfomance(){
+    this.barChartLabelsPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.xAxisLabel;
+    this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet.forEach(element => {
+      this.barChartDataPerformance.push({
+        data: element.data,
+        label: element.label
+      });
     });
-  });
-}
+  }
 
    // Pie
    public pieChartOptions: ChartOptions = {
@@ -1316,8 +1214,6 @@ loadBarChartPerfomance(){
       }
     } 
   };
-  // public pieChartLabels: Label[] = [['Download', 'Sales'], ['In', 'Store', 'Sales'], 'Mail Sales'];
-  // public pieChartData: SingleDataSet = [300, 500, 100];
   public pieChartLabels: Label[] = [];
   public pieChartData: SingleDataSet = [];
   public pieChartType: ChartType = 'pie';
@@ -1329,7 +1225,6 @@ loadBarChartPerfomance(){
   }}];
 
   loadPieChart(index){
-    // let chart = [{"data":[100,0,0,0,0,0],"label":"Overall Driver"},{"data":[15,25,35,5,10,10]}];
     if(this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet.length > 0){
       this.pieChartData = this.ecoScoreDriverDetails.averageGrossWeightChart.chartDataSet[index].data;
       this.pieChartLabels = this.ecoScoreDriverDetails.averageGrossWeightChart.xAxisLabel;
@@ -1340,16 +1235,11 @@ loadBarChartPerfomance(){
   public pieChartDataPerformance: SingleDataSet = [];
 
   loadPieChartPerformance(index){
-    console.log(index);
     if(this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet.length > 0){
       this.pieChartDataPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.chartDataSet[index].data;
       this.pieChartLabelsPerformance = this.ecoScoreDriverDetails.averageDrivingSpeedChart.xAxisLabel;
     }
   }
-
-  // selectionChanged(val){
-  //   this.loadPieChart(Number.parseInt(val));
-  // }
 
   toggleGeneralCharts(val){
     if(val === 'bar'){
@@ -1370,5 +1260,4 @@ loadBarChartPerfomance(){
       this.showPerformancePie=true;
     }
   }
-
 }

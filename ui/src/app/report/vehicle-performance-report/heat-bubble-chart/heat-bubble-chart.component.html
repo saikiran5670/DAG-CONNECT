@@ -1,15 +1,20 @@
-<div id="chart">
-    <h2 style="text-align: center; font-size: 16px; font-weight: 600;">{{ chartTitle || 'Engine Operational Performance' }}</h2>
-    <apx-chart
-      [series]="chartOptions.series"
-      [chart]="chartOptions.chart"
-      [xaxis]="chartOptions.xaxis"
-      [fill]="chartOptions.fill"
-      [dataLabels]="chartOptions.dataLabels"
-      [title]="chartOptions.title"
-      [yaxis]="chartOptions.yaxis"
-      [tooltip]="chartOptions.tooltip"
-      [theme]="chartOptions.theme"
-      [annotations]="chartOptions.annotations"
-    ></apx-chart>
+<div>
+  <h2 style="text-align: center; font-size: 16px; font-weight: 600;">{{ chartTitle || 'Engine Operational Performance'
+    }}</h2>
+  <div class="areaWidth min-width-15-per zoomWrapper" fxLayout="column" fxLayoutAlign="left">
+    <mat-form-field appearance="outline" class="positionZoom">
+      <mat-select placeholder="Zoom" [(ngModel)]="selectedZoom">
+        <mat-option *ngFor="let per of zoom" [value]="per.zValue">
+          {{ per.zName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
+
+  <div id="chart" [ngStyle]="{'zoom': selectedZoom}">
+    <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [xaxis]="chartOptions.xaxis"
+      [fill]="chartOptions.fill" [dataLabels]="chartOptions.dataLabels" [title]="chartOptions.title"
+      [yaxis]="chartOptions.yaxis" [tooltip]="chartOptions.tooltip" [theme]="chartOptions.theme"
+      [annotations]="chartOptions.annotations"></apx-chart>
+  </div>
+</div>
