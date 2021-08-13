@@ -61,6 +61,7 @@ export class DriverTimeDetailComponent implements OnInit {
   @Input() graphPayload : any;
   @Input() prefTimeZone : any;
   initData = [];
+  chartData = [];
   searchExpandPanel: boolean = true;
   chartExpandPanel : boolean = true;
   tableExpandPanel: boolean = true;
@@ -204,14 +205,14 @@ export class DriverTimeDetailComponent implements OnInit {
           let diffDuration = Util.convertUtcToTimeStringFormat(values.end - values.start,this.prefTimeZone);
           let diffDisplay= diffDuration;
           let fromTime = (values.start);
-          let fromDisplay  = Util.convertUtcToTimeStringFormat(fromTime,this.prefTimeZone);
+          let fromDisplay  = Util.convertUtcToDateTimeStringFormat(fromTime,this.prefTimeZone);
           let toTime = (values.end);
-          let toDisplay  = Util.convertUtcToTimeStringFormat(toTime,this.prefTimeZone);
+          let toDisplay  = Util.convertUtcToDateTimeStringFormat(toTime,this.prefTimeZone);
           let getIconName = activityType.toLowerCase();
           let activityIcon =  `assets/activityIcons/${getIconName}.svg`;
           return (
             `<div class='chartTT'> 
-              <div><img matTooltip='activity' class='mr-1' src=${activityIcon} style="width: 16px; height: 16px;" />${activityType} </div>
+              <div style='font-weight: bold;'><img matTooltip='activity' class='mr-1' src=${activityIcon} style="width: 16px; height: 16px;" />${activityType} </div>
               <div>From:${fromDisplay}</div>
               <div>To:${toDisplay} </div>
               <div>Duration: ${diffDisplay}</div>
@@ -226,7 +227,7 @@ export class DriverTimeDetailComponent implements OnInit {
   ngOnInit(): void {
   //console.log(this.driverDetails)
     //this.setGeneralDriverValue();
- 
+    this.showLoadingIndicator = true;
     this.updateDataSource(this.detailConvertedData);
    // this.setGraphData();
 
@@ -325,7 +326,8 @@ export class DriverTimeDetailComponent implements OnInit {
 
   ngOnChanges(){
     this.reportService.getDriverChartDetails(this.graphPayload).subscribe((data)=>{
-      //this.createChart(data);
+      this.showLoadingIndicator = false;
+      this.createChart(data);
     })
     this.updateDataSource(this.detailConvertedData);
     this.setGraphData();
@@ -333,6 +335,7 @@ export class DriverTimeDetailComponent implements OnInit {
 
   createChart(data){
     let _data = data['driverActivitiesChartData'];
+    this.chartData = _data;
     let _series = [];
     let restArray =_data.filter(item => item.code === 0);
     let availableArray =_data.filter(item => item.code === 1);
@@ -409,14 +412,14 @@ export class DriverTimeDetailComponent implements OnInit {
           let diffDuration = Util.convertUtcToTimeStringFormat(values.end - values.start,this.prefTimeZone);
           let diffDisplay= diffDuration;
           let fromTime = (values.start);
-          let fromDisplay  = Util.convertUtcToTimeStringFormat(fromTime,this.prefTimeZone);
+          let fromDisplay  = Util.convertUtcToDateTimeStringFormat(fromTime,this.prefTimeZone);
           let toTime = (values.end);
-          let toDisplay  = Util.convertUtcToTimeStringFormat(toTime,this.prefTimeZone);
+          let toDisplay  = Util.convertUtcToDateTimeStringFormat(toTime,this.prefTimeZone);
           let getIconName = activityType.toLowerCase();
           let activityIcon =  `assets/activityIcons/${getIconName}.svg`;
           return (
             `<div class='chartTT'> 
-              <div><img matTooltip='activity' class='mr-1' src=${activityIcon} style="width: 16px; height: 16px;" />${activityType} </div>
+              <div style='font-weight: bold;'><img matTooltip='activity' class='mr-1' src=${activityIcon} style="width: 16px; height: 16px;" />${activityType} </div>
               <div>From:${fromDisplay}</div>
               <div>To:${toDisplay} </div>
               <div>Duration: ${diffDisplay}</div>

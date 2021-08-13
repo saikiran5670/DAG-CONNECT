@@ -99,6 +99,19 @@ export class Util {
          return _time;
     }
 
+    public static convertUtcToDateTimeStringFormat(_utc: any, timeZone: any, timeFormat? :any){
+        let _t = timeZone.split(')');
+        let _timezone: any;
+        if(_t.length > 0){
+            _timezone = _t[1].trim();
+        }
+        let _format =  timeFormat ? timeFormat + ' HH:mm:ss' : 'DD/MM/YYYY HH:mm:ss';
+        let _date: any = moment.utc(_utc).tz(_timezone ? _timezone : timeZone).format(_format);
+        //let _date: any = moment.utc(_utc).tz(timeZone).format('YYYY/MM/DD hh:mm:ss');
+        return (_date);
+    }
+
+
     public static convertUtcToDateFormat(_utc: any,_format, timeZone? : any){
         let _date: any;
         if (timeZone){
