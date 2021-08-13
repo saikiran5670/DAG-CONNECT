@@ -36,6 +36,7 @@ checkboxChecked: boolean = false;
     
     this.periodSelectionForm = this._formBuilder.group({
       // recipientLabel: ['', [ Validators.required ]],
+      dayCalender: [''],
       FormArrayItems : this._formBuilder.array([this.initPeriodItems()]),
     });
 

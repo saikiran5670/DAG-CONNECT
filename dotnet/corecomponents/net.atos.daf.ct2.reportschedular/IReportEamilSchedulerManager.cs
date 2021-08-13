@@ -9,5 +9,6 @@ namespace net.atos.daf.ct2.reportscheduler
     public interface IReportEmailSchedulerManager
     {
         Task<List<ReportEmailDetail>> SendReportEmail();
+        Task<bool> UpdateMissingSchedulerFrequecy();
     }
 }
