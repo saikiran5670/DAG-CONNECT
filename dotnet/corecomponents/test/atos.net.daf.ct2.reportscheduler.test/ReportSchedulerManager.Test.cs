@@ -152,7 +152,7 @@ namespace atos.net.daf.ct2.reportscheduler.test
         public async Task UnT_Helpr_GetNextQuarterTime()
         {
             long date = 1609500927000;
-            var result = _helper.GetNextQuarterTime(date);
+            var result = _helper.GetNextQuarterTime(date, "Asia/Kolkata");
             Assert.IsNotNull(result);
         }
 
@@ -162,7 +162,7 @@ namespace atos.net.daf.ct2.reportscheduler.test
         public async Task UnT_Helpr_GetNextMonthlyTime()
         {
             long date = 1610710527000;
-            var result = _helper.GetNextMonthlyTime(date);
+            var result = _helper.GetNextMonthlyTime(date, "Asia/Kolkata");
             Assert.IsNotNull(result);
         }
     }

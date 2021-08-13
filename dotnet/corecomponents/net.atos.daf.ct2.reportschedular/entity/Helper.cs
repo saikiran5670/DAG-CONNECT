@@ -40,7 +40,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
             } while (reportEmailFrequency.EndDate < nowDate);
         }
 
-        public ReportEmailFrequency GetNextQuarterTime(long currentdate)
+        public ReportEmailFrequency GetNextQuarterTime(long currentdate, string timeZoneName)
         {
 
             DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -63,8 +63,8 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 
             var reportEmailFrequency = new ReportEmailFrequency()
             {
-                StartDate = UTCHandling.GetUTCFromDateTime(firstDayOfQuarter),
-                EndDate = UTCHandling.GetUTCFromDateTime(lastDayOfQuarter.AddHours(23).AddMinutes(59).AddSeconds(59)),
+                StartDate = UTCHandling.GetUTCFromDateTime(firstDayOfQuarter, timeZoneName),
+                EndDate = UTCHandling.GetUTCFromDateTime(lastDayOfQuarter.AddHours(23).AddMinutes(59).AddSeconds(59), timeZoneName),
                 FrequencyType = TimeFrequenyType.Quartly,
                 ReportNextScheduleRunDate = UTCHandling.GetUTCFromDateTime(nextRunDate)
             };
@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         }
 
 
-        public ReportEmailFrequency GetNextMonthlyTime(long currentdate)
+        public ReportEmailFrequency GetNextMonthlyTime(long currentdate, string timeZoneName)
         {
             DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             DateTime date = start.AddMilliseconds(currentdate).ToLocalTime();
@@ -85,11 +85,11 @@ namespace net.atos.daf.ct2.reportscheduler.entity
                 endDate = startDate.AddMonths(1).AddSeconds(-1);
                 date = start.AddMilliseconds(UTCHandling.GetUTCFromDateTime(nextMonth)).ToLocalTime();
             } while (UTCHandling.GetUTCFromDateTime(endDate) < nowDate);
-
+            nextMonth = new DateTime(nextMonth.Year, nextMonth.Month, 1, nextMonth.Hour, nextMonth.Minute, nextMonth.Second);
             var reportEmailFrequency = new ReportEmailFrequency()
             {
-                StartDate = UTCHandling.GetUTCFromDateTime(startDate),
-                EndDate = UTCHandling.GetUTCFromDateTime(endDate),
+                StartDate = UTCHandling.GetUTCFromDateTime(startDate, timeZoneName),
+                EndDate = UTCHandling.GetUTCFromDateTime(endDate, timeZoneName),
                 FrequencyType = TimeFrequenyType.Monthly,
                 ReportNextScheduleRunDate = UTCHandling.GetUTCFromDateTime(nextMonth)
             };

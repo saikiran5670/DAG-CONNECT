@@ -1324,6 +1324,8 @@ export class ReportMapService {
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
       element.convertedTripTime = this.getHhMmTime(element.tripTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
+      element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
+    
     });
     return gridData;
   }

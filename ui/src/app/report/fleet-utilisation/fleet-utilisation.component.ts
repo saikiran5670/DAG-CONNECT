@@ -1083,6 +1083,7 @@ calendarOptions: CalendarOptions = {
   }
 
   updateDataSource(tableData: any) {
+    console.log("tableData", tableData);
     this.initData = tableData;
     this.showMap = false;
     this.selectedTrip.clear();
@@ -1561,6 +1562,7 @@ getAllSummaryData(){
   })
 
  this.initData.forEach(item => {     
+   console.log("initData", this.initData);
     worksheet.addRow([item.vehicleName,item.vin, item.registrationNumber,item.convertedDistance,
       item.numberOfTrips,item.convertedTripTime, item.convertedDrivingTime, item.convertedIdleDuration,
       item.convertedStopTime, item.convertedAverageSpeed, item.convertedAverageWeight,

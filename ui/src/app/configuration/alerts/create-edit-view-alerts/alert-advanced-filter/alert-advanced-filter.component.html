@@ -186,10 +186,10 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-radio-group *ngIf="isPoiSelected && actionType != 'view'" (change)='onRadioButtonChange($event)' formControlName="poiSite">
-        <mat-radio-button style='margin-right: 20px;' [checked]="true" value="0">
+        <mat-radio-button style='margin-right: 20px;' [checked]="enteringFlag" value="E">
           {{ translationData.lblEnteringSite || 'Entering Site' }}
         </mat-radio-button>
-        <mat-radio-button style='margin-right: 20px;' value="1">
+        <mat-radio-button style='margin-right: 20px;' [checked]="existingFlag" value="X">
           {{ translationData.lblExitingSite || 'Exiting Site' }}
         </mat-radio-button>
       </mat-radio-group>
