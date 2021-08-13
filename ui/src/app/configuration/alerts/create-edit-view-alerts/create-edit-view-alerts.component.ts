@@ -191,7 +191,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
       searchForLevelPOI: [''],
       alertLevelValue:[''],
       searchCorridor:[''],
-      levelType: [''],
+      levelType: ['']
     },
     {
       validator: [
@@ -309,6 +309,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.vehicleByVehGroupList= [];
     this.vehicleListForTable= [];
     this.unitTypes= [];
+    // this.alertFilterRefs = []; need to check
     this.alert_type_selected= value;
     if(this.panelOpenState && this.notificationComponent.openAdvancedFilter){
       this.notificationComponent.setAlertType(this.alert_type_selected);

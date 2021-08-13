@@ -9,5 +9,6 @@ namespace net.atos.daf.ct2.rfms
         Task<RfmsVehicles> GetVehicles(string lastVin, int threshold, int accountId, int orgId);
         Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest);
         Task<string> GetRFMSFeatureRate(string emailId, string featureName);
+        Task<RfmsVehicleStatus> GetRfmsVehicleStatus(RfmsVehicleStatusRequest rfmsVehicleStatusRequest);
     }
 }

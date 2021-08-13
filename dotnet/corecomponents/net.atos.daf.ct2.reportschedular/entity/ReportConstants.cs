@@ -50,5 +50,6 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public const string LOG_MSG = "ReportCreationScheduler";
         public const string LOG_UNSUBSCRIBED = "ReportCreationUnSubscribed";
         public const string LOG_MISSING_MSG = "ReportSchedulerMissingData";
+        public const string LOG_EMAIL_MSG = "EmailNotificationForReportSchedule";
     }
 }
