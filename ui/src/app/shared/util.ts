@@ -75,6 +75,30 @@ export class Util {
          return date;
     }
 
+    public static convertUtcToTimeStringFormat(_utc: any, timeZone: any){
+        let _t = timeZone.split(')');
+        let _timezone: any;
+        if(_t.length > 0){
+            _timezone = _t[1].trim();
+        }
+        let date: any = moment.utc(_utc).tz(_timezone ? _timezone : timeZone).format();
+        //let _date: any = moment.utc(_utc).tz(timeZone);
+        // return (_date._d);
+
+        let _date= date.split("T")[0];
+        let _time= (date.split("T")[1]).slice(0, -6);
+         date=new Date();
+         date.setDate(_date.split("-")[2]);
+         date.setMonth(_date.split("-")[1]-1);
+         date.setYear(_date.split("-")[0]);
+         date.setHours(_time.split(":")[0]);
+         date.setMinutes(_time.split(":")[1]);
+         date.setSeconds(_time.split(":")[2]);
+      
+         let time =  _time.split(":")[0] + _time.split(":")[1] + _time.split(":")[2];
+         return _time;
+    }
+
     public static convertUtcToDateFormat(_utc: any,_format, timeZone? : any){
         let _date: any;
         if (timeZone){
