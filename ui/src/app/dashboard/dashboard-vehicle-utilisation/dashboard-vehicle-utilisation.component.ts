@@ -414,8 +414,8 @@ displayPiechart: boolean = true;
    setPrefFormatDate(){
     switch(this.prefDateFormat){
       case 'ddateformat_dd/mm/yyyy': {
-        this.dateFormats.display.dateInput = "DD/MM/YYYY";
-        this.chartLabelDateFormat='MM/DD/YYYY';
+        this.dateFormats.display.dateInput = "DD/MM/YYYY";      
+        this.chartLabelDateFormat='DD/MM/YYYY';
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
@@ -424,8 +424,8 @@ displayPiechart: boolean = true;
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
-        this.dateFormats.display.dateInput = "DD-MM-YYYY";
-        this.chartLabelDateFormat='MM-DD-YYYY';
+        this.dateFormats.display.dateInput = "DD-MM-YYYY";       
+        this.chartLabelDateFormat='DD-MM-YYYY';
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
