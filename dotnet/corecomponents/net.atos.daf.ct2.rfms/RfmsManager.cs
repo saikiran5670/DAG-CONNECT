@@ -224,5 +224,10 @@ namespace net.atos.daf.ct2.rfms
                 _cache.Set(MasterMemoryObjectCacheConstants.MASTER_DATA_MEMORY_CACHEKEY, masterDataDictionary, cacheEntryOptions);
             }
         }
+
+        public async Task<RfmsVehicleStatus> GetRfmsVehicleStatus(RfmsVehicleStatusRequest rfmsVehicleStatusRequest)
+        {
+            return await _rfmsRepository.GetRfmsVehicleStatus(rfmsVehicleStatusRequest);
+        }
     }
 }

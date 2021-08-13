@@ -14,5 +14,7 @@ namespace net.atos.daf.ct2.rfms.repository
         Task<string> GetRFMSFeatureRate(string emailId, string featureName);
 
         Task<List<MasterTableCacheObject>> GetMasterTableCacheData();
+
+        Task<RfmsVehicleStatus> GetRfmsVehicleStatus(RfmsVehicleStatusRequest rfmsVehicleStatusRequest);
     }
 }

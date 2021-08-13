@@ -439,5 +439,23 @@ namespace net.atos.daf.ct2.rfms.repository
                 throw;
             }
         }
+
+        public async Task<RfmsVehicleStatus> GetRfmsVehicleStatus(RfmsVehicleStatusRequest rfmsVehicleStatusRequest)
+        {
+
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@requestId", rfmsVehicleStatusRequest.RequestId);
+                // To do rfms vehicle status....
+                return new RfmsVehicleStatus();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+        }
     }
 }
