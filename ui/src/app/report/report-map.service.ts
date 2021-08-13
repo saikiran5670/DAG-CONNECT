@@ -1220,7 +1220,7 @@ export class ReportMapService {
 
   convertFuelConsumptionMlmToMpg(_data: any){
     let data: any = 1.6/(_data * 3.78);
-    return (data).toFixed(2);
+    return (data).toFixed(6); // as inverted division results in very low value upto 6 places shown // 16044
   }
 
   convertKgToPound(_data: any){

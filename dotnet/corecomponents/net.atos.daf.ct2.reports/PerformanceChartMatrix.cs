@@ -100,25 +100,53 @@ namespace net.atos.daf.ct2.reports
 
         }
 
+        public List<ChartMatrix> GenrateMatrix(List<VehPerformanceChartData> chartData, string performanceType)
+        {
+            List<ChartMatrix> matrix = new List<ChartMatrix>();
+            foreach (var item in chartData)
+            {
+                try
+                {
+                    ChartMatrix matdata = new ChartMatrix();
+                    matdata.A = item.MatrixValue.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+                    matdata.IA = item.CountPerIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+                    matdata.JA = item.ColumnIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+                    matdata.A = performanceType == "B" ? matdata.A.Select(x => -x).ToArray() : matdata.A;
+
+                    matdata.DMatrix = ParseSparseMatrix(matdata.A, matdata.IA);//, JA);
+                    matdata.ColumnsCount = matdata.DMatrix.GetUpperBound(1) - matdata.DMatrix.GetLowerBound(1) + 1;
+                    matdata.RowsCount = matdata.DMatrix.GetUpperBound(0) - matdata.DMatrix.GetLowerBound(0) + 1;
+                    matrix.Add(matdata);
+                }
+                catch (Exception)
+                {
+                    // skipping trips for now whose matrix didnt genrated 
+                    //throw;
+                }
+
+            }
+            return matrix;
+        }
         public VehiclePerformanceData Getcombinedmatrix(List<VehPerformanceChartData> chartData, string performanceType, List<KpiDataRange> rangedata, double tripDuration)
         {
             //Console.WriteLine("Hello World!");
             VehiclePerformanceData result = new VehiclePerformanceData();
-            List<ChartMatrix> matrix = new List<ChartMatrix>();
-            foreach (var item in chartData)
-            {
-                ChartMatrix matdata = new ChartMatrix();
-                matdata.A = item.MatrixValue.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
-                matdata.IA = item.CountPerIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
-                matdata.JA = item.ColumnIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
-                matdata.A = performanceType == "B" ? matdata.A.Select(x => -x).ToArray() : matdata.A;
+            //List<ChartMatrix> matrix = new List<ChartMatrix>();
+            //foreach (var item in chartData)
+            //{
+            //    ChartMatrix matdata = new ChartMatrix();
+            //    matdata.A = item.MatrixValue.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+            //    matdata.IA = item.CountPerIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+            //    matdata.JA = item.ColumnIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+            //    matdata.A = performanceType == "B" ? matdata.A.Select(x => -x).ToArray() : matdata.A;
 
-                matdata.DMatrix = ParseSparseMatrix(matdata.A, matdata.IA);//, JA);
-                matdata.ColumnsCount = matdata.DMatrix.GetUpperBound(1) - matdata.DMatrix.GetLowerBound(1) + 1;
-                matdata.RowsCount = matdata.DMatrix.GetUpperBound(0) - matdata.DMatrix.GetLowerBound(0) + 1;
-                matrix.Add(matdata);
-            }
+            //    matdata.DMatrix = ParseSparseMatrix(matdata.A, matdata.IA);//, JA);
+            //    matdata.ColumnsCount = matdata.DMatrix.GetUpperBound(1) - matdata.DMatrix.GetLowerBound(1) + 1;
+            //    matdata.RowsCount = matdata.DMatrix.GetUpperBound(0) - matdata.DMatrix.GetLowerBound(0) + 1;
+            //    matrix.Add(matdata);
+            //}
             result.ChartData = new List<IndexWiseChartData>();
+            var matrix = this.GenrateMatrix(chartData, performanceType);
             foreach (var item in matrix)
             {
                 for (int i = 0; i < 10; i++)
@@ -219,22 +247,32 @@ namespace net.atos.daf.ct2.reports
         {
             //Console.WriteLine("Hello World!");
             VehiclePerformanceData result = new VehiclePerformanceData();
-            List<ChartMatrix> matrix = new List<ChartMatrix>();
-            foreach (var item in chartData)
-            {
-                ChartMatrix matdata = new ChartMatrix();
-                matdata.A = item.MatrixValue.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
-                matdata.IA = item.CountPerIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
-                matdata.JA = item.ColumnIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
-                matdata.A = performanceType == "B" ? matdata.A.Select(x => -x).ToArray() : matdata.A;
+            //List<ChartMatrix> matrix = new List<ChartMatrix>();
+            //foreach (var item in chartData)
+            //{
+            //    try
+            //    {
+            //        ChartMatrix matdata = new ChartMatrix();
+            //        matdata.A = item.MatrixValue.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+            //        matdata.IA = item.CountPerIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+            //        matdata.JA = item.ColumnIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+            //        matdata.A = performanceType == "B" ? matdata.A.Select(x => -x).ToArray() : matdata.A;
 
-                matdata.DMatrix = ParseSparseMatrix(matdata.A, matdata.IA);//, JA);
-                matdata.ColumnsCount = matdata.DMatrix.GetUpperBound(1) - matdata.DMatrix.GetLowerBound(1) + 1;
-                matdata.RowsCount = matdata.DMatrix.GetUpperBound(0) - matdata.DMatrix.GetLowerBound(0) + 1;
-                matrix.Add(matdata);
-            }
+            //        matdata.DMatrix = ParseSparseMatrix(matdata.A, matdata.IA);//, JA);
+            //        matdata.ColumnsCount = matdata.DMatrix.GetUpperBound(1) - matdata.DMatrix.GetLowerBound(1) + 1;
+            //        matdata.RowsCount = matdata.DMatrix.GetUpperBound(0) - matdata.DMatrix.GetLowerBound(0) + 1;
+            //        matrix.Add(matdata);
+            //    }
+            //    catch (Exception)
+            //    {
+            //        // skipping trips whose matrix are not genrated
+            //        //throw;
+            //    }
+
+            //}
             //int mAxColsCount = matrix.Max().ColumnsCount;
             //int maxRowsCount = matrix.Max().RowsCount;
+            var matrix = this.GenrateMatrix(chartData, performanceType);
             result.ChartData = new List<IndexWiseChartData>();
             foreach (var item in matrix)
             {
@@ -377,22 +415,23 @@ namespace net.atos.daf.ct2.reports
         {
             //Console.WriteLine("Hello World!");
             VehiclePerformanceData result = new VehiclePerformanceData();
-            List<ChartMatrix> matrix = new List<ChartMatrix>();
-            foreach (var item in chartData)
-            {
-                ChartMatrix matdata = new ChartMatrix();
-                matdata.A = item.MatrixValue.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
-                matdata.IA = item.CountPerIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
-                matdata.JA = item.ColumnIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
-                matdata.A = performanceType == "B" ? matdata.A.Select(x => -x).ToArray() : matdata.A;
+            //List<ChartMatrix> matrix = new List<ChartMatrix>();
+            //foreach (var item in chartData)
+            //{
+            //    ChartMatrix matdata = new ChartMatrix();
+            //    matdata.A = item.MatrixValue.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+            //    matdata.IA = item.CountPerIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+            //    matdata.JA = item.ColumnIndex.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+            //    matdata.A = performanceType == "B" ? matdata.A.Select(x => -x).ToArray() : matdata.A;
 
-                matdata.DMatrix = ParseSparseMatrix(matdata.A, matdata.IA);//, JA);
-                matdata.ColumnsCount = matdata.DMatrix.GetUpperBound(1) - matdata.DMatrix.GetLowerBound(1) + 1;
-                matdata.RowsCount = matdata.DMatrix.GetUpperBound(0) - matdata.DMatrix.GetLowerBound(0) + 1;
-                matrix.Add(matdata);
-            }
+            //    matdata.DMatrix = ParseSparseMatrix(matdata.A, matdata.IA);//, JA);
+            //    matdata.ColumnsCount = matdata.DMatrix.GetUpperBound(1) - matdata.DMatrix.GetLowerBound(1) + 1;
+            //    matdata.RowsCount = matdata.DMatrix.GetUpperBound(0) - matdata.DMatrix.GetLowerBound(0) + 1;
+            //    matrix.Add(matdata);
+            //}
             //int mAxColsCount = matrix.Max().ColumnsCount;
             //int maxRowsCount = matrix.Max().RowsCount;
+            var matrix = this.GenrateMatrix(chartData, performanceType);
             result.ChartData = new List<IndexWiseChartData>();
             foreach (var item in matrix)
             {

@@ -19,6 +19,7 @@ export class DashboardPreferencesComponent implements OnInit {
   @Input() reportListData: any;
 
   //dashboard preferences
+  responseFlag:boolean;
   showLoadingIndicator: any = false;
   dashboardPreferenceForm = new FormGroup({});
   editDashboardFlag: boolean = false;
@@ -434,15 +435,20 @@ export class DashboardPreferencesComponent implements OnInit {
       reportId: this.reportId,
       attributes: [..._fleetKPIArr, ..._vehicleUtilizationArr, ..._todayLiveVehicleArr, ..._alertLast24HoursArr] //-- merge data
     }
+    if(!this.responseFlag)
+    {
+    this.responseFlag=true;
     this.dashboardService.createDashboardPreferences(objData).subscribe((prefData: any) => {
       this.loadDashboardPreferences();
       this.successMsgBlink('Dashboard Preferences Updated Successfully');
       //this.setDashboardFlag.emit({ flag: false, msg: this.getSuccessMsg() });
       //this.reloadCurrentComponent();
+      this.responseFlag=false;
       if((this.router.url).includes("dashboard")){
        this.reloadCurrentComponent();
       }
     });
+    }
   }
 
   reloadCurrentComponent() {

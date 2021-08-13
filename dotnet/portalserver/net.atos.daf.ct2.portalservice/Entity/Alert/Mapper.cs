@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             request.UnitType = entity.UnitType;
             request.LandmarkType = entity.LandmarkType;
             request.RefId = entity.RefId;
-            //request.PositionType = entity.PositionType;
+            request.PositionType = entity.PositionType;
             //for (int i = 0; i < entity.DayType.Length; i++)
             //{
             //    request.DayType.Add(entity.DayType[i]);
