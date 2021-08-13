@@ -1247,7 +1247,23 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
         color : red ;
     }
   
+    .chartTT{
+        border : 1px solid blue;
+        border-radius : 5px;
+        background : #FFF;
+        padding : 5px;
+    }
   
+    .chartTT::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: blue transparent transparent transparent;
+      }
  .filtersTab{
     position: absolute;
     margin: -51px 0px 0px 80px;

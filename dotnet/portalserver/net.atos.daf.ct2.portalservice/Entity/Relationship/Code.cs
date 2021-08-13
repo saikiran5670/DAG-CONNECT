@@ -2,7 +2,13 @@
 {
     public enum RelationshipCode
     {
-        Owner = 1,
-        OEM = 2
+        OWNER = 1,
+        OEM = 2,
+        RENTAL = 3,
+        FLEETOPERATOR = 4,
+        HOMEDEALER = 5,
+        SERVICEDEALER = 6,
+        TRANSPORTERCUSTOMER = 7,
+        SUBSIDIARY = 8,
     }
 }

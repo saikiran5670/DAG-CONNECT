@@ -1135,9 +1135,9 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(this.driverDetails, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
     this.driverSelected = true;
     this.graphPayload = {
-      "startDateTime": this.startDateValue,
-      "endDateTime": this.endDateValue,
-      "driverId": _row.driverID
+      "startDateTime": Util.convertDateToUtc(this.startDateValue),//this.startDateValue,
+      "endDateTime": Util.convertDateToUtc(this.endDateValue), //this.endDateValue,
+      "driverId": _row.driverId
     }
     // this.driverDetails = 
     //   [
