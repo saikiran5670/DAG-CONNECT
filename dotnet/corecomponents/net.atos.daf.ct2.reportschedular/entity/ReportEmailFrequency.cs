@@ -7,8 +7,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 {
     public class ReportEmailFrequency
     {
-        public int SchedulerId { get; set; }
-        public int ReportId { get; set; }
+        public int ReportSchedulerId { get; set; }
         public string EmailId { get; set; }
         public long ReportScheduleRunDate { get; set; }
         public long ReportNextScheduleRunDate { get; set; }
@@ -17,5 +16,6 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public long EndDate { get; set; }
         public TimeFrequenyType FrequencyType { get; set; }
         public char FrequencyTypeValue { get; set; }
+        public string TimeZoneName { get; set; }
     }
 }
