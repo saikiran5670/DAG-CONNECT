@@ -16,5 +16,6 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public long StartDate { get; set; }
         public long EndDate { get; set; }
         public TimeFrequenyType FrequencyType { get; set; }
+        public char FrequencyTypeValue { get; set; }
     }
 }
