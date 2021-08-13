@@ -55,7 +55,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
   isOccurenceSelected: boolean= false;
   isDurationSelected: boolean= false;
   isPoiSelected: boolean= false;
-  selectedPoiSite: any;
+  selectedPoiSite: any ='E';
   marker: any;
   tableRowData: any = [];
   alertTimingDetail: any =[];
@@ -104,6 +104,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
   isHoursValdate:boolean=true;
   isAverageValdate:boolean=true;
   isOccurenceValidate: boolean= true;
+  enteringFlag: boolean = false;
+  existingFlag: boolean = false;
 
   @ViewChild(PeriodSelectionFilterComponent)
   periodSelectionComponent: PeriodSelectionFilterComponent;
@@ -145,12 +147,25 @@ export class AlertAdvancedFilterComponent implements OnInit {
     
     
     this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
+    if(this.actionType == 'create'){
+    this.alertAdvancedFilterForm.get('poiSite').setValue('E');
+    }
     if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
       this.setDefaultAdvanceAlert();
     }
   }
 
   setDefaultAdvanceAlert(){
+    let positionVal = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item=> item.positionType == "E" || "X");
+    this.selectedPoiSite = positionVal[0].positionType;
+    this.alertAdvancedFilterForm.get('poiSite').setValue(this.selectedPoiSite);
+    if (this.selectedPoiSite == 'X')
+    {
+      this.existingFlag =true;
+    }
+    else{
+      this.enteringFlag =true;
+    }
     this.loadMapData();
     this.loadPOIData();
     this.loadGeofenceData();
@@ -990,6 +1005,18 @@ export class AlertAdvancedFilterComponent implements OnInit {
    }
 
    getAdvancedFilterAlertPayload(){
+    if(this.isPoiSelected){
+    // let positionVal = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item=> item.positionType == "E" || "X");
+    // this.selectedPoiSite = positionVal[0].positionType;
+    this.alertAdvancedFilterForm.get('poiSite').setValue('E');
+    if (this.selectedPoiSite == 'X')
+    {
+      this.existingFlag =true;
+    }
+    else{
+      this.enteringFlag =true;
+    }
+  }
 
 let urgencylevelStartDate = 0;
 let urgencylevelEndDate = 0;
@@ -1027,7 +1054,7 @@ else{
             "unitType": "N",
             "landmarkType": element.type,
             "refId": element.id,
-            "positionType": "N",
+            "positionType": this.selectedPoiSite,
             "alertTimingDetails": []
           }
           if(this.actionType == 'edit'){
@@ -1049,7 +1076,7 @@ else{
             "unitType": "N",
             "landmarkType": "P",
             "refId": element.id,
-            "positionType": "N",
+            "positionType": this.selectedPoiSite,
             "alertTimingDetails": []
           }
           if(this.actionType == 'edit'){
@@ -1071,7 +1098,7 @@ else{
           "unitType": "N",
           "landmarkType": "G",
           "refId": element.id,
-          "positionType": "N",
+          "positionType": this.selectedPoiSite,
           "alertTimingDetails": []
         }
         if(this.actionType == 'edit'){
@@ -1116,7 +1143,7 @@ else{
         "unitType": "N",
         "landmarkType": "N",
         "refId": 0,
-        "positionType": "N",
+        "positionType": this.selectedPoiSite,
         "alertTimingDetails": this.alertTimingDetail
       }
       if(this.actionType == 'edit'){
@@ -1153,7 +1180,7 @@ else{
         "unitType": "N",
         "landmarkType": "N",
         "refId": 0,
-        "positionType": "N",
+        "positionType": this.selectedPoiSite,
         "alertTimingDetails": this.alertTimingDetail
       }
       if(this.actionType == 'edit'){
@@ -1177,7 +1204,7 @@ else{
         "unitType": "N",
         "landmarkType": "N",
         "refId": 0,
-        "positionType": "N",
+        "positionType": this.selectedPoiSite,
         "alertTimingDetails": this.alertTimingDetail
       }
       if(this.actionType == 'edit'){
@@ -1221,7 +1248,7 @@ else{
               "unitType": "N",
               "landmarkType": 'N',
               "refId": 0,
-              "positionType": "N",
+              "positionType": this.selectedPoiSite,
               "alertTimingDetails": this.alertTimingDetail
             }
             if(this.actionType == 'edit'){
@@ -1248,7 +1275,7 @@ else{
             "unitType": "N",
             "landmarkType": 'N',
             "refId": 0,
-            "positionType": "N",
+            "positionType": this.selectedPoiSite,
             "alertTimingDetails": this.alertTimingDetail
           }
           if(this.actionType == 'edit'){
@@ -1269,7 +1296,7 @@ else{
               "unitType": "N",
               "landmarkType": element.type,
               "refId": element.id,
-              "positionType": "N",
+              "positionType":this.selectedPoiSite,
               "alertTimingDetails": this.alertTimingDetail
             }
             if(this.actionType == 'edit'){
@@ -1291,7 +1318,7 @@ else{
               "unitType": "N",
               "landmarkType": "P",
               "refId": element.id,
-              "positionType": "N",
+              "positionType": this.selectedPoiSite,
               "alertTimingDetails": this.alertTimingDetail
             }
             if(this.actionType == 'edit'){
@@ -1313,7 +1340,7 @@ else{
              "unitType": "N",
              "landmarkType": "G",
              "refId": element.id,
-             "positionType": "N",
+             "positionType": this.selectedPoiSite,
              "alertTimingDetails": this.alertTimingDetail
            }
            if(this.actionType == 'edit'){
@@ -1378,7 +1405,7 @@ else{
         "unitType": "N",
         "landmarkType": 'N',
         "refId": 0,
-        "positionType": "N",
+        "positionType": this.selectedPoiSite,
         "alertTimingDetails": []
       }
       if(this.actionType == 'edit'){
@@ -1421,7 +1448,7 @@ else{
       "unitType": "N",
       "landmarkType": 'N',
       "refId": 0,
-      "positionType": "N",
+      "positionType": this.selectedPoiSite,
       "alertTimingDetails": []
     }
     if(this.actionType == 'edit'){
@@ -1445,7 +1472,7 @@ else{
             "unitType": "N",
             "landmarkType": element.type,
             "refId": element.id,
-            "positionType": "N",
+            "positionType": this.selectedPoiSite,
             "alertTimingDetails": this.alertTimingDetail
           }
           if(this.actionType == 'edit'){
@@ -1469,7 +1496,7 @@ else{
                 "unitType": "N",
                 "landmarkType": element.type,
                 "refId": element.id,
-                "positionType": "N",
+                "positionType": this.selectedPoiSite,
                 "alertTimingDetails": this.alertTimingDetail
               }
                 if(this.actionType == 'edit'){
@@ -1495,7 +1522,7 @@ else{
               "unitType": "N",
               "landmarkType": "P",
               "refId": element.id,
-              "positionType": "N",
+              "positionType": this.selectedPoiSite,
               "alertTimingDetails": []
               
             }
@@ -1519,7 +1546,7 @@ else{
             "unitType": "N",
             "landmarkType": "P",
             "refId": element.id,
-            "positionType": "N",
+            "positionType": this.selectedPoiSite,
             "alertTimingDetails": this.alertTimingDetail
           }
           if(this.actionType == 'edit'){
@@ -1546,7 +1573,7 @@ else{
             "unitType": "N",
             "landmarkType": "G",
             "refId": element.id,
-            "positionType": "N",
+            "positionType": this.selectedPoiSite,
             "alertTimingDetails": []
           }
           if(this.actionType == 'edit'){
@@ -1570,7 +1597,7 @@ else{
           "unitType": "N",
           "landmarkType": "G",
           "refId": element.id,
-          "positionType": "N",
+          "positionType": this.selectedPoiSite,
           "alertTimingDetails": this.alertTimingDetail
         }
         if(this.actionType == 'edit'){
@@ -1640,7 +1667,7 @@ else{
         "unitType": "N",
         "landmarkType": 'N',
         "refId": 0,
-        "positionType": "N",
+        "positionType": this.selectedPoiSite,
         "alertTimingDetails": this.alertTimingDetail
       }
       if(this.actionType == 'edit'){
@@ -1683,7 +1710,7 @@ else{
       "unitType": "N",
       "landmarkType": 'N',
       "refId": 0,
-      "positionType": "N",
+      "positionType": this.selectedPoiSite,
       "alertTimingDetails": this.alertTimingDetail
     }
     if(this.actionType == 'edit'){
@@ -1726,7 +1753,7 @@ else{
     "unitType": "N",
     "landmarkType": 'N',
     "refId": 0,
-    "positionType": "N",
+    "positionType": this.selectedPoiSite,
     "alertTimingDetails": this.alertTimingDetail
   }
   
@@ -1761,7 +1788,7 @@ if(!this.isDurationSelected && !this.isDistanceSelected && !this.isOccurenceSele
   "unitType": "N",
   "landmarkType": 'N',
   "refId": 0,
-  "positionType": "N",
+  "positionType": this.selectedPoiSite,
   "alertTimingDetails": this.alertTimingDetail
 }
 if(this.actionType == 'edit'){
@@ -1786,7 +1813,7 @@ if(this.actionType == 'edit'){
         "unitType": "N",
         "landmarkType": element.type,
         "refId": element.id,
-        "positionType": "N",
+        "positionType": this.selectedPoiSite,
         "alertTimingDetails": this.alertTimingDetail
       }
       if(this.actionType == 'edit'){
@@ -1810,7 +1837,7 @@ if(this.actionType == 'edit'){
             "unitType": "N",
             "landmarkType": element.type,
             "refId": element.id,
-            "positionType": "N",
+            "positionType": this.selectedPoiSite,
             "alertTimingDetails": this.alertTimingDetail
           }
           if(this.actionType == 'edit'){
@@ -1836,7 +1863,7 @@ if(this.actionType == 'edit'){
               "unitType": "N",
               "landmarkType": "P",
               "refId": element.id,
-              "positionType": "N",
+              "positionType": this.selectedPoiSite,
               "alertTimingDetails": []
               
             }
@@ -1860,7 +1887,7 @@ if(this.actionType == 'edit'){
             "unitType": "N",
             "landmarkType": "P",
             "refId": element.id,
-            "positionType": "N",
+            "positionType": this.selectedPoiSite,
             "alertTimingDetails": this.alertTimingDetail
           }
           if(this.actionType == 'edit'){
@@ -1887,7 +1914,7 @@ if(this.actionType == 'edit'){
             "unitType": "N",
             "landmarkType": "G",
             "refId": element.id,
-            "positionType": "N",
+            "positionType": this.selectedPoiSite,
             "alertTimingDetails": []
           }
           if(this.actionType == 'edit'){
@@ -1911,7 +1938,7 @@ if(this.actionType == 'edit'){
           "unitType": "N",
           "landmarkType": "G",
           "refId": element.id,
-          "positionType": "N",
+          "positionType": this.selectedPoiSite,
           "alertTimingDetails": this.alertTimingDetail
         }
         if(this.actionType == 'edit'){
