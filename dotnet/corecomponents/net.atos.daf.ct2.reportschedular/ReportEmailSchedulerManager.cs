@@ -89,26 +89,23 @@ namespace net.atos.daf.ct2.reportscheduler
         public async Task<bool> UpdateMissingSchedulerFrequecy()
         {
             var flag = true;
+            int count = 0;
             try
             {
                 foreach (var item in await _reportSchedulerRepository.GetMissingSchedulerData())
                 {
                     try
                     {
-                        var nextUpdatedDate = await UpdateNextTimeDate(item);
+                        var countUpdatedId = await UpdateNextTimeDate(item);
+                        if (count == 0 && countUpdatedId == 0)
+                        {
+                            flag = false;
+                            count += 1;
+                        }
                     }
                     catch (Exception ex)
                     {
-                        if (ex.Source == "Npgsql" && ex.InnerException != null && ex.InnerException.Message.Contains("Timeout"))
-                        {
-                            flag = false;
-                            await AddAuditLog($"SchedulerId: {item.SchedulerId}, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_SQL_TIMEOUT, item.SchedulerId);
-                        }
-                        else
-                        {
-                            flag = false;
-                            await AddAuditLog($"SchedulerId: {item.SchedulerId}, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_MSG, item.SchedulerId);
-                        }
+                        flag = false;
                     }
                 }
             }
@@ -127,8 +124,8 @@ namespace net.atos.daf.ct2.reportscheduler
                 Created_at = DateTime.Now,
                 Performed_at = DateTime.Now,
                 Performed_by = 2,
-                Component_name = "Report_Creation_Scheduler",
-                Service_name = "reportscheduler.CoreComponent",
+                Component_name = "Report Scheduler Email Notification",
+                Service_name = "Report Email Scheduler Email Component",
                 Event_type = AuditTrailEnum.Event_type.CREATE,
                 Event_status = eventStatus,
                 Message = message,
@@ -168,7 +165,7 @@ namespace net.atos.daf.ct2.reportscheduler
                     EndDate = emailItem.EndDate,
                     FrequencyType = (TimeFrequenyType)Enum.Parse(typeof(TimeFrequenyType), GetEnumValue(emailItem.FrequencyType)),
                     ReportNextScheduleRunDate = emailItem.NextScheduleRunDate,
-                    ReportPrevioudScheduleRunDate = emailItem.LastScheduleRunDate,
+                    ReportPrevioudScheduleRunDate = emailItem.NextScheduleRunDate,
                     StartDate = emailItem.StartDate,
                     ReportScheduleRunDate = emailItem.NextScheduleRunDate
                 };
@@ -217,6 +214,9 @@ namespace net.atos.daf.ct2.reportscheduler
         {
             try
             {
+                emailItem.ReportId = emailItem.SchedulerId;
+                emailItem.ReportPrevioudScheduleRunDate = emailItem.ReportScheduleRunDate = emailItem.ReportNextScheduleRunDate;
+                emailItem.FrequencyType = (TimeFrequenyType)emailItem.FrequencyTypeValue;
                 if (emailItem.FrequencyType == TimeFrequenyType.Daily || emailItem.FrequencyType == TimeFrequenyType.Weekly || emailItem.FrequencyType == TimeFrequenyType.BiWeekly)
                 {
                     return await _reportSchedulerRepository.UpdateTimeRangeByDate(emailItem);
@@ -229,7 +229,14 @@ namespace net.atos.daf.ct2.reportscheduler
             }
             catch (Exception ex)
             {
-                await AddAuditLog($"UpdateNextTimeDate : Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_MISSING_MSG, emailItem.SchedulerId);
+                if (ex.Source == "Npgsql" && ex.InnerException != null && ex.InnerException.Message.Contains("Timeout"))
+                {
+                    await AddAuditLog($"UpdateNextTimeDate : Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_SQL_TIMEOUT, emailItem.SchedulerId);
+                }
+                else
+                {
+                    await AddAuditLog($"UpdateNextTimeDate : Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_MISSING_MSG, emailItem.SchedulerId);
+                }
                 return 0;
             }
         }
