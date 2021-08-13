@@ -95,7 +95,8 @@
         <div class="areaWidth min-width-60-per" fxLayout="row" fxLayoutAlign="left" style="font-weight: bold;"><mat-label> {{ translationData.lblFrom || 'From'}} {{driverDetails.fromDisplayOnlyDate}} {{translationData.lblTo || 'To'}} {{driverDetails.toDisplayOnlyDate}}</mat-label></div>
         <div *ngIf='zoomMsg' class="areaWidth min-width-40-per" fxLayout="row" fxLayoutAlign="flex-end"><mat-label>Drag to zoom in</mat-label></div>     
       </div>
-      <div [ngClass]="{'reportTable': displayedColumns.length > 7}">
+      <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+      <div  *ngIf="!showLoadingIndicator">
         <div style='padding: 20px; margin-bottom: 10px;'>
           <div class="row">
             <div class="col-md-12">
