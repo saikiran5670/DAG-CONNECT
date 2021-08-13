@@ -195,9 +195,23 @@ export class DriverTimeDetailComponent implements OnInit {
       xaxis: {
         type: 'datetime'
       },
-      legend: {
-        position: 'bottom'
+      legend : {
+        position: 'bottom',
+        showForNullSeries : true,
+        showForZeroSeries : true,
+        markers:{
+          width: 12,
+          height: 12,
+          fillColors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
+        },
+        onItemClick: {
+          toggleDataSeries: true
       },
+        labels: {
+        colors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
+        useSeriesColors: false
+    }
+  },
       tooltip: {
          custom:(opts)=>{
           const values = opts.ctx.rangeBar.getTooltipValues(opts);
@@ -404,6 +418,23 @@ export class DriverTimeDetailComponent implements OnInit {
         'data': availableData,
       });
       this.chartOptions.series = _series;
+      this.chartOptions.legend = {
+        position: 'bottom',
+        showForNullSeries : true,
+        showForZeroSeries : true,
+        markers:{
+          width: 12,
+          height: 12,
+          fillColors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
+        },
+        onItemClick: {
+          toggleDataSeries: true
+      },
+        labels: {
+        colors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
+        useSeriesColors: false
+    }
+  }
       this.chartOptions.colors =  ['#29539b','#e85c2a','#8ac543' ,'#dddee2'];
       this.chartOptions.tooltip = {
         custom:(opts)=>{
