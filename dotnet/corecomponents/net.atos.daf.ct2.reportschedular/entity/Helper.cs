@@ -64,7 +64,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
             var reportEmailFrequency = new ReportEmailFrequency()
             {
                 StartDate = UTCHandling.GetUTCFromDateTime(firstDayOfQuarter),
-                EndDate = UTCHandling.GetUTCFromDateTime(lastDayOfQuarter.AddSeconds(-1)),
+                EndDate = UTCHandling.GetUTCFromDateTime(lastDayOfQuarter.AddHours(23).AddMinutes(59).AddSeconds(59)),
                 FrequencyType = TimeFrequenyType.Quartly,
                 ReportNextScheduleRunDate = UTCHandling.GetUTCFromDateTime(nextRunDate)
             };

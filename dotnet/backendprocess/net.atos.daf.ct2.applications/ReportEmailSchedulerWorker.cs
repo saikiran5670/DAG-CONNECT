@@ -46,6 +46,9 @@ namespace net.atos.daf.ct2.applications
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 var isSuccess = await _reportEmailSchedulerManager.SendReportEmail();
                 await AddAuditLog(isSuccess.Count() > 0 ? "Process run successfully" : "Proccess run failed, For more details, please check audit logs.", isSuccess.Count() > 0 ? AuditTrailEnum.Event_status.SUCCESS : AuditTrailEnum.Event_status.FAILED);
+
+                var isOldFrequecyUpdate = await _reportEmailSchedulerManager.UpdateMissingSchedulerFrequecy();
+                await AddAuditLog(isOldFrequecyUpdate ? "Process run successfully" : "Proccess run failed, For more details, please check audit logs.", isOldFrequecyUpdate ? AuditTrailEnum.Event_status.SUCCESS : AuditTrailEnum.Event_status.FAILED, "UpdateMissingSchedulerFrequecy");
             }
             catch (Exception ex)
             {
@@ -58,7 +61,7 @@ namespace net.atos.daf.ct2.applications
             }
         }
 
-        private async Task AddAuditLog(string message, AuditTrailEnum.Event_status eventStatus)
+        private async Task AddAuditLog(string message, AuditTrailEnum.Event_status eventStatus, string updatedData = "EmailNotificationForReportSchedule")
         {
             await _auditlog.AddLogs(new AuditTrail
             {
@@ -72,7 +75,7 @@ namespace net.atos.daf.ct2.applications
                 Message = message,
                 Sourceobject_id = 0,
                 Targetobject_id = 0,
-                Updated_data = "EmailNotificationForReportSchedule"
+                Updated_data = updatedData
             });
         }
     }
