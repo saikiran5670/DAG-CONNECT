@@ -1,5 +1,5 @@
 <div class="bgtrans">
-    <app-search-criteria [translationData]='translationData' [performanceTypeLst]="performanceTypeLst" (showSearchResult)="showSearchResult($event)" (hideSearchResult)="hideSearchResult()">
+    <app-search-criteria [translationData]='translationData' [performanceTypeLst]="performanceTypeLst" (showSearchResult)="showSearchResult($event)" (hideSearchResult)="hideSearchResult()" #searchCriteria>
     </app-search-criteria>
 
     <!-- Details Panel -->
@@ -57,10 +57,20 @@
                             </span>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                            <span>
+                            <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_Name'">
                                 <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
                                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
                                     searchResult.vehicleName }}</span>
+                            </span>
+                            <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'">
+                                <span>{{ translationData.lblVin || 'VIN' }}: </span>
+                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                    searchResult.vin }}</span>
+                            </span>
+                            <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'">
+                                <span>{{ translationData.lblRegistrationNumber || 'Vehicle Registration Number' }}: </span>
+                                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                                    searchResult.registrationNo }}</span>
                             </span>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">

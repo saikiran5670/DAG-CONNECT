@@ -2,10 +2,9 @@
 {
     public enum RelationshipLevel
     {
-        // Renaming as per DAF request
-        Platform = 10,
-        Global = 20,
-        Organization = 30,
+        PlatformAdmin = 10,
+        GlobalAdmin = 20,
+        OrgAdmin = 30,
         Account = 40
     }
 }
