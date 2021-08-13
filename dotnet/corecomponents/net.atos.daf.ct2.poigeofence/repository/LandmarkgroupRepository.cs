@@ -254,8 +254,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 var parameter = new DynamicParameters();
                 List<Geofence> groupList = new List<Geofence>();
-                var query = @"select id from master.landmarkgroup where 1=1 ";
-
+                var query = @"select id from master.landmarkgroup where 1=1 and state=@state";
+                parameter.Add("@state", "A");
                 if (Convert.ToInt32(landmarkgroup.Id) > 0)
                 {
                     parameter.Add("@id", landmarkgroup.Id);
