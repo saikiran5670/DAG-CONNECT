@@ -54,22 +54,23 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@now_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                //Note: next_schedule_run_date < @now_date and as the email job runs at hourly basis, so there will be always gap of i hour.
                 #region Query GetReportCreationScheduler
                 var query = @"select rs.id as SchedulerId, rs.organization_id as OrganizationId, rs.report_id as ReportId, 
-                            rs.frequency_type as FrequecyType,
+                            rs.frequency_type as FrequencyTypeValue,
 							rs.status as Status, 
                             rs.type as Type, 
 							rs.start_date as StartDate,
 							rs.end_date as EndDate,
-                             rs.last_schedule_run_date as LastScheduleRunDate, 
-                            rs.next_schedule_run_date as NextScheduleRunDate,  
+                             rs.last_schedule_run_date as ReportPrevioudScheduleRunDate, 
+                            rs.next_schedule_run_date as ReportNextScheduleRunDate,  
                             rs.created_by as CreatedBy
                             from master.reportscheduler rs              
 								 left join master.scheduledreport sr 
                                     on sr.schedule_report_id = rs.id AND rs.next_schedule_run_date < @now_date 
                                         and rs.start_date = sr.start_date and  sr.end_date = rs.end_date
                                        and rs.status = 'A'  
-                            where sr.id is null 
+                            where rs.next_schedule_run_date < @now_date and rs.status = 'A' and sr.id is null
 							order by rs.next_schedule_run_date";
                 #endregion
                 return _dataAccess.QueryAsync<ReportEmailFrequency>(query, parameter);
@@ -125,7 +126,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameter.Add("@start_date", next_schedule_run_date.StartDate);
                 parameter.Add("@end_date", next_schedule_run_date.EndDate);
                 parameter.Add("@next_schedule_run_date", next_schedule_run_date.ReportNextScheduleRunDate);
-                parameter.Add("@last_schedule_run_date", next_schedule_run_date.ReportPrevioudScheduleRunDate);
+                parameter.Add("@last_schedule_run_date", reportEmailFrequency.ReportPrevioudScheduleRunDate);
 
                 int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
                 return rowEffected;
