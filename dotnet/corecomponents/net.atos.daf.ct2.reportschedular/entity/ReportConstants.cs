@@ -46,9 +46,10 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 
     public static class CreationConstants
     {
-        public const string LOG_SQL_TIMEOUT = "ReportCreationSqlTimeout";
+        public const string LOG_SQL_TIMEOUT = "ReportSchedulerSqlTimeout";
         public const string LOG_MSG = "ReportCreationScheduler";
         public const string LOG_UNSUBSCRIBED = "ReportCreationUnSubscribed";
         public const string LOG_MISSING_MSG = "ReportSchedulerMissingData";
+        public const string LOG_EMAIL_MSG = "EmailNotificationForReportSchedule";
     }
 }

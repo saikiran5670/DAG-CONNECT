@@ -59,7 +59,9 @@ export class DriverTimeDetailComponent implements OnInit {
   @Input() detailConvertedData : any;
   @Input() showField: any;
   @Input() graphPayload : any;
+  @Input() prefTimeZone : any;
   initData = [];
+  chartData = [];
   searchExpandPanel: boolean = true;
   chartExpandPanel : boolean = true;
   tableExpandPanel: boolean = true;
@@ -193,20 +195,45 @@ export class DriverTimeDetailComponent implements OnInit {
       xaxis: {
         type: 'datetime'
       },
-      legend: {
-        position: 'bottom'
+      legend : {
+        position: 'bottom',
+        showForNullSeries : true,
+        showForZeroSeries : true,
+        markers:{
+          width: 12,
+          height: 12,
+          fillColors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
+        },
+        onItemClick: {
+          toggleDataSeries: true
+      },
+        labels: {
+        colors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
+        useSeriesColors: false
+    }
+  },
+      tooltip: {
+         custom:(opts)=>{
+          const values = opts.ctx.rangeBar.getTooltipValues(opts);
+          let activityType = values.seriesName.split(":")[0];
+          let diffDuration = Util.convertUtcToTimeStringFormat(values.end - values.start,this.prefTimeZone);
+          let diffDisplay= diffDuration;
+          let fromTime = (values.start);
+          let fromDisplay  = Util.convertUtcToDateTimeStringFormat(fromTime,this.prefTimeZone);
+          let toTime = (values.end);
+          let toDisplay  = Util.convertUtcToDateTimeStringFormat(toTime,this.prefTimeZone);
+          let getIconName = activityType.toLowerCase();
+          let activityIcon =  `assets/activityIcons/${getIconName}.svg`;
+          return (
+            `<div class='chartTT'> 
+              <div style='font-weight: bold;'><img matTooltip='activity' class='mr-1' src=${activityIcon} style="width: 16px; height: 16px;" />${activityType} </div>
+              <div>From:${fromDisplay}</div>
+              <div>To:${toDisplay} </div>
+              <div>Duration: ${diffDisplay}</div>
+            </div>`
+          )
+        }
       }
-      // tooltip: {
-      //   custom: function(opts) {
-      //     const fromYear = new Date(opts.y1).getFullYear()
-      //     const toYear = new Date(opts.y2).getFullYear()
-      //     const values = opts.ctx.rangeBar.getTooltipValues(opts)
-      
-      //     return (
-      //       '<div>Hey there </div>'
-      //     )
-      //   }
-      // }
     }
   }
 
@@ -214,7 +241,7 @@ export class DriverTimeDetailComponent implements OnInit {
   ngOnInit(): void {
   //console.log(this.driverDetails)
     //this.setGeneralDriverValue();
- 
+    this.showLoadingIndicator = true;
     this.updateDataSource(this.detailConvertedData);
    // this.setGraphData();
 
@@ -313,6 +340,7 @@ export class DriverTimeDetailComponent implements OnInit {
 
   ngOnChanges(){
     this.reportService.getDriverChartDetails(this.graphPayload).subscribe((data)=>{
+      this.showLoadingIndicator = false;
       this.createChart(data);
     })
     this.updateDataSource(this.detailConvertedData);
@@ -321,6 +349,7 @@ export class DriverTimeDetailComponent implements OnInit {
 
   createChart(data){
     let _data = data['driverActivitiesChartData'];
+    this.chartData = _data;
     let _series = [];
     let restArray =_data.filter(item => item.code === 0);
     let availableArray =_data.filter(item => item.code === 1);
@@ -389,20 +418,44 @@ export class DriverTimeDetailComponent implements OnInit {
         'data': availableData,
       });
       this.chartOptions.series = _series;
+      this.chartOptions.legend = {
+        position: 'bottom',
+        showForNullSeries : true,
+        showForZeroSeries : true,
+        markers:{
+          width: 12,
+          height: 12,
+          fillColors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
+        },
+        onItemClick: {
+          toggleDataSeries: true
+      },
+        labels: {
+        colors: ['#29539b','#e85c2a','#8ac543' ,'#dddee2'],
+        useSeriesColors: false
+    }
+  }
       this.chartOptions.colors =  ['#29539b','#e85c2a','#8ac543' ,'#dddee2'];
       this.chartOptions.tooltip = {
-        custom:function(opts){
-          console.log(opts)
+        custom:(opts)=>{
           const values = opts.ctx.rangeBar.getTooltipValues(opts);
-          console.log(opts)
-          // return (
-          //   `<div> 
-          //     <div>Work </div>
-          //     <div>From:</div>
-          //     <div>To: </div>
-          //     <div>Duration: </div>
-          //   </div>`
-          // )
+          let activityType = values.seriesName.split(":")[0];
+          let diffDuration = Util.convertUtcToTimeStringFormat(values.end - values.start,this.prefTimeZone);
+          let diffDisplay= diffDuration;
+          let fromTime = (values.start);
+          let fromDisplay  = Util.convertUtcToDateTimeStringFormat(fromTime,this.prefTimeZone);
+          let toTime = (values.end);
+          let toDisplay  = Util.convertUtcToDateTimeStringFormat(toTime,this.prefTimeZone);
+          let getIconName = activityType.toLowerCase();
+          let activityIcon =  `assets/activityIcons/${getIconName}.svg`;
+          return (
+            `<div class='chartTT'> 
+              <div style='font-weight: bold;'><img matTooltip='activity' class='mr-1' src=${activityIcon} style="width: 16px; height: 16px;" />${activityType} </div>
+              <div>From:${fromDisplay}</div>
+              <div>To:${toDisplay} </div>
+              <div>Duration: ${diffDisplay}</div>
+            </div>`
+          )
         }
         
 

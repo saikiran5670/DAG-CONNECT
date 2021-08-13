@@ -764,11 +764,24 @@ namespace net.atos.daf.ct2.reports
             PerformanceChartMatrix objmat = new PerformanceChartMatrix();
             VehiclePerformanceData charts = new VehiclePerformanceData();
             var chartRawdata = await _reportRepository.GetVehPerformanceBubbleChartData(vehiclePerformanceRequest);
-            var chartdata = objmat.Getcombinedmatrix(chartRawdata.Where(i => i.ColumnIndex != null).ToList(), vehiclePerformanceRequest.PerformanceType);
+            var rangedata = await _reportRepository.GetRangeData(vehiclePerformanceRequest.PerformanceType);
+            if (vehiclePerformanceRequest.PerformanceType == "B")
+            {
+                charts = objmat.GetcombinedmatrixBrake(chartRawdata.Where(i => i.ColumnIndex != null).ToList(), vehiclePerformanceRequest.PerformanceType, rangedata.ToList(), chartRawdata.Sum(i => i.TripDuration));
+            }
+            else if (vehiclePerformanceRequest.PerformanceType == "S")
+            {
+                charts = objmat.GetcombinedmatrixRoadSpeed(chartRawdata.Where(i => i.ColumnIndex != null).ToList(), vehiclePerformanceRequest.PerformanceType, rangedata.ToList(), chartRawdata.Sum(i => i.TripDuration));
+            }
+            else
+            {
+                charts = objmat.Getcombinedmatrix(chartRawdata.Where(i => i.ColumnIndex != null).ToList(), vehiclePerformanceRequest.PerformanceType, rangedata.ToList(), chartRawdata.Sum(i => i.TripDuration));
+            }
+
             //CalculateKPIData(List<IndexWiseChartData> vehicleChartDatas, double tripDuration, List<KpiDataRange> rangedata)
-            charts.ChartData = chartdata;
-            // chartdata = vehiclePerformanceRequest.PerformanceType == "B" ? chartdata.Select(x => { x.Value = -x.Value; return x; }).ToList() : chartdata;
-            charts.PieChartData = objmat.CalculateKPIData(chartdata, chartRawdata.Sum(i => i.TripDuration), await _reportRepository.GetRangeData(vehiclePerformanceRequest.PerformanceType));
+            //charts.ChartData = chartdata;
+            //// chartdata = vehiclePerformanceRequest.PerformanceType == "B" ? chartdata.Select(x => { x.Value = -x.Value; return x; }).ToList() : chartdata;
+            //charts.PieChartData = objmat.CalculateKPIData(chartdata, chartRawdata.Sum(i => i.TripDuration), await _reportRepository.GetRangeData(vehiclePerformanceRequest.PerformanceType));
             return charts;
         }
         public async Task<List<VehPerformanceProperty>> GetVehPerformanceType()

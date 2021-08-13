@@ -1220,7 +1220,7 @@ export class ReportMapService {
 
   convertFuelConsumptionMlmToMpg(_data: any){
     let data: any = 1.6/(_data * 3.78);
-    return (data).toFixed(2);
+    return (data).toFixed(6); // as inverted division results in very low value upto 6 places shown // 16044
   }
 
   convertKgToPound(_data: any){
@@ -1324,6 +1324,8 @@ export class ReportMapService {
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
       element.convertedTripTime = this.getHhMmTime(element.tripTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
+      element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
+    
     });
     return gridData;
   }
@@ -1600,6 +1602,23 @@ export class ReportMapService {
     let seconds = totalSeconds % 60;
     data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
     return data;
+  }
+
+  getTimeInSeconds(timeValue, unit){
+    let seconds: any;
+    switch(unit){
+      //hrs to seconds
+      case 'H':{
+        seconds = timeValue * 3600;
+        break;
+      }
+      //minutes to seconds
+      case 'M':{
+        seconds = timeValue * 60;
+        break;
+      }
+      return seconds; 
+    }
   }
 
   formStartEndDate(date: any, dateFormat: any, timeFormat: any, addTime?:boolean){

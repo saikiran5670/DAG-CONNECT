@@ -1665,6 +1665,10 @@ setVehicleGroupAndVehiclePreSelection() {
             tempObj.push(e.idlingPTO);
             break;
           }
+          case 'idlingWithoutPTO' :{
+            tempObj.push(e.idlingPTO);
+            break;
+          }
           case 'idlingWithoutPTOpercent' :{
             tempObj.push(e.idlingWithoutPTOpercent);
             break;
@@ -1677,11 +1681,15 @@ setVehicleGroupAndVehiclePreSelection() {
             tempObj.push(e.cO2Emmision);
             break;
           }
-          case 'averageTrafficClassificationValue' :{
-            tempObj.push(e.averageTrafficClassificationValue);
-            break;
-          }
-          case 'idlingConsumptionValue' :{
+          // case 'averageTrafficClassificationValue' :{
+          //   tempObj.push(e.averageTrafficClassificationValue);
+          //   break;
+          // }
+          // case 'idlingConsumptionValue' :{
+          //   tempObj.push(e.idlingConsumptionValue);
+          //   break;
+          // }
+          case 'idlingConsumptionWithPTO' :{
             tempObj.push(e.idlingConsumptionValue);
             break;
           }

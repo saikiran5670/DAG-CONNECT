@@ -18,6 +18,7 @@ import { CreateNotificationsAlertComponent } from './create-notifications-alert/
 import { Options } from '@angular-slider/ngx-slider';
 import { PeriodSelectionFilterComponent } from './period-selection-filter/period-selection-filter.component';
 import { AlertAdvancedFilterComponent } from './alert-advanced-filter/alert-advanced-filter.component';
+import { ReportMapService } from '../../../report/report-map.service';
 
 declare var H: any;
 
@@ -117,7 +118,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
   isEnteringZone: boolean= true;
   isValidityCalender: boolean= true;
   isFiltersDetailsValidate: boolean= true;
-  
+  criticalThreshold: any;
+  warningThreshold: any;
+  advisoryThreshold: any;
+
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
 
@@ -155,7 +159,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
               private alertService: AlertService,
               private corridorService: CorridorService,
               private dialogService: ConfirmDialogService,
-              private el: ElementRef) 
+              private el: ElementRef,
+              private reportMapService: ReportMapService) 
   {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -182,7 +187,11 @@ export class CreateEditViewAlertsComponent implements OnInit {
       advisoryLevelThreshold: [''],
       mondayPeriod: [''],
       unitType: [''],
-      widthInput: ['']
+      widthInput: [''],
+      searchForLevelPOI: [''],
+      alertLevelValue:[''],
+      searchCorridor:[''],
+      levelType: ['']
     },
     {
       validator: [
@@ -291,6 +300,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.alert_category_selected= value;
     this.alertForm.get('alertType').setValue('');
     this.alertTypeByCategoryList= this.alertTypeList.filter(item => item.parentEnum == value);
+    //On 12-08-2021 removed the alert type "Excessive under utilization in days" by adding below line as discussed this will not need anymore.
+    this.alertTypeByCategoryList = this.alertTypeByCategoryList.filter(item => item.enum != 'Y');
   }
 
   onChangeAlertType(value){
@@ -298,6 +309,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.vehicleByVehGroupList= [];
     this.vehicleListForTable= [];
     this.unitTypes= [];
+    // this.alertFilterRefs = []; need to check
     this.alert_type_selected= value;
     if(this.panelOpenState && this.notificationComponent.openAdvancedFilter){
       this.notificationComponent.setAlertType(this.alert_type_selected);
@@ -393,12 +405,13 @@ export class CreateEditViewAlertsComponent implements OnInit {
       }
 
       switch(this.alert_category_selected+this.alert_type_selected){
-        case "LY": { //Excessive under utilization in days
-          this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
-          this.unitForThreshold= this.translationData.lblDays ? this.translationData.lblDays : "Days";
-          this.unitTypeEnum= "D";
-          break;
-        }
+        //On 12-08-2021 removed the alert type "Excessive under utilization in days" as discussed this will not need anymore.
+        // case "LY": { //Excessive under utilization in days
+        //   this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
+        //   this.unitForThreshold= this.translationData.lblDays ? this.translationData.lblDays : "Days";
+        //   this.unitTypeEnum= "D";
+        //   break;
+        // }
         case "LH": { //Excessive under utilization in hours
           this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
           this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
@@ -1441,6 +1454,19 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   onCreateUpdate(){  
+    if(this.isCriticalLevelSelected){
+      this.criticalThreshold = parseInt(this.alertForm.get('criticalLevelThreshold').value);
+      this.criticalThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
+      }
+      else if(this.isWarningLevelSelected){
+      this.warningThreshold = parseInt(this.alertForm.get('warningLevelThreshold').value);
+      this.warningThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
+      }
+      else if(this.isAdvisoryLevelSelected){
+      this.advisoryThreshold = parseInt(this.alertForm.get('advisoryLevelThreshold').value);
+      this.advisoryThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
+      }
+
     this.alertForm.markAllAsTouched();    
     if (!this.alertForm.valid) {      
       this.alertForm.markAllAsTouched();

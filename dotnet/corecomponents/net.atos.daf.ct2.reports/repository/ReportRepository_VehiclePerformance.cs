@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.reports.repository
                 {
                     if (lstengion.Where(e => e.Enginetype == (vehSummary.EngineType ?? "")).ToList().Count > 0)
                     {
-                        vehiclePerformanceChartTemplate.VehChartList = lstengion.Where(e => e.Enginetype == vehSummary.EngineType).ToList();
+                        vehiclePerformanceChartTemplate.VehChartList = lstengion.Where(e => e.Enginetype == (vehSummary.EngineType ?? "")).ToList();
                     }
                     else
                     {
@@ -81,7 +81,7 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@vin", vin);
-                string query = @"SELECT vin as Vin,  engine_type as EngineType, model_type as ModelType, name as VehicleName FROM master.vehicle where vin = @vin";
+                string query = @"SELECT vin as Vin,  coalesce(engine_type,'') as EngineType, coalesce(model_type,'') as ModelType, coalesce(name,'') as VehicleName FROM master.vehicle where vin = @vin";
                 var summary = await _dataMartdataAccess.QueryFirstOrDefaultAsync<VehiclePerformanceSummary>(query, parameter);
                 return (VehiclePerformanceSummary)summary;
             }

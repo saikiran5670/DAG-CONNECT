@@ -53,14 +53,14 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
-    this.getPreferences();
+    // this.getPreferences();
   }
 
   ngOnInit(): void {
     this.searchForm = this.formBuilder.group({
-      vehicleGroup: ['', [Validators.required]],
+      vehicleGroup: [0, [Validators.required]],
       vehicleName: ['', [Validators.required]],
-      performanceType: ['', [Validators.required]],
+      performanceType: ['E', [Validators.required]],
       startDate: ['', []],
       endDate: ['', []],
       startTime: ['00:00', []],
@@ -68,20 +68,19 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     });
   }
 
-  getPreferences() {
-    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-      if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
-        this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-      } else { // org pref
-        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
-          this.proceedStep(prefData, orgPref);
-        }, (error) => { // failed org API
-          let pref: any = {};
-          this.proceedStep(prefData, pref);
-        });
-      }
-      this.loadWholeTripData();
-    });
+  getPreferences(prefData) {
+    if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
+      this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+    } else { // org pref
+      this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
+        this.proceedStep(prefData, orgPref);
+        console.log("orgPref", orgPref)
+      }, (error) => { // failed org API
+        let pref: any = {};
+        this.proceedStep(prefData, pref);
+      });
+    }
+    this.loadWholeTripData();
   }
 
   selectionTimeRange(selection: any) {
@@ -128,10 +127,10 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   resetDropdownValues() {
-    this.searchForm.get('vehicleGroup').setValue('');
+    this.searchForm.get('vehicleGroup').setValue(0);
     this.searchForm.get('vehicleName').setValue('');
-    this.searchForm.get('vehicleName').disable();
-    this.searchForm.get('performanceType').setValue('');
+    // this.searchForm.get('vehicleName').disable();
+    this.searchForm.get('performanceType').setValue('E');
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any) {
@@ -522,6 +521,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.formSubmitted = false;
     this.resetDropdownValues();
     this.selectionTimeRange('today');
+    this.searchForm.get('vehicleGroup').setValue(0);
+    this.searchForm.get('performanceType').setValue('E');
     this.hideSearchResult.emit();
   }
 
