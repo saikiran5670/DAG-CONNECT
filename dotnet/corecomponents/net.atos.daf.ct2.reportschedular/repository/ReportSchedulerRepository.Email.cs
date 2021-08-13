@@ -71,15 +71,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                             rs.next_schedule_run_date as ReportNextScheduleRunDate,  
                             rs.created_by as CreatedBy,
                             coalesce(tz.name,'UTC') as TimeZoneName
-                            from master.reportscheduler rs              
-								 left join master.scheduledreport sr 
-                                    on sr.schedule_report_id = rs.id AND rs.next_schedule_run_date < @now_date 
-                                        and rs.start_date = sr.start_date and  sr.end_date = rs.end_date
-                                       and rs.status = 'A' 
+                            from master.reportscheduler rs 
                                  left Join master.account ac on ac.id = rs.created_by and ac.state='A'
 	                             left join master.accountpreference ap on ap.id = ac.preference_id
                                  left join master.timezone tz on tz.id = ap.timezone_id
-                            where rs.next_schedule_run_date < @now_date and rs.status = 'A' and sr.id is null
+                            where rs.next_schedule_run_date < @now_date and rs.status = 'A' and ac.state='A'
 							order by rs.next_schedule_run_date";
                 #endregion
                 return _dataAccess.QueryAsync<ReportEmailFrequency>(query, parameter);
