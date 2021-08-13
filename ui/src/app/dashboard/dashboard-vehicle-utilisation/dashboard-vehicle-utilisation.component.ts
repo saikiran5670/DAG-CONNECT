@@ -250,6 +250,8 @@ totalThresholdDistance: any;
 timebasedThreshold: any;
 distancebasedThreshold: any;
 totalActiveVehicles : any = 0;
+alert24: any;
+displayPiechart: boolean = true;
 
   constructor(private router: Router,
               private elRef: ElementRef,
@@ -423,6 +425,7 @@ totalActiveVehicles : any = 0;
  }
  this.dashboardService.getAlert24Hours(alertPayload).subscribe((alertData)=>{
   if(alertData["alert24Hours"].length > 0){
+    this.alert24 = alertData["alert24Hours"];
      this.alertsData = alertData["alert24Hours"][0];
      this.logisticCount = this.alertsData.logistic;
      this.fuelAndDriverCount = this.alertsData.fuelAndDriver;
@@ -436,7 +439,7 @@ totalActiveVehicles : any = 0;
 
 setAlertChartData(){
     //for alert level pie chart
-    if(this.alertsData){
+    if(this.alert24.length > 0){
     let totalAlerts = this.alertsData.critical + this.alertsData.warning +this.alertsData.advisory;
     let crticalPercent = (this.alertsData.critical/totalAlerts)* 100; 
     let warningPercent = (this.alertsData.warning/totalAlerts)* 100;
@@ -461,7 +464,17 @@ setAlertChartData(){
       }
     }
   }
-    
+  else{
+    this.displayPiechart = false;
+    this.barChartLegend = false;
+    this.alertPieChartOptions = {
+      responsive: true,
+      legend: {
+        display: false
+     },
+    }
+  }
+
 }
 
 checkForPreference(fieldKey) {

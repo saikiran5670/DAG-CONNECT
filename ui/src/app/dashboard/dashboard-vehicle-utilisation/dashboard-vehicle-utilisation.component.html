@@ -103,7 +103,7 @@
     <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left" [hidden]="!checkForPreference('alertlast24hours_levelalerts')">
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblLevelsOfAlertsTriggered ||
         'Levels Of Alerts Triggered' }}</span>
-        <div class="chart-wrapper">
+        <div class="chart-wrapper" *ngIf="displayPiechart" >
           <canvas baseChart 
             [data]="alertPieChartData" 
             [labels]="alertPieChartLabels" 
