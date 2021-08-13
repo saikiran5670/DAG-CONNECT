@@ -774,12 +774,12 @@ export class TripReportComponent implements OnInit, OnDestroy {
     const title = 'Trip Report';
     const summary = 'Summary Section';
     const detail = 'Detail Section';
-    let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'gallon/100mile') : (this.translationData.lblgallonmile || 'gallon/100mile');
+    let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'mpg') : (this.translationData.lblgallonmile || 'mpg');
     let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound || 'pound');
-    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
+    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'kmph') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
     let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
 
-    const header = ['VIN', 'Odometer', 'Vehicle Name', 'Registration No', 'Start Date', 'End Date', 'Distance(' + unitValkm + ')', 'Idle Duration(hh:mm)', 'Average Speed(' + unitValkmh + ')', 'Average Weight(' + unitValkg + ')', 'Start Position', 'End Position', 'Fuel Consumption(' + unitVal100km + ')', 'Driving Time(hh:mm)', 'Alerts', 'Events'];
+    const header = ['VIN', 'Odometer('+unitValkm+')', 'Vehicle Name', 'Registration No', 'Start Date', 'End Date', 'Distance(' + unitValkm + ')', 'Idle Duration(hh:mm)', 'Average Speed(' + unitValkmh + ')', 'Average Weight(' + unitValkg + ')', 'Start Position', 'End Position', 'Fuel Consumption(' + unitVal100km + ')', 'Driving Time(hh:mm)', 'Alerts', 'Events'];
     const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Vehicle VIN', 'Reg. Plate Number'];
     let summaryObj = [
       ['Trip Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,

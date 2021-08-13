@@ -204,8 +204,8 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 							currentTripPojo.setLatest_warning_position_longitude(null);
 							currentTripPojo.setLatest_warning_geolocation_address_id(null);
 
-							currentTripPojo.setCreated_at(TimeFormatter.getInstance().getCurrentUTCTime());
-							currentTripPojo.setModified_at(null);
+							
+							currentTripPojo.setModified_at(TimeFormatter.getInstance().getCurrentUTCTime());
 
 						} catch (Exception e) {
 							System.out.println("catch in first exception modified" + e.getMessage());
@@ -302,23 +302,43 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 							}
 
 							else { // trip starts, so insert
+								
+								//check if this tripId to be inserted is completely new and not entered ever before
+								CurrentTrip if_trip_exists_var = null;
 
-								if (indexValue.getEvtDateTime() != null)
-									currentTripPojo.setStart_time_stamp(TimeFormatter.getInstance()
-											.convertUTCToEpochMilli(indexValue.getEvtDateTime(), DafConstants.DTM_TS_FORMAT));
+								if (indexValue.getDocument() != null) {
+									if (indexValue.getDocument().getTripID() != null)
+										if_trip_exists_var = currentTripDAO
+												.read(indexValue.getDocument().getTripID());
+								}
+								
+								if (if_trip_exists_var==null) { //if trip is not present before, then insert the new trip with trip start
+									
+									if (indexValue.getEvtDateTime() != null)
+										currentTripPojo.setStart_time_stamp(TimeFormatter.getInstance()
+												.convertUTCToEpochMilli(indexValue.getEvtDateTime(), DafConstants.DTM_TS_FORMAT));
 
-								currentTripPojo.setStart_position_lattitude(indexValue.getGpsLatitude());
-								currentTripPojo.setStart_position_longitude(indexValue.getGpsLongitude());
-								currentTripPojo.setStart_position_heading(indexValue.getGpsHeading());
-								currentTripPojo.setDriving_time(0L);
+									currentTripPojo.setStart_position_lattitude(indexValue.getGpsLatitude());
+									currentTripPojo.setStart_position_longitude(indexValue.getGpsLongitude());
+									currentTripPojo.setStart_position_heading(indexValue.getGpsHeading());
+									currentTripPojo.setDriving_time(0L);
+									currentTripPojo.setCreated_at(TimeFormatter.getInstance().getCurrentUTCTime());
 
-								// calculate the vehicle_driving_status_type
-								currentTripPojo.setVehicle_driving_status_type('N'); // NEVER_MOVED, only when trip
-																						// starts
+									// calculate the vehicle_driving_status_type
+									currentTripPojo.setVehicle_driving_status_type('N'); // NEVER_MOVED, only when trip
+																							// starts
 
-								System.out.println("CURRENT TRIP POJO BEFORE INSERT : " + currentTripPojo);
+									System.out.println("CURRENT TRIP POJO BEFORE INSERT :: " + currentTripPojo);
 
-								currentTripDAO.insert(currentTripPojo);
+									currentTripDAO.insert(currentTripPojo);
+									
+								} else {
+									
+									log.info("PLEASE NOTE: DUPLICATE TRIP ID ATTEMPTED TO BE INSERTED. EITHER CHANGE THE TRIPID OR RETRY WITH VEVTID OTHER THAN 4." + 
+									"TripID = " + indexValue.getDocument().getTripID() + " || VEVTID = " + varVEvtid );
+									
+								}
+									
 
 							}
 						} catch (Exception e) {

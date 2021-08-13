@@ -769,6 +769,10 @@ namespace net.atos.daf.ct2.reports
             {
                 charts = objmat.GetcombinedmatrixBrake(chartRawdata.Where(i => i.ColumnIndex != null).ToList(), vehiclePerformanceRequest.PerformanceType, rangedata.ToList(), chartRawdata.Sum(i => i.TripDuration));
             }
+            else if (vehiclePerformanceRequest.PerformanceType == "S")
+            {
+                charts = objmat.GetcombinedmatrixRoadSpeed(chartRawdata.Where(i => i.ColumnIndex != null).ToList(), vehiclePerformanceRequest.PerformanceType, rangedata.ToList(), chartRawdata.Sum(i => i.TripDuration));
+            }
             else
             {
                 charts = objmat.Getcombinedmatrix(chartRawdata.Where(i => i.ColumnIndex != null).ToList(), vehiclePerformanceRequest.PerformanceType, rangedata.ToList(), chartRawdata.Sum(i => i.TripDuration));
