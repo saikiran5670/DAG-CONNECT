@@ -18,6 +18,7 @@ import { CreateNotificationsAlertComponent } from './create-notifications-alert/
 import { Options } from '@angular-slider/ngx-slider';
 import { PeriodSelectionFilterComponent } from './period-selection-filter/period-selection-filter.component';
 import { AlertAdvancedFilterComponent } from './alert-advanced-filter/alert-advanced-filter.component';
+import { ReportMapService } from '../../../report/report-map.service';
 
 declare var H: any;
 
@@ -117,7 +118,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
   isEnteringZone: boolean= true;
   isValidityCalender: boolean= true;
   isFiltersDetailsValidate: boolean= true;
-  
+  criticalThreshold: any;
+  warningThreshold: any;
+  advisoryThreshold: any;
+
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
 
@@ -155,7 +159,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
               private alertService: AlertService,
               private corridorService: CorridorService,
               private dialogService: ConfirmDialogService,
-              private el: ElementRef) 
+              private el: ElementRef,
+              private reportMapService: ReportMapService) 
   {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -182,7 +187,11 @@ export class CreateEditViewAlertsComponent implements OnInit {
       advisoryLevelThreshold: [''],
       mondayPeriod: [''],
       unitType: [''],
-      widthInput: ['']
+      widthInput: [''],
+      searchForLevelPOI: [''],
+      alertLevelValue:[''],
+      searchCorridor:[''],
+      levelType: [''],
     },
     {
       validator: [
@@ -1444,6 +1453,19 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   onCreateUpdate(){  
+    if(this.isCriticalLevelSelected){
+      this.criticalThreshold = parseInt(this.alertForm.get('criticalLevelThreshold').value);
+      this.criticalThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
+      }
+      else if(this.isWarningLevelSelected){
+      this.warningThreshold = parseInt(this.alertForm.get('warningLevelThreshold').value);
+      this.warningThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
+      }
+      else if(this.isAdvisoryLevelSelected){
+      this.advisoryThreshold = parseInt(this.alertForm.get('advisoryLevelThreshold').value);
+      this.advisoryThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
+      }
+
     this.alertForm.markAllAsTouched();    
     if (!this.alertForm.valid) {      
       this.alertForm.markAllAsTouched();
