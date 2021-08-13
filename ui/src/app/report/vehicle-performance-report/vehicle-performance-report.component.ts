@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { ReportService } from 'src/app/services/report.service';
 import { TranslationService } from 'src/app/services/translation.service';
+import { SearchCriteriaComponent } from './search-criteria/search-criteria.component';
 
 @Component({
   selector: 'app-vehicle-performance-report',
@@ -9,6 +10,7 @@ import { TranslationService } from 'src/app/services/translation.service';
   styleUrls: ['./vehicle-performance-report.component.css']
 })
 export class VehiclePerformanceReportComponent implements OnInit {
+  @ViewChild('searchCriteria') searchCriteria : SearchCriteriaComponent
   detailsExpandPanel: boolean = true;
   chartsExpandPanel: boolean = true;
   searchResult: any = {};
@@ -23,6 +25,8 @@ export class VehiclePerformanceReportComponent implements OnInit {
   pieChartColors = [];
   piechartTitle = '';
   bubbleHeatchartTitle = '';
+  vehicleDisplayPreference = 'dvehicledisplay_Name';
+  accountInfo:any = {};
   defualtData = [
     [
       0,
@@ -193,6 +197,7 @@ export class VehiclePerformanceReportComponent implements OnInit {
 
   constructor(private translationService: TranslationService, private reportService: ReportService) {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -203,9 +208,23 @@ export class VehiclePerformanceReportComponent implements OnInit {
       menuId: 13 //-- for Trip Report
     }
     this.getMenuTranslations(translationObj);
+    this.getPreferences();
   }
 
   ngOnInit(): void {
+  }
+
+  getPreferences() {
+    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+      let vehicleDisplayId = this.accountInfo.accountPreference.vehicleDisplayId;
+      if(vehicleDisplayId) {
+        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        if(vehicledisplay.length != 0) {
+          this.vehicleDisplayPreference = vehicledisplay[0].name;
+        }
+      }
+      this.searchCriteria.getPreferences(prefData)
+    });
   }
 
   kpi() {
@@ -253,23 +272,24 @@ export class VehiclePerformanceReportComponent implements OnInit {
     }
     let req1 = this.reportService.chartTemplate(payload);
     let req2 = this.reportService.chartData(payload);
+    this.updateChartTitles(this.searchResult.performanceType);
     forkJoin([req1, req2]).subscribe((res:any) => {
-      this.searchResult = { ...this.searchResult, ...res[0].vehPerformanceSummary}
-      this.searchResult.vehPerformanceCharts = res[0].vehPerformanceCharts;
-      this.searchResult.kpiData = res[1].kpiData;
-      this.searchResult.matrixData = res[1].matrixData;
-      this.searchResult.bubbleData = this.transformDataForBubbleChart(res[1].matrixData);
-      this.chartXaxis = this["xaxis"+ this.searchResult.performanceType];
-      this.chartYaxis = this["yaxis"+ this.searchResult.performanceType];
-      this.xaxisVaues = this.processXaxis(res[0].vehPerformanceCharts);
-      this.yaxisVaues = this.processYaxis(res[0].vehPerformanceCharts);
-      this.search = true;
+      if(res[1] && res[1].matrixData.length > 0) {
+        this.searchResult = { ...this.searchResult, ...res[0].vehPerformanceSummary}
+        this.searchResult.vehPerformanceCharts = res[0].vehPerformanceCharts;
+        this.searchResult.kpiData = res[1].kpiData;
+        this.searchResult.matrixData = res[1].matrixData;
+        this.searchResult.bubbleData = this.transformDataForBubbleChart(res[1].matrixData);
+        this.chartXaxis = this["xaxis"+ this.searchResult.performanceType];
+        this.chartYaxis = this["yaxis"+ this.searchResult.performanceType];
+        this.xaxisVaues = this.processXaxis(res[0].vehPerformanceCharts);
+        this.yaxisVaues = this.processYaxis(res[0].vehPerformanceCharts);
+        this.generatePieChartData(res[1].kpiData);
+        this.search = true;
+      } else {
+        this.search = false;
+      }
       this.showLoadingIndicator = false;
-      this.generatePieChartData(res[1].kpiData);
-      this.updateChartTitles(this.searchResult.performanceType);
-      console.log("searchResult", this.searchResult)
-      console.log("xaxisVaues", this.xaxisVaues)
-      console.log("yaxisVaues", this.yaxisVaues)
     }, (err) => {
       this.showLoadingIndicator = false;
     });    
