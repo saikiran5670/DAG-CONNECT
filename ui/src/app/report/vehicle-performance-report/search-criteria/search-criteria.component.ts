@@ -53,7 +53,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
-    this.getPreferences();
+    // this.getPreferences();
   }
 
   ngOnInit(): void {
@@ -68,22 +68,19 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     });
   }
 
-  getPreferences() {
-    this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-      console.log("prefData", prefData)
-      if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
-        this.proceedStep(prefData, this.accountPrefObj.accountPreference);
-      } else { // org pref
-        this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
-          this.proceedStep(prefData, orgPref);
-          console.log("orgPref", orgPref)
-        }, (error) => { // failed org API
-          let pref: any = {};
-          this.proceedStep(prefData, pref);
-        });
-      }
-      this.loadWholeTripData();
-    });
+  getPreferences(prefData) {
+    if (this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != '') { // account pref
+      this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+    } else { // org pref
+      this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any) => {
+        this.proceedStep(prefData, orgPref);
+        console.log("orgPref", orgPref)
+      }, (error) => { // failed org API
+        let pref: any = {};
+        this.proceedStep(prefData, pref);
+      });
+    }
+    this.loadWholeTripData();
   }
 
   selectionTimeRange(selection: any) {

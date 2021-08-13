@@ -88,16 +88,16 @@ namespace net.atos.daf.ct2.dashboard
                     objTodayResponse.Distance += todayData[i].TodayDistance;
                     objTodayResponse.TodayTimeBasedUtilizationRate += todayData[i].TodayDrivingTime;
                     objTodayResponse.DrivingTime += todayData[i].TodayDrivingTime;
-                }//Tobe called only when there is Today live data.
-                var yesterdayData = await _dashboardRepository.GetYesterdayLiveVinData(objTodayLiveVehicleRequest);
-                if (yesterdayData != null && yesterdayData.Count > 0)
+                }
+            }
+            var yesterdayData = await _dashboardRepository.GetYesterdayLiveVinData(objTodayLiveVehicleRequest);
+            if (yesterdayData != null && yesterdayData.Count > 0)
+            {
+                objTodayResponse.YesterdayActiveVinCount = yesterdayData.Count;
+                for (int i = 0; i < yesterdayData.Count; i++)
                 {
-                    objTodayResponse.YesterdayActiveVinCount = yesterdayData.Count;
-                    for (int i = 0; i < yesterdayData.Count; i++)
-                    {
-                        objTodayResponse.YesterdayDistanceBasedUtilization += yesterdayData[i].YesterdayDistance;
-                        objTodayResponse.YesterdayTimeBasedUtilizationRate += yesterdayData[i].YesterdayDrivingTime;
-                    }
+                    objTodayResponse.YesterdayDistanceBasedUtilization += yesterdayData[i].YesterdayDistance;
+                    objTodayResponse.YesterdayTimeBasedUtilizationRate += yesterdayData[i].YesterdayDrivingTime;
                 }
             }
             return objTodayResponse;

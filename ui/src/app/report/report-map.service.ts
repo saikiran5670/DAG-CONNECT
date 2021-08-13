@@ -1602,6 +1602,23 @@ export class ReportMapService {
     return data;
   }
 
+  getTimeInSeconds(timeValue, unit){
+    let seconds: any;
+    switch(unit){
+      //hrs to seconds
+      case 'H':{
+        seconds = timeValue * 3600;
+        break;
+      }
+      //minutes to seconds
+      case 'M':{
+        seconds = timeValue * 60;
+        break;
+      }
+      return seconds; 
+    }
+  }
+
   formStartEndDate(date: any, dateFormat: any, timeFormat: any, addTime?:boolean){
     // let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
     // let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
