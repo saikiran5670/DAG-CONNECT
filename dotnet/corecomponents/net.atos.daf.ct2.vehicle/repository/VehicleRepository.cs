@@ -296,6 +296,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                 vehicle.CreatedAt = record.created_at;
             if (record.relationship != null)
                 vehicle.RelationShip = record.relationship;
+            if (record.associatedgroups != null)
+                vehicle.AssociatedGroups = record.associatedgroups;
             return vehicle;
         }
 
@@ -575,37 +577,40 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@is_ota", vehicle.Is_Ota);
                 int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
 
-                //Update existing vehicle groups if change ownership happens
-                //Delete single groups and access relationships created in old owner org
-                parameter = new DynamicParameters();
-                parameter.Add("@Id", vehicle.ID);
-                parameter.Add("@Old_OrganizationId", vehicleDetails.OrganizationId);
+                if (vehicle.Organization_Id != vehicleDetails.OrganizationId)
+                {
+                    //Update existing vehicle groups if change ownership happens
+                    //Delete single groups and access relationships created in old owner org
+                    parameter = new DynamicParameters();
+                    parameter.Add("@Id", vehicle.ID);
+                    parameter.Add("@Old_OrganizationId", vehicleDetails.OrganizationId);
 
-                //Check if access relationship exists on the vehicle and old owner org with single vehicle group type
-
-                var vehicleGroupIds = await _dataAccess
-                                    .QueryAsync<int>(@"select vehicle_group_id from master.accessrelationship where vehicle_group_id in 
+                    //Check if access relationship exists on the vehicle and old owner org with single vehicle group type
+                    var vehicleGroupIds = await _dataAccess
+                                        .QueryAsync<int>(@"select vehicle_group_id from master.accessrelationship where vehicle_group_id in 
                                                    (select id from master.group where ref_id = @Id 
                                                     and organization_id = @Old_OrganizationId
                                                     and group_type = 'S' and object_type = 'V')", parameter);
 
-                if (vehicleGroupIds.Count() > 0)
-                {
-                    var parameters = new DynamicParameters();
-                    parameters.Add("@VehicleGroupIds", vehicleGroupIds.ToArray());
-                    //Delete access relationships with single vehicle group
-                    await _dataAccess.ExecuteAsync(@"delete from master.master.accessrelationship where vehicle_group_id = ANY(@VehicleGroupIds)", parameter);
-                }
+                    if (vehicleGroupIds.Count() > 0)
+                    {
+                        var parameters = new DynamicParameters();
+                        parameters.Add("@VehicleGroupIds", vehicleGroupIds.ToArray());
+                        //Delete access relationships with single vehicle group
+                        await _dataAccess.ExecuteAsync(@"delete from master.master.accessrelationship where vehicle_group_id = ANY(@VehicleGroupIds)", parameter);
+                    }
 
-                //Delete groups with single type
-                await _dataAccess.ExecuteAsync(@"delete from master.group where ref_id = @Id and organization_id = @Old_OrganizationId 
+                    //Delete groups with single type
+                    await _dataAccess.ExecuteAsync(@"delete from master.group where ref_id = @Id and organization_id = @Old_OrganizationId 
                                                  and group_type = 'S' and object_type = 'V'", parameter);
 
-                //Delete vehicle entries from GroupRef for old owner org
-                await _dataAccess.ExecuteAsync(@"delete from master.groupref gref
+                    //Delete vehicle entries from GroupRef for old owner org
+                    await _dataAccess.ExecuteAsync(@"delete from master.groupref gref
                                                 where gref.ref_id = @Id and gref.group_id in 
                                                     (select id from master.group grp where grp.organization_id = @Old_OrganizationId 
                                                     and grp.group_type = 'G' and grp.object_type = 'V')", parameter);
+
+                }
 
                 transaction.Commit();
                 return vehicle;
@@ -872,36 +877,39 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
 
             var QueryStatement = @"select distinct v.id
-                                   ,v.organization_id 
-                                   ,v.name 
-                                   ,v.vin 
-                                   ,v.license_plate_number 
-                                   ,v.status 
-                                   ,v.status_changed_date 
-                                   ,v.termination_date 
-                                   ,v.vid 
-                                   ,v.type 
-                                   ,v.tcu_id 
-                                   ,v.tcu_serial_number 
-                                   ,v.tcu_brand 
-                                   ,v.tcu_version 
-                                   ,v.is_tcu_register 
-                                   ,v.reference_date 
-                                   ,v.vehicle_property_id                                   
-                                   ,v.created_at 
+                                   ,v.organization_id
+                                   ,v.name
+                                   ,v.vin
+                                   ,v.license_plate_number
+                                   ,v.status
+                                   ,v.status_changed_date
+                                   ,v.termination_date
+                                   ,v.vid
+                                   ,v.type
+                                   ,v.tcu_id
+                                   ,v.tcu_serial_number
+                                   ,v.tcu_brand
+                                   ,v.tcu_version
+                                   ,v.is_tcu_register
+                                   ,v.reference_date
+                                   ,v.vehicle_property_id                                  
+                                   ,v.created_at
                                    ,v.model_id
                                    ,v.opt_in
                                    ,v.is_ota
                                    ,v.oem_id
                                    ,v.oem_organisation_id
                                    ,os.name as relationship
+                                   ,string_agg(grp.name::text, ',') as associatedGroups
                                    from master.vehicle v
                                    inner join master.orgrelationshipmapping as om on v.id = om.vehicle_id
-                                   inner join master.orgrelationship as os on om.relationship_id=os.id 
+                                   inner join master.orgrelationship as os on om.relationship_id=os.id
+                                   left join master.groupref as gref on v.id = gref.ref_id
+                                   Left join master.group as grp on grp.id= gref.group_id
                                    where 1=1
                                    and os.state='A'
-                                   and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-								    else COALESCE(end_date,0) =0 end";
+                                   and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+                                   else COALESCE(end_date,0) =0 end ";
             var parameter = new DynamicParameters();
 
             // Vehicle Id Filter
@@ -941,14 +949,14 @@ namespace net.atos.daf.ct2.vehicle.repository
                 QueryStatement = QueryStatement + " and v.status=@status";
 
             }
-
+            QueryStatement = QueryStatement + " GROUP BY v.id,os.name";
             List<Vehicle> vehicles = new List<Vehicle>();
             Vehicle vehicle = new Vehicle();
             dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
             foreach (dynamic record in result)
             {
                 vehicle = Map(record);
-                vehicle.AssociatedGroups = GetVehicleAssociatedGroup(vehicle.ID, Convert.ToInt32(vehicle.Organization_Id)).Result;
+                //vehicle.AssociatedGroups = GetVehicleAssociatedGroup(vehicle.ID, Convert.ToInt32(vehicle.Organization_Id)).Result;
                 vehicles.Add(vehicle);
             }
 
