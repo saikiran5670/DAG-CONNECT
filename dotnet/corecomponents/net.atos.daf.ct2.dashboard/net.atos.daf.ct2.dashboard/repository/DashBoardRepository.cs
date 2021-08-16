@@ -126,8 +126,8 @@ namespace net.atos.daf.ct2.dashboard.repository
                         FROM livefleet.livefleet_current_trip_statistics lcts
 					    LEFT JOIN livefleet.livefleet_position_statistics lps ON lcts.trip_id = lps.trip_id
                         LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
-                        WHERE lps.message_time_stamp >= 1628812800000  --(today 00hr)
-			                        AND lcts.vin in ('XLR0998HGFFT76657','XLR0998HGFFT74611','BLRAE75PC0E272200','XLR0998HGFFT74600','XLR0998HGFFT70000','XLR0998HGFFT80000')
+                        WHERE lps.message_time_stamp >= @todaydatetime  --(today 00hr)
+			                        AND lcts.vin = Any(@Vins)
 							        AND lps.vehicle_msg_trigger_type_id in  (4,5)        
 							        AND lps.Veh_Message_Type = 'I' 
                         ), cte_filterTripEndedToday as
@@ -140,9 +140,9 @@ namespace net.atos.daf.ct2.dashboard.repository
                         FROM livefleet.livefleet_position_statistics lps
                         LEFT JOIN livefleet.livefleet_current_trip_statistics lcts on lcts.trip_id = lps.trip_id
                         LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
-                        WHERE lps.message_time_stamp > 1628726400000 --(yesterday 00hr)
-   							  AND lps.message_time_stamp > 1628899200000 --(Tomorrow 00hr) 
-							AND lcts.vin in ('XLR0998HGFFT76657','XLR0998HGFFT74611','BLRAE75PC0E272200','XLR0998HGFFT74600','XLR0998HGFFT70000','XLR0998HGFFT80000')
+                        WHERE lps.message_time_stamp > @yesterdaydatetime --(yesterday 00hr)
+   							  AND lps.message_time_stamp > @tomorrowdatetime --(Tomorrow 00hr) 
+							AND lcts.vin = Any(@Vins)
 							 AND lps.Veh_Message_Type = 'I' 
 							AND vehicle_msg_trigger_type_id in (4,5)
                         --GROUP BY TodayVin--,position.trip_id                                           	

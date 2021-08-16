@@ -121,6 +121,7 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
   titleVisible : boolean = false;
   feautreCreatedMsg : any = '';
   trendLineSearchDataParam: any;
+  noSingleDriverData: boolean=false;
   prefMapData: any = [
     {
       key: 'da_report_alldriver_general_driverscount',
@@ -1056,6 +1057,8 @@ let finalGroupDataList = [];
         this.hideloader();
      });
     }, (error)=>{
+      this.ecoScoreDriver = true;
+      this.noSingleDriverData = true;
       this.hideloader();
     });
   }
