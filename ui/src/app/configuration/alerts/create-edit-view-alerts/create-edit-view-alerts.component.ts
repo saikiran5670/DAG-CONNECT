@@ -366,6 +366,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
           }
           else if(element.urgencyLevelType == 'W'){
             this.isWarningLevelSelected= true;
+            // let threshold;
+            // if(this.alert_category_selected+this.alert_type_selected == 'LU'){
+            //   threshold = this.reportMapService.getConvertedTime(element.thresholdValue,this.unitTypeEnum);
+            // }
             this.alertForm.get('warningLevelThreshold').setValue(element.thresholdValue);
           }
           else if(element.urgencyLevelType == 'A'){
@@ -382,7 +386,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
                             value : this.translationData.lblKilometer ? this.translationData.lblKilometer : 'Kilometer'
                           },
                           {
-                            enum : 'M',
+                            enum : 'L',
                             value : this.translationData.lblMiles ? this.translationData.lblMiles : 'Miles'
                           }
                         ];
@@ -394,7 +398,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
             value : this.translationData.lblHours ? this.translationData.lblHours : 'Hours'
           },
           {
-            enum : 'I',
+            enum : 'T',
             value : this.translationData.lblMinutes ? this.translationData.lblMinutes : 'Minutes'
           },
           {
@@ -1014,6 +1018,24 @@ PoiCheckboxClicked(event: any, row: any) {
     
     this.alertForm.get('statusMode').setValue(this.selectedRowData.state);
     this.onChangeAlertType(this.selectedRowData.type);
+    let threshold;
+    this.selectedRowData.alertUrgencyLevelRefs.forEach(element => {
+            
+            if(this.alert_category_selected+this.alert_type_selected == 'LU'){
+              threshold = this.reportMapService.getConvertedTime(element.thresholdValue,this.unitTypeEnum);
+
+            }
+    });
+    if(this.isCriticalLevelSelected){
+      this.alertForm.get('criticalLevelThreshold').setValue(threshold);
+    }
+    else if(this.isWarningLevelSelected){
+      this.alertForm.get('warningLevelThreshold').setValue(threshold);
+    }
+    else{
+      this.alertForm.get('advisoryLevelThreshold').setValue(threshold);
+    }
+
   }
 
   getBreadcum() {
@@ -1453,20 +1475,24 @@ PoiCheckboxClicked(event: any, row: any) {
     this.isExpandedOpen=true;
   }
 
-  onCreateUpdate(){  
+
+  convertThresholdValuesBasedOnUnits(){
     if(this.isCriticalLevelSelected){
       this.criticalThreshold = parseInt(this.alertForm.get('criticalLevelThreshold').value);
       this.criticalThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
       }
       else if(this.isWarningLevelSelected){
       this.warningThreshold = parseInt(this.alertForm.get('warningLevelThreshold').value);
-      this.warningThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
-      }
+      this.warningThreshold =this.reportMapService.getTimeInSeconds(this.warningThreshold, this.unitTypeEnum);
+    }
       else if(this.isAdvisoryLevelSelected){
       this.advisoryThreshold = parseInt(this.alertForm.get('advisoryLevelThreshold').value);
-      this.advisoryThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
-      }
+      this.advisoryThreshold =this.reportMapService.getTimeInSeconds(this.advisoryThreshold, this.unitTypeEnum); 
+    }
+  }
 
+  onCreateUpdate(){  
+    this.convertThresholdValuesBasedOnUnits();
     this.alertForm.markAllAsTouched();    
     if (!this.alertForm.valid) {      
       this.alertForm.markAllAsTouched();
