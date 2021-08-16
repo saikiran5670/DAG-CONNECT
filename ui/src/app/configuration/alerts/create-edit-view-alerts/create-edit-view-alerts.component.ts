@@ -207,6 +207,19 @@ export class CreateEditViewAlertsComponent implements OnInit {
 
     this.selectedApplyOn= 'G';
     this.alertForm.controls.widthInput.setValue(0.1);
+    
+    // this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+    //   if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+    //     this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+    //   }else{ // org pref
+    //     this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+    //       this.proceedStep(prefData, orgPref);
+    //     }, (error) => { // failed org API
+    //       let pref: any = {};
+    //       this.proceedStep(prefData, pref);
+    //     });
+    //   }
+    // });
 }
   
 
@@ -379,19 +392,19 @@ export class CreateEditViewAlertsComponent implements OnInit {
         });
       }
         
-      if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG'){        
-        this.unitTypes= [
-                          {
-                            enum : 'K', 
-                            value : this.translationData.lblKilometer ? this.translationData.lblKilometer : 'Kilometer'
-                          },
-                          {
-                            enum : 'L',
-                            value : this.translationData.lblMiles ? this.translationData.lblMiles : 'Miles'
-                          }
-                        ];
-      }
-      else if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'FI'){
+      // if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG'){        
+      //   this.unitTypes= [
+      //                     {
+      //                       enum : 'K', 
+      //                       value : this.translationData.lblKilometer ? this.translationData.lblKilometer : 'Kilometer'
+      //                     },
+      //                     {
+      //                       enum : 'L',
+      //                       value : this.translationData.lblMiles ? this.translationData.lblMiles : 'Miles'
+      //                     }
+      //                   ];
+      // }
+      if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'FI'){
         this.unitTypes= [
           {
             enum : 'H', 
@@ -1020,21 +1033,22 @@ PoiCheckboxClicked(event: any, row: any) {
     this.onChangeAlertType(this.selectedRowData.type);
     let threshold;
     this.selectedRowData.alertUrgencyLevelRefs.forEach(element => {
-            
-            if(this.alert_category_selected+this.alert_type_selected == 'LU'){
+            if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH'){
               threshold = this.reportMapService.getConvertedTime(element.thresholdValue,this.unitTypeEnum);
-
+              if(element.urgencyLevelType == 'C'){
+                this.alertForm.get('criticalLevelThreshold').setValue(threshold);
+              }
+              else if(element.urgencyLevelType == 'W'){
+                this.alertForm.get('warningLevelThreshold').setValue(threshold);
+              }
+              else{
+                this.alertForm.get('advisoryLevelThreshold').setValue(threshold);
+              }
             }
+
+        
     });
-    if(this.isCriticalLevelSelected){
-      this.alertForm.get('criticalLevelThreshold').setValue(threshold);
-    }
-    else if(this.isWarningLevelSelected){
-      this.alertForm.get('warningLevelThreshold').setValue(threshold);
-    }
-    else{
-      this.alertForm.get('advisoryLevelThreshold').setValue(threshold);
-    }
+
 
   }
 
@@ -1481,11 +1495,11 @@ PoiCheckboxClicked(event: any, row: any) {
       this.criticalThreshold = parseInt(this.alertForm.get('criticalLevelThreshold').value);
       this.criticalThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
       }
-      else if(this.isWarningLevelSelected){
+    if(this.isWarningLevelSelected){
       this.warningThreshold = parseInt(this.alertForm.get('warningLevelThreshold').value);
       this.warningThreshold =this.reportMapService.getTimeInSeconds(this.warningThreshold, this.unitTypeEnum);
     }
-      else if(this.isAdvisoryLevelSelected){
+    if(this.isAdvisoryLevelSelected){
       this.advisoryThreshold = parseInt(this.alertForm.get('advisoryLevelThreshold').value);
       this.advisoryThreshold =this.reportMapService.getTimeInSeconds(this.advisoryThreshold, this.unitTypeEnum); 
     }
@@ -1750,7 +1764,7 @@ PoiCheckboxClicked(event: any, row: any) {
         if(this.actionType == 'create' || this.actionType == 'duplicate'){
           criticalUrgenyLevelObj = {
             "urgencyLevelType": "C",
-            "thresholdValue": parseInt(this.alertForm.get('criticalLevelThreshold').value),
+            "thresholdValue": this.criticalThreshold,
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -1787,7 +1801,7 @@ PoiCheckboxClicked(event: any, row: any) {
         if(this.actionType == 'create' || this.actionType == 'duplicate'){
           warningUrgenyLevelObj = {
             "urgencyLevelType": "W",
-            "thresholdValue": parseInt(this.alertForm.get('warningLevelThreshold').value),
+            "thresholdValue": this.warningThreshold,
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false
@@ -1824,7 +1838,7 @@ PoiCheckboxClicked(event: any, row: any) {
         if(this.actionType == 'create' || this.actionType == 'duplicate'){
           advisoryUrgenyLevelObj= {
             "urgencyLevelType": "A",
-            "thresholdValue": parseInt(this.alertForm.get('advisoryLevelThreshold').value),
+            "thresholdValue": this.advisoryThreshold,
             "unitType": this.unitTypeEnum,
             "dayType": [
               false, false, false, false, false, false, false

@@ -146,9 +146,14 @@ export class Util {
   }
 
   public static getHhMmTimeFromMS(totalMilliSeconds: any){
-    let seconds = totalMilliSeconds/ 1000;
-    let time = this.getHhMmTime(seconds);
-    return time;
+    if(totalMilliSeconds < 0){
+        return '00:00';
+    }
+    else{
+        let seconds = totalMilliSeconds/ 1000;
+        let time = this.getHhMmTime(seconds);
+        return time;
+    }
   }
 
 }
