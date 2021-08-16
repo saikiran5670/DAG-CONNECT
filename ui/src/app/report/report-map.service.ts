@@ -1682,6 +1682,9 @@ export class ReportMapService {
         seconds = timeValue * 60;
         break;
       }
+      default: {
+        seconds = timeValue;
+      }
     }
     return seconds; 
   }
@@ -1698,6 +1701,9 @@ export class ReportMapService {
       case 'T':{
         timeValue = seconds / 60;
         break;
+      }
+      default: {
+        timeValue = seconds;
       }
     }
     return timeValue; 
