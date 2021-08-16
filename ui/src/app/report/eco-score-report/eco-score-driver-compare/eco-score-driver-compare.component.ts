@@ -147,24 +147,24 @@ export class EcoScoreDriverCompareComponent implements OnInit {
       { key:'rp_driverperformance' , value:'Driver Performance' },
       { key:'rp_ecoscore' , value:'Eco Score' },
       { key:'rp_fuelconsumption' , value:'Fuel Consumption' },
-      { key:'rp_braking' , value:'Braking(%)' },
+      { key:'rp_braking' , value:'Braking' },
       { key:'rp_anticipationscore' , value:'Anticipation Score' },
       { key:'rp_averagedrivingspeed' , value:'Average Driving Speed' },
       { key:'rp_idleduration' , value:'Idle Duration' },
-      { key:'rp_idling' , value:'Idling(%)' },
+      { key:'rp_idling' , value:'Idling' },
       { key:'rp_heavythrottleduration' , value:'Heavy Throttle Duration' },
-      { key:'rp_heavythrottling' , value:'Heavy Throttling(%)' },
+      { key:'rp_heavythrottling' , value:'Heavy Throttling' },
       { key:'rp_averagespeed' , value:'Average Speed' },
       { key:'rp_ptoduration' , value:'PTO Duration' },
-      { key:'rp_ptousage' , value:'PTO Usage(%)' },
-      { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage 30-50 km/h(%)' },
-      { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage > 75 km/h(%)' },
-      { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage 50-75 km/h(%)' },
+      { key:'rp_ptousage' , value:'PTO Usage' },
+      { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage' },
+      { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage' },
+      { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage' },
       { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage' },
-      { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage 50-75 km/h(%)' },
-      { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage 30-50 km/h(%)' },
-      { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage > 75 km/h(%)' },
-      { key:'rp_harshbraking' , value:'Harsh Braking(%)' },
+      { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage' },
+      { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage' },
+      { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage' },
+      { key:'rp_harshbraking' , value:'Harsh Braking' },
       { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration' },
       { key:'rp_brakeduration' , value:'Brake Duration' },
       { key:'rp_brakingscore' , value:'Braking Score' }
@@ -333,11 +333,11 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     if (value === null || value === undefined || dataContext === undefined) {
       return '';
     }
-    let key='';
-    if(this.prefUnitFormat !== 'dunit_Metric' && value.toLowerCase().indexOf("rp_cruisecontrol") !== -1){
-      key = value;
-      value = "rp_cruisecontrolusage";
-    }
+    let key=value;
+    // if(this.prefUnitFormat !== 'dunit_Metric' && value.toLowerCase().indexOf("rp_cruisecontrol") !== -1){
+    //   key = value;
+    //   value = "rp_cruisecontrolusage";
+    // }
     var foundValue = this.translationData.value || this.translationDataLocal.filter(obj=>obj.key === value);
 
     if(foundValue === undefined || foundValue === null || foundValue.length === 0)
@@ -345,13 +345,49 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     else
       value = foundValue[0].value;
     
-    if(this.prefUnitFormat !== 'dunit_Metric' && key){
-      if(key.indexOf("30") !== -1)
-        value += ' 15-30 mph(%)'
-      else if(key.indexOf("50") !== -1)
-        value += ' 30-45 mph(%)'
-      else if(key.indexOf("75") !== -1)
-        value += ' >45 mph(%)'
+    // if(this.prefUnitFormat !== 'dunit_Metric' && key){
+    //   if(key.indexOf("30") !== -1)
+    //     value += ' 15-30 mph(%)'
+    //   else if(key.indexOf("50") !== -1)
+    //     value += ' 30-45 mph(%)'
+    //   else if(key.indexOf("75") !== -1)
+    //     value += ' >45 mph(%)'
+    // }
+    if(key.indexOf('rp_heavythrottleduration') !== -1 || key.indexOf('rp_ptoduration') !== -1 
+        || key.indexOf('rp_harshbrakeduration') !== -1 || key.indexOf('rp_brakeduration') !== -1 
+        || key.indexOf('rp_idleduration') !== -1){
+      value += ' (hh:mm:ss)';
+    } else if(key.indexOf('rp_braking') !== -1 || key.indexOf('rp_idling') !== -1 || key.indexOf('rp_heavythrottling') !== -1
+              || key.indexOf('rp_ptousage') !== -1 || key.indexOf('rp_harshbraking') !== -1){
+      value += ' (%)';
+    } else if(this.prefUnitFormat === 'dunit_Imperial'){
+      if(key.indexOf('rp_fuelconsumption') !== -1)
+        value += ' (mpg)';
+      else if(key.indexOf('rp_averagedrivingspeed') !== -1 || key.indexOf('rp_averagespeed') !== -1)
+        value += ' (mph)';
+      else if(key.indexOf('rp_CruiseControlUsage') !== -1 || key.indexOf('rp_cruisecontroldistance') !== -1){
+        if(key.indexOf('30') !== -1)
+          value += ' 15-30 mph ';
+        else if(key.indexOf('50') !== -1)
+          value += ' 30-45 mph ';
+        else if(key.indexOf('75') !== -1)
+          value += ' >45 mph ';
+        value += '(%)';
+      }
+    }  else if(this.prefUnitFormat === 'dunit_Metric'){
+      if(key.indexOf('rp_fuelconsumption') !== -1)
+        value += ' (ltrs/100km)';
+      else if(key.indexOf('rp_averagedrivingspeed') !== -1 || key.indexOf('rp_averagespeed') !== -1)
+        value += ' (km/h)';
+      else if(key.indexOf('rp_CruiseControlUsage') !== -1 || key.indexOf('rp_cruisecontroldistance') !== -1){
+          if(key.indexOf('30') !== -1)
+           value += ' 30-50 km/h ';
+          else if(key.indexOf('50') !== -1)
+           value += ' 50-75 km/h ';
+          else if(key.indexOf('75') !== -1)
+           value += ' >75 km/h ';
+          value += '(%)';
+        }
     }
     const gridOptions = grid.getOptions() as GridOption;
     const treeLevelPropName = gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName || '__treeLevel';
