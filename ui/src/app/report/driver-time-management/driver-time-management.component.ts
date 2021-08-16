@@ -918,10 +918,10 @@ export class DriverTimeManagementComponent implements OnInit, OnDestroy {
     this.totalAvailableTime += element.availableTime
     });
       this.tableInfoObj= {
-        driveTime: Util.getHhMmTime(this.totalDriveTime),
-        workTime: Util.getHhMmTime(this.totalWorkTime),
-        restTime: Util.getHhMmTime(this.totalRestTime),
-        availableTime: Util.getHhMmTime(this.totalAvailableTime),
+        driveTime: Util.getHhMmTimeFromMS(this.totalDriveTime),
+        workTime: Util.getHhMmTimeFromMS(this.totalWorkTime),
+        restTime: Util.getHhMmTimeFromMS(this.totalRestTime),
+        availableTime: Util.getHhMmTimeFromMS(this.totalAvailableTime)
       }
   }
 
