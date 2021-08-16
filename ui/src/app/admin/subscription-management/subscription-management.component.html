@@ -45,7 +45,7 @@
         </div>
       <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-select placeholder="{{ translationData.lblSelectStatus || 'Select Status' }}" (selectionChange)="applyFilterOnStatus(1,$event.value)">
+          <mat-select placeholder="{{ translationData.lblSelectStatus || 'Select Status' }}" (selectionChange)="applyFilterOnStatus($event.value)">
             <mat-option *ngFor="let options of StatusList" [value]="options.value">
               {{options.name}}
             </mat-option>
