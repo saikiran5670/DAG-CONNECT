@@ -720,11 +720,11 @@ namespace net.atos.daf.ct2.organization.repository
                 throw;
             }
         }
-        public async Task<int> UpdatetVehicle(HandOver keyHandOver, int OrganizationId)
+        public async Task<int> UpdateVehicle(HandOver keyHandOver, int organizationId)
         {
             try
             {
-                Vehicle objvehicle = new Vehicle();
+                Vehicle objVehicle = new Vehicle();
                 bool istcuactive = true;
                 string tcuactivation = keyHandOver.TCUActivation;
                 if (tcuactivation.ToUpper() == "YES")
@@ -736,17 +736,17 @@ namespace net.atos.daf.ct2.organization.repository
                     istcuactive = false;
                 }
 
-                objvehicle.Reference_Date = keyHandOver.ReferenceDateTime;
+                objVehicle.Reference_Date = keyHandOver.ReferenceDateTime;
 
-                objvehicle.Is_Tcu_Register = istcuactive;
-                objvehicle.VIN = keyHandOver.VIN;
-                objvehicle.Tcu_Id = keyHandOver.TCUID;
-                objvehicle.Vid = null;
-                objvehicle.Tcu_Brand = null;
-                objvehicle.Tcu_Serial_Number = null;
-                objvehicle.Tcu_Version = null;
-                objvehicle.Organization_Id = OrganizationId;
-                await _vehicelManager.UpdateOrgVehicleDetails(objvehicle);
+                objVehicle.Is_Tcu_Register = istcuactive;
+                objVehicle.VIN = keyHandOver.VIN;
+                objVehicle.Tcu_Id = keyHandOver.TCUID;
+                objVehicle.Vid = null;
+                objVehicle.Tcu_Brand = null;
+                objVehicle.Tcu_Serial_Number = null;
+                objVehicle.Tcu_Version = null;
+                objVehicle.Organization_Id = organizationId;
+                await _vehicelManager.UpdateOrgVehicleDetails(objVehicle);
             }
             catch (Exception ex)
             {
@@ -810,7 +810,7 @@ namespace net.atos.daf.ct2.organization.repository
                 if (iscustomerexist > 0 && isVINExist > 0)  // Update organization and vehicle
                 {
                     int organizationId = await UpdateCompany(keyHandOver);
-                    await UpdatetVehicle(keyHandOver, organizationId);
+                    await UpdateVehicle(keyHandOver, organizationId);
 
                     // Owner Relationship Management
 
@@ -859,7 +859,7 @@ namespace net.atos.daf.ct2.organization.repository
                 {
                     int organizationID = await InsertCompany(keyHandOver);
                     await CreateDefaultGroupsAndAccessRelationship(organizationID);
-                    await UpdatetVehicle(keyHandOver, organizationID);
+                    await UpdateVehicle(keyHandOver, organizationID);
 
                     // Owner Relationship Management  
                     keyHandOver.OEMRelationship = organizationID.ToString();

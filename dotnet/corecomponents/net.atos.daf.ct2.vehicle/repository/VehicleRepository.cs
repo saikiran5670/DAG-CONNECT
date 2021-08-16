@@ -539,44 +539,96 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         public async Task<Vehicle> UpdateOrgVehicleDetails(Vehicle vehicle)
         {
+            _dataAccess.Connection.Open();
+            var transaction = _dataAccess.Connection.BeginTransaction();
+            try
+            {
+                var vehicleDetails = await GetVehicleDetails(vehicle.VIN);
+                vehicle.ID = vehicleDetails.Id;
+                //Found unnecessary so commented here
+                //await VehicleOptInOptOutHistory(vehicle.ID);
+                char vehOptIn = await _dataAccess.QuerySingleAsync<char>("select coalesce((select vehicle_default_opt_in FROM master.organization where id=@id), 'U')", new { id = vehicle.Organization_Id });
+                vehicle.Status = (VehicleCalculatedStatus)await GetCalculatedVehicleStatus(vehOptIn, false);
 
-            vehicle.ID = await IsVINExists(vehicle.VIN);
-            //Found unnecessary so commented here
-            //await VehicleOptInOptOutHistory(vehicle.ID);
-            char vehOptIn = await _dataAccess.QuerySingleAsync<char>("select coalesce((select vehicle_default_opt_in FROM master.organization where id=@id), 'U')", new { id = vehicle.Organization_Id });
-            vehicle.Status = (VehicleCalculatedStatus)await GetCalculatedVehicleStatus(vehOptIn, false);
+                var queryStatement = @" UPDATE master.vehicle
+                                        SET 
+                                         organization_id=@organization_id                                        
+                                        ,opt_in=@opt_in
+                                        ,modified_at=@modified_at
+                                        ,modified_by=@modified_by
+                                        ,status_changed_date=@status_changed_date
+                                        ,status=@status
+                                        ,reference_date=@reference_date
+                                        ,is_ota=@is_ota
+                                         WHERE id = @id
+                                         RETURNING id;";
 
-            var queryStatement = @" UPDATE master.vehicle
-                                    SET 
-                                     organization_id=@organization_id                                        
-                                    ,opt_in=@opt_in
-                                    ,modified_at=@modified_at
-                                    ,modified_by=@modified_by
-                                    ,status_changed_date=@status_changed_date
-                                    ,status=@status
-                                    ,reference_date=@reference_date
-                                    ,is_ota=@is_ota
-                                     WHERE id = @id
-                                     RETURNING id;";
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", vehicle.ID);
+                parameter.Add("@organization_id", vehicle.Organization_Id);
+                parameter.Add("@opt_in", (char)VehicleStatusType.Inherit);
+                parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                parameter.Add("@modified_by", vehicle.Modified_By);
+                parameter.Add("@status", (char)vehicle.Status);
+                parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
+                parameter.Add("@is_ota", vehicle.Is_Ota);
+                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
 
-            var parameter = new DynamicParameters();
-            parameter.Add("@id", vehicle.ID);
-            parameter.Add("@organization_id", vehicle.Organization_Id);
-            parameter.Add("@opt_in", (char)VehicleStatusType.Inherit);
-            parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-            parameter.Add("@modified_by", vehicle.Modified_By);
-            parameter.Add("@status", (char)vehicle.Status);
-            parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-            parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
-            parameter.Add("@is_ota", vehicle.Is_Ota);
-            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
+                //Update existing vehicle groups if change ownership happens
+                //Delete single groups and access relationships created in old owner org
+                parameter = new DynamicParameters();
+                parameter.Add("@Id", vehicle.ID);
+                parameter.Add("@Old_OrganizationId", vehicleDetails.OrganizationId);
 
-            return vehicle;
+                //Check if access relationship exists on the vehicle and old owner org with single vehicle group type
+
+                var vehicleGroupIds = await _dataAccess
+                                    .QueryAsync<int>(@"select vehicle_group_id from master.accessrelationship where vehicle_group_id in 
+                                                   (select id from master.group where ref_id = @Id 
+                                                    and organization_id = @Old_OrganizationId
+                                                    and group_type = 'S' and object_type = 'V')", parameter);
+
+                if (vehicleGroupIds.Count() > 0)
+                {
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@VehicleGroupIds", vehicleGroupIds.ToArray());
+                    //Delete access relationships with single vehicle group
+                    await _dataAccess.ExecuteAsync(@"delete from master.master.accessrelationship where vehicle_group_id = ANY(@VehicleGroupIds)", parameter);
+                }
+
+                //Delete groups with single type
+                await _dataAccess.ExecuteAsync(@"delete from master.group where ref_id = @Id and organization_id = @Old_OrganizationId 
+                                                 and group_type = 'S' and object_type = 'V'", parameter);
+
+                //Delete vehicle entries from GroupRef for old owner org
+                await _dataAccess.ExecuteAsync(@"delete from master.groupref gref
+                                                where gref.ref_id = @Id and gref.group_id in 
+                                                    (select id from master.group grp where grp.organization_id = @Old_OrganizationId 
+                                                    and grp.group_type = 'G' and grp.object_type = 'V')", parameter);
+
+                transaction.Commit();
+                return vehicle;
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+            finally
+            {
+                _dataAccess.Connection.Close();
+            }
         }
 
         public async Task<int> IsVINExists(string vin)
         {
             return await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = vin });
+        }
+
+        public async Task<VehicleDetails> GetVehicleDetails(string vin)
+        {
+            return await _dataAccess.QuerySingleAsync<VehicleDetails>("SELECT id, organization_id as OrganizationId FROM master.vehicle where vin=@vin", new { vin = vin });
         }
 
         public async Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId)
