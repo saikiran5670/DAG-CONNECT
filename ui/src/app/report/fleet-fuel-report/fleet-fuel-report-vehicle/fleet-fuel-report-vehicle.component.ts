@@ -1822,14 +1822,14 @@ setVehicleGroupAndVehiclePreSelection() {
       let s = this.displayData.forEach(element => {
         sum += parseFloat(element.idleDuration);
         });
-        sum = this.reportMapService.getHhMmTime(sum);
+        sum = Util.getHhMmTimeFromMS(sum); // time is in millisecond
         break;
     }
     case 'fuelConsumption': { 
       let s = this.displayData.forEach(element => {
       sum += parseFloat(element.convertedFuelConsumption);
       });
-      sum= sum.toFixed(2)*1;
+      sum= sum.toFixed(6)*1;
       break;
     }
     case 'co2emission': { 

@@ -1362,7 +1362,7 @@ export class ReportMapService {
       element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedFuelConsumed100Km = this.getFuelConsumptionUnits(element.fuelConsumed, unitFormat);
-      element.convertedFuelConsumption = this.getFuelConsumedUnits(element.fuelConsumption, unitFormat);
+      element.convertedFuelConsumption = this.getFuelConsumedUnits(element.fuelConsumption, unitFormat,true);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       //element.convertedIdleDuration =element.idleDuration
       element.dpaScore = parseFloat(element.dpaScore);
@@ -1419,11 +1419,11 @@ export class ReportMapService {
       gridData.driverId = gridData.driverId;
       gridData.startTime = this.getStartTime(gridData.startTime, dateFormat, timeFormat, timeZone);
       gridData.endTime = this.getEndTime(gridData.endTime, dateFormat, timeFormat, timeZone);
-      gridData.driveTime = this.getHhMmTime(gridData.driveTime);
-      gridData.workTime = this.getHhMmTime(gridData.workTime);
-      gridData.serviceTime = this.getHhMmTime(gridData.serviceTime);
-      gridData.restTime = this.getHhMmTime(gridData.restTime);
-      gridData.availableTime = this.getHhMmTime(gridData.availableTime);
+      gridData.driveTime = Util.getHhMmTimeFromMS(gridData.driveTime);
+      gridData.workTime =  Util.getHhMmTimeFromMS(gridData.workTime);
+      gridData.serviceTime =  Util.getHhMmTimeFromMS(gridData.serviceTime);
+      gridData.restTime =  Util.getHhMmTimeFromMS(gridData.restTime);
+      gridData.availableTime =  Util.getHhMmTimeFromMS(gridData.availableTime);
    // });
     return gridData;
   }
@@ -1436,11 +1436,11 @@ export class ReportMapService {
         driverName : element.driverName,
       driverId : element.driverId,
       startTime : this.getStartTime(element.activityDate, dateFormat, timeFormat, timeZone,false),
-      driveTime : this.getHhMmTime(element.driveTime),
-      workTime : this.getHhMmTime(element.workTime),
-      serviceTime : this.getHhMmTime(element.serviceTime),
-      restTime : this.getHhMmTime(element.restTime),
-      availableTime : this.getHhMmTime(element.availableTime),
+      driveTime : Util.getHhMmTimeFromMS(element.driveTime),
+      workTime : Util.getHhMmTimeFromMS(element.workTime),
+      serviceTime : Util.getHhMmTimeFromMS(element.serviceTime),
+      restTime : Util.getHhMmTimeFromMS(element.restTime),
+      availableTime : Util.getHhMmTimeFromMS(element.availableTime),
       })
       
     });
@@ -1682,6 +1682,9 @@ export class ReportMapService {
         seconds = timeValue * 60;
         break;
       }
+      default: {
+        seconds = timeValue;
+      }
     }
     return seconds; 
   }
@@ -1698,6 +1701,9 @@ export class ReportMapService {
       case 'T':{
         timeValue = seconds / 60;
         break;
+      }
+      default: {
+        timeValue = seconds;
       }
     }
     return timeValue; 
