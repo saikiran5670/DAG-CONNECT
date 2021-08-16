@@ -3,6 +3,7 @@ import { AccountService } from 'src/app/services/account.service';
 import { ReportService } from 'src/app/services/report.service';
 import { TranslationService } from 'src/app/services/translation.service';
 import { FleetFuelPreferencesComponent } from './fleet-fuel-preferences/fleet-fuel-preferences.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reports-preferences',
@@ -34,7 +35,7 @@ export class ReportsPreferencesComponent implements OnInit {
   editFleetFuelPerferencesFlag: boolean = false;
   generalPreferences: any;
 
-  constructor(private reportService: ReportService, private translationService: TranslationService, private accountService: AccountService) { }
+  constructor(private reportService: ReportService, private translationService: TranslationService, private accountService: AccountService, private router: Router) { }
 
   ngOnInit() {
     this.loadReportData();
@@ -146,7 +147,9 @@ export class ReportsPreferencesComponent implements OnInit {
         this.updateFleetFuelPerferencesFlag({ flag: false, msg: this.getSuccessMsg() });
         setTimeout(() => {
           this.requestSent = false;
+          if((this.router.url).includes("fleetfuelreport")){
           window.location.reload();
+          }
         }, 1000);
       });
     }
