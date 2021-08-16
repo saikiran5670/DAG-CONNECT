@@ -148,6 +148,20 @@ jobs:
         publishJUnitResults: false
         goals: clean install
 
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/daf.fuel.deviation/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/daf.fuel.deviation/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/net.atos.daf.ct2.alerts/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/net.atos.daf.ct2.alerts/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
       inputs:
@@ -165,5 +179,5 @@ jobs:
     - task: PublishPipelineArtifact@1
       displayName: 'Publish Pipeline Artifact'
       inputs:
-        targetPath: 'java/corecomponents/properties/tripMileage.properties'
+        targetPath: 'java/corecomponents/properties'
         artifact: properties

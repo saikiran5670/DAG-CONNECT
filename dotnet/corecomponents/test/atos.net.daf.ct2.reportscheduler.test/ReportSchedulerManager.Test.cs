@@ -136,8 +136,11 @@ namespace atos.net.daf.ct2.reportscheduler.test
             long currentdate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
             bool isresult;
             ReportEmailFrequency objReportEmailFrequency = new ReportEmailFrequency();
-            objReportEmailFrequency.ReportNextScheduleRunDate = 1625574329670;
-            objReportEmailFrequency.FrequencyType = TimeFrequenyType.Daily;
+            objReportEmailFrequency.ReportNextScheduleRunDate = 1626201000000;
+            objReportEmailFrequency.ReportScheduleRunDate = 1626201000000; 
+            objReportEmailFrequency.StartDate = 1625596200000;
+            objReportEmailFrequency.EndDate = 1626201000000; 
+            objReportEmailFrequency.FrequencyType = TimeFrequenyType.Weekly;
             _helper.GetNextFrequencyTime(objReportEmailFrequency);
             isresult = true;
             Assert.IsTrue(isresult);
@@ -148,8 +151,8 @@ namespace atos.net.daf.ct2.reportscheduler.test
         [TestMethod]
         public async Task UnT_Helpr_GetNextQuarterTime()
         {
-            long date = 1624184687000;
-            var result = _helper.GetNextQuarterTime(date);
+            long date = 1609500927000;
+            var result = _helper.GetNextQuarterTime(date, "Asia/Kolkata");
             Assert.IsNotNull(result);
         }
 
@@ -158,8 +161,8 @@ namespace atos.net.daf.ct2.reportscheduler.test
         [TestMethod]
         public async Task UnT_Helpr_GetNextMonthlyTime()
         {
-            long date = 1624184687000;
-            var result = _helper.GetNextMonthlyTime(date);
+            long date = 1610710527000;
+            var result = _helper.GetNextMonthlyTime(date, "Asia/Kolkata");
             Assert.IsNotNull(result);
         }
     }

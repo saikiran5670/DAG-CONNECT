@@ -37,6 +37,14 @@ spec:
       containers:
       - name: testservice-auto-grpc-container
         image: #{acrurl}#/testservice-auto
+        livenessProbe:
+          httpGet:
+            path: /account
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 60
+          timeoutSeconds: 1
+          failureThreshold: 3
         imagePullPolicy: "Always"
         volumeMounts:
         - name: tmp

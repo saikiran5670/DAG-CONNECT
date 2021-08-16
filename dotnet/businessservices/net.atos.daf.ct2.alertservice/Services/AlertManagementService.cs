@@ -11,6 +11,10 @@ using net.atos.daf.ct2.alert.ENUM;
 using net.atos.daf.ct2.alertservice.Entity;
 using net.atos.daf.ct2.visibility;
 using Newtonsoft.Json;
+using net.atos.daf.ct2.kafkacdc;
+using net.atos.daf.ct2.kafkacdc.entity;
+using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.alertservice.common;
 
 namespace net.atos.daf.ct2.alertservice.Services
 {
@@ -20,13 +24,17 @@ namespace net.atos.daf.ct2.alertservice.Services
         private readonly IAlertManager _alertManager;
         private readonly Mapper _mapper;
         private readonly IVisibilityManager _visibilityManager;
+        private readonly IAlertMgmAlertCdcManager _alertMgmAlertCdcManager;
+        private readonly AlertCdcHelper _alertCdcHelper;
 
-        public AlertManagementService(IAlertManager alertManager, IVisibilityManager visibilityManager)
+        public AlertManagementService(IAlertManager alertManager, IVisibilityManager visibilityManager, IAlertMgmAlertCdcManager alertMgmAlertCdcManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _alertManager = alertManager;
             _mapper = new Mapper();
             _visibilityManager = visibilityManager;
+            _alertMgmAlertCdcManager = alertMgmAlertCdcManager;
+            _alertCdcHelper = new AlertCdcHelper(_alertMgmAlertCdcManager);
         }
 
         #region ActivateAlert,SuspendAlert and  DeleteAlert
@@ -35,6 +43,11 @@ namespace net.atos.daf.ct2.alertservice.Services
             try
             {
                 var id = await _alertManager.ActivateAlert(request.AlertId, ((char)AlertState.Active), ((char)AlertState.Suspend));
+                if (id > 0)
+                {
+                    //Triggering alert cdc 
+                    await _alertCdcHelper.TriggerAlertCdc(request.AlertId, "A");
+                }
                 return await Task.FromResult(new AlertResponse
                 {
                     Message = id > 0 ? String.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.ACTIVATED_ALERT_FAILURE_MSG, request.AlertId, AlertConstants.ALERT_FAILURE_MSG),
@@ -58,6 +71,11 @@ namespace net.atos.daf.ct2.alertservice.Services
             try
             {
                 var id = await _alertManager.SuspendAlert(request.AlertId, ((char)AlertState.Suspend), ((char)AlertState.Active));
+                if (id > 0)
+                {
+                    //Triggering alert cdc 
+                    await _alertCdcHelper.TriggerAlertCdc(request.AlertId, "I");
+                }
                 return await Task.FromResult(new AlertResponse
                 {
                     Message = id > 0 ? String.Format(AlertConstants.SUSPEND_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.SUSPEND_ALERT_FAILURE_MSG, request.AlertId, AlertConstants.ALERT_FAILURE_MSG),
@@ -90,6 +108,11 @@ namespace net.atos.daf.ct2.alertservice.Services
 
 
                 var id = await _alertManager.DeleteAlert(request.AlertId, ((char)AlertState.Delete));
+                if (id > 0)
+                {
+                    //Triggering alert cdc 
+                    await _alertCdcHelper.TriggerAlertCdc(request.AlertId, "D");
+                }
                 return await Task.FromResult(new AlertResponse
                 {
                     Message = id > 0 ? String.Format(AlertConstants.DELETE_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.DELETE_ALERT_FAILURE_MSG, request.AlertId, AlertConstants.ALERT_FAILURE_MSG),
@@ -170,6 +193,11 @@ namespace net.atos.daf.ct2.alertservice.Services
                     response.Code = ResponseCode.Conflict;
                     return response;
                 }
+                if (alert.Id > 0)
+                {
+                    //Triggering alert cdc 
+                    await _alertCdcHelper.TriggerAlertCdc(alert.Id, "U");
+                }
                 return await Task.FromResult(new AlertResponse
                 {
                     Message = alert.Id > 0 ? $"Alert is updated successful for id:- {alert.Id}." : $"Activate Alert Failed for id:- {request.Id}.",
@@ -218,6 +246,11 @@ namespace net.atos.daf.ct2.alertservice.Services
                     response.Message = "Duplicate notification recipient label";
                     response.Code = ResponseCode.Conflict;
                     return response;
+                }
+                if (alert.Id > 0)
+                {
+                    //Triggering alert cdc 
+                    await _alertCdcHelper.TriggerAlertCdc(alert.Id, "A");
                 }
                 return await Task.FromResult(new AlertResponse
                 {

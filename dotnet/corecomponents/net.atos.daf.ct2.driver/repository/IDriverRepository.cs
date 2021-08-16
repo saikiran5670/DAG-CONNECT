@@ -8,10 +8,11 @@ namespace net.atos.daf.ct2.driver
     {
         Task<List<DriverImportResponse>> ImportDrivers(List<Driver> driver, int orgid);
         Task<IEnumerable<DriverResponse>> GetDriver(int organizationId, int driverId);
+        Task<DriverLookupResponse> GetDriver(string driverId, string email);
         Task<Driver> UpdateDriver(Driver driver);
-        Task<bool> DeleteDriver(int OrganizationId, int DriverId);
+        Task<bool> DeleteDriver(int organizationId, int driverId);
         Task<bool> UpdateOptinOptout(int organizationId, string optoutStatus);
-        Task<bool> GetCurrentDriver(ProvisioningDriverDataServiceRequest request);
-        Task<bool> GetDriverList(ProvisioningDriverDataServiceRequest request);
+        Task<ProvisioningDriver> GetCurrentDriver(ProvisioningDriverDataServiceRequest request);
+        Task<IEnumerable<ProvisioningDriver>> GetDriverList(ProvisioningDriverDataServiceRequest request);
     }
 }

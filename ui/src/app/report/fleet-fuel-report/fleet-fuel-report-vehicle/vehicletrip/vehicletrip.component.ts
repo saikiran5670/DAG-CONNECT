@@ -602,13 +602,14 @@ tripTraceArray: any = [];
             this.proceedStep(prefData, pref);
           });
         }
+        this.loadfleetFuelDetails(this.vehicleDetails);
+        if(this.vehicleDetails){
+          this.onSearch();
+         }
       });
     });
 
-    this.loadfleetFuelDetails(this.vehicleDetails);
-    if(this.vehicleDetails){
-      this.onSearch();
-     }
+   
 
     this.isSummaryOpen = true;
     this.isChartsOpen = true;
@@ -1016,7 +1017,7 @@ createEndMarker(){
     if(event.checked){
       
       this.rowdata.push(row);
-      this.mapService.viewselectedroutes(this.rowdata, this.displayRouteView,this.trackType);
+      this.mapService.viewselectedroutes(this.rowdata, this.displayRouteView,this.trackType, row);
 
       let _ui = this.reportMapService.getUI();
      // this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType, this.displayRouteView, this.displayPOIList, this.searchMarker, this.herePOIArr);
@@ -2022,15 +2023,15 @@ setVehicleGroupAndVehiclePreSelection() {
             numberOfTrips= this.sumOfColumns('noOfTrips');
             distanceDone= this.sumOfColumns('distance');
             idleDuration= this.sumOfColumns('idleDuration');
-            fuelConsumption= this.sumOfColumns('fuelconsumed');
-            fuelconsumed= this.sumOfColumns('fuelConsumption');
+            fuelConsumption= this.sumOfColumns('fuelConsumption');
+            fuelconsumed= this.sumOfColumns('fuelconsumed');
             CO2Emission= this.sumOfColumns('co2emission');
           // numbeOfVehicles = this.initData.length;   
             
           this.summaryNewObj = [
-           ['Fleet Fuel Driver Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+           ['Fleet Fuel Vehicle Trip Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
              this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, numberOfTrips, distanceDone,
-             fuelconsumed, idleDuration, fuelConsumption
+             fuelconsumed, idleDuration, fuelConsumption,CO2Emission
           ]
           ];        
          }
@@ -2041,14 +2042,18 @@ setVehicleGroupAndVehiclePreSelection() {
         const title = 'Fleet Fuel Vehicle Trip Report';
         const summary = 'Summary Section';
         const detail = 'Detail Section';
-        let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mile/h') : (this.translationData.lblmileh || 'mile/h');
-        let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+        let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'Ltrs/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'mpg') : (this.translationData.lblgallonmile || 'mpg');
+    let unitValuekm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'l') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'gal') : (this.translationData.lblgallonmile || 'gal');
+    let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblton || 't') : (this.translationData.lblton|| 't');
+    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
+    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+    let unitValkg1 = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 't') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lbltons || 'Ton') : (this.translationData.lbltons|| 'Ton');
     
-        const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No','Average Speed('+unitValkmh+')','Max Speed('+unitValkmh+')', 'Distance','startPosition', 'endPosition',
-        'fuelConsumed', 'fuelConsumption','cO2Emission',  'Idle Duration','Pto Duration','Cruise Control Distance 30-50('+unitValkmh+')',
-        'Cruise Control Distance 50-75('+unitValkmh+')','Cruise Control Distance>75('+unitValkmh+')','Heavy Throttle Duration','HarshBrakeDuration', 'averageGrossWeightComb', 'averageTrafficClassification',
-        'ccFuelConsumption','fuelconsumptionCCnonactive','idlingConsumption','dpaScore'];
-        const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed(I)', 'Idle Duration(hh:mm)', 'Fuel Consumption('+unitValkm+')'];
+        const header =  ['Vehicle Name', 'VIN', 'Vehicle Registration No', 'Start Date', 'End Date', 'Average Speed('+unitValkmh+')','Max Speed('+unitValkmh+')', 'Distance('+unitValkm+')','StartPosition', 'EndPosition',
+        'FuelConsumed('+unitValuekm+')', 'FuelConsumption('+unitVal100km+')','CO2Emission('+unitValkg1+')',  'Idle Duration(%)','PTO Duration(%)','Cruise Control Distance 30-50('+unitValkmh+')(%)',
+        'Cruise Control Distance 50-75('+unitValkmh+')(%)','Cruise Control Distance>75('+unitValkmh+')(%)','Heavy Throttle Duration(%)','HarshBrakeDuration(%)', 'GrossWeightCombination(Ton)', 'AverageTrafficClassification',
+        'CCFuelConsumption('+unitVal100km+')','FuelConsumptionCCnonactive('+unitVal100km+')','IdlingConsumption','DPAScore'];
+        const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Number Of Trips', 'Distance('+unitValkm+')', 'Fuel Consumed(I)', 'Idle Duration(hh:mm)', 'Fuel Consumption('+unitVal100km+')','CO2 Emission('+ unitValkg1+')'];
         const summaryData= this.summaryNewObj;
         //Create workbook and worksheet
         let workbook = new Workbook();
@@ -2087,8 +2092,8 @@ setVehicleGroupAndVehiclePreSelection() {
           cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
         })    
         this.initData.forEach(item => {
-          worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.averageSpeed,
-            item.maxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.fuelConsumed,item.fuelConsumption,item.cO2Emission,item.idleDuration,
+          worksheet.addRow([ item.vehicleName,item.vin, item.vehicleRegistrationNo,item.convertedStartTime,item.convertedEndTime,item.convertedAverageSpeed,
+            item.maxSpeed,item.convertedDistance,item.startPosition,item.endPosition,item.convertedFuelConsumed100Km,item.convertedFuelConsumption,item.cO2Emission,item.idleDurationPercentage,
             item.ptoDuration,item.cruiseControlDistance3050,item.cruiseControlDistance5075,item.cruiseControlDistance75,
             item.heavyThrottleDuration,item.harshBrakeDuration,item.averageGrossWeightComb,item.averageTrafficClassification,
             item.ccFuelConsumption,item.fuelconsumptionCCnonactive,item.idlingConsumption,item.dpaScore]);
@@ -2307,7 +2312,7 @@ setVehicleGroupAndVehiclePreSelection() {
         // let PDF = new jsPDF('p', 'mm', 'a4');
         let position = 0;
         doc.addImage(FILEURI, 'PNG', 10, 40, fileWidth, fileHeight) ;
-        doc.addPage();
+        doc.addPage('a1','p');
 
       (doc as any).autoTable({
       head: pdfColumns,
@@ -2345,21 +2350,32 @@ setVehicleGroupAndVehiclePreSelection() {
       }
     case 'fuelconsumed': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.fuelConsumed);
+      sum += parseFloat(element.convertedFuelConsumed100Km);
       });
       sum= sum.toFixed(2)*1;
       break;
     }
     case 'idleDuration': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.idleDuration);
-      });
-      sum = this.reportMapService.getHhMmTime(sum);
-      break;
+        sum += parseFloat(element.idleDuration);
+        });
+        sum = this.reportMapService.getHhMmTime(sum);
+        break;
+      // let s = this.tripData.forEach(element => {
+      //   let time: any = 0;
+      //   time += (element.idleDuration);
+      //   let data: any = "00:00";
+      //   let hours = Math.floor(time / 3600);
+      //   time %= 3600;
+      //   let minutes = Math.floor(time / 60);
+      //   let seconds = time % 60;
+      //   data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
+      //   sum = data;
+      // });
     }
     case 'fuelConsumption': { 
       let s = this.displayData.forEach(element => {
-      sum += parseFloat(element.convertedFuelConsumed100Km);
+      sum += parseFloat(element.convertedFuelConsumption);
       });
       sum= sum.toFixed(2)*1;
       break;

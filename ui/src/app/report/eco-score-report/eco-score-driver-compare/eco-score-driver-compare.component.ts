@@ -84,7 +84,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
               }
             }else if(element.name == 'EcoScore.DriverPerformance'){ // Driver Performance 
               // single
-              if(_elem.subCompareDrivers && _elem.subCompareDrivers.length == 0){ // single -> (eco-score & anticipation score)
+              if(_elem.subCompareDrivers && _elem.subCompareDrivers.length == 0 && this.driverPerformanceColumnData){ // single -> (eco-score & anticipation score)
                 let _q = this.driverPerformanceColumnData.filter(o => o.dataAttributeId == _elem.dataAttributeId && o.state == 'A');
                 if(_q.length > 0){ // filter only active from pref
                   _arr.push(_elem);
@@ -93,12 +93,12 @@ export class EcoScoreDriverCompareComponent implements OnInit {
                 let _nestedArr: any = [];
                 _elem.subCompareDrivers.forEach(el => {
                   if(el.subCompareDrivers && el.subCompareDrivers.length == 0){ // no child -> (others)
-                    if(_elem.name == 'EcoScore.DriverPerformance.FuelConsumption'){
+                    if(_elem.name == 'EcoScore.DriverPerformance.FuelConsumption' && this.driverPerformanceColumnData[1]){
                       let _p = this.driverPerformanceColumnData[1].subReportUserPreferences.filter(j => j.dataAttributeId == el.dataAttributeId && j.state == 'A');
                       if(_p.length > 0){ // filter only active from pref
                         _nestedArr.push(el);
                       }
-                    }else if(_elem.name == 'EcoScore.DriverPerformance.BrakingScore'){
+                    }else if(_elem.name == 'EcoScore.DriverPerformance.BrakingScore' && this.driverPerformanceColumnData[2]){
                       let _p = this.driverPerformanceColumnData[2].subReportUserPreferences.filter(j => j.dataAttributeId == el.dataAttributeId && j.state == 'A');
                       if(_p.length > 0){ // filter only active from pref
                         _nestedArr.push(el);
@@ -347,11 +347,11 @@ export class EcoScoreDriverCompareComponent implements OnInit {
     
     if(this.prefUnitFormat !== 'dunit_Metric' && key){
       if(key.indexOf("30") !== -1)
-        value += ' 18.6-31 m/h(%)'
+        value += ' 15-30 mph(%)'
       else if(key.indexOf("50") !== -1)
-        value += ' 31-46.6 m/h(%)'
+        value += ' 30-45 mph(%)'
       else if(key.indexOf("75") !== -1)
-        value += ' >46.6 m/h(%)'
+        value += ' >45 mph(%)'
     }
     const gridOptions = grid.getOptions() as GridOption;
     const treeLevelPropName = gridOptions.treeDataOptions && gridOptions.treeDataOptions.levelPropName || '__treeLevel';
@@ -416,7 +416,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
   }
 
   formatValues(dataContext: any, val: any){
-    if(val !== '0'){
+    if(val && val !== '0'){
       let valTemp = Number.parseFloat(val.toString());
       if(dataContext.rangeValueType && dataContext.rangeValueType === 'T'){
         valTemp = Number.parseInt(valTemp.toString());

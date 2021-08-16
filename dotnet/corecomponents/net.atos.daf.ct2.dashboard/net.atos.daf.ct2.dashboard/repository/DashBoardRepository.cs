@@ -16,8 +16,7 @@ namespace net.atos.daf.ct2.dashboard.repository
         private static readonly log4net.ILog _log =
           log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public DashBoardRepository(IDataAccess dataAccess
-                                , IDataMartDataAccess dataMartdataAccess)
+        public DashBoardRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             _dataAccess = dataAccess;
             _dataMartdataAccess = dataMartdataAccess;
@@ -45,6 +44,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                                  , SUM(etl_gps_distance)     as distance
                                                                  , SUM(etl_gps_driving_time) as drivingtime
                                                                  , SUM(fuel_consumption)     as fuelconsumption
+                                                                 , SUM(etl_gps_fuel_consumed) as fuelconsumed
                                                                  , SUM(idling_consumption)   as idlingfuelconsumption
                                                                  , SUM(idle_duration)        as idlingtime
                                                                FROM
@@ -62,6 +62,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                                                           , Round(sum(drivingtime),2)           as drivingtime
                                                           , Round(sum(idlingfuelconsumption),2) as idlingfuelconsumption
                                                           , Round(sum(fuelconsumption),2)       as fuelconsumption
+                                                          , Round(sum(fuelconsumed),2)          as fuelconsumed
                                                           , Round(sum(idlingtime),2)            as idlingtime
                                                         FROM cte_filteredTrip 
                                                         GROUP BY isongoingtrip";
@@ -104,37 +105,70 @@ namespace net.atos.daf.ct2.dashboard.repository
 
         }
 
-        public async Task<TodayLiveVehicleResponse> GetTodayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest)
+        #region TodayLive Functionality
+        public async Task<List<TodayLiveVehicleData>> GetTodayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                var filter = DateTime.Now;
-                var datetime = DateTime.Now.AddHours(-filter.Hour).AddMinutes(-filter.Minute).AddSeconds(-filter.Second);
-                long str = UTCHandling.GetUTCFromDateTime(datetime, "UTC");
                 parameter.Add("@Vins", objTodayLiveVehicleRequest.VINs);
-                string query = @"WITH cte_vintodaydata as
-                                     (
-                                SELECT  lcts.vin,
-		                                SUM(lcts.trip_distance) AS distance ,
-		                                SUM(lcts.driving_time) AS drivingtime,
-		                                COUNT(lcts.driver1_id) AS driverid,
-		                                Count(ta.urgency_level_type) As criticlealertcount
-                                FROM  livefleet.livefleet_current_trip_statistics lcts
-                                LEFT JOIN tripdetail.tripalert ta ON lcts.vin = ta.vin
-		                                 WHERE lcts.vin  ANY(@Vins) AND LCTS.START_TIME_STAMP = @startdatetime
-                                GROUP BY lcts.vin,lcts.start_time_stamp
-	                                 )
-	                                 SELECT  
-	                                 Count(vin) AS vehiclecount,
-		                                SUM(distance) AS distance ,
-		                                SUM(drivingtime) AS drivingtime,
-		                                COUNT(drivingtime) AS drivingtime,
-		                                Count(criticlealertcount) As criticlealertcount
-                                FROM  cte_vintodaydata
-                                GROUP BY vin";
-                var data = await _dataMartdataAccess.QueryAsync<TodayLiveVehicleResponse>(query, parameter);
-                return data.FirstOrDefault();
+                parameter.Add("@todaydatetime", objTodayLiveVehicleRequest.TodayDateTime);
+                parameter.Add("@yesterdaydatetime", objTodayLiveVehicleRequest.YesterdayDateTime);
+                parameter.Add("@tomorrowdatetime", objTodayLiveVehicleRequest.TomorrowDateTime);
+                parameter.Add("@dayBeforeYesterdaydatetime", objTodayLiveVehicleRequest.DayDeforeYesterdayDateTime);
+                string queryToday = @"WITH cte_filterToday as
+                        (
+                        SELECT --lcts.trip_id,
+					    lcts.vin,
+                        (lps.last_odometer_val - (lag(lps.last_odometer_val,1) over (order by lps.vehicle_msg_trigger_type_id asc))) as last_odometer_val,
+                        lcts.driving_time,
+                        ta.urgency_level_type
+                        FROM livefleet.livefleet_current_trip_statistics lcts
+					    LEFT JOIN livefleet.livefleet_position_statistics lps ON lcts.trip_id = lps.trip_id
+                        LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
+                        WHERE lps.message_time_stamp >= 1628812800000  --(today 00hr)
+			                        AND lcts.vin in ('XLR0998HGFFT76657','XLR0998HGFFT74611','BLRAE75PC0E272200','XLR0998HGFFT74600','XLR0998HGFFT70000','XLR0998HGFFT80000')
+							        AND lps.vehicle_msg_trigger_type_id in  (4,5)        
+							        AND lps.Veh_Message_Type = 'I' 
+                        ), cte_filterTripEndedToday as
+                        (
+                        SELECT --lps.trip_id,
+                        lps.vin ,
+					    (last_odometer_val - (lag(last_odometer_val,1) over (order by vehicle_msg_trigger_type_id asc))) as last_odometer_val, 
+                        lps.driving_time,
+                        ta.urgency_level_type
+                        FROM livefleet.livefleet_position_statistics lps
+                        LEFT JOIN livefleet.livefleet_current_trip_statistics lcts on lcts.trip_id = lps.trip_id
+                        LEFT JOIN tripdetail.tripalert ta ON lcts.trip_id = ta.trip_id
+                        WHERE lps.message_time_stamp > 1628726400000 --(yesterday 00hr)
+   							  AND lps.message_time_stamp > 1628899200000 --(Tomorrow 00hr) 
+							AND lcts.vin in ('XLR0998HGFFT76657','XLR0998HGFFT74611','BLRAE75PC0E272200','XLR0998HGFFT74600','XLR0998HGFFT70000','XLR0998HGFFT80000')
+							 AND lps.Veh_Message_Type = 'I' 
+							AND vehicle_msg_trigger_type_id in (4,5)
+                        --GROUP BY TodayVin--,position.trip_id                                           	
+                        ), cte_union as (
+           select vin, last_odometer_val as todaydistance, driving_time as todaydrivingtime,urgency_level_type As todayalertcount from cte_filterToday 
+                --WHERE last_odometer_val IS NOT NULL			
+				--GROUP BY vin			
+			UNION 
+		   select vin, last_odometer_val as todaydistance, driving_time as todaydrivingtime, urgency_level_type As todayalertcount from cte_filterTripEndedToday
+			    --WHERE last_odometer_val IS NOT NULL
+				--GROUP BY vin		
+						)
+                        SELECT
+						--* from cte_union 
+                        /*vin
+						,todaydistance
+						,todaydrivingtime,todayalertcount--trip_id,*/
+						vin as TodayVin,
+                        SUM(todaydistance) as TodayDistance,
+                        SUM(todaydrivingtime) as TodayDrivingTime,
+                        COUNT(todayalertcount) as TodayAlertCount 
+                        FROM cte_union 
+                        GROUP BY vin--,trip_id";
+                var dataToday = await _dataMartdataAccess.QueryAsync<TodayLiveVehicleData>(queryToday, parameter);
+
+                return dataToday.ToList();
             }
             catch (System.Exception ex)
             {
@@ -142,5 +176,128 @@ namespace net.atos.daf.ct2.dashboard.repository
             }
 
         }
+        public async Task<List<TodayLiveVehicleData>> GetYesterdayLiveVinData(TodayLiveVehicleRequest objTodayLiveVehicleRequest)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@Vins", objTodayLiveVehicleRequest.VINs);
+                parameter.Add("@todaydatetime", objTodayLiveVehicleRequest.TodayDateTime);
+                parameter.Add("@yesterdaydatetime", objTodayLiveVehicleRequest.YesterdayDateTime);
+                parameter.Add("@tomorrowdatetime", objTodayLiveVehicleRequest.TomorrowDateTime);
+                parameter.Add("@dayBeforeYesterdaydatetime", objTodayLiveVehicleRequest.DayDeforeYesterdayDateTime);
+                string queryYesterday = @"WITH cte_filterYesterday as
+                        (
+                        SELECT --lcts.trip_id,
+                        lcts.vin ,
+                        (last_odometer_val - (lag(last_odometer_val,1) over (order by vehicle_msg_trigger_type_id asc))) as last_odometer_val,  
+                        lcts.driving_time
+                       FROM livefleet.livefleet_current_trip_statistics lcts
+					   LEFT JOIN livefleet.livefleet_position_statistics lps ON lcts.trip_id = lps.trip_id
+                        WHERE (lps.message_time_stamp >= @yesterdaydatetime   --(yesterday 00hr) 
+	                        and lps.message_time_stamp <= @todaydatetime ) --(today 00hr)
+	                        AND lcts.vin = Any(@Vins)
+							AND lps.vehicle_msg_trigger_type_id in (4,5) -- trip started and ended
+							AND lps.Veh_Message_Type = 'I'
+                        ), cte_filtertripendedyesterday as (
+                        SELECT --position.trip_id,
+                        lps.vin ,
+                        lcts.driving_time , 
+                        (lps.last_odometer_val - (lag(lps.last_odometer_val,1) over (order by vehicle_msg_trigger_type_id asc))) as last_odometer_val
+                        FROM livefleet.livefleet_position_statistics lps
+                        LEFT JOIN livefleet.livefleet_current_trip_statistics lcts on lcts.trip_id = lps.trip_id
+                        WHERE (lps.message_time_stamp > @dayBeforeYesterdaydatetime   --(DaybeforeYESTERDAY 00hr)
+	                          and lps.message_time_stamp < @todaydatetime) --(today 00hr)
+	                          AND lps.vin  = Any(@Vins)
+							  AND lps.vehicle_msg_trigger_type_id in (4,5) -- trip started and ended
+	                          AND lps.Veh_Message_Type = 'I'
+                        ),
+						cte_union as(
+						select vin, driving_time, last_odometer_val from cte_filterYesterday --where last_odometer_val is not null
+							UNION
+						select vin , driving_time , last_odometer_val from cte_filtertripendedyesterday --where last_odometer_val is not null
+						)
+                        SELECT 
+						--* from cte_union
+                        vin as YesterdayVin,--trip_id,
+                        SUM(last_odometer_val)as YesterdayDistance,
+                        SUM(driving_time) as YesterdayDrivingTime
+                        FROM cte_union 
+                        GROUP BY YesterdayVin--,trip_id";
+                var dataYesterday = await _dataMartdataAccess.QueryAsync<TodayLiveVehicleData>(queryYesterday, parameter);
+                return dataYesterday.ToList();
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
+
+        #region Fleet utilization
+
+        public async Task<List<Chart_Fleetutilization>> GetUtilizationchartsData(FleetKpiFilter tripFilters)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@StartDateTime", tripFilters.StartDateTime);
+                parameter.Add("@EndDateTime", tripFilters.EndDateTime);
+                parameter.Add("@vins", tripFilters.VINs.ToArray());
+                //string vin = string.Join("','", TripFilters.VIN.ToArray());
+                //vin = "'"+ vin.Replace(",", "', '")+"'";
+                //parameter.Add("@vins", vin);
+                string query = @"WITH cte_workingdays AS(
+                        select
+                        date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
+                        count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
+						Count(distinct vin) as vehiclecount,
+						Count(distinct trip_id) as tripcount,
+                        sum(etl_gps_distance) as totaldistance,
+                        sum(etl_gps_trip_time) as totaltriptime,
+                        sum(etl_gps_driving_time) as totaldrivingtime,
+                        sum(idle_duration) as totalidleduration,
+                        sum(veh_message_distance) as totalAveragedistanceperday,
+                        sum(average_speed) as totalaverageSpeed,
+                        sum(average_weight) as totalaverageweightperprip,
+                        sum(last_odometer) as totalodometer,
+                        SUM(etl_gps_fuel_consumed)    as fuelconsumed,
+                        SUM(fuel_consumption)          as fuelconsumption
+                        FROM tripdetail.trip_statistics
+                        where is_ongoing_trip = false AND (end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
+						and vin=ANY(@vins)
+                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))                     
+                        )
+                        select
+                        '' as VIN,
+                        startdate,
+						extract(epoch from startdate) * 1000 as Calenderdate,
+                       	totalworkingdays,
+						vehiclecount,
+                        tripcount,
+                        CAST((totaldistance) as float) as distance,
+                        CAST((totaltriptime) as float) as triptime ,
+                        CAST((totaldrivingtime) as float) as drivingtime ,
+                        CAST((totaldistance) as float) as distance ,
+                        CAST((totalidleduration) as float) as idleduration ,
+                        CAST((totaldistance) as float) as distanceperday ,
+                        CAST((totalaverageSpeed) as float) as Speed ,
+                        CAST((totalaverageweightperprip) as float) as weight,
+                        fuelconsumed,
+                        fuelconsumption
+                        from cte_workingdays";
+
+
+                List<Chart_Fleetutilization> data = (List<Chart_Fleetutilization>)await _dataMartdataAccess.QueryAsync<Chart_Fleetutilization>(query, parameter);
+                return data;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        #endregion
+
     }
 }

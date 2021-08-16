@@ -15,9 +15,9 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public string DrivingTime { get; set; }
         public string IdleDuration { get; set; }
         public string StopTime { get; set; }
-        public double AverageDistancePerDay { get; set; }
         public double AverageSpeed { get; set; }
         public double AverageWeightPerTrip { get; set; }
+        public double AverageDistancePerDay { get; set; }
         public long Odometer { get; set; }
     }
 }

@@ -11,7 +11,7 @@
                     <app-account-info-settings *ngIf="selectedIndex == 0" [translationData]='translationData'></app-account-info-settings>
                 </mat-tab>
                 <mat-tab label="{{ translationData.lblDashboard || 'Dashboard' }}">
-                    <app-dashboard-preferences *ngIf="selectedIndex == 1"></app-dashboard-preferences>
+                    <app-dashboard-preferences *ngIf="selectedIndex == 1" [translationData]='translationData'></app-dashboard-preferences>
                 </mat-tab>
                 <mat-tab label="{{ translationData.lblReports || 'Reports' }}">
                     <app-reports-preferences *ngIf="selectedIndex == 2" [translationData]='translationData'></app-reports-preferences>

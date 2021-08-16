@@ -41,13 +41,22 @@ namespace net.atos.daf.ct2.subscription.test
             TodayLiveVehicleRequest objTodayLiveVehicleRequest = new TodayLiveVehicleRequest();
             objTodayLiveVehicleRequest.VINs = new List<string>();
             objTodayLiveVehicleRequest.VINs.Add("M4A14532");
-            objTodayLiveVehicleRequest.VINs.Add("XLR0998HGFFT76657");
-            objTodayLiveVehicleRequest.VINs.Add("XLRASH4300G1472w0");
-            objTodayLiveVehicleRequest.VINs.Add("XLR0998HGFFT75550");
-            objTodayLiveVehicleRequest.VINs.Add("XLRAE75PC0E348696");
             var results = await _iDashBoardManager.GetTodayLiveVinData(objTodayLiveVehicleRequest);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
+        }
+
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task UnT_Report_GetAlertLast24Hours_Test()
+        {
+            var alertLast24Hours = new Alert24HoursFilter()
+            {
+                VINs = new List<string>() { "XLR0998HGFFT76657" },
+
+            };
+            var result = await _iDashBoardManager.GetLastAlert24Hours(alertLast24Hours);
+            Assert.IsNotNull(result);
         }
     }
 }

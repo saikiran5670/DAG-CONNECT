@@ -182,6 +182,18 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
+  getEcoScoreSingleDriverTrendLines(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/ecoscore/trendlines`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   getCalendarDetails(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -454,6 +466,43 @@ export class ReportService {
     return this.httpClient
       .post<any[]>(
         `${this.reportServiceUrl}/fueldeviation/charts`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  // https://api.dev1.ct2.atos.net/report/vehicleperformance/charttemplate
+  chartTemplate(data: any) {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/vehicleperformance/charttemplate`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  chartData(data: any) {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/vehicleperformance/chartdata`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  kpi() {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(
+        `${this.reportServiceUrl}/vehicleperformance/kpi`, headers
       )
       .pipe(catchError(this.handleError));
   }

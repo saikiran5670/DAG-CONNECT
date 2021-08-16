@@ -1,5 +1,6 @@
 //using net.atos.daf.ct2.driver.repository;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.driver.entity;
@@ -19,9 +20,14 @@ namespace net.atos.daf.ct2.driver
         {
             return await _driverRepository.ImportDrivers(driver, orgid);
         }
-        public async Task<IEnumerable<DriverResponse>> GetDriver(int OrganizationId, int DriverID)
+        public async Task<IEnumerable<DriverResponse>> GetDriver(int organizationId, int driverID)
         {
-            return await _driverRepository.GetDriver(OrganizationId, DriverID);
+            return await _driverRepository.GetDriver(organizationId, driverID);
+        }
+
+        public async Task<DriverLookupResponse> GetDriver(string driverId, string email)
+        {
+            return await _driverRepository.GetDriver(driverId, email);
         }
 
         public async Task<Driver> UpdateDriver(Driver driver)
@@ -39,16 +45,27 @@ namespace net.atos.daf.ct2.driver
 
         #region Provisioning Data Service
 
-        public async Task<bool> GetCurrentDriver(ProvisioningDriverDataServiceRequest request)
+        public async Task<ProvisioningDriverDataServiceResponse> GetCurrentDriver(ProvisioningDriverDataServiceRequest request)
         {
-            return await _driverRepository.GetCurrentDriver(request);
+            var provisioningDriver = await _driverRepository.GetCurrentDriver(request);
+            var drivers = new List<ProvisioningDriver>();
+            if (provisioningDriver != null)
+                drivers.Add(provisioningDriver);
+
+            return new ProvisioningDriverDataServiceResponse { Drivers = drivers };
         }
 
-        public async Task<bool> GetDriverList(ProvisioningDriverDataServiceRequest request)
+        public async Task<ProvisioningDriverDataServiceResponse> GetDriverList(ProvisioningDriverDataServiceRequest request)
         {
-            return await _driverRepository.GetDriverList(request);
+            var provisioningDrivers = await _driverRepository.GetDriverList(request);
+            return new ProvisioningDriverDataServiceResponse { Drivers = provisioningDrivers.ToList() };
         }
 
         #endregion
+
+        public Task<bool> CheckIfDriverExists(string driverId, string organisationId, string email)
+        {
+            return Task.FromResult(true);
+        }
     }
 }

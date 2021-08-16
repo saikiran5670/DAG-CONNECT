@@ -141,7 +141,8 @@ namespace net.atos.daf.ct2.portalservice.Account
                 LandingPageDisplayId = request.LandingPageDisplayId,
                 IconId = (int)request.IconId,
                 IconByte = request.IconByte == null ? "" : request.IconByte.ToString(),
-                CreatedBy = request.CreatedBy
+                CreatedBy = request.CreatedBy,
+                PageRefreshTime = request.PageRefreshTime
             };
             return preference;
         }
@@ -159,6 +160,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
             preference.IconId = request.IconId;
             preference.IconByte = request.IconByte == null ? "" : request.IconByte.ToString();
+            preference.PageRefreshTime = request.PageRefreshTime;
             return preference;
         }
 

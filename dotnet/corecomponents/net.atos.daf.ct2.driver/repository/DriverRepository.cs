@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.data;
@@ -35,10 +37,10 @@ namespace net.atos.daf.ct2.driver
                 parameter.Add("@id", driverId);
                 parameter.Add("@state", "A");
 
-                var QueryStatement = @" SELECT id, organization_id,driver_id_ext, first_name FirstName, last_name LastName, email Email, status Status, state State,opt_in OptIn,modified_at ModifiedAt,modified_by ModifiedBy,created_at CreatedAt
+                var queryStatement = @" SELECT id, organization_id,driver_id_ext, first_name FirstName, last_name LastName, email Email, status Status, state State,opt_in OptIn,modified_at ModifiedAt,modified_by ModifiedBy,created_at CreatedAt
                                     from master.driver where organization_id=@organization_id and (id=@id OR @id=0) and state=@state";
 
-                return await _dataAccess.QueryAsync<DriverResponse>(QueryStatement, parameter);
+                return await _dataAccess.QueryAsync<DriverResponse>(queryStatement, parameter);
             }
             catch (Exception ex)
             {
@@ -48,6 +50,27 @@ namespace net.atos.daf.ct2.driver
             }
         }
 
+        public async Task<DriverLookupResponse> GetDriver(string driverId, string email)
+        {
+            try
+            {
+                var response = new DriverLookupResponse();
+                var parameter = new DynamicParameters();
+                parameter.Add("@DriverId", driverId);
+                parameter.Add("@Email", email);
+
+                var queryStatement = @"SELECT first_name FirstName, last_name LastName, organization_id as OrganizationId, org.name as OrganizationName
+                                    from master.driver drv inner join master.organization org on org.id=drv.organization_id
+                                    where driver_id_ext = @DriverId and email = @Email";
+
+                response.DriverLookup = await _dataAccess.QueryAsync<DriverLookup>(queryStatement, parameter);
+                return response;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         public async Task<Driver> UpdateDriver(Driver driver)
         {
@@ -337,11 +360,55 @@ namespace net.atos.daf.ct2.driver
 
         #region Provisioning Data Service
 
-        public Task<bool> GetCurrentDriver(ProvisioningDriverDataServiceRequest request)
+        public async Task<ProvisioningDriver> GetCurrentDriver(ProvisioningDriverDataServiceRequest request)
         {
             try
             {
-                return Task.FromResult(true);
+                var parameters = new DynamicParameters();
+                parameters.Add("@VIN", request.VIN);
+                parameters.Add("@StartTimestamp", request.StartTimestamp);
+                parameters.Add("@EndTimestamp", request.EndTimestamp);
+
+                StringBuilder query =
+                    new StringBuilder(@"select distinct driver1_id as DriverId from 
+                                            (select driver1_id, end_time_stamp 
+                                            from livefleet.livefleet_current_trip_statistics where VIN = @VIN");
+
+                if (request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
+                {
+                    query.Append(" and start_time_stamp >= @StartTimestamp and (end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL)");
+                }
+                else if (request.StartTimestamp.HasValue && !request.EndTimestamp.HasValue)
+                {
+                    query.Append(" and start_time_stamp >= @StartTimestamp and (end_time_stamp IS NULL or 1=1)");
+                }
+                else if (!request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
+                {
+                    query.Append(" and end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
+                }
+
+                query.Append(" order by end_time_stamp desc) tmp");
+
+                var provisioningDrivers = await _dataMartdataAccess.QueryAsync<ProvisioningDriver>(query.ToString(), parameters);
+
+                if (provisioningDrivers != null && provisioningDrivers.Count() > 0)
+                {
+                    foreach (var provisioningDriver in provisioningDrivers)
+                    {
+                        parameters = new DynamicParameters();
+                        parameters.Add("@DriverId", provisioningDriver.DriverId);
+                        parameters.Add("@OrgId", request.OrgId);
+
+                        string queryDriver = @"select acc.email as Account, COALESCE(acc.first_name, '') as FirstName, COALESCE(acc.last_name, '') as LastName, drv.driver_id_ext as DriverId
+                                            from master.driver drv inner join master.account acc on drv.email = acc.email
+                                            where drv.driver_id_ext = @DriverId and drv.organization_id = @OrgId
+                                            and drv.state='A' and acc.state='A'";
+                        var driverAccount = await _dataAccess.QueryFirstOrDefaultAsync<ProvisioningDriver>(queryDriver, parameters);
+                        if (driverAccount != null)
+                            return driverAccount;
+                    }
+                }
+                return null;
             }
             catch (Exception)
             {
@@ -349,11 +416,52 @@ namespace net.atos.daf.ct2.driver
             }
         }
 
-        public Task<bool> GetDriverList(ProvisioningDriverDataServiceRequest request)
+        public async Task<IEnumerable<ProvisioningDriver>> GetDriverList(ProvisioningDriverDataServiceRequest request)
         {
             try
             {
-                return Task.FromResult(true);
+                var parameters = new DynamicParameters();
+                IEnumerable<ProvisioningDriver> driverAccounts = new List<ProvisioningDriver>();
+                parameters.Add("@VINs", request.VINs);
+                parameters.Add("@StartTimestamp", request.StartTimestamp);
+                parameters.Add("@EndTimestamp", request.EndTimestamp);
+
+                StringBuilder query =
+                    new StringBuilder(@"select distinct driver1_id as DriverId from 
+                                            (select driver1_id, end_time_stamp 
+                                            from livefleet.livefleet_current_trip_statistics where VIN = ANY(@VINs)");
+
+                if (request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
+                {
+                    query.Append(" and start_time_stamp >= @StartTimestamp and (end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL)");
+                }
+                else if (request.StartTimestamp.HasValue && !request.EndTimestamp.HasValue)
+                {
+                    query.Append(" and start_time_stamp >= @StartTimestamp and (end_time_stamp IS NULL or 1=1)");
+                }
+                else if (!request.StartTimestamp.HasValue && request.EndTimestamp.HasValue)
+                {
+                    query.Append(" and end_time_stamp <= @EndTimestamp or end_time_stamp IS NULL");
+                }
+
+                query.Append(" order by end_time_stamp desc) tmp");
+
+                var provisioningDrivers = await _dataMartdataAccess.QueryAsync<ProvisioningDriver>(query.ToString(), parameters);
+
+                if (provisioningDrivers != null && provisioningDrivers.Count() > 0)
+                {
+                    parameters = new DynamicParameters();
+                    parameters.Add("@DriverIds", provisioningDrivers.Select(x => x.DriverId).ToArray());
+                    parameters.Add("@OrgId", request.OrgId);
+
+                    string queryDriver = @"select acc.email as Account, COALESCE(acc.first_name, '') as FirstName, COALESCE(acc.last_name, '') as LastName, drv.driver_id_ext as DriverId 
+                                            from master.driver drv inner join master.account acc on drv.email = acc.email
+                                            where drv.driver_id_ext = ANY(@DriverIds) and drv.organization_id = @OrgId
+                                            and drv.state='A' and acc.state='A'";
+                    driverAccounts = await _dataAccess.QueryAsync<ProvisioningDriver>(queryDriver, parameters);
+                }
+
+                return driverAccounts;
             }
             catch (Exception)
             {

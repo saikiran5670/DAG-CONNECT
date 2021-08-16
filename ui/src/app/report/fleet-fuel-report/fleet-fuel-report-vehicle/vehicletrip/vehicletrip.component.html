@@ -100,20 +100,21 @@
                   <div *ngIf="checkForPreference('summary_idledurationtotaltime')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                     <span>{{ translationData.lblIdleDuration || 'Idle Duration' }}</span>
                     <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('idleDuration')}}
-                      hh:mm</span>
+                     hh:mm </span>
                   </div>
                   <div *ngIf="checkForPreference('summary_fuelconsumption')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                     <span>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</span>
                     <span
                       style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('fuelConsumption')}}{{
-                      (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' ltr/100km') : (prefUnitFormat ==
+                      (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
                       'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') : (translationData.lblgallonmile
                       || 'mpg') }}</span>
                   </div>
                   <div *ngIf="checkForPreference('summary_co2emission')" class="areaWidth min-width-15-per colData" fxLayout="column" fxLayoutAlign="left">
                     <span>{{ translationData.lblCO2Emission || 'CO2 Emission' }}</span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('co2emission')}}
-                      t</span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('co2emission')}}{{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || ' t') :
+                      (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || ' Ton') : (translationData.lbltons ||' Ton') }}
+                      </span>
                   </div>
                 </div>
               </div>
@@ -374,7 +375,7 @@
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="vehicleRegistrationNo">      
-                   <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">{{ translationData.lblPlateNo || 'Plate No' }}          
+                   <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">{{ translationData.lblPlateNo || 'Vehicle Registration Number' }}          
                     </mat-header-cell>          
                     <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_vehicleregistrationno')">          
                       <span>{{tableInfoObj.vehicleRegistrationNo}}</span>          
@@ -384,14 +385,16 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_startdate')">{{ translationData.lblstartDate || 'Start Date' }}         
                     </mat-header-cell>         
                     <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_startdate')">         
-                      <span>{{row.startDate | date:'dd/MM/yyyy hh:mm:ss'}}</span>          
+                      <!-- <span>{{row.convertedStartTime | date:'dd/MM/yyyy hh:mm:ss'}}</span>           -->
+                      <span>{{row.convertedStartTime }}</span>
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="endDate">
                         <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_enddate')">{{ translationData.lblendDate || ' End Date ' }}             
                         </mat-header-cell>              
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_enddate')">              
-                          <span>{{row.endDate | date:'dd/MM/yyyy hh:mm:ss'}}</span>              
+                          <!-- <span>{{row.convertedEndTime?| date:'dd/MM/yyyy hh:mm:ss'}}</span>               -->
+                          <span>{{row.convertedEndTime }}</span>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="averageSpeed">     
@@ -443,32 +446,35 @@
                             || ' gal') }})</span>              
                         </mat-header-cell>          
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_fuelconsumed')">              
-                          <span>{{row.fuelConsumed}}</span>              
+                          <span>{{row.convertedFuelConsumed100Km}}</span>              
                         </mat-cell>
                       </ng-container>              
                       <ng-container matColumnDef="fuelConsumption">              
                         <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_fuelconsumption')">{{ translationData.lblFuelConsumption || ' Fuel Consumption' }}             
                           <span style="font-weight: normal;">({{
-                            (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' ltr/100km') : (prefUnitFormat ==
+                            (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
                             'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') : (translationData.lblgallonmile
                             || ' mpg') }})</span>              
                         </mat-header-cell>              
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_fuelconsumption')">              
-                          <span>{{row.fuelConsumption}}</span>              
+                          <span>{{row.convertedFuelConsumption}}</span>              
                         </mat-cell>              
                       </ng-container>              
                       <ng-container matColumnDef="cO2Emission">              
-                        <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_co2emission')">{{ translationData.lblCO2Emission || 'CO2 Emission(ton)' }}                          
+                        <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_co2emission')">{{ translationData.lblCO2Emission || 'CO2 Emission' }} 
+                          <span style="font-weight:normal">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblton || ' t') :
+                              (prefUnitFormat == 'dunit_Imperial') ? (translationData.lbltons || ' Ton') : (translationData.lbltons ||' Ton') }})
+                          </span>                         
                         </mat-header-cell>              
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_co2emission')">              
                           <span>{{row.cO2Emission}}</span>              
                         </mat-cell>
                       </ng-container>            
                       <ng-container matColumnDef="idleDuration">             
-                        <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idleduration')">{{ translationData.lblIdleDuration || 'Idle Duration(hh:mm)%' }}              
+                        <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idleduration')">{{ translationData.lblIdleDuration || 'Idle Duration%' }}              
                         </mat-header-cell>          
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_idleduration')">             
-                         <span>{{row.convertedIdleDuration}}</span>              
+                         <span>{{row.idleDurationPercentage}}</span>              
                         </mat-cell>
                       </ng-container>              
                       <ng-container matColumnDef="ptoDuration">              
@@ -506,7 +512,7 @@
                         </mat-cell>              
                       </ng-container>
                       <ng-container matColumnDef="heavyThrottleDuration">      
-                        <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_heavythrottleduration')">{{ translationData.lblHeavyThrottleDuration || 'Heavy Throttle Duration' }}              
+                        <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_heavythrottleduration')">{{ translationData.lblHeavyThrottleDuration || 'Heavy Throttle Duration%' }}              
                         </mat-header-cell>              
                         <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_heavythrottleduration')">              
                           <span>{{row.heavyThrottleDuration}}</span>             
@@ -520,7 +526,7 @@
                         </mat-cell>              
                       </ng-container>                        
               <ng-container matColumnDef="averageGrossWeightComb">      
-                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_grossweightcomb')">{{ translationData.lblAverageGrossWeightComb || 'Gross Weight Comb(ton)' }}      
+                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_grossweightcomb')">{{ translationData.lblAverageGrossWeightComb || 'Gross Weight Combination(Ton)' }}      
                 </mat-header-cell>     
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_grossweightcomb')">      
                   <span>{{row.averageGrossWeightComb}}</span>      
@@ -533,22 +539,32 @@
                   <span>{{row.averageTrafficClassification}}</span>     
                 </mat-cell>      
               </ng-container>
-              <ng-container matColumnDef="ccFuelConsumption">      
-                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_ccfuelconsumption')">{{ translationData.lblCCFuelConsumption || 'CC Fuel Consumption' }}      
-                </mat-header-cell>      
-                <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_ccfuelconsumption')">      
-                  <span>{{row.ccFuelConsumption}}</span>     
-                </mat-cell>     
-              </ng-container>     
-              <ng-container matColumnDef="fuelconsumptionCCnonactive">  
-                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_fuelconsumptionccnonactive')">{{ translationData.lblFuelconsumptionCCnonactive || 'Fuel consumption CC non active' }}     
-                </mat-header-cell>     
-                <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_fuelconsumptionccnonactive')">     
-                  <span>{{row.fuelconsumptionCCnonactive}}</span>     
-                </mat-cell>
-              </ng-container>      
+              <ng-container matColumnDef="ccFuelConsumption">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">{{ translationData.lblCCFuelConsumption || 'CC Fuel
+                    Consumption' }}
+                    <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
+                  'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') : (translationData.lblgallonmile
+                  || ' mpg') }})</span>
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_ccfuelconsumption')">
+                    <span>{{row.ccFuelConsumption}}</span>
+                  </mat-cell>
+                </ng-container>
+    
+                <ng-container matColumnDef="fuelconsumptionCCnonactive">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_fuelconsumptionccnonactive')">{{ translationData.lblFuelconsumptionCCnonactive ||
+                    'Fuel
+                    Consumption CC non active' }}
+                    <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || ' Ltrs/100km') : (prefUnitFormat ==
+                      'dunit_Imperial') ? (translationData.lblgallonmile || 'mpg') : (translationData.lblgallonmile
+                      || ' mpg') }})</span>
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('vehicledetails_fuelconsumptionccnonactive')">
+                    <span>{{row.fuelconsumptionCCnonactive}}</span>
+                  </mat-cell>
+                </ng-container>     
               <ng-container matColumnDef="idlingConsumption">      
-                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idlingconsumption')">{{ translationData.lblIdlingConsumption || 'Idling Consumption(hh:mm)' }}      
+                <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('singlevehicledetails_idlingconsumption')">{{ translationData.lblIdlingConsumption || 'Idling Consumption' }}      
                 </mat-header-cell>      
                 <mat-cell *matCellDef="let row" [hidden]="!checkForPreference('singlevehicledetails_idlingconsumption')">      
                   <span>{{row.idlingConsumption}}</span>      

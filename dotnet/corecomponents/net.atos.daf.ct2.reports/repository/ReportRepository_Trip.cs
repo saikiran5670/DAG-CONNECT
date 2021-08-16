@@ -56,8 +56,8 @@ namespace net.atos.daf.ct2.reports.repository
 	                        ,average_speed AS AverageSpeed
 	                        ,average_weight AS AverageWeight
 	                        ,last_odometer AS Odometer
-                            ,CASE WHEN start_position IS NULL THEN '' ELSE start_position END AS StartPosition
-                            ,CASE WHEN end_position IS NULL THEN '' ELSE end_position END AS EndPosition
+                            , coalesce(startgeoaddr.address,'') AS StartPosition
+                            , coalesce(endgeoaddr.address,'') AS EndPosition
 	                        ,start_position_lattitude AS StartPositionLattitude
 	                        ,start_position_longitude AS StartPositionLongitude
 	                        ,end_position_lattitude AS EndPositionLattitude
@@ -67,15 +67,23 @@ namespace net.atos.daf.ct2.reports.repository
 	                        ,no_of_alerts AS Alerts
 	                        ,no_of_events AS Events
 	                        ,fuel_consumption  AS FuelConsumed100km
-							,VH.registration_no AS RegistrationNo
-							,VH.name AS VehicleName
+							,coalesce(VH.registration_no,'') AS RegistrationNo 
+							,coalesce(VH.name,'') AS VehicleName                            
                         FROM tripdetail.trip_statistics TS
-						left join master.vehicle VH on TS.vin=VH.vin
-                        WHERE TS.vin = @vin
+						left join master.vehicle VH on TS.vin=VH.vin                       
+                        left JOIN master.geolocationaddress as startgeoaddr
+                            on TRUNC(CAST(startgeoaddr.latitude as numeric),4)= TRUNC(CAST(TS.start_position_lattitude as numeric),4) 
+                               and TRUNC(CAST(startgeoaddr.longitude as numeric),4) = TRUNC(CAST(TS.start_position_longitude as numeric),4)
+                         left JOIN master.geolocationaddress as endgeoaddr
+                            on TRUNC(CAST(endgeoaddr.latitude as numeric),4)= TRUNC(CAST(TS.end_position_lattitude as numeric),4) 
+                               and TRUNC(CAST(endgeoaddr.longitude as numeric),4) = TRUNC(CAST(TS.end_position_longitude as numeric),4)
+                        where  TS.vin = @vin
 	                        AND (
 		                        end_time_stamp >= @StartDateTime
 		                        AND end_time_stamp <= @EndDateTime
-		                        )";
+		                        )
+                        order by endtimestamp desc
+                ";
 
                 var parameter = new DynamicParameters();
                 parameter.Add("@StartDateTime", tripFilters.StartDateTime);

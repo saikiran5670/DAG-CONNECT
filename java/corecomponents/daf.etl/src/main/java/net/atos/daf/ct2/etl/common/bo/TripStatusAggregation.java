@@ -75,4 +75,25 @@ public class TripStatusAggregation implements Serializable {
 	private Long vMaxThrottlePaddleDuration;
 	private Long vTripAccelerationTime;
 		
+	private String rpmTorque;
+	private Long absRpmTorque;
+	private Long ordRpmTorque;
+	private Object[] nonZeroRpmTorqueMatrix;
+	private Object[] numValRpmTorque;
+	private Object[] clmnIdnxRpmTorque;
+	
+	private String rpmSpeed;
+	private Long absRpmSpeed;
+	private Long ordRpmSpeed;
+	private Object[] nonZeroRpmSpeedMatrix;
+	private Object[] numValRpmSpeed;
+	private Object[] clmnIdnxRpmSpeed;
+	
+	private String aclnSpeed;
+	private Long absAclnSpeed;
+	private Long ordAclnSpeed;
+	private Object[] nonZeroAclnSpeedMatrix;
+	private Object[] nonZeroBrakePedalAclnSpeedMatrix;
+	private Object[] numValAclnSpeed;
+	private Object[] clmnIdnxAclnSpeed;
 }

@@ -103,5 +103,6 @@
         public const string GET_FUEL_BENCHMARK_SUCCESS_MSG = "Fuel Benchmark details fetched successfully";
         public const string GET_FUEL_BENCHMARK_FAILURE_MSG = "No Result Found";
         #endregion
+        public const string GET_VEHICLE_PERFORMANCE_SUCCESS_MSG = "Vehicle Performance details fetched successfully";
     }
 }

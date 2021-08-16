@@ -8,7 +8,8 @@ namespace net.atos.daf.ct2.vehicledataservice.Common
         public static bool IsValidDate(string dateTime)
         {
             string dateformat = "yyyy-mm-dd";
-            return DateTime.TryParseExact(dateTime, dateformat, CultureInfo.InvariantCulture, DateTimeStyles.None, out _);
+            return DateTime.TryParse(dateTime, out _) &&
+                DateTime.TryParseExact(dateTime, dateformat, CultureInfo.InvariantCulture, DateTimeStyles.None, out _);
         }
     }
 }

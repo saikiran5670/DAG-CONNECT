@@ -29,6 +29,8 @@ namespace net.atos.daf.ct2.rfms
             string visibleVins = string.Empty;
             var visibleVehicles = await _vehicleManager.GetVisibilityVehicles(accountId, orgId);
             int lastVinId = 0;
+            RfmsVehicles rfmsVehicles = new RfmsVehicles();
+            rfmsVehicles.Vehicles = new List<Vehicle>();
             if (visibleVehicles.Count > 0)
             {
                 if (!string.IsNullOrEmpty(lastVin))
@@ -39,9 +41,9 @@ namespace net.atos.daf.ct2.rfms
                         lastVinId = Convert.ToInt32(id.FirstOrDefault());
                 }
                 visibleVins = string.Join(",", visibleVehicles.Select(p => p.VIN.ToString()));
+                rfmsVehicles = await _rfmsRepository.GetVehicles(visibleVins, lastVinId);
 
             }
-            RfmsVehicles rfmsVehicles = await _rfmsRepository.GetVehicles(visibleVins, lastVinId);
 
             if (rfmsVehicles.Vehicles.Count > thresholdValue)
             {
@@ -118,6 +120,14 @@ namespace net.atos.daf.ct2.rfms
                     string lastReceivedDateTime = rfmsVehiclePosition.VehiclePositionResponse.VehiclePositions.Last().ReceivedDateTime.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
                     rfmsVehiclePosition.MoreDataAvailableLink = "/vehiclepositions?starttime=" + lastReceivedDateTime + "&lastVin=" + lastVin;
                     rfmsVehiclePosition.MoreDataAvailable = true;
+                }
+                if (rfmsVehiclePositionRequest.Type == DateType.Created)
+                {
+                    rfmsVehiclePosition.MoreDataAvailableLink += "&datetype=" + DateType.Created;
+                }
+                if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.StopTime))
+                {
+                    rfmsVehiclePosition.MoreDataAvailableLink += "&stoptime=" + rfmsVehiclePositionRequest.StopTime;
                 }
                 if (!string.IsNullOrEmpty(rfmsVehiclePositionRequest.Vin))
                 {
@@ -213,6 +223,11 @@ namespace net.atos.daf.ct2.rfms
                 // Save data in cache.
                 _cache.Set(MasterMemoryObjectCacheConstants.MASTER_DATA_MEMORY_CACHEKEY, masterDataDictionary, cacheEntryOptions);
             }
+        }
+
+        public async Task<RfmsVehicleStatus> GetRfmsVehicleStatus(RfmsVehicleStatusRequest rfmsVehicleStatusRequest)
+        {
+            return await _rfmsRepository.GetRfmsVehicleStatus(rfmsVehicleStatusRequest);
         }
     }
 }

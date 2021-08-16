@@ -1,0 +1,16 @@
+.arrow_box {
+    padding: 10px;
+}
+#chart {
+    overflow: auto;
+}
+
+.positionZoom {
+    width: 90px;
+    right: 5px;
+    position: absolute;
+    margin-top: -40px;
+}
+.zoomWrapper {
+    position: relative;
+}

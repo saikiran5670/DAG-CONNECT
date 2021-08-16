@@ -47,14 +47,14 @@ namespace net.atos.daf.ct2.kafkacdc
                 Formatting = Formatting.Indented
             }));
         }
-        public async Task VehicleCdcProducer(List<int> vehicleIds, KafkaConfiguration kafkaConfiguration)
+        public async Task VehicleCdcProducer(List<int> vehicleIds, entity.KafkaConfiguration kafkaConfiguration)
         {
             if (vehicleIds.Count > 0)
             {
                 List<VehicleCdc> vehicleCdcList = await GetVehicleCdc(vehicleIds);
                 foreach (VehicleCdc vlr in vehicleCdcList)
                 {
-                    KafkaEntity kafkaEntity = new KafkaEntity()
+                    confluentkafka.entity.KafkaConfiguration kafkaEntity = new confluentkafka.entity.KafkaConfiguration()
                     {
                         BrokerList = kafkaConfiguration.EH_FQDN,
                         ConnString = kafkaConfiguration.EH_CONNECTION_STRING,
@@ -67,11 +67,11 @@ namespace net.atos.daf.ct2.kafkacdc
             }
         }
 
-        public async Task VehicleCdcConsumer(KafkaConfiguration kafkaConfiguration)
+        public async Task VehicleCdcConsumer(entity.KafkaConfiguration kafkaConfiguration)
         {
             try
             {
-                KafkaEntity kafkaEntity = new KafkaEntity()
+                confluentkafka.entity.KafkaConfiguration kafkaEntity = new confluentkafka.entity.KafkaConfiguration()
                 {
                     BrokerList = kafkaConfiguration.EH_FQDN,
                     ConnString = kafkaConfiguration.EH_CONNECTION_STRING,
@@ -81,7 +81,7 @@ namespace net.atos.daf.ct2.kafkacdc
 
                 };
                 VehicleCdc vehicleCdc = new VehicleCdc();
-                ConsumeResult<Null, string> message = KafkaConfluentWorker.Consumer(kafkaEntity);
+                ConsumeResult<string, string> message = KafkaConfluentWorker.Consumer(kafkaEntity);
                 while (message != null)
                 {
                     vehicleCdc = JsonConvert.DeserializeObject<VehicleCdc>(message.Message.Value);

@@ -38,6 +38,10 @@ public class ETLQueries {
 			+ ", stsData.tripProcessingTS, stsData.etlProcessingTS,  stsData.numberOfIndexMessage, stsData.vTripDPABrakingCount, stsData.vTripDPAAnticipationCount"
 			+ ", stsData.vSumTripDPABrakingScore, stsData.vSumTripDPAAnticipationScore, stsData.vStopFuel, stsData.vStartFuel , stsData.vHarshBrakeDuration , stsData.vBrakeDuration "
 			+ ", stsData.vMaxThrottlePaddleDuration, stsData.vTripAccelerationTime, stsData.vPTODuration"
+			+ ", stsData.rpmTorque, stsData.absRpmTorque, stsData.ordRpmTorque, stsData.nonZeroRpmTorqueMatrix, stsData.numValRpmTorque, stsData.clmnIdnxRpmTorque"
+			+ ", stsData.rpmSpeed, stsData.absRpmSpeed, stsData.ordRpmSpeed, stsData.nonZeroRpmSpeedMatrix, stsData.numValRpmSpeed, stsData.clmnIdnxRpmSpeed "
+			+ ", stsData.aclnSpeed, stsData.absAclnSpeed, stsData.ordAclnSpeed, stsData.nonZeroAclnSpeedMatrix "
+			+ ", stsData.nonZeroBrakePedalAclnSpeedMatrix, stsData.numValAclnSpeed, stsData.clmnIdnxAclnSpeed "
 			+ " FROM tripStsData stsData";
 	
 	public static final String TRIP_STATUS_AGGREGATION_QRY_BCKUP = " select stsData.tripId, stsData.vid, stsData.vin, stsData.startDateTime, stsData.endDateTime, stsData.gpsTripDist"
@@ -80,38 +84,12 @@ public class ETLQueries {
 			+ ", stsData.vTripDPABrakingCount, stsData.vTripDPAAnticipationCount, stsData.vSumTripDPABrakingScore, stsData.vSumTripDPAAnticipationScore"
 			+ ", stsData.vStopFuel, stsData.vStartFuel , stsData.vHarshBrakeDuration , stsData.vBrakeDuration, stsData.vTripIdlePTODuration, stsData.vTripIdleWithoutPTODuration "
 			+ ", stsData.vPTODuration, stsData.vMaxThrottlePaddleDuration, stsData.vTripAccelerationTime, indxData.f9 as vGrossWtCmbCount  "
+			+ ", stsData.rpmTorque, stsData.absRpmTorque, stsData.ordRpmTorque, stsData.nonZeroRpmTorqueMatrix, stsData.numValRpmTorque, stsData.clmnIdnxRpmTorque"
+			+ ", stsData.rpmSpeed, stsData.absRpmSpeed, stsData.ordRpmSpeed, stsData.nonZeroRpmSpeedMatrix, stsData.numValRpmSpeed, stsData.clmnIdnxRpmSpeed "
+			+ ", stsData.aclnSpeed, stsData.absAclnSpeed, stsData.ordAclnSpeed, stsData.nonZeroAclnSpeedMatrix "
+			+ ", stsData.nonZeroBrakePedalAclnSpeedMatrix, stsData.numValAclnSpeed, stsData.clmnIdnxAclnSpeed "
 			+ " FROM stsAggregatedData stsData LEFT JOIN secondLevelAggrData indxData ON stsData.tripId = indxData.f0 ";
 	
-	public static final String CONSOLIDATED_TRIP_QRY_BACKUP = " select stsData.tripId, stsData.vid "
-			+ ", if(stsData.vin IS NOT NULL, stsData.vin, if(stsData.vid IS NOT NULL, stsData.vid, 'UNKNOWN')) as vin"
-			+ ", if(stsData.startDateTime IS NOT NULL, stsData.startDateTime, 0) as startDateTime, if(stsData.endDateTime IS NOT NULL, stsData.endDateTime, 0) as endDateTime "
-			+ ", if(stsData.gpsTripDist IS NOT NULL, stsData.gpsTripDist, 0) as gpsTripDist, if(stsData.tripCalDist IS NOT NULL, stsData.tripCalDist, 0) as tripCalDist"
-			+ ", if(stsData.vIdleDuration IS NOT NULL, stsData.vIdleDuration, 0) as vIdleDuration, if(indxData.f4 IS NOT NULL, indxData.f4, 0) as vGrossWeightCombination"
-			+ ", if(stsData.tripCalAvgSpeed IS NOT NULL, stsData.tripCalAvgSpeed, 0) as tripCalAvgSpeed, if(stsData.gpsStartVehDist IS NOT NULL, stsData.gpsStartVehDist, 0) as gpsStartVehDist"
-			+ ", if(stsData.gpsStopVehDist IS NOT NULL, stsData.gpsStopVehDist, 0) as gpsStopVehDist, if(stsData.gpsStartLatitude IS NOT NULL, stsData.gpsStartLatitude, 0) as gpsStartLatitude"
-			+ ", if(stsData.gpsStartLongitude IS NOT NULL, stsData.gpsStartLongitude, 0) as gpsStartLongitude, if(stsData.gpsEndLatitude IS NOT NULL, stsData.gpsEndLatitude, 0) as gpsEndLatitude"
-			+ ", if(stsData.gpsEndLongitude IS NOT NULL, stsData.gpsEndLongitude, 0) as gpsEndLongitude, if(stsData.vUsedFuel IS NOT NULL, stsData.vUsedFuel, 0) as vUsedFuel"
-			+ ", if(stsData.tripCalUsedFuel IS NOT NULL, stsData.tripCalUsedFuel, 0) as tripCalUsedFuel, if(stsData.asvTripMotionDuration IS NOT NULL, stsData.asvTripMotionDuration, 0) asvTripMotionDuration"
-			+ ", if(stsData.tripCalDrivingTm IS NOT NULL, stsData.tripCalDrivingTm, 0) as tripCalDrivingTm, if(stsData.receivedTimestamp IS NOT NULL, stsData.receivedTimestamp, 0) as receivedTimestamp"
-			+ ", if(stsData.tripCalC02Emission IS NOT NULL, stsData.tripCalC02Emission, 0) as tripCalC02Emission, if(stsData.tripCalFuelConsumption IS NOT NULL, stsData.tripCalFuelConsumption, 0) as tripCalFuelConsumption"
-			+ ", if(indxData.f3 IS NOT NULL, indxData.f3, 0) as vTachographSpeed, if(0 <> stsData.tripCalDist, indxData.f5/stsData.tripCalDist, 0) as tripCalAvgGrossWtComb"
-			+ ", if(stsData.tripCalPtoDuration IS NOT NULL, stsData.tripCalPtoDuration, 0) as tripCalPtoDuration, if(stsData.tripCalHarshBrakeDuration IS NOT NULL, stsData.tripCalHarshBrakeDuration, 0) as tripCalHarshBrakeDuration"
-			+ ", if(stsData.tripCalHeavyThrottleDuration IS NOT NULL, stsData.tripCalHeavyThrottleDuration, 0) as tripCalHeavyThrottleDuration"
-			+ ", if(stsData.tripCalCrsCntrlDistBelow50 IS NOT NULL, stsData.tripCalCrsCntrlDistBelow50, 0) as tripCalCrsCntrlDistBelow50"
-			+ ", if(stsData.tripCalCrsCntrlDistAbv50 IS NOT NULL, stsData.tripCalCrsCntrlDistAbv50, 0) as tripCalCrsCntrlDistAbv50"
-			+ ", if(stsData.tripCalCrsCntrlDistAbv75 IS NOT NULL, stsData.tripCalCrsCntrlDistAbv75, 0) as tripCalCrsCntrlDistAbv75"
-			+ ", if(stsData.tripCalAvgTrafficClsfn IS NOT NULL, stsData.tripCalAvgTrafficClsfn, 0) as tripCalAvgTrafficClsfn"
-			+ ", if(stsData.tripCalCCFuelConsumption IS NOT NULL, stsData.tripCalCCFuelConsumption, 0) as tripCalCCFuelConsumption"
-			+ ", if(stsData.vCruiseControlFuelConsumed IS NOT NULL, stsData.vCruiseControlFuelConsumed, 0) as vCruiseControlFuelConsumed "
-			+ ", if(stsData.vCruiseControlDist IS NOT NULL, stsData.vCruiseControlDist, 0) as vCruiseControlDist"
-			+ ", if(stsData.vIdleFuelConsumed IS NOT NULL, stsData.vIdleFuelConsumed, 0) as vIdleFuelConsumed"
-			+ ", if(stsData.tripCalfuelNonActiveCnsmpt IS NOT NULL, stsData.tripCalfuelNonActiveCnsmpt, 0) as tripCalfuelNonActiveCnsmpt"
-			+ ", if(stsData.tripCalDpaScore IS NOT NULL, stsData.tripCalDpaScore, 0) as tripCalDpaScore, stsData.driverId"
-			+ ", indxData.f2 as driver2Id, if(stsData.tripCalGpsVehTime IS NOT NULL, stsData.tripCalGpsVehTime, 0) as tripCalGpsVehTime"
-			+ ", if(stsData.tripProcessingTS IS NOT NULL, stsData.tripProcessingTS, 0) as tripProcessingTS, if(stsData.etlProcessingTS IS NOT NULL, stsData.etlProcessingTS, 0) as etlProcessingTS"
-			+ ", if(stsData.kafkaProcessingTS IS NOT NULL, stsData.kafkaProcessingTS, 0) as kafkaProcessingTS"
-			+ " FROM stsAggregatedData stsData LEFT JOIN aggrIndxData indxData ON stsData.tripId = indxData.f0 ";
-
 	public static final String CO2_COEFFICIENT_QRY = " select coefficient from master.co2coefficient c join master.vehicle v on c.fuel_type = v.fuel_type and vin = ? ";
 	
 	public static final String TRIP_QRY = " select tripId ,vid ,vin ,startDateTime ,endDateTime ,gpsTripDist ,tripCalDist ,vIdleDuration, tripCalAvgSpeed "
@@ -122,6 +100,9 @@ public class ETLQueries {
 			+ ", vIdleFuelConsumed ,tripCalfuelNonActiveCnsmpt ,tripCalDpaScore, driverId, driver2Id, tripCalGpsVehTime ,tripProcessingTS ,etlProcessingTS "
 			+ ", kafkaProcessingTS ,vGrossWtSum ,numberOfIndexMessage, vTripDPABrakingCount, vTripDPAAnticipationCount, vSumTripDPABrakingScore, vSumTripDPAAnticipationScore "
 			+ ", vHarshBrakeDuration, vBrakeDuration, vTripIdlePTODuration, vTripIdleWithoutPTODuration, vPTODuration, vMaxThrottlePaddleDuration, vTripAccelerationTime "
+			+ ", rpmTorque, absRpmTorque, ordRpmTorque, nonZeroRpmTorqueMatrix, numValRpmTorque, clmnIdnxRpmTorque, rpmSpeed, absRpmSpeed, ordRpmSpeed"
+			+ ", nonZeroRpmSpeedMatrix, numValRpmSpeed, clmnIdnxRpmSpeed, aclnSpeed, absAclnSpeed, ordAclnSpeed, nonZeroAclnSpeedMatrix"
+			+ ", nonZeroBrakePedalAclnSpeedMatrix, numValAclnSpeed, clmnIdnxAclnSpeed "
 			+ " from tripAggrData ";
 	
 	//tripCalPtoDuration, tripCalHeavyThrottleDuration
@@ -141,8 +122,12 @@ public class ETLQueries {
 			+ ", fuel_consumption_cc_non_active, idling_consumption, dpa_score, driver1_id, driver2_id, etl_gps_trip_time, is_ongoing_trip, msg_gross_weight_combinition"
 			+ ", no_of_total_index_message, veh_message_pto_duration, veh_message_harsh_brake_duration, veh_message_brake_duration, veh_message_max_throttle_paddle_duration"
 			+ ", veh_message_accelerationt_time, veh_message_dpabraking_count, veh_message_dpaanticipation_count, veh_message_dpabraking_score, veh_message_dpaanticipation_score"
-			+ ", veh_message_idle_without_ptoduration, veh_message_idle_ptoduration) "
-			+ "  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+			+ ", veh_message_idle_without_ptoduration, veh_message_idle_ptoduration"
+			+ ", rpm_torque, abs_rpm_torque, ord_rpm_torque, nonzero_matrix_val_rpm_torque, num_val_rpm_torque, col_index_rpm_torque, speed_rpm, abs_speed_rpm"
+			+ ", ord_speed_rpm, nonzero_matrix_val_speed_rpm, num_val_speed_rpm, col_index_speed_rpm, acceleration_speed, abs_acceleration_speed"
+			+ ", ord_acceleration_speed, nonzero_matrix_val_acceleration_speed, nonzero_matrix_val_brake_pedal_acceleration_speed, num_val_acceleration_speed"
+			+ ", col_index_acceleration_speed) "
+			+ "  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 			+ "  ON CONFLICT (trip_id) "
 			+ "  DO UPDATE SET  vin = ?, start_time_stamp = ?, end_time_stamp = ?, veh_message_distance = ?, etl_gps_distance = ?, idle_duration = ?, average_speed = ?"
 			+ ", average_weight = ?, start_odometer = ?, last_odometer = ?, start_position_lattitude = ?, start_position_longitude = ?, end_position_lattitude = ?"
@@ -155,7 +140,11 @@ public class ETLQueries {
 			+ ", fuel_consumption_cc_non_active = ?, idling_consumption = ?, dpa_score = ?, driver1_id = ?, driver2_id = ?, etl_gps_trip_time = ?, is_ongoing_trip = ?"
 			+ ", msg_gross_weight_combinition = ?, no_of_total_index_message =?, veh_message_pto_duration = ?, veh_message_harsh_brake_duration = ?, veh_message_brake_duration = ?"
 			+ ", veh_message_max_throttle_paddle_duration = ?, veh_message_accelerationt_time = ?, veh_message_dpabraking_count = ?, veh_message_dpaanticipation_count = ?"
-			+ ", veh_message_dpabraking_score = ?, veh_message_dpaanticipation_score = ?, veh_message_idle_without_ptoduration = ?, veh_message_idle_ptoduration = ? ";
+			+ ", veh_message_dpabraking_score = ?, veh_message_dpaanticipation_score = ?, veh_message_idle_without_ptoduration = ?, veh_message_idle_ptoduration = ? "
+			+ ", rpm_torque=?, abs_rpm_torque=?, ord_rpm_torque=?, nonzero_matrix_val_rpm_torque=?, num_val_rpm_torque=?, col_index_rpm_torque=?, speed_rpm=?, abs_speed_rpm=?"
+			+ ", ord_speed_rpm=?, nonzero_matrix_val_speed_rpm=?, num_val_speed_rpm=?, col_index_speed_rpm=?, acceleration_speed=?, abs_acceleration_speed=?"
+			+ ", ord_acceleration_speed=?, nonzero_matrix_val_acceleration_speed=?, nonzero_matrix_val_brake_pedal_acceleration_speed=?, num_val_acceleration_speed=?"
+			+ ", col_index_acceleration_speed=?";
 
 	
 	public static final String ECOSCORE_INSERT_STATEMENT = "INSERT INTO tripdetail.ecoscoredata( trip_id, vin, start_time, end_time, driver1_id "

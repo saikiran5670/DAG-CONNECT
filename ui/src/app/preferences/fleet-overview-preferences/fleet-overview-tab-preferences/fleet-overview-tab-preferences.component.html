@@ -1,6 +1,7 @@
 <form [formGroup]="fleetOverviewForm">
-    <!-- Timer Tab -->
-    <div *ngIf='timerPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10'
+    <!-- Timer Tab --> 
+    <!-- Time Pref added in app comp -->
+    <!-- <div *ngIf='timerPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10' 
         fxLayoutAlign="left center" style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
         <div fxLayout="column" class='min-width-33-3-per ' fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForTimerColumns() : null'
@@ -37,7 +38,7 @@
              </mat-error>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style='height: 60px;' class="areaWidth adjust-padding"></div>
-    </div>
+    </div> -->
 
     <!-- General Vehicle Info tab -->
     <div *ngIf='vehInfoPrefData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 margin-top-20' fxLayoutAlign="left center"

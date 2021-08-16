@@ -171,7 +171,7 @@ namespace net.atos.daf.ct2.organizationservice
                                      {
                                          Id = x.Id,
                                          OrganizationId = x.OrganizationId,
-                                         Code = x.Code,
+                                         Code = x.Code.ToUpper(),
                                          Description = x.Description,
                                          Name = x.Name,
                                          Featuresetid = x.FeaturesetId,

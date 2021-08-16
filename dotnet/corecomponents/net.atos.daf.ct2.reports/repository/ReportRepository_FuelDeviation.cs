@@ -59,15 +59,16 @@ namespace net.atos.daf.ct2.reports.repository
 		                                            )
 	                     Left JOIN master.vehicle as v 
 	 	                    ON v.vin = trpst.vin
-	                     left JOIN master.geolocationaddress as geoaddr
+                         left JOIN master.geolocationaddress as geoaddr
                             on TRUNC(CAST(geoaddr.latitude as numeric),4)= TRUNC(CAST(fueldev.latitude as numeric),4) 
                                and TRUNC(CAST(geoaddr.longitude as numeric),4) = TRUNC(CAST(fueldev.longitude as numeric),4)
                          left JOIN master.geolocationaddress as startgeoaddr
                             on TRUNC(CAST(startgeoaddr.latitude as numeric),4)= TRUNC(CAST(trpst.start_position_lattitude as numeric),4) 
                                and TRUNC(CAST(startgeoaddr.longitude as numeric),4) = TRUNC(CAST(trpst.start_position_longitude as numeric),4)
-                        left JOIN master.geolocationaddress as endgeoaddr
+                         left JOIN master.geolocationaddress as endgeoaddr
                             on TRUNC(CAST(endgeoaddr.latitude as numeric),4)= TRUNC(CAST(trpst.end_position_lattitude as numeric),4) 
-                               and TRUNC(CAST(endgeoaddr.longitude as numeric),4) = TRUNC(CAST(trpst.end_position_longitude as numeric),4)";
+                               and TRUNC(CAST(endgeoaddr.longitude as numeric),4) = TRUNC(CAST(trpst.end_position_longitude as numeric),4)
+                ";
 
                 var parameter = new DynamicParameters();
                 parameter.Add("@StartDateTime", fuelDeviationFilters.StartDateTime);
@@ -100,7 +101,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 on trpst.trip_id=ld.trip_id
                                 --Join Master.vehicle v
                                 --on ld.vin=v.vin
-                                where (start_time_stamp >= @StartDateTime 
+                                where (end_time_stamp >= @StartDateTime 
 	                                 and end_time_stamp<= @EndDateTime) and 
 	                                 trpst.vin = Any(@vins)
                                 Group by date_trunc('day', to_timestamp(event_time/1000))
@@ -113,7 +114,7 @@ namespace net.atos.daf.ct2.reports.repository
                 return _dataMartdataAccess.QueryAsync<FuelDeviationCharts>(query, parameter);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

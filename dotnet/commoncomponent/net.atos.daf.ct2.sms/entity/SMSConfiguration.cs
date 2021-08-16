@@ -9,5 +9,6 @@ namespace net.atos.daf.ct2.sms.entity
         public string AccountSid { get; set; }
         public string AuthToken { get; set; }
         public string FromPhoneNumber { get; set; }
+        public string MessagingServiceSid { get; set; }
     }
 }

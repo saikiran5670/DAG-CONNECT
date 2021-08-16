@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, Output, OnInit, ElementRef, EventEmitter } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 @Component({
@@ -22,14 +22,16 @@ export class NotificationAdvancedFilterComponent implements OnInit {
   weekDaySelected: boolean = false;
   checkboxChecked: boolean = false;
   timings: any = [];
+  @Output() isValidityAlwaysCustom = new EventEmitter<any>();
   
-    constructor(private _formBuilder: FormBuilder) { }
+  
+    constructor(private _formBuilder: FormBuilder,  private el: ElementRef) { }
   
     ngOnInit(): void {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
       this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
       this.accountId= parseInt(localStorage.getItem("accountId"));
-      this.days= ['Sunday', 'Monday', 'tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      this.days= ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       
       this.notificationAdvancedFilterForm = this._formBuilder.group({
         notificationFrequency: ['T'],
@@ -38,7 +40,7 @@ export class NotificationAdvancedFilterComponent implements OnInit {
       });
 
       this.setAlertType(this.alert_type_selected);
-  
+     
       if(this.actionType == 'create'){
         for(let i = 0; i < 6; i++ ){
         this.weekDays().push(this.initPeriodItems());
@@ -265,6 +267,22 @@ export class NotificationAdvancedFilterComponent implements OnInit {
     let customTime : any;
     let tempObj: any;
     if(this.notificationAdvancedFilterForm.controls.validityAlwaysCustom.value == 'C'){
+     let weekDaysList = this.weekDays().controls.filter(i=>i['controls'].daySelection.value!="");
+      if (weekDaysList.length == 0) {
+        this.notificationAdvancedFilterForm.controls.validityAlwaysCustom.markAllAsTouched(); 
+        this.scrollToAdvancedFilterControl();       
+         let emitCustomObj = {
+            isValidInput: false
+          }  
+          this.isValidityAlwaysCustom.emit(emitCustomObj);        
+      }
+      else{
+        let emitCustomObj = {
+          isValidInput: true
+        }  
+        this.isValidityAlwaysCustom.emit(emitCustomObj);    
+      }     
+    
       this.weekDays().controls.forEach((element, index) => {
         weekDay = element['controls'];
         if (weekDay.daySelection.value) {
@@ -355,4 +373,13 @@ export class NotificationAdvancedFilterComponent implements OnInit {
     
   }
   
+  private scrollToAdvancedFilterControl() {    
+    let invalidControl: HTMLElement ; 
+    if(this.notificationAdvancedFilterForm.controls.validityAlwaysCustom.value == 'C'){    
+      invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'fulldayCustom' + '"]');
+    }  
+    if (invalidControl) {       
+      invalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }     
+  }
 }

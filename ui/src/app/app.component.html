@@ -12,13 +12,13 @@
                     <div fxLayoutAlign="start center" class='half-width titleText'>{{ currentTitle }}
                     </div>
                     <div fxLayoutAlign="end" class='full-width'>
-                        <span *ngIf="isFleetOverview"><button class="btn btn-primary" type="button" disabled>
+                        <span *ngIf="showTimer"><button class="btn btn-primary" type="button" disabled>
                             <div class="lds-roller-sm" style="height: 27px; width: 54px;">
                                 <div></div><div></div><div></div><div></div><div></div><div></div>
                               </div>
                            {{ subscribeTimer }}
                         </button></span>
-                        <!-- <span *ngIf="isFleetOverview"><button class="btn btn-primary" type="button" disabled>
+                        <!-- <span *ngIf="showTimer"><button class="btn btn-primary" type="button" disabled>
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             {{ subscribeTimer }}
                         </button>&nbsp;</span> -->
@@ -41,12 +41,19 @@
                                 notifications_none</mat-icon>
                             <span class="badge">0</span>
                         </a>
-                        <mat-select formControlName="languageSelection" class="matSelect"
+
+                         <mat-select formControlName="languageSelection" class="matSelect"
                             (selectionChange)="onLanguageChange($event.value)">
-                            <mat-option *ngFor="let lang of languages" [value]="lang.id" matTooltip="{{lang.name}}">
+                            
+                            <mat-option>
+                                <ngx-mat-select-search (keyup)="filterLanguages(search.value)" #search> <mat-icon (click)="resetLanguageFilter()" ngxMatSelectSearchClear>close</mat-icon></ngx-mat-select-search>
+                            </mat-option>
+                            <mat-option *ngFor="let lang of filteredLanguages | async" [value]="lang.id" matTooltip="{{lang.name}}">
                                 &nbsp;{{ lang.name }}
                             </mat-option>
                         </mat-select>
+
+                        
                         <div class='logoutbtnContainer' fxLayout="row" fxLayoutAlign="end">
                             <div class="logoutButton" fxLayout="column">
                                 <button mat-icon-button (click)="logOut()" class="menuToggler display-flex align-items-center padding-item">

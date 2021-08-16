@@ -71,7 +71,7 @@
                   [labels]="doughnutChartLabelsEcoScore"
                   [chartType]="doughnutChartType"
                   [options]="doughnutChartOptions"
-                  [plugins]="doughnutChartPlugins"
+                  [plugins]="pluginsCommon"
                   [colors]="doughnutColors">
                 </canvas>
               </div>
@@ -82,7 +82,7 @@
                   [labels]="doughnutChartLabelsFuelConsumption"
                   [chartType]="doughnutChartType"
                   [options]="doughnutChartOptions"
-                  [plugins]="pluginsFuelConsumption"
+                  [plugins]="pluginsCommon"
                   [colors]="doughnutColors">
                 </canvas>
               </div>
@@ -93,7 +93,7 @@
                   [labels]="doughnutChartLabelsAnticipationScore"
                   [chartType]="doughnutChartType"
                   [options]="doughnutChartOptionsA"
-                  [plugins]="pluginsAnticipationScore"
+                  [plugins]="pluginsCommon"
                   [colors]="doughnutColorsAnticipationScore">
                 </canvas>
               </div>
@@ -104,7 +104,7 @@
                   [labels]="doughnutChartLabelsBrakingScore"
                   [chartType]="doughnutChartType"
                   [options]="doughnutChartOptions"
-                  [plugins]="pluginsBrakingScore"
+                  [plugins]="pluginsCommon"
                   [colors]="doughnutColors">
                 </canvas>
               </div>
@@ -123,9 +123,18 @@
                   </div>
                 </mat-panel-title>
               </mat-expansion-panel-header>
+              <span>{{ translationData.lblZoom || 'Zoom:' }}</span>
+              <br/>
+              <button [disabled]="selectionTabTrend == 'today' " (click)="updateOptions('today')" [ngClass]="{'selectedBtn': selectionTabTrend == 'today'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblToday || 'Today' }}</button>
+              <button [disabled]="selectionTabTrend == 'yesterday' || selectionLimitYesterday" (click)="updateOptions('yesterday')" [ngClass]="{'selectedBtn': selectionTabTrend == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblYesterday || 'Yesterday' }}</button>
+              <button [disabled]="selectionTabTrend == 'lastweek' || selectionLimitLastWeek" (click)="updateOptions('lastweek')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastweek'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastWeek || 'Last Week' }}</button>
+              <button [disabled]="selectionTabTrend == 'lastmonth' || selectionLimitLastMonth" (click)="updateOptions('lastmonth')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastMonth|| 'Last Month' }}</button>
+              <button [disabled]="selectionTabTrend == 'last3month' || selectionLimitLast3Month" (click)="updateOptions('last3month')" [ngClass]="{'selectedBtn': selectionTabTrend == 'last3month'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
+              <button [disabled]="selectionTabTrend == 'last6month' || selectionLimitLast6Month" (click)="updateOptions('last6month')" [ngClass]="{'selectedBtn': selectionTabTrend == 'last6month'}" class='margin-right-10 no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLast6Month|| 'Last 6 Month' }}</button>
+              <button [disabled]="selectionTabTrend == 'lastYear' || selectionLimitLastYear" (click)="updateOptions('lastYear')" [ngClass]="{'selectedBtn': selectionTabTrend == 'lastYear'}" class='no-margin margin-bottom-sm matButton' mat-raised-button>{{translationData.lblLastYear|| 'Last Year' }}</button>              
               <div id="wrapper">
                 <div id="chart-line">
-                  <apx-chart
+                  <apx-chart #trendLineChart
                     [series]="chartOptions1.series"
                     [chart]="chartOptions1.chart"
                     [xaxis]="chartOptions1.xaxis"
@@ -137,7 +146,7 @@
                   ></apx-chart>
                 </div>
                 <div id="chart-line2">
-                  <apx-chart
+                  <apx-chart #brushChart
                     [series]="chartOptions2.series"
                     [chart]="chartOptions2.chart"
                     [xaxis]="chartOptions2.xaxis"
@@ -160,8 +169,16 @@
                   </div>
                 </mat-panel-title>
               </mat-expansion-panel-header>
-            </mat-expansion-panel>
-          </mat-card>
+              <div class="container-fluid" id="grid_general_driver_table">
+                <angular-slickgrid gridId="grid_general_table"
+                [columnDefinitions]="columnDefinitionsGen"
+                [gridOptions]="gridOptionsGen"
+                [datasetHierarchical]="datasetGen"
+                (onAngularGridCreated)="angularGridReadyGen($event)"> 
+                </angular-slickgrid>
+              </div>
+              <br/>
+              <br/>
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="generalChartPanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
@@ -171,22 +188,87 @@
                   </span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
+              <div fxLayout="row" fxLayoutAlign='left' fxLayoutGap="10px">
+                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="toggleGeneralCharts('bar')" fxLayoutAlign="left">
+                  <div class="chartSelection" [ngClass]="showGeneralBar ? 'enable' : 'disable'">
+                    <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                    &nbsp;<span class="chartTitle">{{ translationData.lblBarChart || 'Bar Chart' }}</span></div>
+                </div>
+                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="toggleGeneralCharts('pie')" fxLayoutAlign="left">
+                  <div class="chartSelection" [ngClass]="showGeneralPie ? 'enable' : 'disable'">
+                    <i class="fa fa-pie-chart" aria-hidden="true"></i>
+                    &nbsp;<span class="chartTitle">{{ translationData.lblPiechart || 'Pie Chart' }}</span></div>
+                </div>
+              </div>
+                <div style="float: right;" *ngIf="showGeneralPie">
+                  {{ translationData.lblVehicle || 'Vehicle' }}<br/>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-select [(value)]="vehicleSelected" [disabled]="vehicleListGeneral.length <= 1" (selectionChange)="loadPieChart($event.value)">
+                      <mat-option *ngFor="let vehicle of vehicleListGeneral" [value]="vehicle.id">
+                        {{ vehicle.name }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              <br/>
+              <br/>
+              <br/>
+              <div class="container-fluid chartContainer" *ngIf="showGeneralBar">
+                <div fxLayout="row" fxLayoutAlign='center'>  
+                  <span class="chartTitle">{{ translationData.lblAverageGrossWeight || 'Average Gross Weight' }}</span>
+                </div>
+                    <canvas baseChart
+                            [datasets]="barChartData"
+                            [labels]="barChartLabels"
+                            [options]="barChartOptions"
+                            [legend]="barChartLegend"
+                            [chartType]="barChartType"
+                            [plugins]="barChartPlugins"
+                            height="225" width="450">
+                    </canvas>
+              </div>
+              <div class="container-fluid chartContainer" *ngIf="showGeneralPie">
+                <div fxLayout="row" fxLayoutAlign='center'>
+                  <span class="chartTitle">{{ translationData.lblAverageGrossWeight || 'Average Gross Weight' }}</span>
+                </div>
+                <canvas baseChart 
+                [data]="pieChartData" 
+                [labels]="pieChartLabels" 
+                [chartType]="pieChartType"
+                [options]="pieChartOptions"
+                [plugins]="pieChartPlugins"
+                [legend]="pieChartLegend">
+                </canvas>
+              </div>
+              <br/>
+              <br/>
+              <br/>
             </mat-expansion-panel>
           </mat-card>
+        </mat-expansion-panel>
+      </mat-card>
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="driverPerformancePanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
                   <div fxLayout="row" fxLayoutAlign='center center'>
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverPerformance || 'Driver Performance' }}</span>
-                    <span matTooltip="{{ translationData.lblGeneralInfo || 'User can see an information icon and below information must be shown in tooltip-
-                    The Driver Performance pane represents the elements the driver can influence by its driving style. The Overall column represents the results of all vehicles per Driver Performance element. This is based on the selections made in the search filters. The vehicle name column represents the results of that specific vehicle per Driver Performance element. By hovering over the vehicle name, it is possible to see the Vehicle Identification Number (VIN) and the Registration Number.' }}">
+                    <span matTooltip="{{ translationData.lblGeneralInfo || 'The Driver Performance pane represents the elements the driver can influence by its driving style. The Overall column represents the results of all vehicles per Driver Performance element. This is based on the selections made in the search filters. The vehicle name column represents the results of that specific vehicle per Driver Performance element. By hovering over the vehicle name, it is possible to see the Vehicle Identification Number (VIN) and the Registration Number.' }}">
                       <mat-icon class='margin-right-10'>info</mat-icon></span>
                   </div>
                 </mat-panel-title>
               </mat-expansion-panel-header>
-            </mat-expansion-panel>
-          </mat-card>
+              <div class="container-fluid" id="grid_performance_driver_table">
+                <angular-slickgrid gridId="grid_performance_table"
+                [columnDefinitions]="columnDefinitions"
+                [gridOptions]="gridOptions"
+                [datasetHierarchical]="datasetHierarchical"
+                (onAngularGridCreated)="angularGridReady($event)"> 
+                </angular-slickgrid>
+              </div>
+              <br/>
+              <br/>
+              <br/>
           <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
             <mat-expansion-panel [(expanded)]="driverPerformanceChartPanel" class="full-width" fxLayoutGap="10px">
               <mat-expansion-panel-header class="full-width">
@@ -211,7 +293,58 @@
                   [legend]="chartOptionsApex.legend"
                 ></apx-chart>
               </div> -->
-              
+              <div fxLayout="row" fxLayoutAlign='left' fxLayoutGap="10px" style="display: inline-block;">
+                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="togglePerformanceCharts('bar')" fxLayoutAlign="left">
+                  <div class="chartSelection" [ngClass]="showPerformanceBar ? 'enable' : 'disable'">
+                    <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                    &nbsp;<span class="chartTitle">{{ translationData.lblBarChart || 'Bar Chart' }}</span></div>
+                </div>
+                <div class="areaWidth min-width-7-per" fxLayout="column" (click)="togglePerformanceCharts('pie')" fxLayoutAlign="left">
+                  <div class="chartSelection" [ngClass]="showPerformancePie ? 'enable' : 'disable'">
+                    <i class="fa fa-pie-chart" aria-hidden="true">
+                    &nbsp;</i><span class="chartTitle">{{ translationData.lblPiechart || 'Pie Chart' }}</span></div>
+                </div>
+              </div>
+              <div style="float: right;" *ngIf="showPerformancePie">
+                {{ translationData.lblVehicle || 'Vehicle' }}<br/>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select [(value)]="vehicleSelected" [disabled]="vehicleListGeneral.length <= 1" (selectionChange)="loadPieChartPerformance($event.value)">
+                    <mat-option *ngFor="let vehicle of vehicleListGeneral" [value]="vehicle.id">
+                      {{ vehicle.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <br/><br/><br/>
+              <div class="container-fluid chartContainer" *ngIf="showPerformanceBar">
+                <div fxLayout="row" fxLayoutAlign='center'>
+                  <span class="chartTitle">{{ translationData.lblAverageDrivingSpeed || 'Average Driving Speed' }}</span>
+                </div>
+                <canvas baseChart
+                [datasets]="barChartDataPerformance"
+                [labels]="barChartLabelsPerformance"
+                [options]="barChartOptionsPerformance"
+                [legend]="barChartLegend"
+                [chartType]="barChartType"
+                [plugins]="barChartPlugins"
+                height="225" width="450">
+                </canvas>
+              </div>
+              <div class="container-fluid chartContainer" *ngIf="showPerformancePie">
+                <div fxLayout="row" fxLayoutAlign='center'>
+                  <span class="chartTitle">{{ translationData.lblAverageDrivingSpeed || 'Average Driving Speed' }}</span>
+                </div>
+                <canvas baseChart 
+                [data]="pieChartDataPerformance" 
+                [labels]="pieChartLabelsPerformance" 
+                [chartType]="pieChartType"
+                [options]="pieChartOptions"
+                [plugins]="pieChartPlugins"
+                [legend]="pieChartLegend">
+                </canvas>
+              </div>
             </mat-expansion-panel>
           </mat-card>
+        </mat-expansion-panel>
+      </mat-card>
           <app-spinner *ngIf="showLoadingIndicator"></app-spinner>

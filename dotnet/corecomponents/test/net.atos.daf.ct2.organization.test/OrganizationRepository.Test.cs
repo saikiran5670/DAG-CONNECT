@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.organization.test
 
             //string connectionString = "Server = 127.0.0.1; Port = 5432; Database = DAFCT; User Id = postgres; Password = Admin@1978; CommandTimeout = 90; ";
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _organizationRepository = new OrganizationRepository(_dataAccess,
+            _organizationRepository = new OrganizationRepository(_dataAccess, null,
                                                                   _vehicleManager,
                                                                   _groupManager,
                                                                   _accountManager, null, null, null);

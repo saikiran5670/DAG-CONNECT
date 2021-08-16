@@ -40,52 +40,114 @@ namespace net.atos.daf.ct2.reportscheduler
 
                 foreach (var item in reportEmailResults)
                 {
-                    MailNotificationRequest mailNotification = new MailNotificationRequest();
-                    mailNotification.MessageRequest = new MessageRequest();
-                    Dictionary<string, string> reportTokens = new Dictionary<string, string>();
-                    Dictionary<string, string> toAddressList = new Dictionary<string, string>();
-                    var mailSent = new ReportEmailDetail();
-                    List<ReportTokens> reportTokensList = new List<ReportTokens>();
-                    foreach (var emailItem in item.ReportSchedulerEmailResult)
+                    try
                     {
-                        ReportTokens objReportTokens = new ReportTokens();
-                        objReportTokens.Token = emailItem.ReportToken.ToString();
-                        objReportTokens.ReportName = emailItem.Key.Trim();
-                        reportTokensList.Add(objReportTokens);
-                        if (!toAddressList.ContainsKey(emailItem.EmailId))
+                        MailNotificationRequest mailNotification = new MailNotificationRequest();
+                        mailNotification.MessageRequest = new MessageRequest();
+                        Dictionary<string, string> reportTokens = new Dictionary<string, string>();
+                        Dictionary<string, string> toAddressList = new Dictionary<string, string>();
+                        var mailSent = new ReportEmailDetail();
+                        List<ReportTokens> reportTokensList = new List<ReportTokens>();
+                        foreach (var emailItem in item.ReportSchedulerEmailResult)
                         {
-                            toAddressList.Add(emailItem.EmailId, null);
+                            ReportTokens objReportTokens = new ReportTokens();
+                            objReportTokens.Token = emailItem.ReportToken.ToString();
+                            objReportTokens.ReportName = emailItem.Key.Trim();
+                            reportTokensList.Add(objReportTokens);
+                            if (!toAddressList.ContainsKey(emailItem.EmailId))
+                            {
+                                toAddressList.Add(emailItem.EmailId, null);
+                            }
+                            mailNotification.MessageRequest = new MessageRequest()
+                            {
+                                AccountInfo = new AccountInfo() { EmailId = emailItem.EmailId, Organization_Id = emailItem.OrganizationId },
+                                LanguageCode = emailItem.LanguageCode.Trim(),
+                                ReportTokens = reportTokensList,
+                                ToAddressList = toAddressList,
+                                Subject = emailItem.MailSubject,
+                                Description = emailItem.MailDescription,
+                                IsBcc = true
+                            };
+                            mailSent.EmailId = emailItem.EmailId;
+                            mailSent.IsMailSent = emailItem.IsMailSent;
+                            mailSent.ReportId = emailItem.ReportSchedulerId;
+                            await AddAuditLog(mailSent.IsMailSent, mailSent.EmailId);
                         }
-                        mailNotification.MessageRequest = new MessageRequest()
-                        {
-                            AccountInfo = new AccountInfo() { EmailId = emailItem.EmailId, Organization_Id = emailItem.OrganizationId },
-                            LanguageCode = emailItem.LanguageCode.Trim(),
-                            ReportTokens = reportTokensList,
-                            ToAddressList = toAddressList,
-                            Subject = emailItem.MailSubject,
-                            Description = emailItem.MailDescription,
-                            IsBcc = true
-                        };
-                        mailSent.EmailId = emailItem.EmailId;
-                        mailSent.IsMailSent = emailItem.IsMailSent;
-                        mailSent.ReportId = emailItem.ReportSchedulerId;
-                        await AddAuditLog(mailSent.IsMailSent, mailSent.EmailId);
-                    }
-                    mailNotification.ContentType = EmailContentType.Html;
-                    mailNotification.EventType = EmailEventType.ScheduledReportEmail;
-                    var isSuccess = await _emailNotificationManager.TriggerSendEmail(mailNotification);
+                        mailNotification.ContentType = EmailContentType.Html;
+                        mailNotification.EventType = EmailEventType.ScheduledReportEmail;
+                        var isSuccess = await _emailNotificationManager.TriggerSendEmail(mailNotification);
 
-                    reportsSent.Add(mailSent);
-                    await AddAuditLog(isSuccess, mailSent.EmailId);
-                    if (isSuccess)
+                        reportsSent.Add(mailSent);
+                        await AddAuditLog(isSuccess, mailSent.EmailId);
+                        if (isSuccess)
+                        {
+                            var nextUpdatedDate = await UpdateNextTimeDate(item.ReportSchedulerEmailResult);
+                        }
+                    }
+                    catch (Exception ex)
                     {
-                        var nextUpdatedDate = await UpdateNextTimeDate(item.ReportSchedulerEmailResult);
+                        if (ex.Source == "Npgsql" && ex.InnerException != null && ex.InnerException.Message.Contains("Timeout"))
+                        {
+                            await AddAuditLog($"SendReportEmail: Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_SQL_TIMEOUT);
+                        }
+                        else
+                        {
+                            await AddAuditLog($"SendReportEmail: Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_EMAIL_MSG);
+                        }
                     }
                 }
             }
             return reportsSent;
         }
 
+        public async Task<bool> UpdateMissingSchedulerFrequecy()
+        {
+            var flag = true;
+            int count = 0;
+            try
+            {
+                foreach (var item in await _reportSchedulerRepository.GetMissingSchedulerData())
+                {
+                    try
+                    {
+                        var countUpdatedId = await UpdateNextTimeDate(item);
+                        if (count == 0 && countUpdatedId == 0)
+                        {
+                            flag = false;
+                            count += 1;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        flag = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                flag = false;
+                await AddAuditLog($"Failed to run, Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED);
+            }
+            return flag;
+        }
+
+        private async Task AddAuditLog(string message, AuditTrailEnum.Event_status eventStatus, string updated_data = CreationConstants.LOG_MISSING_MSG, int sourceObjectId = 0)
+        {
+            await _auditlog.AddLogs(new AuditTrail
+            {
+                Created_at = DateTime.Now,
+                Performed_at = DateTime.Now,
+                Performed_by = 2,
+                Component_name = "Report Scheduler Email Notification",
+                Service_name = "Report Email Scheduler Email Component",
+                Event_type = AuditTrailEnum.Event_type.CREATE,
+                Event_status = eventStatus,
+                Message = message,
+                Sourceobject_id = sourceObjectId,
+                Targetobject_id = 0,
+                Updated_data = updated_data
+            });
+        }
         private async Task AddAuditLog(bool isSuccess, string emailId)
         {
 
@@ -111,28 +173,43 @@ namespace net.atos.daf.ct2.reportscheduler
             int timeupdated = 0;
             foreach (var emailItem in emailItemList)
             {
-                var reportEmailFrequency = new ReportEmailFrequency()
+                try
                 {
-                    ReportId = emailItem.ReportSchedulerId,
-                    EndDate = emailItem.EndDate,
-                    FrequencyType = (TimeFrequenyType)Enum.Parse(typeof(TimeFrequenyType), GetEnumValue(emailItem.FrequencyType)),
-                    ReportNextScheduleRunDate = emailItem.NextScheduleRunDate,
-                    ReportPrevioudScheduleRunDate = emailItem.LastScheduleRunDate,
-                    StartDate = emailItem.StartDate,
-                    ReportScheduleRunDate = emailItem.NextScheduleRunDate
-                };
+                    var reportEmailFrequency = new ReportEmailFrequency()
+                    {
+                        ReportSchedulerId = emailItem.ReportSchedulerId,
+                        EndDate = emailItem.EndDate,
+                        FrequencyType = (TimeFrequenyType)Enum.Parse(typeof(TimeFrequenyType), GetEnumValue(emailItem.FrequencyType)),
+                        ReportNextScheduleRunDate = emailItem.NextScheduleRunDate,
+                        ReportPrevioudScheduleRunDate = emailItem.NextScheduleRunDate,
+                        StartDate = emailItem.StartDate,
+                        ReportScheduleRunDate = emailItem.NextScheduleRunDate,
+                        TimeZoneName = emailItem.TimeZoneName
+                    };
 
-                if (emailItem.FrequencyType == ((char)TimeFrequenyType.Daily).ToString() || emailItem.FrequencyType == ((char)TimeFrequenyType.Weekly).ToString() || emailItem.FrequencyType == ((char)TimeFrequenyType.BiWeekly).ToString())
-                {
-                    timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByDate(reportEmailFrequency);
+                    if (emailItem.FrequencyType == ((char)TimeFrequenyType.Daily).ToString() || emailItem.FrequencyType == ((char)TimeFrequenyType.Weekly).ToString() || emailItem.FrequencyType == ((char)TimeFrequenyType.BiWeekly).ToString())
+                    {
+                        timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByDate(reportEmailFrequency);
 
+                    }
+                    else
+                    {
+                        timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByCalenderTime(reportEmailFrequency);
+                    }
+                    emailItem.IsMailSent = true;
+                    await _reportSchedulerRepository.UpdateIsMailSend(emailItem.ReportToken, emailItem.IsMailSent);
                 }
-                else
+                catch (Exception ex)
                 {
-                    timeupdated = await _reportSchedulerRepository.UpdateTimeRangeByCalenderTime(reportEmailFrequency);
+                    if (ex.Source == "Npgsql" && ex.InnerException != null && ex.InnerException.Message.Contains("Timeout"))
+                    {
+                        await AddAuditLog($"UpdateNextTimeDate: Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_SQL_TIMEOUT, emailItem.ReportSchedulerId);
+                    }
+                    else
+                    {
+                        await AddAuditLog($"UpdateNextTimeDate: Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_EMAIL_MSG, emailItem.ReportSchedulerId);
+                    }
                 }
-                emailItem.IsMailSent = true;
-                await _reportSchedulerRepository.UpdateIsMailSend(emailItem.ReportToken, emailItem.IsMailSent);
             }
             return timeupdated;
 
@@ -162,5 +239,34 @@ namespace net.atos.daf.ct2.reportscheduler
             return enumtype;
         }
 
+        private async Task<int> UpdateNextTimeDate(ReportEmailFrequency emailItem)
+        {
+            try
+            {
+                emailItem.ReportPrevioudScheduleRunDate = emailItem.ReportScheduleRunDate = emailItem.ReportNextScheduleRunDate;
+                emailItem.FrequencyType = (TimeFrequenyType)emailItem.FrequencyTypeValue;
+                if (emailItem.FrequencyType == TimeFrequenyType.Daily || emailItem.FrequencyType == TimeFrequenyType.Weekly || emailItem.FrequencyType == TimeFrequenyType.BiWeekly)
+                {
+                    return await _reportSchedulerRepository.UpdateTimeRangeByDate(emailItem);
+
+                }
+                else
+                {
+                    return await _reportSchedulerRepository.UpdateTimeRangeByCalenderTime(emailItem);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.Source == "Npgsql" && ex.InnerException != null && ex.InnerException.Message.Contains("Timeout"))
+                {
+                    await AddAuditLog($"UpdateNextTimeDate: Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_SQL_TIMEOUT, emailItem.ReportSchedulerId);
+                }
+                else
+                {
+                    await AddAuditLog($"UpdateNextTimeDate: Error: {ex.Message}", AuditTrailEnum.Event_status.FAILED, CreationConstants.LOG_MISSING_MSG, emailItem.ReportSchedulerId);
+                }
+                return 0;
+            }
+        }
     }
 }

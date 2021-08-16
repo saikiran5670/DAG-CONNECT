@@ -6,6 +6,7 @@
     <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Protos\dashboard.proto" />
     <None Remove="Protos\geofence.proto" />
     <None Remove="Protos\group.proto" />
     <None Remove="Protos\package.proto" />

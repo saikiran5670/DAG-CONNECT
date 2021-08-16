@@ -16,9 +16,10 @@
         ScheduledReportEmail = 5,
         //Below EventTypes are for Report Creation
         TripReport = 6,
-        FleetUtilisation = 7,
-        FleetFuel = 9,
-        FleetDeviation = 10,
+        FleetUtilisationReport = 7,
+        FleetFuelReportSingleVehicle = 9,
+        FuelDeviationReport = 10,
+        FleetFuelReportAllVehicles = 11,
         //End
         AlertNotificationEmail = 8
     }

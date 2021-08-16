@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.notificationengine
 {
     public interface INotificationIdentifierManager
     {
-        Task<List<Notification>> GetNotificationDetails(TripAlert tripAlert);
+        Task<List<NotificationHistory>> GetNotificationDetails(TripAlert tripAlert);
         Task<NotificationHistory> InsertNotificationSentHistory(NotificationHistory notificationHistory);
         Task<string> GetTranslateValue(string languageCode, string key);
         Task<string> GetLanguageCodePreference(string emailId);

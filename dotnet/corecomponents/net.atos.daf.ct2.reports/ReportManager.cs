@@ -746,22 +746,48 @@ namespace net.atos.daf.ct2.reports
         }
         #endregion
 
-
-
         #region Vehicle Performance Report
-        public async Task<EngineLoadDistributionTemplate> GetEngineLoadTemplate(int enginetypeid)
+        public async Task<VehiclePerformanceChartTemplate> GetVehPerformanceChartTemplate(VehiclePerformanceRequest vehiclePerformanceRequest)
         {
-            var enginetemplate = await _reportRepository.GetEngineLoadDistribution(enginetypeid);
+            var enginetemplate = await _reportRepository.GetVehPerformanceChartTemplate(vehiclePerformanceRequest);
 
-            EngineLoadDistributionTemplate engineloadtemplate = new EngineLoadDistributionTemplate();
             //We will bind data here
-            return engineloadtemplate;
+            return enginetemplate;
         }
+        public async Task<VehiclePerformanceSummary> GetVehPerformanceSummaryDetails(string vin)
+        {
+            return await _reportRepository.GetVehPerformanceSummaryDetails(vin);
 
+        }
+        public async Task<VehiclePerformanceData> GetVehPerformanceBubbleChartData(VehiclePerformanceRequest vehiclePerformanceRequest)
+        {
+            PerformanceChartMatrix objmat = new PerformanceChartMatrix();
+            VehiclePerformanceData charts = new VehiclePerformanceData();
+            var chartRawdata = await _reportRepository.GetVehPerformanceBubbleChartData(vehiclePerformanceRequest);
+            var rangedata = await _reportRepository.GetRangeData(vehiclePerformanceRequest.PerformanceType);
+            if (vehiclePerformanceRequest.PerformanceType == "B")
+            {
+                charts = objmat.GetcombinedmatrixBrake(chartRawdata.Where(i => i.ColumnIndex != null).ToList(), vehiclePerformanceRequest.PerformanceType, rangedata.ToList(), chartRawdata.Sum(i => i.TripDuration));
+            }
+            else if (vehiclePerformanceRequest.PerformanceType == "S")
+            {
+                charts = objmat.GetcombinedmatrixRoadSpeed(chartRawdata.Where(i => i.ColumnIndex != null).ToList(), vehiclePerformanceRequest.PerformanceType, rangedata.ToList(), chartRawdata.Sum(i => i.TripDuration));
+            }
+            else
+            {
+                charts = objmat.Getcombinedmatrix(chartRawdata.Where(i => i.ColumnIndex != null).ToList(), vehiclePerformanceRequest.PerformanceType, rangedata.ToList(), chartRawdata.Sum(i => i.TripDuration));
+            }
 
-
-
-
+            //CalculateKPIData(List<IndexWiseChartData> vehicleChartDatas, double tripDuration, List<KpiDataRange> rangedata)
+            //charts.ChartData = chartdata;
+            //// chartdata = vehiclePerformanceRequest.PerformanceType == "B" ? chartdata.Select(x => { x.Value = -x.Value; return x; }).ToList() : chartdata;
+            //charts.PieChartData = objmat.CalculateKPIData(chartdata, chartRawdata.Sum(i => i.TripDuration), await _reportRepository.GetRangeData(vehiclePerformanceRequest.PerformanceType));
+            return charts;
+        }
+        public async Task<List<VehPerformanceProperty>> GetVehPerformanceType()
+        {
+            return await _reportRepository.GetVehPerformanceType();
+        }
         #endregion
     }
 }

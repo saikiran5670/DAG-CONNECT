@@ -99,6 +99,7 @@ export class LoginComponent implements OnInit {
               this.accountService.getAccount(loginObj).subscribe(getAccresp => {
                 if(getAccresp[0].preferenceId != 0){
                   this.accountService.getAccountPreference(getAccresp[0].preferenceId).subscribe(accPref => {
+                    localStorage.setItem("liveFleetTimer", (accPref['pageRefreshTime']*60).toString());  // default set
                       this.translationService.getLanguageCodes().subscribe(languageCodes => {
                       let objData = {
                         AccountId: data.body.accountInfo.id,
@@ -131,6 +132,7 @@ export class LoginComponent implements OnInit {
                   })
                 }
                 else{
+                  localStorage.setItem("liveFleetTimer", (1*60).toString()); // default timer set 
                   let objData = {
                     AccountId: data.body.accountInfo.id,
                     OrganizationId: data.body.accountOrganization[0].id

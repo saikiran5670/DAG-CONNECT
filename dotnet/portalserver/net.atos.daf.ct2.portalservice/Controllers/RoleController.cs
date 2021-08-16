@@ -50,7 +50,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 //Assign context orgId
-                request.OrganizationId = GetContextOrgId();
+                if (request.OrganizationId > 0)
+                {
+                    request.OrganizationId = GetContextOrgId();
+                }
+
 
                 if ((string.IsNullOrEmpty(request.RoleName)))
                 {
