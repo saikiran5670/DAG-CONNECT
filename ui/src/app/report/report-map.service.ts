@@ -1604,23 +1604,6 @@ export class ReportMapService {
     return data;
   }
 
-  getTimeInSeconds(timeValue, unit){
-    let seconds: any;
-    switch(unit){
-      //hrs to seconds
-      case 'H':{
-        seconds = timeValue * 3600;
-        break;
-      }
-      //minutes to seconds
-      case 'M':{
-        seconds = timeValue * 60;
-        break;
-      }
-      return seconds; 
-    }
-  }
-
   formStartEndDate(date: any, dateFormat: any, timeFormat: any, addTime?:boolean){
     // let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
     // let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
@@ -1686,4 +1669,118 @@ export class ReportMapService {
     return _date;
   }
    
+  getTimeInSeconds(timeValue, unit){
+    let seconds: any;
+    switch(unit){
+      //hrs to seconds
+      case 'H':{
+        seconds = timeValue * 3600;
+        break;
+      }
+      //minutes to seconds
+      case 'T':{
+        seconds = timeValue * 60;
+        break;
+      }
+    }
+    return seconds; 
+  }
+
+  getConvertedTime(seconds, unit){
+    let timeValue: any;
+    switch(unit){
+      //seconds to hrs 
+      case 'H':{
+        timeValue = seconds / 3600;
+        break;
+      }
+      //seconds to minutes 
+      case 'T':{
+        timeValue = seconds / 60;
+        break;
+      }
+    }
+    return timeValue; 
+  }
+
+  getConvertedDistanceToMeter(val ,unit){
+    let distance;
+    switch(unit){
+      //Km to meter 
+      case 'K':{
+        distance = val * 1000;
+        break;
+      }
+      //Miles to meter 
+      case 'L':{
+        distance = val * 1609;
+        break;
+      }
+    }
+    return distance; 
+  }
+
+  getConvertedDistance(val ,unit){
+    let distance;
+    switch(unit){
+      //meter to Km
+      case 'K':{
+        distance = val / 1000;
+        break;
+      }
+      //meter to Miles
+      case 'L':{
+        distance = val / 1609;
+        break;
+      }
+    }
+    return distance; 
+  }
+
+  getConvertedSpeedToMeterPerSec(val ,unit){
+    let speed;
+    switch(unit){
+      //Km/h to m/s
+      case 'K':{
+        speed = (val * 5) /18;
+        break;
+      }
+      //miles/h to m/s
+      case 'L':{
+        speed = (val /2.237);
+        break;
+      }
+    }
+    return speed; 
+  }
+
+  getConvertedSpeed(val ,unit){
+    let speed;
+    switch(unit){
+      // m/s to Km/h
+      case 'K':{
+        speed = (val * 18) /5;
+        break;
+      }
+      // m/s to miles/h
+      case 'L':{
+        speed = (val * 2.237);
+        break;
+      }
+    }
+    return speed; 
+  }
+
+  convertFtToMeters(length){
+    let meter;
+    meter = length / 3.281;
+    return meter;
+  }
+
+  convertMetersToFt(length){
+    let ft;
+    ft = length * 3.281;
+    return ft;
+  }
+
 }
