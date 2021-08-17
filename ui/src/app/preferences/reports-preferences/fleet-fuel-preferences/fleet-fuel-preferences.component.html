@@ -54,7 +54,7 @@
                         <span>
                             {{ field.translatedName }}
                         </span>
-                        <span *ngIf="field.key == 'rp_ff_report_vehicle_vehicleranking_consumption'">{{ getUnits() }}</span>
+                        <span>{{ getUnits(field.key) }}</span>
                     </mat-checkbox>
                 </div>
             </ng-container>
@@ -162,6 +162,7 @@
                         <span>
                             {{field.translatedName}}
                         </span>
+                        <span>{{ getUnits(field.key) }}</span>
                     </mat-checkbox>
                 </div>
             </ng-container>
