@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 tripdetail.trip_statistics as trips
                                 Left JOIN master.vehicle as veh
                                 ON trips.vin = veh.vin
-                                WHERE (start_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
+                                WHERE (end_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
                                 AND trips.VIN=ANY(@vin)
                                 GROUP BY
                                 trips.vin,veh.name";
@@ -56,7 +56,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 , Round(SUM(fuel_consumption)/ @totalActiveVehicle,2) as averagefuelconsumption
                                 From
                                 tripdetail.trip_statistics 
-                                WHERE (start_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
+                                WHERE (end_time_stamp >= @fromDate AND end_time_stamp<= @endDate) 
                                 AND VIN=ANY(@vin)";
                 param.Add("@vin", fuelBenchmarkFilter.VINs);
                 param.Add("@fromDate", fuelBenchmarkFilter.StartDateTime);
