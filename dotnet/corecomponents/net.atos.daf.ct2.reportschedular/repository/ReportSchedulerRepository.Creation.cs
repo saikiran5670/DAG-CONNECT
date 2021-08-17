@@ -53,12 +53,13 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             }
         }
 
-        public Task<IEnumerable<VehicleList>> GetVehicleList(int reprotSchedulerId)
+        public Task<IEnumerable<VehicleList>> GetVehicleList(int reprotSchedulerId, int organizationId)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@report_schedule_id", reprotSchedulerId);
+                parameter.Add("@organization_id", organizationId);
                 var query = @"with cte_alert_vehicle_groupanddynamic
                             AS (
                             select distinct   
@@ -73,7 +74,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                             ,veh.license_plate_number as RegistrationNo	
                             from master.scheduledreportvehicleref cte
                             inner join master.group grp 
-                            on cte.vehicle_group_id = grp.id and grp.object_type='V' and cte.report_schedule_id=@report_schedule_id
+                            on grp.organization_id=@organization_id and cte.vehicle_group_id = grp.id and grp.object_type='V' and cte.report_schedule_id=@report_schedule_id
                             left join master.groupref vgrpref
                             on  grp.id=vgrpref.group_id
                             left join master.vehicle veh
