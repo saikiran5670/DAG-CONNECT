@@ -1736,11 +1736,11 @@ export class ReportMapService {
       }
       //meter to Miles
       case 'L':{
-        distance = val / 1609;
+        distance = (val / 1609);
         break;
       }
     }
-    return distance; 
+    return parseInt(distance); 
   }
 
   getConvertedSpeedToMeterPerSec(val ,unit){
