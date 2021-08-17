@@ -920,7 +920,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.driver1_id,
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000) )*100 
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000) )
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
@@ -1247,7 +1247,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.driver1_id,
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100  
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)) 
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id
@@ -1539,7 +1539,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.organization_id , 
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100  
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id 
@@ -1833,7 +1833,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.vin, 
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100 
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin
@@ -2130,7 +2130,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.organization_id , eco.vin, 
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100  
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.organization_id ,eco.vin
@@ -2621,7 +2621,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.driver1_id,eco.Day,
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100  
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.driver1_id,eco.Day
@@ -3028,7 +3028,7 @@ namespace net.atos.daf.ct2.reports.repository
                                 (
                                     SELECT eco.vin,eco.Day, 
                                     CASE WHEN ((SUM (eco.end_time))- (SUM (eco.start_time))) <> 0 and (((SUM (eco.end_time))- (SUM (eco.start_time)))/1000)<>0 THEN
-                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))*100 
+                                    (SUM(eco.heavy_throttle_pedal_duration)/(((SUM (eco.end_time))- (SUM (eco.start_time)))/1000))
                                     ELSE null END as HeavyThrottling
                                     FROM ecoscorequery eco
                                     GROUP BY eco.vin,eco.Day
