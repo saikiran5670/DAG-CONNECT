@@ -1740,53 +1740,53 @@ export class ReportMapService {
         break;
       }
     }
-    return parseInt(distance); 
+    return Math.round(distance); 
   }
 
   getConvertedSpeedToMeterPerSec(val ,unit){
     let speed;
     switch(unit){
       //Km/h to m/s
-      case 'K':{
+      case 'A':{
         speed = (val * 5) /18;
         break;
       }
       //miles/h to m/s
-      case 'L':{
+      case 'B':{
         speed = (val /2.237);
         break;
       }
     }
-    return speed; 
+    return parseFloat(speed.toFixed(2)); 
   }
 
   getConvertedSpeed(val ,unit){
     let speed;
     switch(unit){
       // m/s to Km/h
-      case 'K':{
+      case 'A':{
         speed = (val * 18) /5;
         break;
       }
       // m/s to miles/h
-      case 'L':{
+      case 'B':{
         speed = (val * 2.237);
         break;
       }
     }
-    return speed; 
+    return Math.round(speed); 
   }
 
   convertFtToMeters(length){
     let meter;
     meter = length / 3.281;
-    return meter;
+    return parseFloat(meter.toFixed(2));
   }
 
   convertMetersToFt(length){
     let ft;
     ft = length * 3.281;
-    return ft;
+    return Math.round(ft);
   }
 
 }

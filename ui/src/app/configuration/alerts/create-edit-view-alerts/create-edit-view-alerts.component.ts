@@ -549,8 +549,14 @@ proceedStep(prefData: any, preference: any){
         }
         case "FA": { //Excessive Average speed
           this.labelForThreshold= this.translationData.lblDSpeed ? this.translationData.lblSpeed : "Speed";
-          this.unitForThreshold= this.translationData.lblkilometerperhour ? this.translationData.lblkilometerperhour : "km/h";
-          this.unitTypeEnum= "E";
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? 'Km/h' : 'Miles/h';
+          // this.unitForThreshold= this.translationData.lblkilometerperhour ? this.translationData.lblkilometerperhour : "km/h";
+          // this.unitTypeEnum= "E";
+          if(this.prefUnitFormat == 'dunit_Metric'){
+            this.unitTypeEnum= "A";  }
+            else{
+              this.unitTypeEnum= "B";
+            }
           break;
         }
         case "FF": { //Fuel Consumed
@@ -1075,7 +1081,8 @@ PoiCheckboxClicked(event: any, row: any) {
     this.onChangeAlertType(this.selectedRowData.type);
     let threshold;
     this.selectedRowData.alertUrgencyLevelRefs.forEach(element => {
-            if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH'){
+            if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' ||
+            this.alert_category_selected+this.alert_type_selected == 'FI' ){
               threshold = this.reportMapService.getConvertedTime(element.thresholdValue,this.unitTypeEnum);
               if(element.urgencyLevelType == 'C'){
                 this.alertForm.get('criticalLevelThreshold').setValue(threshold);
@@ -1106,6 +1113,18 @@ PoiCheckboxClicked(event: any, row: any) {
               }
             }
 
+            if(this.alert_category_selected+this.alert_type_selected == 'FA'){
+              threshold = this.reportMapService.getConvertedSpeed(element.thresholdValue,this.unitTypeEnum);
+              if(element.urgencyLevelType == 'C'){
+                this.alertForm.get('criticalLevelThreshold').setValue(threshold);
+              }
+              else if(element.urgencyLevelType == 'W'){
+                this.alertForm.get('warningLevelThreshold').setValue(threshold);
+              }
+              else{
+                this.alertForm.get('advisoryLevelThreshold').setValue(threshold);
+              }
+            }
         
     });
 
@@ -1553,30 +1572,39 @@ PoiCheckboxClicked(event: any, row: any) {
   convertThresholdValuesBasedOnUnits(){
     if(this.isCriticalLevelSelected){
       this.criticalThreshold = parseInt(this.alertForm.get('criticalLevelThreshold').value);
-      if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH'){
+      if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.criticalThreshold =this.reportMapService.getTimeInSeconds(this.criticalThreshold, this.unitTypeEnum);
       }
       else if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG'){
         this.criticalThreshold =this.reportMapService.getConvertedDistanceToMeter(this.criticalThreshold, this.unitTypeEnum);
         }
+        else if(this.alert_category_selected+this.alert_type_selected == 'FA'){
+          this.criticalThreshold =this.reportMapService.getConvertedSpeedToMeterPerSec(this.criticalThreshold, this.unitTypeEnum);
+          }
     }
     if(this.isWarningLevelSelected){
       this.warningThreshold = parseInt(this.alertForm.get('warningLevelThreshold').value);
-      if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH'){
+      if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.warningThreshold =this.reportMapService.getTimeInSeconds(this.warningThreshold, this.unitTypeEnum);
       }
       else if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG'){
         this.warningThreshold =this.reportMapService.getConvertedDistanceToMeter(this.warningThreshold, this.unitTypeEnum);
         }
+      else if(this.alert_category_selected+this.alert_type_selected == 'FA'){
+          this.warningThreshold =this.reportMapService.getConvertedSpeedToMeterPerSec(this.warningThreshold, this.unitTypeEnum);
+      }
     }
     if(this.isAdvisoryLevelSelected){
       this.advisoryThreshold = parseInt(this.alertForm.get('advisoryLevelThreshold').value);
-      if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH'){
+      if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' || this.alert_category_selected+this.alert_type_selected == 'FI'){
       this.advisoryThreshold =this.reportMapService.getTimeInSeconds(this.advisoryThreshold, this.unitTypeEnum); 
       }
       else if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG'){
         this.advisoryThreshold =this.reportMapService.getConvertedDistanceToMeter(this.advisoryThreshold, this.unitTypeEnum);
         }
+      else if(this.alert_category_selected+this.alert_type_selected == 'FA'){
+        this.advisoryThreshold =this.reportMapService.getConvertedSpeedToMeterPerSec(this.advisoryThreshold, this.unitTypeEnum);
+      }
     }
   }
 
