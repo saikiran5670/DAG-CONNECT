@@ -264,9 +264,9 @@ namespace net.atos.daf.ct2.account.report
                                   , volumePer100KmUnit
                                   , Math.Round(TotalCO2Emission, 2)
                                   , weightUnit
-                                  , vehicle.VehicleName
-                                  , vehicle.VIN
-                                  , vehicle.RegistrationNo
+                                  , vehicle?.VehicleName ?? string.Empty
+                                  , vehicle?.VIN
+                                  , vehicle?.RegistrationNo ?? string.Empty
                                   , distanceUnit
                                   , volumeUnit
                                   , volumePer100KmUnit

@@ -69,9 +69,9 @@ namespace net.atos.daf.ct2.account.report
             FromDate = reportSchedulerData.StartDate;
             ToDate = reportSchedulerData.EndDate;
             var vehicleList = vehicleLists.FirstOrDefault();
-            VIN = vehicleList.VIN;
-            VehicleName = vehicleList.VehicleName;
-            RegistrationNo = vehicleList.RegistrationNo;
+            VIN = vehicleList?.VIN;
+            VehicleName = vehicleList?.VehicleName ?? string.Empty;
+            RegistrationNo = vehicleList?.RegistrationNo ?? string.Empty;
             ReportSchedulerData = reportSchedulerData;
             TimeZoneName = reportSchedulerData.TimeZoneId > 0 ? TimeZoneSingleton.GetInstance(_reportSchedularRepository).GetTimeZoneName(reportSchedulerData.TimeZoneId) : TimeConstants.UTC;
             DateFormatName = reportSchedulerData.DateFormatId > 0 ? DateFormatSingleton.GetInstance(_reportSchedularRepository).GetDateFormatName(reportSchedulerData.DateFormatId) : FormatConstants.DATE_FORMAT;

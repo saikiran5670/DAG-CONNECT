@@ -905,7 +905,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                    inner join master.orgrelationshipmapping as om on v.id = om.vehicle_id
                                    inner join master.orgrelationship as os on om.relationship_id=os.id
                                    left join master.groupref as gref on v.id = gref.ref_id
-                                   Left join master.group as grp on grp.id= gref.group_id
+                                   Left join master.group as grp on grp.id= gref.group_id and grp.object_type='V'
                                    where 1=1
                                    and os.state='A'
                                    and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
