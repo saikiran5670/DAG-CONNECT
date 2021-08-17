@@ -1757,7 +1757,7 @@ export class ReportMapService {
         break;
       }
     }
-    return speed.toFixed(2); 
+    return parseFloat(speed.toFixed(2)); 
   }
 
   getConvertedSpeed(val ,unit){
@@ -1780,7 +1780,7 @@ export class ReportMapService {
   convertFtToMeters(length){
     let meter;
     meter = length / 3.281;
-    return meter.toFixed(2);
+    return parseFloat(meter.toFixed(2));
   }
 
   convertMetersToFt(length){
