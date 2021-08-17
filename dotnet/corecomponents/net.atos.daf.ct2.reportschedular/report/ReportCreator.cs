@@ -156,7 +156,7 @@ namespace net.atos.daf.ct2.reportscheduler.report
             }
             else
             {
-                vehicleList.AddRange(await _reportSchedulerRepository.GetVehicleList(ReportSchedulerData.Id));
+                vehicleList.AddRange(await _reportSchedulerRepository.GetVehicleList(ReportSchedulerData.Id, ReportSchedulerData.OrganizationId));
             }
 
             if (vehicleList == null || vehicleList.Count == 0)
