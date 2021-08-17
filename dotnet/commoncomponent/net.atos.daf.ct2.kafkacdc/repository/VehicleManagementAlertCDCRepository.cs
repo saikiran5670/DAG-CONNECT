@@ -18,12 +18,12 @@ namespace net.atos.daf.ct2.kafkacdc.repository
             _dataAccess = dataAccess;
             _dataMartdataAccess = dataMartdataAccess;
         }
-        public async Task<List<VehicleAlertRef>> GetVehicleAlertRefFromvehicleId(int vehicleId)
+        public async Task<List<VehicleAlertRef>> GetVehicleAlertRefFromvehicleId(IEnumerable<int> vehicleIds)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@vin", vehicleId); //TODO: Get VIN from Vehicle Id
+                parameter.Add("@vin", GetVINsByIds(vehicleIds));
                 string queryAlertLevelPull = @"select vin,alert_id as AlertId, state  from tripdetail.vehiclealertref where vin = @vin;";
 
                 IEnumerable<VehicleAlertRef> vehicleAlertRefs = await _dataMartdataAccess.QueryAsync<VehicleAlertRef>(queryAlertLevelPull, parameter);
@@ -34,12 +34,12 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                 throw;
             }
         }
-        public async Task<List<VehicleAlertRef>> GetVehicleAlertByvehicleId(int vehicleId)
+        public async Task<List<VehicleAlertRef>> GetVehicleAlertByvehicleId(IEnumerable<int> vehicleIds)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@vehicleid", vehicleId);
+                parameter.Add("@vehicleid", vehicleIds);
                 string query = @"with cte_alert_vehicle_groupanddynamic
                             AS (
                             select distinct 
@@ -338,6 +338,15 @@ where veh.id = @vehicleid
             {
                 throw;
             }
+        }
+
+        private Task<IEnumerable<string>> GetVINsByIds(IEnumerable<int> vehicleIds)
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@vehicleid", vehicleIds);
+            string queryAlertLevelPull = @"select vin  from master.vehicle where id = Any(@vehicleid) and vin <> null;";
+
+            return  _dataAccess.QueryAsync<string>(queryAlertLevelPull, parameter);
         }
     }
 }

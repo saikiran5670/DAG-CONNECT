@@ -21,6 +21,7 @@ using Group = net.atos.daf.ct2.group;
 using net.atos.daf.ct2.confluentkafka;
 using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.kafkacdc.entity;
+using net.atos.daf.ct2.vehicleservice.common;
 
 namespace net.atos.daf.ct2.vehicleservice.Services
 {
@@ -36,9 +37,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         private readonly AccountComponent.IAccountManager _accountmanager;
         private readonly IConfiguration _configuration;
         private readonly IVehicleCdcManager _vehicleCdcManager;
+        private readonly AlertCdcHelper _alertCdcHelper;
+        private readonly IVehicleManagementAlertCDCManager _vehicleMgmAlertCdcManager;
 
         public VehicleManagementService(IVehicleManager vehicelManager, Group.IGroupManager groupManager, IAuditTraillib auditlog, AccountComponent.IAccountManager accountmanager, IConfiguration configuration,
-            IVehicleCdcManager vehicleCdcManager)
+            IVehicleCdcManager vehicleCdcManager, IVehicleManagementAlertCDCManager vehicletMgmAlertCdcManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _vehicleManager = vehicelManager;
@@ -49,6 +52,8 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             _kafkaConfiguration = new kafkacdc.entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
             _vehicleCdcManager = vehicleCdcManager;
+            _vehicleMgmAlertCdcManager = vehicletMgmAlertCdcManager;
+            _alertCdcHelper = new AlertCdcHelper(_vehicleMgmAlertCdcManager);
         }
 
         public override async Task<VehiclesBySubscriptionDetailsResponse> GetVehicleBySubscriptionId(SubscriptionIdRequest request, ServerCallContext context)
@@ -146,6 +151,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 {
                     await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Id }, _kafkaConfiguration));
                 }
+                if (Objvehicle.ID > 0)
+                {
+                    //Triggering alert cdc 
+                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { Objvehicle.ID });
+                }
                 return await Task.FromResult(new VehicleResponce
                 {
                     Message = "Vehicle updated for id:- " + Objvehicle.ID,
@@ -217,6 +227,12 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 {
                     await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Refid }, _kafkaConfiguration));
 
+                }
+                //TODO: Need to check the imlementation
+                if (ObjvehicleOptInOptOutResponce.RefId > 0 && ObjvehicleOptInOptOutResponce.Type == OptInOptOutType.VehicleLevel)
+                {
+                    //Triggering alert cdc 
+                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { ObjvehicleOptInOptOutResponce.RefId });
                 }
                 return await Task.FromResult(new VehicleOptInOptOutResponce
                 {
@@ -768,6 +784,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 {
                     await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.VehicleId }, _kafkaConfiguration));
                 }
+                if (result)
+                {
+                    //Triggering alert cdc 
+                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId });
+                }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Vehicle OTA Status updated.",
@@ -794,6 +815,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 if (result && Convert.ToBoolean(_kafkaConfiguration.IsVehicleCDCEnable))
                 {
                     await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.VehicleId }, _kafkaConfiguration));
+                }
+                if (result)
+                {
+                    //Triggering alert cdc 
+                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId });
                 }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
@@ -822,6 +848,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 if (result && Convert.ToBoolean(_kafkaConfiguration.IsVehicleCDCEnable))
                 {
                     await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.VehicleId }, _kafkaConfiguration));
+                }
+                if (result)
+                {
+                    //Triggering alert cdc 
+                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId });
                 }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
@@ -1107,6 +1138,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 response = _mapper.ToVehichleConnectResponse(result);
                 response.Message = "Vehicle Opt In Status updated.";
                 response.Code = Responcecode.Success;
+                if (result.VehicleConnectedList.Count() > 0)
+                {
+                    //Triggering alert cdc 
+                    await _alertCdcHelper.TriggerAlertCdc(result.VehicleConnectedList.Select(s => s.VehicleId));
+                }
                 _logger.Info("VehicleConnectAll method in Vehicle service called.");
                 return await Task.FromResult(response);
             }
