@@ -9,6 +9,8 @@ using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.features;
 using net.atos.daf.ct2.features.repository;
+using net.atos.daf.ct2.kafkacdc;
+using net.atos.daf.ct2.kafkacdc.repository;
 using net.atos.daf.ct2.package;
 using net.atos.daf.ct2.package.repository;
 
@@ -38,9 +40,14 @@ namespace net.atos.daf.ct2.packageservice
 
 
             string connectionString = Configuration.GetConnectionString("ConnectionString");
+            string dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
+            });
+            services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
+            {
+                return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
@@ -48,6 +55,10 @@ namespace net.atos.daf.ct2.packageservice
             services.AddTransient<IPackageRepository, PackageRepository>();
             services.AddTransient<IFeatureRepository, FeatureRepository>();
             services.AddTransient<IFeatureManager, FeatureManager>();
+            services.AddTransient<IPackageAlertCdcManager, PackageAlertCdcManager>();
+            services.AddTransient<IPackageAlertCdcRepository, PackageAlertCdcRepository>();
+            services.AddTransient<IAlertMgmAlertCdcManager, AlertMgmAlertCdcManager>();
+            services.AddTransient<IAlertMgmAlertCdcRepository, AlertMgmAlertCdcRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
