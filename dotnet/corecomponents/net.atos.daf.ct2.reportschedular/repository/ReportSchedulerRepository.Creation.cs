@@ -59,22 +59,176 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@report_schedule_id", reprotSchedulerId);
-                var query = @"with cte_VehicaleList
+                var query = @"with cte_alert_vehicle_groupanddynamic
                             AS (
-                            select distinct ref_id as VehicleId,0 as VehicleGroupId , '' as VehicleGroupName
-						    from master.group g 
-								inner join master.scheduledreportvehicleref srvr 
-								on srvr.report_schedule_id =@report_schedule_id and srvr.vehicle_group_id = g.id and g.group_type = 'S' and g.object_type = 'V' and srvr.state ='A'
-                            union
-                            select distinct gr.ref_id as VehicleId ,g.id as VehicleGroupId, g.name as VehicleGroupName
-						    from master.group g 
-								inner join master.scheduledreportvehicleref srvr 
-								on srvr.report_schedule_id =@report_schedule_id  and srvr.vehicle_group_id = g.id and g.group_type = 'G' and g.object_type = 'V' and srvr.state ='A'
-								inner join master.groupref gr
-								on gr.group_id = g.id)
-                            select distinct v.id as Id ,v.vin as VIN ,v.name as VehicleName,v.license_plate_number as RegistrationNo,vl.VehicleGroupId as VehicleGroupId, vl.VehicleGroupName as VehicleGroupName
-                            from cte_VehicaleList vl
-                                 inner join master.vehicle v on v.id = vl.VehicleId";
+                            select distinct   
+                            grp.group_type
+							,grp.organization_id
+								,grp.function_enum
+                            ,grp.id as VehicleGroupId                            
+                            ,grp.name as VehicleGroupName
+                            ,veh.id as Id
+                            ,veh.name as VehicleName
+                            ,veh.vin as VIN
+                            ,veh.license_plate_number as RegistrationNo	
+                            from master.scheduledreportvehicleref cte
+                            inner join master.group grp 
+                            on cte.vehicle_group_id = grp.id and grp.object_type='V' and cte.report_schedule_id=@report_schedule_id
+                            left join master.groupref vgrpref
+                            on  grp.id=vgrpref.group_id
+                            left join master.vehicle veh
+                            on vgrpref.ref_id=veh.id
+                            )
+                            --select * from cte_alert_vehicle_groupanddynamic;
+
+                            ,cte_account_visibility_for_vehicle_group
+                            AS (
+                            select distinct
+                            VehicleGroupId
+                            ,VehicleGroupName
+                            ,Id
+                            ,VehicleName
+                            ,VIN
+                            ,RegistrationNo	
+                            from cte_alert_vehicle_groupanddynamic
+                            where group_type='G'
+                            )
+                            --select * from cte_account_visibility_for_vehicle_group
+                            ,cte_account_visibility_for_vehicle_single
+                            AS (
+                            select distinct
+                            grp.id as VehicleGroupId
+                            ,grp.name as VehicleGroupName
+                            ,veh.id as Id
+                            ,veh.name as VehicleName
+                            ,veh.vin as VIN
+                            ,veh.license_plate_number as RegistrationNo
+                            from cte_alert_vehicle_groupanddynamic cte
+                            inner join master.group grp 
+                            on cte.vehiclegroupid=grp.id --and grp.object_type='V' --and grp.group_type='S'
+                            inner join master.vehicle veh
+                            on grp.ref_id=veh.id and grp.group_type='S'
+                            where grp.organization_id=cte.organization_id
+                            )
+                            --select * from cte_account_visibility_for_vehicle_single
+                            ,cte_account_visibility_for_vehicle_dynamic_unique
+                            AS (
+	                            select distinct group_type,
+								Organization_Id
+								,function_enum
+	                            ,VehicleGroupId
+	                            ,VehicleGroupName
+	                            From cte_alert_vehicle_groupanddynamic 
+	                            group by group_type
+								,Organization_Id
+								,function_enum
+	                             ,VehicleGroupId
+	                            ,VehicleGroupName
+	                            having group_type='D'
+                            )
+                            --select * from cte_account_visibility_for_vehicle_dynamic_unique
+                            ,
+                            cte_account_vehicle_DynamicAll
+                            AS (
+	                            select distinct 
+	                            du1.VehicleGroupId
+	                            ,du1.VehicleGroupName
+	                            ,veh.id as Id
+	                            ,veh.name as VehicleName
+	                            ,veh.vin as VIN
+	                            ,veh.license_plate_number as RegistrationNo
+	                            from master.vehicle veh
+	                            Inner join master.orgrelationshipmapping  orm
+	                            on orm.vehicle_id=veh.id
+	                            Inner join master.orgrelationship ors
+	                            on ors.id=orm.relationship_id
+	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
+	                            on ((orm.owner_org_id = du1.Organization_Id and ors.code='Owner') 
+	                            or (orm.target_org_id= du1.Organization_Id and ors.code<>'Owner'))
+	                            and du1.function_enum='A'
+	                            --Left join cte_account_visibility_for_vehicle_dynamic_unique du2
+	                            --on orm.target_org_id=du2.Organization_Id and ors.code<>'Owner' and du2.function_enum='A'
+	                            where ors.state='A'
+	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+	                            else COALESCE(end_date,0) =0 end  
+                            )
+                            --select * from cte_account_vehicle_DynamicAll
+                            , 
+                            cte_account_vehicle_DynamicOwned
+                            AS (
+	                            select distinct 
+	                            du1.VehicleGroupId
+	                            ,du1.VehicleGroupName
+	                            ,veh.id as Id
+	                            ,veh.name as VehicleName
+	                            ,veh.vin as VIN
+	                            ,veh.license_plate_number as RegistrationNo
+	                            from master.vehicle veh
+	                            Inner join master.orgrelationshipmapping  orm
+	                            on orm.vehicle_id=veh.id
+	                            Inner join master.orgrelationship ors
+	                            on ors.id=orm.relationship_id
+	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
+	                            on ((orm.owner_org_id=du1.Organization_Id and ors.code='Owner') or (veh.organization_id=du1.Organization_Id)) and du1.function_enum='O'
+	                            where ors.state='A'
+	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+	                            else COALESCE(end_date,0) =0 end  
+                            )
+                            --select * from cte_account_vehicle_DynamicOwned
+                            ,
+                            cte_account_vehicle_DynamicVisible
+                            AS (
+	                            select distinct 
+	                            du2.VehicleGroupId
+	                            ,du2.VehicleGroupName
+	                            ,veh.id as Id
+	                            ,veh.name as VehicleName
+	                            ,veh.vin as VIN
+	                            ,veh.license_plate_number as RegistrationNo
+	                            from master.vehicle veh
+	                            Inner join master.orgrelationshipmapping  orm
+	                            on orm.vehicle_id=veh.id
+	                            Inner join master.orgrelationship ors
+	                            on ors.id=orm.relationship_id
+	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du2
+	                            on orm.target_org_id=du2.Organization_Id and du2.function_enum='V'
+	                            where ors.state='A'
+	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+	                            else COALESCE(end_date,0) =0 end  
+	                            and ors.code<>'Owner'
+                            )
+                            --select * from cte_account_vehicle_DynamicVisible
+                            ,
+                            cte_account_vehicle_DynamicOEM
+                            AS (
+	                            select distinct 
+	                            du1.VehicleGroupId
+	                            ,du1.VehicleGroupName
+	                            ,veh.id as Id
+	                            ,veh.name as VehicleName
+	                            ,veh.vin as VIN
+	                            ,veh.license_plate_number as RegistrationNo
+	                            from master.vehicle veh
+	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
+	                            on veh.organization_id=du1.organization_id and du1.function_enum='M'
+                            )
+                            --select * from cte_account_vehicle_DynamicOEM
+                            ,
+                            cte_account_vehicle_CompleteList
+                            AS (
+	                            select distinct * from cte_account_visibility_for_vehicle_single
+	                            union
+	                            select distinct * from cte_account_visibility_for_vehicle_group
+	                            union
+	                            select distinct * from cte_account_vehicle_DynamicAll
+	                            union
+	                            select distinct * from cte_account_vehicle_DynamicOwned
+	                            union
+	                            select distinct * from cte_account_vehicle_DynamicVisible
+	                            union
+	                            select distinct * from cte_account_vehicle_DynamicOEM
+                            )
+                            select distinct * from cte_account_vehicle_CompleteList";
                 return _dataAccess.QueryAsync<VehicleList>(query, parameter);
             }
             catch (Exception)

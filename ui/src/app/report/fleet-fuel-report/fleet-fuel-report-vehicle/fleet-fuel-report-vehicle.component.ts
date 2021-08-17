@@ -188,7 +188,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'meter'    
+          labelString: 'kms'    
         }
       }]
     }
@@ -214,7 +214,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 'ltr'    
+          labelString: 'Ltrs'    
         }
       }]
     }
@@ -240,7 +240,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: 't'    
+          labelString: 'Ton'    
         }
       }]
     }
@@ -267,7 +267,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         },
         scaleLabel: {
           display: true,
-          labelString: ''    
+          labelString: 'Ltrs /100 km'    
         }
       }]
     }
@@ -391,6 +391,7 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         }else{ // org pref
           this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
             this.proceedStep(prefData, orgPref);
+            this.setPrefData();
           }, (error) => { // failed org API
             let pref: any = {};
             this.proceedStep(prefData, pref);
@@ -398,10 +399,78 @@ export class FleetFuelReportVehicleComponent implements OnInit {
         }
       });
     });
-
-
   }
-
+  
+  setPrefData(){
+    if(this.ConsumedChartType == 'Line' || this.ConsumedChartType == 'Bar')
+    {
+      let data1 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrs || 'Ltrs') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblGallon || 'Gallon') : (this.translationData.lblGallon || 'Gallon');
+      this.lineChartOptions3.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data1    
+        }
+      }];
+  }
+    
+    if(this.Co2ChartType == 'Line'|| this.Co2ChartType == 'Bar')
+    {
+      let data2 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblTon || 'Ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblTon || 'Ton') : (this.translationData.lblTon || 'Ton');
+      
+        this.lineChartOptions4.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data2    
+        }
+      }];
+  }
+    if(this.DistanceChartType == 'Line' || this.DistanceChartType == 'Bar')
+    {    
+      let data3 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkms || 'Kms') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'Miles') : (this.translationData.lblmile || 'Miles');
+      this.lineChartOptions2.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data3    
+        }
+      }];
+  
+  }
+    if(this.ConsumptionChartType == 'Line' ||this.ConsumptionChartType == 'Bar' )
+    {
+      let data4 =( this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblLtrsperkm || 'Ltrs /100 km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblMilesPerGallon || 'Miles per gallon') : (this.translationData.lblMilesPerGallon || 'Miles per gallon');
+      this.lineChartOptions5.scales.yAxes= [{
+        id: "y-axis-1",
+        position: 'left',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: data4   
+        }
+      }];
+  
+  }
+  }
   setGlobalSearchData(globalSearchFilterData:any) {
     this.fleetFuelSearchData["modifiedFrom"] = "vehicletrip";
     localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
