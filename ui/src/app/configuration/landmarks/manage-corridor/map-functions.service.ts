@@ -178,7 +178,7 @@ export class MapFunctionsService {
         </div>`
         this.endMarker.setData(endMarkerHtml);
         this.mapGroup.addObject(this.endMarker);
-
+        //this.hereMap.addObject(this.mapGroup)
         this.hereMap.getViewModel().setLookAtData({
           bounds: this.mapGroup.getBoundingBox()
         });
@@ -191,14 +191,7 @@ export class MapFunctionsService {
           // for all objects that it contains
           bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
             // read custom data
-            content:`<div style="font-size:12px;font-family:Times New Roman">
-            <table>
-            <tr><td><b>Corridor Name:</b></td> <td>${corridorName} </td></tr>
-            <tr><td><b>Start Point:</b></td><td>${startAddress}</td></tr>
-            <tr><td><b>End Point:</b></td><td>${endAddress}</td></tr>
-            <tr><td><b>Width:</b></td><td>${this.corridorWidthKm} km</td></tr>
-            </table>
-            </div>`
+            content: evt.target.getData()
           });
           // show info bubble
           this.ui.addBubble(bubble);
