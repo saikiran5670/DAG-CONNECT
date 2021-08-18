@@ -16,14 +16,14 @@ namespace net.atos.daf.ct2.kafkacdc.entity
     public class AlertCdcKafkaJsonMessage
     {
         public string Schema { get; set; }
-        public Payload Payload { get; set; }
+        public string Payload { get; set; }
+        public string Operation { get; set; }
+        public string Namespace { get; set; }
+        public long TimeStamp { get; set; }
     }
     public class Payload
     {
         public string Data { get; set; }
-        public string Operation { get; set; }
-        public string Namespace { get; set; }
-        public long Ts_ms { get; set; }
     }
     public class VehicleAlertRefMsgFormat
     {
