@@ -222,7 +222,10 @@
     <div *ngIf='calenderColumnData.length > 0' fxLayout="row" class='areaWidth full-width padding-10 calenderPref margin-top-20' fxLayoutAlign="left center"
         style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <mat-checkbox class='custom-checkbox' [checked]='true' [disabled]='!editFlag'>
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForCalenderColumns.toggle(calenderHeader[0]) : null;'
+                [checked]="selectionForCalenderColumns.isSelected(calenderHeader[0])"
+                [aria-label]='checkboxLabelForDetailsColumns(calenderHeader[0])' class='custom-checkbox'>
                 <span class='headerFont'>{{ translationData.lblCalenderCriteria || 'Calender Criteria' }}</span>
             </mat-checkbox>
         </div>
