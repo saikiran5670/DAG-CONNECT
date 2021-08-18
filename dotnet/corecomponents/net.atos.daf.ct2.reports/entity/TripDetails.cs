@@ -14,8 +14,8 @@ namespace net.atos.daf.ct2.reports.entity
         public int Distance { get; set; }
         public int IdleDuration { get; set; }
 
-        public int AverageSpeed { get; set; }
-        public int AverageWeight { get; set; }
+        public double AverageSpeed { get; set; }
+        public double AverageWeight { get; set; }
 
         public long Odometer { get; set; }
 
