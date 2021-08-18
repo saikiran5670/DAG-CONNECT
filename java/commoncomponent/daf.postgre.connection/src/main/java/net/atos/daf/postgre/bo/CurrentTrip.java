@@ -29,6 +29,7 @@ public class CurrentTrip implements Serializable{
 	private long driving_time;
 	private long trip_distance;
 	private long fuel_consumption;
+	private long odometer_val;
 	@Override
 	public String toString() {
 		return "CurrentTrip [trip_id=" + trip_id + ", start_time_stamp=" + start_time_stamp + ", end_time_stamp="
@@ -38,9 +39,9 @@ public class CurrentTrip implements Serializable{
 				+ ", last_position_lattitude=" + last_position_lattitude + ", last_position_longitude="
 				+ last_position_longitude + ", last_position_heading=" + last_position_heading
 				+ ", last_geolocation_address_id=" + last_geolocation_address_id + ", driving_time=" + driving_time
-				+ ", trip_distance=" + trip_distance + ", fuel_consumption=" + fuel_consumption + "]";
+				+ ", trip_distance=" + trip_distance + ", fuel_consumption=" + fuel_consumption + ", odometer_val="
+				+ odometer_val + "]";
 	}
-	
 	
 	
 }

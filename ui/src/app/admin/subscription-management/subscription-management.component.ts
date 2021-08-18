@@ -28,7 +28,8 @@ export class SubscriptionManagementComponent implements OnInit {
   private requestBody: any;
   options=['Select Status','All','Active','Expired'];
   subscriptionRestData: any = [];
-  displayedColumns = ['subscriptionId','packageCode', 'name', 'orgName', 'type', 'count', 'subscriptionStartDate', 'subscriptionEndDate', 'state', 'action'];
+  //displayedColumns = ['subscriptionId','packageCode', 'name', 'orgName', 'type', 'count', 'subscriptionStartDate', 'subscriptionEndDate', 'state', 'action'];
+  displayedColumns = ['subscriptionId','packageCode', 'name', 'type', 'count', 'subscriptionStartDate', 'subscriptionEndDate', 'state', 'action'];
   vehicleDiaplayColumns = ['name', 'vin', 'licensePlateNumber'];
   openVehicleFlag: boolean = false;
   selectedElementData: any;
