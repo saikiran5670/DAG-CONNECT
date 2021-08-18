@@ -300,7 +300,7 @@
     <div *ngIf="(!allDriversSelected && detailConvertedData) || driverSelected">
       <app-driver-time-detail [translationData]='translationData' [driverDetails]='tableDetailsInfoObj' [detailConvertedData]='detailConvertedData'
         [displayedColumns]='detaildisplayedColumns' [graphPayload]='graphPayload' [showField]='showDetailsField' (backToMainPage)="backToMainPage()" [driverSelected]='driverSelected'
-        [prefTimeZone] ='prefTimeZone'
+        [prefTimeZone] ='prefTimeZone' [prefTimeFormat]='prefTimeFormat' [prefDateFormat]='prefDateFormat'
       ></app-driver-time-detail>
     </div>
     </form>
