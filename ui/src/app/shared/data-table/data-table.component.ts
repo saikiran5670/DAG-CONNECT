@@ -18,6 +18,9 @@ export class DataTableComponent implements OnInit {
   @Input() columnLabels = [];
   @Input() topRightElements;
   @Input() actionColumnElements;
+  @Input() selectColumnDataElements;
+  @Input() selectColumnHeaderElements;
+  @Input() showExport;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;

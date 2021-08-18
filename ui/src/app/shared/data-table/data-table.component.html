@@ -10,7 +10,7 @@
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
         <div fxLayout="row" class='areaWidth'>
-            <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
+            <div *ngIf="showExport" class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
                 <button *ngIf='tableData.length > 0' mat-button [matMenuTriggerFor]="menu">
                     <mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon>
                 </button>
@@ -34,26 +34,35 @@
 
         <ng-container [matColumnDef]="column" *ngFor="let column of columnCodes; let i=index;">
 
-            <ng-container *ngIf="column != 'action'">
+            <ng-container *ngIf="column != 'action' && column != 'select'">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData['lbl'+columnLabels[i]] ||
                     columnLabels[i] }}</mat-header-cell>
-            </ng-container>
-            <ng-container *ngIf="column == 'action'">
-                <mat-header-cell *matHeaderCellDef>{{ translationData['lbl'+columnLabels[i]] ||
-                    columnLabels[i] }}</mat-header-cell>
-            </ng-container>
-
-            <mat-cell *matCellDef="let row">
-                <span *ngIf="column != 'action'">
+                <mat-cell *matCellDef="let row">
                     <span *ngIf="row.newTag && i == 0" class='newTagIcon marginLeft-24'></span>
                     <span *ngIf="row.newTag && i == 0" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                     <span [ngClass]="{ 'marginLeft-14': row.newTag && i == 0 }">{{row[column]}}</span>
-                </span>
-                <span *ngIf="column == 'action'">
+                </mat-cell>
+            </ng-container>
+
+            <ng-container *ngIf="column == 'action'">
+                <mat-header-cell *matHeaderCellDef>{{ translationData['lbl'+columnLabels[i]] ||
+                    columnLabels[i] }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
                     <!-- Action Column template elements will be printed here -->
                     <ng-container *ngTemplateOutlet='actionColumnElements; context: {rowData: row}'></ng-container>
-                </span>
-            </mat-cell>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container *ngIf="column == 'select'">
+                <mat-header-cell *matHeaderCellDef>
+                    <!-- Action Column template elements will be printed here -->
+                    <ng-container *ngTemplateOutlet='selectColumnHeaderElements'></ng-container>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <!-- Action Column template elements will be printed here -->
+                    <ng-container *ngTemplateOutlet='selectColumnDataElements; context: {rowData: row}'></ng-container>
+                </mat-cell>
+            </ng-container>
 
         </ng-container>
 

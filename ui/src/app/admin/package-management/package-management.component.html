@@ -16,7 +16,7 @@
   </div>
   
   <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
-    [columnCodes]="columnCodes" [columnLabels]="columnLabels" [topRightElements]="topRightElements" [actionColumnElements]="actionColumnElements">
+    [columnCodes]="columnCodes" [columnLabels]="columnLabels" [topRightElements]="topRightElements" [actionColumnElements]="actionColumnElements" showExport="true">
   
     <ng-template #topRightElements>
       <div>
