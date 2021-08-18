@@ -443,12 +443,12 @@ export class DriverTimeDetailComponent implements OnInit {
           const values = opts.ctx.rangeBar.getTooltipValues(opts);
           let activityType = values.seriesName.split(":")[0];
           let calculatedDiff = values.end - values.start;
-          let diffDuration = Util.getHhMmTimeFromMS(calculatedDiff);
+          let diffDuration = this.reportMapService.getStartTime(calculatedDiff,this.prefDateFormat,24,this.prefTimeZone,false,true) // 24- default time format to be changed to prefTimeFormat
           let diffDisplay= diffDuration;
           let fromTime = (values.start);
-          let fromDisplay  = this.reportMapService.getStartTime(fromTime,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,true,false);
+          let fromDisplay  = this.reportMapService.getStartTime(fromTime,this.prefDateFormat,24,this.prefTimeZone,true,false);
           let toTime = (values.end);
-          let toDisplay  = this.reportMapService.getStartTime(toTime,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,true,false);
+          let toDisplay  = this.reportMapService.getStartTime(toTime,this.prefDateFormat,24,this.prefTimeZone,true,false);
           let getIconName = activityType.toLowerCase();
           let activityIcon =  `assets/activityIcons/${getIconName}.svg`;
           return (

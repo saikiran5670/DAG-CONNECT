@@ -1627,7 +1627,7 @@ export class ReportMapService {
       _time = `${h}:${m}:${s}`;
     }
     if(onlyTime){
-      return _time;
+      return _time; // returns only time
     }
     switch(dateFormat){
       case 'ddateformat_dd/mm/yyyy': {
@@ -1669,7 +1669,7 @@ export class ReportMapService {
 
       }
     }
-    return _date;
+    return _date; //returns dateTime if addTime is true or date if addTime is false
   }
    
   getTimeInSeconds(timeValue, unit){
