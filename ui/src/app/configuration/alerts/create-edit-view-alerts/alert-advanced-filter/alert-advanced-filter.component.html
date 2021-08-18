@@ -89,7 +89,7 @@
             <mat-form-field appearance="outline">
               <input matInput placeholder="{{ translationData.lbl00 || '00' }}" formControlName="distance">
             </mat-form-field>
-            <mat-label>m</mat-label>
+            <mat-label>{{distanceUnit}}</mat-label>
           </mat-label>
         </div>
         <div fxLayout="column" class="areaWidth">
@@ -197,7 +197,7 @@
       <!-- entering site -->
 
       <div class="areawidth" *ngIf="isPoiSelected && actionType != 'view'">
-        <span>{{ translationData.lblWidth|| 'Width' }} ({{ translationData.lblKm|| 'km' }}):
+        <span>{{ translationData.lblWidth|| 'Width' }} <span>({{ poiUnit }}):</span>
           <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"
             (focusout)="changeSliderInput()">
           <span style="color:red;">{{translationData.lblWidthcannotbe0mtrs ||'Width can not be 0 mtrs'}}</span>
