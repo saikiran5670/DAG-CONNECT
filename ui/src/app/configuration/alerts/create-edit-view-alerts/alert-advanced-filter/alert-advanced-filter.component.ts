@@ -38,6 +38,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
   @Input() alert_type_selected : any;
   @Input() selectedRowData : any;
   @Input() actionType :any;
+  @Input() prefUnitFormat: any;
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   @Output() isAdvancedAlertPayload = new EventEmitter<any>();
@@ -106,6 +107,11 @@ export class AlertAdvancedFilterComponent implements OnInit {
   isOccurenceValidate: boolean= true;
   enteringFlag: boolean = false;
   existingFlag: boolean = false;
+  distanceEnum :any;
+  durationEnum :any = 'S';
+  POIEnum  :any;
+  distanceUnit: any;
+  poiUnit: any;
 
   @ViewChild(PeriodSelectionFilterComponent)
   periodSelectionComponent: PeriodSelectionFilterComponent;
@@ -126,7 +132,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    console.log(this.displayedColumnsPOI[0]);
+    console.log(this.prefUnitFormat);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId= parseInt(localStorage.getItem("accountId"));
@@ -148,6 +154,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
     
     this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
     if(this.actionType == 'create'){
+      this.setUnitsAsPrefData();
     this.alertAdvancedFilterForm.get('poiSite').setValue('E');
     }
     if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
@@ -217,6 +224,21 @@ export class AlertAdvancedFilterComponent implements OnInit {
         }
         
       });
+  }
+
+  setUnitsAsPrefData(){
+    if(this.prefUnitFormat == 'dunit_Metric'){
+      this.distanceEnum = 'M';
+      this.distanceUnit = this.translationData.lblMeter || 'm';
+      this.POIEnum = 'K';
+      this.poiUnit = this.translationData.lblKilometer || 'Km';
+  }
+    else{
+      this.distanceEnum = 'F';
+      this.distanceUnit = this.translationData.lblFeet || 'ft';
+      this.POIEnum = 'L';
+      this.poiUnit = this.translationData.lblMiles || 'Miles';
+    }
   }
 
   onChangeDistance(event: any){
@@ -1177,7 +1199,7 @@ else{
         "alertUrgencyLevelId": 0,
         "filterType": "D",
         "thresholdValue": this.thresholdVal,
-        "unitType": "N",
+        "unitType": this.durationEnum,
         "landmarkType": "N",
         "refId": 0,
         "positionType": this.selectedPoiSite,
@@ -1402,7 +1424,7 @@ else{
         "alertUrgencyLevelId": 0,
         "filterType": "D",
         "thresholdValue": this.thresholdVal,
-        "unitType": "N",
+        "unitType": this.durationEnum,
         "landmarkType": 'N',
         "refId": 0,
         "positionType": this.selectedPoiSite,
@@ -1445,7 +1467,7 @@ else{
       "alertUrgencyLevelId": 0,
       "filterType": "T",
       "thresholdValue": this.thresholdVal,
-      "unitType": "N",
+      "unitType": this.distanceEnum,
       "landmarkType": 'N',
       "refId": 0,
       "positionType": this.selectedPoiSite,
@@ -1664,7 +1686,7 @@ else{
         "alertUrgencyLevelId": 0,
         "filterType": "D",
         "thresholdValue": this.thresholdVal,
-        "unitType": "N",
+        "unitType": this.durationEnum,
         "landmarkType": 'N',
         "refId": 0,
         "positionType": this.selectedPoiSite,

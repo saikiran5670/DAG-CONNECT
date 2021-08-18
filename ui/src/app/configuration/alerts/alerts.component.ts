@@ -11,6 +11,7 @@ import { VehicleService } from '../../services/vehicle.service';
 import { PackageService } from 'src/app/services/package.service';
 import { AlertService } from 'src/app/services/alert.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
+import { ReportMapService } from '../../report/report-map.service';
 
 @Component({
   selector: 'app-alerts',
@@ -69,7 +70,8 @@ export class AlertsComponent implements OnInit {
     private dialog: MatDialog,
     private vehicleService: VehicleService,
     private alertService: AlertService,
-    private dialogService: ConfirmDialogService ) { }
+    private dialogService: ConfirmDialogService,
+    private reportMapService: ReportMapService ) { }
   
     ngOnInit() {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -281,7 +283,10 @@ export class AlertsComponent implements OnInit {
       item =  Object.defineProperty(item, "highUrgencyLevel", {value : obj.urgencyLevelType,
       writable : true,enumerable : true, configurable : true});
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
-      writable : true,enumerable : true, configurable : true});         
+      writable : true,enumerable : true, configurable : true});    
+      if(obj.unitType !='N') {
+      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);
+      }
       }); 
       }
       else if(warning.length > 0){
@@ -289,8 +294,11 @@ export class AlertsComponent implements OnInit {
       item =  Object.defineProperty(item, "highUrgencyLevel", {value : obj.urgencyLevelType,
       writable : true,enumerable : true, configurable : true});
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
-      writable : true,enumerable : true, configurable : true});
-      });     
+      writable : true,enumerable : true, configurable : true});  
+      if(obj.unitType !='N') {
+      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);
+      }
+    });     
       }       
       else {
       advisory.forEach(obj => { 
@@ -298,7 +306,10 @@ export class AlertsComponent implements OnInit {
       writable : true,enumerable : true, configurable : true});
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
       writable : true,enumerable : true, configurable : true});  
-      });   
+      if(obj.unitType !='N') {
+      item.highThresholdValue = this.getConvertedThresholdValues(item.highThresholdValue, obj.unitType);  
+      }
+    });   
       }  
       if(item.vehicleGroupName!=''){     
         this.vehicleGroupList.push({value:item.vehicleGroupName, key:item.vehicleGroupName});
@@ -317,6 +328,20 @@ export class AlertsComponent implements OnInit {
    this.hideloader();     
  }
  
+ getConvertedThresholdValues(originalThreshold,unitType){
+   let threshold;
+   if(unitType == 'H' || unitType == 'T' ||unitType == 'S'){
+    threshold =this.reportMapService.getConvertedTime(originalThreshold,unitType);
+   }
+   else if(unitType == 'K' || unitType == 'L'){
+    threshold =this.reportMapService.getConvertedDistance(originalThreshold,unitType);
+    }
+  else if(unitType == 'A' || unitType == 'B'){
+    threshold =this.reportMapService.getConvertedSpeed(originalThreshold,unitType);
+   }
+   return threshold;
+ }
+
  getFilteredValues(dataSource){
   this.dataSource = dataSource;
   this.dataSource.paginator = this.paginator;

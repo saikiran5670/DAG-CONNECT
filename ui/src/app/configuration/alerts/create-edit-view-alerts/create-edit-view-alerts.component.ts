@@ -1764,7 +1764,7 @@ PoiCheckboxClicked(event: any, row: any) {
               let tempObj= {
                 "landmarkType": "P",
                 "refId": element.id,
-                "distance": 100,
+                "distance": this.poiWidth,
                 "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
@@ -1776,7 +1776,7 @@ PoiCheckboxClicked(event: any, row: any) {
               let tempObj= {
                 "landmarkType": "P",
                 "refId": element.id,
-                "distance": 100,
+                "distance": this.poiWidth,
                 "unitType": "N",
                 "id": poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0,	
                 "alertId": this.selectedRowData.id,
@@ -1792,7 +1792,7 @@ PoiCheckboxClicked(event: any, row: any) {
               let tempObj= {
                 "landmarkType": element.type,
                 "refId": element.id,
-                "distance": 0,
+                "distance": element.distance,
                 "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
@@ -2357,6 +2357,7 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   sliderChanged(){
+    this.poiWidth = this.alertForm.controls.widthInput.value;
      this.poiWidthKm = this.poiWidth / 1000;
      this.alertForm.controls.widthInput.setValue(this.poiWidthKm);
      if(this.markerArray.length > 0){

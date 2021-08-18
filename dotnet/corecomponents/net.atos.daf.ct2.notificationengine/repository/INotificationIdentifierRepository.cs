@@ -15,5 +15,6 @@ namespace net.atos.daf.ct2.notificationengine.repository
         Task<TripAlert> GetVehicleIdForTrip(TripAlert tripAlert);
         Task<string> GetTranslateValue(string languageCode, string key);
         Task<string> GetLanguageCodePreference(string emailId);
+        Task<string> GetUnitType(int alertId, string urgencyLevelType);
     }
 }

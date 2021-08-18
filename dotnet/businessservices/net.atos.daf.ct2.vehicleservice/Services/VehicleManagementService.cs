@@ -232,11 +232,17 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Refid }, _kafkaConfiguration));
 
                 }
-                //TODO: Need to check the imlementation
+
                 if (ObjvehicleOptInOptOutResponce.RefId > 0 && ObjvehicleOptInOptOutResponce.Type == OptInOptOutType.VehicleLevel)
                 {
                     //Triggering alert cdc 
                     await _alertCdcHelper.TriggerAlertCdc(new List<int> { ObjvehicleOptInOptOutResponce.RefId });
+                }
+                else if (ObjvehicleOptInOptOutResponce.RefId > 0 && ObjvehicleOptInOptOutResponce.Type == OptInOptOutType.VehicleLevel)
+                {
+                    var vehicleList = await _vehicleManager.GetVehicleIdsByOrgId(ObjvehicleOptInOptOutResponce.RefId);
+                    if (vehicleList.Count() > 0)
+                        await _alertCdcHelper.TriggerAlertCdc(vehicleList);
                 }
                 return await Task.FromResult(new VehicleOptInOptOutResponce
                 {
@@ -338,7 +344,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         {
                             bool vehicleRef = await _groupManager.UpdateRef(entity);
                         }
-                        ///Trigger Vehich Group CDC
+                        ///Trigger Vehicle Group CDC
                         else if (entity.Id > 0 && entity.GroupRef.Count > 0)
                         {
                             await _alertCdcHelper.TriggerVehicleGroupCdc(entity.Id);
@@ -382,7 +388,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 bool result = await _groupManager.Delete(request.GroupId, Group.ObjectType.VehicleGroup);
                 if (result)
                 {
-                    //Trigger Vehich Group CDC
+                    //Trigger Vehicle Group CDC
                     await _alertCdcHelper.TriggerVehicleGroupCdc(request.GroupId);
                 }
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete Vehicle Group ", 1, 2, Convert.ToString(request.GroupId)).Result;

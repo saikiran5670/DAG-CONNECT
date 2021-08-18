@@ -20,6 +20,7 @@ namespace net.atos.daf.ct2.kafkacdc.test
         private readonly IConfiguration _configuration;
         private readonly KafkaConfiguration _kafkaConfig;
         private readonly VehicleCdcManager _vehicleCdcManager;
+        private readonly IVehicleManagementAlertCDCManager _vehicleMgmAlertCdcManager;
 
         public AlertCDCTest()
         {
@@ -34,6 +35,8 @@ namespace net.atos.daf.ct2.kafkacdc.test
             _vehicleAlertRefManager = new AlertMgmAlertCdcManager(_vehicleAlertRepository, _configuration);
             var vehicleCdcrepository = new VehicleCdcRepository(_dataAccess, _datamartDataacess);
             _vehicleCdcManager = new VehicleCdcManager(vehicleCdcrepository);
+            var vehicleManagementAlertCDCRepository = new VehicleManagementAlertCDCRepository(_dataAccess, _datamartDataacess);
+            _vehicleMgmAlertCdcManager = new VehicleManagementAlertCDCManager(_vehicleAlertRepository, vehicleManagementAlertCDCRepository,_configuration);
         }
 
         [TestMethod]
@@ -52,6 +55,13 @@ namespace net.atos.daf.ct2.kafkacdc.test
         public void Delete()
         {
             var result = _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(12, "D").Result;
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void UpdateVehcle()
+        {
+            var result = _vehicleMgmAlertCdcManager.GetVehicleAlertRefFromVehicleId(new List<int> { 27}).Result;
             Assert.IsTrue(result);
         }
         [TestMethod]
