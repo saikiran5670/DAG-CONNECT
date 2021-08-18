@@ -35,6 +35,9 @@ declare var H: any;
 })
 
 export class TripReportComponent implements OnInit, OnDestroy {
+
+  accountInfo:any = {};
+  vehicleDisplayPreference = 'dvehicledisplay_Name';
   searchStr: string = "";
   suggestionData: any;
   selectedMarker: any;
@@ -267,7 +270,16 @@ export class TripReportComponent implements OnInit, OnDestroy {
             this.proceedStep(prefData, pref);
           });
         }
+
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
       });
+    
     });
   }
 
