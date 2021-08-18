@@ -552,9 +552,13 @@ calendarOptions: CalendarOptions = {
     });
   }
 
+  calenderCardView: boolean = true;
   preparePrefData(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(element => {
+        if(element.key == 'rp_fu_report_calendarview'){
+          this.calenderCardView = (element.state == 'A') ? true : false;
+        }
         if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
           element.subReportUserPreferences.forEach(item => {
             let _data: any = item;

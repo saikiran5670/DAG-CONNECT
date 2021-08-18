@@ -66,6 +66,8 @@ namespace net.atos.daf.ct2.vehicleservice
             services.AddTransient<IVehicleCdcRepository, VehicleCdcRepository>();
             services.AddTransient<IVehicleManagementAlertCDCManager, VehicleManagementAlertCDCManager>();
             services.AddTransient<IVehicleManagementAlertCDCRepository, VehicleManagementAlertCDCRepository>();
+            services.AddTransient<IVehicleGroupAlertCdcManager, VehicleGroupAlertCdcManager>();
+            services.AddTransient<IVehicleGroupAlertCdcRepository, VehicleGroupAlertCdcRepository>();
             services.AddTransient<IAlertMgmAlertCdcRepository, AlertMgmAlertCdcRepository>();
         }
 
