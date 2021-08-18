@@ -30,7 +30,7 @@ namespace net.atos.daf.ct2.kafkacdc
             _vehicleAlertRepository = vehicleAlertRepository;
             _kafkaCdcHelper = new KafkaCdcHelper();
         }
-        public Task<bool> GetVehicleGroupAlertConfiguration(int vehicleGroupId, string operation) => ExtractAndSyncVehicleGroupAlertRefByVehicleGroupIds(vehicleGroupId, operation);
+        public Task<bool> GetVehicleGroupAlertConfiguration(int vehicleGroupId) => ExtractAndSyncVehicleGroupAlertRefByVehicleGroupIds(vehicleGroupId, "N");
         internal async Task<bool> ExtractAndSyncVehicleGroupAlertRefByVehicleGroupIds(int vehicleGroupId, string operation)
         {
             bool result = false;

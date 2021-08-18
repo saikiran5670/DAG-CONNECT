@@ -23,6 +23,7 @@ using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.kafkacdc.entity;
 using net.atos.daf.ct2.vehicleservice.common;
 
+
 namespace net.atos.daf.ct2.vehicleservice.Services
 {
     public class VehicleManagementService : VehicleService.VehicleServiceBase
@@ -39,9 +40,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         private readonly IVehicleCdcManager _vehicleCdcManager;
         private readonly AlertCdcHelper _alertCdcHelper;
         private readonly IVehicleManagementAlertCDCManager _vehicleMgmAlertCdcManager;
+        private readonly IVehicleGroupAlertCdcManager _vehicleGroupAlertCdcManager;
+
 
         public VehicleManagementService(IVehicleManager vehicelManager, Group.IGroupManager groupManager, IAuditTraillib auditlog, AccountComponent.IAccountManager accountmanager, IConfiguration configuration,
-            IVehicleCdcManager vehicleCdcManager, IVehicleManagementAlertCDCManager vehicletMgmAlertCdcManager)
+            IVehicleCdcManager vehicleCdcManager, IVehicleManagementAlertCDCManager vehicletMgmAlertCdcManager, IVehicleGroupAlertCdcManager vehicleGroupAlertCdcManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _vehicleManager = vehicelManager;
@@ -53,7 +56,8 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
             _vehicleCdcManager = vehicleCdcManager;
             _vehicleMgmAlertCdcManager = vehicletMgmAlertCdcManager;
-            _alertCdcHelper = new AlertCdcHelper(_vehicleMgmAlertCdcManager);
+            _alertCdcHelper = new AlertCdcHelper(_vehicleMgmAlertCdcManager, _vehicleGroupAlertCdcManager);
+            _vehicleGroupAlertCdcManager = vehicleGroupAlertCdcManager;
         }
 
         public override async Task<VehiclesBySubscriptionDetailsResponse> GetVehicleBySubscriptionId(SubscriptionIdRequest request, ServerCallContext context)
@@ -334,6 +338,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         {
                             bool vehicleRef = await _groupManager.UpdateRef(entity);
                         }
+                        ///Trigger Vehich Group CDC
+                        else if (entity.Id > 0 && entity.GroupRef.Count > 0)
+                        {
+                            await _alertCdcHelper.TriggerVehicleGroupCdc(entity.Id);
+                        }
                         else
                         {
                             // delete existing reference
@@ -371,6 +380,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             try
             {
                 bool result = await _groupManager.Delete(request.GroupId, Group.ObjectType.VehicleGroup);
+                if (result)
+                {
+                    //Trigger Vehich Group CDC
+                    await _alertCdcHelper.TriggerVehicleGroupCdc(request.GroupId);
+                }
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete Vehicle Group ", 1, 2, Convert.ToString(request.GroupId)).Result;
 
                 return await Task.FromResult(new VehicleGroupDeleteResponce
