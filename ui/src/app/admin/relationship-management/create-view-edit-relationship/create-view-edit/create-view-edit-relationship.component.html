@@ -67,13 +67,16 @@
                             formControlName="relationshipName" required maxlength="50">
                         <mat-icon style='color:green;' matSuffix *ngIf="doneFlag">done</mat-icon>
                     </mat-form-field>
-                    <mat-error *ngIf="relationshipFormGroup.get('relationshipName').hasError('required')">
+                   <mat-error *ngIf="relationshipFormGroup.get('relationshipName').hasError('required')">
                         {{ translationData.lblPleaseentertheRelationshipname || 'Please enter the relationship name'}}
                     </mat-error>
                     <mat-error *ngIf="relationshipFormGroup.get('relationshipName').hasError('maxlength')">
                         {{ translationData.lblRelationshipNameShouldbeMax60Characters || 'Relationshipname should be
                         max. 60 characters'}}
                     </mat-error>
+                    <mat-error *ngIf="relationshipFormGroup.get('relationshipName').hasError('specialCharsNotAllowed')">
+                        {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                      </mat-error>
                     <mat-error #RelationshipValueCheck *ngIf="isRelationshipExist">
                         {{ translationData.lblRelationshipalreadyexistsPleasechooseadifferentname || 'Relationship
                         already exists. Please choose a different name.'}}
