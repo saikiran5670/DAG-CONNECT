@@ -39,24 +39,24 @@ export class ReportsPreferencesComponent implements OnInit {
 
   ngOnInit() {
     this.loadReportData();
-    this.getPreferences();
   }
 
   loadReportData(){
     this.showLoadingIndicator = true;
-    this.reportService.getReportDetails().subscribe((reportList: any)=>{
-      this.hideloader();
+    this.reportService.getReportDetails().subscribe((reportList: any) => {
       this.reportListData = reportList.reportDetails;
+      let languageCode = JSON.parse(localStorage.getItem('language')).code;
+      this.translationService.getPreferences(languageCode).subscribe((res: any) => { 
+        this.hideloader();
+        this.generalPreferences = res;
+      }, (error)=>{
+        this.hideloader();
+      });
     }, (error)=>{
       console.log('Report not found...', error);
       this.hideloader();
       this.reportListData = [];
     });
-  }
-
-  getPreferences() {
-    let languageCode = JSON.parse(localStorage.getItem('language')).code;
-    this.translationService.getPreferences(languageCode).subscribe((res) => this.generalPreferences = res)
   }
 
   hideloader() {

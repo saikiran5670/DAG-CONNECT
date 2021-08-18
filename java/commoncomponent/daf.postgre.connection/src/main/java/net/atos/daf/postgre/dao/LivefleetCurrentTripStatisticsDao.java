@@ -21,7 +21,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 	private Connection connection;
 
 	/** SQL statement for insert. */
-	private static final String READ_CURRENT_TRIP = "SELECT * FROM livefleet.livefleet_current_trip_statistics WHERE trip_id = ? ORDER BY created_at ASC limit 1";
+	private static final String READ_CURRENT_TRIP = "SELECT * FROM livefleet.livefleet_current_trip_statistics WHERE trip_id = ? AND trip_id IS NOT NULL ORDER BY id DESC limit 1";
 	private static final String INSERT_CURRENT_TRIP = "INSERT INTO livefleet.livefleet_current_trip_statistics ( trip_id , vin , start_time_stamp , end_time_stamp , "
 			+ "driver1_id , trip_distance , driving_time , fuel_consumption , vehicle_driving_status_type , odometer_val , distance_until_next_service , latest_received_position_lattitude , "
 			+ "latest_received_position_longitude , latest_received_position_heading , latest_geolocation_address_id , start_position_lattitude , start_position_longitude , start_position_heading , "
@@ -367,11 +367,11 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 				
 				
 				System.out.println("rs_trip "+rs_trip);
-
-				if(rs_trip.next()){
 				
-					currentTripdata = new CurrentTrip();
-					currentTripdata.setTrip_id(tripId);
+				currentTripdata = new CurrentTrip();
+				currentTripdata.setTrip_id(tripId);
+
+				while(rs_trip.next()){
 	
 					currentTripdata.setStart_time_stamp(rs_trip.getLong("start_time_stamp"));
 					currentTripdata.setEnd_time_stamp(rs_trip.getLong("end_time_stamp"));
@@ -386,6 +386,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 					currentTripdata.setDriving_time(rs_trip.getLong("driving_time"));
 					currentTripdata.setTrip_distance(rs_trip.getLong("trip_distance"));
 					currentTripdata.setFuel_consumption(rs_trip.getLong("fuel_consumption"));
+					currentTripdata.setOdometer_val(rs_trip.getLong("odometer_val"));
 				}
 				//}
 				System.out.println("RESULTSET RECEIVED from READ_CURRENT_TRIP for tripId = " + tripId + " is " + currentTripdata.toString());

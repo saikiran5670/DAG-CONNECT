@@ -12,6 +12,7 @@ export class TripReportPreferenceComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
   @Input() translationData: any;
+  @Input() generalPreferences: any;
   @Output() setTripReportFlag = new EventEmitter<any>();
   localStLanguage: any;
   accountId: any;
@@ -22,12 +23,15 @@ export class TripReportPreferenceComponent implements OnInit {
   tripPrefData: any = [];
   selectionForTripColumns = new SelectionModel(true, []);
   reqField: boolean = false;
+  accountPreference: any;
+  prefUnitFormat: any = 'dunit_Metric';
 
   constructor(private reportService: ReportService, private router: Router) { }
 
   ngOnInit(){ 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
+    this.accountPreference = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     let repoId: any = this.reportListData.filter(i => i.name == 'Trip Report');
@@ -37,7 +41,16 @@ export class TripReportPreferenceComponent implements OnInit {
       this.reportId = 1; //- hard coded for trip report
     }
     this.translationUpdate();
+    this.getUnitFormat(this.accountPreference);
     this.loadTripReportPreferences();
+  }
+
+  getUnitFormat(accPref: any){
+    if(accPref && accPref.accountPreference){
+      if(this.generalPreferences && this.generalPreferences.unit && this.generalPreferences.unit.length > 0){
+        this.prefUnitFormat = this.generalPreferences.unit.filter(i => i.id == accPref.accountPreference.unitId)[0].name;
+      }
+    }
   }
 
   translationUpdate(){
@@ -85,10 +98,24 @@ export class TripReportPreferenceComponent implements OnInit {
             let _data: any;
             if(item.key.includes('rp_tr_report_tripreportdetails_')){
               _data = item;
-              if(this.translationData[item.key]){
-                _data.translatedName = this.translationData[item.key];  
+              let txt: any;
+              if(item.key == 'rp_tr_report_tripreportdetails_odometer' || item.key == 'rp_tr_report_tripreportdetails_distance'){
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmi || 'mi');
+                _data.translatedName = this.getTranslatedValues(item, txt);
+              }else if(item.key == 'rp_tr_report_tripreportdetails_idleduration' || item.key == 'rp_tr_report_tripreportdetails_drivingtime'){
+                txt = this.translationData.lblhhmm || 'hh:mm';
+                _data.translatedName = this.getTranslatedValues(item, txt);
+              }else if(item.key == 'rp_tr_report_tripreportdetails_averageweight'){
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblpound || 'pound');
+                _data.translatedName = this.getTranslatedValues(item, txt);
+              }else if(item.key == 'rp_tr_report_tripreportdetails_fuelconsumed'){
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.translationData.lblmpg || 'mpg');
+                _data.translatedName = this.getTranslatedValues(item, txt);
+              }else if(item.key == 'rp_tr_report_tripreportdetails_averagespeed'){
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
+                _data.translatedName = this.getTranslatedValues(item, txt);
               }else{
-                _data.translatedName = this.getName(item.name, 25);   
+                _data.translatedName = this.getTranslatedValues(item);
               }
               this.tripPrefData.push(_data);
             }
@@ -97,6 +124,16 @@ export class TripReportPreferenceComponent implements OnInit {
       });
       this.setColumnCheckbox();
     }
+  }
+
+  getTranslatedValues(item: any, text?: any){
+    let _retVal: any;
+    if(this.translationData[item.key]){
+      _retVal = (text && text != '') ? `${this.translationData[item.key]} (${text})` : `${this.translationData[item.key]}`;  
+    }else{
+      _retVal = (text && text != '') ? `${this.getName(item.name, 25)} (${text})` : `${this.getName(item.name, 25)}`;   
+    }
+    return _retVal;
   }
 
   getName(name: any, _count: any) {
