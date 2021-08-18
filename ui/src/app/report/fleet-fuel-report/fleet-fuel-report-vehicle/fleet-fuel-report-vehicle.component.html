@@ -540,7 +540,7 @@
           <ng-container matColumnDef="vin">
             <mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="!checkForPreference('vehicledetails_vin')">{{ translationData.lblVIN || 'VIN' }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row" class="text-truncate" [hidden]="!checkForPreference('vehicledetails_vin')">
+            <mat-cell *matCellDef="let row" class="text-truncate" matTooltip="{{row.vin}}" [hidden]="!checkForPreference('vehicledetails_vin')">
               <span>{{row.vin}}</span>
             </mat-cell>
             <!-- <mat-cell *matCellDef="let row">{{ row.vin != '' ? row.vin : '-' }}</mat-cell> -->
