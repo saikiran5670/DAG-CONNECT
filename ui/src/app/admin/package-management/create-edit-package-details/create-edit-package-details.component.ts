@@ -49,7 +49,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   ];
   columnCodes = ['name', 'select'];
   columnLabels = ['FeatureName','Include'];
-  showFeatures:boolean = false;
+  showLoadingIndicator: boolean = true;
   
  
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService,) { }
@@ -127,7 +127,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         // });
       }
 
-      this.showFeatures = true;
+      this.showLoadingIndicator = false;
 
       setTimeout(()=>{
         if(!this.createStatus || this.duplicateMsg || this.viewFlag){

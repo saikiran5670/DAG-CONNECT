@@ -10,7 +10,7 @@
         </span>
     </div>
 </div>
-<form [formGroup]="packageFormGroup">
+<form *ngIf="!showLoadingIndicator" [formGroup]="packageFormGroup">
     <mat-card class='mat-elevation-z'>
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
@@ -158,7 +158,7 @@
                 </div>
             </div>
 
-            <app-data-table *ngIf="showFeatures" [tableData]="initData" [translationData]="translationData"
+            <app-data-table [tableData]="initData" [translationData]="translationData"
                 [columnCodes]="columnCodes" [columnLabels]="columnLabels"
                 [selectColumnHeaderElements]="selectColumnHeaderElements" [selectColumnDataElements]="selectColumnDataElements">
             
@@ -226,3 +226,4 @@
         </mat-card-content>
     </mat-card>
 </form>
+<app-spinner *ngIf="showLoadingIndicator"></app-spinner>

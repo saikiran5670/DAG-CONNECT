@@ -85,11 +85,10 @@ export class DataTableComponent implements OnInit {
       }
     });
 
-    this.dataSource.filterPredicate = function (data, filter: any) {
-      return data.code.toLowerCase().includes(filter) ||
-        data.name.toLowerCase().includes(filter) ||
-        data.type.toLowerCase().includes(filter) ||
-        data.state.toLowerCase().includes(filter)
+    this.dataSource.filterPredicate = (data, filter: any) => {
+      for(let col of this.columnCodes) {
+        return data[col].toLowerCase().includes(filter)
+      }
     }
   }
 
