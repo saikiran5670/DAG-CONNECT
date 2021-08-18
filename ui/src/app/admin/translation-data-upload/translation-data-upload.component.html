@@ -104,15 +104,25 @@
                         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbluploadedFileHistory || 'Uploaded File History' }}</span>
                     </div>
                 </div>
-                <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+                <!-- <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
                     <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                         <mat-form-field appearance="outline" class="full-width">
                             <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
                             <span matPrefix><mat-icon>search</mat-icon></span>
                         </mat-form-field>
                     </div>
-                </div>
-                <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+                </div> -->
+                <app-data-table *ngIf="!showLoadingIndicator" [tableData]="initData" [translationData]="translationData"
+                    [columnCodes]="columnCodes" [columnLabels]="columnLabels" [displayedColumns]="displayedColumns" [actionColumnElements]="actionColumnElements">
+                
+                    <ng-template #actionColumnElements let-gridData='rowData'>
+                        <button class='actionBtn' mat-flat-button (click)="onDownloadExcel(gridData)" matTooltip="{{ translationData.lblDownload || 'Download' }}">
+                            <img src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 20px; height: 20px;" />
+                        </button>
+                    </ng-template>
+                    
+                </app-data-table>
+                <!-- <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
                 <div *ngIf='initData.length > 0'>
                     <mat-table [dataSource]="dataSource" matSort>
                         <ng-container matColumnDef="fileName">
@@ -144,7 +154,7 @@
                         </mat-row>
                     </mat-table>
                     <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-                </div>
+                </div> -->
             <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
         </mat-card>
 </div>

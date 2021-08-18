@@ -24,7 +24,9 @@ export class TranslationDataUploadComponent implements OnInit {
   accountOrganizationId: any = 0;
   dataSource: any;
   initData: any = [];
+  columnCodes: string[] = ['fileName','createdAt','fileSize','description','action'];
   displayedColumns: string[] = ['fileName','createdAt','fileSize','description','action'];
+  columnLabels: String[] = ['File Name', 'Uploaded Date', 'File Size', 'Description', 'Action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   uploadTranslationDataFormGroup: FormGroup;
