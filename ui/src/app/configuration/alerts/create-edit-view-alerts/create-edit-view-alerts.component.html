@@ -136,7 +136,9 @@
               <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" (selectionChange)="onChangeVehicle($event.value)" formControlName="vehicle">
                       <mat-option *ngFor="let vehicle of vehicleByVehGroupList" [value]="vehicle.vehicleId">
-                          {{vehicle.vin}}
+                        <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_Name'"> {{vehicle.vehicleName}} </span>
+                        <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{vehicle.vin}} </span>
+                        <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{vehicle.registrationNo ? vehicle.registrationNo : vehicle.vehicleName}} </span>
                       </mat-option>
                   </mat-select>
               </mat-form-field>

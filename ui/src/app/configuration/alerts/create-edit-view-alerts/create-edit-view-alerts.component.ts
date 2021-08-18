@@ -38,6 +38,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   alertTypeList: any = [];
   vehicleGroupList: any = [];
   vehicleList: any = [];
+  accountInfo:any = {};
+  vehicleDisplayPreference = 'dvehicledisplay_Name';
  
   alertCategoryTypeMasterData: any= [];
   alertCategoryTypeFilterData: any= [];
@@ -174,7 +176,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-    });
+    });  
    }
 
   ngOnInit(): void {
@@ -232,6 +234,14 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.proceedStep(prefData, pref);
         });
       }
+
+      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+      if(vehicleDisplayId) {
+        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        if(vehicledisplay.length != 0) {
+          this.vehicleDisplayPreference = vehicledisplay[0].name;
+        }
+      }  
     });
 }
   
