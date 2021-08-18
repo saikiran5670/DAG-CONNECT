@@ -242,6 +242,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.vehicleDisplayPreference = vehicledisplay[0].name;
         }
       }  
+      if(this.actionType == 'create')
+      {
+        this.sliderChanged();
+      }
     });
 }
   
@@ -1077,6 +1081,8 @@ PoiCheckboxClicked(event: any, row: any) {
     
     this.alertForm.get('alertType').setValue(this.selectedRowData.type);
     this.alertForm.get('applyOn').setValue(this.selectedRowData.applyOn);
+    this.poiWidth =this.selectedRowData.alertLandmarkRefs[0].distance;
+    this.sliderChanged();
     
     if(this.selectedRowData.applyOn == 'G'){
       this.alertForm.get('vehicleGroup').setValue(this.selectedRowData.vehicleGroupId);
@@ -2357,8 +2363,12 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   sliderChanged(){
-    this.poiWidth = this.alertForm.controls.widthInput.value;
+    if(this.prefUnitFormat == 'dunit_Metric'){
      this.poiWidthKm = this.poiWidth / 1000;
+    }
+    else{
+      this.poiWidthKm = this.poiWidth / 1609;
+    }
      this.alertForm.controls.widthInput.setValue(this.poiWidthKm);
      if(this.markerArray.length > 0){
      this.addMarkerOnMap(this.ui);
@@ -2367,7 +2377,12 @@ PoiCheckboxClicked(event: any, row: any) {
 
  changeSliderInput(){
   this.poiWidthKm = this.alertForm.controls.widthInput.value;
+  if(this.prefUnitFormat == 'dunit_Metric'){
   this.poiWidth = this.poiWidthKm * 1000;
+  }
+  else{
+    this.poiWidthKm = this.poiWidth * 1609;
+  }
 }
 
 keyPressNumbers(event) {    
