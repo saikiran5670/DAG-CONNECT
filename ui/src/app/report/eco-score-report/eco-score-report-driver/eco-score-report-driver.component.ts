@@ -198,7 +198,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
     this.doughnutChartLabelsFuelConsumption = [(this.translationData.lblFuelConsumption || 'Fuel Consumption'), '', ''];
     //litre/100 km - mpg pending
     let fuelConsumption = this.ecoScoreDriverDetails.overallPerformance.fuelConsumption.score;
-    if(this.prefUnitFormat == 'dunit_Imperial')
+    if(this.prefUnitFormat == 'dunit_Imperial' && fuelConsumption !== '0.0')
       fuelConsumption = (235.215/fuelConsumption).toFixed(3);
     this.doughnutChartDataFuelConsumption= [ [fuelConsumption, 100-fuelConsumption] ];
     // Doughnut - Anticipation Score
@@ -1017,38 +1017,38 @@ export class EcoScoreReportDriverComponent implements OnInit {
     return '';
   }
 
-  getScore0: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-    if(value !== undefined && value !== null && value.length > 0){
-      // let color = value[0].color === 'Amber'?'Orange':value[0].color;
-      let color = this.getColor(dataContext, value[0].value);
-      return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[0].value) + "</span>";
-    }
-    return '';
-  }
+  // getScore0: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+  //   if(value !== undefined && value !== null && value.length > 0){
+  //     // let color = value[0].color === 'Amber'?'Orange':value[0].color;
+  //     let color = this.getColor(dataContext, value[0].value);
+  //     return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[0].value) + "</span>";
+  //   }
+  //   return '';
+  // }
   
-  getScore1: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-    if(value !== undefined && value !== null && value.length > 1){
-      let color = this.getColor(dataContext, value[0].value);
-      return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[1].value) + "</span>";
-    }
-    return '';
-  }
+  // getScore1: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+  //   if(value !== undefined && value !== null && value.length > 1){
+  //     let color = this.getColor(dataContext, value[0].value);
+  //     return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[1].value) + "</span>";
+  //   }
+  //   return '';
+  // }
 
-  getScore2: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-    if(value !== undefined && value !== null && value.length > 2){
-      let color = this.getColor(dataContext, value[0].value);
-      return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[2].value) + "</span>";
-    }
-    return '';
-  }
+  // getScore2: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+  //   if(value !== undefined && value !== null && value.length > 2){
+  //     let color = this.getColor(dataContext, value[0].value);
+  //     return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[2].value) + "</span>";
+  //   }
+  //   return '';
+  // }
 
-  getScore3: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-    if(value !== undefined && value !== null && value.length > 3){
-      let color = this.getColor(dataContext, value[0].value);
-      return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[3].value) + "</span>";
-    }
-    return '';
-  }
+  // getScore3: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+  //   if(value !== undefined && value !== null && value.length > 3){
+  //     let color = this.getColor(dataContext, value[0].value);
+  //     return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[3].value) + "</span>";
+  //   }
+  //   return '';
+  // }
 
   formatValues(dataContext: any, val: any){
     if(val && val !== '0'){
@@ -1057,16 +1057,16 @@ export class EcoScoreReportDriverComponent implements OnInit {
         valTemp = Number.parseInt(valTemp.toString());
         return new Date(valTemp * 1000).toISOString().substr(11, 8);
       } 
-      // else if(this.prefUnitFormat === 'dunit_Imperial'){
-      //     if(dataContext.key && dataContext.key === 'rp_averagegrossweight'){
-      //       return (valTemp * 1.10231).toFixed(2);
-      //     } else if(dataContext.key && (dataContext.key === 'rp_distance' || dataContext.key === 'rp_averagedistanceperday'
-      //               || dataContext.key === 'rp_averagedrivingspeed' || dataContext.key === 'rp_averagespeed')){
-      //       return (valTemp * 0.621371).toFixed(2);
-      //     } else if(dataContext.key && dataContext.key === 'rp_fuelconsumption'){
-      //       return val;
-      //     }
-      //   }
+      else if(this.prefUnitFormat === 'dunit_Imperial'){
+          if(dataContext.key && dataContext.key === 'rp_averagegrossweight'){
+            return (valTemp * 1.10231).toFixed(2);
+          } else if(dataContext.key && (dataContext.key === 'rp_distance' || dataContext.key === 'rp_averagedistanceperday'
+                    || dataContext.key === 'rp_averagedrivingspeed' || dataContext.key === 'rp_averagespeed')){
+            return (valTemp * 0.621371).toFixed(2);
+          } else if(dataContext.key && dataContext.key === 'rp_fuelconsumption'){
+            return val * 235.215;
+          }
+        }
     }
     return val;
   }

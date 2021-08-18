@@ -18,6 +18,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   @Output() setFleetUtilFlag = new EventEmitter<any>();
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   reportId: any;
+  calenderHeader: any = [];
   slideState: any = false;
   slideStateData: any = {};
   localStLanguage: any;
@@ -147,13 +148,15 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.detailColumnData = [];
     this.chartsColumnData = [];
     this.calenderColumnData = [];
+    this.calenderHeader = [];
   }
 
   setColumnCheckbox(){
     this.selectionForSummaryColumns.clear();
     this.selectionForDetailsColumns.clear();
     this.selectionForChartsColumns.clear();
-    
+    this.selectionForCalenderColumns.clear();
+
     this.summaryColumnData.forEach(element => {
       if(element.state == 'A'){
         this.selectionForSummaryColumns.select(element);
@@ -171,6 +174,13 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
         this.selectionForChartsColumns.select(element);
       }
     });
+    
+    this.calenderHeader.forEach(element => {
+      if(element.state == 'A'){
+        this.selectionForCalenderColumns.select(element);
+      }
+    });
+
     if(this.summaryColumnData.length > 0 && this.chartsColumnData.length > 0 && this.calenderColumnData.length > 0 && this.detailColumnData.length > 0){
       this.setDefaultFormValues();
     }
@@ -180,6 +190,9 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   preparePrefData(prefData: any){
     if(prefData && prefData.subReportUserPreferences && prefData.subReportUserPreferences.length > 0){
       prefData.subReportUserPreferences.forEach(element => {
+        if(element.key == 'rp_fu_report_calendarview'){
+          this.calenderHeader.push(element);
+        }
         if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
           element.subReportUserPreferences.forEach(item => {
             let _data: any = item;
@@ -379,7 +392,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
             parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "C", chartType: "", thresholdType: "", thresholdValue: 0 });
           }
         }else if(elem.key.includes('rp_fu_report_calendarview')){
-          if(this.selectionForCalenderColumns.selected.length == this.calenderColumnData.length){ // parent selected
+          if(this.selectionForCalenderColumns.selected.length == this.calenderHeader.length){ // parent selected
             parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "A", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
           }else{
             parentDataAttr.push({ dataAttributeId: elem.dataAttributeId, state: "I", preferenceType: "D", chartType: "", thresholdType: "", thresholdValue: 0 });

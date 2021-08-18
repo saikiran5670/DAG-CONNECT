@@ -1370,9 +1370,14 @@ namespace net.atos.daf.ct2.vehicle.repository
                     vehicleproperty.ID = VehiclePropertiesId;
                     parameter.Add("@id", vehicleproperty.ID);
                 }
-
-                parameter.Add("@manufacture_date", vehicleproperty.ManufactureDate != null && vehicleproperty.ManufactureDate != Convert.ToDateTime("01 - 01 - 0001 00:00:00") ? UTCHandling.GetUTCFromDateTime(vehicleproperty.ManufactureDate.ToString()) : 0);
-                parameter.Add("@delivery_date", vehicleproperty.DeliveryDate != null && vehicleproperty.DeliveryDate != Convert.ToDateTime("01 - 01 - 0001 00:00:00") ? UTCHandling.GetUTCFromDateTime(vehicleproperty.DeliveryDate.ToString()) : 0);
+                if (vehicleproperty.ManufactureDate != null && vehicleproperty.ManufactureDate != Convert.ToDateTime("01 - 01 - 0001 00:00:00"))
+                    parameter.Add("@manufacture_date", UTCHandling.GetUTCFromDateTime(vehicleproperty.ManufactureDate.ToString()));
+                else
+                    parameter.Add("@manufacture_date", null);
+                if (vehicleproperty.DeliveryDate != null && vehicleproperty.DeliveryDate != Convert.ToDateTime("01 - 01 - 0001 00:00:00"))
+                    parameter.Add("@delivery_date", UTCHandling.GetUTCFromDateTime(vehicleproperty.DeliveryDate.ToString()));
+                else
+                    parameter.Add("@delivery_date", null);
                 parameter.Add("@make", vehicleproperty.Classification_Make);
                 parameter.Add("@length", vehicleproperty.Dimensions_Size_Length);
                 parameter.Add("@height", vehicleproperty.Dimensions_Size_Height);
