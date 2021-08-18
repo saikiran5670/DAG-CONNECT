@@ -213,9 +213,9 @@
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-          <div *ngIf='distanceChart && distanceChart.state' class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistancePerDay || 'Distance per day' }}</span>
+          <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px" style='margin-top: 10px;'>
+          <div *ngIf='distanceChart && distanceChart.state' class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left"  style="padding: 10px;border: 1px solid #ddd;">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif; text-align: center;margin-bottom: 10px;'>{{ translationData.lblDistancePerDay || 'Distance per day' }}</span>
             <div  *ngIf = "!distanceChartType" class="chart-wrapper">
               <canvas baseChart 
               [datasets]="barChartData"
@@ -238,8 +238,8 @@
             </canvas>
         </div>
         </div>
-        <div *ngIf='activeVehicleChart && activeVehicleChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblActiveVehiclesPerDay || 'Active vehicles per day' }}</span>
+        <div *ngIf='activeVehicleChart && activeVehicleChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right"  style="padding: 10px;border: 1px solid #ddd;">
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;margin-bottom: 10px;'>{{ translationData.lblActiveVehiclesPerDay || 'Active vehicles per day' }}</span>
           <div  *ngIf = "activeVehicleChartType" class="chart-wrapper">
             <canvas baseChart 
                 [datasets]="lineChartData" 
@@ -264,9 +264,9 @@
       </div>
 
       </div>
-      <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-        <div *ngIf='mileageBasedChart && mileageBasedChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMileageBasedUtilisation || 'Mileage based utilisation' }}</span>
+      <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px" style='margin-top: 10px;'>
+        <div *ngIf='mileageBasedChart && mileageBasedChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left"  style="padding: 10px;border: 1px solid #ddd;">
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;margin-bottom: 10px;'>{{ translationData.lblMileageBasedUtilisation || 'Mileage based utilisation' }}</span>
           <div *ngIf = "mileageDChartType" class="chart-wrapper">
             <canvas baseChart 
             [data]="doughnutChartData"
@@ -289,8 +289,8 @@
         </canvas>
       </div>
         </div>
-        <div *ngIf='timeBasedChart && timeBasedChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTimeBasedUtilisation || 'Time based utilisation' }}</span>
+        <div *ngIf='timeBasedChart && timeBasedChart.state' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right" style="padding: 10px;border: 1px solid #ddd;">
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;text-align: center;margin-bottom: 10px;'>{{ translationData.lblTimeBasedUtilisation || 'Time based utilisation' }}</span>
           <div *ngIf = "timeDChartType" class="chart-wrapper">
             <canvas baseChart 
             [data]="doughnutChartDataForTime"
