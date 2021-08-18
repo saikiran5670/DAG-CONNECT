@@ -25,7 +25,7 @@ export class PackageManagementComponent implements OnInit {
   selectedPackages = new SelectionModel(true, []);
   createEditViewPackageFlag: boolean = false;
   translationData: any;
-  dataSource: any;
+  // dataSource: any;
   actionType: any;
   initData: any = [];
   accountOrganizationId: any = 0;
@@ -210,27 +210,27 @@ export class PackageManagementComponent implements OnInit {
     this.titleVisible = false;
   }
 
-  masterToggleForPackage() {
-    this.isAllSelectedForPackege()
-      ? this.selectedPackages.clear()
-      : this.dataSource.data.forEach((row) =>
-        this.selectedPackages.select(row)
-      );
-  }
+  // masterToggleForPackage() {
+  //   this.isAllSelectedForPackege()
+  //     ? this.selectedPackages.clear()
+  //     : this.dataSource.data.forEach((row) =>
+  //       this.selectedPackages.select(row)
+  //     );
+  // }
 
-  isAllSelectedForPackege() {
-    const numSelected = this.selectedPackages.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
-  }
+  // isAllSelectedForPackege() {
+  //   const numSelected = this.selectedPackages.selected.length;
+  //   const numRows = this.dataSource.data.length;
+  //   return numSelected === numRows;
+  // }
 
-  checkboxLabelForPackage(row?: any): string {
-    if (row)
-      return `${this.isAllSelectedForPackege() ? 'select' : 'deselect'} all`;
-    else
-      return `${this.selectedPackages.isSelected(row) ? 'deselect' : 'select'
-        } row`;
-  }
+  // checkboxLabelForPackage(row?: any): string {
+  //   if (row)
+  //     return `${this.isAllSelectedForPackege() ? 'select' : 'deselect'} all`;
+  //   else
+  //     return `${this.selectedPackages.isSelected(row) ? 'deselect' : 'select'
+  //       } row`;
+  // }
 
   checkCreationForPackage(item: any){
     // this.createEditViewPackageFlag = !this.createEditViewPackageFlag;

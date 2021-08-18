@@ -2,44 +2,46 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.kafkacdc.entity;
 using Dapper;
 using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.kafkacdc.entity;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.kafkacdc.repository
 {
-    public class VehicleManagementAlertCDCRepository : IVehicleManagementAlertCDCRepository
+    public class VehicleGroupAlertCdcRepository : IVehicleGroupAlertCdcRepository
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartdataAccess;
 
-        public VehicleManagementAlertCDCRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
+        public VehicleGroupAlertCdcRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             _dataAccess = dataAccess;
             _dataMartdataAccess = dataMartdataAccess;
         }
-        public async Task<List<VehicleAlertRef>> GetVehicleAlertRefFromvehicleId(IEnumerable<int> vehicleIds)
+
+        public async Task<List<VehicleAlertRef>> GetVehicleGroupAlertRefByAlertIds(List<int> alertId)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@vin", GetVINsByIds(vehicleIds));
-                string queryAlertLevelPull = @"select vin,alert_id as AlertId, state  from tripdetail.vehiclealertref where vin = @vin;";
+                parameter.Add("@alertid", alertId);
+                string queryAlertLevelPull = @"select vin,alert_id as AlertId, state  from tripdetail.vehiclealertref where alert_id = ANY(@alertid);";
 
-                IEnumerable<VehicleAlertRef> vehicleAlertRefs = await _dataMartdataAccess.QueryAsync<VehicleAlertRef>(queryAlertLevelPull, parameter);
-                return vehicleAlertRefs.AsList();
+                IEnumerable<VehicleAlertRef> vehicleGroupAlertRefs = await _dataMartdataAccess.QueryAsync<VehicleAlertRef>(queryAlertLevelPull, parameter);
+                return vehicleGroupAlertRefs.AsList();
             }
             catch (Exception)
             {
                 throw;
             }
         }
-        public async Task<List<VehicleAlertRef>> GetVehicleAlertByvehicleId(IEnumerable<int> vehicleIds)
+        public async Task<List<VehicleAlertRef>> GetVehiclesGroupFromAlertConfiguration(int vehicleGroupId)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@vehicleid", vehicleIds);
+                parameter.Add("@vehiclegroupid", vehicleGroupId);
                 string query = @"with cte_alert_vehicle_groupanddynamic
                             AS (
                             select distinct 
@@ -58,12 +60,11 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                             ,veh.license_plate_number as RegistrationNo	
                             from master.alert cte
                             inner join master.group grp 
-                            on cte.vehicle_group_id = grp.id and grp.object_type='V' 
+                            on cte.vehicle_group_id = grp.id and grp.object_type='V' and cte.id=@alertid
                             left join master.groupref vgrpref
                             on  grp.id=vgrpref.group_id
                             left join master.vehicle veh
                             on vgrpref.ref_id=veh.id
-where veh.id=@vehicleid
                             )
                             --select * from cte_alert_vehicle_groupanddynamic;
 
@@ -84,7 +85,7 @@ where veh.id=@vehicleid
                             ,Vin
                             ,RegistrationNo	
                             from cte_alert_vehicle_groupanddynamic
-                            where VehicleId = @vehicleid and group_type='G' 
+                            where group_type='G'
                             )
                             --select * from cte_account_visibility_for_vehicle_group
                             ,cte_account_visibility_for_vehicle_single
@@ -107,8 +108,8 @@ where veh.id=@vehicleid
                             inner join master.group grp 
                             on cte.vehiclegroupid=grp.id --and grp.object_type='V' --and grp.group_type='S'
                             inner join master.vehicle veh
-                            on veh.id = @vehicleid and grp.ref_id=veh.id and grp.group_type='S'
-                            where veh.id = @vehicleid and grp.organization_id=cte.organization_id 
+                            on grp.ref_id=veh.id and grp.group_type='S'
+                            where grp.organization_id=cte.organization_id
                             )
                             --select * from cte_account_visibility_for_vehicle_single
                             ,cte_account_visibility_for_vehicle_dynamic_unique
@@ -124,7 +125,6 @@ where veh.id=@vehicleid
 	                            ,Organization_Id
 	                            ,VehicleGroupName
 	                            From cte_alert_vehicle_groupanddynamic 
-where VehicleId = @vehicleid 
 	                            group by AlertId
 	                            ,Category
 	                            ,AlertType
@@ -156,7 +156,7 @@ where VehicleId = @vehicleid
 	                            ,veh.license_plate_number as RegistrationNo
 	                            from master.vehicle veh
 	                            Inner join master.orgrelationshipmapping  orm
-	                            on orm.vehicle_id=veh.id and veh.id = @vehicleid 
+	                            on orm.vehicle_id=veh.id
 	                            Inner join master.orgrelationship ors
 	                            on ors.id=orm.relationship_id
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
@@ -165,7 +165,7 @@ where VehicleId = @vehicleid
 	                            and du1.function_enum='A'
 	                            --Left join cte_account_visibility_for_vehicle_dynamic_unique du2
 	                            --on orm.target_org_id=du2.Organization_Id and ors.code<>'Owner' and du2.function_enum='A'
-	                            where veh.id = @vehicleid and ors.state='A' 
+	                            where ors.state='A'
 	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 	                            else COALESCE(end_date,0) =0 end  
                             )
@@ -189,12 +189,12 @@ where VehicleId = @vehicleid
 	                            ,veh.license_plate_number as RegistrationNo
 	                            from master.vehicle veh
 	                            Inner join master.orgrelationshipmapping  orm
-	                            on orm.vehicle_id=veh.id and veh.id = @vehicleid
+	                            on orm.vehicle_id=veh.id
 	                            Inner join master.orgrelationship ors
 	                            on ors.id=orm.relationship_id
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
 	                            on ((orm.owner_org_id=du1.Organization_Id and ors.code='Owner') or (veh.organization_id=du1.Organization_Id)) and du1.function_enum='O'
-	                            where veh.id = @vehicleid and ors.state='A' 
+	                            where ors.state='A'
 	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 	                            else COALESCE(end_date,0) =0 end  
                             )
@@ -218,12 +218,12 @@ where VehicleId = @vehicleid
 	                            ,veh.license_plate_number as RegistrationNo
 	                            from master.vehicle veh
 	                            Inner join master.orgrelationshipmapping  orm
-	                            on orm.vehicle_id=veh.id and  veh.id = @vehicleid
+	                            on orm.vehicle_id=veh.id
 	                            Inner join master.orgrelationship ors
 	                            on ors.id=orm.relationship_id
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du2
 	                            on orm.target_org_id=du2.Organization_Id and du2.function_enum='V'
-	                            where veh.id = @vehicleid and ors.state='A'
+	                            where ors.state='A'
 	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 	                            else COALESCE(end_date,0) =0 end  
 	                            and ors.code<>'Owner'
@@ -249,7 +249,6 @@ where VehicleId = @vehicleid
 	                            from master.vehicle veh
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
 	                            on veh.organization_id=du1.organization_id and du1.function_enum='M'
-where veh.id = @vehicleid
                             )
                             --select * from cte_account_vehicle_DynamicOEM
                             ,
@@ -288,7 +287,7 @@ where veh.id = @vehicleid
 	                               ,feasetfea.feature_set_id as featuresetid 
                             from master.subscription sub
                             inner join cte_account_vehicle_CompleteList cavc
-                            on sub.organization_id = cavc.Organization_Id 
+                            on sub.organization_id = cavc.Organization_Id
                             inner join master.package pac
                             on sub.package_id=pac.id and sub.state='A' and pac.state='A'
                             inner join master.featuresetfeature feasetfea
@@ -318,7 +317,7 @@ where veh.id = @vehicleid
                              as (
 	                             select cavc.* from cte_account_vehicle_CompleteList cavc
 	                             inner join org_veh_subscriptions  ovs
-	                             on cavc.vehicleid = @vehicleid and cavc.vehicleid = ovs.vehicleid and ovs.subscriptiontype='V'
+	                             on cavc.vehicleid = ovs.vehicleid and ovs.subscriptiontype='V'
                              )
                             --select * from veh_subscriptions
                             , 
@@ -331,22 +330,14 @@ where veh.id = @vehicleid
                             )
                             select distinct alertid,vin from subscription_complete;";
 
-                IEnumerable<VehicleAlertRef> vehicleAlertRefs = await _dataAccess.QueryAsync<VehicleAlertRef>(query, parameter);
-                return vehicleAlertRefs.AsList();
+                IEnumerable<VehicleAlertRef> vehicleGroupAlertRefs = await _dataAccess.QueryAsync<VehicleAlertRef>(query, parameter);
+                return vehicleGroupAlertRefs.AsList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
         }
 
-        private Task<IEnumerable<string>> GetVINsByIds(IEnumerable<int> vehicleIds)
-        {
-            var parameter = new DynamicParameters();
-            parameter.Add("@vehicleid", vehicleIds);
-            string queryAlertLevelPull = @"select vin  from master.vehicle where id = Any(@vehicleid) and vin <> null;";
-
-            return  _dataAccess.QueryAsync<string>(queryAlertLevelPull, parameter);
-        }
     }
 }

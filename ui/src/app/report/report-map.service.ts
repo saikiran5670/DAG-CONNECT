@@ -1235,7 +1235,7 @@ export class ReportMapService {
     let _data: any;
     switch(unitFormat){
       case 'dunit_Metric': { 
-        _data = tonFlag ? this.convertKgToTonnes(data) : data; //-- kg/ton
+        _data = this.convertKgToTonnes(data); //-- ton
         break;
       }
       case 'dunit_Imperial': {

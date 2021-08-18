@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
-    public interface IVehicleManagementAlertCDCManager
+    public interface IVehicleGroupAlertCdcManager
     {
-        Task<bool> GetVehicleAlertRefFromVehicleId(IEnumerable<int> vehicleIds);
+        Task<bool> GetVehicleGroupAlertConfiguration(int vehicleGroupId);
     }
 }
