@@ -1,6 +1,6 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -62,6 +62,11 @@ export class CreateViewEditRelationshipComponent implements OnInit {
       relationshipDescription: ['',[CustomValidators.noWhitespaceValidatorforDesc]],
       level: [],
       code: []
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('relationshipName'),
+      ]
     });
 
     let objData = {
