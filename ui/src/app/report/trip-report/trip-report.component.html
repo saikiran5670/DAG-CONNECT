@@ -302,7 +302,7 @@
               <mat-cell [ngClass]="{'text-truncate': displayedColumns.length > 7}" matTooltip='{{ row.vin }}' *matCellDef="let row">{{  row.vin != '' ? row.vin : '-' }}</mat-cell>
             </ng-container>           
             <ng-container matColumnDef="odometer">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblkm || 'km') }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmi || 'mi') : (translationData.lblkm || 'km') }})</span>
               </mat-header-cell>
               <mat-cell matTooltip='{{ row.convertedOdometer }}' *matCellDef="let row">{{ row.convertedOdometer != '' ? row.convertedOdometer : '-' }}</mat-cell>
             </ng-container>          
