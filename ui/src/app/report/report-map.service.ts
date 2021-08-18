@@ -1447,10 +1447,10 @@ export class ReportMapService {
     return _gridData;
   }
 
-  getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean){
+  getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean,onlyTime?: boolean){
     let sTime: any = 0;
     if(startTime != 0){
-      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime);
+      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime ,onlyTime);
     }
     return sTime;
   }
@@ -1604,7 +1604,7 @@ export class ReportMapService {
     return data;
   }
 
-  formStartEndDate(date: any, dateFormat: any, timeFormat: any, addTime?:boolean){
+  formStartEndDate(date: any, dateFormat: any, timeFormat: any, addTime?:boolean, onlyTime?:boolean){
     // let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
     // let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
     // let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
@@ -1625,6 +1625,9 @@ export class ReportMapService {
       _time = (h > 12 || (h == 12 && m > 0)) ? `${h == 12 ? 12 : h-12}:${m} PM` : `${(h == 0) ? 12 : h}:${m} AM`;
     }else{
       _time = `${h}:${m}:${s}`;
+    }
+    if(onlyTime){
+      return _time;
     }
     switch(dateFormat){
       case 'ddateformat_dd/mm/yyyy': {

@@ -81,6 +81,7 @@ namespace net.atos.daf.ct2.kafkacdc
 
                 //Update datamart with lastest mapping 
                 //set alert operation for state column into datamart
+                //TODO Need check this logic
                 masterDBVehicleAlerts.ForEach(s => s.Op = operation);
                 //Update datamart table vehiclealertref based on latest modification.
                 await _vehicleAlertRepository.DeleteAndInsertVehicleAlertRef(alertIds, masterDBVehicleAlerts);
@@ -90,7 +91,8 @@ namespace net.atos.daf.ct2.kafkacdc
                 //sending only states I & D with combined mapping of vehicle and alertid
                 foreach (var alertId in alertIds)
                 {
-                    await _kafkaCdcHelper.ProduceMessageToKafka(finalmapping.Where(w => w.AlertId == alertId).ToList(), alertId, operation, _kafkaConfig);
+                    if (finalmapping.Where(w => w.AlertId == alertId).Count() > 0)
+                        await _kafkaCdcHelper.ProduceMessageToKafka(finalmapping.Where(w => w.AlertId == alertId).ToList(), alertId, operation, _kafkaConfig);
                 }
                 result = true;
             }

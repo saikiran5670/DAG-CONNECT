@@ -319,5 +319,30 @@ namespace net.atos.daf.ct2.notificationengine.repository
                 throw;
             }
         }
+
+        public async Task<string> GetUnitType(int alertId, string urgencyLevelType)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@alert_id", alertId);
+                parameter.Add("@urgency_level_type", urgencyLevelType);
+                parameter.Add("@state", 'A');
+
+                string query =
+                    @"select unit_type from master.alerturgencylevelref 
+                          where urgency_level_type=@urgency_level_type and alert_id=@alert_id and state=@state";
+
+                string unitType = await _dataAccess.QueryFirstAsync<string>(query, parameter);
+
+                return unitType;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
     }
 }
