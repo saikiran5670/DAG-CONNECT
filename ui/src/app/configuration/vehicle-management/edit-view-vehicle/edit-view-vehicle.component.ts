@@ -107,9 +107,9 @@ export class EditViewVehicleComponent implements OnInit {
         if(error.error == 'Duplicate vehicle Name'){
           this.duplicateVehicleMsg = true;
         }
-        else if(error.error == 'Duplicate vehicle License Plate Number'){
-          this.duplicateRegistrationNumber = true;
-        }
+        // else if(error.error == 'Duplicate vehicle License Plate Number'){
+        //   this.duplicateRegistrationNumber = true;
+        // }
       }
     });
   }
