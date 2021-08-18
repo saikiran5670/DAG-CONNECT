@@ -77,5 +77,6 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         Task<ProvisioningVehicle> GetCurrentVehicle(ProvisioningVehicleDataServiceRequest request);
         Task<IEnumerable<ProvisioningVehicle>> GetVehicleList(ProvisioningVehicleDataServiceRequest request);
+        Task<IEnumerable<int>> GetVehicleIdsByOrgId(int refId);
     }
 }
