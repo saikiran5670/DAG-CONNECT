@@ -102,7 +102,9 @@ export class SummaryStepComponent implements OnInit {
       dateFormatData:  this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.dateFormat.value ? accountPreferenceData.dateFormat.value : 2)),
       timeFormatData: this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.timeFormat.value ? accountPreferenceData.timeFormat.value : 2)),
       vehicleDisplayData: this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.vehDisplay.value ? accountPreferenceData.vehDisplay.value : 2)),
-      landingPageDisplayData: this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.landingPage.value ? accountPreferenceData.landingPage.value : 2))
+      landingPageDisplayData: this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.landingPage.value ? accountPreferenceData.landingPage.value : 2)),
+      pageRefreshTime: accountPreferenceData.pageRefreshTime.value ? parseInt(accountPreferenceData.pageRefreshTime.value) : 1
+      
     }
     return respData;
   }

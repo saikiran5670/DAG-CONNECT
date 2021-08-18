@@ -136,7 +136,9 @@
               <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" (selectionChange)="onChangeVehicle($event.value)" formControlName="vehicle">
                       <mat-option *ngFor="let vehicle of vehicleByVehGroupList" [value]="vehicle.vehicleId">
-                          {{vehicle.vin}}
+                        <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_Name'"> {{vehicle.vehicleName}} </span>
+                        <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{vehicle.vin}} </span>
+                        <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{vehicle.registrationNo ? vehicle.registrationNo : vehicle.vehicleName}} </span>
                       </mat-option>
                   </mat-select>
               </mat-form-field>
@@ -296,7 +298,8 @@
               <div class="areaWidth min-width-75-per" fxLayout="column" fxLayoutAlign="left">
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                   <div class="areaWidth max-width-25-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label formControlName="levelType">{{ translationData.lblLevel || 'Level' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>  
+                    <input type="hidden" formControlName="levelType">
+                    <mat-label>{{ translationData.lblLevel || 'Level' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>  
                   </div>
                   <div *ngIf="actionType == 'view'" class="areaWidth max-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblThreshold || 'Threshold' }} </mat-label>  

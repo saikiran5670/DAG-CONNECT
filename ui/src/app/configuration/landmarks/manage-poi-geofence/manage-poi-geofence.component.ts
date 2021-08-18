@@ -66,11 +66,14 @@ export class ManagePoiGeofenceComponent implements OnInit {
   importTranslationData: any = {};
   xmlObject : any = {};
   map: any;
-  templateTitle = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
-    'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Type'];
+  templateTitle = ['Name', 'Latitude', 'Longitude', 'Category', 'SubCategory', 'Address','Zipcode', 'City', 'Country'];
+  //templateTitle = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
+  //  'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Type'];
   templateValue = [
-    [36, 10, 'CategoryName', 8, 'SubCategoryName', "PoiTest",
-      'Pune', 'Pune', 'India', '411057', 51.07, 57.07, 12, 'Active', 'POI']];
+    ['GeoFence','51.07','57.07','Category','SubCategory','Banglore','612304','Banglore','India']];
+  // [
+  //  [36, 10, 'CategoryName', 8, 'SubCategoryName', "PoiTest",
+  //    'Pune', 'Pune', 'India', '411057', 51.07, 57.07, 12, 'Active', 'POI']];
   tableColumnList = ['organizationId', 'categoryId',  'subCategoryId', 
     'poiName', 'latitude', 'longitude', 'returnMessage'];
   tableColumnName = ['OrganizationId', 'CategoryId',  'SubCategoryId',
@@ -142,7 +145,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.poiService.getPois(this.accountOrganizationId).subscribe((data: any) => {
       this.poiInitData = data;
-      // //console.log("poiData=" +this.poiInitData);
+      console.log("poiData=" +this.poiInitData);
       this.hideloader();
       this.allCategoryPOIData = this.poiInitData;
       this.updatedPOITableData(this.poiInitData);
@@ -947,7 +950,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   public exportAsExcelFile(): void {
     let json: any[], excelFileName: string = 'POIData';
     this.poiService.downloadPOIForExcel().subscribe((poiData) => {
-      const result = poiData.map(({ organizationId, id, categoryId, subCategoryId, type, city, country, zipcode, latitude, longitude, distance, state, createdBy, createdAt, icon, ...rest }) => ({ ...rest }));
+      const result = poiData.map(({ Name, Latitude, Longitude, Category, SubCategory, Address,Zipcode, City, Country, ...rest})=>({...rest}))
+     //const result = poiData.map(({ organizationId, id, categoryId, subCategoryId, type, city, country, zipcode, latitude, longitude, distance, state, createdBy, createdAt, icon, ...rest }) => ({ ...rest }));
       const myworksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(result);
       const myworkbook: XLSX.WorkBook = { Sheets: { 'data': myworksheet }, SheetNames: ['data'] };
       const excelBuffer: any = XLSX.write(myworkbook, { bookType: 'xlsx', type: 'array' });

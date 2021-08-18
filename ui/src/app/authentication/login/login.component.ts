@@ -262,10 +262,10 @@ export class LoginComponent implements OnInit {
     console.log("values:: ", values)
     if (this.forgotPasswordForm.valid) {
       this.accountService.resetPasswordInitiate(values).subscribe(data => {
-        if(data){
+        // if(data){
           this.forgotPwdFlag = false;
           this.resetPwdFlag = true;
-        }
+        // }
       },(error)=> {
 
       })

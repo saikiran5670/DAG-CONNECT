@@ -5,7 +5,6 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { NgxMaterialTimepickerComponent } from 'ngx-material-timepicker';
 import { OrganizationService } from 'src/app/services/organization.service';
 import { ReportService } from 'src/app/services/report.service';
-import { TranslationService } from 'src/app/services/translation.service';
 import { UtilsService } from 'src/app/services/utils.service';
 import { Util } from '../../../shared/util';
 
@@ -48,12 +47,14 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   
 
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private formBuilder: FormBuilder, private translationService: TranslationService, private organizationService: OrganizationService, private utilsService: UtilsService, private reportService: ReportService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private formBuilder: FormBuilder, private organizationService: OrganizationService, private utilsService: UtilsService, private reportService: ReportService) {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
-    // this.getPreferences();
+    if(!this.utilsService.isEmpty(localStorage.getItem("globalSearchFilterData"))) {
+      this.globalSearchFilterData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
+    }
   }
 
   ngOnInit(): void {
@@ -127,9 +128,13 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   resetDropdownValues() {
-    this.searchForm.get('vehicleGroup').setValue(0);
-    this.searchForm.get('vehicleName').setValue('');
-    // this.searchForm.get('vehicleName').disable();
+    if (!this.internalSelection && !this.utilsService.isEmpty(this.globalSearchFilterData)) {
+      this.searchForm.get('vehicleGroup').setValue(this.globalSearchFilterData["vehicleGroupDropDownValue"]);
+      this.searchForm.get('vehicleName').setValue(this.globalSearchFilterData["vehicleDropDownValue"]);
+    } else {
+      this.searchForm.get('vehicleGroup').setValue(0);
+      this.searchForm.get('vehicleName').setValue('');
+    }
     this.searchForm.get('performanceType').setValue('E');
   }
 
@@ -238,6 +243,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
     this.setDefaultStartEndTime();
     this.setPrefFormatDate();
     this.setDefaultTodayDate();
+    this.resetDropdownValues();
   }
 
   loadWholeTripData() {
@@ -293,13 +299,6 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
     }
     this.vehicleDD = this.vehicleListData.slice();
-    // if (this.vehicleDD.length > 0) {
-    //   this.resetTripFormControlValue();
-    // }
-    // this.setVehicleGroupAndVehiclePreSelection();
-    // if (this.showBack) {
-    //   this.onSearch();
-    // }
   }
 
   setDefaultStartEndTime() {
@@ -442,6 +441,10 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.setGlobalSearchData();
+  }
+
+  setGlobalSearchData() {
     this.globalSearchFilterData["vehicleGroupDropDownValue"] = this.searchForm.get('vehicleGroup').value;
     this.globalSearchFilterData["vehicleDropDownValue"] = this.searchForm.get('vehicleName').value;
     this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
@@ -458,12 +461,8 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
       this.globalSearchFilterData["startTimeStamp"] = this.startTimeDisplay;
       this.globalSearchFilterData["endTimeStamp"] = this.endTimeDisplay;
     }
-    this.setGlobalSearchData(this.globalSearchFilterData);
-  }
-
-  setGlobalSearchData(globalSearchFilterData: any) {
     this.globalSearchFilterData["modifiedFrom"] = "VehiclePerformanceReport";
-    localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
+    localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
   }
 
   startTimeChanged(selectedTime: any) {
@@ -559,6 +558,7 @@ export class SearchCriteriaComponent implements OnInit, OnDestroy {
         registrationNo: registrationNo,
       }
       this.showSearchResult.emit(searchData);
+      this.setGlobalSearchData();
     }
   }
 

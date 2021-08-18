@@ -1235,7 +1235,7 @@ export class ReportMapService {
     let _data: any;
     switch(unitFormat){
       case 'dunit_Metric': { 
-        _data = tonFlag ? this.convertKgToTonnes(data) : data; //-- kg/ton
+        _data = this.convertKgToTonnes(data); //-- ton
         break;
       }
       case 'dunit_Imperial': {
@@ -1736,57 +1736,57 @@ export class ReportMapService {
       }
       //meter to Miles
       case 'L':{
-        distance = val / 1609;
+        distance = (val / 1609);
         break;
       }
     }
-    return distance; 
+    return Math.round(distance); 
   }
 
   getConvertedSpeedToMeterPerSec(val ,unit){
     let speed;
     switch(unit){
       //Km/h to m/s
-      case 'K':{
+      case 'A':{
         speed = (val * 5) /18;
         break;
       }
       //miles/h to m/s
-      case 'L':{
+      case 'B':{
         speed = (val /2.237);
         break;
       }
     }
-    return speed; 
+    return parseFloat(speed.toFixed(2)); 
   }
 
   getConvertedSpeed(val ,unit){
     let speed;
     switch(unit){
       // m/s to Km/h
-      case 'K':{
+      case 'A':{
         speed = (val * 18) /5;
         break;
       }
       // m/s to miles/h
-      case 'L':{
+      case 'B':{
         speed = (val * 2.237);
         break;
       }
     }
-    return speed; 
+    return Math.round(speed); 
   }
 
   convertFtToMeters(length){
     let meter;
     meter = length / 3.281;
-    return meter;
+    return parseFloat(meter.toFixed(2));
   }
 
   convertMetersToFt(length){
     let ft;
     ft = length * 3.281;
-    return ft;
+    return Math.round(ft);
   }
 
 }

@@ -110,11 +110,12 @@ export class NewUserStepComponent implements OnInit {
   }
 
   ngOnInit() {
-    // if(localStorage.getItem('contextOrgId') == localStorage.getItem('accountOrganizationId'))
-    //   this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    // else 
-    //   this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    if(localStorage.getItem('contextOrgId'))
+    this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    else 
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+
+    //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.firstFormGroup = this._formBuilder.group({
       salutation: ['', [Validators.required]],
       firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
@@ -130,14 +131,18 @@ export class NewUserStepComponent implements OnInit {
       dateFormat: ['', []],
       vehDisplay: ['',[]],
       timeFormat: ['',[]],
-      landingPage: ['',[]]
+      landingPage: ['',[]],
+      pageRefreshTime: ['', [Validators.required]]
+
     },
     {
       validator: [
         CustomValidators.specialCharValidationForName('firstName'),
         CustomValidators.numberValidationForName('firstName'),
         CustomValidators.specialCharValidationForName('lastName'), 
-        CustomValidators.numberValidationForName('lastName')
+        CustomValidators.numberValidationForName('lastName'),
+        CustomValidators.numberFieldValidation('pageRefreshTime', 60),
+        CustomValidators.numberMinFieldValidation('pageRefreshTime', 1)
       ]
     });
     this.orgName = localStorage.getItem("organizationName");
@@ -174,7 +179,19 @@ export class NewUserStepComponent implements OnInit {
       dateFormat: true,
       vehDisplay: true,
       timeFormat: true,
-      landingPage: true
+      landingPage: true,
+      pageRefreshTime : true
+    }
+  }
+
+  keyPressNumbers(event: any){
+    var charCode = (event.which) ? event.which : event.keyCode;
+    // Only Numbers 0-9
+    if ((charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+      return false;
+    } else {
+      return true;
     }
   }
 
@@ -188,6 +205,8 @@ export class NewUserStepComponent implements OnInit {
       this.firstFormGroup.get('vehDisplay').setValue(prefObj.vehicleDisplayId);
       this.firstFormGroup.get('timeFormat').setValue(prefObj.timeFormatId);
       this.firstFormGroup.get('landingPage').setValue(prefObj.landingPageDisplayId);
+      this.firstFormGroup.get('pageRefreshTime').setValue(prefObj.pageRefreshTime);
+
     }
     else{ //-- set org default setting
       this.firstFormGroup.get('language').setValue((this.orgPreference.language && this.orgPreference.language != '') ? this.orgPreference.language : this.defaultSetting.languageDropdownData[0].id);
@@ -198,6 +217,8 @@ export class NewUserStepComponent implements OnInit {
       this.firstFormGroup.get('vehDisplay').setValue((this.orgPreference.vehicleDisplay && this.orgPreference.vehicleDisplay != '') ? this.orgPreference.vehicleDisplay : this.defaultSetting.vehicleDisplayDropdownData[0].id);
       this.firstFormGroup.get('timeFormat').setValue((this.orgPreference.timeFormat && this.orgPreference.timeFormat != '') ? this.orgPreference.timeFormat : this.defaultSetting.timeFormatDropdownData[0].id);
       this.firstFormGroup.get('landingPage').setValue((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id);
+      this.firstFormGroup.get('pageRefreshTime').setValue((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1);
+     
       this.setDefaultOrgVal();
     }
    }
@@ -245,7 +266,9 @@ export class NewUserStepComponent implements OnInit {
           dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : ((this.orgPreference.dateFormat && this.orgPreference.dateFormat != '') ? this.orgPreference.dateFormat : this.defaultSetting.dateFormatDropdownData[0].id),
           timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : ((this.orgPreference.timeFormat && this.orgPreference.timeFormat != '') ? this.orgPreference.timeFormat : this.defaultSetting.timeFormatDropdownData[0].id),
           vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : ((this.orgPreference.vehicleDisplay && this.orgPreference.vehicleDisplay != '') ? this.orgPreference.vehicleDisplay : this.defaultSetting.vehicleDisplayDropdownData[0].id),
-          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : ((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id)
+          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : ((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id),
+          pageRefreshTime: this.firstFormGroup.controls.pageRefreshTime.value != '' ?  parseInt(this.firstFormGroup.controls.pageRefreshTime.value) : ((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1)
+          
         }
         let createPrefFlag = false;
         for (const [key, value] of Object.entries(this.orgDefaultFlag)) {
@@ -255,7 +278,7 @@ export class NewUserStepComponent implements OnInit {
           }
         }
 
-        if(createPrefFlag){ //--- pref created
+        if(createPrefFlag || (parseInt(this.firstFormGroup.controls.pageRefreshTime.value) != this.orgPreference.pageRefreshTime)){ //--- pref created
           this.accountService.createPreference(preferenceObj).subscribe((prefData: any) => {
             this.goForword(createStatus);
           });
@@ -691,7 +714,9 @@ export class NewUserStepComponent implements OnInit {
           dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : ((this.orgPreference.dateFormat && this.orgPreference.dateFormat != '') ? this.orgPreference.dateFormat : this.defaultSetting.dateFormatDropdownData[0].id),
           timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : ((this.orgPreference.timeFormat && this.orgPreference.timeFormat != '') ? this.orgPreference.timeFormat : this.defaultSetting.timeFormatDropdownData[0].id),
           vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : ((this.orgPreference.vehicleDisplay && this.orgPreference.vehicleDisplay != '') ? this.orgPreference.vehicleDisplay : this.defaultSetting.vehicleDisplayDropdownData[0].id),
-          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : ((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id)
+          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : ((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id),
+          pageRefreshTime: this.firstFormGroup.controls.pageRefreshTime.value != '' ?  parseInt(this.firstFormGroup.controls.pageRefreshTime.value) : ((this.orgPreference.pageRefreshTime && this.orgPreference.pageRefreshTime != '') ? this.orgPreference.pageRefreshTime : 1)
+          
         }
         if(this.prefId != 0){
           this.accountService.updateAccountPreference(prefObj).subscribe((data) => {

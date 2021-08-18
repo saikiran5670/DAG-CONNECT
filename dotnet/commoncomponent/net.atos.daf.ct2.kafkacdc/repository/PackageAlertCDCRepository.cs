@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 	                               ,feasetfea.feature_set_id as featuresetid   
                             from master.package pac
                             inner join master.subscription sub
-                            on sub.package_id=pac.id and sub.state='A' and pac.state='A'
+                            on sub.package_id=pac.id and sub.state='A'
                             inner join master.featuresetfeature feasetfea
                             on pac.feature_set_id=feasetfea.feature_set_id
                             inner join master.feature fea
@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                             on fea.id=enutra.feature_id and enutra.type='T'
 							inner join master.alert ale
                             on ale.type= enutra.enum and ale.category= enutra.parent_enum and enutra.type='T' AND ale.state ='A'
-                            where pac.id =@packageId and pac.state ='A' and sub.organization_id in(ale.organization_id)
+                            where pac.id =@packageId and sub.organization_id in(ale.organization_id)
                             and sub.state ='A' and fea.id= enutra.feature_id
                             and case when COALESCE(subscription_end_date,0) !=0 then to_timestamp(COALESCE(subscription_end_date)/1000)::date>=now()::date
                                 else COALESCE(subscription_end_date,0) =0 end

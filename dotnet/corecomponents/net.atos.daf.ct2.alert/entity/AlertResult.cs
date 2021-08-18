@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.alert.entity
         public int Aleurg_id { get; set; }
         public int Aleurg_alert_id { get; set; }
         public string Aleurg_urgency_level_type { get; set; }
-        public int Aleurg_threshold_value { get; set; }
+        public double Aleurg_threshold_value { get; set; }
         public string Aleurg_unit_type { get; set; }
         public BitArray Aleurg_day_type { get; set; }
         public string Aleurg_period_type { get; set; }

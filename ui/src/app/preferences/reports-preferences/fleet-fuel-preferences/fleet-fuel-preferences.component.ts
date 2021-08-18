@@ -274,7 +274,7 @@ export class FleetFuelPreferencesComponent implements OnInit {
 
   if(key === "rp_ff_report_vehicle_vehicledetails_cruisecontroldistance5075"){
     if(unitObj[0].value == 'Imperial'){
-      return '(mph)';
+      return '(mph)(%)';
     } else {
       return 'km/h (%)';
     }
@@ -282,36 +282,83 @@ export class FleetFuelPreferencesComponent implements OnInit {
 
   if(key === "rp_ff_report_vehicle_vehicledetails_cruisecontroldistance75"){
     if(unitObj[0].value == 'Imperial'){
-      return '(mph)';
+      return '(mph)(%)';
     } else {
       return 'km/h (%)';
     }
   }
   
-  // if(key === "rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance5075"){
-  //   if(unitObj[0].value == 'Imperial'){
-  //     return '(mph)';
-  //   } else {
-  //     return 'km/h (%)';
-  //   }
-  // }
+  if(key === "rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance5075"){
+    if(unitObj[0].value == 'Imperial'){
+      return '(mph)(%)';
+    } else {
+      return 'km/h (%)';
+    }
+  }
 
 
-  // if(key === "rp_ff_report_driver_singlevehicledetails_cruisecontroldistance3050"){
-  //   if(unitObj[0].value == 'Imperial'){
-  //     return '(mph)';
-  //   } else {
-  //     return 'km/h(%)';
-  //   }
-  // }
+  if(key === "rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance3050"){
+    if(unitObj[0].value == 'Imperial'){
+      return '(mph)(%)';
+    } else {
+      return 'km/h(%)';
+    }
+  }
 
-  // if(key === "rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance75"){
-  //   if(unitObj[0].value == 'Imperial'){
-  //     return '(mph)';
-  //   } else {
-  //     return 'km/h(%)';
-  //   }
-  // }
+  if(key === "rp_ff_report_vehicle_singlevehicledetails_cruisecontroldistance75"){
+    if(unitObj[0].value == 'Imperial'){
+      return '(mph)(%)';
+    } else {
+      return 'km/h(%)';
+    }
+  }
+
+  if(key === "rp_ff_report_driver_vehicledetails_cruisecontroldistance3050"){
+    if(unitObj[0].value == 'Imperial'){
+      return '(mph)(%)';
+    } else {
+      return 'km/h(%)';
+    }
+  }
+
+  if(key === "rp_ff_report_driver_vehicledetails_cruisecontroldistance75"){
+    if(unitObj[0].value == 'Imperial'){
+      return '(mph)(%)';
+    } else {
+      return 'km/h(%)';
+    }
+  }
+
+  if(key === "rp_ff_report_driver_vehicledetails_cruisecontroldistance5075"){
+    if(unitObj[0].value == 'Imperial'){
+      return '(mph)(%)';
+    } else {
+      return 'km/h(%)';
+    }
+  }
+
+  if(key === "rp_ff_report_driver_singlevehicledetails_cruisecontroldistance3050"){
+    if(unitObj[0].value == 'Imperial'){
+      return '(mph)(%)';
+    } else {
+      return 'km/h(%)';
+    }
+  }
+
+  if(key === "rp_ff_report_driver_singlevehicledetails_cruisecontroldistance5075"){
+    if(unitObj[0].value == 'Imperial'){
+      return '(mph)(%)';
+    } else {
+      return 'km/h(%)';
+    }
+  }
+  if(key === "rp_ff_report_driver_singlevehicledetails_cruisecontroldistance75"){
+    if(unitObj[0].value == 'Imperial'){
+      return '(mph)(%)';
+    } else {
+      return 'km/h(%)';
+    }
+  }
 
   }
  }

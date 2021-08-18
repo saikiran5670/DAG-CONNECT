@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.package;
 using net.atos.daf.ct2.package.entity;
+using net.atos.daf.ct2.packageservice.Common;
 
 namespace net.atos.daf.ct2.packageservice
 {
@@ -16,17 +18,21 @@ namespace net.atos.daf.ct2.packageservice
         private readonly ILog _logger;
         private readonly IAuditTraillib _auditTraillib;
         private readonly IPackageManager _packageManager;
+        private readonly PackageCdcHelper _packageCdcHelper;
+        private readonly IPackageAlertCdcManager _packageMgmAlertCdcManager;
         public PackageManagementService(
-                                        IAuditTraillib AuditTrail,
-                                        IPackageManager packageManager)
+                                        IAuditTraillib auditTrail,
+                                        IPackageManager packageManager, IPackageAlertCdcManager packageMgmAlertCdcManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _auditTraillib = AuditTrail;
+            _auditTraillib = auditTrail;
             _packageManager = packageManager;
+            _packageMgmAlertCdcManager = packageMgmAlertCdcManager;
+            _packageCdcHelper = new PackageCdcHelper(_packageMgmAlertCdcManager);
         }
 
 
-        public override Task<PackageResponse> Create(PackageCreateRequest request, ServerCallContext context)
+        public async override Task<PackageResponse> Create(PackageCreateRequest request, ServerCallContext context)
         {
             try
             {
@@ -41,7 +47,7 @@ namespace net.atos.daf.ct2.packageservice
                 package = _packageManager.Create(package).Result;
                 if (package.Id == -1)
                 {
-                    return Task.FromResult(new PackageResponse
+                    return await Task.FromResult(new PackageResponse
                     {
                         Message = "Package Code is " + package.Code + " already exists ",
                         PackageId = package.Id,
@@ -50,16 +56,16 @@ namespace net.atos.daf.ct2.packageservice
                 }
                 else
                 {
-                    return Task.FromResult(new PackageResponse
+                    return await Task.FromResult(new PackageResponse
                     {
-                        Message = "Package Created " + package.Id,
+                        Message = "Package Not Created " + package.Id,
                         PackageId = package.Id
                     });
                 }
             }
             catch (Exception ex)
             {
-                return Task.FromResult(new PackageResponse
+                return await Task.FromResult(new PackageResponse
                 {
                     Message = "Exception " + ex.Message,
                     Code = Responsecode.Failed
@@ -69,7 +75,7 @@ namespace net.atos.daf.ct2.packageservice
 
 
         //Update
-        public override Task<PackageResponse> Update(PackageCreateRequest request, ServerCallContext context)
+        public async override Task<PackageResponse> Update(PackageCreateRequest request, ServerCallContext context)
         {
             try
             {
@@ -87,25 +93,35 @@ namespace net.atos.daf.ct2.packageservice
 
                 if (package.Id == -1)
                 {
-                    return Task.FromResult(new PackageResponse
+                    return await Task.FromResult(new PackageResponse
                     {
                         Message = "Package Code is " + package.Code + " already exists ",
                         PackageId = package.Id,
                         Code = Responsecode.Conflict
                     });
                 }
-                else
+                else if (package.Id > 0)
                 {
-                    return Task.FromResult(new PackageResponse
+                    //Triggering package cdc 
+                    await _packageCdcHelper.TriggerPackageCdc(package.Id, "U");
+                    return await Task.FromResult(new PackageResponse
                     {
                         Message = "Package Updated ",
+                        PackageId = package.Id
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new PackageResponse
+                    {
+                        Message = "Package Not Updated " + package.Id,
                         PackageId = package.Id
                     });
                 }
             }
             catch (Exception ex)
             {
-                return Task.FromResult(new PackageResponse
+                return await Task.FromResult(new PackageResponse
                 {
                     Message = "Exception " + ex.Message
                 });
@@ -121,6 +137,8 @@ namespace net.atos.daf.ct2.packageservice
                 var response = new PackageResponse();
                 if (result)
                 {
+                    //Triggering package cdc 
+                    await _packageCdcHelper.TriggerPackageCdc(request.Id, "D");
                     response.Code = Responsecode.Success;
                     response.Message = "Package Deleted.";
                 }
@@ -239,7 +257,7 @@ namespace net.atos.daf.ct2.packageservice
 
 
         //Update Package Status
-        public override Task<UpdatePackageStateResponse> UpdatePackageState(UpdatePackageStateRequest request, ServerCallContext context)
+        public async override Task<UpdatePackageStateResponse> UpdatePackageState(UpdatePackageStateRequest request, ServerCallContext context)
         {
             try
             {
@@ -247,15 +265,29 @@ namespace net.atos.daf.ct2.packageservice
                 package.Id = request.PackageId;
                 package.State = request.State;
                 package = _packageManager.UpdatePackageState(package).Result;
-                return Task.FromResult(new UpdatePackageStateResponse
+                if (package.Id > 0)
                 {
-                    Message = "Package state Updated ",
-                    PackageStateResponse = request
-                });
+                    //Triggering package cdc 
+                    await _packageCdcHelper.TriggerPackageCdc(package.Id, "U");
+                    return await Task.FromResult(new UpdatePackageStateResponse
+                    {
+                        Message = "Package state Updated ",
+                        PackageStateResponse = request
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new UpdatePackageStateResponse
+                    {
+                        Message = "Package state not Updated " + package.Id,
+                        PackageStateResponse = request
+                    });
+                }
+
             }
             catch (Exception ex)
             {
-                return Task.FromResult(new UpdatePackageStateResponse
+                return await Task.FromResult(new UpdatePackageStateResponse
                 {
                     Message = "Exception " + ex.Message
                 });

@@ -269,9 +269,9 @@ doughnutDistanceColors: Color[] = [
         
       // ]
     }
-    this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
-       // console.log(vehicleData);
-       if(vehicleData){
+   this.dashboardService.getTodayLiveVehicleData(_vehiclePayload).subscribe((vehicleData)=>{
+       //console.log(vehicleData);
+      if(vehicleData){
           this.liveVehicleData = vehicleData;
           this.totalVehicles =  this.finalVinList.length;
             // this.liveVehicleData ={
@@ -791,7 +791,7 @@ doughnutDistanceColors: Color[] = [
       nextPercent = 0;
     }
     this.doughnutChartDistanceBasedData = [[distanceBasedPercent,(nextPercent)]]
-    let distanceTarget = this.dashboardService.calculateTargetValue(this.activeVehicleTotalCount,_threshold,1);
+    let distanceTarget = this.reportMapService.getDistance(distancecutOff, this.prefUnitFormat);// this.dashboardService.calculateTargetValue(this.activeVehicleTotalCount,_threshold,1);
     let changePercent = this.dashboardService.calculateLastChange(todayDistance,lastDistance,4);
    
     let activeVehicleCaretColor = 'caretGreen';

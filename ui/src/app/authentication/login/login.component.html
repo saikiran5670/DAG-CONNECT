@@ -94,9 +94,9 @@
                                     <div fxLayout="column" fxLayoutAlign="start" class='full-width emailField'>
                                         <mat-label><span>Registered Email Id</span><span class='asterick'>*</span></mat-label>
                                         <mat-form-field appearance="fill">
-                                            <input matInput placeholder="Enter your registered Email Id" formControlName="emailId" required>
+                                            <input matInput maxlength="120" placeholder="Enter your registered Email Id" formControlName="emailId" required>
                                             <mat-error *ngIf="forgotPasswordForm.get('emailId').hasError('required')">
-                                              Email id is required
+                                                Email id is required
                                             </mat-error>
                                             <mat-error *ngIf="forgotPasswordForm.get('emailId').hasError('pattern')">
                                                 Please enter valid email id
