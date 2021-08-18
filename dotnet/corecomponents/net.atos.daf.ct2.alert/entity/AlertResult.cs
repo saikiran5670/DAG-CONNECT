@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.alert.entity
         public int Alefil_alert_id { get; set; }
         public int Alefil_alert_urgency_level_id { get; set; }
         public string Alefil_filter_type { get; set; }
-        public int Alefil_threshold_value { get; set; }
+        public double Alefil_threshold_value { get; set; }
         public string Alefil_unit_type { get; set; }
         public string Alefil_landmark_type { get; set; }
         public int Alefil_ref_id { get; set; }
