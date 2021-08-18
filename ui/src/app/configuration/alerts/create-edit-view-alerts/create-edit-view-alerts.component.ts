@@ -39,7 +39,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   vehicleGroupList: any = [];
   vehicleList: any = [];
   accountInfo:any = {};
-  vehicleDisplayPreference = 'dvehicledisplay_Name';
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
  
   alertCategoryTypeMasterData: any= [];
   alertCategoryTypeFilterData: any= [];

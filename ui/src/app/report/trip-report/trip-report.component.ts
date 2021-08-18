@@ -37,7 +37,7 @@ declare var H: any;
 export class TripReportComponent implements OnInit, OnDestroy {
 
   accountInfo:any = {};
-  vehicleDisplayPreference = 'dvehicledisplay_Name';
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   searchStr: string = "";
   suggestionData: any;
   selectedMarker: any;
