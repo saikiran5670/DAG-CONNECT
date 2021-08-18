@@ -7,6 +7,7 @@ using net.atos.daf.ct2.confluentkafka;
 using net.atos.daf.ct2.kafkacdc.entity;
 using net.atos.daf.ct2.utilities;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
@@ -34,20 +35,27 @@ namespace net.atos.daf.ct2.kafkacdc
             VehicleAlertRefMsgFormat data = new VehicleAlertRefMsgFormat();
             data.AlertId = alertId;
             data.VinOps = vehicleAlertRefList.Count > 0 ? vehicleAlertRefList.Select(result => new VehicleStateMsgFormat() { VIN = result.VIN, Op = result.Op }).ToList() : new List<VehicleStateMsgFormat>(); ;
-
-            Payload payload = new Payload()
+            DefaultContractResolver contractResolver = new DefaultContractResolver
             {
-                Data = JsonConvert.SerializeObject(data),
-                Operation = operation,
-                Namespace = "alerts",
-                Ts_ms = UTCHandling.GetUTCFromDateTime(DateTime.Now)
+                NamingStrategy = new CamelCaseNamingStrategy()
             };
             AlertCdcKafkaJsonMessage vehicleAlertRefKafkaMessage = new AlertCdcKafkaJsonMessage()
             {
-                Payload = payload,
-                Schema = "master.vehiclealertref"
+                Schema = "master.vehiclealertref",
+                Payload = JsonConvert.SerializeObject(data, new JsonSerializerSettings
+                {
+                    ContractResolver = contractResolver
+                }),
+                Operation = operation,
+                Namespace = "alerts",
+                TimeStamp = UTCHandling.GetUTCFromDateTime(DateTime.Now)
             };
-            return Task.FromResult(JsonConvert.SerializeObject(vehicleAlertRefKafkaMessage));
+            return Task.FromResult(JsonConvert.SerializeObject(vehicleAlertRefKafkaMessage,
+                new JsonSerializerSettings
+                {
+                    ContractResolver = contractResolver,
+                    Formatting = Formatting.Indented
+                }));
         }
     }
 }
