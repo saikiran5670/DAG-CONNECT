@@ -23,8 +23,8 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   breadcumMsg: any = ''; 
   editPackageFlag : boolean = false;
-  featureDisplayedColumns: string[] = ['name', 'select'];
-  dataSource: any;
+  // featureDisplayedColumns: string[] = ['name', 'select'];
+  // dataSource: any;
   packageFormGroup: FormGroup;
   initData: any = [];
   updatedData: any = [];
@@ -47,6 +47,9 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       value: 'VIN'
     }
   ];
+  columnCodes = ['name', 'select'];
+  columnLabels = ['FeatureName','Include'];
+  showLoadingIndicator: boolean = true;
   
  
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService,) { }
@@ -88,105 +91,118 @@ export class CreateEditPackageDetailsComponent implements OnInit {
             selectedFeatureList.push(row);
           }
         });
-        this.dataSource = selectedFeatureList;
-        this.updatedTableData(selectedFeatureList);
-        this.featureDisplayedColumns = ['name'] ;
-        setTimeout(()=>{
-          this.dataSource = new MatTableDataSource(data);
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-          this.dataSource.sortData = (data: String[], sort: MatSort) => {
-            const isAsc = sort.direction === 'asc';
-            return data.sort((a: any, b: any) => {
-              return this.compare(a[sort.active], b[sort.active], isAsc);
-            });
-           }
-          if(!this.createStatus || this.duplicateMsg || this.viewFlag){
-            this.onReset();
-          }
-        });
+        this.initData = selectedFeatureList;
+        // this.dataSource = selectedFeatureList;
+        // this.updatedTableData(selectedFeatureList);
+        this.columnCodes = ['name'] ;
+        // setTimeout(()=>{
+        //   // this.dataSource = new MatTableDataSource(data);
+        //   // this.dataSource.paginator = this.paginator;
+        //   // this.dataSource.sort = this.sort;
+        //   // this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        //   //   const isAsc = sort.direction === 'asc';
+        //   //   return data.sort((a: any, b: any) => {
+        //   //     return this.compare(a[sort.active], b[sort.active], isAsc);
+        //   //   });
+        //   //  }
+        //   if(!this.createStatus || this.duplicateMsg || this.viewFlag){
+        //     this.onReset();
+        //   }
+        // });
 
       } else if (this.actionType == "edit" || this.actionType == "create") {
-        setTimeout(()=>{
-          this.dataSource = new MatTableDataSource(data);
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-          this.dataSource.sortData = (data: String[], sort: MatSort) => {
-            const isAsc = sort.direction === 'asc';
-            return data.sort((a: any, b: any) => {
-              return this.compare(a[sort.active], b[sort.active], isAsc);
-            });
-           }
-          if(!this.createStatus || this.duplicateMsg || this.viewFlag){
-            this.onReset();
-          }
-        });
+        // setTimeout(()=>{
+        //   // this.dataSource = new MatTableDataSource(data);
+        //   // this.dataSource.paginator = this.paginator;
+        //   // this.dataSource.sort = this.sort;
+        //   // this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        //   //   const isAsc = sort.direction === 'asc';
+        //   //   return data.sort((a: any, b: any) => {
+        //   //     return this.compare(a[sort.active], b[sort.active], isAsc);
+        //   //   });
+        //   //  }
+        //   if(!this.createStatus || this.duplicateMsg || this.viewFlag){
+        //     this.onReset();
+        //   }
+        // });
       }
-      this.featuresData 
+
+      this.showLoadingIndicator = false;
+
+      setTimeout(()=>{
+        if(!this.createStatus || this.duplicateMsg || this.viewFlag){
+          this.onReset();
+        }
+      });
+      // this.featuresData 
   }, (error) => { });
-   this.updatedTableData(this.dataSource); 
+  //  this.updatedTableData(this.dataSource); 
 }
 
-compare(a: Number | String, b: Number | String, isAsc: boolean) {
-  if(!(a instanceof Number)) a = a.toUpperCase();
-  if(!(b instanceof Number)) b = b.toUpperCase();
-  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-  }
-  applyFilter(filterValue: string) {
-    this.updatedTableData(this.initData);
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
-    this.updatedTableData(this.dataSource.filteredData);
-  }
+// compare(a: Number | String, b: Number | String, isAsc: boolean) {
+//   if(!(a instanceof Number)) a = a.toUpperCase();
+//   if(!(b instanceof Number)) b = b.toUpperCase();
+//   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+//   }
+  // applyFilter(filterValue: string) {
+  //   this.updatedTableData(this.initData);
+  //   filterValue = filterValue.trim(); // Remove whitespace
+  //   filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+  //   this.dataSource.filter = filterValue;
+  //   this.updatedTableData(this.dataSource.filteredData);
+  // }
   
   selectTableRows() {
-    this.dataSource.data.forEach((row: any) => {
-      let search = this.selectedElementData.featureIds.includes(row.id);
-      if (search.length > 0) {
-        this.selectionForFeatures.select(row);
-      }
-    });
+    if(this.selectedElementData) {
+      this.initData.forEach((row: any) => {
+        let search = this.selectedElementData.featureIds.includes(row.id);
+        if (search.length > 0) {
+          this.selectionForFeatures.select(row);
+        }
+      });
+    }
   }
 
   editPackage(){
     this.actionType = "edit";
     this.editPackageFlag = true;
-    this.featureDisplayedColumns = ['name','select'] ;
+    this.columnCodes = ['name','select'] ;
     this.selectTableRows();
-    this.updatedTableData(this.initData);
-    this.featuresSelected = this.selectedElementData.featureIds;
-    this.dataSource.data.forEach(row => {
-      if(this.featuresSelected){
-        for(let selectedFeature of this.featuresSelected){
-          if(selectedFeature == row.id){
+    // this.updatedTableData(this.initData);
+    this.featuresSelected = this.selectedElementData?.featureIds;
+    if (this.featuresSelected) {
+      this.initData.forEach(row => {
+        for (let selectedFeature of this.featuresSelected) {
+          if (selectedFeature == row.id) {
             this.selectionForFeatures.select(row);
             break;
           }
-          else{
+          else {
             this.selectionForFeatures.deselect(row);
           }
         }
-      }
-    })
+      })
+    }
     this.breadcumMsg = this.getBreadcum(this.actionType);
   }
 
-  updatedTableData(tableData: any){
-    this.dataSource = new MatTableDataSource(tableData);
-      setTimeout(()=>{
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      });
-  }
+  // updatedTableData(tableData: any){
+  //   this.dataSource = new MatTableDataSource(tableData);
+  //     setTimeout(()=>{
+  //       this.dataSource.paginator = this.paginator;
+  //       this.dataSource.sort = this.sort;
+  //     });
+  // }
 
   setDefaultValue(){
-    this.packageFormGroup.get("code").setValue(this.selectedElementData.code);
-    this.packageFormGroup.get("name").setValue(this.selectedElementData.name);
-    this.packageFormGroup.get("type").setValue(this.selectedElementData.type);
-    this.packageFormGroup.get("state").setValue(this.selectedElementData.state);
-    this.packageFormGroup.get("description").setValue(this.selectedElementData.description);
-    this.selectedStatus = this.selectedElementData.state;
+    if(this.selectedElementData) {
+      this.packageFormGroup.get("code").setValue(this.selectedElementData.code);
+      this.packageFormGroup.get("name").setValue(this.selectedElementData.name);
+      this.packageFormGroup.get("type").setValue(this.selectedElementData.type);
+      this.packageFormGroup.get("state").setValue(this.selectedElementData.state);
+      this.packageFormGroup.get("description").setValue(this.selectedElementData.description);
+      this.selectedStatus = this.selectedElementData.state;
+    }
   }
 
   toBack(){
@@ -288,36 +304,35 @@ compare(a: Number | String, b: Number | String, isAsc: boolean) {
     }
   }
 
-  onReset(){
-    this.featuresSelected = this.selectedElementData.featureIds;
+  onReset() {
+    this.featuresSelected = this.selectedElementData?.featureIds;
     this.selectionForFeatures.clear();
     this.setDefaultValue();
     this.selectTableRows();
-
-    this.dataSource.data.forEach(row => {
-      if(this.featuresSelected){
-        for(let selectedFeature of this.featuresSelected){
-          if(selectedFeature == row.id){
+    if (this.featuresSelected) {
+      this.initData.forEach(row => {
+        for (let selectedFeature of this.featuresSelected) {
+          if (selectedFeature == row.id) {
             this.selectionForFeatures.select(row);
             break;
           }
-          else{
+          else {
             this.selectionForFeatures.deselect(row);
           }
         }
-      }
-    })
+      })
+    }
   }
 
   isAllSelectedForFeatures(){
     const numSelected = this.selectionForFeatures.selected.length;
-    const numRows = this.dataSource.data.length;
+    const numRows = this.initData.length;
     return numSelected === numRows;
   }
 
   masterToggleForFeatures(){
     this.isAllSelectedForFeatures() ? 
-    this.selectionForFeatures.clear() : this.dataSource.data.forEach(row => {this.selectionForFeatures.select(row)});
+    this.selectionForFeatures.clear() : this.initData.forEach(row => {this.selectionForFeatures.select(row)});
 
   }
 
@@ -332,7 +347,7 @@ compare(a: Number | String, b: Number | String, isAsc: boolean) {
     var selectName = row.name;
     var selectId = row.id;
     if(!selectName.includes('.')){
-      this.dataSource.data.forEach( row => {
+      this.initData.forEach( row => {
         if(row.name.startsWith(selectName)){
           if(event.checked)
             this.selectionForFeatures.select(row);

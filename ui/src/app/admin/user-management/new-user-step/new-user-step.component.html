@@ -248,7 +248,24 @@
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+            <div  class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label>{{ translationData.lblSetPageRefreshTime || 'Set Page Refresh Time' }}</mat-label>
+              <mat-form-field appearance="outline" class="full-width">
+                <input matInput maxlength="2" type="text" formControlName="pageRefreshTime" (keypress)="keyPressNumbers($event)">
+                <span matSuffix>min</span>  
+              </mat-form-field>
+              <mat-error *ngIf="firstFormGroup.get('pageRefreshTime').hasError('required')">
+                {{ translationData.lblPleaseEnterTimerValue || 'Please Enter Timer Value' }}
+              </mat-error>
+              <mat-error  *ngIf="firstFormGroup.get('pageRefreshTime').hasError('cannotExceedMaxValue')">
+                  {{ translationData.lbl || 'Timer Value cannot be greater than 60' }}
+              </mat-error>
+              <mat-error  *ngIf="firstFormGroup.get('pageRefreshTime').hasError('cannotExceedMinValue')">
+                  {{ translationData.lbl || 'Timer Value cannot be less than 1' }}
+              </mat-error>
+            </div>
+            
+            <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div> -->
           </div>
         </mat-card-content>
       </mat-card>

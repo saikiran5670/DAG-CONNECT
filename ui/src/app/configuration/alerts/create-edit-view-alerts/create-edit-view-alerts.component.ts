@@ -38,6 +38,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   alertTypeList: any = [];
   vehicleGroupList: any = [];
   vehicleList: any = [];
+  accountInfo:any = {};
+  vehicleDisplayPreference = 'dvehicledisplay_Name';
  
   alertCategoryTypeMasterData: any= [];
   alertCategoryTypeFilterData: any= [];
@@ -174,7 +176,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-    });
+    });  
    }
 
   ngOnInit(): void {
@@ -232,6 +234,14 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.proceedStep(prefData, pref);
         });
       }
+
+      let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+      if(vehicleDisplayId) {
+        let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+        if(vehicledisplay.length != 0) {
+          this.vehicleDisplayPreference = vehicledisplay[0].name;
+        }
+      }  
     });
 }
   
@@ -320,6 +330,7 @@ proceedStep(prefData: any, preference: any){
         this.alertCategoryName = this.translationData[this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_category_selected)[0].key];
         this.alertTypeName = this.translationData[this.alertCategoryTypeMasterData.filter(item => (item.enum == this.selectedRowData.type && item.parentEnum == this.alert_category_selected))[0].key];
         this.onChangeAlertType(this.selectedRowData.type);
+        this.convertValuesToPrefUnit();
         if(this.selectedRowData.notifications.length != 0)
           this.panelOpenState= true;
       }
@@ -469,8 +480,8 @@ proceedStep(prefData: any, preference: any){
         }
         case "LD": { //Excessive distance done
           this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer : 'Miles';
-          // this.unitForThreshold= this.translationData.lbl ? this.translationData.lblKilometer : "Kilometer"; //km/miles
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer || 'Kilometer' : this.translationData.lblMiles || 'Miles';
+         // this.unitForThreshold= this.translationData.lbl ? this.translationData.lblKilometer : "Kilometer"; //km/miles
           if(this.prefUnitFormat == 'dunit_Metric'){
             this.unitTypeEnum= "K";  }
             else{
@@ -1079,6 +1090,10 @@ PoiCheckboxClicked(event: any, row: any) {
     
     this.alertForm.get('statusMode').setValue(this.selectedRowData.state);
     this.onChangeAlertType(this.selectedRowData.type);
+    this.convertValuesToPrefUnit();
+  }
+
+  convertValuesToPrefUnit(){
     let threshold;
     this.selectedRowData.alertUrgencyLevelRefs.forEach(element => {
             if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'LH' ||
@@ -1127,8 +1142,6 @@ PoiCheckboxClicked(event: any, row: any) {
             }
         
     });
-
-
   }
 
   getBreadcum() {

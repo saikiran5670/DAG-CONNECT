@@ -35,6 +35,9 @@ declare var H: any;
 })
 
 export class TripReportComponent implements OnInit, OnDestroy {
+
+  accountInfo:any = {};
+  vehicleDisplayPreference = 'dvehicledisplay_Name';
   searchStr: string = "";
   suggestionData: any;
   selectedMarker: any;
@@ -267,7 +270,16 @@ export class TripReportComponent implements OnInit, OnDestroy {
             this.proceedStep(prefData, pref);
           });
         }
+
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
       });
+    
     });
   }
 
@@ -770,19 +782,25 @@ export class TripReportComponent implements OnInit, OnDestroy {
     });
   }
 
-  exportAsExcelFile() {
-    const title = 'Trip Report';
-    const summary = 'Summary Section';
-    const detail = 'Detail Section';
-    let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblgallonmile || 'mpg') : (this.translationData.lblgallonmile || 'mpg');
-    let unitValkg = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkg || 'kg') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound || 'pound');
-    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'kmph') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmileh || 'mph') : (this.translationData.lblmileh || 'mph');
-    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmile || 'mile') : (this.translationData.lblmile || 'mile');
+  getPDFExcelHeader(){
+    let col: any = [];
+    let unitVal100km = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblltr100km || 'ltr/100km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmpg || 'mpg') : (this.translationData.lblmpg || 'mpg');
+    let unitValTon = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblpound || 'pound') : (this.translationData.lblpound || 'pound');
+    let unitValkmh = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmph || 'mph') : (this.translationData.lblmph || 'mph');
+    let unitValkm = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.prefUnitFormat == 'dunit_Imperial') ? (this.translationData.lblmi || 'mi') : (this.translationData.lblmi || 'mi');
+    col = [`${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblOdometer || 'Odometer'} (${unitValkm})`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblRegistrationNo || 'Registration No'}`, `${this.translationData.lblStartDate || 'Start Date'}`, `${this.translationData.lblEndDate || 'End Date'}`, `${this.translationData.lblDistance || 'Distance'} (${unitValkm})`, `${this.translationData.lblIdleDuration || 'Idle Duration'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAverageSpeed || 'Average Speed'} (${unitValkmh})`, `${this.translationData.lblAverageWeight || 'Average Weight'} (${unitValTon})`, `${this.translationData.lblStartPosition || 'Start Position'}`, `${this.translationData.lblEndPosition || 'End Position'}`, `${this.translationData.lblFuelConsumption || 'Fuel Consumption'} (${unitVal100km})`, `${this.translationData.lblDrivingTime || 'Driving Time'} (${this.translationData.lblhhmm || 'hh:mm'})`, `${this.translationData.lblAlerts || 'Alerts'}`, `${this.translationData.lblEvents || 'Events'}`];
+    return col;
+  }
 
-    const header = ['VIN', 'Odometer('+unitValkm+')', 'Vehicle Name', 'Registration No', 'Start Date', 'End Date', 'Distance(' + unitValkm + ')', 'Idle Duration(hh:mm)', 'Average Speed(' + unitValkmh + ')', 'Average Weight(Ton)', 'Start Position', 'End Position', 'Fuel Consumption(' + unitVal100km + ')', 'Driving Time(hh:mm)', 'Alerts', 'Events'];
-    const summaryHeader = ['Report Name', 'Report Created', 'Report Start Time', 'Report End Time', 'Vehicle Group', 'Vehicle Name', 'Vehicle VIN', 'Reg. Plate Number'];
+  exportAsExcelFile() {
+    const title = this.translationData.lblTripReport || 'Trip Report';
+    const summary = this.translationData.lblSummarySection || 'Summary Section'; 
+    const detail = this.translationData.lblDetailSection || 'Detail Section';
+    
+    const header = this.getPDFExcelHeader(); 
+    const summaryHeader = [`${this.translationData.lblReportName || 'Report Name'}`, `${this.translationData.lblReportCreated || 'Report Created'}`, `${this.translationData.lblReportStartTime|| 'Report Start Time'}`, `${this.translationData.lblReportEndTime|| 'Report End Time'}`, `${this.translationData.lblVehicleGroup || 'Vehicle Group'}`, `${this.translationData.lblVehicleName || 'Vehicle Name'}`, `${this.translationData.lblVIN || 'VIN'}`, `${this.translationData.lblRegPlateNumber || 'Reg. Plate Number'}`];
     let summaryObj = [
-      ['Trip Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
+      [this.translationData.lblTripReport || 'Trip Report', new Date(), this.tableInfoObj.fromDate, this.tableInfoObj.endDate,
         this.tableInfoObj.vehGroupName, this.tableInfoObj.vehicleName, this.tableInfoObj.vin, this.tableInfoObj.regNo
       ]
     ];
@@ -858,7 +876,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       didDrawPage: function (data) {
         // Header
         doc.setFontSize(20);
-        var fileTitle = "Trip Details";
+        var fileTitle = 'Trip Details';
         var img = "/assets/logo.png";
         doc.addImage(img, 'JPEG', 10, 10, 0, 0);
 
@@ -872,18 +890,14 @@ export class TripReportComponent implements OnInit, OnDestroy {
       }
     });
 
-    let pdfColumns = [['VIN', 'Vehicle Name', 'Registration Number', 'Odometer', 'Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
-    // let pdfColumns = [['Odometer','Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
-
+    let pdfColumns = this.getPDFExcelHeader();
     let prepare = []
     this.initData.forEach(e => {
-      // console.log("---actual data--pdf columns", this.initData)
       var tempObj = [];
-
-      tempObj.push(e.vin); ////need to confirm from backend for key
-      tempObj.push(e.vehicleName); ////need to confirm from backend for key
-      tempObj.push(e.registrationNo); //need to confirm from backend for key
+      tempObj.push(e.vin);
       tempObj.push(e.convertedOdometer);
+      tempObj.push(e.vehicleName);
+      tempObj.push(e.registrationNo);
       tempObj.push(e.convertedStartTime);
       tempObj.push(e.convertedEndTime);
       tempObj.push(e.convertedDistance);
@@ -900,7 +914,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       prepare.push(tempObj);
     });
     (doc as any).autoTable({
-      head: pdfColumns,
+      head: [pdfColumns],
       body: prepare,
       theme: 'striped',
       didDrawCell: data => {
