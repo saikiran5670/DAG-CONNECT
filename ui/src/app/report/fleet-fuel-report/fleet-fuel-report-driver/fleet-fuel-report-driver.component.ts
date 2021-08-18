@@ -1527,7 +1527,7 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
       case 'averageDistancePerDay' :{
-        pdfColumnHeads.push('Average Distance('+distance+')');
+        pdfColumnHeads.push('Average Distance Per Day('+distance+')');
         break;
       }
       case 'averageSpeed' :{
@@ -1575,15 +1575,15 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
       case 'cruiseControlDistance3050' :{
-        pdfColumnHeads.push('Cruise Control Distance 30-50('+speed+')');
+        pdfColumnHeads.push('Cruise Control Distance 30-50('+speed+')(%)');
         break;
       }
       case 'cruiseControlDistance5075' :{
-        pdfColumnHeads.push('Cruise Control Distance 50-75('+speed+')');
+        pdfColumnHeads.push('Cruise Control Distance 50-75('+speed+')(%)');
         break;
       }
       case 'cruiseControlDistance75' :{
-        pdfColumnHeads.push('Cruise Control Distance 75('+speed+')');
+        pdfColumnHeads.push('Cruise Control Distance 75('+speed+')(%)');
         break;
       }
       case 'averageTrafficClassification' :{
@@ -1622,6 +1622,10 @@ setVehicleGroupAndVehiclePreSelection() {
         pdfColumnHeads.push('Idling PTO %');
         break;
       }
+      case 'idlingWithoutPTO' :{
+        pdfColumnHeads.push('Idling Without PTO(hh:mm:ss)');
+        break;
+      }  
       case 'idlingWithoutPTOpercent' :{
         pdfColumnHeads.push('Idling Without PTO % ');
         break;
@@ -1633,11 +1637,7 @@ setVehicleGroupAndVehiclePreSelection() {
       case 'cO2Emmision' :{
         pdfColumnHeads.push('CO2 Emmision gr/km');
         break;
-      }
-      case 'averageTrafficClassificationValue' :{
-        pdfColumnHeads.push('Average Traffic Classification Value');
-        break;
-      }
+      }     
       case 'idlingConsumptionValue' :{
         pdfColumnHeads.push('Idling Consumption Value('+idlingPTO+')');
         break;
@@ -1695,11 +1695,11 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'fuelConsumed' :{
-            tempObj.push(e.fuelConsumed);
+            tempObj.push(e.convertedFuelConsumed100Km);
             break;
           }
           case 'fuelConsumption' :{
-            tempObj.push(e.fuelConsumption);
+            tempObj.push(e.convertedFuelConsumption);
             break;
           }
           case 'cO2Emission' :{
@@ -1707,7 +1707,7 @@ setVehicleGroupAndVehiclePreSelection() {
             break;
           }
           case 'idleDuration' :{
-            tempObj.push(e.convertedIdleDuration);
+            tempObj.push(e.idleDurationPercentage);
             break;
           }
           case 'ptoDuration' :{
@@ -1770,6 +1770,10 @@ setVehicleGroupAndVehiclePreSelection() {
             tempObj.push(e.idlingPTO);
             break;
           }
+          case 'idlingWithoutPTO' :{
+            tempObj.push(e.idlingWithoutPTO);
+            break;
+          }          
           case 'idlingWithoutPTOpercent' :{
             tempObj.push(e.idlingWithoutPTOpercent);
             break;
@@ -1782,14 +1786,10 @@ setVehicleGroupAndVehiclePreSelection() {
             tempObj.push(e.cO2Emmision);
             break;
           }
-          case 'averageTrafficClassificationValue' :{
-            tempObj.push(e.averageTrafficClassificationValue);
-            break;
-          }
-          case 'idlingConsumptionValue' :{
+          case 'idlingConsumptionWithPTO' :{
             tempObj.push(e.idlingConsumptionValue);
             break;
-          }
+          }          
         }
       })
       prepare.push(tempObj);    

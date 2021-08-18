@@ -2212,6 +2212,14 @@ setVehicleGroupAndVehiclePreSelection() {
           pdfColumnHeads.push('Vehicle Registration No');
           break;
         }
+        case 'startDate' :{
+          pdfColumnHeads.push('Start Date');
+          break;
+        }
+        case 'endDate' :{
+          pdfColumnHeads.push('End Date');
+          break;
+        }
         case 'distance' :{
           pdfColumnHeads.push('Distance('+distance+')');
           break;
@@ -2228,8 +2236,12 @@ setVehicleGroupAndVehiclePreSelection() {
           pdfColumnHeads.push('Max Speed('+speed+')');
           break;
         }
-        case 'numberOfTrips' :{
-          pdfColumnHeads.push('Number Of Trips');
+        case 'startPosition' :{
+          pdfColumnHeads.push('Start Position');
+          break;
+        }
+        case 'endPosition' :{
+          pdfColumnHeads.push('End Position');
           break;
         }
         case 'averageGrossWeightComb' :{
@@ -2361,6 +2373,14 @@ setVehicleGroupAndVehiclePreSelection() {
               tempObj.push(e.vehicleRegistrationNo);
               break;
             }
+            case 'startDate' :{
+              tempObj.push(e.convertedStartTime);
+              break;
+            }
+            case 'endDate' :{
+              tempObj.push(e.convertedEndTime);
+              break;
+            }
             case 'distance' :{
               tempObj.push(e.convertedDistance);
               break;
@@ -2377,20 +2397,24 @@ setVehicleGroupAndVehiclePreSelection() {
               tempObj.push(e.maxSpeed);
               break;
             }
-            case 'numberOfTrips' :{
-              tempObj.push(e.numberOfTrips);
+            case 'startPosition' :{
+              tempObj.push(e.startPosition);
               break;
+            }
+            case 'endPosition' :{
+              tempObj.push(e.endPosition);
+               break;
             }
             case 'averageGrossWeightComb' :{
               tempObj.push(e.averageGrossWeightComb);
               break;
             }
             case 'fuelConsumed' :{
-              tempObj.push(e.fuelConsumed);
+              tempObj.push(e.convertedFuelConsumed100Km);
               break;
             }
             case 'fuelConsumption' :{
-              tempObj.push(e.fuelConsumption);
+              tempObj.push(e.convertedFuelConsumption);
               break;
             }
             case 'cO2Emission' :{

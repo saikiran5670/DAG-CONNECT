@@ -1672,7 +1672,7 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
       case 'averageDistancePerDay' :{
-        pdfColumnHeads.push('Average Distance('+distance+')');
+        pdfColumnHeads.push('Average Distance Per Day('+distance+')');
         break;
       }
       case 'averageSpeed' :{
@@ -1692,7 +1692,7 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
       case 'fuelConsumed' :{
-        pdfColumnHeads.push('Fuel Consumed100('+fuel+')');
+        pdfColumnHeads.push('Fuel Consumed('+fuel+')');
         break;
       }
       case 'fuelConsumption' :{
@@ -1720,15 +1720,15 @@ setVehicleGroupAndVehiclePreSelection() {
         break;
       }
       case 'cruiseControlDistance3050' :{
-        pdfColumnHeads.push('Cruise Control Distance 30-50('+speed+')');
+        pdfColumnHeads.push('Cruise Control Distance 30-50('+speed+')(%)');
         break;
       }
       case 'cruiseControlDistance5075' :{
-        pdfColumnHeads.push('Cruise Control Distance 50-75('+speed+')');
+        pdfColumnHeads.push('Cruise Control Distance 50-75('+speed+')(%)');
         break;
       }
       case 'cruiseControlDistance75' :{
-        pdfColumnHeads.push('Cruise Control Distance 75('+speed+')');
+        pdfColumnHeads.push('Cruise Control Distance 75('+speed+')(%)');
         break;
       }
       case 'averageTrafficClassification' :{
