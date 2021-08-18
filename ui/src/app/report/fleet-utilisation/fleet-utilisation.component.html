@@ -201,7 +201,7 @@
            
           </div>
         </mat-expansion-panel>
-      </mat-card>
+    </mat-card>
 
 <!-- Charts view -->
 
@@ -319,7 +319,7 @@
 
       <!-- Calendar view -->
 
-      <mat-card *ngIf='initData.length > 0'  class='mat-elevation-z no-padding margin-bottom-xlg'>
+      <mat-card *ngIf='initData.length > 0 && calenderCardView'  class='mat-elevation-z no-padding margin-bottom-xlg'>
         <mat-expansion-panel [(expanded)]="isCalendarOpen" class="full-width" fxLayoutGap="10px" (opened)="isCalendarOpen == true"
         (closed)="isCalendarOpen == false">
           <mat-expansion-panel-header class="full-width">
