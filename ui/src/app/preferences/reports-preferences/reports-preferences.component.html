@@ -26,7 +26,7 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div>
-        <app-trip-report-preference *ngIf='showTripReport' [editFlag]='editTripFlag' [reportListData]='reportListData'
+        <app-trip-report-preference *ngIf='showTripReport' [generalPreferences]="generalPreferences" [editFlag]='editTripFlag' [reportListData]='reportListData'
           [translationData]='translationData' (setTripReportFlag)="updateEditTripReportFlag($event)">
         </app-trip-report-preference>
       </div>

@@ -24,6 +24,7 @@ import { PeriodSelectionFilterComponent } from '../period-selection-filter/perio
 import { Util } from 'src/app/shared/util';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import * as moment from 'moment-timezone';
+import { ReportMapService } from '../../../../report/report-map.service';
 
 declare var H: any;
 
@@ -125,7 +126,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
               private dialog: MatDialog,
               private dialogService: ConfirmDialogService,
               private geofenceService: GeofenceService,
-              private el: ElementRef) {
+              private el: ElementRef,
+              private reportMapService: ReportMapService) {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
@@ -173,10 +175,13 @@ export class AlertAdvancedFilterComponent implements OnInit {
     else{
       this.enteringFlag =true;
     }
+
+    if(this.alert_category_selected+this.alert_type_selected != 'LS'){
     this.loadMapData();
     this.loadPOIData();
     this.loadGeofenceData();
     this.loadGroupData();
+    }
     this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
     if(this.selectedApplyOn == 'C'){
       this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate,'DD/MM/YYYY HH:MM').split(" ");
@@ -197,7 +202,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
         if(element.filterType == 'T')
         {
           this.isDistanceSelected =true;
-          this.alertAdvancedFilterForm.get('distance').setValue(element.thresholdValue);
+          let threshold = this.convertValues(element.thresholdValue,element.unitType);
+          this.alertAdvancedFilterForm.get('distance').setValue(threshold);
         }
         if(element.filterType == 'D')
         {
@@ -224,6 +230,28 @@ export class AlertAdvancedFilterComponent implements OnInit {
         }
         
       });
+  }
+
+  convertValues(threshold, unitType){
+    let val;
+    if(unitType == 'F'){
+      val = this.reportMapService.convertMetersToFt(threshold);
+    }
+    else{
+      val = threshold;
+    }
+    return val;
+  }
+
+  convertLengthToMeter(length){
+    let val;
+    if(this.distanceEnum == 'F'){
+      val = this.reportMapService.convertFtToMeters(length);
+    }
+    else{
+      val = length;
+    }
+    return val;
   }
 
   setUnitsAsPrefData(){
@@ -1443,7 +1471,9 @@ else{
 
       if(this.isDistanceSelected){
       this.filterType = 'T';
-      this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.distance.value);
+      let val = parseInt(this.alertAdvancedFilterForm.controls.distance.value);
+      let length = this.convertLengthToMeter(val);
+      this.thresholdVal = length;
       if(this.alertAdvancedFilterForm.controls.distance.value == ""){
         const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'distance' + '"]');
         if (invalidControl) { 
@@ -1705,7 +1735,10 @@ else{
 
     if(this.isDistanceSelected){
       this.filterType = 'T';
-      this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.distance.value);
+      // this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.distance.value);
+      let val = parseInt(this.alertAdvancedFilterForm.controls.distance.value);
+      let length = this.convertLengthToMeter(val);
+      this.thresholdVal = length;
       if(this.alertAdvancedFilterForm.controls.distance.value == ""){
         const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + 'distance' + '"]');
         if (invalidControl) { 
@@ -1729,7 +1762,7 @@ else{
       "alertUrgencyLevelId": 0,
       "filterType": "T",
       "thresholdValue": this.thresholdVal,
-      "unitType": "N",
+      "unitType": this.distanceEnum,
       "landmarkType": 'N',
       "refId": 0,
       "positionType": this.selectedPoiSite,
