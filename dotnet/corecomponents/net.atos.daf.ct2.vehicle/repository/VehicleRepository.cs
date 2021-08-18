@@ -811,7 +811,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (OrganizationId > 0)
             {
                 parameter.Add("@organization_id", OrganizationId);
-                QueryStatement = QueryStatement + " and ((orm.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)";
+                QueryStatement = QueryStatement + " and (orm.owner_org_id=@organization_id AND ors.code='Owner' AND veh.organization_id=@organization_id)";
 
             }
 
