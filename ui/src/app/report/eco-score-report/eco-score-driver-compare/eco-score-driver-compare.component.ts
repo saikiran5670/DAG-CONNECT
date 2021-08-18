@@ -464,7 +464,7 @@ export class EcoScoreDriverCompareComponent implements OnInit {
                     || dataContext.key === 'rp_averagedrivingspeed' || dataContext.key === 'rp_averagespeed')){
             return (valTemp * 0.621371).toFixed(2);
           } else if(dataContext.key && dataContext.key === 'rp_fuelconsumption'){
-            return val;
+            return val * 235.215;
           }
         }
     }
