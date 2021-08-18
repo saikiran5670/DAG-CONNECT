@@ -607,6 +607,11 @@ namespace net.atos.daf.ct2.vehicle
             return new ProvisioningVehicleDataServiceResponse { Vehicles = provisioningVehicles.ToList() };
         }
 
+        public Task<IEnumerable<int>> GetVehicleIdsByOrgId(int refId)
+        {
+            return _vehicleRepository.GetVehicleIdsByOrgId(refId);
+        }
+
         #endregion
     }
 

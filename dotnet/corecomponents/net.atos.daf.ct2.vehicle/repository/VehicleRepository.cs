@@ -2487,6 +2487,23 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
         }
 
+        public Task<IEnumerable<int>> GetVehicleIdsByOrgId(int refId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@organization_id", refId);
+                string queryAlertLevelPull = @"select id  from master.vehicle where organization_id = @organization_id;";
+
+                return _dataAccess.QueryAsync<int>(queryAlertLevelPull, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+
         #endregion
     }
 }

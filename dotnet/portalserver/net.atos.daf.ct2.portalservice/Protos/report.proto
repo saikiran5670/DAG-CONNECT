@@ -278,8 +278,8 @@ message TripDetails {
     int32 Distance=6; 
     int32 IdleDuration=7;
     
-    int32 AverageSpeed=8;
-    int32 AverageWeight=9;
+    double AverageSpeed=8;
+    double AverageWeight=9;
     int64 Odometer=10;
     string StartPosition =11;
     string EndPosition=12;

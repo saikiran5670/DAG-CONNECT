@@ -978,6 +978,9 @@ calendarOptions: CalendarOptions = {
           data: this.barVarticleData
         },
     ];
+    this.barChartOptions.scales.yAxes[0].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(mile/day)';
+    this.barChartOptions.scales.yAxes[1].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(mile)';
+    
     this.distanceLineChartData = [
       { 
         data: this.averageDistanceBarData,
@@ -990,9 +993,7 @@ calendarOptions: CalendarOptions = {
         label:  this.prefUnitFormat == 'dunit_Metric' ? 'Total distance(km)' :'Total distance(mile)' 
       },
     ];
-    this.barChartOptions.scales.yAxes[0].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(mile/day)';
-    this.barChartOptions.scales.yAxes[1].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(mile)';
-    this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(mile/day)';
+   this.distanceLineChartOptions.scales.yAxes[0].scaleLabel.labelString = this.prefUnitFormat == 'dunit_Metric' ? 'per vehicle(km/day)' : 'per vehicle(mile/day)';
     this.distanceLineChartOptions.scales.yAxes[1].scaleLabel.labelString =  this.prefUnitFormat == 'dunit_Metric' ? 'total distance(km)' : 'total distance(mile)';
     this.lineChartData = [
       { data: this.lineChartVehicleCount, label: 'Number of Vehicles' },
