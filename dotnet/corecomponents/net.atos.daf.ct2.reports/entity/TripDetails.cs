@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.reports.entity
         public string EndPosition { get; set; }
 
         public double FuelConsumed { get; set; }
-        public int DrivingTime { get; set; }
+        public long DrivingTime { get; set; }
 
         public int Alert { get; set; }
         public int Events { get; set; }
