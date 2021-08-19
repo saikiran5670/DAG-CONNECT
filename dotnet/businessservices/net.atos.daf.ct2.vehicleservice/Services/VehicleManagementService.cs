@@ -347,7 +347,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         ///Trigger Vehicle Group CDC
                         else if (entity.Id > 0 && entity.GroupRef.Count > 0)
                         {
-                            await _alertCdcHelper.TriggerVehicleGroupCdc(entity.Id);
+                            await _alertCdcHelper.TriggerVehicleGroupCdc(entity.Id, "N");
                         }
                         else
                         {
@@ -389,7 +389,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 if (result)
                 {
                     //Trigger Vehicle Group CDC
-                    await _alertCdcHelper.TriggerVehicleGroupCdc(request.GroupId);
+                    await _alertCdcHelper.TriggerVehicleGroupCdc(request.GroupId, "N");
                 }
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete Vehicle Group ", 1, 2, Convert.ToString(request.GroupId)).Result;
 

@@ -257,8 +257,8 @@ namespace net.atos.daf.ct2.dashboard.repository
                 //parameter.Add("@vins", vin);
                 string query = @"WITH cte_workingdays AS(
                         select
-                        date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
-                        count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
+                        date_trunc('day', to_timestamp(end_time_stamp/1000)) as startdate,
+                        count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays,
 						Count(distinct vin) as vehiclecount,
 						Count(distinct trip_id) as tripcount,
                         sum(etl_gps_distance) as totaldistance,
@@ -274,7 +274,7 @@ namespace net.atos.daf.ct2.dashboard.repository
                         FROM tripdetail.trip_statistics
                         where is_ongoing_trip = false AND (end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
 						and vin=ANY(@vins)
-                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))                     
+                        group by date_trunc('day', to_timestamp(end_time_stamp/1000))                     
                         )
                         select
                         '' as VIN,
