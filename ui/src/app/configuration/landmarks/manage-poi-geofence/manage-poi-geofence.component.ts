@@ -969,8 +969,70 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   exportGeofenceAsExcelFile() {
-    this.matTableExporter.exportTable('xlsx', { fileName: 'GeofenceData', sheet: 'sheet_name' });
-
+    //this.matTableExporter.exportTable('xlsx', { fileName: 'GeofenceData', sheet: 'sheet_name' });
+    let geofenceData = `<?xml version="1.0" encoding="UTF-8"?>
+    <gpx version="1.1">`;
+    let _tempStr = '';
+    this.geoInitData.forEach(element => {
+      if (element.type === 'C') {
+        geofenceData += `
+        <metadata>
+        <id>${element.id}</id>
+        <categoryId>${element.categoryId}</categoryId>
+        <subCategoryId>${element.subCategoryId}</subCategoryId>
+        <geofencename>${element.name}</geofencename>
+        <type>${element.type}</type>
+        <address>${element.address}</address>
+        <city>${element.city}</city>
+        <country>${element.country}</country>
+        <zipcode>${element.zipcode}</zipcode>
+        <latitude>${element.latitude}</latitude>
+        <longitude>${element.longitude}</longitude>
+        <distance>${element.distance}</distance>
+		    <width>${element.width}</width>
+        <createdBy>${element.createdBy}</createdBy>
+      </metadata>`
+      }
+      else {
+        geofenceData += `
+        <metadata>
+        <id>${element.id}</id>
+        <categoryId>${element.categoryId}</categoryId>
+        <subCategoryId>${element.subCategoryId}</subCategoryId>
+        <geofencename>${element.name}</geofencename>
+        <type>${element.type}</type>
+        <address>${element.address}</address>
+        <city>${element.city}</city>
+        <country>${element.country}</country>
+        <zipcode>${element.zipcode}</zipcode>
+        <latitude>${element.latitude}</latitude>
+        <longitude>${element.longitude}</longitude>
+        <distance>${element.distance}</distance>
+		    <width>${element.width}</width>
+        <createdBy>${element.createdBy}</createdBy>`;
+        if(element.nodes && element.nodes.length>0){
+          element.nodes.forEach(node => {
+            geofenceData+=`
+            <nodes>
+            <id>${node.id}</id>
+            <landmarkId>${node.landmarkId}</landmarkId>
+            <seqNo>${node.seqNo}</seqNo>
+            <latitude>${node.latitude}</latitude>
+            <longitude>${node.longitude}</longitude>
+            <createdBy>${node.createdBy}</createdBy>
+            <address>${node.address}</address>
+            <tripId>${node.tripId}</tripId>
+            </nodes>`
+          });
+        }
+        geofenceData += `
+        </metadata>`;
+      }
+    });
+    geofenceData += `
+    </gpx>`;
+    let blob = new Blob([geofenceData], { type: 'xml;charset=utf-8;' });
+    FileSaver.saveAs(blob, 'geofenceExport.gpx');
   }
 
   updateImportView(_event) {
