@@ -35,8 +35,8 @@ namespace net.atos.daf.ct2.email.Entity
         public string AlertName { get; set; }
         public string AlertLevel { get; set; }
         public string AlertLevelCls { get; set; }
-        public double DefinedThreshold { get; set; }
-        public double ActualThresholdValue { get; set; }
+        public string DefinedThreshold { get; set; }
+        public string ActualThresholdValue { get; set; }
         public string AlertCategory { get; set; }
         public string VehicleGroup { get; set; }
         public string AlertDateTime { get; set; }
