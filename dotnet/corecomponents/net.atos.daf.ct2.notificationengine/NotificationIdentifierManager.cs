@@ -138,7 +138,7 @@ namespace net.atos.daf.ct2.notificationengine
                         notificationHistory.UrgencyTypeKey = generatedAlertForVehicle.Select(c => c.UrgencyTypeKey).FirstOrDefault();
                         notificationHistory.UrgencyTypeEnum = generatedAlertForVehicle.Select(c => c.UrgencyLevelType).FirstOrDefault();
                         notificationHistory.ThresholdValue = UOMHandling.GetConvertedThresholdValue(tripAlert.ThresholdValue, await _notificationIdentifierRepository.GetUnitType(item.Noti_alert_id, notificationHistory.UrgencyTypeEnum));
-                        notificationHistory.ThresholdValueUnitType = tripAlert.ThresholdValueUnitType;
+                        notificationHistory.ThresholdValueUnitType = UOMHandling.GetUnitName(tripAlert.ThresholdValueUnitType);
                         notificationHistory.ValueAtAlertTime = UOMHandling.GetConvertedThresholdValue(tripAlert.ValueAtAlertTime, await _notificationIdentifierRepository.GetUnitType(item.Noti_alert_id, notificationHistory.UrgencyTypeEnum));
                         notificationHistory.SMS = item.Notrec_sms;
                         notificationHistory.AlertName = item.Ale_name;

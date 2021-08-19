@@ -1,0 +1,125 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Subscription",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureMySqlSource",
+						"query": "select distinct prty.external_id as org_id,co.internal_id as vid,pk.external_id as packagecode,\n/*cos.commercial_service_name,*/\nsub.activation_date,sub.end_date,sub.status\nfrom daf.co_third_party prty\njoin daf.co_pack_subscription pkg\non pkg.third_party_id = prty.id\njoin daf.co_resource_subscription sub\non sub.pack_subscription_id = pkg.id\njoin daf.co_commercial_subscription cs\non cs.resource_subscription_id = sub.id\njoin daf.co_link_pack_commercial_service pcs\non pcs.pack_id = pkg.pack_id\njoin daf.co_commercial_service cos\non cos.id = pcs.commercial_service_id\njoin daf.co_connected_object co\non co.id = sub.resource_id\njoin daf.co_pack pk\non pk.id = pkg.pack_id\nwhere  prty.external_id in (select distinct customer_id from daf_ct_wl.priority_customers);",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 1000000,
+						"writeBatchTimeout": "00:30:00",
+						"writeMethod": "BulkInsert"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "org_id",
+									"type": "String"
+								},
+								"sink": {
+									"name": "org_id",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "vid",
+									"type": "String"
+								},
+								"sink": {
+									"name": "vid",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "packagecode",
+									"type": "String"
+								},
+								"sink": {
+									"name": "package_code",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "activation_date",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "subscription_start_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "end_date",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "subscription_end_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "status",
+									"type": "String"
+								},
+								"sink": {
+									"name": "state",
+									"type": "String",
+									"physicalType": "character"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Organization_CT1",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Subscription",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-08-13T02:39:14Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
