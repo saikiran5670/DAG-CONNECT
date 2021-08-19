@@ -200,6 +200,7 @@ message VehicleGroupRef{
 
 message VehicleGroupIdRequest{
   int32 Group_Id = 1;
+   int32 OrganizationId=2;
 }
 
 message VehicleGroupResponce{

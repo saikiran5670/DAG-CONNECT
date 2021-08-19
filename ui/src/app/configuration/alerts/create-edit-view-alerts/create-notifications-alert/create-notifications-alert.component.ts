@@ -146,7 +146,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.notificationForm = this._formBuilder.group({
       recipientLabel: ['', [Validators.required]],
-      contactMode: ['', [Validators.required]],
+      contactMode: ['E', [Validators.required]],
       criticalLevel: [''],
       warningLevel: [''],
       advisoryLevel: [''],
@@ -304,8 +304,8 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
           this.FormEmailArray.at(this.emailIndex).get("minutes").setValue(this.emailtimeUnitValue);
           this.FormEmailArray.at(this.emailIndex).get("emailllimitId").setValue(0);
-          this.notificationForm.get("recipientLabel").reset();
-          this.notificationForm.get("contactMode").reset();
+          this.notificationForm.get("recipientLabel").setValue('');
+          this.notificationForm.get("contactMode").setValue('E');
         }
         else {
           this.emailIndex = this.emailIndex + 1;
@@ -315,8 +315,8 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
           this.FormEmailArray.at(this.emailIndex).get("minutes").setValue(this.emailtimeUnitValue);
           this.FormEmailArray.at(this.emailIndex).get("emailllimitId").setValue(0);
-          this.notificationForm.get("recipientLabel").reset();
-          this.notificationForm.get("contactMode").reset();
+          this.notificationForm.get("recipientLabel").setValue('');
+          this.notificationForm.get("contactMode").setValue('E');
         }
       }
       //this is for web service
@@ -330,8 +330,8 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
           this.FormWebArray.at(this.wsIndex).get("webminutes").setValue(this.timeUnitValue);
           this.FormWebArray.at(this.wsIndex).get("weblimitId").setValue(0);
-          this.notificationForm.get("recipientLabel").reset();
-          this.notificationForm.get("contactMode").reset();
+          this.notificationForm.get("recipientLabel").setValue('');
+          this.notificationForm.get("contactMode").setValue('E');
         }
         else {
           this.wsIndex = this.wsIndex + 1;
@@ -341,8 +341,8 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
           this.FormWebArray.at(this.wsIndex).get("webminutes").setValue(this.timeUnitValue);
           this.FormWebArray.at(this.wsIndex).get("weblimitId").setValue(0);
-          this.notificationForm.get("recipientLabel").reset();
-          this.notificationForm.get("contactMode").reset();
+          this.notificationForm.get("recipientLabel").setValue('');
+          this.notificationForm.get("contactMode").setValue('E');
         }
       }
       // For sms
@@ -356,8 +356,8 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.FormSMSArray.at(this.smsIndex).get("smsContactModes").setValue(this.contactModeType);
           this.FormSMSArray.at(this.smsIndex).get("smsMinutes").setValue(this.smsTimeUnitValue);
           this.FormSMSArray.at(this.smsIndex).get("smslimitId").setValue(0);
-          this.notificationForm.get("recipientLabel").reset();
-          this.notificationForm.get("contactMode").reset();
+          this.notificationForm.get("recipientLabel").setValue('');
+          this.notificationForm.get("contactMode").setValue('E');
         }
         else {
           this.smsIndex = this.smsIndex + 1;
@@ -367,14 +367,16 @@ export class CreateNotificationsAlertComponent implements OnInit {
           this.FormSMSArray.at(this.smsIndex).get("smsContactModes").setValue(this.contactModeType);
           this.FormSMSArray.at(this.smsIndex).get("smsMinutes").setValue(this.smsTimeUnitValue);
           this.FormSMSArray.at(this.smsIndex).get("smslimitId").setValue(0);
-          this.notificationForm.get("recipientLabel").reset();
-          this.notificationForm.get("contactMode").reset();
+          this.notificationForm.get("recipientLabel").setValue('');
+          this.notificationForm.get("contactMode").setValue('E');
         }
       }
     }
     //for edit or duplicate functionality
     else {
-      this.notificationForm.get("recipientLabel").reset();
+      // this.notificationForm.get("recipientLabel").reset();
+      this.notificationForm.get("recipientLabel").setValue('');
+          this.notificationForm.get("contactMode").setValue('E');
       this.contactModeType = data.notificationModeType;
       this.weblimitButton = data.notificationLimits[0].notificationModeType;
       this.limitButton = data.notificationLimits[0].notificationModeType;
