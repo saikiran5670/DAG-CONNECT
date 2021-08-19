@@ -78,7 +78,7 @@ namespace net.atos.daf.ct2.portalservice.Account
     {
         [Required]
         [RegularExpression(@"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", ErrorMessage = "The field EmailId must be in proper format.")]
-        [StringLength(50, MinimumLength = 1, ErrorMessage = "Minimum length of {0} field is {2} and maximum length is {1} characters.")]
+        [StringLength(120, MinimumLength = 6, ErrorMessage = "Minimum length of {0} field is {2} and maximum length is {1} characters.")]
         public string EmailId { get; set; }
     }
 
