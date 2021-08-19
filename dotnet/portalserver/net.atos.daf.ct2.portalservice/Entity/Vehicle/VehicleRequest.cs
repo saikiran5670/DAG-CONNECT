@@ -66,6 +66,5 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
         public string ModelId { get; set; }
         public string Opt_In { get; set; }
         public string RelationShip { get; set; }
-        public string AssociatedGroups { get; set; } = string.Empty;
     }
 }

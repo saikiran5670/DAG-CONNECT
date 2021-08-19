@@ -964,72 +964,81 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         public async Task<IEnumerable<VehicleManagementDto>> GetAllRelationshipVehicles(int organizationId)
         {
-            // Fetch Owned vehicles
-            // Fetch Visible vehicles of type S/G/D with method Owned(O).
-            // TODO : Include visible vehicles of type D with Visible(V)
-            var queryStatement
-                = @"SELECT v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
-                    FROM master.vehicle v
-                    INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
-                    INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and ors.code='Owner'
-                    WHERE 
-	                    case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
-	                    else COALESCE(end_date,0) = 0 end
+            try
+            {
+                // Fetch Owned vehicles
+                // Fetch Visible vehicles of type S/G/D with method Owned(O).
+                // TODO : Include visible vehicles of type D with Visible(V)
+                var queryStatement
+                    = @"SELECT v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
+                        FROM master.vehicle v
+                        INNER JOIN master.orgrelationshipmapping as om on v.id = om.vehicle_id and v.organization_id=om.owner_org_id and om.owner_org_id=@organization_id
+                        INNER JOIN master.orgrelationship as ors on om.relationship_id=ors.id and ors.state='A' and ors.code='Owner'
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end
 
-                    UNION
+                        UNION
 
-                    SELECT v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
-                    FROM master.vehicle v
-                    LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
-                    INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V'
-                    INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
-                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
-                    WHERE 
-	                    case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
-	                    else COALESCE(end_date,0) = 0 end
+                        SELECT v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
+                        FROM master.vehicle v
+                        LEFT OUTER JOIN master.groupref gref ON v.id=gref.ref_id
+                        INNER JOIN master.group grp ON (gref.group_id=grp.id OR grp.ref_id=v.id) AND grp.object_type='V'
+                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.target_org_id=@organization_id
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end
 
-                    UNION
+                        UNION
 
-                    SELECT v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
-                    FROM master.group grp
-                    INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
-                    INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
-                    INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
-                    WHERE 
-	                    case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
-	                    else COALESCE(end_date,0) = 0 end";
+                        SELECT v.id, v.name, v.vin, v.license_plate_number, v.status, v.model_id, v.opt_in, ors.name as relationship
+                        FROM master.group grp
+                        INNER JOIN master.orgrelationshipmapping as orm on grp.id = orm.vehicle_group_id and orm.owner_org_id=grp.organization_id and orm.target_org_id=@organization_id and grp.group_type='D' AND grp.object_type='V'
+                        INNER JOIN master.orgrelationship as ors on orm.relationship_id=ors.id and ors.state='A' AND ors.code NOT IN ('Owner','OEM')
+                        INNER JOIN master.vehicle v on v.organization_id = grp.organization_id
+                        WHERE 
+	                        case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date
+	                        else COALESCE(end_date,0) = 0 end";
 
-            var parameter = new DynamicParameters();
-            parameter.Add("@organization_id", organizationId);
+                var parameter = new DynamicParameters();
+                parameter.Add("@organization_id", organizationId);
 
-            return await _dataAccess.QueryAsync<VehicleManagementDto>(queryStatement, parameter);
+                return await _dataAccess.QueryAsync<VehicleManagementDto>(queryStatement, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId)
         {
             try
             {
-                var QueryStatement = @"select string_agg(grp.name::text, ',')
-                                    from master.vehicle veh left join
-                                    master.groupref gref on veh.id= gref.ref_id Left join 
-                                    master.group grp on grp.id= gref.group_id
-                                    where 1=1 ";
+                var queryStatement = @"select string_agg(name::text, ', ') from
+                                            (select distinct grp.name
+                                            from master.vehicle veh 
+                                            left join master.groupref gref on veh.id= gref.ref_id 
+                                            inner join master.group grp on (gref.group_id=grp.id OR grp.ref_id=veh.id OR grp.group_type='D') 
+                                                and grp.object_type='V'";
                 var parameter = new DynamicParameters();
 
                 // Vehicle Id Filter
                 if (vehicleId > 0)
                 {
                     parameter.Add("@id", vehicleId);
-                    QueryStatement = QueryStatement + " and veh.id  = @id";
+                    queryStatement = queryStatement + " and veh.id = @id";
                 }
                 // organization id filter
                 if (organizationId > 0)
                 {
                     parameter.Add("@organization_id", organizationId);
-                    QueryStatement = QueryStatement + " and veh.organization_id = @organization_id";
+                    queryStatement = queryStatement + " and veh.organization_id = @organization_id";
                 }
-                string result = await _dataAccess.ExecuteScalarAsync<string>(QueryStatement, parameter);
-                return result;
+                queryStatement += ") tmp";
+                string result = await _dataAccess.ExecuteScalarAsync<string>(queryStatement, parameter);
+                return result ?? string.Empty;
             }
             catch (Exception)
             {

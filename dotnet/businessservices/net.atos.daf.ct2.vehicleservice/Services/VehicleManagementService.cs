@@ -207,10 +207,29 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     Message = "Get failed due to with reason : " + ex.Message
                 });
             }
-
-
         }
 
+        public override async Task<GetVehicleAssociatedGroupResponse> GetVehicleAssociatedGroups(GetVehicleAssociatedGroupRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var groups = await _vehicleManager.GetVehicleAssociatedGroup(request.VehicleId, 0);
+                return await Task.FromResult(new GetVehicleAssociatedGroupResponse
+                {
+                    Groups = groups,
+                    Code = Responcecode.Success
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GetVehicleAssociatedGroupResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Get failed due to with reason : " + ex.Message
+                });
+            }
+        }
 
         public override async Task<VehicleOptInOptOutResponce> UpdateStatus(VehicleOptInOptOutRequest request, ServerCallContext context)
         {

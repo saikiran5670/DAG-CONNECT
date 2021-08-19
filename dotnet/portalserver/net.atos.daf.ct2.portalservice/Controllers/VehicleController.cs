@@ -904,7 +904,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
 
@@ -944,6 +944,33 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             }
 
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetVehicleAssociatedGroups")]
+        public async Task<IActionResult> GetVehicleAssociatedGroups([FromQuery] int vehicleId)
+        {
+            try
+            {
+                _logger.Info("GetVehicleAssociatedGroups method in vehicle API called.");
+
+                VehicleBusinessService.GetVehicleAssociatedGroupResponse response
+                    = await _vehicleClient.GetVehicleAssociatedGroupsAsync(new VehicleBusinessService.GetVehicleAssociatedGroupRequest { VehicleId = vehicleId });
+
+                if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
+                {
+                    return Ok(response.Groups);
+                }
+                else
+                {
+                    return StatusCode(500, response.Message);
+                }
+            }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
