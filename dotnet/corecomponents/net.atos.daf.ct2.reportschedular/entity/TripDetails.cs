@@ -30,7 +30,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 
         public double FuelConsumed { get; set; }
 
-        public int DrivingTime { get; set; }
+        public long DrivingTime { get; set; }
 
         public int Alert { get; set; }
 
