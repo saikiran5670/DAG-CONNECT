@@ -1,0 +1,102 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "daf-lan3-d-euwe-adf"
+		},
+		"AzureMySql1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureMySql1'"
+		},
+		"AzurePostgreSql1master_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzurePostgreSql1master'"
+		},
+		"dafctlan3postgresmaster_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/0d01fd30-a216-42aa-809a-57c280730851/resourceGroups/daf-lan3-d-euwe-rsg-pgrmd/providers/Microsoft.DBforPostgreSQL/servers/dafct-lan3-d-euwe-cdp-pgsql-master"
+		},
+		"dafctlan3postgresmaster_properties_groupId": {
+			"type": "string",
+			"defaultValue": "postgresqlServer"
+		},
+		"dafctlan3postgresmaster_properties_fqdns": {
+			"type": "array",
+			"defaultValue": [
+				"dafct-lan3-d-euwe-cdp-pgsql-master.postgres.database.azure.com"
+			]
+		},
+		"daflan3mysqlprivateendpoint_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/0d01fd30-a216-42aa-809a-57c280730851/resourceGroups/daf-lan3-d-euwe-rsg-pgrmd/providers/Microsoft.DBforMySQL/servers/dafct-lan3-d-euwe-cdp-mysql-master"
+		},
+		"daflan3mysqlprivateendpoint_properties_groupId": {
+			"type": "string",
+			"defaultValue": "mysqlServer"
+		},
+		"daflan3mysqlprivateendpoint_properties_fqdns": {
+			"type": "array",
+			"defaultValue": [
+				"dafct-lan3-d-euwe-cdp-mysql-master.mysql.database.azure.com"
+			]
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "daf-lan3-d-euwe-adf_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureMySql1_connectionString": {
+						"value": "[parameters('AzureMySql1_connectionString')]"
+					},
+					"AzurePostgreSql1master_connectionString": {
+						"value": "[parameters('AzurePostgreSql1master_connectionString')]"
+					},
+					"dafctlan3postgresmaster_properties_privateLinkResourceId": {
+						"value": "[parameters('dafctlan3postgresmaster_properties_privateLinkResourceId')]"
+					},
+					"dafctlan3postgresmaster_properties_groupId": {
+						"value": "[parameters('dafctlan3postgresmaster_properties_groupId')]"
+					},
+					"dafctlan3postgresmaster_properties_fqdns": {
+						"value": "[parameters('dafctlan3postgresmaster_properties_fqdns')]"
+					},
+					"daflan3mysqlprivateendpoint_properties_privateLinkResourceId": {
+						"value": "[parameters('daflan3mysqlprivateendpoint_properties_privateLinkResourceId')]"
+					},
+					"daflan3mysqlprivateendpoint_properties_groupId": {
+						"value": "[parameters('daflan3mysqlprivateendpoint_properties_groupId')]"
+					},
+					"daflan3mysqlprivateendpoint_properties_fqdns": {
+						"value": "[parameters('daflan3mysqlprivateendpoint_properties_fqdns')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
