@@ -215,15 +215,16 @@ export class DriverTimeDetailComponent implements OnInit {
     }
   },
       tooltip: {
-         custom:(opts)=>{
+        custom:(opts)=>{
           const values = opts.ctx.rangeBar.getTooltipValues(opts);
           let activityType = values.seriesName.split(":")[0];
-          let diffDuration = Util.convertUtcToTimeStringFormat(values.end - values.start,this.prefTimeZone);
+          let calculatedDiff = values.end - values.start;
+          let diffDuration = Util.getHhMmSsTimeFromMS(calculatedDiff) // 24- default time format to be changed to prefTimeFormat
           let diffDisplay= diffDuration;
           let fromTime = (values.start);
-          let fromDisplay  = Util.convertUtcToDateTimeStringFormat(fromTime,this.prefTimeZone);
+          let fromDisplay  = this.reportMapService.getStartTime(fromTime,this.prefDateFormat,24,this.prefTimeZone,true,false);
           let toTime = (values.end);
-          let toDisplay  = Util.convertUtcToDateTimeStringFormat(toTime,this.prefTimeZone);
+          let toDisplay  = this.reportMapService.getStartTime(toTime,this.prefDateFormat,24,this.prefTimeZone,true,false);
           let getIconName = activityType.toLowerCase();
           let activityIcon =  `assets/activityIcons/${getIconName}.svg`;
           return (
@@ -362,7 +363,7 @@ export class DriverTimeDetailComponent implements OnInit {
     restArray.forEach(element => {
       let restObj={
         x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-        y : [element.activityDate,element.endTime],
+        y : [element.startTime,element.endTime],
         fillColor: '#8ac543',
       }
       restData.push(restObj)
@@ -372,7 +373,7 @@ export class DriverTimeDetailComponent implements OnInit {
     availableArray.forEach(element => {
       let restObj={
         x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-        y : [element.activityDate,element.endTime],
+        y : [element.startTime,element.endTime],
         fillColor : '#dddee2'
       }
       availableData.push(restObj)
@@ -382,7 +383,7 @@ export class DriverTimeDetailComponent implements OnInit {
     workArray.forEach(element => {
       let restObj={
         x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-        y : [element.activityDate,element.endTime],
+        y : [element.startTime,element.endTime],
         fillColor : '#e85c2a'
       }
       workData.push(restObj)
@@ -392,7 +393,7 @@ export class DriverTimeDetailComponent implements OnInit {
     driveArray.forEach(element => {
       let restObj={
         x :  this.reportMapService.getStartTime(element.activityDate,this.prefDateFormat,this.prefTimeFormat,this.prefTimeZone,false,false),
-        y : [element.activityDate,element.endTime],
+        y : [element.startTime,element.endTime],
         fillColor : '#29539b'
       }
       driveData.push(restObj)
@@ -443,7 +444,7 @@ export class DriverTimeDetailComponent implements OnInit {
           const values = opts.ctx.rangeBar.getTooltipValues(opts);
           let activityType = values.seriesName.split(":")[0];
           let calculatedDiff = values.end - values.start;
-          let diffDuration = this.reportMapService.getStartTime(calculatedDiff,this.prefDateFormat,24,this.prefTimeZone,false,true) // 24- default time format to be changed to prefTimeFormat
+          let diffDuration = Util.getHhMmSsTimeFromMS(calculatedDiff)// 24- default time format to be changed to prefTimeFormat
           let diffDisplay= diffDuration;
           let fromTime = (values.start);
           let fromDisplay  = this.reportMapService.getStartTime(fromTime,this.prefDateFormat,24,this.prefTimeZone,true,false);
