@@ -71,7 +71,7 @@ namespace net.atos.daf.ct2.alert.entity
         public int Alelan_alert_id { get; set; }
         public string Alelan_landmark_type { get; set; }
         public int Alelan_ref_id { get; set; }
-        public int Alelan_distance { get; set; }
+        public double Alelan_distance { get; set; }
         public string Alelan_unit_type { get; set; }
         public string Alelan_state { get; set; }
         public long Alelan_created_at { get; set; }
