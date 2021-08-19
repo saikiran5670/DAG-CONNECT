@@ -1,5 +1,5 @@
 {
-	"name": "Organization_CT2",
+	"name": "Organization_source",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzurePostgreSql1master",
