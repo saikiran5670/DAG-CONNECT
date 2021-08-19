@@ -315,14 +315,14 @@
   </div>
 </div>
 
-<div class='bgtrans' *ngIf="importPOIClicked">
+<div *ngIf="importPOIClicked">
   <app-common-import [importFileComponent]="'poi'" (backToPage)='checkCreationForPoi($event)' (showImportCSV)="updateImportView($event)"
     [importTranslationData]="importTranslationData" [templateTitle]="templateTitle" [templateValue]="templateValue"
     [tableColumnList]="tableColumnList" [tableColumnName]="tableColumnName" [tableTitle]='tableTitle' [breadcumMsg]="breadcumMsg">
   </app-common-import>
 </div>
 
-<div class='bgtrans' *ngIf="importGeofenceClicked">
+<div *ngIf="importGeofenceClicked">
   <app-common-import [importFileComponent]="'geofence'" (showImportCSV)="updateImportView($event)"
     [importTranslationData]="importTranslationData" [templateTitle]="templateTitle" [templateValue]="templateValue"
     [tableColumnList]="tableColumnList" [tableColumnName]="tableColumnName" [tableTitle]='tableTitle'
