@@ -81,7 +81,7 @@
             </mat-error>
         </div>
         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-            <button class='no-margin' mat-raised-button color="primary" (click)='addMultipleItems(true)'>{{ actionType
+            <button [disabled]="notificationForm.get('contactMode').value == '' || notificationForm.get('recipientLabel').value == ''" class='no-margin' mat-raised-button color="primary" (click)='addMultipleItems(true)'>{{ actionType
                 ==
                 'create'
                 ? (translationData.lblAdd || 'Add') :

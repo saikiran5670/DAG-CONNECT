@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The organization id is required.");
                 }
                 //Assign context orgId
-                request.Organization_Id = GetContextOrgId();                
+                request.Organization_Id = GetContextOrgId();
                 var vehicleRequest = new VehicleBusinessService.VehicleRequest();
                 vehicleRequest = _mapper.ToVehicle(request);
                 vehicleRequest.UserOrgId = GetUserSelectedOrgId();
@@ -284,7 +284,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The vehicle group id is required.");
                 }
-
+                //Add the organizationId for hte Vehicle group CDC ogranization filter
+                request.OrganizationId = GetContextOrgId();
                 request.GroupId = Convert.ToInt32(GroupId);
                 VehicleBusinessService.VehicleGroupDeleteResponce response = await _vehicleClient.DeleteGroupAsync(request);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
