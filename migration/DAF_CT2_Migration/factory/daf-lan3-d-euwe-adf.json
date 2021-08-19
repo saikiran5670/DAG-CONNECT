@@ -1,0 +1,9 @@
+{
+	"name": "daf-lan3-d-euwe-adf",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "1d8905c1-4715-4784-98c5-e7b3caaf547c",
+		"tenantId": "393e912a-7442-4e1b-88b8-b0eb8b8e3d7b"
+	}
+}

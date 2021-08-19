@@ -49,7 +49,7 @@
                                     <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
                                         <button style='color: #fff;' [disabled]="!importDriverFormGroup.valid || importDriverPopup || excelEmptyMsg" [ngStyle]="{'margin-top': importDriverFormGroup.get('uploadFile').hasError('required') || excelEmptyMsg ? '9px' : '29px' }" mat-flat-button color="primary"
                                             (click)="importDrivers(removableInput)">
-                                            <mat-icon>arrow_circle_up</mat-icon> {{ translationData.lblImportDrivers || 'Import Driver(s)' }}
+                                            <mat-icon>arrow_circle_down</mat-icon> {{ translationData.lblImportDrivers || 'Import Driver(s)' }}
                                         </button>
                                     </div>
                                 </div>

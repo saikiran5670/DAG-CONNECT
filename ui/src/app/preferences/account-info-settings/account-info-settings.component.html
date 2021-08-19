@@ -66,19 +66,19 @@
         <div fxLayout="column" class="areaWidth min-width-75-per accountInfo wordWrap">
           <div *ngIf="!editAccountSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
             class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
-            <div class="areaWidth min-width-30-per" style="width:30%" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-30-per" style="width:32%" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblSalutation || 'Salutation' }}</mat-label>
               <mat-label class='custom-font'>
                 {{ accountInfo.length > 0 ? accountInfo[0].salutation : '--' }}
               </mat-label>
             </div>
-            <div class="areaWidth min-width-30-per" style="width:30%" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-30-per" style="width:32%" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblFirstName || 'First Name' }}</mat-label>
               <mat-label class='custom-font'>
                 {{ accountInfo.length > 0 ? accountInfo[0].firstName : '--' }}
               </mat-label>
             </div>
-            <div class="areaWidth min-width-30-per" style="width:30%"  fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-30-per" style="width:32%"  fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblLastName || 'Last Name' }}</mat-label>
               <mat-label class='custom-font'>
                 {{ accountInfo.length > 0 ? accountInfo[0].lastName : '--' }}
@@ -87,19 +87,19 @@
           </div>
           <div *ngIf="!editAccountSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
             class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
-            <div class="areaWidth min-width-30-per"  style="width:30%" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-30-per"  style="width:32%" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}</mat-label>
               <mat-label class='custom-font'>
                 {{ accountInfo.length > 0 ? accountInfo[0].emailId : '--' }}
               </mat-label>
             </div>
-            <div class="areaWidth min-width-30-per" style="width:30%"  fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-30-per" style="width:32%"  fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
               <mat-label class='custom-font'>
                 {{ orgName ? orgName : '--' }}
               </mat-label>
             </div>
-            <div class="areaWidth min-width-30-per"  style="width:30%" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-30-per"  style="width:32%" fxLayout="column" fxLayoutAlign="left">
               <!--<span *ngIf="accountInfo.length > 0 ? accountInfo[0].driverId != '' : false">-->
                 <mat-label>{{ translationData.lblDriverId || 'Driver Id' }}</mat-label>
                 <mat-label class='custom-font'>

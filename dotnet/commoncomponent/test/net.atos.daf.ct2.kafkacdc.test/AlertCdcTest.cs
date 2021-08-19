@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.kafkacdc.test
             var vehicleCdcrepository = new VehicleCdcRepository(_dataAccess, _datamartDataacess);
             _vehicleCdcManager = new VehicleCdcManager(vehicleCdcrepository);
             var vehicleManagementAlertCDCRepository = new VehicleManagementAlertCDCRepository(_dataAccess, _datamartDataacess);
-            _vehicleMgmAlertCdcManager = new VehicleManagementAlertCDCManager(_vehicleAlertRepository, vehicleManagementAlertCDCRepository,_configuration);
+            _vehicleMgmAlertCdcManager = new VehicleManagementAlertCDCManager(_vehicleAlertRepository, vehicleManagementAlertCDCRepository, _configuration);
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace net.atos.daf.ct2.kafkacdc.test
         [TestMethod]
         public void UpdateVehcle()
         {
-            var result = _vehicleMgmAlertCdcManager.GetVehicleAlertRefFromVehicleId(new List<int> { 27}).Result;
+            var result = _vehicleMgmAlertCdcManager.GetVehicleAlertRefFromVehicleId(new List<int> { 27 }, "N", 36).Result;
             Assert.IsTrue(result);
         }
         [TestMethod]

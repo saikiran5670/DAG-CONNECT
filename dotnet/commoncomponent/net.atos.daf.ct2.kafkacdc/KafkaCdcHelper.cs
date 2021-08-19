@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,8 @@ namespace net.atos.daf.ct2.kafkacdc
                 ProducerMessage = PrepareKafkaJSON(vehicleAlertRefList, alertId, operation).Result
             };
             //Pushing message to kafka topic
+            Debug.WriteLine("/////////////////////////////////////////////////////////");
+            Debug.WriteLine(kafkaEntity.ProducerMessage);
             await KafkaConfluentWorker.Producer(kafkaEntity);
         }
         internal Task<string> PrepareKafkaJSON(List<VehicleAlertRef> vehicleAlertRefList, int alertId, string operation)
