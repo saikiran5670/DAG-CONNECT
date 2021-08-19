@@ -611,7 +611,9 @@
             <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
               <mat-expansion-panel-header class="full-width">
                 <mat-panel-title>
-                  <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedCorridor || 'Selected Corridor') : (translationData.lblSelectCorridor || 'Select Corridor ') }}</span>  <span class='mandatoryColor'>*</span></span>
+                  <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedCorridor || 'Selected Corridor') : (translationData.lblSelectCorridor || 'Select Corridor ') }}</span>  <span class='mandatoryColor'>*
+                    <span *ngIf="actionType != 'view' && selectedCorridor.selected.length == 0"> Please select atleast one corridor</span>
+                  </span></span>
                 </mat-panel-title>
                 </mat-expansion-panel-header>
             <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
