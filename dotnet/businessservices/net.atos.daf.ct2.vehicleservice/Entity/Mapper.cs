@@ -150,9 +150,9 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             {
                 Id = vehicle.Id,
                 Vin = vehicle.VIN,
-                LicensePlateNumber = vehicle.License_Plate_Number,
-                ModelId = vehicle.Model_Id,
-                Name = vehicle.Name,
+                LicensePlateNumber = vehicle.License_Plate_Number ?? string.Empty,
+                ModelId = vehicle.Model_Id ?? string.Empty,
+                Name = vehicle.Name ?? string.Empty,
                 Status = vehicle.Status,
                 OptIn = vehicle.Opt_In,
                 RelationShip = vehicle.Relationship
