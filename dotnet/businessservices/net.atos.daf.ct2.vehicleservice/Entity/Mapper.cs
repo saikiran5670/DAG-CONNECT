@@ -144,6 +144,23 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             return vehicledetails;
         }
 
+        public VehicleList ToVehicle(VehicleManagementDto vehicle)
+        {
+            VehicleList vehicledetails = new VehicleList
+            {
+                Id = vehicle.Id,
+                Vin = vehicle.VIN,
+                LicensePlateNumber = vehicle.License_Plate_Number,
+                ModelId = vehicle.Model_Id,
+                Name = vehicle.Name,
+                Status = vehicle.Status,
+                OptIn = vehicle.Opt_In,
+                RelationShip = vehicle.Relationship
+            };
+
+            return vehicledetails;
+        }
+
         public Group.Group ToGroup(VehicleGroupRequest request)
         {
             Group.Group entity = new Group.Group();

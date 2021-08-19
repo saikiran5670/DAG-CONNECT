@@ -907,28 +907,26 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [HttpGet]
         [Route("GetRelationshipVehicles")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "It has to be fixed while clean up of Organization Id related code")]
-        public async Task<IActionResult> GetRelationshipVehicles([FromQuery] int OrganizationId, int VehicleId)
+        public async Task<IActionResult> GetRelationshipVehicles([FromQuery] int organizationId)
         {
             try
             {
                 _logger.Info("GetRelationshipVehicles method in vehicle API called.");
 
                 //Assign context orgId
-                OrganizationId = GetContextOrgId();
+                organizationId = GetContextOrgId();
 
                 VehicleBusinessService.OrgvehicleIdRequest orgvehicleIdRequest = new VehicleBusinessService.OrgvehicleIdRequest();
-                orgvehicleIdRequest.OrganizationId = OrganizationId;
-                orgvehicleIdRequest.VehicleId = VehicleId;
+                orgvehicleIdRequest.OrganizationId = organizationId;
 
-                VehicleBusinessService.VehicleListResponce vehicleListResponse = await _vehicleClient.GetRelationshipVehiclesAsync(orgvehicleIdRequest);
-                List<VehicleResponse> response = new List<VehicleResponse>();
-                response = _mapper.ToVehicles(vehicleListResponse);
+                VehicleBusinessService.VehiclesResponse vehiclesResponse = await _vehicleClient.GetRelationshipVehiclesAsync(orgvehicleIdRequest);
+                List<VehicleManagementResponse> vehicles = _mapper.ToVehicles(vehiclesResponse);
 
-                if (vehicleListResponse != null && vehicleListResponse.Code == VehicleBusinessService.Responcecode.Success)
+                if (vehiclesResponse != null && vehiclesResponse.Code == VehicleBusinessService.Responcecode.Success)
                 {
-                    if (vehicleListResponse.Vehicles != null && vehicleListResponse.Vehicles.Count > 0)
+                    if (vehiclesResponse.Vehicles != null && vehiclesResponse.Vehicles.Count > 0)
                     {
-                        return Ok(vehicleListResponse.Vehicles);
+                        return Ok(vehicles);
                     }
                     else
                     {
@@ -937,7 +935,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, vehicleListResponse.Message);
+                    return StatusCode(500, vehiclesResponse.Message);
                 }
 
             }
