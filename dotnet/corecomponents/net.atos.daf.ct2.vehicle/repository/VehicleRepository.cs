@@ -681,7 +681,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 parameter.Add("@organization_id", OrganizationId);
                 QueryStatement = QueryStatement + @" AND ((orm.owner_org_id=@organization_id AND ors.code='Owner')
-                                                        OR(orm.target_org_id=@organization_id AND ors.code<>'Owner'))";
+                                                        OR(orm.target_org_id=@organization_id AND ors.code NOT IN ('Owner','OEM')))";
 
             }
 
@@ -745,7 +745,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (OrganizationId > 0)
             {
                 parameter.Add("@organization_id", OrganizationId);
-                QueryStatement = QueryStatement + " and orm.target_org_id=@organization_id AND ors.code<>'Owner'";
+                QueryStatement = QueryStatement + " and orm.target_org_id=@organization_id AND ors.code NOT IN ('Owner','OEM')";
             }
 
             // RelationShip Id Filter
@@ -923,7 +923,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (vehiclefilter.OrganizationId > 0)
             {
                 parameter.Add("@organization_id", vehiclefilter.OrganizationId);
-                QueryStatement = QueryStatement + " and ((v.organization_id=@organization_id and om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code<>'Owner'))";
+                QueryStatement = QueryStatement + " and ((v.organization_id=@organization_id and om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))";
 
             }
 
@@ -1151,7 +1151,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 									                                    Inner join master.orgrelationship ors
 									                                     on ors.id=org.relationship_id
 									                                    and ((org.owner_org_id=@organization_id and ors.code='Owner') 
-									                                    or (org.target_org_id=@organization_id and ors.code<>'Owner'))
+									                                    or (org.target_org_id=@organization_id and ors.code NOT IN ('Owner','OEM')))
 									                                    and ors.state='A'
 									                                    and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 									                                    else COALESCE(end_date,0) =0 end)
@@ -1162,7 +1162,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 									                                    on veh.id=org.vehicle_id 
 									                                    inner join master.orgrelationship ors
 									                                     on ors.id=org.relationship_id
-									                                    and (org.target_org_id=@organization_id and ors.code<>'Owner')
+									                                    and (org.target_org_id=@organization_id and ors.code NOT IN ('Owner','OEM'))
 									                                    and ors.state='A'
 									                                    and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 									                                    else COALESCE(end_date,0) =0 end)
@@ -1177,8 +1177,8 @@ namespace net.atos.daf.ct2.vehicle.repository
 									                                    and ors.state='A'
 									                                    and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 									                                    else COALESCE(end_date,0) =0 end)
-		                                    --	else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code<>'Owner'))) end as count
-			                                    else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id  and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code<>'Owner'))) end as count
+		                                    --	else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))) end as count
+			                                    else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id  and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))) end as count
 			                                    from master.group vg 
 			                                    left join master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
 			                                    left join master.orgrelationship as os on om.relationship_id=os.id 
@@ -1194,7 +1194,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                 from master.group vg
 								inner join master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
 								inner join master.orgrelationship as os on om.relationship_id=os.id 
-                                where (vg.organization_id=@organization_id or ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code<>'Owner')))  and vg.object_type='V' and vg.group_type in ('G','D') 
+                                where (vg.organization_id=@organization_id or ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM'))))  and vg.object_type='V' and vg.group_type in ('G','D') 
                                 ) vehicleGroup";
                 }
                 parameter.Add("@organization_id", organizationId);
@@ -2131,7 +2131,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 {
                     parameter.Add("@organization_id", OrganizationId);
                     QueryStatement += @" AND ((orm.owner_org_id=@organization_id AND ors.code='Owner')
-                                                        OR(orm.target_org_id=@organization_id AND ors.code<>'Owner'))";
+                                                        OR(orm.target_org_id=@organization_id AND ors.code NOT IN ('Owner','OEM')))";
 
                 }
 
@@ -2163,7 +2163,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 if (OrganizationId > 0)
                 {
                     parameter.Add("@organization_id", OrganizationId);
-                    QueryStatement += " and orm.target_org_id=@organization_id AND ors.code<>'Owner'";
+                    QueryStatement += " and orm.target_org_id=@organization_id AND ors.code NOT IN ('Owner','OEM')";
                 }
 
                 return await _dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
