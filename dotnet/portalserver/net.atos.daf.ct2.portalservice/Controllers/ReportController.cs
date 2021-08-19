@@ -95,6 +95,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                organizationId = GetContextOrgId();
                 if (reportId < 1) return BadRequest(ReportConstants.REPORT_REQUIRED_MSG);
                 if (accountId < 1) return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG);
                 if (organizationId < 1) return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG);
@@ -184,6 +185,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                organizationId = GetContextOrgId();
                 if (!(accountId > 0)) return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG);
                 if (!(organizationId > 0)) return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG);
                 var response = await _reportServiceClient
@@ -366,6 +368,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                request.OrganizationId = GetContextOrgId();
                 if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG); }
                 if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG); }
                 if (!(request.OrganizationId > 0)) { return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG); }
@@ -397,6 +400,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                request.OrganizationId = GetContextOrgId();
                 if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG); }
                 if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG); }
                 if (!(request.OrganizationId > 0)) { return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG); }
@@ -1500,7 +1504,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        AssociatedVehicleResponse vehicleGroupResponse = await _reportServiceClient.GetAssociatedVehiclGroupAsync(new VehicleListRequest { AccountId = _userDetails.AccountId, OrganizationId = GetUserSelectedOrgId() });
+                        AssociatedVehicleResponse vehicleGroupResponse = await _reportServiceClient.GetAssociatedVehiclGroupAsync(new VehicleListRequest { AccountId = _userDetails.AccountId, OrganizationId = GetContextOrgId() });
                         if (vehicleGroupResponse.Code == Responsecode.Success)
                         {
                             int vehicleCount = 0;
@@ -1568,7 +1572,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     //Find vehicle group according to time period 
                     else
                     {
-                        AssociatedVehicleResponse vehicleGroupResponse = await _reportServiceClient.GetAssociatedVehiclGroupAsync(new VehicleListRequest { AccountId = _userDetails.AccountId, OrganizationId = GetUserSelectedOrgId() });
+                        AssociatedVehicleResponse vehicleGroupResponse = await _reportServiceClient.GetAssociatedVehiclGroupAsync(new VehicleListRequest { AccountId = _userDetails.AccountId, OrganizationId = GetContextOrgId() });
                         if (vehicleGroupResponse.Code == Responsecode.Success)
                         {
                             int vehicleCount = 0;

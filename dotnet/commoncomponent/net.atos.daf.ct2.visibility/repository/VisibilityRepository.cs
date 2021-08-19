@@ -60,6 +60,7 @@ namespace net.atos.daf.ct2.visibility.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@account_id", accountId);
                 parameter.Add("@organization_id", OrganizationId);
+                // Added and veh.opt_in != 'U' to avoide opt out vehicle in below query for bug no. 15983
                 #region Query Select Vehicle By Account Visibility
                 var query = @"WITH cte_account_visibility_for_vehicle
                             AS (
@@ -100,7 +101,7 @@ namespace net.atos.daf.ct2.visibility.repository
                             left join master.groupref vgrpref
                             on  grp.id=vgrpref.group_id
                             left join master.vehicle veh
-                            on vgrpref.ref_id=veh.id
+                            on vgrpref.ref_id=veh.id and veh.opt_in != 'U'
                             where grp.organization_id=cte.organization_id 
                             )
 
@@ -144,7 +145,7 @@ namespace net.atos.daf.ct2.visibility.repository
                             inner join master.group grp 
                             on cte.vehiclegroupid=grp.id --and grp.object_type='V' --and grp.group_type='S'
                             inner join master.vehicle veh
-                            on grp.ref_id=veh.id and grp.group_type='S'
+                            on grp.ref_id=veh.id and grp.group_type='S' and veh.opt_in != 'U'
                             where grp.organization_id=cte.organization_id
                             )
 
@@ -192,15 +193,15 @@ namespace net.atos.daf.ct2.visibility.repository
 	                            ,veh.license_plate_number as RegistrationNo
 	                            from master.vehicle veh
 	                            Inner join master.orgrelationshipmapping  orm
-	                            on orm.vehicle_id=veh.id
+	                            on orm.vehicle_id=veh.id and veh.opt_in != 'U'
 	                            Inner join master.orgrelationship ors
 	                            on ors.id=orm.relationship_id
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
 	                            on ((orm.owner_org_id = du1.Organization_Id and ors.code='Owner') 
-	                            or (orm.target_org_id= du1.Organization_Id and ors.code<>'Owner'))
+	                            or (orm.target_org_id= du1.Organization_Id and ors.code NOT IN ('Owner','OEM')))
 	                            and du1.function_enum='A'
 	                            --Left join cte_account_visibility_for_vehicle_dynamic_unique du2
-	                            --on orm.target_org_id=du2.Organization_Id and ors.code<>'Owner' and du2.function_enum='A'
+	                            --on orm.target_org_id=du2.Organization_Id and ors.code NOT IN ('Owner','OEM') and du2.function_enum='A'
 	                            where ((@organization_id > 0 and veh.organization_id=@organization_id ) or ( @organization_id = 0 and 1=1))
 	                            and ors.state='A'
 	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
@@ -225,7 +226,7 @@ namespace net.atos.daf.ct2.visibility.repository
 	                            ,veh.license_plate_number as RegistrationNo
 	                            from master.vehicle veh
 	                            Inner join master.orgrelationshipmapping  orm
-	                            on orm.vehicle_id=veh.id
+	                            on orm.vehicle_id=veh.id  and veh.opt_in != 'U'
 	                            Inner join master.orgrelationship ors
 	                            on ors.id=orm.relationship_id
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
@@ -255,7 +256,7 @@ namespace net.atos.daf.ct2.visibility.repository
 	                            ,veh.license_plate_number as RegistrationNo
 	                            from master.vehicle veh
 	                            Inner join master.orgrelationshipmapping  orm
-	                            on orm.vehicle_id=veh.id
+	                            on orm.vehicle_id=veh.id  and veh.opt_in != 'U'
 	                            Inner join master.orgrelationship ors
 	                            on ors.id=orm.relationship_id
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du2
@@ -264,7 +265,7 @@ namespace net.atos.daf.ct2.visibility.repository
 	                            and ors.state='A'
 	                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 	                            else COALESCE(end_date,0) =0 end  
-	                            and ors.code<>'Owner'
+	                            and ors.code NOT IN ('Owner','OEM')
                             )
                             --select * from cte_account_vehicle_DynamicVisible
                             ,
@@ -285,7 +286,7 @@ namespace net.atos.daf.ct2.visibility.repository
 	                            ,veh.license_plate_number as RegistrationNo
 	                            from master.vehicle veh
 	                            Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
-	                            on veh.organization_id=du1.organization_id and du1.function_enum='M'
+	                            on veh.organization_id=du1.organization_id and du1.function_enum='M'  and veh.opt_in != 'U'
 	                            where ((@organization_id > 0 and veh.organization_id=@organization_id) or ( @organization_id = 0 and 1=1))
                             )
                             --select * from cte_account_vehicle_DynamicOEM

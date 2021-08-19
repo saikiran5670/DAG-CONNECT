@@ -38,5 +38,43 @@ namespace net.atos.daf.ct2.utilities
 
             return expectedThresholdValue;
         }
+        public static string GetUnitName(string unitEnum)
+        {
+            string unitName = string.Empty;
+            switch (unitEnum)
+            {
+                case "H":
+                    unitName = "Hours";
+                    break;
+                case "T":
+                    unitName = "Minutes";
+                    break;
+                case "K":
+                    unitName = "KiloMeter";
+                    break;
+                case "L":
+                    unitName = "Miles";
+                    break;
+                case "F":
+                    unitName = "Feet";
+                    break;
+                case "A":
+                    unitName = "Km/h";
+                    break;
+                case "B":
+                    unitName = "Miles/h";
+                    break;
+                case "S":
+                    unitName = "Seconds";
+                    break;
+                case "P":
+                    unitName = "%";
+                    break;
+                default:
+                    break;
+            }
+
+            return unitName;
+        }
     }
 }
