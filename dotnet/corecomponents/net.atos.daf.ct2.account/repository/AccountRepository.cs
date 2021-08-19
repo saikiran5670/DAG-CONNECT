@@ -823,7 +823,7 @@ namespace net.atos.daf.ct2.account
 									                inner join master.orgrelationship ors
 									                 on ors.id=org.relationship_id
 									                and ((org.owner_org_id=@organization_id and ors.code='Owner') 
-									                or (org.target_org_id=@organization_id and ors.code<>'Owner'))
+									                or (org.target_org_id=@organization_id and ors.code NOT IN ('Owner','OEM')))
 									                and ors.state='A'
 									                and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 									                else COALESCE(end_date,0) =0 end)
@@ -834,7 +834,7 @@ namespace net.atos.daf.ct2.account
 									                on veh.id=org.vehicle_id 
 									                inner join master.orgrelationship ors
 									                 on ors.id=org.relationship_id
-									                and (org.target_org_id=@organization_id and ors.code<>'Owner')
+									                and (org.target_org_id=@organization_id and ors.code NOT IN ('Owner','OEM'))
 									                and ors.state='A'
 									                and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 									                else COALESCE(end_date,0) =0 end)
@@ -849,7 +849,7 @@ namespace net.atos.daf.ct2.account
 									                and ors.state='A'
 									                and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 									                else COALESCE(end_date,0) =0 end)
-							else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id  and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code<>'Owner'))) end as count,
+							else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id  and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code NOT IN ('Owner','OEM')))) end as count,
                             case when (a.id is NULL) then ag.id else a.id end as group_id,
                             case when (a.id is NULL) then ag.name else a.salutation || ' ' || a.first_name || ' ' || a.last_name  end as group_name,
                             case when (a.id is NULL) then true else false end as is_ag_vg_group
