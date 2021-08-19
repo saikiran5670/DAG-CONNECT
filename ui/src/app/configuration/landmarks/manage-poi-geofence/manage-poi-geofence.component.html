@@ -88,7 +88,7 @@
               <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
             </button>
           </div> -->
-          <div fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="left">
+          <div fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
             <button mat-button [matMenuTriggerFor]="menu">
               <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
             </button>
@@ -97,7 +97,7 @@
             </mat-menu>
           </div>
           <div>
-            <button mat-flat-button (click)="importPOIExcel()">
+            <button style="margin-top: 6px;" mat-flat-button (click)="importPOIExcel()">
               <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
             </button>
           </div>
@@ -230,7 +230,7 @@
             </mat-menu>
           </div>
           <div>
-            <button mat-flat-button (click)="importGeofence()">
+            <button style="margin-top: 6px;" mat-flat-button (click)="importGeofence()">
               <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
             </button>
           </div>
