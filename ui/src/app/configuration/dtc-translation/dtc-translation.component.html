@@ -112,7 +112,7 @@
                                 <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
                                     <button style='color: #fff;' [disabled]="!dtcTranslationFormGroup.valid || svgEmptyMsg" [ngStyle]="{'margin-top': dtcTranslationFormGroup.get('uploadFile').hasError('required') || svgEmptyMsg || serverIconError ? serverIconError ? '-9px' : '9px' : '29px' }" mat-flat-button color="primary"
                                         (click)="uploadIconTranslation(removableIconInput)">
-                                        <mat-icon>arrow_circle_down</mat-icon> {{ translationData.lblImport || 'Import Icons' }}
+                                        <mat-icon>arrow_circle_down</mat-icon> {{ translationData.lblImport || 'Import Icon(s)' }}
                                     </button>
                                 </div>
                                </div>
