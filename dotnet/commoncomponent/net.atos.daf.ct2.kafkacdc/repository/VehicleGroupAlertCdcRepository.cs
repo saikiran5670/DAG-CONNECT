@@ -156,10 +156,10 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 		                            on ors.id=orm.relationship_id
 		                            Inner join Alerts_Associated_To_Dynamic_Unique_Groups du1
 		                            on ((orm.owner_org_id = du1.Organization_Id and ors.code='Owner') 
-		                            or (orm.target_org_id= du1.Organization_Id and ors.code<>'Owner'))
+		                            or (orm.target_org_id= du1.Organization_Id and ors.code NOT IN ('Owner','OEM')))
 		                            and du1.function_enum='A'
 		                            --Left join cte_account_visibility_for_vehicle_dynamic_unique du2
-		                            --on orm.target_org_id=du2.Organization_Id and ors.code<>'Owner' and du2.function_enum='A'
+		                            --on orm.target_org_id=du2.Organization_Id and ors.code NOT IN ('Owner','OEM') and du2.function_enum='A'
 		                            where veh.id = 72 and ors.state='A' 
 		                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 		                            else COALESCE(end_date,0) =0 end  
@@ -221,7 +221,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 		                            where veh.id = 72 and ors.state='A'
 		                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 		                            else COALESCE(end_date,0) =0 end  
-		                            and ors.code<>'Owner'
+		                            and ors.code NOT IN ('Owner','OEM')
 	                            )
 	                            --select * from Alerts_Associated_To_Dynamic_visible_Vehicle
 	                            ,
