@@ -478,6 +478,13 @@ tripTraceArray: any = [];
           display: true,
           labelString: 'Number of Trips'    
         }}
+      ], xAxes:[
+        {
+          barThickness: 6,
+          gridLines: {
+            drawOnChartArea: false
+          }
+        }
       ]}
   };
   barChartOptions3= {
@@ -497,6 +504,13 @@ tripTraceArray: any = [];
           display: true,
           labelString: 'Values (ltr)'    
         }}
+      ], xAxes:[
+        {
+          barThickness: 6,
+          gridLines: {
+            drawOnChartArea: false
+          }
+        }
       ]}
   };
 
@@ -1386,14 +1400,24 @@ createEndMarker(){
       let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
       this.barChartLabels.push(resultDate);
       this.barData.push(e.numberofTrips);
-      let convertedFuelConsumed = e.fuelConsumed / 1000;
-      this.fuelConsumedChart.push(convertedFuelConsumed);
+      // let convertedFuelConsumed = e.fuelConsumed / 1000;
+      // this.fuelConsumedChart.push(convertedFuelConsumed);
+      // this.co2Chart.push(e.co2Emission);
+      // this.distanceChart.push(e.distance);
+      // this.fuelConsumptionChart.push(e.fuelConsumtion);
+      // let minutes = this.convertTimeToMinutes(e.idleDuration);
+      // // this.idleDuration.push(e.idleDuration);
+      // this.idleDuration.push(minutes);
+
+      let convertedFuelConsumed = this.reportMapService.getFuelConsumptionUnits(e.fuelConsumed, this.prefUnitFormat);
+      this.fuelConsumedChart.push(convertedFuelConsumed);      
       this.co2Chart.push(e.co2Emission);
-      this.distanceChart.push(e.distance);
-      this.fuelConsumptionChart.push(e.fuelConsumtion);
+      let convertedDistance =  this.reportMapService.convertDistanceUnits(e.distance, this.prefUnitFormat);
+      this.distanceChart.push(convertedDistance);
+      let convertedFuelConsumption =  this.reportMapService.getFuelConsumedUnits(e.fuelConsumtion, this.prefUnitFormat);
+      this.fuelConsumptionChart.push(convertedFuelConsumption);      
       let minutes = this.convertTimeToMinutes(e.idleDuration);
-      // this.idleDuration.push(e.idleDuration);
-      this.idleDuration.push(minutes);
+      this.idleDuration.push(minutes);  
     })
 
     this.barChartLegend = true;
@@ -1526,7 +1550,8 @@ createEndMarker(){
   
     this.lineChartColors= [
       {
-        borderColor:'#7BC5EC'
+        borderColor:'#7BC5EC',
+        backgroundColor: 'rgba(255,255,0,0)',
       },
     ];
   
