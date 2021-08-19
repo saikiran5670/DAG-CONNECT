@@ -30,8 +30,8 @@ namespace net.atos.daf.ct2.kafkacdc
             _vehicleAlertRepository = vehicleAlertRepository;
             _kafkaCdcHelper = new KafkaCdcHelper();
         }
-        public Task<bool> GetVehicleGroupAlertConfiguration(int vehicleGroupId, string operation) => ExtractAndSyncVehicleGroupAlertRefByVehicleGroupIds(vehicleGroupId, operation);
-        internal async Task<bool> ExtractAndSyncVehicleGroupAlertRefByVehicleGroupIds(int vehicleGroupId, string operation)
+        public Task<bool> GetVehicleGroupAlertConfiguration(int vehicleGroupId, string operation, int organizationId) => ExtractAndSyncVehicleGroupAlertRefByVehicleGroupIds(vehicleGroupId, operation, organizationId);
+        internal async Task<bool> ExtractAndSyncVehicleGroupAlertRefByVehicleGroupIds(int vehicleGroupId, string operation, int organizationId)
         {
             bool result = false;
             List<int> alertIds = new List<int>();
@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.kafkacdc
             {
                 //alertIds.Add(vehicleGroupId);
                 // get all the vehicles & alert mapping under the vehicle group for given alert id
-                List<VehicleAlertRef> masterDBVehicleGroupAlerts = await _vehicleGroupAlertCdcRepository.GetVehiclesGroupFromAlertConfiguration(vehicleGroupId);
+                List<VehicleAlertRef> masterDBVehicleGroupAlerts = await _vehicleGroupAlertCdcRepository.GetVehiclesGroupFromAlertConfiguration(vehicleGroupId, organizationId);
                 alertIds = masterDBVehicleGroupAlerts.Select(x => x.AlertId).ToList();
                 List<VehicleAlertRef> datamartVehicleGroupAlerts = await _vehicleGroupAlertCdcRepository.GetVehicleGroupAlertRefByAlertIds(alertIds);
                 // Preparing data for sending to kafka topic
