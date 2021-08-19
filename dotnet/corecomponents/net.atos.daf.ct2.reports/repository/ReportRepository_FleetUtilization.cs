@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.reports.repository
                                             	(
                                             		SELECT
                                             			VIN
-                                                      , count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays
+                                                      , count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays
                                             		  , count(trip_id)                as numberoftrips
                                             		  , SUM(etl_gps_trip_time)        as etl_gps_trip_time
                                             		  , SUM(end_time_stamp)           as end_time_stamp
@@ -100,13 +100,14 @@ namespace net.atos.daf.ct2.reports.repository
                 //string vin = string.Join("','", TripFilters.VIN.ToArray());
                 //vin = "'"+ vin.Replace(",", "', '")+"'";
                 //parameter.Add("@vins", vin);
+                // changing range to end time stamp as per discussion with shailesh smita
                 string query;
                 if (tripFilters.VIN.Count > 0)
                 {
                     query = @"WITH cte_workingdays AS(
                         select
-                        date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
-                        count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
+                        date_trunc('day', to_timestamp(end_time_stamp/1000)) as startdate,
+                        count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays,
 						Count(distinct vin) as vehiclecount,
 						Count(distinct trip_id) as tripcount,
                         sum(etl_gps_distance) as totaldistance,
@@ -118,9 +119,9 @@ namespace net.atos.daf.ct2.reports.repository
                         sum(average_weight) as totalaverageweightperprip,
                         sum(last_odometer) as totalodometer
                         FROM tripdetail.trip_statistics
-                        where (start_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
+                        where (end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
 						and vin=ANY(@vins)
-                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))                     
+                        group by date_trunc('day', to_timestamp(end_time_stamp/1000))                     
                         )
                         select
                         '' as VIN,
@@ -143,8 +144,8 @@ namespace net.atos.daf.ct2.reports.repository
                 {
                     query = query = @"WITH cte_workingdays AS(
                         select
-                        date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
-                        count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
+                        date_trunc('day', to_timestamp(end_time_stamp/1000)) as startdate,
+                        count(distinct date_trunc('day', to_timestamp(end_time_stamp/1000))) as totalworkingdays,
 						Count(distinct vin) as vehiclecount,
 						Count(distinct trip_id) as tripcount,
                         sum(etl_gps_distance) as totaldistance,
@@ -156,8 +157,8 @@ namespace net.atos.daf.ct2.reports.repository
                         sum(average_weight) as totalaverageweightperprip,
                         sum(last_odometer) as totalodometer
                         FROM tripdetail.trip_statistics
-                        where (start_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime)
-                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))                     
+                        where (end_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime)
+                        group by date_trunc('day', to_timestamp(end_time_stamp/1000))                     
                         )
                         select
                         '' as VIN,
