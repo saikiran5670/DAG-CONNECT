@@ -107,6 +107,7 @@ message VehicleRequest {
   string Name = 2;
   string LicensePlateNumber=3;
   int32 Organization_Id=4;
+  int32 User_Org_Id=5; 
 }
 
 // The response message containing the greetings.
@@ -216,6 +217,7 @@ message VehicleGroupRef{
 
 message VehicleGroupIdRequest{
   int32 Group_Id = 1;
+   int32 OrganizationId=2;
 }
 
 message VehicleGroupResponce{
@@ -306,18 +308,24 @@ message VehicleOtaRequest{
   bool Is_Ota=1;
   int32 Modified_By=2;
   int32 Vehicle_Id=3;
+  int32 Organization_Id=4;
+  int32 Org_Context_Id=5;
 }
 
 message VehicleTerminateRequest{
   bool Is_Terminate=1;
   int32 Modified_By=2;
   int32 Vehicle_Id=3;
+  int32 Organization_Id=4;
+  int32 Org_Context_Id=5;
 }
 
 message VehicleOptInRequest{
   string Is_OptIn=1;
   int32 Modified_By=2;
   int32 Vehicle_Id=3;
+  int32 Organization_Id=4;
+  int32 Org_Context_Id=5;
 }
 
 message VehicleIdRequest {
@@ -381,12 +389,13 @@ message VehicleGroupListRequest {
 message VehicleConnection {
   int32 VehicleId = 1;
   string Opt_In = 2;
-  int32 ModifiedBy = 3;
-  
+  int32 ModifiedBy = 3;  
 }
 
 message VehicleConnectRequest{
     repeated VehicleConnection Vehicles = 1;
+    int32 Organization_Id=2;
+    int32 Org_Context_Id=3;
 }
 
 message VehicleConnectResponse {

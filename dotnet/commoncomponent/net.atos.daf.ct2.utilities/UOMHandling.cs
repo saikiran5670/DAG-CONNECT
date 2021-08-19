@@ -9,34 +9,76 @@ namespace net.atos.daf.ct2.utilities
         public static double GetConvertedThresholdValue(double actualValue, string expectedUnit)
         {
             double expectedThresholdValue = actualValue;
-            switch (expectedUnit)
+            if (expectedThresholdValue > 0)
+            {
+                switch (expectedUnit)
+                {
+                    case "H":
+                        expectedThresholdValue = actualValue / 3600;
+                        break;
+                    case "T":
+                        expectedThresholdValue = actualValue / 60;
+                        break;
+                    case "K":
+                        expectedThresholdValue = actualValue / 1000;
+                        break;
+                    case "L":
+                        expectedThresholdValue = actualValue / 1609;
+                        break;
+                    case "F":
+                        expectedThresholdValue = actualValue * Convert.ToDouble(3.281);
+                        break;
+                    case "A":
+                        expectedThresholdValue = actualValue * Convert.ToDouble(3.6);
+                        break;
+                    case "B":
+                        expectedThresholdValue = actualValue * Convert.ToDouble(2.237);
+                        break;
+                    default:
+                        break;
+                }
+                decimal calVal = decimal.Truncate(Convert.ToDecimal(expectedThresholdValue));
+                expectedThresholdValue = Convert.ToDouble(calVal);
+            }
+            return expectedThresholdValue;
+        }
+        public static string GetUnitName(string unitEnum)
+        {
+            string unitName = string.Empty;
+            switch (unitEnum)
             {
                 case "H":
-                    expectedThresholdValue = actualValue / 3600;
+                    unitName = "Hours";
                     break;
                 case "T":
-                    expectedThresholdValue = actualValue / 60;
+                    unitName = "Minutes";
                     break;
                 case "K":
-                    expectedThresholdValue = actualValue / 1000;
+                    unitName = "KiloMeter";
                     break;
                 case "L":
-                    expectedThresholdValue = actualValue / 1609;
+                    unitName = "Miles";
                     break;
                 case "F":
-                    expectedThresholdValue = actualValue * Convert.ToDouble(3.281);
+                    unitName = "Feet";
                     break;
                 case "A":
-                    expectedThresholdValue = actualValue * Convert.ToDouble(3.6);
+                    unitName = "Km/h";
                     break;
                 case "B":
-                    expectedThresholdValue = actualValue * Convert.ToDouble(2.237);
+                    unitName = "Miles/h";
+                    break;
+                case "S":
+                    unitName = "Seconds";
+                    break;
+                case "P":
+                    unitName = "%";
                     break;
                 default:
                     break;
             }
 
-            return expectedThresholdValue;
+            return unitName;
         }
     }
 }

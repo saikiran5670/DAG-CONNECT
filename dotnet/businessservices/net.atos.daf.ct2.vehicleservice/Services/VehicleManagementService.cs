@@ -158,7 +158,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 if (Objvehicle.ID > 0)
                 {
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { Objvehicle.ID });
+                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { Objvehicle.ID }, "N", request.OrganizationId);
                 }
                 return await Task.FromResult(new VehicleResponce
                 {
@@ -232,18 +232,18 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     await Task.Run(() => _vehicleCdcManager.VehicleCdcProducer(new List<int>() { request.Refid }, _kafkaConfiguration));
 
                 }
-
-                if (ObjvehicleOptInOptOutResponce.RefId > 0 && ObjvehicleOptInOptOutResponce.Type == OptInOptOutType.VehicleLevel)
-                {
-                    //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { ObjvehicleOptInOptOutResponce.RefId });
-                }
-                else if (ObjvehicleOptInOptOutResponce.RefId > 0 && ObjvehicleOptInOptOutResponce.Type == OptInOptOutType.VehicleLevel)
-                {
-                    var vehicleList = await _vehicleManager.GetVehicleIdsByOrgId(ObjvehicleOptInOptOutResponce.RefId);
-                    if (vehicleList.Count() > 0)
-                        await _alertCdcHelper.TriggerAlertCdc(vehicleList);
-                }
+                //TODO : It is not called from Controller
+                //if (ObjvehicleOptInOptOutResponce.RefId > 0 && ObjvehicleOptInOptOutResponce.Type == OptInOptOutType.VehicleLevel)
+                //{
+                //    //Triggering alert cdc 
+                //    await _alertCdcHelper.TriggerAlertCdc(new List<int> { ObjvehicleOptInOptOutResponce.RefId });
+                //}
+                //else if (ObjvehicleOptInOptOutResponce.RefId > 0 && ObjvehicleOptInOptOutResponce.Type == OptInOptOutType.VehicleLevel)
+                //{
+                //    var vehicleList = await _vehicleManager.GetVehicleIdsByOrgId(ObjvehicleOptInOptOutResponce.RefId);
+                //    if (vehicleList.Count() > 0)
+                //        await _alertCdcHelper.TriggerAlertCdc(vehicleList);
+                //}
                 return await Task.FromResult(new VehicleOptInOptOutResponce
                 {
                     Message = "Status updated for " + ObjvehicleOptInOptOutResponce.RefId,
@@ -347,7 +347,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         ///Trigger Vehicle Group CDC
                         else if (entity.Id > 0 && entity.GroupRef.Count > 0)
                         {
-                            await _alertCdcHelper.TriggerVehicleGroupCdc(entity.Id, "N");
+                            await _alertCdcHelper.TriggerVehicleGroupCdc(entity.Id, "N", request.OrganizationId);
                         }
                         else
                         {
@@ -389,7 +389,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 if (result)
                 {
                     //Trigger Vehicle Group CDC
-                    await _alertCdcHelper.TriggerVehicleGroupCdc(request.GroupId, "N");
+                    await _alertCdcHelper.TriggerVehicleGroupCdc(request.GroupId, "N", request.OrganizationId);
                 }
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete Vehicle Group ", 1, 2, Convert.ToString(request.GroupId)).Result;
 
@@ -807,7 +807,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 if (result)
                 {
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId });
+                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId }, "N", request.OrgContextId);
                 }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
@@ -839,7 +839,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 if (result)
                 {
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId });
+                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId }, "N", request.OrgContextId);
                 }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
@@ -872,7 +872,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 if (result)
                 {
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId });
+                    await _alertCdcHelper.TriggerAlertCdc(new List<int> { request.VehicleId }, "N", request.OrgContextId);
                 }
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
@@ -1157,7 +1157,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 if (result.VehicleConnectedList.Count() > 0)
                 {
                     //Triggering alert cdc 
-                    await _alertCdcHelper.TriggerAlertCdc(result.VehicleConnectedList.Select(s => s.VehicleId));
+                    await _alertCdcHelper.TriggerAlertCdc(result.VehicleConnectedList.Select(s => s.VehicleId), "N", request.OrgContextId);
                 }
                 _logger.Info("VehicleConnectAll method in Vehicle service called.");
                 return await Task.FromResult(response);

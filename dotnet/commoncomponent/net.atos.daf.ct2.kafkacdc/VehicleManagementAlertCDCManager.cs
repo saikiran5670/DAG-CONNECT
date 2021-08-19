@@ -32,9 +32,9 @@ namespace net.atos.daf.ct2.kafkacdc
             _kafkaCdcHelper = new KafkaCdcHelper();
         }
 
-        public Task<bool> GetVehicleAlertRefFromVehicleId(IEnumerable<int> vehicleIds) => ExtractAndSyncVehicleAlertRefFromVehicleId(vehicleIds, "N");
+        public Task<bool> GetVehicleAlertRefFromVehicleId(IEnumerable<int> vehicleIds, string operation, int organizationId) => ExtractAndSyncVehicleAlertRefFromVehicleId(vehicleIds, operation, organizationId);
 
-        internal async Task<bool> ExtractAndSyncVehicleAlertRefFromVehicleId(IEnumerable<int> vehicleIds, string operation)
+        internal async Task<bool> ExtractAndSyncVehicleAlertRefFromVehicleId(IEnumerable<int> vehicleIds, string operation, int organizationId)
         {
             bool result = false;
             List<VehicleAlertRef> unmodifiedMapping = new List<VehicleAlertRef>();
@@ -45,9 +45,10 @@ namespace net.atos.daf.ct2.kafkacdc
             try
             {
                 // get all the vehicles & alert mapping under the vehicle group for given alert id
-                List<VehicleAlertRef> masterDBVehicleAlerts = await _vehicleManagementAlertCDCRepository.GetVehicleAlertByvehicleId(vehicleIds);
-                List<VehicleAlertRef> datamartVehicleAlerts = await _vehicleManagementAlertCDCRepository.GetVehicleAlertRefFromvehicleId(vehicleIds);
+                List<VehicleAlertRef> masterDBVehicleAlerts = await _vehicleManagementAlertCDCRepository.GetVehicleAlertByvehicleId(vehicleIds, organizationId);//Context Org ID
                 alertIds = masterDBVehicleAlerts.Select(x => x.AlertId).ToList();
+                List<VehicleAlertRef> datamartVehicleAlerts = await _vehicleManagementAlertCDCRepository.GetVehicleAlertRefFromvehicleId(alertIds);
+
                 // Preparing data for sending to kafka topic
                 if (masterDBVehicleAlerts.Count > 0)
                 {
@@ -61,8 +62,9 @@ namespace net.atos.daf.ct2.kafkacdc
                     //all are eligible for deletion  //break the deep copy (reference of list) while coping from one list to another 
                     deletionMapping = datamartVehicleAlerts.Select(obj => new VehicleAlertRef { VIN = obj.VIN, AlertId = obj.AlertId, Op = "D" }).ToList();
                 }
-                //removing duplicate records if any 
-                deletionMapping = deletionMapping.GroupBy(c => c.VIN, (key, c) => c.FirstOrDefault()).ToList();
+                //removing duplicate records if any
+                //TODO Need to check on this logic
+                //deletionMapping = deletionMapping.GroupBy(c => c.VIN, (key, c) => c.FirstOrDefault()).ToList();
 
                 if (datamartVehicleAlerts.Count > 0)
                 {
@@ -77,11 +79,11 @@ namespace net.atos.daf.ct2.kafkacdc
                     insertionMapping = masterDBVehicleAlerts.Select(obj => new VehicleAlertRef { VIN = obj.VIN, AlertId = obj.AlertId, Op = "I" }).ToList();
                 }
                 //removing duplicate records if any 
-                insertionMapping = insertionMapping.GroupBy(c => c.VIN, (key, c) => c.FirstOrDefault()).ToList();
+                //TODO Need to check on this logic
+                //insertionMapping = insertionMapping.GroupBy(c => c.VIN, (key, c) => c.FirstOrDefault()).ToList();
 
                 //Update datamart with lastest mapping 
-                //set alert operation for state column into datamart
-                //TODO Need check this logic
+                //set alert operation for state column into datamart                
                 masterDBVehicleAlerts.ForEach(s => s.Op = operation);
                 //Update datamart table vehiclealertref based on latest modification.
                 await _vehicleAlertRepository.DeleteAndInsertVehicleAlertRef(alertIds, masterDBVehicleAlerts);
@@ -89,11 +91,12 @@ namespace net.atos.daf.ct2.kafkacdc
                 //Union mapping for sending to kafka topic
                 finalmapping = insertionMapping.Union(deletionMapping).ToList();
                 //sending only states I & D with combined mapping of vehicle and alertid
-                foreach (var alertId in alertIds)
-                {
-                    if (finalmapping.Where(w => w.AlertId == alertId).Count() > 0)
-                        await _kafkaCdcHelper.ProduceMessageToKafka(finalmapping.Where(w => w.AlertId == alertId).ToList(), alertId, operation, _kafkaConfig);
-                }
+                if (finalmapping.Count() > 0)
+                    foreach (var alertId in alertIds)
+                    {
+                        if (finalmapping.Where(w => w.AlertId == alertId).Count() > 0)
+                            await _kafkaCdcHelper.ProduceMessageToKafka(finalmapping.Where(w => w.AlertId == alertId).ToList(), alertId, operation, _kafkaConfig);
+                    }
                 result = true;
             }
             catch (Exception ex)

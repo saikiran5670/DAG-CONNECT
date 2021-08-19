@@ -36,12 +36,13 @@ namespace net.atos.daf.ct2.kafkacdc.repository
                 throw;
             }
         }
-        public async Task<List<VehicleAlertRef>> GetVehiclesGroupFromAlertConfiguration(int vehicleGroupId)
+        public async Task<List<VehicleAlertRef>> GetVehiclesGroupFromAlertConfiguration(int vehicleGroupId, int organizationId)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@vehiclegroupid", vehicleGroupId);
+                parameter.Add("@context_org_id", organizationId);
                 string query = @"
                             --select * from Vehicle_Group_of_Type_All
                             with Alerts_Associated_To_Groups
@@ -60,7 +61,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 	                            from master.alert ale
 	                            inner join master.group grp 
 	                            on ale.vehicle_group_id = grp.id
-	                            --and ale.vehicle_group_id=0
+	                            and ale.vehicle_group_id=@vehiclegroupid
                             )
                             --select * from Alerts_Associated_To_Groups;
                             ,Alerts_Associated_To_Single_Vehicle
@@ -151,7 +152,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 		                            ,veh.license_plate_number as RegistrationNo
 		                            from master.vehicle veh
 		                            Inner join master.orgrelationshipmapping  orm
-		                            on orm.vehicle_id=veh.id and veh.id = 72 
+		                            on orm.vehicle_id=veh.id and veh.Organization_Id = 36 
 		                            Inner join master.orgrelationship ors
 		                            on ors.id=orm.relationship_id
 		                            Inner join Alerts_Associated_To_Dynamic_Unique_Groups du1
@@ -184,7 +185,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 		                            ,veh.license_plate_number as RegistrationNo
 		                            from master.vehicle veh
 		                            Inner join master.orgrelationshipmapping  orm
-		                            on orm.vehicle_id=veh.id and veh.id = 72
+		                            on orm.vehicle_id=veh.id and veh.Organization_Id = 36
 		                            Inner join master.orgrelationship ors
 		                            on ors.id=orm.relationship_id
 		                            Inner join Alerts_Associated_To_Dynamic_Unique_Groups du1
@@ -213,7 +214,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 		                            ,veh.license_plate_number as RegistrationNo
 		                            from master.vehicle veh
 		                            Inner join master.orgrelationshipmapping  orm
-		                            on orm.vehicle_id=veh.id and  veh.id = 72
+		                            on orm.vehicle_id=veh.id and veh.Organization_Id = 36
 		                            Inner join master.orgrelationship ors
 		                            on ors.id=orm.relationship_id
 		                            Inner join Alerts_Associated_To_Dynamic_Unique_Groups du2
@@ -312,7 +313,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
 	                             as (
 		                             select cavc.* from cte_account_vehicle_CompleteList cavc
 		                             inner join org_veh_subscriptions  ovs
-		                             on cavc.vehicleid = 72 and cavc.vehicleid = ovs.vehicleid and ovs.subscriptiontype='V'
+		                             on cavc.Organization_Id = 36 and cavc.vehicleid = ovs.vehicleid and ovs.subscriptiontype='V'
 	                             )
                             --select * from veh_subscriptions
 	                            , 

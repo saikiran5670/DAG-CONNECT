@@ -15,9 +15,13 @@ namespace net.atos.daf.ct2.vehicleservice.common
             _vehicleMgmAlertCdcManager = vehicletMgmAlertCdcManager;
             _vehicleGroupAlertCdcManager = vehicleGroupAlertCdcManager;
         }
-        public async Task TriggerAlertCdc(IEnumerable<int> vehicleIds)
-            => _ = await Task.Run(() => _vehicleMgmAlertCdcManager.GetVehicleAlertRefFromVehicleId(vehicleIds));
-        public async Task TriggerVehicleGroupCdc(int vehicleGroupId, string alertState)
-           => _ = await Task.Run(() => _vehicleGroupAlertCdcManager.GetVehicleGroupAlertConfiguration(vehicleGroupId, alertState));
+        public async Task TriggerAlertCdc(IEnumerable<int> vehicleIds, string operation, int organizationId)
+            => _ = await Task.Run(() => _vehicleMgmAlertCdcManager.GetVehicleAlertRefFromVehicleId(vehicleIds, operation, organizationId));
+
+        public async Task TriggerVehicleGroupCdc(int vehicleGroupId, string alertState, int organizationId)
+        {
+            _ = await Task.Run(() => _vehicleGroupAlertCdcManager.GetVehicleGroupAlertConfiguration(vehicleGroupId, alertState, organizationId));
+        }
+
     }
 }

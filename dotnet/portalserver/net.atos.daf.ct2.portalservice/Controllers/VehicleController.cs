@@ -55,9 +55,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 //Assign context orgId
                 request.Organization_Id = GetContextOrgId();
-
                 var vehicleRequest = new VehicleBusinessService.VehicleRequest();
                 vehicleRequest = _mapper.ToVehicle(request);
+                vehicleRequest.UserOrgId = GetUserSelectedOrgId();
                 VehicleBusinessService.VehicleResponce vehicleResponse = await _vehicleClient.UpdateAsync(vehicleRequest);
 
                 if (vehicleResponse.Code == VehicleBusinessService.Responcecode.Failed
@@ -284,7 +284,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The vehicle group id is required.");
                 }
-
+                //Add the organizationId for hte Vehicle group CDC ogranization filter
+                request.OrganizationId = GetContextOrgId();
                 request.GroupId = Convert.ToInt32(GroupId);
                 VehicleBusinessService.VehicleGroupDeleteResponce response = await _vehicleClient.DeleteGroupAsync(request);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
@@ -547,7 +548,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The VehicleId is required.");
                 }
-
+                request.OrganizationId = GetUserSelectedOrgId();
+                request.OrgContextId = GetContextOrgId();
                 VehicleBusinessService.VehicleGroupDeleteResponce vehicleResponse = await _vehicleClient.SetOptInStatusAsync(request);
 
                 if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Failed
@@ -602,7 +604,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The VehicleId is required.");
                 }
-
+                request.OrganizationId = GetUserSelectedOrgId();
+                request.OrgContextId = GetContextOrgId();
                 VehicleBusinessService.VehicleGroupDeleteResponce vehicleResponse = await _vehicleClient.SetOTAStatusAsync(request);
 
                 if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Failed
@@ -656,7 +659,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The VehicleId is required.");
                 }
-
+                request.OrganizationId = GetUserSelectedOrgId();
+                request.OrgContextId = GetContextOrgId();
                 VehicleBusinessService.VehicleGroupDeleteResponce vehicleResponse = await _vehicleClient.TerminateAsync(request);
 
                 if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Failed
@@ -1001,7 +1005,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The vehicle settings data is required.");
                 }
                 var vehicleSettings = _mapper.ToUpdateVehicleConnection(request);
-
+                vehicleSettings.OrganizationId = GetUserSelectedOrgId();
+                vehicleSettings.OrgContextId = GetContextOrgId();
                 VehicleBusinessService.VehicleConnectResponse vehicleConnectResponse = _vehicleClient.UpdateVehicleConnection(vehicleSettings);
                 if (vehicleConnectResponse != null && vehicleConnectResponse.Code == VehicleBusinessService.Responcecode.Failed
                      && vehicleConnectResponse.Message == "There is an error updating vehicle opt in status.")
