@@ -83,11 +83,11 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div>
+          <!-- <div>
             <button mat-flat-button (click)="importPOIExcel()">
               <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
             </button>
-          </div>
+          </div> -->
           <div fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="left">
             <button mat-button [matMenuTriggerFor]="menu">
               <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
@@ -95,6 +95,11 @@
             <mat-menu #menu="matMenu">
               <button mat-menu-item (click)="exportAsExcelFile()">{{ translationData.lblExcel || 'Excel' }}</button>
             </mat-menu>
+          </div>
+          <div>
+            <button mat-flat-button (click)="importPOIExcel()">
+              <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
+            </button>
           </div>
           <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
             <button [disabled]='selectedpois.selected.length == 0' mat-flat-button color="warn"
@@ -210,11 +215,11 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div>
+          <!-- <div>
             <button mat-flat-button (click)="importGeofence()">
               <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
             </button>
-          </div>
+          </div> -->
           <div fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
             <button mat-button [matMenuTriggerFor]="menu">
               <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
@@ -223,6 +228,11 @@
               <button mat-menu-item (click)="exportGeofenceAsExcelFile()">{{ translationData.lblGpx || 'GPX'
                 }}</button>
             </mat-menu>
+          </div>
+          <div>
+            <button mat-flat-button (click)="importGeofence()">
+              <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
+            </button>
           </div>
           <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
             <button [disabled]='selectedgeofences.selected.length == 0' mat-flat-button color="warn"
