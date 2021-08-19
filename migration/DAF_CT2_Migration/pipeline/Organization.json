@@ -489,7 +489,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzurePostgreSqlSource",
-						"query": "UPDATE MASTER.ORGANIZATION L \nSET\t \nTYPE\t=\tE.TYPE\t,\nNAME\t=\tE.NAME\t,\nADDRESS_TYPE\t=\tE.ADDRESS_TYPE\t,\nSTREET\t=\tE.STREET\t,\nSTREET_NUMBER\t=\tE.STREET_NUMBER\t,\nPOSTAL_CODE\t=\tE.POSTAL_CODE\t,\nCITY\t=\tE.CITY\t,\nCOUNTRY_CODE\t=\tE.COUNTRY_CODE\t,\nREFERENCE_DATE\t=\tE.REFERENCE_DATE\t,\nPREFERENCE_ID\t=\tE.PREFERENCE_ID\t,\nVEHICLE_DEFAULT_OPT_IN\t=\tE.VEHICLE_DEFAULT_OPT_IN\t,\nDRIVER_DEFAULT_OPT_IN\t=\tE.DRIVER_DEFAULT_OPT_IN\t,\nSTATE\t=\tE.STATE\nFROM    staging.organization_chg E\nWHERE L.org_id = E.org_id \n  AND  E.CHG_FLG     = 'X';\n  "
+						"query": "UPDATE MASTER.ORGANIZATION L \nSET\t \nTYPE\t=\tE.TYPE\t,\nNAME\t=\tE.NAME\t,\nADDRESS_TYPE\t=\tE.ADDRESS_TYPE\t,\nSTREET\t=\tE.STREET\t,\nSTREET_NUMBER\t=\tE.STREET_NUMBER\t,\nPOSTAL_CODE\t=\tE.POSTAL_CODE\t,\nCITY\t=\tE.CITY\t,\nCOUNTRY_CODE\t=\tE.COUNTRY_CODE\t,\nREFERENCE_DATE\t=\tE.REFERENCE_DATE\t,\nPREFERENCE_ID\t=\tE.PREFERENCE_ID\t,\nVEHICLE_DEFAULT_OPT_IN\t=\tE.VEHICLE_DEFAULT_OPT_IN\t,\nDRIVER_DEFAULT_OPT_IN\t=\tE.DRIVER_DEFAULT_OPT_IN\t,\nSTATE\t=\tE.STATE\nFROM    staging.organization_chg E\nWHERE L.org_id = E.org_id \n  AND  E.CHG_FLG     = 'X';\n  \nSELECT * FROM STAGING.ORGANIZATION_CHG WHERE CHG_FLG = 'X';"
 					},
 					"dataset": {
 						"referenceName": "Organization",
