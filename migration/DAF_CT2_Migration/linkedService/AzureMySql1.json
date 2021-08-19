@@ -1,0 +1,16 @@
+{
+	"name": "AzureMySql1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureMySql",
+		"typeProperties": {
+			"connectionString": "server=dafct-lan3-d-euwe-cdp-mysql-master.mysql.database.azure.com;port=3306;database=daf_ct_wl;uid=mysqladmin@dafct-lan3-d-euwe-cdp-mysql-master;sslmode=1;usesystemtruststore=0",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBRi1MQU4zLUQtRVVXRS1BREZfNzMwZDJkYTEtMzNmYS00NzFjLTkzMWMtYzZiZGU2NzFkYjk1Ig0KfQ=="
+		},
+		"connectVia": {
+			"referenceName": "daf-lan3-euwe-adf-mvnet-ir",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

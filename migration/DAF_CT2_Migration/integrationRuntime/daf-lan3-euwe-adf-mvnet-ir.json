@@ -1,0 +1,21 @@
+{
+	"name": "daf-lan3-euwe-adf-mvnet-ir",
+	"properties": {
+		"type": "Managed",
+		"typeProperties": {
+			"computeProperties": {
+				"location": "West Europe",
+				"dataFlowProperties": {
+					"computeType": "General",
+					"coreCount": 8,
+					"timeToLive": 10,
+					"cleanup": false
+				}
+			}
+		},
+		"managedVirtualNetwork": {
+			"type": "ManagedVirtualNetworkReference",
+			"referenceName": "default"
+		}
+	}
+}

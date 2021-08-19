@@ -1,0 +1,17 @@
+{
+	"name": "Organization_CT2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzurePostgreSql1master",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "public",
+			"table": "organization"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
