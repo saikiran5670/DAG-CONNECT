@@ -240,8 +240,8 @@ export class SubscriptionManagementComponent implements OnInit {
 
   compare(a: Number | String, b: Number | String, isAsc: boolean, columnName: any){
       if(columnName == "packageCode" || columnName == "name"){
-        if(!(a instanceof Number)) a = a.toString().toUpperCase();
-        if(!(b instanceof Number)) b = b.toString().toUpperCase();
+        if(a && !(a instanceof Number)) a = a.toString().toUpperCase();
+        if(b && !(b instanceof Number)) b = b.toString().toUpperCase();
       }
       return (a<b ? -1 : 1) * (isAsc ? 1 : -1);
 
