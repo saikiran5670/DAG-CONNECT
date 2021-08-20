@@ -42,6 +42,7 @@ namespace net.atos.daf.ct2.kafkacdc.repository
             {
                 var parameter = new DynamicParameters();
                 string query = "";
+                // Adding if to verify landmark types and group.
                 if (landmarktype == "")
                 {
                     query = @"select distinct alert_id

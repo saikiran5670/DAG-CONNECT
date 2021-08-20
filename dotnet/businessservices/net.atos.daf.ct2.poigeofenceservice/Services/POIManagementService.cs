@@ -4,8 +4,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
 using log4net;
+using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.poigeofenceservice.common;
 using net.atos.daf.ct2.poigeofenceservice.entity;
 using net.atos.daf.ct2.poiservice;
 
@@ -16,11 +18,15 @@ namespace net.atos.daf.ct2.poigeofenceservice
         private readonly ILog _logger;
         private readonly IPoiManager _poiManager;
         private readonly Mapper _mapper;
-        public POIManagementService(IPoiManager poiManager)
+        private readonly LandmarkAlertCdcHelper _landmarkAlertCdcHelper;
+        private readonly ILandmarkAlertCdcManager _landmarkMgmAlertCdcManager;
+        public POIManagementService(IPoiManager poiManager, ILandmarkAlertCdcManager landmarkAlertCdcManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiManager = poiManager;
             _mapper = new Mapper();
+            _landmarkMgmAlertCdcManager = landmarkAlertCdcManager;
+            _landmarkAlertCdcHelper = new LandmarkAlertCdcHelper(_landmarkMgmAlertCdcManager);
         }
 
         public override async Task<POIResponseList> GetAllGobalPOI(net.atos.daf.ct2.poiservice.POIEntityRequest request, ServerCallContext context)
@@ -154,6 +160,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 poi = await _poiManager.UpdatePOI(poi);
                 if (poi.Id > 0)
                 {
+                    await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "");
                     response.POIData = _mapper.ToPOIResponseData(poi);
                     response.Message = "POI updated for id:- " + poi.Id;
                     response.Code = Responsecode.Success;
@@ -193,6 +200,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 bool result = await _poiManager.DeletePOI(request.Id);
                 if (result)
                 {
+                    await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "");
                     response.Message = "Deleted";
                     response.Code = Responsecode.Success;
                 }
@@ -224,6 +232,12 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 bool result = await _poiManager.DeletePOI(poiIds);
                 if (result)
                 {
+                    //check alerts for each deleted POI
+                    foreach (var item in request.Id)
+                    {
+                        await _landmarkAlertCdcHelper.TriggerAlertCdc(item, "");
+                    }
+
                     response.Message = "Deleted";
                     response.Code = Responsecode.Success;
                 }
