@@ -36,6 +36,8 @@ import * as fs from 'file-saver';
 })
 
 export class FleetUtilisationComponent implements OnInit, OnDestroy {
+
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   tripReportId: any = 1;
   selectionTab: any;
   reportPrefData: any = [];
@@ -444,6 +446,15 @@ calendarOptions: CalendarOptions = {
             this.proceedStep(prefData, pref);
           });
         }
+
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
+
       });
     });
   }
