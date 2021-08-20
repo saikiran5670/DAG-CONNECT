@@ -217,12 +217,17 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
         if(element.subReportUserPreferences && element.subReportUserPreferences.length > 0){
           element.subReportUserPreferences.forEach(item => {
             let _data: any = item;
+            let txt: any;
             if(item.key.includes('rp_fu_report_summary_')){
-              if(this.translationData[item.key]){
-               _data.translatedName = this.translationData[item.key];  
-             }else{
-               _data.translatedName = this.getName(item.name, 15);   
-             }
+              if(item.key == 'rp_fu_report_summary_totaldistance' || item.key == 'rp_fu_report_summary_averagedistanceperday'){
+                txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmi || 'mi');
+                _data.translatedName = this.getTranslatedValues(item, 15, txt);
+              }else if(item.key == 'rp_fu_report_summary_idleduration'){
+                txt = this.translationData.lblhhmm || 'hh:mm';
+                _data.translatedName = this.getTranslatedValues(item, 15, txt);
+              }else{
+                _data.translatedName = this.getTranslatedValues(item, 15);
+              }
              this.summaryColumnData.push(_data);
            }else if(item.key.includes('rp_fu_report_chart_')){
              if(this.translationData[item.key]){
@@ -262,11 +267,21 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
                this.calenderColumnData.push(_data);
              }
            }else if(item.key.includes('rp_fu_report_details_')){
-             if(this.translationData[item.key]){
-               _data.translatedName = this.translationData[item.key];  
-             }else{
-               _data.translatedName = this.getName(item.name, 15);   
-             }
+            if(item.key == 'rp_fu_report_details_averagedistanceperday' || item.key == 'rp_fu_report_details_distance' || item.key == 'rp_fu_report_details_odometer'){
+              txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkm || 'km') : (this.translationData.lblmi || 'mi');
+              _data.translatedName = this.getTranslatedValues(item, 15, txt);
+            }else if(item.key == 'rp_fu_report_details_idleduration' || item.key == 'rp_fu_report_details_stoptime' || item.key == 'rp_fu_report_details_drivingtime' || item.key == 'rp_fu_report_details_triptime'){
+              txt = this.translationData.lblhhmm || 'hh:mm';
+              _data.translatedName = this.getTranslatedValues(item, 15, txt);
+            }else if(item.key == 'rp_fu_report_details_averageweightpertrip'){
+              txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblton || 'ton') : (this.translationData.lblpound || 'pound');
+              _data.translatedName = this.getTranslatedValues(item, 15, txt);
+            }else if(item.key == 'rp_fu_report_details_averagespeed'){
+              txt = (this.prefUnitFormat == 'dunit_Metric') ? (this.translationData.lblkmh || 'km/h') : (this.translationData.lblmph || 'mph');
+              _data.translatedName = this.getTranslatedValues(item, 15, txt);
+            }else{
+              _data.translatedName = this.getTranslatedValues(item, 15);
+            }
              this.detailColumnData.push(_data);
            }
           });
@@ -274,6 +289,16 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       });
       this.setColumnCheckbox();
     }
+  }
+
+  getTranslatedValues(item: any, number: any, text?: any){
+    let _retVal: any;
+    if(this.translationData[item.key]){
+      _retVal = (text && text != '') ? `${this.translationData[item.key]} (${text})` : `${this.translationData[item.key]}`;  
+    }else{
+      _retVal = (text && text != '') ? `${this.getName(item.name, number)} (${text})` : `${this.getName(item.name, number)}`;   
+    }
+    return _retVal;
   }
 
   getName(name: any, index: any) {
