@@ -365,13 +365,9 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                             bool vehicleRef = await _groupManager.UpdateRef(entity);
                         }
                         ///Trigger Vehicle Group CDC
-                        else if (entity.Id > 0 && entity.GroupRef.Count > 0)
+                        if (entity.Id > 0 && entity.GroupRef.Count > 0)
                         {
-                            foreach (var grpId in request.GroupRef)
-                            {
-                                await _alertCdcHelper.TriggerVehicleGroupCdc(grpId.GroupId, "N", request.OrganizationId);
-                            }
-
+                            await _alertCdcHelper.TriggerVehicleGroupCdc(request.Id, "N", request.OrganizationId);
                         }
                         else
                         {

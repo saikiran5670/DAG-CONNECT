@@ -4,6 +4,8 @@ import { ReportService } from '../../../services/report.service';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ReportMapService } from '../../../report/report-map.service';
+import { CustomValidators } from '../../../shared/custom.validators';
 
 @Component({
   selector: 'app-fleet-utilisation-preference',
@@ -15,6 +17,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   @Input() translationData: any;
   @Input() reportListData: any;
   @Input() editFlag: any;
+  @Input() generalPreferences: any;
   @Output() setFleetUtilFlag = new EventEmitter<any>();
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   reportId: any;
@@ -65,11 +68,15 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     name: 'Upper'
   }];
   
-  constructor(private reportService: ReportService, private _formBuilder: FormBuilder, private router: Router) { }
+  accountPreference: any;
+  prefUnitFormat: any = 'dunit_Metric';
+  
+  constructor(private reportService: ReportService, private _formBuilder: FormBuilder, private router: Router, private reportMapService: ReportMapService) { }
 
   ngOnInit() { 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
+    this.accountPreference = JSON.parse(localStorage.getItem('accountInfo'));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     let repoId: any = this.reportListData.filter(i => i.name == 'Fleet Utilisation Report');
@@ -85,6 +92,11 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       timeThreshold: [],
       calenderView: [],
       calenderViewMode: []
+    },{
+      validator: [
+        CustomValidators.numberFieldValidation('mileageTarget', 1000),
+        CustomValidators.numberMinFieldValidation('mileageTarget', 0)
+      ]
     });
 
     if(repoId.length > 0){
@@ -93,7 +105,16 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       this.reportId = 5; //- hard coded for fleet utilisation report
     }
     this.translationUpdate();
+    this.getUnitFormat(this.accountPreference);
     this.loadFleetUtilisationPreferences();
+  }
+
+  getUnitFormat(accPref: any){
+    if(accPref && accPref.accountPreference){
+      if(this.generalPreferences && this.generalPreferences.unit && this.generalPreferences.unit.length > 0){
+        this.prefUnitFormat = this.generalPreferences.unit.filter(i => i.id == accPref.accountPreference.unitId)[0].name;
+      }
+    }
   }
 
   translationUpdate(){
@@ -347,7 +368,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.chartsColumnData.forEach((element, index) => {
       let cSearch = this.selectionForChartsColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
       if(index == 2){ // mileage base utilisation
-        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fleetUtilForm.controls.mileageChart.value, thresholdType: this.fleetUtilForm.controls.mileageThreshold.value, thresholdValue: this.convertKmToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value)) });
+        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fleetUtilForm.controls.mileageChart.value, thresholdType: this.fleetUtilForm.controls.mileageThreshold.value, thresholdValue: (this.prefUnitFormat == 'dunit_Metric') ? this.reportMapService.kmToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value)) : this.reportMapService.mileToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value)) });
       }else if(index == 3){ // time base utilisation
         _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fleetUtilForm.controls.timeChart.value, thresholdType: this.fleetUtilForm.controls.timeThreshold.value, thresholdValue: this.convertHHMMToMs(this.fleetUtilForm.controls.timeTarget.value) });
       }else{ // distance & active vehicle
@@ -414,10 +435,9 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.reportService.updateReportUserPreference(objData).subscribe((prefData: any) => {
       this.loadFleetUtilisationPreferences();
       this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-      this.reloadCurrentComponent();
-      // if((this.router.url).includes("fleetfuelreport")){
-      //   this.reloadCurrentComponent();
-      // }
+      if((this.router.url).includes("fleetutilisation")){
+        this.reloadCurrentComponent();
+      }
     });
   }
 
@@ -469,7 +489,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
 
   setDefaultFormValues(){
     this.timeDisplay = this.chartsColumnData[3].thresholdValue != '' ? this.convertMilisecondsToHHMM(parseInt(this.chartsColumnData[3].thresholdValue)) : '00:00';
-    let mileageInKm: any = this.chartsColumnData[2].thresholdValue != '' ? this.convertMeterToKm(parseInt(this.chartsColumnData[2].thresholdValue)) : 0;
+    let mileageInKm: any = this.chartsColumnData[2].thresholdValue != '' ? this.reportMapService.convertDistanceUnits(parseInt(this.chartsColumnData[2].thresholdValue), this.prefUnitFormat) : 0;
     this.slideState = this.slideStateData ? ((this.slideStateData.state == 'A') ? true : false) : false; //-- TODO: API changes pending 
     let calenderSelectionId: any;
     let _selectionCalenderView = this.calenderColumnData.filter(i => i.state == 'A');
