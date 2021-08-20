@@ -1322,7 +1322,7 @@ export class ReportMapService {
       element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
-      element.convertedTripTime = this.getHhMmTime(element.tripTime);
+      element.convertedTripTime = Util.getHhMmTimeFromMS(element.tripTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
     
