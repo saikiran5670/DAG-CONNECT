@@ -172,7 +172,7 @@
                         <span>{{ translationData.lblTotalDistance || 'Total distance' }} </span>
                     </div>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('distance').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</span>
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('distance').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'miles') : (translationData.lblmile || 'miles')  }}</span>
                     </div>
                 </div>
                 <div *ngIf='noOfTripsStatus' style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
@@ -188,7 +188,7 @@
                         <span>{{ translationData.lblAverageDistancePerDay || 'Average distance per day' }} </span>
                     </div>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('AverageDistancePerDay').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</span>
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('AverageDistancePerDay').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'miles') : (translationData.lblmile || 'miles')  }}</span>
                     </div>
                 </div>
                 <div *ngIf='idleDurationStatus' style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
@@ -384,6 +384,7 @@
               </mat-menu>
             </div>
           </div>
+          <div id="fleetDetailBlock">
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items"
           matSort #exporter="matTableExporter">
           <ng-container matColumnDef="vehiclename">
@@ -408,7 +409,7 @@
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="distance">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }})</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'miles') : (translationData.lblmile || 'miles')  }})</span>    
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedDistance != '' ? row.convertedDistance : '-' }}</mat-cell>
           </ng-container>
@@ -438,7 +439,7 @@
             <mat-cell *matCellDef="let row">{{ row.convertedStopTime != '' ? row.convertedStopTime : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="averageSpeed">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed || 'Average Speed' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h')  }})</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed || 'Average Speed' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'miles/h') : (translationData.lblmileh || 'miles/h')  }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedAverageSpeed != '' ? row.convertedAverageSpeed : '-' }}</mat-cell>
           </ng-container>
@@ -448,7 +449,7 @@
             <mat-cell *matCellDef="let row">{{ row.convertedAverageWeight != '' ? row.convertedAverageWeight : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="averageDistancePerDay">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Distance per Day' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }})</span>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Distance per Day' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km/day') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'miles/day') : (translationData.lblmile || 'miles/day')  }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedAverageDistance != '' ? row.convertedAverageDistance : '-' }}</mat-cell>
           </ng-container>
@@ -467,6 +468,7 @@
           </mat-table>
           <mat-paginator [pageSizeOptions]="[5, 10, 25, 100, 500]" (page)="pageSizeUpdated($event)"></mat-paginator>
           </div>
+        </div>
           <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
         </mat-expansion-panel>
       </mat-card>

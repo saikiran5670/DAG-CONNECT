@@ -274,18 +274,6 @@ doughnutDistanceColors: Color[] = [
       if(vehicleData){
           this.liveVehicleData = vehicleData;
           this.totalVehicles =  this.finalVinList.length;
-            // this.liveVehicleData ={
-            //     "distance": 0,
-            //     "drivingTime": 0,
-            //     "vehicleCount": 2,
-            //     "driverCount": 0,
-            //     "criticleAlertCount": 0,
-            //     "activeVehicles": 2,
-            //     "timeBaseUtilization": 3600000,
-            //     "distanceBaseUtilization": 20,
-            //     "code": 200,
-            //     "message": "No data found for Today live vehicle details."
-            // }
           this.setValues();
           this.updateCharts();
 

@@ -126,7 +126,7 @@
 <!-- Fuel Consumed -->
 <div  [hidden]="!checkForPreference('fuelconsumed')" class="chartTile col-md-2"  [ngClass]="{'warningClass':(fuelConsumedThreshold==0)}">
   <div class="textDiv">
-    <div>{{ translationData.lblFuelConsume || 'Fuel Consumed' }}</div>
+    <div>{{ translationData.lblFuelConsumed || 'Fuel Consumed' }}</div>
     <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;line-height: 1.5;'>{{currentFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }}) <br>
       out of {{cutOffFuelConsumed}} ({{ (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallons || 'g') : (translationData.lblLtrs || 'L') }})</div>
     

@@ -17,6 +17,8 @@ namespace net.atos.daf.ct2.kafkacdc.test
         private readonly IDataMartDataAccess _datamartDataacess;
         private readonly IAlertMgmAlertCdcManager _vehicleAlertRefManager;
         private readonly IAlertMgmAlertCdcRepository _vehicleAlertRepository;
+        private readonly ILandmarkAlertCdcManager _landmarkrefmanager;
+        private readonly ILandmarkAlertCdcRepository _landmarkrefrepo;
         private readonly IConfiguration _configuration;
         private readonly KafkaConfiguration _kafkaConfig;
         private readonly VehicleCdcManager _vehicleCdcManager;
@@ -37,6 +39,8 @@ namespace net.atos.daf.ct2.kafkacdc.test
             _vehicleCdcManager = new VehicleCdcManager(vehicleCdcrepository);
             var vehicleManagementAlertCDCRepository = new VehicleManagementAlertCDCRepository(_dataAccess, _datamartDataacess);
             _vehicleMgmAlertCdcManager = new VehicleManagementAlertCDCManager(_vehicleAlertRepository, vehicleManagementAlertCDCRepository, _configuration);
+            _landmarkrefrepo = new LandmarkAlertCdcRepository(_dataAccess, _datamartDataacess);
+            _landmarkrefmanager = new LandmarkAlertCdcManager(_landmarkrefrepo, _vehicleAlertRepository, _configuration);
         }
 
         [TestMethod]
@@ -55,6 +59,13 @@ namespace net.atos.daf.ct2.kafkacdc.test
         public void Delete()
         {
             var result = _vehicleAlertRefManager.GetVehicleAlertRefFromAlertConfiguration(12, "D").Result;
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void LandmarkUpdate()
+        {
+            var result = _landmarkrefmanager.LandmarkAlertRefFromAlertConfiguration(12, "D", "P").Result;
             Assert.IsTrue(result);
         }
 
