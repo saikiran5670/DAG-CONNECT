@@ -1314,13 +1314,27 @@ export class ReportMapService {
   }
 
   meterToKm(_data: any){
-    return (_data/1000).toFixed(2);
+    return parseInt((_data/1000).toFixed(2));
+  }
+
+  kmToMeter(_data: any){
+    return parseInt((_data*1000).toFixed(2));
   }
 
   meterToMile(_data: any){
     let km: any = this.meterToKm(_data);
     let mile = km/1.6;
-    return mile.toFixed(2);
+    return parseInt(mile.toFixed(2));
+  }
+
+  mileToKm(_data: any){
+    let km: any = _data * 1.6;
+    return parseInt(km.toFixed(2));
+  }
+
+  mileToMeter(_data: any){
+    let km: any = this.mileToKm(_data);
+    return this.kmToMeter(km);
   }
 
   // Fleet utilisation data conversions
