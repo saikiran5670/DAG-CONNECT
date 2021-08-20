@@ -247,4 +247,43 @@ export class CustomValidators {
       }
     };
   }
+
+  static timeMaxFieldValidation(name,maxValue){
+    // let time = this.backToSeconds(maxValue);
+    return (formGroup: FormGroup) => {
+      const NAME = formGroup.controls[name];
+      var regex = /[0-9]/;
+
+      if (NAME.value) {
+       if(this.backToSeconds(NAME.value) > maxValue){
+          NAME.setErrors({ timeCannotExceedMaxValue: true });
+        }
+        else if(this.backToSeconds(NAME.value) < 0){
+          NAME.setErrors({ noNegativeTimeValueAllowed: true });
+
+        }
+      }
+    };
+  }
+
+  static timeMinFieldValidation(name,minValue){
+    // let time = this.backToSeconds(minValue);
+    return (formGroup: FormGroup) => {
+      const NAME = formGroup.controls[name];
+      var regex = /[0-9]/;
+
+      if (NAME.value) {
+       if(this.backToSeconds(NAME.value) < minValue){
+          NAME.setErrors({ timeCannotExceedMinValue: true });
+        }
+      }
+    };
+  }
+
+  static backToSeconds(time: any){
+    const hms = time;
+    const [hours, minutes, seconds] = hms.split(':');
+    const totalSeconds = (+hours) * 60 * 60 + (+minutes) * 60 + (+seconds);
+    return totalSeconds;
+  }
 }

@@ -228,6 +228,19 @@ namespace net.atos.daf.ct2.vehicle
                 throw;
             }
         }
+
+        public async Task<IEnumerable<VehicleManagementDto>> GetAllRelationshipVehicles(int orgId)
+        {
+            try
+            {
+                return await _vehicleRepository.GetAllRelationshipVehicles(orgId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid)
         {
             try

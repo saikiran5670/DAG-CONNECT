@@ -43,6 +43,7 @@ import { BreakingScoreComponent } from './eco-score-profile-management/breaking-
 import { MaxTargetScoreComponent } from './eco-score-profile-management/max-target-score/max-target-score.component';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { TimeRangeSliderComponent } from './eco-score-profile-management/time-range-slider/time-range-slider.component';
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
     ViewReportSchedulerComponent,
     BreakingScoreComponent,
     MaxTargetScoreComponent,
+    TimeRangeSliderComponent
   ],
   imports: [
     CommonModule,

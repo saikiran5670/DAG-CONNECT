@@ -191,7 +191,6 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   loadProfileKpis(id: any){
     let details = []
     this.reportService.getEcoScoreProfileKPIs(id).subscribe((data: any) => {
-      console.log(data);
       details = data["profile"];
       this.SliderData(details);  
     })
@@ -289,8 +288,8 @@ export class EcoScoreProfileManagementComponent implements OnInit {
   }
 
   getUserCreatedMessage(type: any, name: any) {
+    this.toBack();
     if (type == 'create') {
-      this.toBack();
       if (this.translationData.lblNewProfileCreatedSuccessfully)
         return this.translationData.lblNewProfileCreatedSuccessfully.replace('$', name);
       else

@@ -60,7 +60,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@report_schedule_id", reprotSchedulerId);
                 parameter.Add("@organization_id", organizationId);
-                var query = @"with cte_alert_vehicle_groupanddynamic
+                var query = @"with cte_scheduler_vehicle_groupanddynamic
                             AS (
                             select distinct   
                             grp.group_type
@@ -80,7 +80,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                             left join master.vehicle veh
                             on vgrpref.ref_id=veh.id
                             )
-                            --select * from cte_alert_vehicle_groupanddynamic;
+                            --select * from cte_scheduler_vehicle_groupanddynamic;
 
                             ,cte_account_visibility_for_vehicle_group
                             AS (
@@ -91,7 +91,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                             ,VehicleName
                             ,VIN
                             ,RegistrationNo	
-                            from cte_alert_vehicle_groupanddynamic
+                            from cte_scheduler_vehicle_groupanddynamic
                             where group_type='G'
                             )
                             --select * from cte_account_visibility_for_vehicle_group
@@ -104,7 +104,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                             ,veh.name as VehicleName
                             ,veh.vin as VIN
                             ,veh.license_plate_number as RegistrationNo
-                            from cte_alert_vehicle_groupanddynamic cte
+                            from cte_scheduler_vehicle_groupanddynamic cte
                             inner join master.group grp 
                             on cte.vehiclegroupid=grp.id --and grp.object_type='V' --and grp.group_type='S'
                             inner join master.vehicle veh
@@ -119,7 +119,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 								,function_enum
 	                            ,VehicleGroupId
 	                            ,VehicleGroupName
-	                            From cte_alert_vehicle_groupanddynamic 
+	                            From cte_scheduler_vehicle_groupanddynamic 
 	                            group by group_type
 								,Organization_Id
 								,function_enum
