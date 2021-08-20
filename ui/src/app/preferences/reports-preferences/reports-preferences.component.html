@@ -183,7 +183,7 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div>
-        <app-fuel-deviation-preferences *ngIf='showFuelDeviationPerferences'
+        <app-fuel-deviation-preferences *ngIf='showFuelDeviationPerferences' [generalPreferences]="generalPreferences"
           [editFlag]='editFuelDeviationPerferencesFlag' [reportListData]='reportListData'
           [translationData]='translationData' (setFuelDeviationReportFlag)="updateFuelDeviationReportFlag($event)">
         </app-fuel-deviation-preferences>
