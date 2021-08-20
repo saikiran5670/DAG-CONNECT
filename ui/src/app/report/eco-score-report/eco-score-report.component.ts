@@ -25,6 +25,8 @@ import * as fs from 'file-saver';
   styleUrls: ['./eco-score-report.component.less']
 })
 export class EcoScoreReportComponent implements OnInit, OnDestroy {
+
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   generalColumnData: any = [];
   generalGraphColumnData: any = [];
   driverPerformanceColumnData: any = [];
@@ -293,6 +295,15 @@ export class EcoScoreReportComponent implements OnInit, OnDestroy {
             this.proceedStep(prefData, pref);
           });
         }
+
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
+
        });
     });
   }
@@ -746,8 +757,8 @@ let finalGroupDataList = [];
       }
       }
       this.vehicleListData = finalVINDataList;
-      if(this.vehicleListData.length>0 && this.vehicleListData[0].vehicleId != 0)
-      this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
+      // if(this.vehicleListData.length>0 && this.vehicleListData[0].vehicleId != 0)
+      // this.vehicleListData.unshift({ vehicleId: 0, vehicleName: this.translationData.lblAll || 'All' });
     }
     }
     if(this.onLoadData.driverList.length > 0){

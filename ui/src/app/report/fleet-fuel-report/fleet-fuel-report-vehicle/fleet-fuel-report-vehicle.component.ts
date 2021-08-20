@@ -56,6 +56,8 @@ export class FleetFuelReportVehicleComponent implements OnInit {
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   searchExpandPanel: boolean = true;
   @ViewChild('fleetfuelvehicle') fleetfuelvehicle: VehicletripComponent;
+
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   initData: any = [];
   FuelData: any;
   graphData: any;
@@ -512,6 +514,14 @@ export class FleetFuelReportVehicleComponent implements OnInit {
             this.proceedStep(prefData, pref);
           });
         }
+
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
       });
     });
   }
