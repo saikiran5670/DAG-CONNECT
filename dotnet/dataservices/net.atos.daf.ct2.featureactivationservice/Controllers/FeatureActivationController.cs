@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using net.atos.daf.ct2.featureactivationservice.Common;
 using net.atos.daf.ct2.featureactivationservice.CustomAttributes;
 using net.atos.daf.ct2.featureactivationservice.Entity;
+using net.atos.daf.ct2.kafkacdc;
 using net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.entity;
 using net.atos.daf.ct2.utilities;
@@ -16,16 +18,20 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
 {
     [ApiController]
     [Route("subscription")]
-    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
+    //[Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class FeatureActivationController : ControllerBase
     {
         private readonly ILogger<FeatureActivationController> _logger;
         private readonly ISubscriptionManager _subscriptionManager;
+        private readonly FeatureActivationCdcHelper _featureActivationCdcHelper;
+        private readonly IFeatureActivationCdcManager _featureActivationCdcManager;
 
-        public FeatureActivationController(ILogger<FeatureActivationController> logger, ISubscriptionManager subscriptionManager)
+        public FeatureActivationController(ILogger<FeatureActivationController> logger, ISubscriptionManager subscriptionManager, IFeatureActivationCdcManager featureActivationCdcManager)
         {
             this._logger = logger;
             this._subscriptionManager = subscriptionManager;
+            _featureActivationCdcManager = featureActivationCdcManager;
+            _featureActivationCdcHelper = new FeatureActivationCdcHelper(_featureActivationCdcManager);
         }
 
         [HttpPost]
@@ -85,6 +91,12 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     }
                     else if (order.Item1 == HttpStatusCode.NotFound)
                         return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
+                    else if (order.Item2.Response.OrderId != "0")
+                    {
+                        //Triggering subscription cdc 
+                        int subscriptionId = Convert.ToInt32(order.Item2.Response.OrderId);
+                        await _featureActivationCdcHelper.TriggerSubscriptionCdc(subscriptionId, "I");
+                    }
 
                     _logger.LogInformation($"Subscription data has been Inserted, order ID - {order.Item2.Response.OrderId}");
                     return Ok(order.Item2.Response);
@@ -140,6 +152,12 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     }
                     else if (order.Item1 == HttpStatusCode.NotFound)
                         return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
+                    else if (objUnsubs.OrderID != "0")
+                    {
+                        //Triggering subscription cdc 
+                        int subscriptionId = Convert.ToInt32(objUnsubs.OrderID);
+                        await _featureActivationCdcHelper.TriggerSubscriptionCdc(subscriptionId, "U");
+                    }
 
                     _logger.LogInformation($"UnSubscription data has been Inserted, order ID - {objUnsubs.OrderID}");
                     return Ok(order.Item2.Response);
