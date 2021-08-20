@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { TranslationService } from '../../services/translation.service';
 import { Router } from '@angular/router';
+import { VehicleService } from 'src/app/services/vehicle.service';
 
 
 @Component({
@@ -10,14 +11,18 @@ import { Router } from '@angular/router';
 })
 
 export class VehicleManagementComponent implements OnInit {
-    public selectedIndex: number = 0; 
+  public selectedIndex: number = 0; 
   translationData: any =[];
   localStLanguage: any;
   accountOrganizationId: any = 0;
   accountOrganizationSetting: any ;
   isShow: boolean = false;
+  relationshipVehiclesData = [];
+  showLoadingIndicator: boolean = false;
 
-  constructor(private translationService: TranslationService, private route: Router,) {}
+  constructor(private vehicleService: VehicleService, private translationService: TranslationService, private route: Router,) {
+    this.loadVehicleData()
+  }
 
      
   ngOnInit() {
@@ -50,6 +55,19 @@ export class VehicleManagementComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }),{});
+  }
+
+  loadVehicleData(){
+    this.showLoadingIndicator = true;
+    this.vehicleService.getVehiclesData(this.accountOrganizationId).subscribe((vehData: any) => {
+      // this.updateDataSource(vehData);
+      this.relationshipVehiclesData = vehData;
+      this.showLoadingIndicator = false;
+    }, (error) => {
+        // this.updateDataSource([]);
+        this.showLoadingIndicator = false;
+      }
+    );
   }
   
   checkVehicleConnectionSetting(){

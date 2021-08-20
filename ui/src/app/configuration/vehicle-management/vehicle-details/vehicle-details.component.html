@@ -96,7 +96,7 @@
       <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
     </mat-card>
     <app-edit-view-vehicle *ngIf='updateViewStatus' [actionType]='actionType' [translationData]="translationData"
-    [selectedRowData]="selectedRowData" (backToPage)='onVehicleUpdateView($event)'></app-edit-view-vehicle>
+    [selectedRowData]="selectedRowData" (backToPage)='onVehicleUpdateView($event)' (updateRelationshipVehiclesData)="getRelationshipVehiclesData()"></app-edit-view-vehicle>
     
   
   </div> 

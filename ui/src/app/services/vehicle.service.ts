@@ -88,6 +88,17 @@ export class VehicleService {
       .pipe(catchError(this.handleError));
   }
 
+  getVehicleAssociatedGroups(vehicleId: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
+    };
+    return this.httpClient
+      .get<any[]>(`${this.vehicleServiceUrl}/GetVehicleAssociatedGroups?vehicleId=${vehicleId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
   createVehicleGroup(data: any): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {

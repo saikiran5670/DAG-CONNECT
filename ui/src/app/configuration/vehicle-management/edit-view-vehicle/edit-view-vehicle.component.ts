@@ -12,6 +12,7 @@ import { CustomValidators } from '../../../shared/custom.validators';
 export class EditViewVehicleComponent implements OnInit {
   accountOrganizationId: any = 0;
   @Output() backToPage = new EventEmitter<any>();
+  @Output() updateRelationshipVehiclesData = new EventEmitter();
   @Input() translationData: any;
   @Input() selectedRowData: any;
   @Input() actionType: any;
@@ -100,7 +101,9 @@ export class EditViewVehicleComponent implements OnInit {
       organization_Id: this.accountOrganizationId
     }
     this.vehicleService.updateVehicle(updateVehObj).subscribe((updatedVehData: any) => {
-      this.getVehicleGridData();
+      // this.getVehicleGridData();
+      this.updateRelationshipVehiclesData.emit();
+
     }, (error) => {
       //console.error(error);
       if(error.status == 409) {
