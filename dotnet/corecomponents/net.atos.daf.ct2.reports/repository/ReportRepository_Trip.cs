@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                        ,TS.vin AS VIN
 	                        ,start_time_stamp AS StartTimeStamp
 	                        ,end_time_stamp AS EndTimeStamp
-	                        ,veh_message_distance AS Distance
+	                        ,etl_gps_distance AS Distance
 	                        ,idle_duration AS IdleDuration
 	                        ,average_speed AS AverageSpeed
 	                        ,average_weight AS AverageWeight
@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.reports.repository
 	                        ,start_position_longitude AS StartPositionLongitude
 	                        ,end_position_lattitude AS EndPositionLattitude
 	                        ,end_position_longitude AS EndPositionLongitude
-	                        ,fuel_consumption AS FuelConsumed
+	                        ,etl_gps_fuel_consumed AS FuelConsumed
 	                        ,veh_message_driving_time AS DrivingTime
 	                        ,no_of_alerts AS Alerts
 	                        ,no_of_events AS Events

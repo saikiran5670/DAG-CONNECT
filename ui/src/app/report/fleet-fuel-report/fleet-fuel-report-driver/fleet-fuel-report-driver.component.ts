@@ -51,6 +51,8 @@ export class FleetFuelReportDriverComponent implements OnInit {
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   driverSelected : boolean =false;
   searchExpandPanel: boolean = true;
   initData: any = [];
@@ -404,6 +406,14 @@ export class FleetFuelReportDriverComponent implements OnInit {
             this.proceedStep(prefData, pref);
           });
         }
+
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
       });
     });
 

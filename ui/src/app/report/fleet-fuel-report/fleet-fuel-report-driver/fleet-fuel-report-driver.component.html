@@ -137,7 +137,9 @@
   
                   <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
   
-                    {{ rer.vehicleName }}
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleName'"> {{rer.vehicleName}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleIdentificationNumber'"> {{rer.vin}} </span>
+                    <span *ngIf="vehicleDisplayPreference == 'dvehicledisplay_VehicleRegistrationNumber'"> {{rer.registrationNo ? rer.registrationNo : rer.vehicleName}} </span>
   
                   </mat-option>
   
