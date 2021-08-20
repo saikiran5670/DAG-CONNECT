@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The organization id is required.");
                 }
                 //Assign context orgId
-                request.Organization_Id = GetContextOrgId();                
+                request.Organization_Id = GetContextOrgId();
                 var vehicleRequest = new VehicleBusinessService.VehicleRequest();
                 vehicleRequest = _mapper.ToVehicle(request);
                 vehicleRequest.UserOrgId = GetUserSelectedOrgId();
@@ -284,7 +284,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The vehicle group id is required.");
                 }
-
+                //Add the organizationId for hte Vehicle group CDC ogranization filter
+                request.OrganizationId = GetContextOrgId();
                 request.GroupId = Convert.ToInt32(GroupId);
                 VehicleBusinessService.VehicleGroupDeleteResponce response = await _vehicleClient.DeleteGroupAsync(request);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
@@ -903,35 +904,33 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
 
         [HttpGet]
         [Route("GetRelationshipVehicles")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "It has to be fixed while clean up of Organization Id related code")]
-        public async Task<IActionResult> GetRelationshipVehicles([FromQuery] int OrganizationId, int VehicleId)
+        public async Task<IActionResult> GetRelationshipVehicles([FromQuery] int organizationId)
         {
             try
             {
                 _logger.Info("GetRelationshipVehicles method in vehicle API called.");
 
                 //Assign context orgId
-                OrganizationId = GetContextOrgId();
+                organizationId = GetContextOrgId();
 
                 VehicleBusinessService.OrgvehicleIdRequest orgvehicleIdRequest = new VehicleBusinessService.OrgvehicleIdRequest();
-                orgvehicleIdRequest.OrganizationId = OrganizationId;
-                orgvehicleIdRequest.VehicleId = VehicleId;
+                orgvehicleIdRequest.OrganizationId = organizationId;
 
-                VehicleBusinessService.VehicleListResponce vehicleListResponse = await _vehicleClient.GetRelationshipVehiclesAsync(orgvehicleIdRequest);
-                List<VehicleResponse> response = new List<VehicleResponse>();
-                response = _mapper.ToVehicles(vehicleListResponse);
+                VehicleBusinessService.VehiclesResponse vehiclesResponse = await _vehicleClient.GetRelationshipVehiclesAsync(orgvehicleIdRequest);
+                List<VehicleManagementResponse> vehicles = _mapper.ToVehicles(vehiclesResponse);
 
-                if (vehicleListResponse != null && vehicleListResponse.Code == VehicleBusinessService.Responcecode.Success)
+                if (vehiclesResponse != null && vehiclesResponse.Code == VehicleBusinessService.Responcecode.Success)
                 {
-                    if (vehicleListResponse.Vehicles != null && vehicleListResponse.Vehicles.Count > 0)
+                    if (vehiclesResponse.Vehicles != null && vehiclesResponse.Vehicles.Count > 0)
                     {
-                        return Ok(vehicleListResponse.Vehicles);
+                        return Ok(vehicles);
                     }
                     else
                     {
@@ -940,11 +939,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, vehicleListResponse.Message);
+                    return StatusCode(500, vehiclesResponse.Message);
                 }
 
             }
 
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetVehicleAssociatedGroups")]
+        public async Task<IActionResult> GetVehicleAssociatedGroups([FromQuery] int vehicleId)
+        {
+            try
+            {
+                _logger.Info("GetVehicleAssociatedGroups method in vehicle API called.");
+
+                VehicleBusinessService.GetVehicleAssociatedGroupResponse response
+                    = await _vehicleClient.GetVehicleAssociatedGroupsAsync(new VehicleBusinessService.GetVehicleAssociatedGroupRequest { VehicleId = vehicleId });
+
+                if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
+                {
+                    return Ok(response.Groups);
+                }
+                else
+                {
+                    return StatusCode(500, response.Message);
+                }
+            }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);

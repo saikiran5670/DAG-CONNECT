@@ -32,11 +32,22 @@ service VehicleService {
   rpc GetDynamicAllVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
   rpc GetDynamicOwnedVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
   rpc GetDynamicVisibleVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
-  rpc GetRelationshipVehicles (OrgvehicleIdRequest) returns (VehicleListResponce);
+  rpc GetRelationshipVehicles (OrgvehicleIdRequest) returns (VehiclesResponse);
   rpc GetVehicleGroupbyAccountId (VehicleGroupListRequest) returns (VehicleGroupResponse);
 
   rpc UpdateVehicleConnection(VehicleConnectRequest)returns(VehicleConnectResponse);
   rpc GetVehicleAssociatedGroupCount (VehicleCountFilterRequest) returns (VehicleCountFilterResponse);
+  rpc GetVehicleAssociatedGroups (GetVehicleAssociatedGroupRequest) returns (GetVehicleAssociatedGroupResponse);  
+}
+
+message GetVehicleAssociatedGroupRequest{
+    int32 VehicleId = 1;
+}
+
+message GetVehicleAssociatedGroupResponse{
+    string Groups = 1;
+    Responcecode Code=2;
+    string Message = 3;
 }
 
 message VehiclesBySubscriptionDetailsResponse{
@@ -159,10 +170,27 @@ google.protobuf.StringValue RelationShip=22;
 google.protobuf.StringValue AssociatedGroups=23;
 }
 
+message VehicleList {
+    int32 Id=1;
+    string Name = 2;
+    string Vin=3;
+    string LicensePlateNumber=4;
+    string Opt_In=5;
+    string ModelId=6;
+    string Status=7;
+    string RelationShip=8;
+}
+
 message VehicleListResponce {
   Responcecode code=1;
   string message = 2;
   repeated VehicleDetails vehicles = 3;
+}
+
+message VehiclesResponse {
+  Responcecode code=1;
+  string message = 2;
+  repeated VehicleList vehicles = 3;
 }
 
 message VehicleOptInOptOutRequest{
@@ -200,6 +228,7 @@ message VehicleGroupRef{
 
 message VehicleGroupIdRequest{
   int32 Group_Id = 1;
+  int32 OrganizationId=2;
 }
 
 message VehicleGroupResponce{

@@ -1,0 +1,89 @@
+<form [formGroup]="ecoScoreProfileKPIForm">
+    <div class='bgtrans'>
+        <div fxLayout="row" fxLayoutAlign="space-between " class='margin-bottom-sm'>
+            <div fxLayout="column" fxLayoutAlign="left" class="areaWidth half-width">
+                <div class="custom-slider">
+                    <ngx-slider *ngIf="isKPI" [(value)]="value" [(highValue)]="maxvalue" [options]="options"
+                        (valueChange)="sliderEvent(value)" (highValueChange)="sliderEndEvent(maxvalue)"></ngx-slider>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
+                <div fxLayout="column" fxLayoutAlign="right" class="areaWidth min-width-5-per">
+                    <mat-label style='display: flex;'>
+                        <span>Target</span>
+                    </mat-label>
+                    <mat-form-field appearance="outline" class="half-width">
+                        <input type="time" step="1" matInput formControlName="targetValue"
+                            (focusout)="changeTarget(ecoScoreProfileKPIForm.valid ? $event.target.value : timeConversion(value))">
+                    </mat-form-field>
+                    <mat-error *ngIf="ecoScoreProfileKPIForm.get('targetValue').hasError('timeCannotExceedMaxValue')">
+                        Target Value cannot be greater than Max value
+                     </mat-error>
+                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('targetValue').hasError('timeCannotExceedMinValue')">
+                        Target Value cannot be less than lower value
+                     </mat-error>
+                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('targetValue').hasError('noNegativeTimeValueAllowed')">
+                        Target Value cannot be negative
+                     </mat-error>
+                </div>
+                <div fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-5-per">
+                    <mat-label style='display: flex;'>
+                        <span>Max</span>
+                    </mat-label>
+                    <mat-form-field appearance="outline" class="half-width">
+                        <input type="time" step="1" maxlength="50" matInput formControlName="limitValue"
+                            (focusout)="changeMax(ecoScoreProfileKPIForm.valid ? $event.target.value : timeConversion(maxvalue))">
+                    </mat-form-field>
+                    <mat-error *ngIf="ecoScoreProfileKPIForm.get('limitValue').hasError('timeCannotExceedMaxValue')">
+                        Max Value cannot be greater than upper value
+                     </mat-error>
+                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('limitValue').hasError('timeCannotExceedMinValue')">
+                        Max Value cannot be lesser than target value
+                     </mat-error>
+                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('limitValue').hasError('noNegativeTimeValueAllowed')">
+                        Max Value cannot be negative
+                     </mat-error>
+                </div>
+            </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm' fxLayoutGap="10px">
+            <div fxLayout="column" fxLayoutAlign="left" class="areaWidth half-width">
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
+                <div fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-5-per">
+                    <mat-label style='display: flex;'>
+                        <span>Lower Value</span>
+                    </mat-label>
+                    <mat-form-field appearance="outline" class="half-width">
+                        <input type="time" step="1" maxlength="50" matInput formControlName="lowerValue"
+                            (focusout)="ecoScoreProfileKPIForm.valid ? changeLower($event.target.value) : timeConversion(arrayMin)">
+                    </mat-form-field>
+                    <mat-error *ngIf="ecoScoreProfileKPIForm.get('lowerValue').hasError('timeCannotExceedMaxValue')">
+                        Lower Value cannot be greater than target value
+                     </mat-error>
+                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('lowerValue').hasError('timeCannotExceedMinValue')">
+                        Lower Value cannot be negative
+                     </mat-error>
+                </div>
+                <div fxLayout="column" fxLayoutAlign="right" class="areaWidth min-width-5-per">
+                    <mat-label style='display: flex;'>
+                        <span>Upper Value</span>
+                    </mat-label>
+                    <mat-form-field appearance="outline" class="half-width">
+                        <input type="time" step="1" maxlength="50" matInput formControlName="upperValue"
+                            (focusout)="ecoScoreProfileKPIForm.valid ? changeUpper($event.target.value) : timeConversion(arrayMax)">
+                    </mat-form-field>
+                    <mat-error *ngIf="ecoScoreProfileKPIForm.get('upperValue').hasError('timeCannotExceedMaxValue')">
+                        Upper Value cannot be greater than Max upper value
+                     </mat-error>
+                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('upperValue').hasError('timeCannotExceedMinValue')">
+                         Upper Value cannot be lesser than max value
+                      </mat-error>
+                     <mat-error *ngIf="ecoScoreProfileKPIForm.get('upperValue').hasError('noNegativeTimeValueAllowed')">
+                         Upper Value cannot be negative
+                      </mat-error>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

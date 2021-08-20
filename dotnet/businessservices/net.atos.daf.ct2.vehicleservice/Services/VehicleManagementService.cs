@@ -207,10 +207,29 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     Message = "Get failed due to with reason : " + ex.Message
                 });
             }
-
-
         }
 
+        public override async Task<GetVehicleAssociatedGroupResponse> GetVehicleAssociatedGroups(GetVehicleAssociatedGroupRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var groups = await _vehicleManager.GetVehicleAssociatedGroup(request.VehicleId, 0);
+                return await Task.FromResult(new GetVehicleAssociatedGroupResponse
+                {
+                    Groups = groups,
+                    Code = Responcecode.Success
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GetVehicleAssociatedGroupResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Get failed due to with reason : " + ex.Message
+                });
+            }
+        }
 
         public override async Task<VehicleOptInOptOutResponce> UpdateStatus(VehicleOptInOptOutRequest request, ServerCallContext context)
         {
@@ -347,7 +366,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         ///Trigger Vehicle Group CDC
                         else if (entity.Id > 0 && entity.GroupRef.Count > 0)
                         {
-                            await _alertCdcHelper.TriggerVehicleGroupCdc(entity.Id, "N");
+                            await _alertCdcHelper.TriggerVehicleGroupCdc(entity.Id, "N", request.OrganizationId);
                         }
                         else
                         {
@@ -389,7 +408,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 if (result)
                 {
                     //Trigger Vehicle Group CDC
-                    await _alertCdcHelper.TriggerVehicleGroupCdc(request.GroupId, "N");
+                    await _alertCdcHelper.TriggerVehicleGroupCdc(request.GroupId, "N", request.OrganizationId);
                 }
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete Vehicle Group ", 1, 2, Convert.ToString(request.GroupId)).Result;
 
@@ -1082,30 +1101,26 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
         }
 
-        public override async Task<VehicleListResponce> GetRelationshipVehicles(OrgvehicleIdRequest request, ServerCallContext context)
+        public override async Task<VehiclesResponse> GetRelationshipVehicles(OrgvehicleIdRequest request, ServerCallContext context)
         {
             try
             {
-                VehicleFilter ObjVehicleFilter = new VehicleFilter();
-                ObjVehicleFilter.VIN = null;
-                ObjVehicleFilter.VehicleIdList = null;
-                ObjVehicleFilter.OrganizationId = request.OrganizationId;
-                ObjVehicleFilter.VehicleId = request.VehicleId;
-                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicleManager.GetRelationshipVehicles(ObjVehicleFilter);
-                VehicleListResponce responce = new VehicleListResponce();
-                foreach (var item in ObjRetrieveVehicleList)
+                VehicleFilter objVehicleFilter = new VehicleFilter();
+                IEnumerable<VehicleManagementDto> objRetrieveVehicleList = await _vehicleManager.GetAllRelationshipVehicles(request.OrganizationId);
+                VehiclesResponse response = new VehiclesResponse();
+                foreach (var item in objRetrieveVehicleList)
                 {
-                    responce.Vehicles.Add(_mapper.ToVehicle(item));
+                    response.Vehicles.Add(_mapper.ToVehicle(item));
                 }
-                responce.Message = "Vehicles data retrieved";
-                responce.Code = Responcecode.Success;
+                response.Message = "Vehicles data retrieved";
+                response.Code = Responcecode.Success;
                 _logger.Info("Get method in vehicle service called.");
-                return await Task.FromResult(responce);
+                return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return await Task.FromResult(new VehicleListResponce
+                return await Task.FromResult(new VehiclesResponse
                 {
                     Code = Responcecode.Failed,
                     Message = "Get failed due to with reason : " + ex.Message

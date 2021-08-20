@@ -7,6 +7,6 @@ namespace net.atos.daf.ct2.kafkacdc
 {
     public interface IVehicleGroupAlertCdcManager
     {
-        Task<bool> GetVehicleGroupAlertConfiguration(int vehicleGroupId, string operation);
+        Task<bool> GetVehicleGroupAlertConfiguration(int vehicleGroupId, string operation, int organizationId);
     }
 }

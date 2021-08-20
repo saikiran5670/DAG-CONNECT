@@ -520,7 +520,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzurePostgreSqlSource",
-						"query": "SELECT \n\t(SELECT COALESCE(MAX(ID),0) FROM MASTER.ORGANIZATION ) + ROW_NUMBER() OVER (ORDER BY 1 ASC),\n\tE.ORG_ID                        ,\n\tE.NAME                          ,\n\tE.ADDRESS_TYPE                  ,\n\tCASE WHEN E.STREET  IS NOT NULL THEN E.STREET ELSE '' END AS STREET  ,\n\tCASE WHEN E.STREET_NUMBER  IS NOT NULL THEN E.STREET_NUMBER ELSE '' END AS STREET_NUMBER ,\n\tCASE WHEN E.POSTAL_CODE  IS NOT NULL THEN E.POSTAL_CODE ELSE '' END AS POSTAL_CODE                 ,\n\tCASE WHEN E.CITY IS NOT NULL THEN E.CITY ELSE '' END AS CITY                         ,\n\tCASE WHEN E.COUNTRY_CODE IS NOT NULL THEN E.COUNTRY_CODE ELSE '' END AS COUNTRY_CODE                 ,\n\tE.REFERENCE_DATE                ,\n\tE.VEHICLE_DEFAULT_OPT_IN        ,\n\tE.DRIVER_DEFAULT_OPT_IN         ,\n\tE.STATE                \n\t\nFROM staging.Organization_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.ORGANIZATION L\n             WHERE    L.ORG_ID = E.ORG_ID)\nORDER BY \n    \tORG_ID;\n"
+						"query": "SELECT \n\tE.ORG_ID                        ,\n\tE.NAME                          ,\n\tE.ADDRESS_TYPE                  ,\n\tCASE WHEN E.STREET  IS NOT NULL THEN E.STREET ELSE '' END AS STREET  ,\n\tCASE WHEN E.STREET_NUMBER  IS NOT NULL THEN E.STREET_NUMBER ELSE '' END AS STREET_NUMBER ,\n\tCASE WHEN E.POSTAL_CODE  IS NOT NULL THEN E.POSTAL_CODE ELSE '' END AS POSTAL_CODE                 ,\n\tCASE WHEN E.CITY IS NOT NULL THEN E.CITY ELSE '' END AS CITY                         ,\n\tCASE WHEN E.COUNTRY_CODE IS NOT NULL THEN E.COUNTRY_CODE ELSE '' END AS COUNTRY_CODE                 ,\n\tE.REFERENCE_DATE                ,\n\tE.VEHICLE_DEFAULT_OPT_IN        ,\n\tE.DRIVER_DEFAULT_OPT_IN         ,\n\tE.STATE                \n\t\nFROM staging.Organization_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.ORGANIZATION L\n             WHERE    L.ORG_ID = E.ORG_ID)\nORDER BY \n    \tORG_ID;\n"
 					},
 					"sink": {
 						"type": "AzurePostgreSQLSink",
@@ -531,6 +531,152 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "org_id",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "org_id",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "address_type",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "address_type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "street",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "street",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "street_number",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "street_number",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "postal_code",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "postal_code",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "city",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "city",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "country_code",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "country_code",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "reference_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "reference_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "vehicle_default_opt_in",
+									"type": "String",
+									"physicalType": "character"
+								},
+								"sink": {
+									"name": "vehicle_default_opt_in",
+									"type": "String",
+									"physicalType": "character"
+								}
+							},
+							{
+								"source": {
+									"name": "driver_default_opt_in",
+									"type": "String",
+									"physicalType": "character"
+								},
+								"sink": {
+									"name": "driver_default_opt_in",
+									"type": "String",
+									"physicalType": "character"
+								}
+							},
+							{
+								"source": {
+									"name": "state",
+									"type": "String",
+									"physicalType": "character"
+								},
+								"sink": {
+									"name": "state",
+									"type": "String",
+									"physicalType": "character"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
