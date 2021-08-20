@@ -1218,6 +1218,16 @@ export class ReportMapService {
     return (_data*100).toFixed(2);
   }
 
+  convertFuelConsumptionL100kmToMpg(_data: any){ // as value is sent in L/100Km - convert to mpg
+    let data: any = (282.481 / _data);
+    return (data).toFixed(6); 
+  }
+
+  convertFuelConsumptionMpgToL100km(_data: any){ // convert from mpg to L/100Km
+    let data: any = (282.481 / _data);
+    return (data).toFixed(2); 
+  }
+
   convertFuelConsumptionMlmToMpg(_data: any){
     let data: any = 1.6/(_data * 3.78);
     return (data).toFixed(6); // as inverted division results in very low value upto 6 places shown // 16044
@@ -1470,11 +1480,11 @@ export class ReportMapService {
     let _fuelConsumed: any = 0;
     switch(unitFormat){
       case 'dunit_Metric': { 
-        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); //-- Ltr/100Km / ltr
+        _fuelConsumed = litreFlag ? (fuelConsumed) : this.miliLitreToLitre(fuelConsumed); //-- Ltr/100Km / ltr
         break;
       }
       case 'dunit_Imperial':{
-        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToMpg(fuelConsumed) : this.miliLitreToGallon(fuelConsumed); // mpg / gallon
+        _fuelConsumed = litreFlag ? this.convertFuelConsumptionL100kmToMpg(fuelConsumed) : this.miliLitreToGallon(fuelConsumed); // mpg / gallon
         break;
       }
       default: {
