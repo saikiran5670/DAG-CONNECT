@@ -28,9 +28,7 @@ namespace net.atos.daf.ct2.kafkacdc
                 Cacertlocation = _kafkaConfig.CA_CERT_LOCATION,
                 ProducerMessage = PrepareKafkaJSON(vehicleAlertRefList, alertId, operation).Result
             };
-            //Pushing message to kafka topic
-            Debug.WriteLine("/////////////////////////////////////////////////////////");
-            Debug.WriteLine(kafkaEntity.ProducerMessage);
+            
             await KafkaConfluentWorker.Producer(kafkaEntity);
         }
         internal Task<string> PrepareKafkaJSON(List<VehicleAlertRef> vehicleAlertRefList, int alertId, string operation)
