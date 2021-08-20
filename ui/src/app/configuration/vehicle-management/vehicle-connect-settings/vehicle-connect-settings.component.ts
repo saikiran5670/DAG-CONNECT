@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, ViewChild, EventEmitter } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -25,7 +25,9 @@ export class VehicleConnectSettingsComponent implements OnInit {
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   initData: any = [];
-  translationData: any;
+  @Input() translationData;
+  @Input() relationshipVehiclesData;
+  @Output() updateRelationshipVehiclesData = new EventEmitter();
   accountOrganizationId: any = 0;
   titleVisible: boolean = false;
   showLoadingIndicator: any = false;
@@ -46,56 +48,57 @@ export class VehicleConnectSettingsComponent implements OnInit {
      }
  
     defaultTranslation() {
-    this.translationData = {
+      let defaultValues =  {
       lblAllVehicleDetails: "All Vehicle Details",
       lblNoRecordFound: "No Record Found",
       lblVehicle: "Vehicle",
       lblVIN: "VIN"      
     };
+    this.translationData = Object.assign( {}, this.translationData, defaultValues );
   }
  
   onClose() {
     this.titleVisible = false;
   }
   ngOnInit(): void {
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
-    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage.code,
-      type: 'Menu',
-      name: '',
-      value: '',
-      filter: '',
-      menuId: 21 //-- for vehicle mgnt
-    };
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);  
-      this.updateDataSource(data);
-      this.loadVehicleData();  
-    }); 
+    // this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    // this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    // this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    // let translationObj = {
+    //   id: 0,
+    //   code: this.localStLanguage.code,
+    //   type: 'Menu',
+    //   name: '',
+    //   value: '',
+    //   filter: '',
+    //   menuId: 21 //-- for vehicle mgnt
+    // };
+    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+    //   this.processTranslation(data);  
+      this.updateDataSource(this.relationshipVehiclesData);
+    //   this.loadVehicleData();  
+    // }); 
   }
-  processTranslation(transData: any) {
-    this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }),{});
-  }
+  // processTranslation(transData: any) {
+  //   this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }),{});
+  // }
 
-  loadVehicleData(){
-    this.showLoadingIndicator = true;
-    this.vehicleService.getVehiclesData(this.accountOrganizationId).subscribe((vehData: any) => {
-      this.hideloader();
-      this.updateDataSource(vehData);
-      this.loadVehData = vehData;
-      this.vehicleOptInOut = [];
-      this.connectedAll = false;  
-      this.totalVehicles= vehData.length;
-    }, (error) => {
-        //console.error(error);
-        this.hideloader();
-        this.updateDataSource([]);
-      }
-    );
-  }
+  // loadVehicleData(){
+  //   this.showLoadingIndicator = true;
+  //   this.vehicleService.getVehiclesData(this.accountOrganizationId).subscribe((vehData: any) => {
+  //     this.hideloader();
+  //     this.updateDataSource(vehData);
+  //     this.loadVehData = vehData;
+  //     this.vehicleOptInOut = [];
+  //     this.connectedAll = false;  
+  //     this.totalVehicles= vehData.length;
+  //   }, (error) => {
+  //       //console.error(error);
+  //       this.hideloader();
+  //       this.updateDataSource([]);
+  //     }
+  //   );
+  // }
  
   updateDataSource(tableData: any) {
     this.initData = tableData;
@@ -173,7 +176,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
       if(element.id == item)
       {
         let optInStatus='';
-        if(element.optIn == 'U' ||element.optIn == 'H'){
+        if(element.opt_In == 'U' ||element.opt_In == 'H'){
           optInStatus = 'I';
           this.connectedOn.push(element.id)
         }
@@ -206,7 +209,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
       message: this.translationData.lblYouwanttoDetails || "Are you sure want to change all vehicle status? \n Out of "+ this.totalVehicles +" vehicles    "+ connectedOnData  + connectedOffData,   
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblConnected || "Confirm",
-      status: rowData.optIn == 'I' ? 'On to Off' : 'Off to On' ,
+      status: rowData.opt_In == 'I' ? 'On to Off' : 'Off to On' ,
       name: rowData.name
     };      
     const dialogConfig = new MatDialogConfig();
@@ -217,12 +220,13 @@ export class VehicleConnectSettingsComponent implements OnInit {
     this.dialogRef.afterClosed().subscribe((res: any) => {
       if(res == true){     
         this.vehicleService.updatevehicleconnection(connectedData).subscribe((data) => {
-            this.loadVehicleData();           
+            // this.loadVehicleData();   
+            this.updateRelationshipVehiclesData.emit();        
           }, error => {
-            this.loadVehicleData();
+            // this.loadVehicleData();
           });      
       }else {       
-         this.loadVehicleData();        
+        //  this.loadVehicleData();        
       }  
     });  
   }
@@ -239,8 +243,8 @@ export class VehicleConnectSettingsComponent implements OnInit {
       title: this.translationData.lblConnected || "Confirmation",
       message: this.translationData.lblYouwanttoDetails || "Are you sure want to change status Connected  # '$' Vehicle?",   
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.status == "C" && rowData.optIn == "I"|| rowData.status == "C" && rowData.optIn == "H" || rowData.status == "N" && rowData.optIn == "H") ? this.translationData.lblDeactivate || "Connected Off" : this.translationData.lblActivate || " Connected On",
-      status: (rowData.status == "C" && rowData.optIn == "I" || rowData.status == 'C'  && rowData.optIn == "H"|| rowData.status == "N"  && rowData.optIn == "H")? 'On to Off' : 'Off to On' ,
+      confirmText: (rowData.status == "C" && rowData.opt_In == "I"|| rowData.status == "C" && rowData.opt_In == "H" || rowData.status == "N" && rowData.opt_In == "H") ? this.translationData.lblDeactivate || "Connected Off" : this.translationData.lblActivate || " Connected On",
+      status: (rowData.status == "C" && rowData.opt_In == "I" || rowData.status == 'C'  && rowData.opt_In == "H"|| rowData.status == "N"  && rowData.opt_In == "H")? 'On to Off' : 'Off to On' ,
       name: rowData.name
     };
     const dialogConfig = new MatDialogConfig();
@@ -251,7 +255,7 @@ export class VehicleConnectSettingsComponent implements OnInit {
     this.dialogRef.afterClosed().subscribe((res: any) => {
       if(res == true){ 
         let statusOptIn;
-        if(rowData.optIn == 'I'){
+        if(rowData.opt_In == 'I'){
           statusOptIn='U';
         }
         else{
@@ -263,12 +267,13 @@ export class VehicleConnectSettingsComponent implements OnInit {
           vehicleId: rowData.id    
         };               
         this.vehicleService.setoptinstatus(statusObj).subscribe((data) => {
-            this.loadVehicleData();          
+            // this.loadVehicleData();          
+            this.updateRelationshipVehiclesData.emit(); 
           }, error => {
-            this.loadVehicleData();
+            // this.loadVehicleData();
           });         
       }else {
-        this.loadVehicleData();
+        // this.loadVehicleData();
       }
     });
   }
@@ -295,12 +300,13 @@ export class VehicleConnectSettingsComponent implements OnInit {
           vehicleId: rowData.id    
         };            
         this.vehicleService.terminateVehiclestatus(statusObj).subscribe((data) => {
-            this.loadVehicleData();          
+            // this.loadVehicleData();      
+            this.updateRelationshipVehiclesData.emit();     
           }, error => {
-            this.loadVehicleData();
+            // this.loadVehicleData();
           });         
       }else {
-        this.loadVehicleData();
+        // this.loadVehicleData();
       }
     });  
   } 

@@ -112,7 +112,7 @@ select * from Vehicle_Group_of_Type_Dynamic
 	,cte.ref_id
 	from master.alert ale
 	inner join Vehicle_Group_of_Type_All cte 
-	on ale.vehicle_group_id = cte.vehicle_group_id
+	on ale.vehicle_group_id = cte.vehicle_group_id and state='A'
 )
 --select * from Alerts_Associated_To_Groups;
 ,Alerts_Associated_To_Single_Vehicle

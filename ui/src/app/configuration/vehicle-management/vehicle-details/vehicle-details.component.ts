@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -22,15 +22,17 @@ export class VehicleDetailsComponent implements OnInit {
   displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'relationShip', 'status', 'action'];
   dataSource: any = new MatTableDataSource([]);
   vehicleUpdatedMsg: any = '';
+  @Output() updateRelationshipVehiclesData = new EventEmitter();
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   initData: any = [];
-  translationData: any;
-  accountOrganizationId: any = 0;
+  @Input() translationData;
+  @Input() relationshipVehiclesData;
+  // accountOrganizationId: any = 0;
   titleVisible: boolean = false;
   showLoadingIndicator: any = false;
-  localStLanguage: any;
+  // localStLanguage: any;
   actionBtn:any; 
   updateViewStatus: boolean = false;
 
@@ -39,12 +41,13 @@ export class VehicleDetailsComponent implements OnInit {
   }
 
   defaultTranslation() {
-    this.translationData = {
+    let defaultValues = {
       lblAllVehicleDetails: "All Vehicle Details",
       lblNoRecordFound: "No Record Found",
       lblVehicle: "Vehicle",
       lblVIN: "VIN"      
     };
+    this.translationData = Object.assign( {}, this.translationData, defaultValues );
   }
 
   onClose() {
@@ -52,38 +55,30 @@ export class VehicleDetailsComponent implements OnInit {
   }
   
   ngOnInit() {
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage.code,
-      type: 'Menu',
-      name: '',
-      value: '',
-      filter: '',
-      menuId: 21 //-- for vehicle mgnt
-    };
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
-      this.loadVehicleData();
-    });
+    // this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    // this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    // let translationObj = {
+    //   id: 0,
+    //   code: this.localStLanguage.code,
+    //   type: 'Menu',
+    //   name: '',
+    //   value: '',
+    //   filter: '',
+    //   menuId: 21 //-- for vehicle mgnt
+    // };
+    // this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+    //   this.processTranslation(data);
+    //   // this.loadVehicleData();
+    // });
+    this.updateDataSource(this.relationshipVehiclesData)
   }
   
-  processTranslation(transData: any) {
-    this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }),{});
-  }
+  // processTranslation(transData: any) {
+  //   this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }),{});
+  // }
 
-  loadVehicleData(){
-    this.showLoadingIndicator = true;
-    this.vehicleService.getVehiclesData(this.accountOrganizationId).subscribe((vehData: any) => {
-      this.hideloader();
-      this.updateDataSource(vehData);
-    }, (error) => {
-        //console.error(error);
-        this.hideloader();
-        this.updateDataSource([]);
-      }
-    );
+  getRelationshipVehiclesData() {
+    this.updateRelationshipVehiclesData.emit()
   }
 
   updateDataSource(tableData: any) {
@@ -123,9 +118,19 @@ export class VehicleDetailsComponent implements OnInit {
   }
 
   editViewVehicle(rowData: any, type: any){
-    this.selectedRowData = rowData;
-    this.actionType = type;
-    this.updateViewStatus = true;
+    if(rowData['associatedGroups'] && rowData['associatedGroups'] != '') {
+      this.selectedRowData = rowData;
+      this.actionType = type;
+      this.updateViewStatus = true;
+    } else {
+      this.vehicleService.getVehicleAssociatedGroups(rowData.id).subscribe((res) => {
+        console.log("res", res)
+        rowData['associatedGroups'] = res;
+        this.selectedRowData = rowData;
+        this.actionType = type;
+        this.updateViewStatus = true;
+      })
+    }
   }
 
   onVehicleUpdateView(item: any){
