@@ -34,6 +34,7 @@ declare var H: any;
 })
 
 export class FuelDeviationReportComponent implements OnInit {
+  vehicleDisplayPreference = 'dvehicledisplay_VehicleName';
   dataService: any;
   searchMarker: any = {};
   eventIconMarker: any;
@@ -476,6 +477,14 @@ export class FuelDeviationReportComponent implements OnInit {
             this.proceedStep(prefData, pref);
           });
         }
+
+        let vehicleDisplayId = this.accountPrefObj.accountPreference.vehicleDisplayId;
+        if(vehicleDisplayId) {
+          let vehicledisplay = prefData.vehicledisplay.filter((el) => el.id == vehicleDisplayId);
+          if(vehicledisplay.length != 0) {
+            this.vehicleDisplayPreference = vehicledisplay[0].name;
+          }
+        }  
       });
     });
   }

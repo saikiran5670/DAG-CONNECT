@@ -284,7 +284,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The vehicle group id is required.");
                 }
-                //Add the organizationId for hte Vehicle group CDC ogranization filter
+                //Add the organizationId for Vehicle group CDC ogranization filter
                 request.OrganizationId = GetContextOrgId();
                 request.GroupId = Convert.ToInt32(GroupId);
                 VehicleBusinessService.VehicleGroupDeleteResponce response = await _vehicleClient.DeleteGroupAsync(request);

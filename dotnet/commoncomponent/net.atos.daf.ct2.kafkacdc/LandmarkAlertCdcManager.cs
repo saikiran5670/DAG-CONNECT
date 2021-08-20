@@ -1,37 +1,48 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.kafkacdc.entity;
 using net.atos.daf.ct2.kafkacdc.repository;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
+using net.atos.daf.ct2.data;
 
 namespace net.atos.daf.ct2.kafkacdc
 {
-    public class VehicleGroupAlertCdcManager : IVehicleGroupAlertCdcManager
+    public class LandmarkAlertCdcManager : ILandmarkAlertCdcManager
     {
         private static readonly log4net.ILog _log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly IVehicleGroupAlertCdcRepository _vehicleGroupAlertCdcRepository;
+        private readonly ILandmarkAlertCdcRepository _landmarkAlertCdcRepository;
+        private readonly IAlertMgmAlertCdcRepository _vehicleAlertRepository;
         private readonly KafkaCdcHelper _kafkaCdcHelper;
         private readonly IConfiguration _configuration;
         private readonly entity.KafkaConfiguration _kafkaConfig;
-        private readonly IAlertMgmAlertCdcRepository _vehicleAlertRepository;
 
-        public VehicleGroupAlertCdcManager(IAlertMgmAlertCdcRepository vehicleAlertRepository, IVehicleGroupAlertCdcRepository vehicleGroupAlertCdcRepository, IConfiguration configuration)
+        //private readonly IDataAccess _dataAccess;
+        //private readonly IDataMartDataAccess _datamartDataacess;
+
+        public LandmarkAlertCdcManager(ILandmarkAlertCdcRepository vehiclelandmarkRepository, IAlertMgmAlertCdcRepository vehicleAlertRepository, IConfiguration configuration)
         {
+
             this._configuration = configuration;
+
+            //Need to handle background dataaccess and dependency injection
+            //string connectionString = _configuration.GetConnectionString("ConnectionString");
+            //string datamartconnectionString = _configuration.GetConnectionString("DataMartConnectionString");
+            //_dataAccess = new PgSQLDataAccess(connectionString);
+            //_datamartDataacess = new PgSQLDataMartDataAccess(datamartconnectionString);
+            //_vehicleAlertRepository = new AlertMgmAlertCdcRepository(_dataAccess, _datamartDataacess);
+
             _kafkaConfig = new entity.KafkaConfiguration();
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfig);
 
-            _vehicleGroupAlertCdcRepository = vehicleGroupAlertCdcRepository;
+            _landmarkAlertCdcRepository = vehiclelandmarkRepository;
             _vehicleAlertRepository = vehicleAlertRepository;
             _kafkaCdcHelper = new KafkaCdcHelper();
         }
-        public Task<bool> GetVehicleGroupAlertConfiguration(int vehicleGroupId, string operation, int organizationId) => ExtractAndSyncVehicleGroupAlertRefByVehicleGroupIds(vehicleGroupId, operation, organizationId);
-        internal async Task<bool> ExtractAndSyncVehicleGroupAlertRefByVehicleGroupIds(int vehicleGroupId, string operation, int organizationId)
+        public Task<bool> LandmarkAlertRefFromAlertConfiguration(int landmarkId, string operation, string landmarktype) => ExtractAndSyncVehicleAlertRefByAlertIds(landmarkId, operation, landmarktype);
+        internal async Task<bool> ExtractAndSyncVehicleAlertRefByAlertIds(int landmarkId, string operation, string landmarktype)
         {
             bool result = false;
             List<int> alertIds = new List<int>();
@@ -41,63 +52,62 @@ namespace net.atos.daf.ct2.kafkacdc
             List<VehicleAlertRef> finalmapping = new List<VehicleAlertRef>();
             try
             {
-                //alertIds.Add(vehicleGroupId);
+                var alerts = await _landmarkAlertCdcRepository.GetAlertsbyLandmarkId(landmarkId, landmarktype);
+                alertIds.AddRange(alerts);
                 // get all the vehicles & alert mapping under the vehicle group for given alert id
-                List<VehicleAlertRef> masterDBVehicleGroupAlerts = await _vehicleGroupAlertCdcRepository.GetVehiclesGroupFromAlertConfiguration(vehicleGroupId, organizationId);
-                alertIds = masterDBVehicleGroupAlerts.Select(x => x.AlertId).ToList();
-                List<VehicleAlertRef> datamartVehicleGroupAlerts = await _vehicleGroupAlertCdcRepository.GetVehicleGroupAlertRefByAlertIds(alertIds);
+                List<VehicleAlertRef> masterDBVehicleAlerts = await _landmarkAlertCdcRepository.GetVehiclesFromAlertConfiguration(alertIds);
+                List<VehicleAlertRef> datamartVehicleAlerts = await _landmarkAlertCdcRepository.GetVehicleAlertRefByAlertIds(alertIds);
                 // Preparing data for sending to kafka topic
-                unmodifiedMapping = datamartVehicleGroupAlerts.Where(datamart => masterDBVehicleGroupAlerts.Any(master => master.VIN == datamart.VIN && master.AlertId == datamart.AlertId)).ToList().Distinct().ToList();
+                unmodifiedMapping = datamartVehicleAlerts.Where(datamart => masterDBVehicleAlerts.Any(master => master.VIN == datamart.VIN && master.AlertId == datamart.AlertId)).ToList().Distinct().ToList();
 
-                if (masterDBVehicleGroupAlerts.Count > 0)
+                if (masterDBVehicleAlerts.Count > 0)
                 {
                     //Identify mapping for deletion i.e. present in datamart but not in master database 
-                    deletionMapping = datamartVehicleGroupAlerts.Where(datamart => !masterDBVehicleGroupAlerts.Any(master => master.VIN == datamart.VIN && master.AlertId == datamart.AlertId))
+                    deletionMapping = datamartVehicleAlerts.Where(datamart => !masterDBVehicleAlerts.Any(master => master.VIN == datamart.VIN && master.AlertId == datamart.AlertId))
                                                            .Select(obj => new VehicleAlertRef { VIN = obj.VIN, AlertId = obj.AlertId, Op = "D" })
                                                            .ToList();
                 }
                 else
                 {
                     //all are eligible for deletion  //break the deep copy (reference of list) while coping from one list to another 
-                    deletionMapping = datamartVehicleGroupAlerts.Select(obj => new VehicleAlertRef { VIN = obj.VIN, AlertId = obj.AlertId, Op = "D" }).ToList();
+                    deletionMapping = datamartVehicleAlerts.Select(obj => new VehicleAlertRef { VIN = obj.VIN, AlertId = obj.AlertId, Op = "D" }).ToList();
                 }
                 //removing duplicate records if any 
                 deletionMapping = deletionMapping.GroupBy(c => c.VIN, (key, c) => c.FirstOrDefault()).ToList();
 
-                if (datamartVehicleGroupAlerts.Count > 0)
+                if (datamartVehicleAlerts.Count > 0)
                 {
                     //Identify mapping for insertion i.e. present in master but not in datamart database 
-                    insertionMapping = masterDBVehicleGroupAlerts.Where(master => !datamartVehicleGroupAlerts.Any(datamart => master.VIN == datamart.VIN && master.AlertId == datamart.AlertId))
+                    insertionMapping = masterDBVehicleAlerts.Where(master => !datamartVehicleAlerts.Any(datamart => master.VIN == datamart.VIN && master.AlertId == datamart.AlertId))
                                                             .Select(obj => new VehicleAlertRef { VIN = obj.VIN, AlertId = obj.AlertId, Op = "I" })
                                                             .ToList();
                 }
                 else
                 {
                     //all are eligible for insertion  //break the deep copy (reference of list) while coping from one list to another 
-                    insertionMapping = masterDBVehicleGroupAlerts.Select(obj => new VehicleAlertRef { VIN = obj.VIN, AlertId = obj.AlertId, Op = "I" }).ToList();
+                    insertionMapping = masterDBVehicleAlerts.Select(obj => new VehicleAlertRef { VIN = obj.VIN, AlertId = obj.AlertId, Op = "I" }).ToList();
                 }
                 //removing duplicate records if any 
                 insertionMapping = insertionMapping.GroupBy(c => c.VIN, (key, c) => c.FirstOrDefault()).ToList();
 
                 //Update datamart with lastest mapping 
                 //set alert operation for state column into datamart
-                masterDBVehicleGroupAlerts.ForEach(s => s.Op = operation);
+                masterDBVehicleAlerts.ForEach(s => s.Op = operation);
                 //Update datamart table vehiclealertref based on latest modification.
-                await _vehicleAlertRepository.DeleteAndInsertVehicleAlertRef(alertIds, masterDBVehicleGroupAlerts);
+                await _vehicleAlertRepository.DeleteAndInsertVehicleAlertRef(alertIds, masterDBVehicleAlerts);
                 //sent message to Kafka topic 
                 //Union mapping for sending to kafka topic
                 finalmapping = insertionMapping.Union(deletionMapping).ToList();
                 //sending only states I & D with combined mapping of vehicle and alertid
-                if (finalmapping.Count() > 0)
-                    foreach (var alertId in alertIds)
-                    {
-                        await _kafkaCdcHelper.ProduceMessageToKafka(finalmapping, alertId, operation, _kafkaConfig);
-                    }
+                foreach (var item in alertIds)
+                {
+                    await _kafkaCdcHelper.ProduceMessageToKafka(finalmapping, item, operation, _kafkaConfig);
+                }
                 result = true;
             }
             catch (Exception ex)
             {
-                _log.Info("Vehicle Group CDC has failed for Vehicle Group Id :" + vehicleGroupId.ToString() + " and operation " + operation);
+                _log.Info("Alert CDC has failed for Alert Id :" + alertIds.ToString() + " and operation " + operation);
                 _log.Error(ex.ToString());
                 result = false;
             }

@@ -46,7 +46,7 @@ namespace net.atos.daf.ct2.kafkacdc
             {
                 // get all the vehicles & alert mapping under the vehicle group for given alert id
                 List<VehicleAlertRef> masterDBVehicleAlerts = await _vehicleManagementAlertCDCRepository.GetVehicleAlertByvehicleId(vehicleIds, organizationId);//Context Org ID
-                alertIds = masterDBVehicleAlerts.Select(x => x.AlertId).ToList();
+                alertIds = masterDBVehicleAlerts.Select(x => x.AlertId).Distinct().ToList();
                 List<VehicleAlertRef> datamartVehicleAlerts = await _vehicleManagementAlertCDCRepository.GetVehicleAlertRefFromvehicleId(alertIds);
 
                 // Preparing data for sending to kafka topic

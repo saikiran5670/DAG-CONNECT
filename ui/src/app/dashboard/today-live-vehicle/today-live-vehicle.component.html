@@ -18,7 +18,7 @@
           <div [hidden]="!checkForPreference('distance')" class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">
             <span>
               <div>{{ translationData.lblDistance || 'Distance' }} </div>
-              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{distance}}{{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </div>
+              <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{distance}} {{prefUnitFormat == 'dunit_Metric' ?  (this.translationData.lblkms || 'Km') : (this.translationData.lblmile || 'Miles')}} </div>
             </span>
           </div>
           <div [hidden]="!checkForPreference('drivingtime')" class="areaWidth  divTile normalClass" fxLayout="column" fxLayoutAlign="left">

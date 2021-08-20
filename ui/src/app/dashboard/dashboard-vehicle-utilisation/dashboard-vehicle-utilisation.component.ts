@@ -49,6 +49,8 @@ export class DashboardVehicleUtilisationComponent implements OnInit {
         position: 'left',
         type: 'linear',
         ticks: {
+           steps: 10,
+          stepSize: 1,
           beginAtZero:true,
           fontSize: 8, 
         },
@@ -151,8 +153,8 @@ lineChartOptions = {
       position: 'left',
       type: 'linear',
       ticks: {
-        // steps: 10,
-        // stepSize: 1,
+        steps: 10,
+        stepSize: 1,
         beginAtZero: true,
         fontSize: 8, 
       },
@@ -915,7 +917,9 @@ if(this.prefTimeFormat == 12){
           id: "y-axis-1",
           position: 'left',
           type: 'linear',
-          ticks: {            
+          ticks: { 
+            steps: 10,
+            stepSize: 1,           
             beginAtZero: true,
             fontSize: 8, 
           },
@@ -949,7 +953,9 @@ else if(this.selectionTab == 'lastmonth ' || this.selectionTab == 'last3month'){
       id: "y-axis-1",
       position: 'left',
       type: 'linear',
-      ticks: {            
+      ticks: { 
+        steps: 10,
+        stepSize: 1,           
         beginAtZero: true,
         fontSize: 8, 
       },
@@ -1002,8 +1008,11 @@ else if(this.selectionTab == 'lastmonth ' || this.selectionTab == 'last3month'){
         id: "y-axis-1",
         position: 'left',
         type: 'linear',
-        ticks: {
-          beginAtZero:true
+        ticks: {        
+          steps: 10,
+          stepSize: 1,
+          beginAtZero:true,
+          fontSize: 8, 
         },
         scaleLabel: {
           display: true,
@@ -1020,7 +1029,10 @@ else if(this.selectionTab == 'lastmonth ' || this.selectionTab == 'last3month'){
           displayFormats: {      
             day: this.chartLabelDateFormat,            
            },             
-        },           
+        },   
+        ticks: {           
+          fontSize: 8,  
+      },           
       scaleLabel: {
         display: true,
         labelString: 'Dates'
@@ -1034,8 +1046,11 @@ else if(this.selectionTab == 'lastmonth ' || this.selectionTab == 'last3month'){
       id: "y-axis-1",
       position: 'left',
       type: 'linear',
-      ticks: {
-        beginAtZero:true
+      ticks: {        
+        steps: 10,
+        stepSize: 1,
+        beginAtZero:true,
+        fontSize: 8, 
       },
       scaleLabel: {
         display: true,
@@ -1052,7 +1067,10 @@ else if(this.selectionTab == 'lastmonth ' || this.selectionTab == 'last3month'){
         displayFormats: {      
           day: this.chartLabelDateFormat,           
          },             
-      },           
+      }, 
+       ticks: {           
+            fontSize: 8,  
+        },             
     scaleLabel: {
       display: true,
       labelString: 'Dates'  
