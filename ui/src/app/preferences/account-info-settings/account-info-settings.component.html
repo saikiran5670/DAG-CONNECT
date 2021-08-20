@@ -66,7 +66,7 @@
         <div fxLayout="column" class="areaWidth min-width-75-per accountInfo wordWrap">
           <div *ngIf="!editAccountSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
             class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
-            <div class="areaWidth min-width-30-per" style="width:32%" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-30-per" style="width:34%" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblSalutation || 'Salutation' }}</mat-label>
               <mat-label class='custom-font'>
                 {{ accountInfo.length > 0 ? accountInfo[0].salutation : '--' }}
@@ -87,7 +87,7 @@
           </div>
           <div *ngIf="!editAccountSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
             class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
-            <div class="areaWidth min-width-30-per"  style="width:32%" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-30-per"  style="width:34%" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}</mat-label>
               <mat-label class='custom-font'>
                 {{ accountInfo.length > 0 ? accountInfo[0].emailId : '--' }}
