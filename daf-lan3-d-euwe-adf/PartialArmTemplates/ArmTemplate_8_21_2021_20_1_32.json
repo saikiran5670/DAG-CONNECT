@@ -6,42 +6,6 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "daf-lan3-d-euwe-adf"
-		},
-		"AzureMySql1_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureMySql1'"
-		},
-		"AzurePostgreSql1master_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzurePostgreSql1master'"
-		},
-		"dafctlan3postgresmaster_properties_privateLinkResourceId": {
-			"type": "string",
-			"defaultValue": "/subscriptions/0d01fd30-a216-42aa-809a-57c280730851/resourceGroups/daf-lan3-d-euwe-rsg-pgrmd/providers/Microsoft.DBforPostgreSQL/servers/dafct-lan3-d-euwe-cdp-pgsql-master"
-		},
-		"dafctlan3postgresmaster_properties_groupId": {
-			"type": "string",
-			"defaultValue": "postgresqlServer"
-		},
-		"dafctlan3postgresmaster_properties_fqdns": {
-			"type": "array",
-			"defaultValue": [
-				"dafct-lan3-d-euwe-cdp-pgsql-master.postgres.database.azure.com"
-			]
-		},
-		"daflan3mysqlprivateendpoint_properties_privateLinkResourceId": {
-			"type": "string",
-			"defaultValue": "/subscriptions/0d01fd30-a216-42aa-809a-57c280730851/resourceGroups/daf-lan3-d-euwe-rsg-pgrmd/providers/Microsoft.DBforMySQL/servers/dafct-lan3-d-euwe-cdp-mysql-master"
-		},
-		"daflan3mysqlprivateendpoint_properties_groupId": {
-			"type": "string",
-			"defaultValue": "mysqlServer"
-		},
-		"daflan3mysqlprivateendpoint_properties_fqdns": {
-			"type": "array",
-			"defaultValue": [
-				"dafct-lan3-d-euwe-cdp-mysql-master.mysql.database.azure.com"
-			]
 		}
 	},
 	"variables": {
@@ -248,15 +212,13 @@
 						"inputs": [
 							{
 								"referenceName": "Organization_CT1",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "Organization_source",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -511,15 +473,13 @@
 						"inputs": [
 							{
 								"referenceName": "Organization_source",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "Organization_CHG",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -549,8 +509,7 @@
 							},
 							"dataset": {
 								"referenceName": "Organization",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -744,15 +703,13 @@
 						"inputs": [
 							{
 								"referenceName": "Organization_CHG",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "Organization",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					}
@@ -760,12 +717,7 @@
 				"annotations": [],
 				"lastPublishTime": "2021-08-18T13:28:56Z"
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Organization_CT1')]",
-				"[concat(variables('factoryId'), '/datasets/Organization_source')]",
-				"[concat(variables('factoryId'), '/datasets/Organization_CHG')]",
-				"[concat(variables('factoryId'), '/datasets/Organization')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Vehicle')]",
@@ -967,15 +919,13 @@
 						"inputs": [
 							{
 								"referenceName": "Organization_CT1",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "Organization_source",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -1230,15 +1180,13 @@
 						"inputs": [
 							{
 								"referenceName": "Organization_source",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "Organization_CHG",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -1268,8 +1216,7 @@
 							},
 							"dataset": {
 								"referenceName": "Organization",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -1463,15 +1410,13 @@
 						"inputs": [
 							{
 								"referenceName": "Organization_CHG",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "Organization",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					}
@@ -1479,12 +1424,7 @@
 				"annotations": [],
 				"lastPublishTime": "2021-08-18T13:28:56Z"
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Organization_CT1')]",
-				"[concat(variables('factoryId'), '/datasets/Organization_source')]",
-				"[concat(variables('factoryId'), '/datasets/Organization_CHG')]",
-				"[concat(variables('factoryId'), '/datasets/Organization')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/VehicleProperties')]",
@@ -1840,15 +1780,13 @@
 						"inputs": [
 							{
 								"referenceName": "VehicleProperties_CT1",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "VehicleProperties_Source",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -2307,15 +2245,13 @@
 						"inputs": [
 							{
 								"referenceName": "VehicleProperties_Source",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "VehicleProperties_CHG",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -2345,8 +2281,7 @@
 							},
 							"dataset": {
 								"referenceName": "VehicleProperties",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -2768,15 +2703,13 @@
 						"inputs": [
 							{
 								"referenceName": "VehicleProperties_CHG",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "VehicleProperties",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					}
@@ -2789,471 +2722,6 @@
 				"[concat(variables('factoryId'), '/datasets/VehicleProperties_Source')]",
 				"[concat(variables('factoryId'), '/datasets/VehicleProperties_CHG')]",
 				"[concat(variables('factoryId'), '/datasets/VehicleProperties')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Subscription",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureMySqlSource",
-								"query": "select distinct prty.external_id as org_id,co.internal_id as vid,pk.external_id as packagecode,\n/*cos.commercial_service_name,*/\nsub.activation_date,sub.end_date,sub.status\nfrom daf.co_third_party prty\njoin daf.co_pack_subscription pkg\non pkg.third_party_id = prty.id\njoin daf.co_resource_subscription sub\non sub.pack_subscription_id = pkg.id\njoin daf.co_commercial_subscription cs\non cs.resource_subscription_id = sub.id\njoin daf.co_link_pack_commercial_service pcs\non pcs.pack_id = pkg.pack_id\njoin daf.co_commercial_service cos\non cos.id = pcs.commercial_service_id\njoin daf.co_connected_object co\non co.id = sub.resource_id\njoin daf.co_pack pk\non pk.id = pkg.pack_id\nwhere  prty.external_id in (select distinct customer_id from daf_ct_wl.priority_customers);",
-								"queryTimeout": "02:00:00"
-							},
-							"sink": {
-								"type": "AzurePostgreSQLSink",
-								"writeBatchSize": 1000000,
-								"writeBatchTimeout": "00:30:00",
-								"writeMethod": "BulkInsert"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "org_id",
-											"type": "String"
-										},
-										"sink": {
-											"name": "org_id",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "vid",
-											"type": "String"
-										},
-										"sink": {
-											"name": "vid",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "packagecode",
-											"type": "String"
-										},
-										"sink": {
-											"name": "package_code",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "activation_date",
-											"type": "Int64"
-										},
-										"sink": {
-											"name": "subscription_start_date",
-											"type": "Int64",
-											"physicalType": "bigint"
-										}
-									},
-									{
-										"source": {
-											"name": "end_date",
-											"type": "Int64"
-										},
-										"sink": {
-											"name": "subscription_end_date",
-											"type": "Int64",
-											"physicalType": "bigint"
-										}
-									},
-									{
-										"source": {
-											"name": "status",
-											"type": "String"
-										},
-										"sink": {
-											"name": "state",
-											"type": "String",
-											"physicalType": "character"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "Organization_CT1",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "Subscription",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"annotations": [],
-				"lastPublishTime": "2021-08-13T02:39:14Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Organization_CT1')]",
-				"[concat(variables('factoryId'), '/datasets/Subscription')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Organization')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1master",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "org_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "name",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "address_type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "street",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "street_number",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "postal_code",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "city",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "country_code",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "reference_date",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "preference_id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "vehicle_default_opt_in",
-						"type": "character",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "driver_default_opt_in",
-						"type": "character",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "state",
-						"type": "character",
-						"precision": 0,
-						"scale": 0
-					}
-				],
-				"typeProperties": {
-					"schema": "master",
-					"table": "organization"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1master')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Organization_CHG')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1master",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "org_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "name",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "address_type",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "street",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "street_number",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "postal_code",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "city",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "country_code",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "reference_date",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "preference_id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "vehicle_default_opt_in",
-						"type": "character",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "driver_default_opt_in",
-						"type": "character",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "state",
-						"type": "character",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chg_flg",
-						"type": "character",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "load_dt",
-						"type": "timestamp without time zone",
-						"precision": 0,
-						"scale": 0
-					}
-				],
-				"typeProperties": {
-					"schema": "staging",
-					"table": "organization_chg"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1master')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Organization_CT1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureMySql1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureMySqlTable",
-				"schema": [],
-				"typeProperties": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureMySql1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Organization_source')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1master",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "public",
-					"table": "organization"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1master')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Subscription')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1master",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [
-					{
-						"name": "org_id",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "vid",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "package_code",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "subscription_start_date",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "subscription_end_date",
-						"type": "bigint",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "state",
-						"type": "character",
-						"precision": 0,
-						"scale": 0
-					}
-				],
-				"typeProperties": {
-					"schema": "public",
-					"table": "subscription"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1master')]"
 			]
 		},
 		{
@@ -3430,9 +2898,7 @@
 					"table": "vehicle"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1master')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/VehicleProperties')]",
@@ -3644,9 +3110,7 @@
 					"table": "vehicleproperties"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1master')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/VehicleProperties_CHG')]",
@@ -3870,9 +3334,7 @@
 					"table": "vehicleproperties_chg"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1master')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/VehicleProperties_CT1')]",
@@ -3885,12 +3347,9 @@
 				},
 				"annotations": [],
 				"type": "AzureMySqlTable",
-				"schema": [],
-				"typeProperties": {}
+				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureMySql1')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/VehicleProperties_Source')]",
@@ -3946,9 +3405,7 @@
 					"table": "vehicleproperties"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1master')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Vehicle_CHG')]",
@@ -4136,9 +3593,7 @@
 					"table": "vehicle_chg"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1master')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Vehicle_CT1')]",
@@ -4151,134 +3606,9 @@
 				},
 				"annotations": [],
 				"type": "AzureMySqlTable",
-				"schema": [],
-				"typeProperties": {}
+				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureMySql1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureMySql1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureMySql",
-				"typeProperties": {
-					"connectionString": "[parameters('AzureMySql1_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "daf-lan3-euwe-adf-mvnet-ir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/daf-lan3-euwe-adf-mvnet-ir')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzurePostgreSql1master')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzurePostgreSql",
-				"typeProperties": {
-					"connectionString": "[parameters('AzurePostgreSql1master_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "daf-lan3-euwe-adf-mvnet-ir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/daf-lan3-euwe-adf-mvnet-ir')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AutoResolveIntegrationRuntime')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "Managed",
-				"typeProperties": {
-					"computeProperties": {
-						"location": "AutoResolve",
-						"dataFlowProperties": {
-							"computeType": "General",
-							"coreCount": 8,
-							"timeToLive": 0
-						}
-					}
-				},
-				"managedVirtualNetwork": {
-					"type": "ManagedVirtualNetworkReference",
-					"referenceName": "default"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/daf-lan3-euwe-adf-mvnet-ir')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "Managed",
-				"typeProperties": {
-					"computeProperties": {
-						"location": "West Europe",
-						"dataFlowProperties": {
-							"computeType": "General",
-							"coreCount": 8,
-							"timeToLive": 10,
-							"cleanup": false
-						}
-					}
-				},
-				"managedVirtualNetwork": {
-					"type": "ManagedVirtualNetworkReference",
-					"referenceName": "default"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/default')]",
-			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
-			"apiVersion": "2018-06-01",
-			"properties": {},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/default/dafctlan3postgresmaster')]",
-			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"privateLinkResourceId": "[parameters('dafctlan3postgresmaster_properties_privateLinkResourceId')]",
-				"groupId": "[parameters('dafctlan3postgresmaster_properties_groupId')]",
-				"fqdns": "[parameters('dafctlan3postgresmaster_properties_fqdns')]"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/default/daflan3mysqlprivateendpoint')]",
-			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"privateLinkResourceId": "[parameters('daflan3mysqlprivateendpoint_properties_privateLinkResourceId')]",
-				"groupId": "[parameters('daflan3mysqlprivateendpoint_properties_groupId')]",
-				"fqdns": "[parameters('daflan3mysqlprivateendpoint_properties_fqdns')]"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
-			]
 		}
 	]
 }
