@@ -698,17 +698,17 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzurePostgreSqlSource",
-						"query": ""
+						"query": "UPDATE MASTER.VEHICLE L \nSET\t \nORGANIZATION_ID\t=\tS.ORGANIZATION_ID\t,\nNAME\t=\tS.NAME\t,\nVIN\t=\tS.VIN\t,\nLICENSE_PLATE_NUMBER\t=\tS.LICENSE_PLATE_NUMBER\t,\nSTATUS\t=\tS.STATUS\t,\nSTATUS_CHANGED_DATE\t=\tS.STATUS_CHANGED_DATE\t,\nTERMINATION_DATE\t=\tS.TERMINATION_DATE\t,\nTYPE\t\t=\tS.TYPE\t,\nTCU_ID\t=\tS.TCU_ID\t,\nTCU_SERIAL_NUMBER\t=\tS.TCU_SERIAL_NUMBER\t,\nTCU_BRAND\t=\tS.TCU_BRAND\t,\nTCU_VERSION\t=\tS.TCU_VERSION\t,\nIS_TCU_REGISTER\t=\tS.IS_TCU_REGISTER  ,\nREFERENCE_DATE\t=\tS.REFERENCE_DATE  ,\nVEHICLE_PROPERTY_ID\t=\tS.VEHICLE_PROPERTY_ID  ,\nCREATED_AT\t=\tS.CREATED_AT  ,\nMODEL_ID\t=\tS.MODEL_ID  ,\nOEM_ID\t=\tS.OEM_ID  ,\nOEM_ORGANISATION_ID\t=\tS.OEM_ORGANISATION_ID  ,\nOPT_IN\t=\tS.OPT_IN  ,\nMODIFIED_AT\t=\tS.MODIFIED_AT  ,\nIS_OTA\t=\tS.IS_OTA  ,\nMODIFIED_BY\t=\tS.MODIFIED_BY  ,\nFUEL_TYPE\t=\tS.FUEL_TYPE  \nFROM    staging.Vehicle_CHG S\nWHERE L.VID = S.VID \n  AND  S.CHG_FLG     = 'X';\n\nselect * from staging.vehicle_chg ;"
 					},
 					"dataset": {
 						"referenceName": "Vehicle",
 						"type": "DatasetReference"
 					},
-					"firstRowOnly": false
+					"firstRowOnly": true
 				}
 			},
 			{
-				"name": "Organization",
+				"name": "Vehicle",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -729,7 +729,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzurePostgreSqlSource",
-						"query": "SELECT \n\tE.ORG_ID                        ,\n\tE.NAME                          ,\n\tE.ADDRESS_TYPE                  ,\n\tCASE WHEN E.STREET  IS NOT NULL THEN E.STREET ELSE '' END AS STREET  ,\n\tCASE WHEN E.STREET_NUMBER  IS NOT NULL THEN E.STREET_NUMBER ELSE '' END AS STREET_NUMBER ,\n\tCASE WHEN E.POSTAL_CODE  IS NOT NULL THEN E.POSTAL_CODE ELSE '' END AS POSTAL_CODE                 ,\n\tCASE WHEN E.CITY IS NOT NULL THEN E.CITY ELSE '' END AS CITY                         ,\n\tCASE WHEN E.COUNTRY_CODE IS NOT NULL THEN E.COUNTRY_CODE ELSE '' END AS COUNTRY_CODE                 ,\n\tE.REFERENCE_DATE                ,\n\tE.VEHICLE_DEFAULT_OPT_IN        ,\n\tE.DRIVER_DEFAULT_OPT_IN         ,\n\tE.STATE                \n\t\nFROM staging.Organization_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.ORGANIZATION L\n             WHERE    L.ORG_ID = E.ORG_ID)\nORDER BY \n    \tORG_ID;\n"
+						"query": "SELECT \nE.ORGANIZATION_ID       ,\nE.NAME                  ,\nE.VIN                   ,\nE.LICENSE_PLATE_NUMBER  ,\nE.STATUS                ,\nE.STATUS_CHANGED_DATE   ,\nE.TERMINATION_DATE      ,\nE.VID                   ,\nE.TYPE                  ,\nE.TCU_ID                ,\nE.TCU_SERIAL_NUMBER     ,\nE.TCU_BRAND             ,\nE.TCU_VERSION           ,\nE.IS_TCU_REGISTER       ,\nE.REFERENCE_DATE        ,\nE.VEHICLE_PROPERTY_ID   ,\nE.CREATED_AT            ,\nE.MODEL_ID              ,\nE.OEM_ID                ,\nE.OEM_ORGANISATION_ID   ,\nE.OPT_IN                ,\nE.MODIFIED_AT           ,\nE.IS_OTA                ,\nE.MODIFIED_BY           ,\nE.FUEL_TYPE             \nFROM staging.Vehicle_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.VEHICLE L\n             WHERE    L.VID = E.VID)\nORDER BY \n    \tVID;\n"
 					},
 					"sink": {
 						"type": "AzurePostgreSQLSink",
@@ -743,14 +743,14 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "org_id",
-									"type": "String",
-									"physicalType": "character varying"
+									"name": "organization_id",
+									"type": "Int32",
+									"physicalType": "integer"
 								},
 								"sink": {
-									"name": "org_id",
-									"type": "String",
-									"physicalType": "character varying"
+									"name": "organization_id",
+									"type": "Int32",
+									"physicalType": "integer"
 								}
 							},
 							{
@@ -767,74 +767,146 @@
 							},
 							{
 								"source": {
-									"name": "address_type",
+									"name": "vin",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "address_type",
+									"name": "vin",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "street",
+									"name": "license_plate_number",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "street",
+									"name": "license_plate_number",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "street_number",
+									"name": "status",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "street_number",
+									"name": "status",
+									"type": "String",
+									"physicalType": "character"
+								}
+							},
+							{
+								"source": {
+									"name": "status_changed_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "status_changed_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "termination_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "termination_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "vid",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "vid",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "postal_code",
+									"name": "type",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "postal_code",
+									"name": "type",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "city",
+									"name": "tcu_id",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "city",
+									"name": "tcu_id",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "country_code",
+									"name": "tcu_serial_number",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "country_code",
+									"name": "tcu_serial_number",
 									"type": "String",
 									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "tcu_brand",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "tcu_brand",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "tcu_version",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "tcu_version",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "is_tcu_register",
+									"type": "Boolean",
+									"physicalType": "boolean"
+								},
+								"sink": {
+									"name": "is_tcu_register",
+									"type": "Boolean",
+									"physicalType": "boolean"
 								}
 							},
 							{
@@ -851,38 +923,122 @@
 							},
 							{
 								"source": {
-									"name": "vehicle_default_opt_in",
+									"name": "vehicle_property_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "vehicle_property_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "created_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "created_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "model_id",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "model_id",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "oem_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "oem_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "oem_organisation_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "oem_organisation_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "opt_in",
 									"type": "String",
 									"physicalType": "character"
 								},
 								"sink": {
-									"name": "vehicle_default_opt_in",
+									"name": "opt_in",
 									"type": "String",
 									"physicalType": "character"
 								}
 							},
 							{
 								"source": {
-									"name": "driver_default_opt_in",
-									"type": "String",
-									"physicalType": "character"
+									"name": "modified_at",
+									"type": "Int64",
+									"physicalType": "bigint"
 								},
 								"sink": {
-									"name": "driver_default_opt_in",
-									"type": "String",
-									"physicalType": "character"
+									"name": "modified_at",
+									"type": "Int64",
+									"physicalType": "bigint"
 								}
 							},
 							{
 								"source": {
-									"name": "state",
-									"type": "String",
-									"physicalType": "character"
+									"name": "is_ota",
+									"type": "Boolean",
+									"physicalType": "boolean"
 								},
 								"sink": {
-									"name": "state",
+									"name": "is_ota",
+									"type": "Boolean",
+									"physicalType": "boolean"
+								}
+							},
+							{
+								"source": {
+									"name": "modified_by",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "modified_by",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "fuel_type",
 									"type": "String",
-									"physicalType": "character"
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "fuel_type",
+									"type": "String",
+									"physicalType": "character varying"
 								}
 							}
 						],
@@ -895,13 +1051,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Organization_CHG",
+						"referenceName": "Vehicle_CHG",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "Organization",
+						"referenceName": "Vehicle",
 						"type": "DatasetReference"
 					}
 				]
