@@ -857,7 +857,7 @@
 				}
 			},
 			{
-				"name": "Organization",
+				"name": "VehicleProperties",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -878,7 +878,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzurePostgreSqlSource",
-						"query": "SELECT \n\tE.ORG_ID                        ,\n\tE.NAME                          ,\n\tE.ADDRESS_TYPE                  ,\n\tCASE WHEN E.STREET  IS NOT NULL THEN E.STREET ELSE '' END AS STREET  ,\n\tCASE WHEN E.STREET_NUMBER  IS NOT NULL THEN E.STREET_NUMBER ELSE '' END AS STREET_NUMBER ,\n\tCASE WHEN E.POSTAL_CODE  IS NOT NULL THEN E.POSTAL_CODE ELSE '' END AS POSTAL_CODE                 ,\n\tCASE WHEN E.CITY IS NOT NULL THEN E.CITY ELSE '' END AS CITY                         ,\n\tCASE WHEN E.COUNTRY_CODE IS NOT NULL THEN E.COUNTRY_CODE ELSE '' END AS COUNTRY_CODE                 ,\n\tE.REFERENCE_DATE                ,\n\tE.VEHICLE_DEFAULT_OPT_IN        ,\n\tE.DRIVER_DEFAULT_OPT_IN         ,\n\tE.STATE                \n\t\nFROM staging.Organization_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.ORGANIZATION L\n             WHERE    L.ORG_ID = E.ORG_ID)\nORDER BY \n    \tORG_ID;\n"
+						"query": "SELECT \nE.MANUFACTURE_DATE                           ,\nE.DELIVERY_DATE                              ,\nE.MAKE                                       ,\nE.LENGTH                                     ,\nE.HEIGHT                                     ,\nE.WEIGHT                                     ,\nE.ENGINE_ID                                  ,\nE.ENGINE_TYPE                                ,\nE.ENGINE_POWER                               ,\nE.ENGINE_COOLANT                             ,\nE.ENGINE_EMISSION_LEVEL                      ,\nE.CHASIS_ID                                  ,\nE.CHASIS_REAR_OVERHANG                       ,\nE.DRIVELINE_AXLE_CONFIGURATION               ,\nE.DRIVELINE_WHEEL_BASE                       ,\nE.DRIVELINE_TIRE_SIZE                        ,\nE.TRANSMISSION_GEARBOX_ID                    ,\nE.TRANSMISSION_GEARBOX_TYPE                  ,\nE.CABIN_ID                                   ,\nE.SERIES_ID                                  ,\nE.SERIES_VEHICLE_RANGE                       ,\nE.MODEL_YEAR                                 ,\nE.CABIN_TYPE                                 ,\nE.CABIN_ROOFSPOILER                          ,\nE.ELECTRONIC_CONTROL_UNIT_TYPE               ,\nE.ELECTRONIC_CONTROL_UNIT_NAME               ,\nE.WEIGHT_TYPE                                ,\nE.CHASIS_SIDE_SKIRTS                         ,\nE.CHASIS_SIDE_COLLAR                         ,\nE.WIDTH                                      ,\nE.TYPE_ID                        \nFROM staging.VehicleProperties_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.VEHICLEPROPERTIES L\n             WHERE    L.CHASIS_ID = E.CHASIS_ID)\nORDER BY \n    \tCHASIS_ID;\n"
 					},
 					"sink": {
 						"type": "AzurePostgreSQLSink",
@@ -892,146 +892,374 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "org_id",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "org_id",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "name",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "name",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "address_type",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "address_type",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "street",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "street",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "street_number",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "street_number",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "postal_code",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "postal_code",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "city",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "city",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "country_code",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "country_code",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "reference_date",
+									"name": "manufacture_date",
 									"type": "Int64",
 									"physicalType": "bigint"
 								},
 								"sink": {
-									"name": "reference_date",
+									"name": "manufacture_date",
 									"type": "Int64",
 									"physicalType": "bigint"
 								}
 							},
 							{
 								"source": {
-									"name": "vehicle_default_opt_in",
-									"type": "String",
-									"physicalType": "character"
+									"name": "delivery_date",
+									"type": "Int64",
+									"physicalType": "bigint"
 								},
 								"sink": {
-									"name": "vehicle_default_opt_in",
-									"type": "String",
-									"physicalType": "character"
+									"name": "delivery_date",
+									"type": "Int64",
+									"physicalType": "bigint"
 								}
 							},
 							{
 								"source": {
-									"name": "driver_default_opt_in",
+									"name": "make",
 									"type": "String",
-									"physicalType": "character"
+									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "driver_default_opt_in",
+									"name": "make",
 									"type": "String",
-									"physicalType": "character"
+									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "state",
+									"name": "length",
 									"type": "String",
-									"physicalType": "character"
+									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "state",
+									"name": "length",
 									"type": "String",
-									"physicalType": "character"
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "height",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "height",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "weight",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "weight",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "engine_id",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "engine_id",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "engine_type",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "engine_type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "engine_power",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "engine_power",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "engine_coolant",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "engine_coolant",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "engine_emission_level",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "engine_emission_level",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "chasis_id",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "chasis_id",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "chasis_rear_overhang",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "chasis_rear_overhang",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "driveline_axle_configuration",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "driveline_axle_configuration",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "driveline_wheel_base",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "driveline_wheel_base",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "driveline_tire_size",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "driveline_tire_size",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "transmission_gearbox_id",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "transmission_gearbox_id",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "transmission_gearbox_type",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "transmission_gearbox_type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "cabin_id",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "cabin_id",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "series_id",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "series_id",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "series_vehicle_range",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "series_vehicle_range",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "model_year",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "model_year",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "cabin_type",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "cabin_type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "cabin_roofspoiler",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "cabin_roofspoiler",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "electronic_control_unit_type",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "electronic_control_unit_type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "electronic_control_unit_name",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "electronic_control_unit_name",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "weight_type",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "weight_type",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "chasis_side_skirts",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "chasis_side_skirts",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "chasis_side_collar",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "chasis_side_collar",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "width",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "width",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "type_id",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "type_id",
+									"type": "String",
+									"physicalType": "character varying"
 								}
 							}
 						],
@@ -1044,13 +1272,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Organization_CHG",
+						"referenceName": "VehicleProperties_CHG",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "Organization",
+						"referenceName": "VehicleProperties",
 						"type": "DatasetReference"
 					}
 				]
