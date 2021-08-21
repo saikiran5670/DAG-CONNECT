@@ -333,26 +333,14 @@
 							},
 							{
 								"source": {
-									"name": "org_id",
-									"type": "String",
-									"physicalType": "character varying"
+									"name": "organization_id",
+									"type": "Int32",
+									"physicalType": "integer"
 								},
 								"sink": {
-									"name": "org_id",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "type",
-									"type": "String",
-									"physicalType": "character varying"
-								},
-								"sink": {
-									"name": "type",
-									"type": "String",
-									"physicalType": "character varying"
+									"name": "organization_id",
+									"type": "Int32",
+									"physicalType": "integer"
 								}
 							},
 							{
@@ -369,81 +357,153 @@
 							},
 							{
 								"source": {
-									"name": "address_type",
+									"name": "vin",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "address_type",
+									"name": "vin",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "street",
+									"name": "license_plate_number",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "street",
+									"name": "license_plate_number",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "street_number",
+									"name": "status",
 									"type": "String",
 									"physicalType": "text"
 								},
 								"sink": {
-									"name": "street_number",
+									"name": "status",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "postal_code",
+									"name": "status_changed_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "status_changed_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "termination_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "termination_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "vid",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "postal_code",
+									"name": "vid",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "city",
+									"name": "type",
 									"type": "String",
-									"physicalType": "character varying"
+									"physicalType": "text"
 								},
 								"sink": {
-									"name": "city",
+									"name": "type",
 									"type": "String",
 									"physicalType": "character varying"
 								}
 							},
 							{
 								"source": {
-									"name": "country_code",
+									"name": "tcu_id",
 									"type": "String",
 									"physicalType": "character varying"
 								},
 								"sink": {
-									"name": "country_code",
+									"name": "tcu_id",
 									"type": "String",
 									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "tcu_serial_number",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "tcu_serial_number",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "tcu_brand",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "tcu_brand",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "tcu_version",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "tcu_version",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "is_tcu_register",
+									"type": "Boolean",
+									"physicalType": "boolean"
+								},
+								"sink": {
+									"name": "is_tcu_register",
+									"type": "Boolean",
+									"physicalType": "boolean"
 								}
 							},
 							{
 								"source": {
 									"name": "reference_date",
-									"type": "Double",
-									"physicalType": "double precision"
+									"type": "Int64",
+									"physicalType": "bigint"
 								},
 								"sink": {
 									"name": "reference_date",
@@ -453,50 +513,122 @@
 							},
 							{
 								"source": {
-									"name": "preference_id",
+									"name": "vehicle_property_id",
 									"type": "Int32",
 									"physicalType": "integer"
 								},
 								"sink": {
-									"name": "preference_id",
+									"name": "vehicle_property_id",
 									"type": "Int32",
 									"physicalType": "integer"
 								}
 							},
 							{
 								"source": {
-									"name": "vehicle_default_opt_in",
-									"type": "String",
-									"physicalType": "character"
+									"name": "created_at",
+									"type": "Double",
+									"physicalType": "double precision"
 								},
 								"sink": {
-									"name": "vehicle_default_opt_in",
+									"name": "created_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "model_id",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "model_id",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "oem_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "oem_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "oem_organisation_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "oem_organisation_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "opt_in",
+									"type": "String",
+									"physicalType": "text"
+								},
+								"sink": {
+									"name": "opt_in",
 									"type": "String",
 									"physicalType": "character"
 								}
 							},
 							{
 								"source": {
-									"name": "driver_default_opt_in",
-									"type": "String",
-									"physicalType": "character"
+									"name": "modified_at",
+									"type": "Double",
+									"physicalType": "double precision"
 								},
 								"sink": {
-									"name": "driver_default_opt_in",
-									"type": "String",
-									"physicalType": "character"
+									"name": "modified_at",
+									"type": "Int64",
+									"physicalType": "bigint"
 								}
 							},
 							{
 								"source": {
-									"name": "state",
-									"type": "String",
-									"physicalType": "character"
+									"name": "is_ota",
+									"type": "Boolean",
+									"physicalType": "boolean"
 								},
 								"sink": {
-									"name": "state",
+									"name": "is_ota",
+									"type": "Boolean",
+									"physicalType": "boolean"
+								}
+							},
+							{
+								"source": {
+									"name": "modified_by",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "modified_by",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "fuel_type",
 									"type": "String",
-									"physicalType": "character"
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "fuel_type",
+									"type": "String",
+									"physicalType": "character varying"
 								}
 							},
 							{
@@ -508,7 +640,7 @@
 								"sink": {
 									"name": "chg_flg",
 									"type": "String",
-									"physicalType": "character"
+									"physicalType": "character varying"
 								}
 							},
 							{
@@ -545,7 +677,7 @@
 				]
 			},
 			{
-				"name": "Update_Organization_X",
+				"name": "Update_Vehicle_X",
 				"type": "Lookup",
 				"dependsOn": [
 					{
@@ -566,10 +698,10 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzurePostgreSqlSource",
-						"query": "UPDATE MASTER.ORGANIZATION L \nSET\t \nTYPE\t=\tE.TYPE\t,\nNAME\t=\tE.NAME\t,\nADDRESS_TYPE\t=\tE.ADDRESS_TYPE\t,\nSTREET\t=\tE.STREET\t,\nSTREET_NUMBER\t=\tE.STREET_NUMBER\t,\nPOSTAL_CODE\t=\tE.POSTAL_CODE\t,\nCITY\t=\tE.CITY\t,\nCOUNTRY_CODE\t=\tE.COUNTRY_CODE\t,\nREFERENCE_DATE\t=\tE.REFERENCE_DATE\t,\nPREFERENCE_ID\t=\tE.PREFERENCE_ID\t,\nVEHICLE_DEFAULT_OPT_IN\t=\tE.VEHICLE_DEFAULT_OPT_IN\t,\nDRIVER_DEFAULT_OPT_IN\t=\tE.DRIVER_DEFAULT_OPT_IN\t,\nSTATE\t=\tE.STATE\nFROM    staging.organization_chg E\nWHERE L.org_id = E.org_id \n  AND  E.CHG_FLG     = 'X';\n  \nSELECT * FROM STAGING.ORGANIZATION_CHG WHERE CHG_FLG = 'X';"
+						"query": ""
 					},
 					"dataset": {
-						"referenceName": "Organization",
+						"referenceName": "Vehicle",
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
@@ -580,7 +712,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Update_Organization_X",
+						"activity": "Update_Vehicle_X",
 						"dependencyConditions": [
 							"Succeeded"
 						]
