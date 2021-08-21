@@ -47,7 +47,7 @@
 		],
 		"typeProperties": {
 			"schema": "public",
-			"table": "vehicleaxleproperties"
+			"table": "vehicleproperties"
 		}
 	}
 }
