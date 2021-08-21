@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Organization_CT1",
-				"description": "Migrate Organization data",
+				"name": "Vehicle_CT1",
+				"description": "Migrate Vehicle data",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -18,7 +18,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureMySqlSource",
-						"query": "select * from  daf_ct_wl.organization where org_id not in (select distinct org_id from  daf_ct_wl.organization_duplicacy)\nunion\nselect * from  daf_ct_wl.organization where org_id in (select distinct org_id from  daf_ct_wl.organization_duplicacy)  and street is not null;",
+						"query": "select distinct vh.id,prty.id as organization_id,vh.name as Name,vh.VIN,vh.plate_number as license_plate_number,\nvh.connected_object_status as status,     \nnull as status_changed_date,\nnull as termination_date,\nvh.vehicle_vid as vid,typ.type as type,\neq.supplier_serial_number as tcu_id,\neq.serial_number as tcu_serial_number,\nvh.brand as tcu_brand,\n'1.0' as tcu_version,\nCASE WHEN eq.serial_number is not null then 'True' ELSE 'False' END is_tcu_register,\nNULL as reference_date,\nNULL as vehicle_property_id,\nvh.creation_date as created_at,\nvh.model_name as model_id,\n1 as oem_id,\n2 as oem_organisation_id,\n'H' as opt_in,\nvh.last_modification_date as modified_at,\n'False' as is_ota,\nnull as modified_by,\nREPLACE(JSON_EXTRACT(co.metadata,'$.fuelType'),'\"','') as fuel_type\nfrom cle_pc_cvp_fap.vehicle vh\nleft join daf.co_connected_object co\non co.internal_id = vh.vehicle_vid\nleft join daf.co_connected_object_type typ\non typ.id = co.connected_object_type\nleft join daf.co_third_party prty\non typ.third_party_id = prty.id\nleft join cle_pc_cvp_fap.equipment eq\non eq.vehicle_id = vh.id;\n",
 						"queryTimeout": "02:00:00"
 					},
 					"sink": {
@@ -195,7 +195,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Organization_CT1",
+						"referenceName": "Vehicle_CT1",
 						"type": "DatasetReference"
 					}
 				],
@@ -212,7 +212,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Organization_CT1",
+						"activity": "Vehicle_CT1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
