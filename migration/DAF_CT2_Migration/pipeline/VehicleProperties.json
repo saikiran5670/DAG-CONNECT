@@ -853,7 +853,7 @@
 						"referenceName": "VehicleProperties",
 						"type": "DatasetReference"
 					},
-					"firstRowOnly": false
+					"firstRowOnly": true
 				}
 			},
 			{
