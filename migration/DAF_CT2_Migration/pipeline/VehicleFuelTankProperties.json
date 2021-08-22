@@ -593,7 +593,7 @@
 				}
 			},
 			{
-				"name": "VehicleProperties",
+				"name": "VehicleFuelTankProperties",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -614,7 +614,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzurePostgreSqlSource",
-						"query": "SELECT \nE.MANUFACTURE_DATE                           ,\nE.DELIVERY_DATE                              ,\nE.MAKE                                       ,\nE.LENGTH                                     ,\nE.HEIGHT                                     ,\nE.WEIGHT                                     ,\nE.ENGINE_ID                                  ,\nE.ENGINE_TYPE                                ,\nE.ENGINE_POWER                               ,\nE.ENGINE_COOLANT                             ,\nE.ENGINE_EMISSION_LEVEL                      ,\nE.CHASIS_ID                                  ,\nE.CHASIS_REAR_OVERHANG                       ,\nE.DRIVELINE_AXLE_CONFIGURATION               ,\nE.DRIVELINE_WHEEL_BASE                       ,\nE.DRIVELINE_TIRE_SIZE                        ,\nE.TRANSMISSION_GEARBOX_ID                    ,\nE.TRANSMISSION_GEARBOX_TYPE                  ,\nE.CABIN_ID                                   ,\nE.SERIES_ID                                  ,\nE.SERIES_VEHICLE_RANGE                       ,\nE.MODEL_YEAR                                 ,\nE.CABIN_TYPE                                 ,\nE.CABIN_ROOFSPOILER                          ,\nE.ELECTRONIC_CONTROL_UNIT_TYPE               ,\nE.ELECTRONIC_CONTROL_UNIT_NAME               ,\nE.WEIGHT_TYPE                                ,\nE.CHASIS_SIDE_SKIRTS                         ,\nE.CHASIS_SIDE_COLLAR                         ,\nE.WIDTH                                      ,\nE.TYPE_ID                        \nFROM staging.VehicleProperties_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.VEHICLEPROPERTIES L\n             WHERE    L.CHASIS_ID = E.CHASIS_ID)\nORDER BY \n    \tCHASIS_ID;\n"
+						"query": "SELECT \nE.vehicle_id       ,\nE.CHASIS_FUEL_TANK_NUMBER                  ,\nE.CHASIS_FUEL_TANK_VOLUME\nFROM staging.VehicleFuelTankProperties_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.VehicleFuelTankProperties_CHG L\n             WHERE    L.vehicle_id = E.vehicle_id)\nORDER BY \n    \tCHASIS_FUEL_TANK_NUMBER;\n"
 					},
 					"sink": {
 						"type": "AzurePostgreSQLSink",
@@ -1008,7 +1008,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "VehicleProperties_CHG",
+						"referenceName": "VehicleFuelTankProperties_CHG",
 						"type": "DatasetReference"
 					}
 				],
