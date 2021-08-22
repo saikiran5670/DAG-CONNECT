@@ -13,880 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/VehicleFuelTankProperties_CT1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureMySql1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureMySqlTable",
-				"schema": [],
-				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/VehicleFuelTankProperties_Source')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1master",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chasis_fuel_tank_number",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chasis_fuel_tank_volume",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "vehicle_vid",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					}
-				],
-				"typeProperties": {
-					"schema": "public",
-					"table": "vehiclefueltankproperties"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/VehicleFuelTankProperties_CHG')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1master",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chasis_fuel_tank_number",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chasis_fuel_tank_volume",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "vehicle_vid",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chg_flg",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "load_dt",
-						"type": "timestamp without time zone",
-						"precision": 0,
-						"scale": 0
-					}
-				],
-				"typeProperties": {
-					"schema": "staging",
-					"table": "vehiclefueltankproperties_chg"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/VehicleFuelTankProperties')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1master",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "vehicle_id",
-						"type": "integer",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chasis_fuel_tank_number",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "chasis_fuel_tank_volume",
-						"type": "character varying",
-						"precision": 0,
-						"scale": 0
-					}
-				],
-				"typeProperties": {
-					"schema": "master",
-					"table": "vehiclefueltankproperties"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Organization')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Organization_CT1",
-						"description": "Migrate Organization data",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureMySqlSource",
-								"query": "select * from  daf_ct_wl.organization where org_id not in (select distinct org_id from  daf_ct_wl.organization_duplicacy)\nunion\nselect * from  daf_ct_wl.organization where org_id in (select distinct org_id from  daf_ct_wl.organization_duplicacy)  and street is not null;",
-								"queryTimeout": "02:00:00"
-							},
-							"sink": {
-								"type": "AzurePostgreSQLSink",
-								"writeBatchSize": 1000000,
-								"writeBatchTimeout": "00:30:00",
-								"writeMethod": "BulkInsert"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "id",
-											"type": "Int64"
-										},
-										"sink": {
-											"name": "id",
-											"type": "Int32",
-											"physicalType": "integer"
-										}
-									},
-									{
-										"source": {
-											"name": "org_id",
-											"type": "String"
-										},
-										"sink": {
-											"name": "org_id",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "type",
-											"type": "Byte[]"
-										},
-										"sink": {
-											"name": "type",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "name",
-											"type": "String"
-										},
-										"sink": {
-											"name": "name",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "address_type",
-											"type": "String"
-										},
-										"sink": {
-											"name": "address_type",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "street",
-											"type": "String"
-										},
-										"sink": {
-											"name": "street",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "street_number",
-											"type": "String"
-										},
-										"sink": {
-											"name": "street_number",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "postal_code",
-											"type": "String"
-										},
-										"sink": {
-											"name": "postal_code",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "city",
-											"type": "String"
-										},
-										"sink": {
-											"name": "city",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "country_code",
-											"type": "String"
-										},
-										"sink": {
-											"name": "country_code",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "reference_date",
-											"type": "DateTime"
-										},
-										"sink": {
-											"name": "reference_date",
-											"type": "String",
-											"physicalType": "text"
-										}
-									},
-									{
-										"source": {
-											"name": "vehicle_default_opt_in",
-											"type": "String"
-										},
-										"sink": {
-											"name": "vehicle_default_opt_in",
-											"type": "String",
-											"physicalType": "character"
-										}
-									},
-									{
-										"source": {
-											"name": "driver_default_opt_in",
-											"type": "String"
-										},
-										"sink": {
-											"name": "driver_default_opt_in",
-											"type": "String",
-											"physicalType": "character"
-										}
-									},
-									{
-										"source": {
-											"name": "state",
-											"type": "String"
-										},
-										"sink": {
-											"name": "state",
-											"type": "String",
-											"physicalType": "character"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "Organization_CT1",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "Organization_source",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Organization_CHG",
-						"description": "Compares source and target and find the records for upsert",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Organization_CT1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzurePostgreSqlSource",
-								"query": "SELECT \n\tcoalesce(L.ID,0) AS ID,\nS.ORG_ID                        ,\nS.TYPE                          ,\nS.NAME                          ,\nS.ADDRESS_TYPE                  ,\nS.STREET                        ,\nsubstring(S.STREET,'[0-9]+')  as STREET_NUMBER                  ,\nS.POSTAL_CODE                   ,\nS.CITY                          ,\nCASE WHEN S.COUNTRY_CODE  IS NOT NULL THEN cnty.code ELSE NULL END AS country_code,\n(select extract(epoch from cast(S.reference_date as timestamp)) * 1000) as REFERENCE_DATE,\nS.PREFERENCE_ID                 ,\nS.VEHICLE_DEFAULT_OPT_IN        ,\nS.DRIVER_DEFAULT_OPT_IN         ,\nS.STATE                         ,\n\tCASE WHEN L.ID IS NULL THEN 'I' ELSE 'X' END AS CHG_FLG,\n\tCURRENT_TIMeSTAMP AS LOAD_DT\n\t\nFROM\n       public.organization S\nLEFT JOIN \n       master.organization L\nON S.ORG_ID = L.ORG_ID\nLEFT join master.country cnty\non s.country_code = cnty.name\nWHERE ( S.TYPE\t<>\tL.TYPE\tOR\nS.NAME\t<>\tL.NAME\tOR\nS.ADDRESS_TYPE\t<>\tL.ADDRESS_TYPE\tOR\nS.STREET\t<>\tL.STREET\tOR\nS.STREET_NUMBER\t<>\tL.STREET_NUMBER\tOR\nS.POSTAL_CODE\t<>\tL.POSTAL_CODE\tOR\nS.CITY\t<>\tL.CITY\tOR\nS.COUNTRY_CODE\t<>\tL.COUNTRY_CODE\tOR\n(select extract(epoch from cast(S.reference_date as timestamp)) * 1000)\t<>\tL.REFERENCE_DATE\tOR\nS.PREFERENCE_ID\t<>\tL.PREFERENCE_ID\tOR\nS.VEHICLE_DEFAULT_OPT_IN\t<>\tL.VEHICLE_DEFAULT_OPT_IN\tOR\nS.DRIVER_DEFAULT_OPT_IN\t<>\tL.DRIVER_DEFAULT_OPT_IN\tOR\nS.STATE\t<>\tL.STATE  OR\n\t    L.ID IS NULL);"
-							},
-							"sink": {
-								"type": "AzurePostgreSQLSink",
-								"writeBatchSize": 1000000,
-								"writeBatchTimeout": "00:30:00",
-								"preCopyScript": "TRUNCATE TABLE STAGING.ORGANIZATION_CHG;",
-								"writeMethod": "BulkInsert"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "id",
-											"type": "Int32",
-											"physicalType": "integer"
-										},
-										"sink": {
-											"name": "id",
-											"type": "Int32",
-											"physicalType": "integer"
-										}
-									},
-									{
-										"source": {
-											"name": "org_id",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "org_id",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "type",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "type",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "name",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "name",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "address_type",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "address_type",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "street",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "street",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "street_number",
-											"type": "String",
-											"physicalType": "text"
-										},
-										"sink": {
-											"name": "street_number",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "postal_code",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "postal_code",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "city",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "city",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "country_code",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "country_code",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "reference_date",
-											"type": "Double",
-											"physicalType": "double precision"
-										},
-										"sink": {
-											"name": "reference_date",
-											"type": "Int64",
-											"physicalType": "bigint"
-										}
-									},
-									{
-										"source": {
-											"name": "preference_id",
-											"type": "Int32",
-											"physicalType": "integer"
-										},
-										"sink": {
-											"name": "preference_id",
-											"type": "Int32",
-											"physicalType": "integer"
-										}
-									},
-									{
-										"source": {
-											"name": "vehicle_default_opt_in",
-											"type": "String",
-											"physicalType": "character"
-										},
-										"sink": {
-											"name": "vehicle_default_opt_in",
-											"type": "String",
-											"physicalType": "character"
-										}
-									},
-									{
-										"source": {
-											"name": "driver_default_opt_in",
-											"type": "String",
-											"physicalType": "character"
-										},
-										"sink": {
-											"name": "driver_default_opt_in",
-											"type": "String",
-											"physicalType": "character"
-										}
-									},
-									{
-										"source": {
-											"name": "state",
-											"type": "String",
-											"physicalType": "character"
-										},
-										"sink": {
-											"name": "state",
-											"type": "String",
-											"physicalType": "character"
-										}
-									},
-									{
-										"source": {
-											"name": "chg_flg",
-											"type": "String",
-											"physicalType": "text"
-										},
-										"sink": {
-											"name": "chg_flg",
-											"type": "String",
-											"physicalType": "character"
-										}
-									},
-									{
-										"source": {
-											"name": "load_dt",
-											"type": "DateTime",
-											"physicalType": "timestamp with time zone"
-										},
-										"sink": {
-											"name": "load_dt",
-											"type": "DateTime",
-											"physicalType": "timestamp without time zone"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "Organization_source",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "Organization_CHG",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Update_Organization_X",
-						"type": "Lookup",
-						"dependsOn": [
-							{
-								"activity": "Organization_CHG",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzurePostgreSqlSource",
-								"query": "UPDATE MASTER.ORGANIZATION L \nSET\t \nTYPE\t=\tE.TYPE\t,\nNAME\t=\tE.NAME\t,\nADDRESS_TYPE\t=\tE.ADDRESS_TYPE\t,\nSTREET\t=\tE.STREET\t,\nSTREET_NUMBER\t=\tE.STREET_NUMBER\t,\nPOSTAL_CODE\t=\tE.POSTAL_CODE\t,\nCITY\t=\tE.CITY\t,\nCOUNTRY_CODE\t=\tE.COUNTRY_CODE\t,\nREFERENCE_DATE\t=\tE.REFERENCE_DATE\t,\nPREFERENCE_ID\t=\tE.PREFERENCE_ID\t,\nVEHICLE_DEFAULT_OPT_IN\t=\tE.VEHICLE_DEFAULT_OPT_IN\t,\nDRIVER_DEFAULT_OPT_IN\t=\tE.DRIVER_DEFAULT_OPT_IN\t,\nSTATE\t=\tE.STATE\nFROM    staging.organization_chg E\nWHERE L.org_id = E.org_id \n  AND  E.CHG_FLG     = 'X';\n  \nSELECT * FROM STAGING.ORGANIZATION_CHG WHERE CHG_FLG = 'X';"
-							},
-							"dataset": {
-								"referenceName": "Organization",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "Organization",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Update_Organization_X",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzurePostgreSqlSource",
-								"query": "SELECT \n\tE.ORG_ID                        ,\n\tE.NAME                          ,\n\tE.ADDRESS_TYPE                  ,\n\tCASE WHEN E.STREET  IS NOT NULL THEN E.STREET ELSE '' END AS STREET  ,\n\tCASE WHEN E.STREET_NUMBER  IS NOT NULL THEN E.STREET_NUMBER ELSE '' END AS STREET_NUMBER ,\n\tCASE WHEN E.POSTAL_CODE  IS NOT NULL THEN E.POSTAL_CODE ELSE '' END AS POSTAL_CODE                 ,\n\tCASE WHEN E.CITY IS NOT NULL THEN E.CITY ELSE '' END AS CITY                         ,\n\tCASE WHEN E.COUNTRY_CODE IS NOT NULL THEN E.COUNTRY_CODE ELSE '' END AS COUNTRY_CODE                 ,\n\tE.REFERENCE_DATE                ,\n\tE.VEHICLE_DEFAULT_OPT_IN        ,\n\tE.DRIVER_DEFAULT_OPT_IN         ,\n\tE.STATE                \n\t\nFROM staging.Organization_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.ORGANIZATION L\n             WHERE    L.ORG_ID = E.ORG_ID)\nORDER BY \n    \tORG_ID;\n"
-							},
-							"sink": {
-								"type": "AzurePostgreSQLSink",
-								"writeBatchSize": 1000000,
-								"writeBatchTimeout": "00:30:00",
-								"writeMethod": "BulkInsert"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "org_id",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "org_id",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "name",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "name",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "address_type",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "address_type",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "street",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "street",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "street_number",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "street_number",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "postal_code",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "postal_code",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "city",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "city",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "country_code",
-											"type": "String",
-											"physicalType": "character varying"
-										},
-										"sink": {
-											"name": "country_code",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "reference_date",
-											"type": "Int64",
-											"physicalType": "bigint"
-										},
-										"sink": {
-											"name": "reference_date",
-											"type": "Int64",
-											"physicalType": "bigint"
-										}
-									},
-									{
-										"source": {
-											"name": "vehicle_default_opt_in",
-											"type": "String",
-											"physicalType": "character"
-										},
-										"sink": {
-											"name": "vehicle_default_opt_in",
-											"type": "String",
-											"physicalType": "character"
-										}
-									},
-									{
-										"source": {
-											"name": "driver_default_opt_in",
-											"type": "String",
-											"physicalType": "character"
-										},
-										"sink": {
-											"name": "driver_default_opt_in",
-											"type": "String",
-											"physicalType": "character"
-										}
-									},
-									{
-										"source": {
-											"name": "state",
-											"type": "String",
-											"physicalType": "character"
-										},
-										"sink": {
-											"name": "state",
-											"type": "String",
-											"physicalType": "character"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "Organization_CHG",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "Organization",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"annotations": [],
-				"lastPublishTime": "2021-08-18T13:28:56Z"
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Vehicle')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1163,15 +289,13 @@
 						"inputs": [
 							{
 								"referenceName": "Vehicle_CT1",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "Vehicle_Source",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -1558,15 +682,13 @@
 						"inputs": [
 							{
 								"referenceName": "Vehicle_Source",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "Vehicle_CHG",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -1596,8 +718,7 @@
 							},
 							"dataset": {
 								"referenceName": "Vehicle",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": true
 						}
@@ -1947,15 +1068,13 @@
 						"inputs": [
 							{
 								"referenceName": "Vehicle_CHG",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "Vehicle",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					}
@@ -2319,15 +1438,13 @@
 						"inputs": [
 							{
 								"referenceName": "VehicleProperties_CT1",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "VehicleProperties_Source",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -2786,15 +1903,13 @@
 						"inputs": [
 							{
 								"referenceName": "VehicleProperties_Source",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "VehicleProperties_CHG",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -2824,8 +1939,7 @@
 							},
 							"dataset": {
 								"referenceName": "VehicleProperties",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": true
 						}
@@ -3247,15 +2361,13 @@
 						"inputs": [
 							{
 								"referenceName": "VehicleProperties_CHG",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "VehicleProperties",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					}
@@ -3266,131 +2378,161 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/VehicleFuelTankProperties_CT1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
+				"linkedServiceName": {
+					"referenceName": "AzureMySql1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureMySqlTable",
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/VehicleFuelTankProperties_Source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzurePostgreSql1master",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
 					{
-						"name": "Subscription",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureMySqlSource",
-								"query": "select distinct prty.external_id as org_id,co.internal_id as vid,pk.external_id as packagecode,\n/*cos.commercial_service_name,*/\nsub.activation_date,sub.end_date,sub.status\nfrom daf.co_third_party prty\njoin daf.co_pack_subscription pkg\non pkg.third_party_id = prty.id\njoin daf.co_resource_subscription sub\non sub.pack_subscription_id = pkg.id\njoin daf.co_commercial_subscription cs\non cs.resource_subscription_id = sub.id\njoin daf.co_link_pack_commercial_service pcs\non pcs.pack_id = pkg.pack_id\njoin daf.co_commercial_service cos\non cos.id = pcs.commercial_service_id\njoin daf.co_connected_object co\non co.id = sub.resource_id\njoin daf.co_pack pk\non pk.id = pkg.pack_id\nwhere  prty.external_id in (select distinct customer_id from daf_ct_wl.priority_customers);",
-								"queryTimeout": "02:00:00"
-							},
-							"sink": {
-								"type": "AzurePostgreSQLSink",
-								"writeBatchSize": 1000000,
-								"writeBatchTimeout": "00:30:00",
-								"writeMethod": "BulkInsert"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "org_id",
-											"type": "String"
-										},
-										"sink": {
-											"name": "org_id",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "vid",
-											"type": "String"
-										},
-										"sink": {
-											"name": "vid",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "packagecode",
-											"type": "String"
-										},
-										"sink": {
-											"name": "package_code",
-											"type": "String",
-											"physicalType": "character varying"
-										}
-									},
-									{
-										"source": {
-											"name": "activation_date",
-											"type": "Int64"
-										},
-										"sink": {
-											"name": "subscription_start_date",
-											"type": "Int64",
-											"physicalType": "bigint"
-										}
-									},
-									{
-										"source": {
-											"name": "end_date",
-											"type": "Int64"
-										},
-										"sink": {
-											"name": "subscription_end_date",
-											"type": "Int64",
-											"physicalType": "bigint"
-										}
-									},
-									{
-										"source": {
-											"name": "status",
-											"type": "String"
-										},
-										"sink": {
-											"name": "state",
-											"type": "String",
-											"physicalType": "character"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "Organization_CT1",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "Subscription",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "chasis_fuel_tank_number",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "chasis_fuel_tank_volume",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "vehicle_vid",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
 					}
 				],
+				"typeProperties": {
+					"schema": "public",
+					"table": "vehiclefueltankproperties"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/VehicleFuelTankProperties_CHG')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzurePostgreSql1master",
+					"type": "LinkedServiceReference"
+				},
 				"annotations": [],
-				"lastPublishTime": "2021-08-13T02:39:14Z"
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "chasis_fuel_tank_number",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "chasis_fuel_tank_volume",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "vehicle_vid",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "chg_flg",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "load_dt",
+						"type": "timestamp without time zone",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "staging",
+					"table": "vehiclefueltankproperties_chg"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/VehicleFuelTankProperties')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzurePostgreSql1master",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "vehicle_id",
+						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "chasis_fuel_tank_number",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "chasis_fuel_tank_volume",
+						"type": "character varying",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "master",
+					"table": "vehiclefueltankproperties"
+				}
 			},
 			"dependsOn": []
 		},
@@ -3484,15 +2626,13 @@
 						"inputs": [
 							{
 								"referenceName": "VehicleFuelTankProperties_CT1",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "VehicleFuelTankProperties_Source",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -3951,15 +3091,13 @@
 						"inputs": [
 							{
 								"referenceName": "VehicleFuelTankProperties_Source",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "VehicleFuelTankProperties_CHG",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -3989,8 +3127,7 @@
 							},
 							"dataset": {
 								"referenceName": "VehicleFuelTankProperties",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": true
 						}
@@ -4412,15 +3549,13 @@
 						"inputs": [
 							{
 								"referenceName": "VehicleFuelTankProperties_CHG",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "VehicleProperties",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					}
