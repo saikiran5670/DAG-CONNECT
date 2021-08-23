@@ -393,7 +393,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.chartsColumnData.forEach((element, index) => {
       let cSearch = this.selectionForChartsColumns.selected.filter(item => item.dataAttributeId == element.dataAttributeId);
       if(index == 2){ // mileage base utilisation
-        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fleetUtilForm.controls.mileageChart.value, thresholdType: this.fleetUtilForm.controls.mileageThreshold.value, thresholdValue: (this.prefUnitFormat == 'dunit_Metric') ? this.reportMapService.kmToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value)) : this.reportMapService.mileToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value)) });
+        _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fleetUtilForm.controls.mileageChart.value, thresholdType: this.fleetUtilForm.controls.mileageThreshold.value, thresholdValue: (this.prefUnitFormat == 'dunit_Metric') ? parseInt(this.reportMapService.kmToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value))) : parseInt(this.reportMapService.mileToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value))) });
       }else if(index == 3){ // time base utilisation
         _chartArr.push({ dataAttributeId: element.dataAttributeId, state: (cSearch.length > 0) ? "A" : "I", preferenceType: "C", chartType: this.fleetUtilForm.controls.timeChart.value, thresholdType: this.fleetUtilForm.controls.timeThreshold.value, thresholdValue: this.convertHHMMToMs(this.fleetUtilForm.controls.timeTarget.value) });
       }else{ // distance & active vehicle
@@ -514,7 +514,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
 
   setDefaultFormValues(){
     this.timeDisplay = this.chartsColumnData[3].thresholdValue != '' ? this.convertMilisecondsToHHMM(parseInt(this.chartsColumnData[3].thresholdValue)) : '00:00';
-    let mileageInKm: any = this.chartsColumnData[2].thresholdValue != '' ? this.reportMapService.convertDistanceUnits(parseInt(this.chartsColumnData[2].thresholdValue), this.prefUnitFormat) : 0;
+    let mileageInKm: any = this.chartsColumnData[2].thresholdValue != '' ? parseInt(this.reportMapService.convertDistanceUnits(parseInt(this.chartsColumnData[2].thresholdValue), this.prefUnitFormat)) : 0;
     this.slideState = this.slideStateData ? ((this.slideStateData.state == 'A') ? true : false) : false; //-- TODO: API changes pending 
     let calenderSelectionId: any;
     let _selectionCalenderView = this.calenderColumnData.filter(i => i.state == 'A');
