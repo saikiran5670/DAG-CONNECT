@@ -1218,6 +1218,16 @@ export class ReportMapService {
     return (_data*100).toFixed(2);
   }
 
+  convertFuelConsumptionL100kmToMpg(_data: any){ // as value is sent in L/100Km - convert to mpg
+    let data: any = (282.481 / _data);
+    return (data).toFixed(6); 
+  }
+
+  convertFuelConsumptionMpgToL100km(_data: any){ // convert from mpg to L/100Km
+    let data: any = (282.481 / _data);
+    return (data).toFixed(2); 
+  }
+
   convertFuelConsumptionMlmToMpg(_data: any){
     let data: any = 1.6/(_data * 3.78);
     return (data).toFixed(6); // as inverted division results in very low value upto 6 places shown // 16044
@@ -1304,25 +1314,39 @@ export class ReportMapService {
   }
 
   meterToKm(_data: any){
-    return (_data/1000).toFixed(2);
+    return parseInt((_data/1000).toFixed(2));
+  }
+
+  kmToMeter(_data: any){
+    return parseInt((_data*1000).toFixed(2));
   }
 
   meterToMile(_data: any){
     let km: any = this.meterToKm(_data);
     let mile = km/1.6;
-    return mile.toFixed(2);
+    return parseInt(mile.toFixed(2));
+  }
+
+  mileToKm(_data: any){
+    let km: any = _data * 1.6;
+    return parseInt(km.toFixed(2));
+  }
+
+  mileToMeter(_data: any){
+    let km: any = this.mileToKm(_data);
+    return this.kmToMeter(km);
   }
 
   // Fleet utilisation data conversions
   getConvertedFleetDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
       element.convertedStopTime = this.getStartTime(element.StopTime, dateFormat, timeFormat, timeZone,true);
-      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeightPerTrip, unitFormat, true);
+      element.convertedAverageWeight = this.convertWeightUnits(element.averageWeightPerTrip, unitFormat, false);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
       element.convertedAverageDistance = this.convertDistanceUnits(element.averageDistancePerDay, unitFormat);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
-      element.convertedTripTime = this.getHhMmTime(element.tripTime);
+      element.convertedTripTime = Util.getHhMmTimeFromMS(element.tripTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
       element.convertedOdometer = this.convertDistanceUnits(element.odometer, unitFormat);
     
@@ -1470,11 +1494,11 @@ export class ReportMapService {
     let _fuelConsumed: any = 0;
     switch(unitFormat){
       case 'dunit_Metric': { 
-        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToLtr100km(fuelConsumed) : this.miliLitreToLitre(fuelConsumed); //-- Ltr/100Km / ltr
+        _fuelConsumed = litreFlag ? (fuelConsumed) : this.miliLitreToLitre(fuelConsumed); //-- Ltr/100Km / ltr
         break;
       }
       case 'dunit_Imperial':{
-        _fuelConsumed = litreFlag ? this.convertFuelConsumptionMlmToMpg(fuelConsumed) : this.miliLitreToGallon(fuelConsumed); // mpg / gallon
+        _fuelConsumed = litreFlag ? this.convertFuelConsumptionL100kmToMpg(fuelConsumed) : this.miliLitreToGallon(fuelConsumed); // mpg / gallon
         break;
       }
       default: {

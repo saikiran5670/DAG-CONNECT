@@ -179,6 +179,7 @@ message VehicleList {
     string ModelId=6;
     string Status=7;
     string RelationShip=8;
+    bool HasOwned=9;
 }
 
 message VehicleListResponce {

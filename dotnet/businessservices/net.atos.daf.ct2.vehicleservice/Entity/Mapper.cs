@@ -148,6 +148,7 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
         {
             VehicleList vehicledetails = new VehicleList
             {
+                HasOwned = vehicle.HasOwned,
                 Id = vehicle.Id,
                 Vin = vehicle.VIN,
                 LicensePlateNumber = vehicle.License_Plate_Number ?? string.Empty,

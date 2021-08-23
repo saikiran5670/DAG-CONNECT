@@ -58,6 +58,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
 
     public class VehicleManagementResponse
     {
+        public bool HasOwned { get; set; }
         public int Id { get; set; }
         public string Name { get; set; }
         public string Vin { get; set; }

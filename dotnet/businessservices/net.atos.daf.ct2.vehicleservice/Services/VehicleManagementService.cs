@@ -56,8 +56,9 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             configuration.GetSection("KafkaConfiguration").Bind(_kafkaConfiguration);
             _vehicleCdcManager = vehicleCdcManager;
             _vehicleMgmAlertCdcManager = vehicletMgmAlertCdcManager;
-            _alertCdcHelper = new AlertCdcHelper(_vehicleMgmAlertCdcManager, _vehicleGroupAlertCdcManager);
             _vehicleGroupAlertCdcManager = vehicleGroupAlertCdcManager;
+            _alertCdcHelper = new AlertCdcHelper(_vehicleMgmAlertCdcManager, _vehicleGroupAlertCdcManager);
+
         }
 
         public override async Task<VehiclesBySubscriptionDetailsResponse> GetVehicleBySubscriptionId(SubscriptionIdRequest request, ServerCallContext context)
@@ -362,11 +363,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         if ((entity.GroupRef != null) && Convert.ToInt16(entity.GroupRef.Count) > 0)
                         {
                             bool vehicleRef = await _groupManager.UpdateRef(entity);
-                        }
-                        ///Trigger Vehicle Group CDC
-                        else if (entity.Id > 0 && entity.GroupRef.Count > 0)
-                        {
-                            await _alertCdcHelper.TriggerVehicleGroupCdc(entity.Id, "N", request.OrganizationId);
+                            ///Trigger Vehicle Group CDC
+                            if (vehicleRef)
+                            {
+                                await _alertCdcHelper.TriggerVehicleGroupCdc(request.Id, "N", request.OrganizationId);
+                            }
                         }
                         else
                         {

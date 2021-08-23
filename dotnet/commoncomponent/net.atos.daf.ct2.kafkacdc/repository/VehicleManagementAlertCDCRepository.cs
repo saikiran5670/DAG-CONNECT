@@ -112,9 +112,20 @@ select * from Vehicle_Group_of_Type_Dynamic
 	,cte.ref_id
 	from master.alert ale
 	inner join Vehicle_Group_of_Type_All cte 
-	on ale.vehicle_group_id = cte.vehicle_group_id and state='A'
+	on ale.vehicle_group_id = cte.vehicle_group_id
 )
 --select * from Alerts_Associated_To_Groups;
+, Vehicle_OptIn_All
+As (
+select id,name,vin,license_plate_number,organization_id
+from master.vehicle
+where organization_id = @context_org_id and opt_in = 'I'
+union
+select veh.id,veh.name,veh.vin,veh.license_plate_number,veh.organization_id
+from master.vehicle veh
+	 inner join master.organization org 
+     on  organization_id = @context_org_id and org.id = veh.organization_id and veh.opt_in = 'H' and org.vehicle_default_opt_in = 'I'
+)
 ,Alerts_Associated_To_Single_Vehicle
 AS (
 	select distinct 
@@ -132,28 +143,8 @@ AS (
 	,veh.vin as Vin
 	,veh.license_plate_number as RegistrationNo
 	from Alerts_Associated_To_Groups cte	
-	inner join master.vehicle veh
-	on cte.ref_id=veh.id and cte.group_type='S' and veh.opt_in='I'
-	union
-	select distinct 
-	cte.AlertId
-	,cte.Category
-	,cte.AlertType
-	,cte.vehicle_group_id
-	,cte.object_type
-	,cte.group_type
-	,cte.function_enum
-	,cte.organization_id
-	,cte.vehicle_group_name
-	,veh.id as VehicleId
-	,veh.name as VehicleName
-	,veh.vin as Vin
-	,veh.license_plate_number as RegistrationNo
-	from Alerts_Associated_To_Groups cte	
-	inner join master.vehicle veh
-	on cte.ref_id=veh.id and cte.group_type='S' and veh.opt_in='H'
-	inner join master.organization org
-	on org.id = veh.organization_id  and org.vehicle_default_opt_in = 'I'
+	inner join Vehicle_OptIn_All veh
+	on cte.ref_id=veh.id and cte.group_type='S'
 )
 --select * from Alerts_Associated_To_Single_Vehicle
 ,Alerts_Associated_To_Group_Vehicle
@@ -175,30 +166,8 @@ AS (
 	from Alerts_Associated_To_Groups cte	
 	inner join master.groupref grpref
 	on cte.vehicle_group_id=grpref.group_id and cte.group_type='G'
-	inner join master.vehicle veh
-	on veh.id=grpref.ref_id and veh.opt_in='I'
-	union
-	select distinct 
-	cte.AlertId
-	,cte.Category
-	,cte.AlertType
-	,cte.vehicle_group_id
-	,cte.object_type
-	,cte.group_type
-	,cte.function_enum
-	,cte.organization_id
-	,cte.vehicle_group_name
-	,veh.id as VehicleId
-	,veh.name as VehicleName
-	,veh.vin as Vin
-	,veh.license_plate_number as RegistrationNo
-	from Alerts_Associated_To_Groups cte	
-	inner join master.groupref grpref
-	on cte.vehicle_group_id=grpref.group_id and cte.group_type='G'
-	inner join master.vehicle veh
-	on veh.id=grpref.ref_id and veh.opt_in='H'
-	inner join master.organization org
-	on org.id = veh.organization_id  and org.vehicle_default_opt_in = 'I'
+	inner join Vehicle_OptIn_All veh
+	on veh.id=grpref.ref_id 
 )
 --select * from Alerts_Associated_To_Group_Vehicle
 ,Alerts_Associated_To_Dynamic_Unique_Groups
@@ -243,9 +212,9 @@ AS (
 		,veh.name as VehicleName
 		,veh.vin as Vin
 		,veh.license_plate_number as RegistrationNo
-		from master.vehicle veh
+		from Vehicle_OptIn_All veh
 		Inner join master.orgrelationshipmapping  orm
-		on orm.vehicle_id=veh.id and veh.id = Any(@vehicleIds) and veh.opt_in='I'
+		on orm.vehicle_id=veh.id
 		Inner join master.orgrelationship ors
 		on ors.id=orm.relationship_id
 		Inner join Alerts_Associated_To_Dynamic_Unique_Groups du1
@@ -254,40 +223,9 @@ AS (
 		and du1.function_enum='A'
 		--Left join cte_account_visibility_for_vehicle_dynamic_unique du2
 		--on orm.target_org_id=du2.Organization_Id and ors.code<>'Owner' and du2.function_enum='A'
-		where veh.id = Any(@vehicleIds) and ors.state='A' 
+		where ors.state='A' 
 		and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-		else COALESCE(end_date,0) =0 end 
-		union
-		select distinct 
-		 du1.AlertId
-		,du1.Category
-		,du1.AlertType
-		,du1.vehicle_group_id
-		,du1.object_type
-		,du1.group_type
-		,du1.function_enum
-		,du1.Organization_Id
-		,du1.vehicle_group_name
-		,veh.id as VehicleId
-		,veh.name as VehicleName
-		,veh.vin as Vin
-		,veh.license_plate_number as RegistrationNo
-		from master.vehicle veh
-		Inner join master.orgrelationshipmapping  orm
-		on orm.vehicle_id=veh.id and veh.id = Any(@vehicleIds) and veh.opt_in='H'
-		inner join master.organization org
-		on org.id = veh.organization_id  and org.vehicle_default_opt_in = 'I'
-		Inner join master.orgrelationship ors
-		on ors.id=orm.relationship_id
-		Inner join Alerts_Associated_To_Dynamic_Unique_Groups du1
-		on ((orm.owner_org_id = du1.Organization_Id and ors.code='Owner') 
-		or (orm.target_org_id= du1.Organization_Id and ors.code<>'Owner'))
-		and du1.function_enum='A'
-		--Left join cte_account_visibility_for_vehicle_dynamic_unique du2
-		--on orm.target_org_id=du2.Organization_Id and ors.code<>'Owner' and du2.function_enum='A'
-		where veh.id = Any(@vehicleIds) and ors.state='A' 
-		and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-		else COALESCE(end_date,0) =0 end
+		else COALESCE(end_date,0) =0 end  
 	)
 	--select * from Alerts_Associated_To_Dynamic_Vehicle
 	, 
@@ -307,43 +245,16 @@ AS (
 		,veh.name as VehicleName
 		,veh.vin as Vin
 		,veh.license_plate_number as RegistrationNo
-		from master.vehicle veh
+		from Vehicle_OptIn_All veh
 		Inner join master.orgrelationshipmapping  orm
-		on orm.vehicle_id=veh.id and veh.id = Any(@vehicleIds) and veh.opt_in='I'
+		on orm.vehicle_id=veh.id
 		Inner join master.orgrelationship ors
 		on ors.id=orm.relationship_id
 		Inner join Alerts_Associated_To_Dynamic_Unique_Groups du1
 		on ((orm.owner_org_id=du1.Organization_Id and ors.code='Owner') or (veh.organization_id=du1.Organization_Id)) and du1.function_enum='O'
-		where veh.id = Any(@vehicleIds) and ors.state='A' 
+		where ors.state='A' 
 		and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 		else COALESCE(end_date,0) =0 end  
-		union
-		select distinct 
-		du1.AlertId
-		,du1.Category
-		,du1.AlertType
-		,du1.vehicle_group_id
-		,du1.object_type
-		,du1.group_type
-		,du1.function_enum
-		,du1.Organization_Id
-		,du1.vehicle_group_name
-		,veh.id as VehicleId
-		,veh.name as VehicleName
-		,veh.vin as Vin
-		,veh.license_plate_number as RegistrationNo
-		from master.vehicle veh
-		Inner join master.orgrelationshipmapping  orm
-		on orm.vehicle_id=veh.id and veh.id = Any(@vehicleIds) and veh.opt_in='H'
-		inner join master.organization org
-		on org.id = veh.organization_id  and org.vehicle_default_opt_in = 'I'
-		Inner join master.orgrelationship ors
-		on ors.id=orm.relationship_id
-		Inner join Alerts_Associated_To_Dynamic_Unique_Groups du1
-		on ((orm.owner_org_id=du1.Organization_Id and ors.code='Owner') or (veh.organization_id=du1.Organization_Id)) and du1.function_enum='O'
-		where veh.id = Any(@vehicleIds) and ors.state='A' 
-		and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-		else COALESCE(end_date,0) =0 end 
 	)
 	-- select * from Alerts_Associated_To_Dynamic_Owned_Vehicle
 	,
@@ -363,42 +274,14 @@ AS (
 		,veh.name as VehicleName
 		,veh.vin as Vin
 		,veh.license_plate_number as RegistrationNo
-		from master.vehicle veh
+		from Vehicle_OptIn_All veh
 		Inner join master.orgrelationshipmapping  orm
-		on orm.vehicle_id=veh.id and  veh.id = Any(@vehicleIds) and veh.opt_in='I'
+		on orm.vehicle_id=veh.id
 		Inner join master.orgrelationship ors
 		on ors.id=orm.relationship_id
 		Inner join Alerts_Associated_To_Dynamic_Unique_Groups du2
 		on orm.target_org_id=du2.Organization_Id and du2.function_enum='V'
-		where veh.id = Any(@vehicleIds) and ors.state='A'
-		and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
-		else COALESCE(end_date,0) =0 end  
-		and ors.code<>'Owner'
-		union
-		select distinct 
-		du2.AlertId
-		,du2.Category
-		,du2.AlertType
-		,du2.vehicle_group_id
-		,du2.object_type
-		,du2.group_type
-		,du2.function_enum
-		,du2.Organization_Id
-		,du2.vehicle_group_name
-		,veh.id as VehicleId
-		,veh.name as VehicleName
-		,veh.vin as Vin
-		,veh.license_plate_number as RegistrationNo
-		from master.vehicle veh
-		Inner join master.orgrelationshipmapping  orm
-		on orm.vehicle_id=veh.id and  veh.id = Any(@vehicleIds) and veh.opt_in='H'
-		inner join master.organization org
-		on org.id = veh.organization_id  and org.vehicle_default_opt_in = 'I'
-		Inner join master.orgrelationship ors
-		on ors.id=orm.relationship_id
-		Inner join Alerts_Associated_To_Dynamic_Unique_Groups du2
-		on orm.target_org_id=du2.Organization_Id and du2.function_enum='V'
-		where veh.id = Any(@vehicleIds) and ors.state='A'
+		where ors.state='A'
 		and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 		else COALESCE(end_date,0) =0 end  
 		and ors.code<>'Owner'
@@ -421,29 +304,9 @@ AS (
 		,veh.name as VehicleName
 		,veh.vin as Vin
 		,veh.license_plate_number as RegistrationNo
-		from master.vehicle veh
+		from Vehicle_OptIn_All veh
 		Inner join Alerts_Associated_To_Dynamic_Unique_Groups du1
-		on veh.organization_id=du1.organization_id and du1.function_enum='M' and veh.opt_in='I'
-		union
-		select distinct 
-		 du1.AlertId
-		,du1.Category
-		,du1.AlertType
-		,du1.vehicle_group_id
-		,du1.object_type
-		,du1.group_type
-		,du1.function_enum
-		,du1.Organization_Id
-		,du1.vehicle_group_name
-		,veh.id as VehicleId
-		,veh.name as VehicleName
-		,veh.vin as Vin
-		,veh.license_plate_number as RegistrationNo
-		from master.vehicle veh
-		Inner join Alerts_Associated_To_Dynamic_Unique_Groups du1
-		on veh.organization_id=du1.organization_id and du1.function_enum='M' and veh.opt_in='H'
-		inner join master.organization org
-		on org.id = veh.organization_id  and org.vehicle_default_opt_in = 'I'
+		on veh.organization_id=du1.organization_id and du1.function_enum='M'
 	)
 	--select * from Alerts_Associated_To_Dynamic_OEM_Vehicle
 	,
@@ -512,7 +375,7 @@ AS (
 	 as (
 		 select cavc.* from cte_account_vehicle_CompleteList cavc
 		 inner join org_veh_subscriptions  ovs
-		 on cavc.vehicleid = Any(@vehicleIds) and cavc.vehicleid = ovs.vehicleid and ovs.subscriptiontype='V'
+		 on cavc.vehicleid = ovs.vehicleid and ovs.subscriptiontype='V'
 	 )
 --select * from veh_subscriptions
 	, 

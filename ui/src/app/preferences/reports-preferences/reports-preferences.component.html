@@ -49,7 +49,7 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div>
-        <app-fleet-utilisation-preference *ngIf='showFleetUtilisationReport' [editFlag]='editFleetUtilisationFlag'
+        <app-fleet-utilisation-preference *ngIf='showFleetUtilisationReport' [generalPreferences]="generalPreferences" [editFlag]='editFleetUtilisationFlag'
           [reportListData]='reportListData' [translationData]='translationData'
           (setFleetUtilFlag)="updateEditFleetUtilFlag($event)"></app-fleet-utilisation-preference>
       </div>
@@ -183,7 +183,7 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div>
-        <app-fuel-deviation-preferences *ngIf='showFuelDeviationPerferences'
+        <app-fuel-deviation-preferences *ngIf='showFuelDeviationPerferences' [generalPreferences]="generalPreferences"
           [editFlag]='editFuelDeviationPerferencesFlag' [reportListData]='reportListData'
           [translationData]='translationData' (setFuelDeviationReportFlag)="updateFuelDeviationReportFlag($event)">
         </app-fuel-deviation-preferences>

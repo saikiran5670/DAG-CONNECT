@@ -88,10 +88,11 @@ namespace net.atos.daf.ct2.kafkacdc
                 //Union mapping for sending to kafka topic
                 finalmapping = insertionMapping.Union(deletionMapping).ToList();
                 //sending only states I & D with combined mapping of vehicle and alertid
-                foreach (var alertId in alertIds)
-                {
-                    await _kafkaCdcHelper.ProduceMessageToKafka(finalmapping, alertId, operation, _kafkaConfig);
-                }
+                if (finalmapping.Count() > 0)
+                    foreach (var alertId in alertIds)
+                    {
+                        await _kafkaCdcHelper.ProduceMessageToKafka(finalmapping, alertId, operation, _kafkaConfig);
+                    }
                 result = true;
             }
             catch (Exception ex)

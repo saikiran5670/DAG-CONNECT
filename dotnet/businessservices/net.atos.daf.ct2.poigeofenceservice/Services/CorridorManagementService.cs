@@ -7,7 +7,9 @@ using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.corridorservice;
 using net.atos.daf.ct2.poigeofence;
+using net.atos.daf.ct2.poigeofenceservice.common;
 using net.atos.daf.ct2.poigeofenceservice.entity;
+using net.atos.daf.ct2.kafkacdc;
 
 namespace net.atos.daf.ct2.poigeofenceservice
 {
@@ -16,11 +18,15 @@ namespace net.atos.daf.ct2.poigeofenceservice
         private readonly ILog _logger;
         private readonly ICorridorManger _corridorManger;
         private readonly CorridorMapper _corridorMapper;
-        public CorridorManagementService(ICorridorManger corridorManger)
+        private readonly LandmarkAlertCdcHelper _landmarkAlertCdcHelper;
+        private readonly ILandmarkAlertCdcManager _landmarkMgmAlertCdcManager;
+        public CorridorManagementService(ICorridorManger corridorManger, ILandmarkAlertCdcManager landmarkAlertCdcManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _corridorManger = corridorManger;
             _corridorMapper = new CorridorMapper();
+            _landmarkMgmAlertCdcManager = landmarkAlertCdcManager;
+            _landmarkAlertCdcHelper = new LandmarkAlertCdcHelper(_landmarkMgmAlertCdcManager);
         }
 
         public override async Task<CorridorResponseList> GetCorridorList(CorridorRequest request, ServerCallContext context)
@@ -348,6 +354,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 var result = await _corridorManger.DeleteCorridor(request.CorridorID);
                 if (result.Id >= 0)
                 {
+                    await _landmarkAlertCdcHelper.TriggerAlertCdc(request.CorridorID, "");
                     response.Message = "Delete successfully";
                     response.Code = Responsecode.Success;
                     response.CorridorID = request.CorridorID;
@@ -444,6 +451,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     var isTransactionDone = result.ExistingTrips.Any(x => x.Id != 0);
                     if (isTransactionDone)
                     {
+                        await _landmarkAlertCdcHelper.TriggerAlertCdc(request.Id, "");
                         response.Message = "Update successfully";
                         response.Code = Responsecode.Success;
                         response.CorridorID = result.Id;
@@ -552,6 +560,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 }
                 else if (result != null && result.Id > 0)
                 {
+                    await _landmarkAlertCdcHelper.TriggerAlertCdc(objRequest.Request.Id, "");
                     objResponse.Response.Message = "Updated successfully";
                     objResponse.Response.Code = Responsecode.Success;
                     objResponse.Response.CorridorID = result.Id;
