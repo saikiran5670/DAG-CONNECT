@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using net.atos.daf.ct2.rfms.entity;
 
 namespace net.atos.daf.ct2.rfms.response
@@ -136,8 +137,6 @@ namespace net.atos.daf.ct2.rfms.response
             };
 
             return accumulatedData;
-
-
         }
     }
 }

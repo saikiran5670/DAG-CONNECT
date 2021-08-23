@@ -419,7 +419,7 @@ namespace net.atos.daf.ct2.rfms.repository
             {
                 vehicleStatus.Status2OfDoors = Convert.ToString(record.status2OfDoors);
             }
-
+            vehicleStatus.AccumulatedData = new RfmsMapper().MapAccumuatedData();
             return vehicleStatus;
         }
 
@@ -578,7 +578,7 @@ namespace net.atos.daf.ct2.rfms.repository
                                     'uptimedata' as uptimedata,
                                     'status2ofdoors' as status2ofdoors, 
                                     'doorstatus' as doorstatus
-                                     from livefleet.livefleet_position_statistics
+                                    
 									    from livefleet.livefleet_position_statistics";
                 }
 
@@ -669,7 +669,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 List<VehicleStatus> lstVehicleStatus = new List<VehicleStatus>();
                 foreach (dynamic record in result)
                 {
-                    lstVehicleStatus.Add(MapVehiclePositions(record)); // mapper need to implement
+                    lstVehicleStatus.Add(MapVehicleStatus(record)); // mapper need to implement
                 }
 
 
