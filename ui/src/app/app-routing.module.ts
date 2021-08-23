@@ -17,6 +17,7 @@ const routes: Routes = [
   { path: 'information', loadChildren: () => import('./information/information.module').then(m => m.InformationModule) },
   { path: 'termsAndconditionhistory', loadChildren: () => import('./terms-conditions-content/terms-conditions.module').then(m => m.TermsConditionsModule) },
   { path: "errorPage", component: ErrorComponent },
+  { path: 'menunotfound', loadChildren: () => import('./menu-not-found/menu-not-found-routing.module').then(m => m.MenuNotFoundRoutingModule) },
 
 ];
 
