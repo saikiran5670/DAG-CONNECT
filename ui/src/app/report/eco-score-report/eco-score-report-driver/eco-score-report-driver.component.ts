@@ -4,7 +4,6 @@ import { ChartComponent, ApexAxisChartSeries, ApexChart, ApexFill, ApexTooltip, 
 import { AngularGridInstance, Column, FieldType, GridOption, Formatter, } from 'angular-slickgrid';
 import { ChartOptions, ChartType } from 'chart.js';
 import { Color, Label, MultiDataSet, PluginServiceGlobalRegistrationAndOptions, SingleDataSet } from 'ng2-charts';
-import { ReportService } from 'src/app/services/report.service';
 import * as Chart from 'chart.js';
 import * as ApexCharts from 'apexcharts';
 import { Util } from 'src/app/shared/util';
@@ -63,15 +62,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
   showLoadingIndicator: boolean = false;
   translationDataLocal: any=[];
   translationDataTrendLineLocal: any=[];
-  trendLinesInfotemp: any = [
-    'The trendlines represent the following results on 1 or more KPI element(s) over a period of time:',
-    '1. Driver results per vehicle',
-    '2. All drivers result per vehicle.',
-    '3. Driver results for all vehicles.',
-    '4. Company results for all vehicles.',
-    'Each point on the trendline displays the results per day. By selecting 1 or more element(s) and a time frame, it is possible to see how the driver is performing on 1 or more element(s) in a time frame.'
-  ];
-  trendLinesInfo: string = this.trendLinesInfotemp.join("\r\n");
  //performance table
  angularGrid!: AngularGridInstance;
  dataViewObj: any;
@@ -128,7 +118,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
  selectionLimitLastYear: boolean=false;
  public pluginsCommon: PluginServiceGlobalRegistrationAndOptions[];
 
- constructor(private reportService: ReportService) {}
+ constructor() {}
 
   ngOnInit(): void {
     this.translationUpdate();
@@ -756,44 +746,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
       { key:'rp_brakeduration' , value:'Brake Duration' },
       { key:'rp_brakingscore' , value:'Braking Score' }
      ];
-    //  this.translationDataTrendLineLocal = [
-    //   { key:'rp_general' , value:'General' },
-    //   { key:'rp_averagegrossweight' , value:'Average Gross Weight' },
-    //   { key:'rp_distance' , value:'Distance' },
-    //   { key:'rp_numberoftrips' , value:'Number of Trips' },
-    //   { key:'rp_numberofvehicles' , value:'Number of vehicles' },
-    //   { key:'rp_averagedistanceperday' , value:'Average distance per day' },
-    //   { key:'rp_driverperformance' , value:'Driver Performance' },
-    //   { key:'rp_ecoscore' , value:'Eco Score' },
-    //   { key:'rp_fuelconsumption' , value:'Fuel Consumption' },
-    //   { key:'rp_braking' , value:'Braking' },
-    //   { key:'rp_anticipationscore' , value:'Anticipation Score' },
-    //   { key:'rp_averagedrivingspeed' , value:'Average Driving Speed' },
-    //   { key:'rp_idleduration' , value:'Idle Duration' },
-    //   { key:'rp_idling' , value:'Idling' },
-    //   { key:'rp_heavythrottleduration' , value:'Heavy Throttle Duration' },
-    //   { key:'rp_heavythrottling' , value:'Heavy Throttling' },
-    //   { key:'rp_averagespeed' , value:'Average Speed' },
-    //   { key:'rp_ptoduration' , value:'PTO Duration' },
-    //   { key:'rp_ptousage' , value:'PTO Usage' },
-    //   { key:'rp_CruiseControlUsage30' , value:'Cruise Control Usage 30-50' },
-    //   { key:'rp_CruiseControlUsage75' , value:'Cruise Control Usage >75' },
-    //   { key:'rp_CruiseControlUsage50' , value:'Cruise Control Usage 50-75' },
-    //   { key:'rp_CruiseControlUsage30_I' , value:'Cruise Control Usage 15-30'},
-    //   { key:'rp_CruiseControlUsage50_I' , value:'Cruise Control Usage 30-45'},
-    //   { key:'rp_CruiseControlUsage75_I' , value:'Cruise Control Usage >75'},
-    //   { key:'rp_cruisecontrolusage' , value:'Cruise Control Usage' },
-    //   { key:'rp_cruisecontroldistance50' , value:'Cruise Control Usage 50-75' },
-    //   { key:'rp_cruisecontroldistance30' , value:'Cruise Control Usage 30-50' },
-    //   { key:'rp_cruisecontroldistance75' , value:'Cruise Control Usage >75' },
-    //   { key:'rp_cruisecontroldistance30_I' , value:'Cruise Control Usage 15-30' },
-    //   { key:'rp_cruisecontroldistance50_I' , value:'Cruise Control Usage 30-45' },
-    //   { key:'rp_cruisecontroldistance75_I' , value:'Cruise Control Usage >45' },
-    //   { key:'rp_harshbraking' , value:'Harsh Braking' },
-    //   { key:'rp_harshbrakeduration' , value:'Harsh Brake Duration' },
-    //   { key:'rp_brakeduration' , value:'Brake Duration' },
-    //   { key:'rp_brakingscore' , value:'Braking Score' }
-    //  ];
   }
 
   tableColumns(){
@@ -926,12 +878,6 @@ export class EcoScoreReportDriverComponent implements OnInit {
       return '';
     }
     let key=value;
-    // if(this.prefUnitFormat === 'dunit_Imperial' && (value.toLowerCase().indexOf("30") !== -1
-    //     || value.toLowerCase().indexOf("50") !== -1 || value.toLowerCase().indexOf("75") !== -1
-    //     || value.toLowerCase().indexOf("rp_fuelconsumption") !== -1 || value.toLowerCase().indexOf("rp_averagedrivingspeed") !== -1
-    //     || value.toLowerCase().indexOf("rp_averagespeed") !== -1)){
-    //   value += "_I";
-    // }
     var foundValue = this.translationData.value || this.translationDataLocal.filter(obj=>obj.key === value);
     if(foundValue === undefined || foundValue === null || foundValue.length === 0)
       value = value;
@@ -1016,40 +962,7 @@ export class EcoScoreReportDriverComponent implements OnInit {
     }
     return '';
   }
-
-  // getScore0: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-  //   if(value !== undefined && value !== null && value.length > 0){
-  //     // let color = value[0].color === 'Amber'?'Orange':value[0].color;
-  //     let color = this.getColor(dataContext, value[0].value);
-  //     return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[0].value) + "</span>";
-  //   }
-  //   return '';
-  // }
   
-  // getScore1: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-  //   if(value !== undefined && value !== null && value.length > 1){
-  //     let color = this.getColor(dataContext, value[0].value);
-  //     return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[1].value) + "</span>";
-  //   }
-  //   return '';
-  // }
-
-  // getScore2: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-  //   if(value !== undefined && value !== null && value.length > 2){
-  //     let color = this.getColor(dataContext, value[0].value);
-  //     return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[2].value) + "</span>";
-  //   }
-  //   return '';
-  // }
-
-  // getScore3: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
-  //   if(value !== undefined && value !== null && value.length > 3){
-  //     let color = this.getColor(dataContext, value[0].value);
-  //     return '<span style="color:' + color + '">' + this.formatValues(dataContext, value[3].value) + "</span>";
-  //   }
-  //   return '';
-  // }
-
   formatValues(dataContext: any, val: any){
     if(val && val !== '0'){
       let valTemp = Number.parseFloat(val.toString());

@@ -15,6 +15,8 @@ namespace net.atos.daf.ct2.rfms.entity
         public static string TALE_TELL = "telltale";
         public static string TALE_TELL_STATE = "telltalestate";
         public static string MASTER_DATA_MEMORY_CACHEKEY = "MasterTableCacheData-rFMS";
+        public static string WHEELBASED_SPEED_OVER_ZERO = "wheelBasedSpeed ";
+        public static string DRIVING_WITHOUT_TORQUE = "drivingWithoutTorqueClass";
     }
     public class MasterTableCacheObject
     {

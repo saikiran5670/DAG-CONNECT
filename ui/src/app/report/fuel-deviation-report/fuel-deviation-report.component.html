@@ -355,8 +355,7 @@
         </mat-expansion-panel-header>
         <div *ngIf='initData.length == 0'>
           <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row"
-            fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record
-            Found!' }}</div>
+            fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || '' }}</div>
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{
             translationData.lblSelectionMessage || 'Please select and search required fields from top to view the
             details' }}</div>
