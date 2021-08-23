@@ -20,7 +20,6 @@ create index if not exists  idx_livefleetcurrenttripstatistics_drvidhltstttyp ON
 create index if not exists  idx_livefleetpositionstatistics_vin ON livefleet.livefleet_position_statistics (vin);
 create index if not exists  idx_driver_orgid ON master.driver (organization_id);
 create index if not exists  idx_tripstatistics_drvid ON tripdetail.trip_statistics (driver1_id );
-create index if not exists  idx_resetpasswordtoken_tknststatus on master.ResetPasswordToken(token_secret,status);								
 create index if not exists  idx_vehicle_mdat on  master.vehicle (modified_at);										
 create index if not exists  idx_vehiclemileage_mdat on  mileage.vehiclemileage (modified_at);																				
 create index if not exists  idx_livefleetcurrenttripstatistics_drvidsttsendts ON livefleet.livefleet_current_trip_statistics (driver1_id,start_time_stamp,end_time_stamp);

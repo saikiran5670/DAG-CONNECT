@@ -19,7 +19,7 @@
                 <div style='width: 60%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <span style='display: flex; align-items: center;'>
                         <img matTooltip='Download Excel' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 30px; height: 30px;" />&nbsp;
-                        <a (click)="downloadTranslatedData()" style='cursor: pointer; font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>
+                        <a (click)="downloadTranslatedData()" class='cursor-pointer' style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>
                             {{ translationData.lblDownloadTranslatedData || 'Download Translated Data' }}
                         </a>
                     </span>

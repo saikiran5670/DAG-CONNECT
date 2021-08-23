@@ -33,308 +33,66 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "manufacture_date",
-									"type": "DateTime"
-								},
-								"sink": {
-									"name": "manufacture_date",
-									"type": "String",
-									"physicalType": "text"
-								}
-							},
-							{
-								"source": {
-									"name": "make",
-									"type": "String"
-								},
-								"sink": {
-									"name": "make",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "length",
-									"type": "Double"
-								},
-								"sink": {
-									"name": "length",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "height",
-									"type": "Double"
-								},
-								"sink": {
-									"name": "height",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "weight",
-									"type": "Double"
-								},
-								"sink": {
-									"name": "weight",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "engine_type",
-									"type": "String"
-								},
-								"sink": {
-									"name": "engine_type",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "engine_power",
-									"type": "String"
-								},
-								"sink": {
-									"name": "engine_power",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "engine_coolant",
-									"type": "String"
-								},
-								"sink": {
-									"name": "engine_coolant",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "engine_emission_level",
-									"type": "String"
-								},
-								"sink": {
-									"name": "engine_emission_level",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "chasis_id",
-									"type": "String"
-								},
-								"sink": {
-									"name": "chasis_id",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "chasis_rear_overhang",
-									"type": "String"
-								},
-								"sink": {
-									"name": "chasis_rear_overhang",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "driveline_axle_configuration",
-									"type": "String"
-								},
-								"sink": {
-									"name": "driveline_axle_configuration",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "driveline_wheel_base",
-									"type": "String"
-								},
-								"sink": {
-									"name": "driveline_wheel_base",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "driveline_tire_size",
-									"type": "String"
-								},
-								"sink": {
-									"name": "driveline_tire_size",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "transmission_gearbox_type",
-									"type": "String"
-								},
-								"sink": {
-									"name": "transmission_gearbox_type",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "cabin_id",
-									"type": "String"
-								},
-								"sink": {
-									"name": "cabin_id",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "series_vehicle_range",
-									"type": "String"
-								},
-								"sink": {
-									"name": "series_vehicle_range",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "model_year",
-									"type": "String"
-								},
-								"sink": {
-									"name": "model_year",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "cabin_type",
-									"type": "String"
-								},
-								"sink": {
-									"name": "cabin_type",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "cabin_roofspoiler",
-									"type": "String"
-								},
-								"sink": {
-									"name": "cabin_roofspoiler",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "electronic_control_unit_type",
-									"type": "String"
-								},
-								"sink": {
-									"name": "electronic_control_unit_type",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "electronic_control_unit_name",
-									"type": "String"
-								},
-								"sink": {
-									"name": "electronic_control_unit_name",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "weight_type",
-									"type": "String"
-								},
-								"sink": {
-									"name": "weight_type",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "chasis_side_skirts",
-									"type": "String"
-								},
-								"sink": {
-									"name": "chasis_side_skirts",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "chasis_side_collar",
-									"type": "String"
-								},
-								"sink": {
-									"name": "chasis_side_collar",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "width",
-									"type": "Double"
-								},
-								"sink": {
-									"name": "width",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
-									"name": "type_id",
-									"type": "String"
-								},
-								"sink": {
-									"name": "type_id",
-									"type": "String",
-									"physicalType": "character varying"
-								}
-							},
-							{
-								"source": {
 									"name": "vehicle_vid",
 									"type": "String"
 								},
 								"sink": {
 									"name": "vehicle_vid",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "frontaxletype",
+									"type": "String"
+								},
+								"sink": {
+									"name": "frontaxletype",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "rearaxleload",
+									"type": "String"
+								},
+								"sink": {
+									"name": "rearaxleload",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "rearaxleratio",
+									"type": "String"
+								},
+								"sink": {
+									"name": "rearaxleratio",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "TyreRearsize",
+									"type": "String"
+								},
+								"sink": {
+									"name": "tyrerearsize",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "TyreFrontsize",
+									"type": "String"
+								},
+								"sink": {
+									"name": "tyrefrontsize",
 									"type": "String",
 									"physicalType": "character varying"
 								}
@@ -355,7 +113,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "VehicleProperties_Source",
+						"referenceName": "VehicleAxleProperties_Source",
 						"type": "DatasetReference"
 					}
 				]
