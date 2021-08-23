@@ -82,7 +82,7 @@
               <button class='actionBtn' (click)="editViewVehicle(row, 'view')" mat-flat-button matTooltip="View">
                 <mat-icon>visibility</mat-icon>
               </button>
-              <button class='actionBtn' mat-flat-button (click)="editViewVehicle(row, 'edit')" matTooltip="Edit" [disabled]="!row.hasOwned">
+              <button class='actionBtn' mat-flat-button (click)="editViewVehicle(row, 'edit')" matTooltip="Edit" *ngIf="row.hasOwned">
                 <mat-icon>create</mat-icon>
               </button>
             </mat-cell>
