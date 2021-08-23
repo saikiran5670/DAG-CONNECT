@@ -164,7 +164,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Group_Chg_Accounts",
+						"activity": "Update_Group_X",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -297,6 +297,36 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Update_Group_X",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Group_Chg_Accounts",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "UPDATE MASTER.GROUP L \nSET\t \nobject_type\t=\tS.object_type  ,\ngroup_type\t=\tS.group_type,  \nfunction_enum\t=\tS.function_enum  ,\nname\t=\tS.name  ,\ndescription\t=\tS.description  \nFROM    staging.GROUP_CHG S\nWHERE L.organization_id = S.organization_id \n  AND  S.CHG_FLG     = 'X';\n\nSELECT * FROM STAGING.GROUP_CHG;"
+					},
+					"dataset": {
+						"referenceName": "Group",
+						"type": "DatasetReference"
+					}
+				}
 			}
 		],
 		"annotations": []
