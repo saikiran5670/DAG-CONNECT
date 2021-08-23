@@ -114,6 +114,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
   POIEnum  :any;
   distanceUnit: any;
   poiUnit: any;
+  unitTypeVal: any;
 
   @ViewChild(PeriodSelectionFilterComponent)
   periodSelectionComponent: PeriodSelectionFilterComponent;
@@ -203,7 +204,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
     }
       this.alertAdvancedFilterForm.get('fullorCustom').setValue(this.selectedApplyOn);
       let Data = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.forEach(element => {
-        if(element.filterType == 'N' && element.thresholdValue !=0 && element.landmarkType== 'N')
+        if(element.filterType == 'N' && element.thresholdValue !=0 && element.unitType== 'N')
         {
           this.isOccurenceSelected =true;
           this.alertAdvancedFilterForm.get('occurences').setValue(element.thresholdValue);
@@ -1519,7 +1520,7 @@ else{
         "val" : this.thresholdVal
       }
       this.filterTypeArray.push(filterObj);
-      // if(!this.isPoiSelected){
+      if(!this.isPoiSelected){
       obj = {
       "alertUrgencyLevelId": 0,
       "filterType": "T",
@@ -1538,7 +1539,7 @@ else{
       obj["alertTimingDetails"]["refId"] = distanceRefArr.length > 0 ? distanceRefArr[0].id : 0;
       }
     this.advancedAlertPayload.push(obj);
-  // }
+  }
       }
 
       if (this.geoMarkerArray.length != 0) {
@@ -1568,7 +1569,11 @@ else{
           if (this.filterTypeArray.length != 0) {
             this.filterTypeArray.forEach(item => {
               this.filterType = item.type;
-              this.thresholdVal = parseInt(item.val);
+              if(!this.isDistanceSelected){
+                this.thresholdVal = parseInt(item.val);
+                } else{
+                  this.thresholdVal = parseFloat(item.val);
+                }
               let obj = {
                 "alertUrgencyLevelId": 0,
                 "filterType": this.filterType,
@@ -1595,7 +1600,7 @@ else{
       }
       if(this.markerArray.length != 0) {
         this.markerArray.forEach(element => {
-          if(this.filterTypeArray.length == 0){
+          // if(this.filterTypeArray.length == 0){
             let obj = {
               "alertUrgencyLevelId": 0,
               "filterType": "N",
@@ -1616,16 +1621,26 @@ else{
               obj["unitType"] = poiLandmarkRefArr[0].unitType;
             }
             this.advancedAlertPayload.push(obj);
-          }
+          // }
           if (this.filterTypeArray.length != 0) {
             this.filterTypeArray.forEach(item => {
               this.filterType = item.type;
-              this.thresholdVal = parseInt(item.val);
+              if(!this.isDistanceSelected){
+                this.thresholdVal = parseInt(item.val);
+                } else{
+                  this.thresholdVal = parseFloat(item.val);
+                }
+              if(this.filterType== 'T'){
+              this.unitTypeVal = this.distanceEnum;
+              }
+              if(this.filterType== 'D'){
+                this.unitTypeVal = this.durationEnum;
+                }
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": this.filterType,
             "thresholdValue": this.thresholdVal,
-            "unitType": "N",
+            "unitType": this.unitTypeVal,
             "landmarkType": "P",
             "refId": element.id,
             "positionType": this.selectedPoiSite,
@@ -1673,7 +1688,11 @@ else{
         if (this.filterTypeArray.length != 0) {
           this.filterTypeArray.forEach(item => {
             this.filterType = item.type;
-            this.thresholdVal = parseInt(item.val);
+            if(!this.isDistanceSelected){
+              this.thresholdVal = parseInt(item.val);
+              } else{
+                this.thresholdVal = parseFloat(item.val);
+              }
         let obj = {
           "alertUrgencyLevelId": 0,
           "filterType": this.filterType,
@@ -1921,7 +1940,11 @@ if(this.actionType == 'edit'){
       if (this.filterTypeArray.length != 0) {
         this.filterTypeArray.forEach(item => {
           this.filterType = item.type;
-          this.thresholdVal = parseInt(item.val);
+          if(!this.isDistanceSelected){
+            this.thresholdVal = parseInt(item.val);
+            } else{
+              this.thresholdVal = parseFloat(item.val);
+            }
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": this.filterType,
@@ -1974,11 +1997,20 @@ if(this.actionType == 'edit'){
             this.filterTypeArray.forEach(item => {
               this.filterType = item.type;
               this.thresholdVal = item.val;
+              if(this.filterType== 'T'){
+                this.unitTypeVal = this.distanceEnum;
+                }
+                if(this.filterType== 'D'){
+                  this.unitTypeVal = this.durationEnum;
+                  }
+                  if(this.filterType== 'N'){
+                    this.unitTypeVal = "N";
+                    }
           let obj = {
             "alertUrgencyLevelId": 0,
             "filterType": this.filterType,
             "thresholdValue": this.thresholdVal,
-            "unitType": this.distanceEnum,
+            "unitType": this.unitTypeVal,
             "landmarkType": "P",
             "refId": element.id,
             "positionType": this.selectedPoiSite,
@@ -2026,7 +2058,11 @@ if(this.actionType == 'edit'){
         if (this.filterTypeArray.length != 0) {
           this.filterTypeArray.forEach(item => {
             this.filterType = item.type;
+            if(!this.isDistanceSelected){
             this.thresholdVal = parseInt(item.val);
+            } else{
+              this.thresholdVal = parseFloat(item.val);
+            }
         let obj = {
           "alertUrgencyLevelId": 0,
           "filterType": this.filterType,
