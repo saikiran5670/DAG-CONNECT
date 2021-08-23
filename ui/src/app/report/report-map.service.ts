@@ -1136,6 +1136,7 @@ export class ReportMapService {
       element.convertedAverageWeight = this.convertWeightUnits(element.averageWeight, unitFormat, false);
       element.convertedAverageSpeed = this.convertSpeedUnits(element.averageSpeed, unitFormat);
       element.convertedFuelConsumed100Km = this.getFuelConsumedUnits(element.fuelConsumed100Km, unitFormat, true);
+      element.convertedFuelConsumed100Km = element.convertedFuelConsumed100Km.toFixed(2);
       element.convertedDistance = this.convertDistanceUnits(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
