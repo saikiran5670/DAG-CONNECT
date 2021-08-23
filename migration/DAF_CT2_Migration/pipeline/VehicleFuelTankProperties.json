@@ -562,7 +562,7 @@
 				]
 			},
 			{
-				"name": "Update_VehicleProperties_X",
+				"name": "Update_VehicleFuelTankProperties_X",
 				"type": "Lookup",
 				"dependsOn": [
 					{
@@ -597,7 +597,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Update_VehicleProperties_X",
+						"activity": "Update_VehicleFuelTankProperties_X",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -614,7 +614,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzurePostgreSqlSource",
-						"query": "SELECT \nE.vehicle_id       ,\nE.CHASIS_FUEL_TANK_NUMBER                  ,\nE.CHASIS_FUEL_TANK_VOLUME\nFROM staging.VehicleFuelTankProperties_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.VehicleFuelTankProperties_CHG L\n             WHERE    L.vehicle_id = E.vehicle_id)\nORDER BY \n    \tCHASIS_FUEL_TANK_NUMBER;\n"
+						"query": "SELECT \nE.vehicle_id       ,\nE.CHASIS_FUEL_TANK_NUMBER                  ,\nE.CHASIS_FUEL_TANK_VOLUME\nFROM staging.VehicleFuelTankProperties_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.VehicleFuelTankProperties L\n             WHERE    L.vehicle_id = E.vehicle_id)\nORDER BY \n    \tCHASIS_FUEL_TANK_NUMBER;\n"
 					},
 					"sink": {
 						"type": "AzurePostgreSQLSink",
