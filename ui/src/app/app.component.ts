@@ -401,15 +401,7 @@ export class AppComponent {
   }
 
   getNavigationMenu() {
-    let parseLanguageCode = JSON.parse(localStorage.getItem("language"))
-    
-    //--- accessing getmenufeature api from account --//
-    // let featureMenuObj = {
-    //  "accountId": 336,
-    //  "roleId": 161,
-    //  "organizationId": 1,
-    //  "languageCode": "EN-GB"
-    // }
+    let parseLanguageCode = JSON.parse(localStorage.getItem("language"));
     let refresh = localStorage.getItem('pageRefreshed') == 'true';
     let _orgContextStatus = localStorage.getItem("orgContextStatus");
     if(refresh && _orgContextStatus) {
@@ -564,6 +556,12 @@ export class AppComponent {
     let accessNameList = [];
     
     if(from && from == 'orgRoleChange'){
+      if(this.menuPages.menus.length > 0){
+        this.router.navigate(['/dashboard']);
+      }else{
+        this.router.navigate(['/menunotfound']);
+      }
+      
       this.orgContextType = false;
       let _orgContextStatus = localStorage.getItem("orgContextStatus");
       if(_orgContextStatus){
@@ -624,7 +622,8 @@ export class AppComponent {
             let _routerLink = _menu[0].subMenus.length > 0 ? `/${_menu[0].url}/${_menu[0].subMenus[0].url}` : `/${_menu[0].url}`;
             this.router.navigate([_routerLink]);
           } else {
-            this.router.navigate(['/dashboard']);
+            //this.router.navigate(['/dashboard']);
+            this.router.navigate(['/menunotfound']);
           }
         }
         localStorage.removeItem('appRouterUrl'); 
@@ -989,7 +988,7 @@ export class AppComponent {
     this.userRole = rolename[0].name;
     this.setLocalContext(localStorage.getItem("accountOrganizationId"));
     this.filterOrgBasedRoles(localStorage.getItem("accountOrganizationId"), true);
-    this.router.navigate(['/dashboard']);
+    //this.router.navigate(['/dashboard']);
   }
 
   filterOrgBasedRoles(orgId: any, defaultType: boolean) {
