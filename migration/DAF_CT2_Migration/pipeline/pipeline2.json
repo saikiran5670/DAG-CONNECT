@@ -158,6 +158,145 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Group",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Group_Chg_Accounts",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "SELECT \nE.object_type       ,\nE.group_type                  ,\nE.function_enum,\nE.organization_id,\nE.name,\nE.description,\nE.created_at\nFROM staging.Group_CHG E\nWHERE  E.CHG_FLG = 'I' \nAND NOT EXISTS (SELECT 1 FROM MASTER.GROUP L\n             WHERE    L.organization_id = E.organization_id)\nORDER BY \n    \tE.organization_id;"
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 1000000,
+						"writeBatchTimeout": "00:30:00",
+						"writeMethod": "BulkInsert"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "object_type",
+									"type": "String",
+									"physicalType": "character"
+								},
+								"sink": {
+									"name": "object_type",
+									"type": "String",
+									"physicalType": "character"
+								}
+							},
+							{
+								"source": {
+									"name": "group_type",
+									"type": "String",
+									"physicalType": "character"
+								},
+								"sink": {
+									"name": "group_type",
+									"type": "String",
+									"physicalType": "character"
+								}
+							},
+							{
+								"source": {
+									"name": "function_enum",
+									"type": "String",
+									"physicalType": "character"
+								},
+								"sink": {
+									"name": "function_enum",
+									"type": "String",
+									"physicalType": "character"
+								}
+							},
+							{
+								"source": {
+									"name": "organization_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "organization_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "description",
+									"type": "String",
+									"physicalType": "character varying"
+								},
+								"sink": {
+									"name": "description",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "created_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "created_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Group_CHG",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Group",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
