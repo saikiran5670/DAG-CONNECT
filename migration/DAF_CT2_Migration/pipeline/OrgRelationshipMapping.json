@@ -92,6 +92,18 @@
 							},
 							{
 								"source": {
+									"name": "start_date",
+									"type": "Double",
+									"physicalType": "double precision"
+								},
+								"sink": {
+									"name": "start_date",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
 									"name": "created_at",
 									"type": "Double",
 									"physicalType": "double precision"
