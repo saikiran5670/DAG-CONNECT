@@ -4,7 +4,7 @@ using net.atos.daf.ct2.rfms.entity;
 
 namespace net.atos.daf.ct2.rfms.response
 {
-    public class RfmsMapper
+    public class RfmsVehicleStatusMapper
     {
         public AccumulatedData MapAccumuatedData()
         {

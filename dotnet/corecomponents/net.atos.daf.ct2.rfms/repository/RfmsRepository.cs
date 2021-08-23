@@ -419,7 +419,7 @@ namespace net.atos.daf.ct2.rfms.repository
             {
                 vehicleStatus.Status2OfDoors = Convert.ToString(record.status2OfDoors);
             }
-            vehicleStatus.AccumulatedData = new RfmsMapper().MapAccumuatedData();
+            vehicleStatus.AccumulatedData = new RfmsVehicleStatusMapper().MapAccumuatedData();
             return vehicleStatus;
         }
 
