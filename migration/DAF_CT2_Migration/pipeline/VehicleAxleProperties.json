@@ -361,7 +361,7 @@
 				]
 			},
 			{
-				"name": "VehicleProperties_CHG",
+				"name": "VehicleAxleProperties_CHG",
 				"description": "Compares source and target and find the records for upsert",
 				"type": "Copy",
 				"dependsOn": [
@@ -814,7 +814,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "VehicleProperties_Source",
+						"referenceName": "VehicleAxleProperties_Source",
 						"type": "DatasetReference"
 					}
 				],
@@ -830,7 +830,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "VehicleProperties_CHG",
+						"activity": "VehicleAxleProperties_CHG",
 						"dependencyConditions": [
 							"Succeeded"
 						]
