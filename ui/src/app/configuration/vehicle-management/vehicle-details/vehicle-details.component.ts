@@ -8,6 +8,8 @@ import { ConfirmDialogService } from '../../../shared/confirm-dialog/confirm-dia
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Workbook } from 'exceljs';
+import * as fs from 'file-saver';
 
 
 @Component({
@@ -153,9 +155,62 @@ export class VehicleDetailsComponent implements OnInit {
     }, 5000);
   }
 
-  exportAsCSV(){
-    this.matTableExporter.exportTable('csv', {fileName:'VehicleMgmt_Data', sheet: 'sheet_name'});
+//   exportAsCSV(){
+//     console.log("Yes, It is working Properly");
+//     this.matTableExporter.exportTable('csv', {fileName:'VehicleMgmt_Data', sheet: 'sheet_name'});
+       
+// }
+
+exportAsCSV(){  
+  const title = 'Vehicle Details';
+  
+  const header = ['VIN', 'Registration Number', 'Model', 'Relationship','Status'];
+  
+  //Create workbook and worksheet
+  let workbook = new Workbook();
+  let worksheet = workbook.addWorksheet('Vehicle Management');
+  //Add Row and formatting
+  let titleRow = worksheet.addRow([title]);
+  worksheet.addRow([]);
+  titleRow.font = { name: 'sans-serif', family: 4, size: 14, underline: 'double', bold: true }
+ 
+  worksheet.addRow([]);  
+  let headerRow = worksheet.addRow(header);
+  headerRow.eachCell((cell, number) => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFFFFF00' },
+      bgColor: { argb: 'FF0000FF' }
+    }
+    cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+  })
+  this.initData.forEach(item => {
+    let status1 = '';
+    if(item.status == 'T'){
+     status1 = 'Terminate'
+    } else if(item.status == 'N'){
+      status1 = 'Opt-In + OTA'
+    } else if(item.status == 'A'){
+      status1 = 'OTA'
+    } else if(item.status == 'C'){
+      status1 = 'Opt-In'
+    }  else if(item.status == 'O'){
+      status1 = 'Opt-Out'
+    }  
+    worksheet.addRow([item.vin, item.licensePlateNumber, item.modelId, item.relationShip, status1]);   
+  }); 
+  worksheet.mergeCells('A1:D2'); 
+  for (var i = 0; i < header.length; i++) {    
+    worksheet.columns[i].width = 20;      
+  }
+  worksheet.addRow([]); 
+  workbook.xlsx.writeBuffer().then((data) => {
+    let blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    fs.saveAs(blob, 'VehicleMgmt_Data.xlsx');
+ }) 
 }
+
 
 exportAsPdf() {
   let DATA = document.getElementById('vehicleMgmtData');
