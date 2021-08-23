@@ -36,10 +36,10 @@ namespace net.atos.daf.ct2.rfms.test
         {
             RfmsVehicleStatusRequest rfmsVehicleRequest = new RfmsVehicleStatusRequest()
             {
-                AccountId =,
-                OrgId =,
-                Vin = 'BLRAE75PC0E272200',
-                StartTime= "2021-07-30T01:40:00.000Z",
+                AccountId = 171,
+                OrgId = 36,
+                Vin = "BLRAE75PC0E272200",
+                StartTime = "2021-07-30T01:40:00.000Z",
 
 
             };

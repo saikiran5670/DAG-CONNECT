@@ -618,6 +618,8 @@ export class AppComponent {
         if(_routerUrl){ // from refresh page
           this.router.navigate([_routerUrl]);
         }else{
+          this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+          this.router.onSameUrlNavigation = 'reload';
           if (_menu.length > 0) {
             let _routerLink = _menu[0].subMenus.length > 0 ? `/${_menu[0].url}/${_menu[0].subMenus[0].url}` : `/${_menu[0].url}`;
             this.router.navigate([_routerLink]);
