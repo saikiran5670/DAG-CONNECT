@@ -20,7 +20,7 @@ import { DashboardService } from '../services/dashboard.service';
 })
 export class DashboardComponent implements OnInit {
   localStLanguage: any;
-  accountOrganizationId: any;
+  accountOrganizationId: any = 0;
   globalSearchFilterData: any = JSON.parse(localStorage.getItem("globalSearchFilterData"));
   accountId: any;
   accountPrefObj : any;
@@ -141,7 +141,11 @@ export class DashboardComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     let _langCode = this.localStLanguage ? this.localStLanguage.code  :  "EN-GB";
     
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    if(localStorage.getItem('contextOrgId'))
+      this.accountOrganizationId = localStorage.getItem('contextOrgId') ? parseInt(localStorage.getItem('contextOrgId')) : 0;
+    else 
+      this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+
     let translationObj = {
       id: 0,
       code:_langCode,
@@ -154,7 +158,6 @@ export class DashboardComponent implements OnInit {
    
     this.globalSearchFilterData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
    // this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.showLoadingIndicator = true;

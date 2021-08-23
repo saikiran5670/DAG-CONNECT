@@ -1310,6 +1310,11 @@ else{
           else{
             this.isIdlingValdate=true;
            }
+           let filterObj = {
+            "type" : this.filterType,
+            "val" : this.thresholdVal
+          }
+          this.filterTypeArray.push(filterObj);
           if(!this.isPoiSelected){
             let obj = {
               "alertUrgencyLevelId": 0,
@@ -1380,6 +1385,35 @@ else{
               obj["unitType"] = geofenceLandmarkRefArr[0].unitType;
             }
             this.advancedAlertPayload.push(obj);
+            if (this.filterTypeArray.length != 0) {
+              this.filterTypeArray.forEach(item => {
+                this.filterType = item.type;
+                if(!this.isDistanceSelected){
+                  this.thresholdVal = parseInt(item.val);
+                  } else{
+                    this.thresholdVal = parseFloat(item.val);
+                  }
+                let obj = {
+                  "alertUrgencyLevelId": 0,
+                  "filterType": this.filterType,
+                  "thresholdValue": this.thresholdVal,
+                  "unitType": "N",
+                  "landmarkType": element.type,
+                  "refId": element.id,
+                  "positionType": this.selectedPoiSite,
+                  "alertTimingDetails": this.alertTimingDetail
+                }
+                  if(this.actionType == 'edit'){
+                    let filterTypeRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == this.filterType); 
+                    obj["id"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+                    obj["alertId"] = this.selectedRowData.id;
+                    obj["state"] = 'A';
+                    obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+                    obj["unitType"] = filterTypeRefArr.unitType;
+                  }
+                this.advancedAlertPayload.push(obj);
+              });
+            }
           })
         }
         if(this.markerArray.length != 0) {
@@ -1405,8 +1439,38 @@ else{
             }
 
             // this.advancedAlertPayload.push(obj);
-          });
           this.advancedAlertPayload.push(obj);
+
+          if (this.filterTypeArray.length != 0) {
+            this.filterTypeArray.forEach(item => {
+              this.filterType = item.type;
+              if(!this.isDistanceSelected){
+                this.thresholdVal = parseInt(item.val);
+                } else{
+                  this.thresholdVal = parseFloat(item.val);
+                }
+              let obj = {
+                "alertUrgencyLevelId": 0,
+                "filterType": this.filterType,
+                "thresholdValue": this.thresholdVal,
+                "unitType": "N",
+                "landmarkType": "P",
+                "refId": element.id,
+                "positionType": this.selectedPoiSite,
+                "alertTimingDetails": this.alertTimingDetail
+              }
+                if(this.actionType == 'edit'){
+                  let filterTypeRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == this.filterType); 
+                  obj["id"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+                  obj["alertId"] = this.selectedRowData.id;
+                  obj["state"] = 'A';
+                  obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+                  obj["unitType"] = filterTypeRefArr.unitType;
+                }
+              this.advancedAlertPayload.push(obj);
+            });
+          }
+        });
         }
         if(this.groupArray.length != 0) {
          this.groupArray.forEach(element => {
@@ -1429,6 +1493,35 @@ else{
             obj["unitType"] = groupLandmarkRefArr[0].unitType;
           }
            this.advancedAlertPayload.push(obj);
+           if (this.filterTypeArray.length != 0) {
+            this.filterTypeArray.forEach(item => {
+              this.filterType = item.type;
+              if(!this.isDistanceSelected){
+                this.thresholdVal = parseInt(item.val);
+                } else{
+                  this.thresholdVal = parseFloat(item.val);
+                }
+              let obj = {
+                "alertUrgencyLevelId": 0,
+                "filterType": this.filterType,
+                "thresholdValue": this.thresholdVal,
+                "unitType": "N",
+                "landmarkType": "G",
+                "refId": element.id,
+                "positionType": this.selectedPoiSite,
+                "alertTimingDetails": this.alertTimingDetail
+              }
+                if(this.actionType == 'edit'){
+                  let filterTypeRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == this.filterType); 
+                  obj["id"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+                  obj["alertId"] = this.selectedRowData.id;
+                  obj["state"] = 'A';
+                  obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+                  obj["unitType"] = filterTypeRefArr.unitType;
+                }
+              this.advancedAlertPayload.push(obj);
+            });
+          }
          });
        }
        if ((this.geoMarkerArray.length == 0) && (this.markerArray.length == 0) && (this.groupArray.length == 0))

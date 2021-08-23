@@ -17,11 +17,12 @@ namespace net.atos.daf.ct2.rfms.repository
         private static readonly log4net.ILog _log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-
+        private readonly RfmsVehicleStatusMapper _rfmsVehicleStatusMapper;
         public RfmsRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartAccess)
         {
             _dataMartDataAccess = dataMartAccess;
             _dataAccess = dataAccess;
+            _rfmsVehicleStatusMapper = new RfmsVehicleStatusMapper();
         }
         public async Task<RfmsVehicles> GetVehicles(string visibleVins, int lastVinId)
         {
@@ -419,7 +420,9 @@ namespace net.atos.daf.ct2.rfms.repository
             {
                 vehicleStatus.Status2OfDoors = Convert.ToString(record.status2OfDoors);
             }
-            vehicleStatus.AccumulatedData = new RfmsVehicleStatusMapper().MapAccumuatedData();
+            vehicleStatus.AccumulatedData = _rfmsVehicleStatusMapper.MapAccumuatedData();
+            vehicleStatus.SnapshotData = _rfmsVehicleStatusMapper.MapSnapShotData();
+            vehicleStatus.UptimeData = _rfmsVehicleStatusMapper.MapUptimeData();
             return vehicleStatus;
         }
 

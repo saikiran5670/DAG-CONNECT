@@ -516,7 +516,7 @@ proceedStep(prefData: any, preference: any){
         case "LG": { //Excessive Global Mileage
           this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
           // this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer : 'Miles';
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblKilometer || 'Kilometer' : 'Miles';
           if(this.prefUnitFormat == 'dunit_Metric'){
           this.unitTypeEnum= "K";  }
           else{
@@ -564,7 +564,7 @@ proceedStep(prefData: any, preference: any){
         }
         case "FA": { //Excessive Average speed
           this.labelForThreshold= this.translationData.lblDSpeed ? this.translationData.lblSpeed : "Speed";
-          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? 'Km/h' : 'Miles/h';
+          this.unitForThreshold= this.prefUnitFormat == 'dunit_Metric' ? this.translationData.lblkilometerperhour || 'Km/h' : this.translationData.lblMilesPerHour || 'Miles/h';
           // this.unitForThreshold= this.translationData.lblkilometerperhour ? this.translationData.lblkilometerperhour : "km/h";
           // this.unitTypeEnum= "E";
           if(this.prefUnitFormat == 'dunit_Metric'){
