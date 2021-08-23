@@ -1,0 +1,165 @@
+{
+	"name": "pipeline2",
+	"properties": {
+		"activities": [
+			{
+				"name": "Group_Chg_Accounts",
+				"description": "Makes default dynamic group for Accounts",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "SELECT DISTINCT\n'A' as object_type,\n'D' as group_type,\n'A' as function_enum            ,\nS.id as organization_id,\n'All accounts' as name                     ,\n'All accounts' as description              ,\n(select extract(epoch from now()) * 1000) as created_at,\nCASE WHEN L.organization_id IS NULL THEN 'I' ELSE 'X' END AS CHG_FLG,\nCURRENT_TIMeSTAMP AS LOAD_DT\nfrom master.organization S\nleft join master.group L\nON S.ID = L.organization_id\nwhere ('D' <> L.group_type OR\n  'A'  <> L.function_enum OR\n  'All accounts'  <> L.name  OR\n  'All accounts' <> L.description OR\n  L.organization_id IS NULL)\n  \n  UNION\n\nSELECT DISTINCT\n'V' as object_type,\n'D' as group_type,\n'A' as function_enum            ,\nS.id as organization_id,\n'Fleet' as name                     ,\n'Fleet' as description              ,\n(select extract(epoch from now()) * 1000) as created_at,\nCASE WHEN L.organization_id IS NULL THEN 'I' ELSE 'X' END AS CHG_FLG,\nCURRENT_TIMeSTAMP AS LOAD_DT\nfrom master.organization S\nleft join master.group L\nON S.ID = L.organization_id\nwhere ('D' <> L.group_type OR\n  'A'  <> L.function_enum OR\n  'Fleet'  <> L.name  OR\n  'Fleet' <> L.description OR\n  L.organization_id IS NULL);\n  \n\n"
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 1000000,
+						"writeBatchTimeout": "00:30:00",
+						"writeMethod": "CopyCommand"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "object_type",
+									"type": "String",
+									"physicalType": "text"
+								},
+								"sink": {
+									"name": "object_type",
+									"type": "String",
+									"physicalType": "character"
+								}
+							},
+							{
+								"source": {
+									"name": "group_type",
+									"type": "String",
+									"physicalType": "text"
+								},
+								"sink": {
+									"name": "group_type",
+									"type": "String",
+									"physicalType": "character"
+								}
+							},
+							{
+								"source": {
+									"name": "function_enum",
+									"type": "String",
+									"physicalType": "text"
+								},
+								"sink": {
+									"name": "function_enum",
+									"type": "String",
+									"physicalType": "character"
+								}
+							},
+							{
+								"source": {
+									"name": "organization_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								},
+								"sink": {
+									"name": "organization_id",
+									"type": "Int32",
+									"physicalType": "integer"
+								}
+							},
+							{
+								"source": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "text"
+								},
+								"sink": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "description",
+									"type": "String",
+									"physicalType": "text"
+								},
+								"sink": {
+									"name": "description",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "created_at",
+									"type": "Double",
+									"physicalType": "double precision"
+								},
+								"sink": {
+									"name": "created_at",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "chg_flg",
+									"type": "String",
+									"physicalType": "text"
+								},
+								"sink": {
+									"name": "chg_flg",
+									"type": "String",
+									"physicalType": "character varying"
+								}
+							},
+							{
+								"source": {
+									"name": "load_dt",
+									"type": "DateTime",
+									"physicalType": "timestamp with time zone"
+								},
+								"sink": {
+									"name": "load_dt",
+									"type": "DateTime",
+									"physicalType": "timestamp without time zone"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Organization",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Group_CHG",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}
